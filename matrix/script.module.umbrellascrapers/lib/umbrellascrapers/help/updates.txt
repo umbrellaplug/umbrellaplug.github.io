@@ -1,0 +1,1 @@
+This option is useful for those who prefer to disable Auto Updates.  When enabled this setting will run a "runounce" service at startup and display a notification if an update is available.

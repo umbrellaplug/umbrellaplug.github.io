@@ -1,0 +1,5 @@
+
+[B][COLOR red]Update - v2.0.0 - Nov. 23, 2021[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I] First official py3 only version for Kodi Matrix.[/I]
+[COLOR yellow]--[/COLOR][I] Fixed issue with "check for updates" using old github url.[/I]
+

@@ -1,0 +1,4 @@
+
+You must enter username and password and then "Authorize TMDb" to import your own personal
+lists.  If you do not use personal list on TMDb, or do not wish to import your lists, then you can
+leave this section blank.

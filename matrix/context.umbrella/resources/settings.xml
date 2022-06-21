@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<settings>
+	<!-- Menu Items - 0 -->
+	<category label="30000">
+		<!-- <setting label="30001" type="bool" id="general.on.back" default="true" /> -->
+		<setting type="lsep" label="30002" />
+		<setting id="context.umbrella.settings" label="30012" type="bool" default="true" />
+		<setting id="context.umbrella.traktManager" label="30003" type="bool" default="true" />
+		<setting id="context.umbrella.clearProviders" label="30004" type="bool" default="true" />
+		<setting id="context.umbrella.clearBookmark" label="30013" type="bool" default="true" />
+		<setting id="context.umbrella.rescrape" label="30005" type="bool" default="true" />
+		<setting id="context.umbrella.rescrape2" label="30016" type="bool" subsetting="true" default="false" visible="eq(-1,true)" />
+		<setting id="context.umbrella.rescrape3" label="30017" type="select" subsetting="true" lvalues="30018|30019|30020|30021" default="3" visible="eq(-1,true)" />
+		<setting id="context.umbrella.playFromHere" label="30006" type="bool" default="true" />
+		<setting id="context.umbrella.autoPlay" label="30007" type="bool" default="true" />
+		<setting id="context.umbrella.sourceSelect" label="30008" type="bool" default="true" />
+		<setting id="context.umbrella.findSimilar" label="30009" type="bool" default="true" />
+		<setting id="context.umbrella.browseSeries" label="30010" type="bool" default="true" />
+		<setting id="context.umbrella.browseEpisodes" label="30011" type="bool" default="true" />
+	</category>
+	<!-- Options - 1 -->
+	<category label="30014">
+		<setting id="checkAddonUpdates" label="30015" type="bool" default="false" />
+	</category>
+</settings>

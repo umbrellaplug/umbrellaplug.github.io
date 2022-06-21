@@ -1,0 +1,1 @@
+Some features of TMDb v3 api require a session_ID. You must enter username and password and then "Authorize TMDb" if the addon using this supports importing your own personal lists.  If you do not use personal list on TMDb, or do not wish to import your lists, then you can leave this section blank.

@@ -1,0 +1,429 @@
+# Addon Name: My Accounts
+# Addon id: script.module.myaccounts
+# Addon Provider: My Accounts
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: My Accounts\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2016-08-01 02:03+0000\n"
+"Last-Translator: lambda81\n"
+"Language-Team: English (http://www.transifex.com/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#32072"
+msgid "A new verison of Fenomscrapers is available from the repository. Please consider updating to v%s"
+msgstr ""
+
+msgctxt "#32073"
+msgid "[B]TRAKT[/B] : Authorize"
+msgstr ""
+
+msgctxt "#32074"
+msgid "Are you sure?"
+msgstr ""
+
+msgctxt "#32306"
+msgid "Authorization..."
+msgstr ""
+
+msgctxt "#32309"
+msgid "Debrid Accounts"
+msgstr ""
+
+msgctxt "#32310"
+msgid "Meta Accounts"
+msgstr ""
+
+msgctxt "#32311"
+msgid "[COLOR FFA0C12C] -- Help --[/COLOR]"
+msgstr ""
+
+msgctxt "#32312"
+msgid "Authorize TMDb"
+msgstr ""
+
+msgctxt "#32313"
+msgid "FANART.TV"
+msgstr ""
+
+msgctxt "#32314"
+msgid "Auth Revoked"
+msgstr ""
+
+msgctxt "#32315"
+msgid "Trakt"
+msgstr ""
+
+msgctxt "#32316"
+msgid "Account Info"
+msgstr ""
+
+msgctxt "#32317"
+msgid "Revoke"
+msgstr ""
+
+msgctxt "#32318"
+msgid "Username"
+msgstr ""
+
+msgctxt "#32319"
+msgid "Authorize"
+msgstr ""
+
+msgctxt "#32320"
+msgid "Fanart API"
+msgstr ""
+
+msgctxt "#32321"
+msgid "Revoke TMDb session_id"
+msgstr ""
+
+msgctxt "#32322"
+msgid "TVDb"
+msgstr ""
+
+msgctxt "#32323"
+msgid "TVDb API Key (Legacy)"
+msgstr ""
+
+msgctxt "#32324"
+msgid "[COLOR FFA0C12C] -- Help --[/COLOR]"
+msgstr ""
+
+msgctxt "#32325"
+msgid "IMDb"
+msgstr ""
+
+msgctxt "#32326"
+msgid "User"
+msgstr ""
+
+msgctxt "#32327"
+msgid "Scraper Accounts"
+msgstr ""
+
+msgctxt "#32328"
+msgid "Filepursuit - for key visit: rapidapi.com/azharxes/api/filepursuit"
+msgstr ""
+
+msgctxt "#32329"
+msgid "Filepursuit API Key"
+msgstr ""
+
+msgctxt "#32330"
+msgid "Furk.net"
+msgstr ""
+
+msgctxt "#32331"
+msgid "Furk Username"
+msgstr ""
+
+msgctxt "#32332"
+msgid "Furk Password"
+msgstr ""
+
+msgctxt "#32333"
+msgid "Furk API Key"
+msgstr ""
+
+msgctxt "#32334"
+msgid "Easynews"
+msgstr ""
+
+msgctxt "#32335"
+msgid "Easynews Username"
+msgstr ""
+
+msgctxt "#32336"
+msgid "Easynews Password"
+msgstr ""
+
+msgctxt "#32337"
+msgid "Ororo.tv"
+msgstr ""
+
+msgctxt "#32338"
+msgid "Email"
+msgstr ""
+
+msgctxt "#32339"
+msgid "Options"
+msgstr ""
+
+msgctxt "#32340"
+msgid "Notify Me About Available Updates"
+msgstr ""
+
+msgctxt "#32341"
+msgid "[COLOR FFA0C12C] -- Help --[/COLOR]"
+msgstr ""
+
+msgctxt "#32342"
+msgid "Enable Debug"
+msgstr ""
+
+msgctxt "#32343"
+msgid "Logging Location"
+msgstr ""
+
+msgctxt "#32344"
+msgid "Password"
+msgstr ""
+
+msgctxt "#32345"
+msgid "Write My Accounts log in reverse order"
+msgstr ""
+
+msgctxt "#32346"
+msgid "Clear My Accounts log file"
+msgstr ""
+
+msgctxt "#32347"
+msgid "View My Accounts log file"
+msgstr ""
+
+msgctxt "#32348"
+msgid "Upload My Accounts log file to pastebin"
+msgstr ""
+
+msgctxt "#32349"
+msgid "My Accounts log file uploaded to:"
+msgstr ""
+
+msgctxt "#32369"
+msgid "TVDB api key1"
+msgstr ""
+
+msgctxt "#32370"
+msgid "TVDB api key2"
+msgstr ""
+
+msgctxt "#32371"
+msgid "TVDB api key3"
+msgstr ""
+
+msgctxt "#32513"
+msgid "1) Open this link in a browser : [COLOR skyblue]%s[/COLOR]"
+msgstr ""
+
+msgctxt "#32514"
+msgid "2) When prompted enter : [COLOR skyblue]%s[/COLOR]"
+msgstr ""
+
+msgctxt "#32679"
+msgid "TMDb Successfully Authorized"
+msgstr ""
+
+msgctxt "#32680"
+msgid "TMDb Authorization Cancelled"
+msgstr ""
+
+msgctxt "#32681"
+msgid "TMDb session_id successfully deleted"
+msgstr ""
+
+msgctxt "#32682"
+msgid "TMDb session_id deletion FAILED"
+msgstr ""
+
+msgctxt "#32683"
+msgid "TMDb Account info missing"
+msgstr ""
+
+msgctxt "#32684"
+msgid "TMDb"
+msgstr ""
+
+msgctxt "#40019"
+msgid "Authentication with Real-Debrid has failed, please try again"
+msgstr ""
+
+msgctxt "#40020"
+msgid "Authentication with Premiumize.me has failed, please try again"
+msgstr ""
+
+msgctxt "#40021"
+msgid "Authentication with All-Debrid has failed, please try again"
+msgstr ""
+
+msgctxt "#40035"
+msgid "[B]Email:[/B] %s"
+msgstr ""
+
+msgctxt "#40036"
+msgid "[B]Username:[/B] %s"
+msgstr ""
+
+msgctxt "#40037"
+msgid "[B]Status:[/B] %s"
+msgstr ""
+
+msgctxt "#40038"
+msgid "[B]Fidelity Points:[/B] %s"
+msgstr ""
+
+msgctxt "#40040"
+msgid "[B]Customer ID:[/B] %s"
+msgstr ""
+
+msgctxt "#40041"
+msgid "[B]Expires:[/B] %s"
+msgstr ""
+
+msgctxt "#40042"
+msgid "[B]Days Remaining:[/B] %s"
+msgstr ""
+
+msgctxt "#40043"
+msgid "[B]Points Used:[/B] %.f"
+msgstr ""
+
+msgctxt "#40044"
+msgid "[B]Space Used:[/B] %.2f"
+msgstr ""
+
+msgctxt "#40045"
+msgid "[B]Fair Use (Percentage Used):[/B] %s"
+msgstr ""
+
+msgctxt "#40054"
+msgid "Premiumize.me Auth"
+msgstr ""
+
+msgctxt "#40055"
+msgid "Real-Debrid Auth"
+msgstr ""
+
+msgctxt "#40056"
+msgid "All Debrid Auth"
+msgstr ""
+
+msgctxt "#40057"
+msgid "Premiumize.me"
+msgstr ""
+
+msgctxt "#40058"
+msgid "Real-Debrid"
+msgstr ""
+
+msgctxt "#40059"
+msgid "All Debrid"
+msgstr ""
+
+msgctxt "#40060"
+msgid "TMDb username"
+msgstr ""
+
+msgctxt "#40061"
+msgid "TMDb password"
+msgstr ""
+
+msgctxt "#40062"
+msgid "Trakt Username"
+msgstr ""
+
+msgctxt "#40063"
+msgid "[B]Timezone:[/B] %s"
+msgstr ""
+
+msgctxt "#40064"
+msgid "[B]Joined:[/B] %s"
+msgstr ""
+
+msgctxt "#40065"
+msgid "[B]Private:[/B] %s"
+msgstr ""
+
+msgctxt "#40066"
+msgid "[B]VIP Status:[/B] %s"
+msgstr ""
+
+msgctxt "#40067"
+msgid "[B]Ratings Given:[/B] %s"
+msgstr ""
+
+msgctxt "#40068"
+msgid "[B]Movies:[/B] [B]%s[/B] Collected, [B]%s[/B] Watched for [B]%s[/B]"
+msgstr ""
+
+msgctxt "#40069"
+msgid "[B]Shows:[/B] [B]%s[/B] Collected, [B]%s[/B] Watched"
+msgstr ""
+
+msgctxt "#40070"
+msgid "[B]Episodes:[/B] [B]%s[/B] Watched for [B]%s[/B]"
+msgstr ""
+
+msgctxt "#40071"
+msgid "%s %s hours %s minutes"
+msgstr ""
+
+msgctxt "#40072"
+msgid "TMDb API Key"
+msgstr ""
+
+msgctxt "#40073"
+msgid "Failed to connect to All Debrid"
+msgstr ""
+
+msgctxt "#40074"
+msgid "Trakt Successfully Authorized"
+msgstr ""
+
+msgctxt "#40075"
+msgid "Error Authoriing"
+msgstr ""
+
+msgctxt "#40076"
+msgid "View Changelog"
+msgstr ""
+
+msgctxt "#40077"
+msgid "alldebrid token"
+msgstr ""
+
+msgctxt "#40078"
+msgid "premiumize token"
+msgstr ""
+
+msgctxt "#40079"
+msgid "realdebrid token"
+msgstr ""
+
+msgctxt "#40080"
+msgid "Enable"
+msgstr ""
+
+msgctxt "#40081"
+msgid "Authorization Successful"
+msgstr ""
+
+msgctxt "#40082"
+msgid "GDRIVE"
+msgstr ""
+
+msgctxt "#40083"
+msgid "GDrive Worker URL"
+msgstr ""
+
+msgctxt "#40084"
+msgid "To generate a GDrive Worker URL, go to  [B]https://gdrive-cfworker.glitch.me/[/B]  and follow the instructions."
+msgstr ""
+
+msgctxt "#40085"
+msgid "Setup"
+msgstr ""
+
+msgctxt "#40086"
+msgid "Account Expiry Notification"
+msgstr ""

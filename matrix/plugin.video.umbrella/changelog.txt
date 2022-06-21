@@ -1,0 +1,35 @@
+[B][COLOR red]Update - v6.5.23 - June 21, 2022[/COLOR][/B]
+[COLOR cyan]--[/COLOR][I] Setup new repo.[/I]
+
+[B][COLOR red]Update - v6.5.20 - June 18, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I] Made adjustments to replace "$" in titles.[/I]
+
+[B][COLOR red]Update - v6.5.15 - June 15, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I] Corrected news and info section code.[/I]
+[COLOR yellow]--[/COLOR][I] Added news and info back into default menu.[/I]
+
+[B][COLOR red]Update - v6.5.14 - June 15, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I] Modifed Umbrella to use trakt information provided by my accounts module instead of hard coded client id and secret.[/I]
+[COLOR yellow]--[/COLOR][I] Setup update-detection to work.[/I]
+[COLOR yellow]--[/COLOR][I] Started new branch for Kodi 20 development to start.[/I]
+
+[B][COLOR red]Update - v6.5.13 - June 15, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I] Modifed Umbrella to use trakt information provided by my accounts module instead of hard coded client id and secret.[/I]
+
+[B][COLOR red]Update - v6.5.12 - June 7, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I] Requires Umbrella Scrapers now. You can delete fenomscrapers.[/I]
+
+[B][COLOR red]Update - v6.5.10 - June 7, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I] Updated to take over scrapers package also.[/I]
+
+[B][COLOR red]Update - v6.5.9 - June 1, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I] Updated my account for compatibility with ezra.[/I]
+
+[B][COLOR red]Update - v6.5.8 - May 12, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I] Updated plugin for updates from repo.[/I]
+
+[B][COLOR red]Update - v6.5.7 - May 10, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I] Now Umbrella....[/I]
+
+[B][COLOR red]Update - v6.5.6 - May 05, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I]Setup umbrella and removed some menu options.[/I]

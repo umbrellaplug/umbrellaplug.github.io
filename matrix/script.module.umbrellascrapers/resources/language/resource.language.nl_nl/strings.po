@@ -1,0 +1,580 @@
+# Kodi Media Center language file
+# Addon Name: umbrellascrapers
+# Addon id: script.module.umbrellascrapers
+# Addon Provider: Mr-Kodi
+# Translator Dutch: Tinuz97
+# Translator English: Mr-Kodi
+msgid ""
+msgstr ""
+
+msgctxt "#32001"
+msgid "[COLOR cyan]-- Help --[/COLOR]"
+msgstr "[COLOR cyan]-- Help --[/COLOR]"
+
+msgctxt "#32002"
+msgid "[COLOR cyan]-- pack scraper Help --[/COLOR]"
+msgstr "[COLOR cyan]-- pack scraper Help --[/COLOR]"
+
+msgctxt "#32003"
+msgid "[COLOR cyan]-- undesirables filter Help --[/COLOR]"
+msgstr "[COLOR cyan]-- ongewenste filter Help --[/COLOR]"
+
+msgctxt "#32004"
+msgid "[COLOR cyan]-- my accounts Help --[/COLOR]"
+msgstr "[COLOR cyan]-- mijn accounts Help --[/COLOR]"
+
+msgctxt "#32005"
+msgid "Choose Module Scraper"
+msgstr "Kies Module Scraper"
+
+msgctxt "#32006"
+msgid "Umbrellascrapers Default Providers"
+msgstr "Umbrellascrapers Standaard Providers"
+
+msgctxt "#32007"
+msgid "Disable All Providers"
+msgstr "Alle Providers Uitschakelen"
+
+msgctxt "#32008"
+msgid "Enable All Providers"
+msgstr "Alle Providers Inschakelen"
+
+msgctxt "#32009"
+msgid "Show Changelog"
+msgstr "Laat Veranderingen Zien"
+
+msgctxt "#32010"
+msgid "Notify Me About Available Updates"
+msgstr "Informeer Mij Over Beschikbare Updates"
+
+msgctxt "#32011"
+msgid "Disable All Hoster Providers"
+msgstr "Schakel Alle Hoster Providers Uit"
+
+msgctxt "#32012"
+msgid "Enable All Hoster Providers"
+msgstr "Schakel Alle Hoster Providers In"
+
+msgctxt "#32013"
+msgid "Disable All Torrent Providers"
+msgstr "Schakel Alle Torrent Providers Uit"
+
+msgctxt "#32014"
+msgid "Enable All Torrent Providers"
+msgstr "Schakel Alle Torrent Providers In"
+
+msgctxt "#32015"
+msgid "Enable Only Pack Capable Torrent Providers"
+msgstr "Alleen Pack Geschikte Torrent Providers Inschakelen"
+
+msgctxt "#32016"
+msgid "Remove Undesirables"
+msgstr "Verwijder Ongewenste"
+
+msgctxt "#32017"
+msgid "Remove identified Foreign single audio sources"
+msgstr "Verwijder geidentificeerde Buitenlandse enkelvoudige audio bronnen"
+
+msgctxt "#32018"
+msgid "My Accounts Manager"
+msgstr "Mijn Accounts Manager"
+
+msgctxt "#32019"
+msgid "Open My Accounts Addon"
+msgstr "Open Mijn Accounts Addon"
+
+msgctxt "#32020"
+msgid "sync(re) with My Accounts"
+msgstr "(her)synchroniseren met Mijn Accounts"
+
+msgctxt "#32021"
+msgid "Filepursuit - for key visit: rapidapi.com/azharxes/api/filepursuit"
+msgstr "Filepursuit - voor een sleutel bezoek: rapidapi.com/azharxes/api/filepursuit"
+
+msgctxt "#32022"
+msgid "Filepursuit API Key"
+msgstr "Filepursuit API Sleutel"
+
+msgctxt "#32023"
+msgid "Furk.net"
+msgstr "Furk.net"
+
+msgctxt "#32024"
+msgid "Furk Username"
+msgstr "Furk Gebruikersnaam"
+
+msgctxt "#32025"
+msgid "Furk Password"
+msgstr "Furk Wachtwoord"
+
+msgctxt "#32026"
+msgid "Furk API Key"
+msgstr "Furk API Sleutel"
+
+msgctxt "#32027"
+msgid "Easynews"
+msgstr "Easynews"
+
+msgctxt "#32028"
+msgid "Easynews Username"
+msgstr "Easynews Gebruikersnaam"
+
+msgctxt "#32029"
+msgid "Easynews Password"
+msgstr "Easynews Wachtwoord"
+
+msgctxt "#32030"
+msgid "Ororo.tv"
+msgstr "Ororo.tv"
+
+msgctxt "#32031"
+msgid "Email"
+msgstr "Email"
+
+msgctxt "#32032"
+msgid "Password"
+msgstr "Wachtwoord"
+
+msgctxt "#32033"
+msgid "Enable Debug"
+msgstr "Debug Inschakelen"
+
+msgctxt "#32034"
+msgid "Logging Location"
+msgstr "Logboek Locatie"
+
+msgctxt "#32035"
+msgid "Kodi Log"
+msgstr "Kodi Log"
+
+msgctxt "#32036"
+msgid "Addon Log"
+msgstr "Addon Log"
+
+msgctxt "#32037"
+msgid "A new verison of Umbrellascrapers is available from the repository. Please consider updating to v%s"
+msgstr "Een nieuwe versie van Umbrellascrapers is beschikbaar in de repository. Overweeg om bij te werken naar v%s"
+
+msgctxt "#32038"
+msgid "My Accounts sync complete"
+msgstr "Mijn Accounts zijn gesynchroniseerd"
+
+msgctxt "#32039"
+msgid "GDrive Worker URL"
+msgstr "GDrive Worker URL"
+
+msgctxt "#32040"
+msgid "[COLOR cyan]-- Torrent scraper Info --[/COLOR]"
+msgstr "[COLOR cyan]-- Torrent scraper Info --[/COLOR]"
+
+msgctxt "#32041"
+msgid "Clean Settings file"
+msgstr "Reinig Instellingenbestand"
+
+msgctxt "#32042"
+msgid "{} Obsolete Settings Entries Removed"
+msgstr "{} Verouderde Instellingen Gegevens Verwijderd"
+
+msgctxt "#32043"
+msgid "Error Cleaning Settings.xml. Old settings.xml files Restored."
+msgstr "Fout Bij Het Opschonen Van Settings.xml. Oude settings.xml bestanden Hersteld"
+
+msgctxt "#32044"
+msgid "Account Required Scrapers"
+msgstr "Account Vereiste Scrapers"
+
+msgctxt "#32045"
+msgid "Local Scrapers"
+msgstr "Lokale Scrapers"
+
+msgctxt "#32046"
+msgid "Manage Default Undesirables"
+msgstr "Beheer Standaard Ongewenste"
+
+msgctxt "#32047"
+msgid "[B]Browse[/B]"
+msgstr "[B]Bladeren[/B]"
+
+msgctxt "#32048"
+msgid "Define Extra Undesirables (Comma Separated)"
+msgstr "Definieer Extra Ongewenste (Komma Gescheiden)"
+
+msgctxt "#32049"
+msgid "Remove Extra Undesirables"
+msgstr "Verwijder Extra Ongewenste"
+
+msgctxt "#32050"
+msgid "General"
+msgstr "Algemeen"
+
+msgctxt "#32051"
+msgid "Premium Hosters"
+msgstr "Premium Hosters"
+
+msgctxt "#32052"
+msgid "Torrents"
+msgstr "Torrents"
+
+msgctxt "#32053"
+msgid "Scraper Accounts"
+msgstr "Scraper Accounts"
+
+msgctxt "#32054"
+msgid "Debug"
+msgstr "Debug"
+
+msgctxt "#32055"
+msgid "Write umbrellascrapers log in reverse order"
+msgstr "Schrijf Umbrellascrapers log in omgekeerde volgorde"
+
+msgctxt "#32056"
+msgid "Clear umbrellascrapers log file"
+msgstr "Wis het Umbrellascrapers logbestand"
+
+msgctxt "#32057"
+msgid "View umbrellascrapers log File"
+msgstr "umbrellascrapers logbestand bekijken"
+
+msgctxt "#32058"
+msgid "Upload umbrellascrapers log file to pastebin"
+msgstr "Upload umbrellascrapers logbestand naar pastebin"
+
+msgctxt "#32059"
+msgid "umbrellascrapers log file uploaded to:"
+msgstr "umbrellascrapers logbestand geüpload naar:"
+
+msgctxt "#32060"
+msgid "Are you sure?"
+msgstr "Weet u het zeker?"
+
+msgctxt "#32061"
+msgid "$NUMBER[2]DDL"
+msgstr "$NUMBER[2]DDL"
+
+msgctxt "#32062"
+msgid "$NUMBER[300]MBFILMS"
+msgstr "$NUMBER[300]MBFILMS"
+
+msgctxt "#32063"
+msgid "$NUMBER[5]MOVIES"
+msgstr "$NUMBER[5]MOVIES"
+
+msgctxt "#32064"
+msgid "CARTOONHD"
+msgstr "CARTOONHD"
+
+msgctxt "#32065"
+msgid "EASYNEWS"
+msgstr "EASYNEWS"
+
+msgctxt "#32066"
+msgid "FILEPURSUIT"
+msgstr "FILEPURSUIT"
+
+msgctxt "#32067"
+msgid "FILMXY"
+msgstr "FILMXY"
+
+msgctxt "#32068"
+msgid "FURK"
+msgstr "FURK"
+
+msgctxt "#32069"
+msgid "GANOOL (movies only)"
+msgstr "GANOOL (alleen films)"
+
+msgctxt "#32070"
+msgid "LIBRARY"
+msgstr "BIBLIOTHEEK"
+
+msgctxt "#32071"
+msgid "MAXRLS"
+msgstr "MAXRLS"
+
+msgctxt "#32072"
+msgid "MYVIDEOLINK"
+msgstr "MYVIDEOLINK"
+
+msgctxt "#32073"
+msgid "ONLINESERIES"
+msgstr "ONLINESERIES"
+
+msgctxt "#32074"
+msgid "ORORO"
+msgstr "ORORO"
+
+msgctxt "#32075"
+msgid "RLSBB"
+msgstr "RLSBB"
+
+msgctxt "#32076"
+msgid "SCENERLS"
+msgstr "SCENERLS"
+
+msgctxt "#32077"
+msgid "WATCHEPISODES (shows only)"
+msgstr "WATCHEPISODES (alleen series)"
+
+msgctxt "#32078"
+msgid "WATCHSERIES (shows only)"
+msgstr "WATCHSERIES (alleen series)"
+
+msgctxt "#32079"
+msgid "WATCHSERIESHD (shows only)"
+msgstr "WATCHSERIESHD (alleen series)"
+
+msgctxt "#32080"
+msgid "WATCHSERIESTV (shows only)"
+msgstr "WATCHSERIESTV (alleen series)"
+
+msgctxt "#32081"
+msgid "GDRIVE"
+msgstr "GDRIVE"
+
+msgctxt "#32082"
+msgid "RAPIDMOVIEZ"
+msgstr "RAPIDMOVIEZ"
+
+msgctxt "#32083"
+msgid "-- Title Check Results"
+msgstr "-- Titel Controle Resultaten"
+
+msgctxt "#32084"
+msgid "No User Undesirables Set"
+msgstr "Geen Gebruiker Ongewenste Ingesteld"
+
+msgctxt "#32085"
+msgid "Select to Enable/Disable"
+msgstr "Selecteer om In/Uit te Schakelen"
+
+msgctxt "#32086"
+msgid "Select to Remove From List"
+msgstr "Selecteer om uit Lijst te Verwijderen"
+
+msgctxt "#32087"
+msgid "Success"
+msgstr "Succes"
+
+msgctxt "#32088"
+msgid ""
+msgstr ""
+
+msgctxt "#32089"
+msgid ""
+msgstr ""
+
+msgctxt "#32090"
+msgid ""
+msgstr ""
+
+msgctxt "#32091"
+msgid ""
+msgstr ""
+
+msgctxt "#32092"
+msgid ""
+msgstr ""
+
+msgctxt "#32093"
+msgid ""
+msgstr ""
+
+msgctxt "#32094"
+msgid ""
+msgstr ""
+
+msgctxt "#32095"
+msgid ""
+msgstr ""
+
+msgctxt "#32096"
+msgid ""
+msgstr ""
+
+msgctxt "#32097"
+msgid ""
+msgstr ""
+
+msgctxt "#32098"
+msgid ""
+msgstr ""
+
+msgctxt "#32099"
+msgid ""
+msgstr ""
+
+msgctxt "#32100"
+msgid ""
+msgstr ""
+
+msgctxt "#32101"
+msgid "$NUMBER[1337]X"
+msgstr "$NUMBER[1337]X"
+
+msgctxt "#32102"
+msgid "$NUMBER[7]TORRENTS (Pack capable)"
+msgstr "$NUMBER[7]TORRENTS (Pack geschikt)"
+
+msgctxt "#32103"
+msgid "BITLORD (Pack capable)"
+msgstr "BITLORD (Pack geschikt)"
+
+msgctxt "#32104"
+msgid "BTSCENE (Pack capable)"
+msgstr "BTSCENE (Pack geschikt)"
+
+msgctxt "#32105"
+msgid "ETTV"
+msgstr "ETTV"
+
+msgctxt "#32106"
+msgid "EXTRATORRENT (Pack capable)"
+msgstr "EXTRATORRENT (Pack geschikt)"
+
+msgctxt "#32107"
+msgid "EZTV (shows only-Pack capable)"
+msgstr "EZTV (alleen series-Pack geschikt)"
+
+msgctxt "#32108"
+msgid "GLODLS (Pack capable)"
+msgstr "GLODLS  (Pack geschikt)"
+
+msgctxt "#32109"
+msgid "IDOPE (Pack capable)"
+msgstr "IDOPE (Pack geschikt)"
+
+msgctxt "#32110"
+msgid "ISOHUNT2"
+msgstr "ISOHUNT2"
+
+msgctxt "#32111"
+msgid "KICKASS2 (Pack Capable)"
+msgstr "KICKASS2 (Pack geschikt)"
+
+msgctxt "#32112"
+msgid "LIMETORRENTS (Pack capable)"
+msgstr "LIMETORRENTS (Pack geschikt)"
+
+msgctxt "#32113"
+msgid "MAGNET$NUMBER[4]YOU"
+msgstr MAGNET$NUMBER[4]YOU"
+
+msgctxt "#32114"
+msgid "MAGNETDL (Pack capable)"
+msgstr "MAGNETDL (Pack geschikt)"
+
+msgctxt "#32115"
+msgid "MOVIEMAGNET"
+msgstr "MOVIEMAGNET"
+
+msgctxt "#32116"
+msgid "NYAA"
+msgstr "NYAA"
+
+msgctxt "#32117"
+msgid "PIRATEBAY (Pack capable)"
+msgstr "PIRATEBAY (Pack geschikt)"
+
+msgctxt "#32118"
+msgid "SKYTORRENTS (Pack capable)"
+msgstr "SKYTORRENTS (Pack geschikt)"
+
+msgctxt "#32119"
+msgid "SOLIDTORRENTS (Pack capable)"
+msgstr "SOLIDTORRENTS (Pack geschikt)"
+
+msgctxt "#32120"
+msgid "TOPNOW"
+msgstr "TOPNOW"
+
+msgctxt "#32121"
+msgid "TORLOCK"
+msgstr "TORLOCK"
+
+msgctxt "#32122"
+msgid "TORRENTAPI (Pack capable)"
+msgstr "TORRENTAPI (Pack geschikt)"
+
+msgctxt "#32123"
+msgid "TORRENTDOWNLOAD (Pack capable)"
+msgstr "TORRENTDOWNLOAD (Pack geschikt)"
+
+msgctxt "#32124"
+msgid "TORRENTFUNK (Pack capable)"
+msgstr "TORRENTFUNK (Pack geschikt)"
+
+msgctxt "#32125"
+msgid "TORRENTGALAXY (Pack capable)"
+msgstr "TORRENTGALAXY (Pack geschikt)"
+
+msgctxt "#32126"
+msgid "YOURBITTORRENT (Pack capable)"
+msgstr "YOURBITTORRENT (Pack geschikt)"
+
+msgctxt "#32127"
+msgid "YTSMX (movies only)"
+msgstr "YTSMX (alleen films)"
+
+msgctxt "#32128"
+msgid "ZOOQLE (Pack capable)"
+msgstr "ZOOQLE (Pack geschikt)"
+
+msgctxt "#32129"
+msgid "BTDB (Pack capable)"
+msgstr "BTDB (Pack geschikt)"
+
+msgctxt "#32130"
+msgid "TORRENTZ2 (Pack capable)"
+msgstr "TORRENTZ2 (Pack geschikt)"
+
+msgctxt "#32131"
+msgid "EXT.TO (Pack capable)"
+msgstr "EXT.TO (Pack geschikt)"
+
+msgctxt "#32132"
+msgid "BT4G (Pack capable)"
+msgstr "BT4G (Pack geschikt)"
+
+msgctxt "#32133"
+msgid "BTDIG"
+msgstr "BTDIG"
+
+msgctxt "#32134"
+msgid "TORRENTTM (Pack capable)"
+msgstr "TORRENTTM (Pack geschikt)"
+
+msgctxt "#32135"
+msgid "TORRENTPARADISE (Pack capable)"
+msgstr "TORRENTPARADISE (Pack geschikt)"
+
+msgctxt "#32136"
+msgid "TORRENTPROJECT2 (Pack capable)"
+msgstr "TORRENTPPROJECT2 (Pack geschikt)"
+
+msgctxt "#32137"
+msgid "BITCQ (Pack capable)"
+msgstr "BITCQ (Pack geschikt)"
+
+msgctxt "#32138"
+msgid "BITSEARCH (Pack capable)"
+msgstr "BITSEARCH (Pack geschikt)"
+
+msgctxt "#32139"
+msgid "TORRENTIO (Pack capable)"
+msgstr "TORRENTIO (Pack geschikt)"
+
+msgctxt "#32140"
+msgid "Clear ALL Extra Undesirables"
+msgstr "Wis ALLE Extra Ongewenste "
+
+msgctxt "#32141"
+msgid ""
+msgstr ""
+
+msgctxt "#32142"
+msgid "[COLOR cyan]May Require VPN[/COLOR]"
+msgstr ""
+
+msgctxt "#32143"
+msgid "[COLOR cyan]--Hoster Info--[/COLOR]"
+msgstr ""
