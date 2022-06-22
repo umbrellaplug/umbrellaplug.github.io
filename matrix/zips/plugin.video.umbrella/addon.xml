@@ -1,0 +1,39 @@
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.23">
+	<requires>
+		<import addon="xbmc.python" version="3.0.0" />
+		<import addon="context.umbrella" version="1.2.2"/>
+		<import addon="script.module.myaccounts" version="2.0.0" />
+		<import addon="script.module.umbrellascrapers" version="0.0.11" />
+		<import addon="script.module.requests" />
+		<import addon="script.module.beautifulsoup4" />
+		<import addon="script.module.metahandler" optional="true" />
+		<import addon="plugin.video.youtube" optional="true" />
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="umbrella.py">
+		<provides>video</provides>
+	</extension>
+	<extension point="xbmc.service" library="service.py" start="startup" />
+	<extension point="xbmc.python.module" library="resources/lib/" />
+	<extension point="xbmc.addon.metadata">
+		<reuselanguageinvoker>true</reuselanguageinvoker>
+		<summary lang="en">[B]Umbrella[/B] - We do not host any of the contents streamed</summary>
+		<description lang="en">[B]Umbrella[/B][CR] This addon does not form part of the Kodi Media Centre. Please do not seek assistance with this addon from any of the Official Kodi Support Channels.[CR]The author does not host any of the content in this addon and takes no responsibility for content found</description>
+		<platform>all</platform>
+		<license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
+		<forum />
+		<website>https://umbrellaplug.github.io</website>
+		<source>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/plugin.video.umbrella</source>
+		<disclaimer lang="en">The author of this addon does not host any of the content which is found and have no affiliation with any of the content providers. This addon simply searches websites for content. Use at your own risk!</disclaimer>
+		<assets>
+			<icon>icon.png</icon>
+			<fanart>fanart.jpg</fanart>
+			<screenshot>resources/screenshots/screenshot001.jpg</screenshot>
+			<screenshot>resources/screenshots/screenshot002.jpg</screenshot>
+			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
+		</assets>
+		<news>
+[B][COLOR red]Update - v6.5.23 - June 21, 2022[/COLOR][/B]
+[COLOR cyan]--[/COLOR][I] Changed to new repo.[/I]
+		</news>
+	</extension>
+</addon>
