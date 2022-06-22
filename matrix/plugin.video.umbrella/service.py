@@ -91,7 +91,7 @@ class AddonCheckUpdate:
 		try:
 			import re
 			import requests
-			repo_xml = requests.get('https://raw.githubusercontent.com/umbrellaplug.github.io/master/matrix/addons.xml')
+			repo_xml = requests.get('https://raw.githubusercontent.com/umbrellaplug.github.io/master/matrix/plugin.video.umbrella/addon.xml')
 			if not repo_xml.status_code == 200:
 				return control.log('[ plugin.video.umbrella ]  Could not connect to remote repo XML: status code = %s' % repo_xml.status_code, LOGINFO)
 			repo_version = re.findall(r'<addon id=\"plugin.video.umbrella\".+version=\"(\d*.\d*.\d*)\"', repo_xml.text)[0]

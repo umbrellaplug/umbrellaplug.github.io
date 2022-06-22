@@ -10,9 +10,9 @@
 You can add the source directory to your own repository for convenience and updates
 ```
 <dir>
-    <info compressed="false">https://raw.githubusercontent.com/umbrellaplug.github.io/master/matrix/addons.xml</info>
-    <checksum>https://raw.githubusercontent.com/umbrellaplug.github.io/master/matrix/addons.xml.md5</checksum>
-    <datadir zip="true">https://raw.githubusercontent.com/umbrellaplug.github.io/master/matrix/script.module.umbrellascrapers/</datadir>
+    <info compressed="false">https://raw.githubusercontent.com/umbrellaplug.github.io/master/matrix/umbrellascrapscript.module.umbrellascrapers/addons.xml</info>
+    <checksum>https://raw.githubusercontent.com/umbrellaplug.github.io/master/matrix/script.module.umbrellascrapers/addons.xml.md5</checksum>
+    <datadir zip="true">https://raw.githubusercontent.com/umbrellaplug.github.io/master/matrix/zips/</datadir>
 </dir>
 ```
 ## How to Import Umbrella Scrapers Into Any Addon
