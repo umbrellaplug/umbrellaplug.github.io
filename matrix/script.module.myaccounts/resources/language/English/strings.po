@@ -21,7 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "#32072"
-msgid "A new verison of Fenomscrapers is available from the repository. Please consider updating to v%s"
+msgid "A new verison of umbrellascrapers is available from the repository. Please consider updating to v%s"
 msgstr ""
 
 msgctxt "#32073"

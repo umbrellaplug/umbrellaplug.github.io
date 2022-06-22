@@ -1,3 +1,8 @@
+[B][COLOR red]Update - v2.0.5 - Jun. 21, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I]New artwork.[/I]
+
+[B][COLOR red]Update - v2.0.4 - Jun. 1, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I]Updated to be compatible with Ezra and Umbrella.[/I]
 
 [B][COLOR red]Update - v2.0.0 - Nov. 23, 2021[/COLOR][/B]
 [COLOR yellow]--[/COLOR][I] First official py3 only version for Kodi Matrix.[/I]
