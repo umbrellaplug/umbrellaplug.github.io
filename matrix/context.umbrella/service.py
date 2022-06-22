@@ -45,7 +45,7 @@ class AddonCheckUpdate:
 		try:
 			import re
 			import requests
-			repo_xml = requests.get('https://raw.githubusercontent.com/umbrellaplug.github.io/master/matrix/context.umbrella/addon.xml')
+			repo_xml = requests.get('https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/context.umbrella/addon.xml')
 			if not repo_xml.status_code == 200:
 				xbmc.log('[ context.umbrella ]  Could not connect to remote repo XML: status code = %s' % repo_xml.status_code, LOGNOTICE)
 				return
