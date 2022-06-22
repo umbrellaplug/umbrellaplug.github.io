@@ -1,3 +1,5 @@
+[B][COLOR red]Update - v1.2.2 - June. 21, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I] Taking over context menu project for umbrella.[/I]
 
 [B][COLOR red]Update - v1.2.1 - Nov. 04, 2021[/COLOR][/B]
 [COLOR yellow]--[/COLOR][I] The "Rescrape Item" context menu now has a pop-up select method of 4 possible choices to rescrape.  You can set a preferred default action in the settings to bypass the select dialog pop up.[/I]

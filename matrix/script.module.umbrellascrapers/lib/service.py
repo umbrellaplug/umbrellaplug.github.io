@@ -46,11 +46,11 @@ class AddonCheckUpdate:
 		try:
 			import re
 			import requests
-			repo_xml = requests.get('https://repoj.000webhostapp.com/_rep/addons.xml')
+			repo_xml = requests.get('https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/addons.xml')
 			if repo_xml.status_code != 200:
 				return xbmc.log('[ script.module.umbrellascrapers ]  Could not connect to remote repo XML: status code = %s' % repo_xml.status_code, LOGINFO)
 			repo_version = re.search(r'<addon id=\"script.module.umbrellascrapers\".*version=\"(\d*.\d*.\d*)\"', repo_xml.text, re.I).group(1)
-			local_version = control.addonVersion()[:5] # 5 char max so pre-releases do try to compare more chars than github version
+			local_version = control.addonVersion()[:6] # 5 char max so pre-releases do try to compare more chars than github version
 			def check_version_numbers(current, new): # Compares version numbers and return True if github version is newer
 				current = current.split('.')
 				new = new.split('.')

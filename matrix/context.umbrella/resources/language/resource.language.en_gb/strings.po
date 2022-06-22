@@ -1,7 +1,7 @@
 # Kodi Media Center language file
 # Addon Name: Umbrella - Global Context Menu Items
 # Addon id: context.umbrella
-# Addon Provider: 123Umbrella
+# Addon Provider: Umbrella
 msgid ""
 msgstr ""
 

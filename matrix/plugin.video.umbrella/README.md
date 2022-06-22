@@ -13,18 +13,16 @@
   ```
   What not to do:
 
-      DO NOT state things like "no streams available" when searching "Game of Thrones".
+      DO NOT state things like "no streams available" when searching
       How am I to test without knowing the "season" and "episode" you are having an issue with?
   What is best practice:
 
-      Post screenshots of the issue!  The more the merrier.
+      Post screenshots of the issue!
       The more detail you can provide of the condition, without me asking for additional info,  the faster I can trace it.
 
 
 * **ALL** error related Issues opened **MUST** include log files. Please provide both the **Kodi debug** log as well as the **Umbrella** log file.
 * Please review Open Issues to see if your problem is being addressed already.
-* **Do Not** hijack an open issue with unrelated problems. Please open a new issue.
-* I am not a fan of hearing **Well this addon works and yours does not**.  I often find that insulting and would just assume delete your issue and tell you to use that addon.  I'm not into addon comparison games when the code base is more often not interchangeable to begin with.
 
 * If I've requested additional info for your issue it is your job to monitor the issue. I'll delete posts after an extended period of no response.
 

@@ -1,7 +1,7 @@
 <addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.23">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
-		<import addon="context.umbrella" />
+		<import addon="context.umbrella" version="1.2.2"/>
 		<import addon="script.module.myaccounts" version="2.0.0" />
 		<import addon="script.module.umbrellascrapers" version="0.0.11" />
 		<import addon="script.module.requests" />

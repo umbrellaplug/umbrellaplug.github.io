@@ -1,3 +1,5 @@
+[B][COLOR red]June 20, 2022[/COLOR][/B]
+[COLOR cyan]--[/COLOR][I] Switched to github for repo.[/I]
 
 [B][COLOR red]June 20, 2022[/COLOR][/B]
 [COLOR cyan]--[/COLOR][I] Updated scrapers. Checked them all..[/I]
