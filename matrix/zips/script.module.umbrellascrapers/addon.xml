@@ -1,4 +1,4 @@
-<addon id="script.module.umbrellascrapers" name="Umbrella Scrapers" version="0.0.11" provider-name="Umbrella">
+<addon id="script.module.umbrellascrapers" name="Umbrella Scrapers" version="0.0.12" provider-name="Umbrella">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -25,8 +25,8 @@
 			<screenshot></screenshot>
 		</assets>
 		<news>
-[B][COLOR red]Update - v0.0.11 - June 21, 2022[/COLOR][/B]
-[COLOR yellow]--[/COLOR][I]Changed to new repo.[/I]
+[B][COLOR red]Update - v0.0.12 - June 21, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I]Changed to new artwork.[/I]
 		</news>
 	</extension>
 </addon>

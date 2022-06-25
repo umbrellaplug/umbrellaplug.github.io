@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="context.umbrella" name="Umbrella - Global Context Menu Items" provider-name="Umbrella" version="1.2.2">
+<addons><addon id="context.umbrella" name="Umbrella - Global Context Menu Items" provider-name="Umbrella" version="1.2.3">
 	<requires>
 		<import addon="script.module.requests" version="2.19.1" />
 	</requires>
@@ -135,21 +135,20 @@
 			<screenshot />
 		</assets>
 		<news>
-[B][COLOR red]Update - v1.2.2 - June. 21, 2022[/COLOR][/B]
-[COLOR yellow]--[/COLOR][I] Taking over context menu project for umbrella.[/I]
+[B][COLOR red]Update - v1.2.3 - June. 21, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I] Change of icon, not much new added here yet.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.24u">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.25">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
-		<import addon="context.umbrella" version="1.2.2" />
+		<import addon="context.umbrella" version="1.2.3" />
 		<import addon="script.module.myaccounts" version="2.0.0" />
-		<import addon="script.module.umbrellascrapers" version="0.0.11" />
+		<import addon="script.module.umbrellascrapers" version="0.0.12" />
 		<import addon="script.module.requests" />
 		<import addon="script.module.beautifulsoup4" />
 		<import addon="script.module.metahandler" optional="true" />
 		<import addon="plugin.video.youtube" optional="true" />
-		<import addon="script.module.web-pdb" version="1.5.6" />
 	</requires>
 	<extension point="xbmc.python.pluginsource" library="umbrella.py">
 		<provides>video</provides>
@@ -169,9 +168,9 @@
 		<assets>
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
-			<screenshot>resources/screenshots/screenshot001.jpg</screenshot>
-			<screenshot>resources/screenshots/screenshot002.jpg</screenshot>
-			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
+			<screenshot />
+			<screenshot />
+			<screenshot />
 		</assets>
 		<news>
 [B][COLOR red]Update - v6.5.25 - June 24, 2022[/COLOR][/B]
@@ -260,7 +259,7 @@
     <disclaimer lang="vi_VN">Plugin này không được xác nhận bởi Google</disclaimer>
     <disclaimer lang="zh_TW">此附加元件未由Google支持</disclaimer>
   </extension>
-</addon><addon id="repository.umbrella" name="Umbrella Repository" version="2.1.1" provider-name="Umbrella">
+</addon><addon id="repository.umbrella" name="Umbrella Repository" version="2.1.2" provider-name="Umbrella">
     <extension point="xbmc.addon.repository" name="Umbrella Repository">
         <dir minversion="19.0.0">
             <info compressed="false">https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/zips/addons.xml</info>
@@ -308,7 +307,7 @@
 [COLOR yellow]--[/COLOR][I]New artwork.[/I]
 		</news>
 	</extension>
-</addon><addon id="script.module.umbrellascrapers" name="Umbrella Scrapers" version="0.0.11" provider-name="Umbrella">
+</addon><addon id="script.module.umbrellascrapers" name="Umbrella Scrapers" version="0.0.12" provider-name="Umbrella">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -335,8 +334,8 @@
 			<screenshot />
 		</assets>
 		<news>
-[B][COLOR red]Update - v0.0.11 - June 21, 2022[/COLOR][/B]
-[COLOR yellow]--[/COLOR][I]Changed to new repo.[/I]
+[B][COLOR red]Update - v0.0.12 - June 21, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I]Changed to new artwork.[/I]
 		</news>
 	</extension>
 </addon></addons>
