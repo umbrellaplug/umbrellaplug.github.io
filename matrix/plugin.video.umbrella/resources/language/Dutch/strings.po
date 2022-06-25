@@ -4279,3 +4279,11 @@ msgstr "[COLOR %s][B]Scrobble Reset[/B][/COLOR] Item"
 msgctxt "#40077"
 msgid "Originals (TMDb)"
 msgstr "originelen (TMDb)"
+
+msgctxt "#40078"
+msgid "Clear [COLOR yellow]Icon and Fanart [/COLOR]..."
+msgstr "[COLOR yellow]Icoon en fanart wissen[/COLOR]..."
+
+msgctxt "#40079"
+msgid "Icon and Fanart Successfully Cleared!"
+msgstr "Icoon en fanart succesvol gewist"

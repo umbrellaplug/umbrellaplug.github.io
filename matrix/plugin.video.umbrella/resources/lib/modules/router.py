@@ -859,3 +859,6 @@ def router(params):
 		elif action == 'cache_clearKodiBookmark': # context.umbrella action call only
 			from resources.lib.database import cache
 			cache.clear_local_bookmark(url)
+		elif action == 'cache_clearThumbnails':
+			from resources.lib.menus import navigator
+			navigator.Navigator().clearThumbnails()

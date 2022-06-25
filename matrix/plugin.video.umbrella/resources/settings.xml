@@ -40,6 +40,8 @@
 	<!-- Navigation - 1 -->
 	<category label="32621">
 		<setting type="lsep" label="32005" />
+		<setting id="navi.searchMovies" type="bool" label="33042" default="true" />
+		<setting id="navi.searchTVShows" type="bool" label="33043" default="true" />
 		<setting id="mylists.widget" type="bool" label="32329" default="true" />
 		<setting id="navi.anime" type="bool" label="40068" default="false" />
 		<setting id="navi.youtube" type="bool" label="40061" default="true" />
@@ -442,6 +444,7 @@
 		<setting type="action" label="32613" action="RunPlugin(plugin://plugin.video.umbrella/?action=cache_clearCache)" />
 		<setting type="action" label="32614" action="RunPlugin(plugin://plugin.video.umbrella/?action=cache_clearSearch)" />
 		<setting type="action" label="32615" action="RunPlugin(plugin://plugin.video.umbrella/?action=cache_clearBookmarks)" />
+		<setting type="action" label="40078" action="RunPlugin(plugin://plugin.video.umbrella/?action=cache_clearThumbnails)" />
 		<setting type="action" label="32101" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowChangelog&amp;name=Umbrella)" />
 	</category>
 </settings>

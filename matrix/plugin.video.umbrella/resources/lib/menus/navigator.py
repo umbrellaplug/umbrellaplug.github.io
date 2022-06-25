@@ -25,6 +25,8 @@ class Navigator:
 		self.highlight_color = control.getHighlightColor()
 
 	def root(self):
+		if getMenuEnabled('navi.searchMovies'):self.addDirectoryItem(33042, 'movieSearch', 'trakt.png' if self.iconLogos else 'searchmovies.png', 'DefaultAddonsSearch.png')
+		if getMenuEnabled('navi.searchTVShows'):self.addDirectoryItem(33043, 'tvSearch', 'trakt.png' if self.iconLogos else 'searchtv.png', 'DefaultAddonsSearch.png')
 		self.addDirectoryItem(33046, 'movieNavigator', 'movies.png', 'DefaultMovies.png')
 		self.addDirectoryItem(33047, 'tvNavigator', 'tvshows.png', 'DefaultTVShows.png')
 		if getMenuEnabled('navi.anime'): self.addDirectoryItem('Anime', 'anime_Navigator', 'boxsets.png', 'DefaultFolder.png')
@@ -37,8 +39,8 @@ class Navigator:
 		downloads = True if getSetting('downloads') == 'true' and (len(control.listDir(getSetting('movie.download.path'))[0]) > 0 or len(control.listDir(getSetting('tv.download.path'))[0]) > 0) else False
 		if downloads: self.addDirectoryItem(32009, 'downloadNavigator', 'downloads.png', 'DefaultFolder.png')
 		if getMenuEnabled('navi.prem.services'): self.addDirectoryItem('Premium Services', 'premiumNavigator', 'premium.png', 'DefaultFolder.png')
-		if getMenuEnabled('navi.news'): self.addDirectoryItem(32013, 'tools_ShowNews', 'icon.png', 'DefaultAddonHelper.png', isFolder=False)
-		if getMenuEnabled('navi.changelog'): self.addDirectoryItem(32014, 'tools_ShowChangelog&name=Umbrella', 'icon.png', 'DefaultAddonHelper.png', isFolder=False)
+		if getMenuEnabled('navi.news'): self.addDirectoryItem(32013, 'tools_ShowNews', 'newsandinfo.png', 'DefaultAddonHelper.png', isFolder=False)
+		if getMenuEnabled('navi.changelog'): self.addDirectoryItem(32014, 'tools_ShowChangelog&name=Umbrella', 'changelog.png', 'DefaultAddonHelper.png', isFolder=False)
 		self.endDirectory()
 
 	def movies(self, lite=False):
@@ -223,13 +225,13 @@ class Navigator:
 
 	def tools(self):
 		if self.traktCredentials: self.addDirectoryItem(35057, 'tools_traktToolsNavigator', 'tools.png', 'DefaultAddonService.png', isFolder=True)
-		self.addDirectoryItem(32510, 'cache_Navigator', 'tools.png', 'DefaultAddonService.png', isFolder=True)
+		self.addDirectoryItem(32510, 'cache_Navigator', 'settings.png', 'DefaultAddonService.png', isFolder=True)
 		self.addDirectoryItem(32609, 'tools_openMyAccount', 'MyAccounts.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(32506, 'tools_contextUmbrellaSettings', 'icon.png', 'DefaultAddonProgram.png', isFolder=False)
 		#-- Providers - 4
 		self.addDirectoryItem(32651, 'tools_umbrellascrapersSettings', 'umbrellascrapers.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(32523, 'tools_loggingNavigator', 'tools.png', 'DefaultAddonService.png')
-		self.addDirectoryItem(32083, 'tools_cleanSettings', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
+		self.addDirectoryItem(32083, 'tools_cleanSettings', 'settings.png', 'DefaultAddonProgram.png', isFolder=False)
 		#-- General - 0
 		self.addDirectoryItem(32043, 'tools_openSettings&query=0.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#-- Navigation - 1
@@ -243,8 +245,8 @@ class Navigator:
 		#-- Subtitles - 11
 		self.addDirectoryItem(32046, 'tools_openSettings&query=11.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(32556, 'library_Navigator', 'tools.png', 'DefaultAddonService.png', isFolder=True)
-		self.addDirectoryItem(32049, 'tools_viewsNavigator', 'tools.png', 'DefaultAddonService.png', isFolder=True)
-		self.addDirectoryItem(32361, 'tools_resetViewTypes', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(32049, 'tools_viewsNavigator', 'settings.png', 'DefaultAddonService.png', isFolder=True)
+		self.addDirectoryItem(32361, 'tools_resetViewTypes', 'settings.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 
 	def traktTools(self):
@@ -274,11 +276,12 @@ class Navigator:
 
 	def cf(self):
 		self.addDirectoryItem(32610, 'cache_clearAll', 'tools.png', 'DefaultAddonService.png', isFolder=False)
-		self.addDirectoryItem(32611, 'cache_clearSources', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(32611, 'cache_clearSources', 'settings.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(32612, 'cache_clearMeta', 'tools.png', 'DefaultAddonService.png', isFolder=False)
-		self.addDirectoryItem(32613, 'cache_clearCache', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(32613, 'cache_clearCache', 'settings.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(32614, 'cache_clearSearch', 'tools.png', 'DefaultAddonService.png', isFolder=False)
-		self.addDirectoryItem(32615, 'cache_clearBookmarks', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(32615, 'cache_clearBookmarks', 'settings.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(40078, 'cache_clearThumbnails', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 
 	def library(self): # -- Library - 9
@@ -506,6 +509,17 @@ class Navigator:
 		try:
 			from resources.lib.database import cache
 			if cache.cache_clear_bookmarks(): control.notification(message=32100)
+			else: control.notification(message=33586)
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+	
+	def clearThumbnails(self):
+		control.hide()
+		if not control.yesnoDialog(getLS(32056), '', ''): return
+		try:
+			from resources.lib.database import cache
+			if cache.cache_clear_thumbnails(): control.notification(message=40079)
 			else: control.notification(message=33586)
 		except:
 			from resources.lib.modules import log_utils

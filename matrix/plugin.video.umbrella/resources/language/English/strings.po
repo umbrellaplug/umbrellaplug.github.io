@@ -4279,3 +4279,11 @@ msgstr ""
 msgctxt "#40077"
 msgid "Originals (TMDb)"
 msgstr ""
+
+msgctxt "#40078"
+msgid "Clear [COLOR yellow]Icon and Fanart [/COLOR]..."
+msgstr ""
+
+msgctxt "#40079"
+msgid "Icon and Fanart Successfully Cleared!"
+msgstr ""

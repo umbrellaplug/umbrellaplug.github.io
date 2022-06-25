@@ -1,3 +1,6 @@
+[B][COLOR red]Update - v0.0.12 - June 21, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I]Changed to new artwork.[/I]
+
 [B][COLOR red]Update - v0.0.11 - June 21, 2022[/COLOR][/B]
 [COLOR yellow]--[/COLOR][I]Changed to new repo.[/I]
 

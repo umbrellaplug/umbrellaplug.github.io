@@ -589,7 +589,8 @@ class Episodes:
 		if not items: items = self.trakt_list(url, user)
 		def items_list(i):
 			values = i
-			tmdb, tvdb = i['tmdb'], i['tvdb']
+			tmdb = i['tmdb']
+			tvdb = i['tvdb']
 			try:
 				seasonEpisodes = cache.get(tmdb_indexer().get_seasonEpisodes_meta, 96, tmdb, i['season'])
 				if not seasonEpisodes: return

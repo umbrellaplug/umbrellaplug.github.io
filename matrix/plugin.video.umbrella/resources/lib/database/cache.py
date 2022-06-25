@@ -9,6 +9,10 @@ from re import sub as re_sub
 from sqlite3 import dbapi2 as db
 from time import time
 from resources.lib.modules import control
+import sqlite3
+import xbmc
+import xbmcvfs
+import os
 
 
 def get(function, duration, *args):
@@ -220,6 +224,33 @@ def get_connection_search():
 	conn = db.connect(control.searchFile)
 	conn.row_factory = _dict_factory
 	return conn
+#added to clear old artwork
+def cache_clear_thumbnails():
+	cleared = False
+	thumbnailsPath = xbmcvfs.translatePath('special://profile/Thumbnails/')
+	databasePath  = xbmcvfs.translatePath('special://profile/Database/')
+	addonPath = xbmcvfs.translatePath('special://home/addons')
+	try:
+		dbcon = sqlite3.connect(databasePath+'/Textures13.db')
+		dbcur = dbcon.cursor()
+		icon = dbcur.execute("SELECT cachedurl FROM texture WHERE url ='" + addonPath + "/plugin.video.umbrella/icon.png';").fetchone()
+		fanart = dbcur.execute("SELECT cachedurl FROM texture WHERE url ='" + addonPath + "/plugin.video.umbrella/fanart.jpg';").fetchone()
+		if icon is not None:
+			if xbmcvfs.exists(thumbnailsPath + icon[0]):
+				xbmcvfs.delete(thumbnailsPath + icon[0])
+			dbcur.execute("DELETE FROM texture WHERE url ='" + addonPath + "/plugin.video.umbrella/icon.png';") #delete the icon
+		if fanart is not None:
+			if xbmcvfs.exists(thumbnailsPath + fanart[0]):
+				xbmcvfs.delete(thumbnailsPath + fanart[0])
+			dbcur.execute("DELETE FROM texture WHERE url ='" + addonPath + "/plugin.video.umbrella/fanart.jpg';") #delete the fanart
+		dbcon.close()
+		cleared = True
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+		cleared = False
+	return cleared
+
 ##################
 def cache_clear_bookmarks():
 	cleared = False

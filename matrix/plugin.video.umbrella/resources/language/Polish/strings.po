@@ -4279,3 +4279,11 @@ msgstr "[COLOR %s][B]Resetowanie Scrobbble[/B][/COLOR] Pozycja"
 msgctxt "#40077"
 msgid "Originals (TMDb)"
 msgstr "Oryginały (YMDb)"
+
+msgctxt "#40078"
+msgid "Clear [COLOR yellow]Icon and Fanart [/COLOR]..."
+msgstr "[COLOR yellow]Wyczyść ikonę i Fanart[/COLOR]..."
+
+msgctxt "#40079"
+msgid "Icon and Fanart Successfully Cleared!"
+msgstr "Ikona i Fanart zostały pomyślnie usunięte"

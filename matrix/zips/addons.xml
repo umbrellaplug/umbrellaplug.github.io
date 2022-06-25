@@ -139,7 +139,7 @@
 [COLOR yellow]--[/COLOR][I] Taking over context menu project for umbrella.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.24">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.24u">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.2" />
@@ -149,6 +149,7 @@
 		<import addon="script.module.beautifulsoup4" />
 		<import addon="script.module.metahandler" optional="true" />
 		<import addon="plugin.video.youtube" optional="true" />
+		<import addon="script.module.web-pdb" version="1.5.6" />
 	</requires>
 	<extension point="xbmc.python.pluginsource" library="umbrella.py">
 		<provides>video</provides>
@@ -173,8 +174,10 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR red]Update - v6.5.24 - June 21, 2022[/COLOR][/B]
-[COLOR cyan]--[/COLOR][I] Changed artwork[/I]
+[B][COLOR red]Update - v6.5.25 - June 24, 2022[/COLOR][/B]
+[COLOR cyan]--[/COLOR][I] Entire new icon set.[/I]
+[COLOR cyan]--[/COLOR][I] Fixed small error in Episode List module.[/I]
+[COLOR cyan]--[/COLOR][I] Updated settings added option for search movies and search tv on main menu.[/I]
 		</news>
 	</extension>
 </addon><addon id="plugin.video.youtube" name="YouTube" version="6.8.18+matrix.1" provider-name="anxdpanic, bromix">
