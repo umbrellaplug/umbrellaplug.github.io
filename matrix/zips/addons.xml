@@ -139,7 +139,7 @@
 [COLOR yellow]--[/COLOR][I] Change of icon, not much new added here yet.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.25">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.26">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.3" />
@@ -173,7 +173,7 @@
 			<screenshot />
 		</assets>
 		<news>
-[B][COLOR red]Update - v6.5.25 - June 24, 2022[/COLOR][/B]
+[B][COLOR red]Update - v6.5.26 - June 24, 2022[/COLOR][/B]
 [COLOR cyan]--[/COLOR][I] Entire new icon set.[/I]
 [COLOR cyan]--[/COLOR][I] Fixed small error in Episode List module.[/I]
 [COLOR cyan]--[/COLOR][I] Updated settings added option for search movies and search tv on main menu.[/I]
