@@ -13,7 +13,7 @@
 				</control>
 				<control type="image">
 					<height>100</height>
-					<texture colordiffuse="firebrick">common/white.png</texture>
+					<texture colordiffuse="FF55100E">common/white.png</texture>
 				</control>
 				<control type="image">
 					<left>15</left>
