@@ -1,11 +1,14 @@
-[B][COLOR red]June 20, 2022[/COLOR][/B]
-[COLOR cyan]--[/COLOR][I] Switched to github for repo.[/I]
+[B][COLOR black]June 25, 2022[/COLOR][/B]
+--[I] Adding different color versions of new icon theme.[/I]
 
-[B][COLOR red]June 20, 2022[/COLOR][/B]
-[COLOR cyan]--[/COLOR][I] Updated scrapers. Checked them all..[/I]
+[B][COLOR black]June 20, 2022[/COLOR][/B]
+--[I] Switched to github for repo.[/I]
 
-[B][COLOR red]June 16, 2022[/COLOR][/B]
-[COLOR yellow]--[/COLOR][I] Yay! News and Info is now working.[/I]
+[B][COLOR black]June 20, 2022[/COLOR][/B]
+--[I] Updated scrapers. Checked them all..[/I]
 
-[B][COLOR red]June 16, 2022[/COLOR][/B]
-[COLOR yellow]--[/COLOR][I] Working to get news and info working again to make sure information can be added.[/I]
+[B][COLOR black]June 16, 2022[/COLOR][/B]
+--[I] Yay! News and Info is now working.[/I]
+
+[B][COLOR black]June 16, 2022[/COLOR][/B]
+--[I] Working to get news and info working again to make sure information can be added.[/I]

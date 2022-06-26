@@ -2,7 +2,7 @@
 <settings>
 	<!-- General - 0 -->
 	<category label="32310">
-		<setting id="appearance.1" type="select" label="32311" values="Umbrella|Exodus|Exuary" default="Umbrella" visible="true" />
+		<setting id="appearance.1" type="select" label="32311" values="Umbrella|Exodus|Umbrella-Maroon" default="Umbrella" visible="true" />
 		<setting id="icon.logos" type="select" label="40033" values="Traditional|Meta Provider Logos" default="Traditional" visible="true" />
 		<setting id="index.labels" type="bool" label="40034" default="true" />
 		<setting id="trakt.isauthed" type="text" default="" visible="false" />

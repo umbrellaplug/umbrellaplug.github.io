@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="context.umbrella" name="Umbrella - Global Context Menu Items" provider-name="Umbrella" version="1.2.3">
+<addon id="context.umbrella" name="Umbrella - Global Context Menu Items" provider-name="Umbrella" version="1.2.4">
 	<requires>
 		<import addon="script.module.requests" version="2.19.1" />
 	</requires>

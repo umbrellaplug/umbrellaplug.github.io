@@ -12,7 +12,7 @@
 				</control>
 				<control type="image">
 					<height>100</height>
-					<texture colordiffuse="firebrick">common/white.png</texture>
+					<texture colordiffuse="FFCCCCCC">common/white.png</texture>
 				</control>
 				<control type="image">
 					<left>15</left>
@@ -33,7 +33,7 @@
 					<textcolor>black</textcolor>
 					<align>center</align>
 					<aligny>center</aligny>
-						<label>$INFO[Window().Property(myaccounts.heading)]</label>
+						<label>$INFO[Window().Property(umbrella.heading)]</label>
 				</control>
 				<control type="textbox" id="2000">
 					<left>45</left>
@@ -45,7 +45,7 @@
 					<scrolltime tween="sine">400</scrolltime>
 					<font>font14</font>
 					<textcolor>white</textcolor>
-					<label>$INFO[Window().Property(myaccounts.text)]</label>
+					<label>$INFO[Window().Property(umbrella.text)]</label>
 					<pagecontrol>2060</pagecontrol>
 				</control>
 				<control type="scrollbar" id="2060">
@@ -55,7 +55,7 @@
 					<height>850</height>
 					<texturesliderbackground border="15">scrollbars/scrollbaruni-bg.png</texturesliderbackground>
 					<texturesliderbar border="15">scrollbars/scrollbaruni-bar.png</texturesliderbar>
-					<texturesliderbarfocus colordiffuse="firebrick" border="15">scrollbars/scrollbaruni-bar-focus.png</texturesliderbarfocus>
+					<texturesliderbarfocus colordiffuse="FF000000" border="15">scrollbars/scrollbaruni-bar-focus.png</texturesliderbarfocus>
 					<textureslidernib>scrollbars/scrollbaruni-nib.png</textureslidernib>
 					<textureslidernibfocus>scrollbars/scrollbaruni-nib.png</textureslidernibfocus>
 					<onleft>2060</onleft>

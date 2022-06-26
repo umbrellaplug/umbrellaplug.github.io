@@ -50,7 +50,7 @@ class source:
 			undesirables = source_utils.get_undesirables()
 			check_foreign_audio = source_utils.check_foreign_audio()
 		except:
-			source_utils.scraper_error('NYYAA')
+			source_utils.scraper_error('NYAA')
 			return sources
 
 		for url in urls:

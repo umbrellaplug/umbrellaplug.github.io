@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="context.umbrella" name="Umbrella - Global Context Menu Items" provider-name="Umbrella" version="1.2.3">
+<addons><addon id="context.umbrella" name="Umbrella - Global Context Menu Items" provider-name="Umbrella" version="1.2.4">
 	<requires>
 		<import addon="script.module.requests" version="2.19.1" />
 	</requires>
@@ -139,10 +139,10 @@
 [COLOR yellow]--[/COLOR][I] Change of icon, not much new added here yet.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.26">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.27">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
-		<import addon="context.umbrella" version="1.2.3" />
+		<import addon="context.umbrella" version="1.2.4" />
 		<import addon="script.module.myaccounts" version="2.0.0" />
 		<import addon="script.module.umbrellascrapers" version="0.0.12" />
 		<import addon="script.module.requests" />
@@ -158,7 +158,7 @@
 	<extension point="xbmc.addon.metadata">
 		<reuselanguageinvoker>true</reuselanguageinvoker>
 		<summary lang="en">[B]Umbrella[/B] - We do not host any of the contents streamed</summary>
-		<description lang="en">[B]Umbrella[/B][CR] This addon does not form part of the Kodi Media Centre. Please do not seek assistance with this addon from any of the Official Kodi Support Channels.[CR]The author does not host any of the content in this addon and takes no responsibility for content found</description>
+		<description lang="en">[B]Umbrella[/B][CR] This addon does not form part of the Kodi Media Centre. Please do not seek assistance with this addon from any of the Official Kodi Support Channels.[CR]The author does not host any of the content in this addon and takes no responsibility for content found. We do not know anything about a lab under Raccoon City.</description>
 		<platform>all</platform>
 		<license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
 		<forum />
@@ -173,10 +173,8 @@
 			<screenshot />
 		</assets>
 		<news>
-[B][COLOR red]Update - v6.5.26 - June 24, 2022[/COLOR][/B]
-[COLOR cyan]--[/COLOR][I] Entire new icon set.[/I]
-[COLOR cyan]--[/COLOR][I] Fixed small error in Episode List module.[/I]
-[COLOR cyan]--[/COLOR][I] Updated settings added option for search movies and search tv on main menu.[/I]
+[B][COLOR black]Update - v6.5.27 - June 25, 2022[/COLOR][/B]
+--[I] Default to white icon set now. Maroon is in settings..[/I]
 		</news>
 	</extension>
 </addon><addon id="plugin.video.youtube" name="YouTube" version="6.8.18+matrix.1" provider-name="anxdpanic, bromix">
@@ -259,7 +257,7 @@
     <disclaimer lang="vi_VN">Plugin này không được xác nhận bởi Google</disclaimer>
     <disclaimer lang="zh_TW">此附加元件未由Google支持</disclaimer>
   </extension>
-</addon><addon id="repository.umbrella" name="Umbrella Repository" version="2.1.3" provider-name="Umbrella">
+</addon><addon id="repository.umbrella" name="Umbrella Repository" version="2.1.4" provider-name="Umbrella">
     <extension point="xbmc.addon.repository" name="Umbrella Repository">
         <dir minversion="19.0.0">
             <info compressed="false">https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/zips/addons.xml</info>
