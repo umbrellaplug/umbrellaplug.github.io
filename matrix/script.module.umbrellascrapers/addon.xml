@@ -11,7 +11,7 @@
 	<extension point="xbmc.python.module" library="lib" /> <!-- Must be placed after xbmc.python.pluginsource, otherwise the addon does not show in the repository. -->
 	<extension point="xbmc.addon.metadata">
 		<reuselanguageinvoker>false</reuselanguageinvoker>
-		<summary lang="en">umbrellascrapers Module</summary>
+		<summary lang="en">Umbrella Scrapers Module</summary>
 		<description>Scrape common video host for URL's to be playable in Kodi, simplifying addon development of video plugins requiring multi video hosts.</description>
 		<platform>all</platform>
 		<license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
@@ -25,8 +25,9 @@
 			<screenshot></screenshot>
 		</assets>
 		<news>
-[B][COLOR red]Update - v0.0.12 - June 21, 2022[/COLOR][/B]
-[COLOR yellow]--[/COLOR][I]Changed to new artwork.[/I]
+[B][COLOR black]Update - v0.0.13 - June 21, 2022[/COLOR][/B]
+--[I]Added hosters back in, still disabled by default.[/I]
+--[I]Made changes from reddit. u/NearbyYak7156 sugggestions for Anime.[/I]
 		</news>
 	</extension>
 </addon>

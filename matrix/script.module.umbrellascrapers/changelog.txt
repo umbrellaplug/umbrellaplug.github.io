@@ -1,27 +1,31 @@
-[B][COLOR red]Update - v0.0.12 - June 21, 2022[/COLOR][/B]
-[COLOR yellow]--[/COLOR][I]Changed to new artwork.[/I]
+[B][COLOR black]Update - v0.0.13 - June 21, 2022[/COLOR][/B]
+--[I]Added hosters back in, still disabled by default.[/I]
+--[I]Made changes from reddit. u/NearbyYak7156 sugggestions for Anime.[/I]
 
-[B][COLOR red]Update - v0.0.11 - June 21, 2022[/COLOR][/B]
-[COLOR yellow]--[/COLOR][I]Changed to new repo.[/I]
+[B][COLOR black]Update - v0.0.12 - June 21, 2022[/COLOR][/B]
+--[I]Changed to new artwork.[/I]
 
-[B][COLOR red]Update - v0.0.6 - 0.0.10 - June 20, 2022[/COLOR][/B]
-[COLOR yellow]--[/COLOR][I]Checked each source and have moved some defaults around and removed any non-working sources.[/I]
+[B][COLOR black]Update - v0.0.11 - June 21, 2022[/COLOR][/B]
+--[I]Changed to new repo.[/I]
 
-[B][COLOR red]Update - v0.0.5 - June 18, 2022[/COLOR][/B]
-[COLOR yellow]--[/COLOR][I] Fixed all the stuff I broke in the last update. :)[/I]
+[B][COLOR black]Update - v0.0.6 - 0.0.10 - June 20, 2022[/COLOR][/B]
+--[I]Checked each source and have moved some defaults around and removed any non-working sources.[/I]
 
-[B][COLOR red]Update - v0.0.4 - June 17, 2022[/COLOR][/B]
-[COLOR yellow]--[/COLOR][I] Made same url changes ezra has made to match up.[/I]
-[COLOR yellow]--[/COLOR][I] Removed sections of settings that were not being used.[/I]
-[COLOR yellow]--[/COLOR][I] Looking into why entire hoster section does not work.[/I]
+[B][COLOR black]Update - v0.0.5 - June 18, 2022[/COLOR][/B]
+--[I] Fixed all the stuff I broke in the last update. :)[/I]
 
-[B][COLOR red]Update - v0.0.4 - June 17, 2022[/COLOR][/B]
-[COLOR yellow]--[/COLOR][I] Made same url changes ezra has made to match up.[/I]
+[B][COLOR black]Update - v0.0.4 - June 17, 2022[/COLOR][/B]
+--[I] Made same url changes ezra has made to match up.[/I]
+--[I] Removed sections of settings that were not being used.[/I]
+--[I] Looking into why entire hoster section does not work.[/I]
 
-[B][COLOR red]Update - v0.0.2 - June 17, 2022[/COLOR][/B]
-[COLOR yellow]--[/COLOR][I] Reset version numbers due to this being a new project now.[/I]
-[COLOR yellow]--[/COLOR][I] Added 1XBET into default undesirables because we all know why.[/I]
+[B][COLOR black]Update - v0.0.4 - June 17, 2022[/COLOR][/B]
+--[I] Made same url changes ezra has made to match up.[/I]
 
-[B][COLOR red]Pre-Release - v0.0.1 - June 16, 2022[/COLOR][/B]
-[COLOR yellow]--[/COLOR][I] Just taking over this. RIP FENOMSCRAPERS![/I]
+[B][COLOR black]Update - v0.0.2 - June 17, 2022[/COLOR][/B]
+--[I] Reset version numbers due to this being a new project now.[/I]
+--[I] Added 1XBET into default undesirables because we all know why.[/I]
+
+[B][COLOR black]Pre-Release - v0.0.1 - June 16, 2022[/COLOR][/B]
+--[I] Just taking over this. RIP FENOMSCRAPERS![/I]
 

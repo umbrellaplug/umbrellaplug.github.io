@@ -13,7 +13,7 @@
 				</control>
 				<control type="image">
 					<height>100</height>
-					<texture colordiffuse="FF55100E">common/white.png</texture>
+					<texture colordiffuse="FFCCCCCC">common/white.png</texture>
 				</control>
 				<control type="image">
 					<left>15</left>
@@ -56,7 +56,7 @@
 					<height>850</height>
 					<texturesliderbackground border="15">scrollbars/scrollbaruni-bg.png</texturesliderbackground>
 					<texturesliderbar border="15">scrollbars/scrollbaruni-bar.png</texturesliderbar>
-					<texturesliderbarfocus colordiffuse="firebrick" border="15">scrollbars/scrollbaruni-bar-focus.png</texturesliderbarfocus>
+					<texturesliderbarfocus colordiffuse="FF000000" border="15">scrollbars/scrollbaruni-bar-focus.png</texturesliderbarfocus>
 					<textureslidernib>scrollbars/scrollbaruni-nib.png</textureslidernib>
 					<textureslidernibfocus>scrollbars/scrollbaruni-nib.png</textureslidernibfocus>
 					<onleft>2060</onleft>
