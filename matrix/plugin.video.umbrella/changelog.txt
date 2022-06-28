@@ -1,3 +1,8 @@
+--[I] Moved to My Accounts module from Ezra.[/I]
+--[I] Users now have the ability to input their own Trakt Client keys.[/I]
+--[I] Thanks to Ezra Dev for being open to collaboration.[/I]
+--[I] Umbrella Player should now be available in TMDBHelper Players.[/I]
+
 [B][COLOR black]Update - v6.5.26/27 - June 25, 2022[/COLOR][/B]
 --[I] Default to white icon set now. Maroon is in settings..[/I]
 

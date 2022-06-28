@@ -139,12 +139,12 @@
 [COLOR yellow]--[/COLOR][I] Change of icon, not much new added here yet.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.27">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.28">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.4" />
-		<import addon="script.module.myaccounts" version="2.0.0" />
-		<import addon="script.module.umbrellascrapers" version="0.0.12" />
+		<import addon="script.module.myaccounts" />
+		<import addon="script.module.umbrellascrapers" version="0.0.13" />
 		<import addon="script.module.requests" />
 		<import addon="script.module.beautifulsoup4" />
 		<import addon="script.module.metahandler" optional="true" />
@@ -173,8 +173,11 @@
 			<screenshot />
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.27 - June 25, 2022[/COLOR][/B]
---[I] Default to white icon set now. Maroon is in settings..[/I]
+[B][COLOR black]Update - v6.5.28 - June 28, 2022[/COLOR][/B]
+--[I] Moved to My Accounts module from Ezra.[/I]
+--[I] Users now have the ability to input their own Trakt Client keys.[/I]
+--[I] Thanks to Ezra Dev for being open to collaboration.[/I]
+--[I] Umbrella Player should now be available in TMDBHelper Players.[/I]
 		</news>
 	</extension>
 </addon><addon id="plugin.video.youtube" name="YouTube" version="6.8.18+matrix.1" provider-name="anxdpanic, bromix">
@@ -275,7 +278,7 @@
             <fanart>fanart.jpg</fanart>
         </assets>
     </extension>
-</addon><addon id="script.module.myaccounts" version="2.0.5" name="My Accounts" provider-name="Umbrella">
+</addon><addon id="script.module.myaccounts" version="2.0.8" name="My Accounts" provider-name="Ezra Hubbard">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" version="2.19.1" />
@@ -287,7 +290,7 @@
 	<extension point="xbmc.python.module" library="lib" /> 
 	<extension point="xbmc.addon.metadata">
 		<reuselanguageinvoker>false</reuselanguageinvoker>
-		<summary lang="en">My Accounts Module</summary>
+		<summary lang="en">Shared Accounts Module</summary>
 		<description>Single placeholder for all your accounts.</description>
 		<platform>all</platform>
 		<license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
@@ -297,12 +300,10 @@
 		<disclaimer lang="en">The author is not responsible for the use of this addon. [CR]The author is in no way affiliated with Kodi, Team Kodi, or the XBMC Foundation.[CR]This is a Non-profit resource, organized solely for educational purposes which is protected under the Fair-Use doctrine of the Copyright Act, Specifically section 107, which does promote freedom of expression, by permitting the unlicensed use of copyright-protected works.</disclaimer>
 		<assets>
 			<icon>icon.png</icon>
-			<fanart>fanart.jpg</fanart>
+			<fanart>fanart.png</fanart>
 			<screenshot />
 		</assets>
 		<news>
-[B][COLOR red]Update - v2.0.5 - Jun. 21, 2022[/COLOR][/B]
-[COLOR yellow]--[/COLOR][I]New artwork.[/I]
 		</news>
 	</extension>
 </addon><addon id="script.module.umbrellascrapers" name="Umbrella Scrapers" version="0.0.13" provider-name="Umbrella">

@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.27">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.28">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.4"/>
@@ -32,8 +32,11 @@
 			<screenshot></screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.27 - June 25, 2022[/COLOR][/B]
---[I] Default to white icon set now. Maroon is in settings..[/I]
+[B][COLOR black]Update - v6.5.28 - June 28, 2022[/COLOR][/B]
+--[I] Moved to My Accounts module from Ezra.[/I]
+--[I] Users now have the ability to input their own Trakt Client keys.[/I]
+--[I] Thanks to Ezra Dev for being open to collaboration.[/I]
+--[I] Umbrella Player should now be available in TMDBHelper Players.[/I]
 		</news>
 	</extension>
 </addon>
