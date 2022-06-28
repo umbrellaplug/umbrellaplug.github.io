@@ -16,9 +16,24 @@
 	<!-- Debrid Sources-1 -->
 	<!-- Provider lang. string range 32061-32100 -->
 	<category label="32051">
+		<setting label="32011" type="action" action="RunPlugin(plugin://script.module.umbrellascrapers/?action=toggleAllHosters&amp;setting=false)" />
+		<setting label="32012" type="action" action="RunPlugin(plugin://script.module.umbrellascrapers/?action=toggleAllHosters&amp;setting=true)" />
 		<setting label="32143" type="action" action="RunPlugin(plugin://script.module.umbrellascrapers/?action=ShowHelp&amp;name=hosterInfo)" />
 		<setting type="sep" />
-		<setting id="provider.library" type="bool" label="32070" default="false" />
+		<setting id="provider.300mbfilms" type="bool" label="32062" default="false" />
+		<setting id="provider.maxrls" type="bool" label="32071" default="false" />
+		<setting id="provider.myvideolink" type="bool" label="32072" default="false" />
+		<setting id="provider.rapidmoviez" type="bool" label="32082" default="false" />
+		<setting id="provider.rlsbb" type="bool" label="32075" default="false" />
+		<setting id="provider.scenerls" type="bool" label="32076" default="false" />
+		<setting label="32044" type="lsep" />
+		<setting id="provider.easynews" type="bool" label="32065" default="false" />
+		<setting id="easynews.title.chk" type="bool" label="32083" default="true" visible="eq(-1,true)" />
+		<setting label="32001" type="action" action="RunPlugin(plugin://script.module.umbrellascrapers/?action=ShowHelp&amp;name=EasyNews_titleCheck)" visible="eq(-2,true)" />
+		<setting id="provider.filepursuit" type="bool" label="32066" default="false" />
+		<setting id="provider.furk" type="bool" label="32068" default="false" />
+		<setting id="provider.ororo" type="bool" label="32074" default="false" />
+		<setting label="32045" type="lsep" />
 	</category>
 
 	<!-- Torrents-2 -->

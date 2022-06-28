@@ -1,4 +1,4 @@
-<addon id="script.module.umbrellascrapers" name="Umbrella Scrapers" version="0.0.12" provider-name="Umbrella">
+<addon id="script.module.umbrellascrapers" name="Umbrella Scrapers" version="0.0.13" provider-name="Umbrella">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />

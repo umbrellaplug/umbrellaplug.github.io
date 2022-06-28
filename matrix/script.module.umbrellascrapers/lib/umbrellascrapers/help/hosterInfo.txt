@@ -7,7 +7,7 @@ Working to debug which ones work and which ones do not and will re-add and remov
 
 WORKING
 ============================================
-
+Release BB
 
 
 NOT WORKING
@@ -17,7 +17,6 @@ NOT WORKING
 Max-RLS - Cloudflare protected
 My Video Link
 RapidMoviez
-Release BB - url changed for UK/AUS 9/5/22
 Scene Release
 
 

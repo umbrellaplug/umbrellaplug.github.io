@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# created by   for Umbrellascrapers (updated 12-16-2021)
+# updated by me for Umbrellascrapers (updated 06-25-2022)
 """
-	Umbrellascrapers Project
+	scrapers Project
 """
 
 import re
@@ -33,6 +33,7 @@ class source:
 			year = data['year']
 			hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else year
 			hdlr2 = 'S%d - %d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else year
+			hdlr3 = '%02d' % (int(data['episode'])) if 'tvshowtitle' in data else year
 
 			query = '%s %s' % (title, hdlr)
 			query = re.sub(r'(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', '', query)
@@ -72,7 +73,7 @@ class source:
 						hash = re.search(r'btih:(.*?)&', url, re.I).group(1)
 						name = source_utils.clean_name(url.split('&dn=')[1])
 
-						if hdlr not in name and hdlr2 not in name: continue
+						if hdlr not in name and hdlr2 not in name and hdlr3 not in name.split('.'): continue
 						if source_utils.remove_lang(name, check_foreign_audio): continue
 						# if undesirables and source_utils.remove_undesirables(name_info, undesirables): continue
 
@@ -81,6 +82,16 @@ class source:
 						if hdlr2 in name:
 							t = name.split(hdlr2)[0].replace(year, '').replace('(', '').replace(')', '').replace('&', 'and').replace('.US.', '.').replace('.us.', '.')
 						# if cleantitle.get(t) != cleantitle.get(title): continue # Anime title matching is a bitch!
+						elif hdlr3 in name.split('.'):
+							# check if season number, if it exists, is same as season from data
+							# prevents cases where S01 - 11 is matched even though we might be querying for season 2
+							seasonInName = re.search("(\.)(S|s)(\d{1,2})(?: |$|e|E)", name)
+							if seasonInName:
+								try:
+									if int(seasonInName.groups()[2]) != int(data['season']):
+										continue
+								except:
+									continue
 						try:
 							seeders = int(link[2][0])
 							if self.min_seeders > seeders: continue
