@@ -16,9 +16,9 @@ session.mount('https://webservice.fanart.tv', HTTPAdapter(max_retries=retries, p
 
 class FanartTv:
 	def __init__(self):
-		self.headers = {'api-key': '9f846e7ec1ea94fad5d8a431d1d26b43'}
+		self.headers = {'api-key': 'de96877f6be09cc1edfec18dbbe76e79'}
 		client_key = getSetting('fanart_tv.api_key')
-		if not client_key: client_key = 'cf0ebcc2f7b824bd04cf3a318f15c17d'
+		if not client_key: client_key = '1ba8a00b5855afd7d7e48f3cd4b50807'
 		self.headers.update({'client-key': client_key})
 		self.lang = apiLanguage()['trakt']
 

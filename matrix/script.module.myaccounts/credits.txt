@@ -1,5 +1,0 @@
-My Accounts project builds on the efforts of the developers listed below.
-
-- 123Venom
-- Tikipeter
-
