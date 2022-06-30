@@ -4287,3 +4287,7 @@ msgstr "[COLOR yellow]Wyczyść ikonę i Fanart[/COLOR]..."
 msgctxt "#40079"
 msgid "Icon and Fanart Successfully Cleared!"
 msgstr "Ikona i Fanart zostały pomyślnie usunięte"
+
+msgctxt "#40080"
+msgid "Trakt Tokens are out of sync and have been revoked. Please re-authorize Trakt in My Accounts module and reboot."
+msgstr ""

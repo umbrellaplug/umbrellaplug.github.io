@@ -4287,3 +4287,7 @@ msgstr "Klares [COLOR yellow]Symbol und Fanart [/COLOR]..."
 msgctxt "#40079"
 msgid "Icon and Fanart Successfully Cleared!"
 msgstr "Symbol und Fanart erfolgreich gelöscht"
+
+msgctxt "#40080"
+msgid "Trakt Tokens are out of sync and have been revoked. Please re-authorize Trakt in My Accounts module and reboot."
+msgstr ""

@@ -1,3 +1,9 @@
+[B][COLOR black]Update - v6.5.29 - June 30, 2022[/COLOR][/B]
+--[I] Upon Request the Exuary icons have been re-added. You can set them from settings.[/I]
+--[I] Additional logging has been added to attempt to track some issues with episodes being marked.[/I]
+--[I] Fanart Key Replaced.[/I]
+
+[B][COLOR black]Update - v6.5.28 - June 28, 2022[/COLOR][/B]
 --[I] Moved to My Accounts module from Ezra.[/I]
 --[I] Users now have the ability to input their own Trakt Client keys.[/I]
 --[I] Thanks to Ezra Dev for being open to collaboration.[/I]

@@ -1,3 +1,7 @@
+[B][COLOR black]June 30, 2022[/COLOR][/B]
+--[I] Good communication among the Kodi Addon community.[/I]
+--[I] Working to assist Ezra in clearing his issues.[/I]
+
 [B][COLOR black]June 25, 2022[/COLOR][/B]
 --[I] Adding different color versions of new icon theme.[/I]
 
