@@ -1,7 +1,7 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.29">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.30">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
-		<import addon="context.umbrella" version="1.2.4"/>
+		<import addon="context.umbrella" version="1.2.5"/>
 		<import addon="script.module.myaccounts"  />
 		<import addon="script.module.umbrellascrapers" version="0.0.13" />
 		<import addon="script.module.requests" />
@@ -32,7 +32,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.29 - June 30, 2022[/COLOR][/B]
+[B][COLOR black]Update - v6.5.30 - June 30, 2022[/COLOR][/B]
+--[I] Small bump to fix logging error [I]
 --[I] Upon Request the Exuary icons have been re-added. You can set them from settings.[/I]
 --[I] Additional logging has been added to attempt to track some issues with episodes being marked.[/I]
 --[I] Fanart Key Replaced.[/I]

@@ -112,9 +112,7 @@ def re_auth(headers):
 		log_utils.log('Re-Authenticating Trakt Token', level=log_utils.LOGINFO)
 		oauth = urljoin(BASE_URL, '/oauth/token')
 		opost = {'client_id': V2_API_KEY, 'client_secret': CLIENT_SECRET, 'redirect_uri': REDIRECT_URI, 'grant_type': 'refresh_token', 'refresh_token': control.addon('script.module.myaccounts').getSetting('trakt.refresh')}
-		log_utils.log(opost, level=log_utils.LOGINFO)
 		response = session.post(url=oauth, data=jsdumps(opost), headers=headers, timeout=20)
-		log_utils.log(response.status_code, level=log_utils.LOGINFO)
 		status_code = str(response.status_code)
 
 		error_handler(oauth, response, status_code)
