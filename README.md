@@ -6,7 +6,7 @@ Please let me know if you have any questions or issues.
 Currently for Kodi 19 and working for Nexus Alphas (with lots of warnings).
 Clone of V
 
-##Installation Instructions:
+## Installation Instructions:
 From Kodi:
 System > File Manager > Select Add Source
 
@@ -24,7 +24,7 @@ Install the Umbrella repository by clicking on Install from Zip File then "Umbre
 
 Select "Install From Repository" then Umbrella Repo then Video Add-ons then Umbrella. Click on Install and wait for the Add-on Enabled Notification.
 
-##Setup Instructions
+## Setup Instructions
 
 From the main menu, navigate to Tools > My Accounts Settings > Add Trakt
 Follow the onscreen instructions and authorize Trakt.
@@ -37,12 +37,12 @@ Currently Supported Debrid Providers:
 
 **The plugin will not work without at least 1 debrid account**
 
-##Issues
+## Issues
 Feel free to open issues, they are being looked at.
 If opening an issue please verify there is not already an open issue for the same thing.
 **Please** post a log with your issue. The more information the better.
 
-##FAQ
+## FAQ
 
 Q: Why do you have a seperate scraper package?
 A: At some point there may be a shared scraper package, but you would get the same results with every addon for searches. I will continue to maintain my own package so tweaks and modifications can be made for now. It also gives you the ability to set different scraper settings for different addons. I feel that is currently the best way.
