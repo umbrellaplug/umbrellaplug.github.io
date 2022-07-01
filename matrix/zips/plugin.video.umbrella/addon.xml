@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.31">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.32">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.5"/>
@@ -32,7 +32,7 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.31 - June 30, 2022[/COLOR][/B]
+[B][COLOR black]Update - v6.5.31/32 - June 30, 2022[/COLOR][/B]
 --[I] Logging Added. Attempting to track down episodes being marked as watched issue. [I]
 --[I] Found more keys. Removed and replaced with my own. [I]
 		</news>

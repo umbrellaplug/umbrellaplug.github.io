@@ -285,7 +285,6 @@ def _get_result(response, limit=None, ret_code=None):
 		try: encoding = response.headers["Content-Encoding"]
 		except: encoding = None
 		if encoding == 'gzip': result = gzip.GzipFile(fileobj=BytesIO(result)).read()
-		import web_pdb; web_pdb.set_trace()
 		return result
 	except:
 		from umbrellascrapers.modules import log_utils

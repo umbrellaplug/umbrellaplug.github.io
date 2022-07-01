@@ -187,7 +187,6 @@ def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, r
 		success = markSeasonAsWatched(imdb, tvdb, season)
 		cachesyncTV(imdb, tvdb)
 	elif content_type == 'episode':
-		import web_pdb; web_pdb.set_trace()
 		success = markEpisodeAsWatched(imdb, tvdb, season, episode)
 		cachesyncTV(imdb, tvdb)
 	else: success = False
