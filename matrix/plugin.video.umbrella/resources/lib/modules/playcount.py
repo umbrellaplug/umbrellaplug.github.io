@@ -178,11 +178,13 @@ def markMovieDuringPlayback(imdb, watched):
 def markEpisodeDuringPlayback(imdb, tvdb, season, episode, watched):
 	try:
 		if traktIndicators:
+			from resources.lib.modules import log_utils
 			log_utils.log('Marking Episode as Watched from markEpisodeDuringPlayback() in playcount.py IMDB:%s TVDB:%s Season:%s Episode:%s' % (imdb,tvdb, season, episode), level=log_utils.LOGINFO)
 			if int(watched) == 5: trakt.markEpisodeAsWatched(imdb, tvdb, season, episode)
 			else: trakt.markEpisodeAsNotWatched(imdb, tvdb, season, episode)
 			trakt.cachesyncTV(imdb, tvdb) # updates all watched shows, as well as season indicators and counts for given ID of show
 		else:
+			from resources.lib.modules import log_utils
 			log_utils.log('MetaHandlers is attempting to get episode information to mark watched.', level=log_utils.LOGINFO)
 			from metahandler import metahandlers
 			metaget = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
