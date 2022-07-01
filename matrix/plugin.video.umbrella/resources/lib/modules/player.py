@@ -56,7 +56,7 @@ class Player(xbmc.Player):
 ## - compare meta received to database and use largest(eventually switch to a request to fetch missing db meta for item)
 			self.imdb_user = getSetting('imdb.user').replace('ur', '')
 			self.tmdb_key = getSetting('tmdb.api.key')
-			if not self.tmdb_key: self.tmdb_key = '3320855e65a9758297fec4f7c9717698'
+			if not self.tmdb_key: self.tmdb_key = 'bc96b19479c7db6c8ae805744d0bdfe2'
 			self.tvdb_key = getSetting('tvdb.api.key')
 			if self.media_type == 'episode': self.user = str(self.imdb_user) + str(self.tvdb_key)
 			else: self.user = str(self.tmdb_key)
@@ -260,6 +260,7 @@ class Player(xbmc.Player):
 					try:
 						if watcher and property != '5':
 							homeWindow.setProperty(pname, '5')
+							log_utils.log('Marking Episode as Watched from keepAlive() in player.py IMDB:%s TVDB:%s Season:%s Episode:%s' % (self.imdb,self.tvdb, self.season, self.episode), level=log_utils.LOGINFO)
 							playcount.markEpisodeDuringPlayback(self.imdb, self.tvdb, self.season, self.episode, '5')
 						if self.enable_playnext and not self.play_next_triggered:
 							if int(control.playlist.size()) > 1:

@@ -187,6 +187,7 @@ def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, r
 		success = markSeasonAsWatched(imdb, tvdb, season)
 		cachesyncTV(imdb, tvdb)
 	elif content_type == 'episode':
+		import web_pdb; web_pdb.set_trace()
 		success = markEpisodeAsWatched(imdb, tvdb, season, episode)
 		cachesyncTV(imdb, tvdb)
 	else: success = False
@@ -956,7 +957,7 @@ def markEpisodeAsWatched(imdb, tvdb, season, episode):
 	try:
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
 		result = getTraktAsJson('/sync/history', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": imdb, "tvdb": tvdb}}]})
-		log_utils.log('Marking IMDB as Watched:%s Season:%s Episode:%s' % (imdb, season, episode), level=log_utils.LOGINFO)
+		log_utils.log('Marking Episode as Watched from markEpisodeAsWatched in Trakt IMDB:%s TVDB:%s Season:%s Episode:%s' % (imdb,tvdb, season, episode), level=log_utils.LOGINFO)
 		return result['added']['episodes'] != 0
 	except: log_utils.error()
 
@@ -969,7 +970,7 @@ def markEpisodeAsNotWatched(imdb, tvdb, season, episode):
 		if result['deleted']['episodes'] == 0 and tvdb: # sometimes trakt fails to mark because of imdb_id issues, check tvdb only as fallback if it fails
 			control.sleep(1000) # POST 1 call per sec rate-limit
 			result = getTraktAsJson('/sync/history/remove', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"tvdb": tvdb}}]})
-			log_utils.log('Marking IMDB as Unwatched:%s Season:%s Episode:%s' % (imdb, season, episode), level=log_utils.LOGINFO)
+			log_utils.log('Marking Episode as Watched IMDB:%s TVDB:%s Season:%s Episode:%s' % (imdb,tvdb, season, episode), level=log_utils.LOGINFO)
 		return result['deleted']['episodes'] != 0
 	except: log_utils.error()
 

@@ -37,7 +37,7 @@ class Movies:
 		self.lang = control.apiLanguage()['trakt']
 		self.imdb_user = getSetting('imdb.user').replace('ur', '')
 		self.tmdb_key = getSetting('tmdb.api.key')
-		if not self.tmdb_key: self.tmdb_key = '3320855e65a9758297fec4f7c9717698'
+		if not self.tmdb_key: self.tmdb_key = 'bc96b19479c7db6c8ae805744d0bdfe2'
 		self.tmdb_session_id = getSetting('tmdb.session_id')
 		# self.user = str(self.imdb_user) + str(self.tmdb_key)
 		self.user = str(self.tmdb_key)

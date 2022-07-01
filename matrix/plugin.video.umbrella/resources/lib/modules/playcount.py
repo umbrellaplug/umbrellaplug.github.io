@@ -5,7 +5,8 @@
 
 from resources.lib.modules.control import setting as getSetting, refresh as containerRefresh, addonInfo, progressDialogBG, monitor, condVisibility, execute
 from resources.lib.modules import trakt
-tmdb_api_key = '3320855e65a9758297fec4f7c9717698'
+
+tmdb_api_key = 'bc96b19479c7db6c8ae805744d0bdfe2'
 omdb_api_key = 'd4daa2b'
 tvdb_api_key = '06cff30690f9b9622957044f2159ffae'
 traktIndicators = trakt.getTraktIndicatorsInfo()
@@ -177,10 +178,12 @@ def markMovieDuringPlayback(imdb, watched):
 def markEpisodeDuringPlayback(imdb, tvdb, season, episode, watched):
 	try:
 		if traktIndicators:
+			log_utils.log('Marking Episode as Watched from markEpisodeDuringPlayback() in playcount.py IMDB:%s TVDB:%s Season:%s Episode:%s' % (imdb,tvdb, season, episode), level=log_utils.LOGINFO)
 			if int(watched) == 5: trakt.markEpisodeAsWatched(imdb, tvdb, season, episode)
 			else: trakt.markEpisodeAsNotWatched(imdb, tvdb, season, episode)
 			trakt.cachesyncTV(imdb, tvdb) # updates all watched shows, as well as season indicators and counts for given ID of show
 		else:
+			log_utils.log('MetaHandlers is attempting to get episode information to mark watched.', level=log_utils.LOGINFO)
 			from metahandler import metahandlers
 			metaget = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
 			metaget.get_meta('tvshow', name='', imdb_id=imdb)

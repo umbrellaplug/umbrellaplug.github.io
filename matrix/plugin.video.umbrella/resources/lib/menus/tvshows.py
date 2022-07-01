@@ -80,7 +80,7 @@ class TVshows:
 		self.tvmaze_link = 'https://www.tvmaze.com'
 		self.tmdb_key = getSetting('tmdb.api.key')
 		if self.tmdb_key == '' or self.tmdb_key is None:
-			self.tmdb_key = '3320855e65a9758297fec4f7c9717698'
+			self.tmdb_key = 'bc96b19479c7db6c8ae805744d0bdfe2'
 		self.tmdb_session_id = getSetting('tmdb.session_id')
 		self.tmdb_link = 'https://api.themoviedb.org'
 		self.tmdb_userlists_link = 'https://api.themoviedb.org/3/account/{account_id}/lists?api_key=%s&language=en-US&session_id=%s&page=1' % ('%s', self.tmdb_session_id) # used by library import only
