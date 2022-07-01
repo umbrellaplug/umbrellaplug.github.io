@@ -25,8 +25,6 @@ BASE_URL = 'https://api.trakt.tv'
 ma_trakt= Trakt()
 V2_API_KEY = ma_trakt.client_id
 CLIENT_SECRET = ma_trakt.client_secret
-#V2_API_KEY = 'removedkey'
-#CLIENT_SECRET = 'removedclientsecret'
 
 headers = {'Content-Type': 'application/json', 'trakt-api-key': V2_API_KEY, 'trakt-api-version': '2'}
 REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
@@ -37,15 +35,15 @@ highlight_color = control.getHighlightColor()
 server_notification = getSetting('trakt.server.notifications') == 'true'
 service_syncInterval = int(getSetting('trakt.service.syncInterval')) if getSetting('trakt.service.syncInterval') else 15
 
-
 def getTrakt(url, post=None, extended=False, silent=False):
 	try:
+		service_customTimeout = int(getSetting('trakt.service.timeoutInterval')) if getSetting('trakt.service.timeoutInterval') else int(30)
 		if not url.startswith(BASE_URL): url = urljoin(BASE_URL, url)
 		if post: post = jsdumps(post)
 		if getTraktCredentialsInfo(): headers['Authorization'] = 'Bearer %s' % control.addon('script.module.myaccounts').getSetting('trakt.token')
-
-		if post: response = session.post(url, data=post, headers=headers, timeout=20)
-		else: response = session.get(url, headers=headers, timeout=20)
+		log_utils.log('Using custom timeout for possible garbage networks. Using Timeout Length: %s' % (service_customTimeout), level=log_utils.LOGINFO)
+		if post: response = session.post(url, data=post, headers=headers, timeout=service_customTimeout)
+		else: response = session.get(url, headers=headers, timeout=service_customTimeout)
 		status_code = str(response.status_code)
 
 		# if status_code.startswith('5') or '<html' in response: # temp to log html maintenance response
@@ -84,8 +82,7 @@ def error_handler(url, response, status_code, silent=False):
 	elif status_code == '404':
 		log_utils.log('getTrakt() (404:NOT FOUND): URL=(%s): %s' % (url, str(response.text)), level=log_utils.LOGWARNING)
 	elif status_code == '400':
-		log_utils.log('Trakt Account Tokens out of Sync Revoking and will need to Re-Authorize', log_utils.LOGINFO)
-		if (not silent) and server_notification: control.notification(title=32315, message=40080)
+		log_utils.log('Trakt account tokens out of sync need to Revoke and Re-Authorize', log_utils.LOGINFO)
 
 def getTraktAsJson(url, post=None, silent=False):
 	try:
@@ -885,14 +882,12 @@ def service_syncSeasons(): # season indicators and counts for watched shows ex. 
 def markMovieAsWatched(imdb):
 	try:
 		result = getTraktAsJson('/sync/history', {"movies": [{"ids": {"imdb": imdb}}]})
-		log_utils.log('Marking Movie as Watched IMDB:%s' % (imdb), level=log_utils.LOGINFO)
 		return result['added']['movies'] != 0
 	except: log_utils.error()
 
 def markMovieAsNotWatched(imdb):
 	try:
 		result = getTraktAsJson('/sync/history/remove', {"movies": [{"ids": {"imdb": imdb}}]})
-		log_utils.log('Marking Movie as Unwatched IMDB:%s' % (imdb), level=log_utils.LOGINFO)
 		return result['deleted']['movies'] != 0
 	except: log_utils.error()
 
@@ -902,7 +897,6 @@ def markTVShowAsWatched(imdb, tvdb):
 		if result['added']['episodes'] == 0 and tvdb: # sometimes trakt fails to mark because of imdb_id issues, check tvdb only as fallback if it fails
 			control.sleep(1000) # POST 1 call per sec rate-limit
 			result = getTraktAsJson('/sync/history', {"shows": [{"ids": {"tvdb": tvdb}}]})
-			log_utils.log('Marking TV Show as Watched IMDB:%s TVDB:%s' % (imdb, tvdb), level=log_utils.LOGINFO)
 		return result['added']['episodes'] != 0
 	except: log_utils.error()
 
@@ -912,7 +906,6 @@ def markTVShowAsNotWatched(imdb, tvdb):
 		if result['deleted']['episodes'] == 0 and tvdb: # sometimes trakt fails to mark because of imdb_id issues, check tvdb only as fallback if it fails
 			control.sleep(1000) # POST 1 call per sec rate-limit
 			result = getTraktAsJson('/sync/history/remove', {"shows": [{"ids": {"tvdb": tvdb}}]})
-			log_utils.log('Marking TV Show as Unwatched IMDB:%s TVDB:%s' % (imdb, tvdb), level=log_utils.LOGINFO)
 		return result['deleted']['episodes'] != 0
 	except: log_utils.error()
 
@@ -923,7 +916,6 @@ def markSeasonAsWatched(imdb, tvdb, season):
 		if result['added']['episodes'] == 0 and tvdb: # sometimes trakt fails to mark because of imdb_id issues, check tvdb only as fallback if it fails
 			control.sleep(1000) # POST 1 call per sec rate-limit
 			result = getTraktAsJson('/sync/history', {"shows": [{"seasons": [{"number": season}], "ids": {"tvdb": tvdb}}]})
-			log_utils.log('Marking Season as Watched IMDB:%s TVDB:%s Season:%s' % (imdb, tvdb, season), level=log_utils.LOGINFO)
 		return result['added']['episodes'] != 0
 	except: log_utils.error()
 
@@ -934,7 +926,6 @@ def markSeasonAsNotWatched(imdb, tvdb, season):
 		if result['deleted']['episodes'] == 0 and tvdb: # sometimes trakt fails to mark because of imdb_id issues, check tvdb only as fallback if it fails
 			control.sleep(1000) # POST 1 call per sec rate-limit
 			result = getTraktAsJson('/sync/history/remove', {"shows": [{"seasons": [{"number": season}], "ids": {"tvdb": tvdb}}]})
-			log_utils.log('Marking Season as Unwatched IMDB:%s TVDB:%s Season:%s' % (imdb, tvdb, season), level=log_utils.LOGINFO)
 		return result['deleted']['episodes'] != 0
 	except: log_utils.error()
 
@@ -955,8 +946,8 @@ def markSeasonAsNotWatched(imdb, tvdb, season):
 def markEpisodeAsWatched(imdb, tvdb, season, episode):
 	try:
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
-		result = getTraktAsJson('/sync/history', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": imdb, "tvdb": tvdb}}]})
 		log_utils.log('Marking Episode as Watched from markEpisodeAsWatched in Trakt IMDB:%s TVDB:%s Season:%s Episode:%s' % (imdb,tvdb, season, episode), level=log_utils.LOGINFO)
+		result = getTraktAsJson('/sync/history', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": imdb, "tvdb": tvdb}}]})
 		return result['added']['episodes'] != 0
 	except: log_utils.error()
 
@@ -969,7 +960,6 @@ def markEpisodeAsNotWatched(imdb, tvdb, season, episode):
 		if result['deleted']['episodes'] == 0 and tvdb: # sometimes trakt fails to mark because of imdb_id issues, check tvdb only as fallback if it fails
 			control.sleep(1000) # POST 1 call per sec rate-limit
 			result = getTraktAsJson('/sync/history/remove', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"tvdb": tvdb}}]})
-			log_utils.log('Marking Episode as Watched IMDB:%s TVDB:%s Season:%s Episode:%s' % (imdb,tvdb, season, episode), level=log_utils.LOGINFO)
 		return result['deleted']['episodes'] != 0
 	except: log_utils.error()
 

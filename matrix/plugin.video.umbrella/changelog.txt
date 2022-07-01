@@ -1,3 +1,6 @@
+[B][COLOR black]Update - v6.5.34 - July 1, 2022[/COLOR][/B]
+--[I] Timeout values changed for Trakt calls. Testing extended timeouts for slower networks. [I]
+
 [B][COLOR black]Update - v6.5.31 - June 30, 2022[/COLOR][/B]
 --[I] Logging Added. Attempting to track down episodes being marked as watched issue. [I]
 

@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.33">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.34">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.5"/>
@@ -8,6 +8,7 @@
 		<import addon="script.module.beautifulsoup4" />
 		<import addon="script.module.metahandler" optional="true" />
 		<import addon="plugin.video.youtube" optional="true" />
+
 	</requires>
 	<extension point="xbmc.python.pluginsource" library="umbrella.py">
 		<provides>video</provides>
@@ -32,9 +33,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.31/32 - June 30, 2022[/COLOR][/B]
---[I] Logging Added. Attempting to track down episodes being marked as watched issue. [I]
---[I] Found more keys. Removed and replaced with my own. [I]
+[B][COLOR black]Update - v6.5.34 - July 1, 2022[/COLOR][/B]
+--[I] Timeout values changed for Trakt API calls. Can now be set to custom value in settings. [I]
 		</news>
 	</extension>
 </addon>
