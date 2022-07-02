@@ -16,7 +16,7 @@ LOGFATAL = 4
 LOGNONE = 5 # not used
 
 debug_list = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'FATAL']
-DEBUGPREFIX = '[COLOR red][ Umbrella: %s ][/COLOR]'
+DEBUGPREFIX = '[ Umbrella: %s ]'
 LOGPATH = transPath('special://logpath/')
 
 

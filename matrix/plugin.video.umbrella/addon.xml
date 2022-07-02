@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.35">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.36">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.5"/>
@@ -32,8 +32,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.35 - July 2, 2022[/COLOR][/B]
---[I] Removed custom timeout and logging. Appears to be causing crashes for some. [I]
+[B][COLOR black]Update - v6.5.36 - July 2, 2022[/COLOR][/B]
+--[I] Logging Removed fro all watched item events. [I]
 		</news>
 	</extension>
 </addon>
