@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.37">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.38">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.5"/>
@@ -32,8 +32,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.37 - July 2, 2022[/COLOR][/B]
---[I] Looking at issue with title's being compared for none first. [I]
+[B][COLOR black]Update - v6.5.38 - July 2, 2022[/COLOR][/B]
+--[I] Had to remove dollar sign fix. [I]
 		</news>
 	</extension>
 </addon>
