@@ -71,10 +71,16 @@ class Sources:
 				return player.Player().play_source(title, year, season, episode, imdb, tmdb, tvdb, preResolved_nextUrl, meta)
 			if title: title = self.getTitle(title)
 			if tvshowtitle: tvshowtitle = self.getTitle(tvshowtitle)
-			try: title = title.replace('$','s')
-			except: log_utils.error('Could not replace title $')
-			try:tvshowtitle = tvshowtitle.replace('$','s')
-			except: log_utils.error('Could not replace tvshowtitle $')
+			try: 
+				if title is not None:
+					title = title.replace('$','s')
+			except: 
+				log_utils.error('Could not replace title $')
+			try:
+				if tvshowtitle is not None:
+					tvshowtitle = tvshowtitle.replace('$','s')
+			except: 
+				log_utils.error('Could not replace tvshowtitle $')
 			homeWindow.clearProperty(self.metaProperty)
 			homeWindow.setProperty(self.metaProperty, meta)
 			homeWindow.clearProperty(self.seasonProperty)

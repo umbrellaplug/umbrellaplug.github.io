@@ -1,3 +1,9 @@
+[B][COLOR black]Update - v6.5.37 - July 2, 2022[/COLOR][/B]
+--[I] Looking at issue with title's being compared for none first. [I]
+
+[B][COLOR black]Update - v6.5.36 - July 2, 2022[/COLOR][/B]
+--[I] Removed more log statements. [I]
+
 [B][COLOR black]Update - v6.5.35 - July 2, 2022[/COLOR][/B]
 --[I] Removed custom timeout and logging. Appears to be causing crashes for some. [I]
 
