@@ -260,7 +260,6 @@ class Player(xbmc.Player):
 					try:
 						if watcher and property != '5':
 							homeWindow.setProperty(pname, '5')
-							from resources.lib.modules import log_utils
 							playcount.markEpisodeDuringPlayback(self.imdb, self.tvdb, self.season, self.episode, '5')
 						if self.enable_playnext and not self.play_next_triggered:
 							if int(control.playlist.size()) > 1:
