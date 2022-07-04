@@ -1,3 +1,6 @@
+[B][COLOR black]Update - v6.5.39 - July 3, 2022[/COLOR][/B]
+--[I] Fixed missing setting for Trakt. Should resolve "Re-Authorize Trakt" nonstop problems. [I]
+
 [B][COLOR black]Update - v6.5.37 - July 2, 2022[/COLOR][/B]
 --[I] Looking at issue with title's being compared for none first. [I]
 
