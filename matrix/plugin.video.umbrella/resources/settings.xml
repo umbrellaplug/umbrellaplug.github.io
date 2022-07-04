@@ -239,6 +239,7 @@
 		<setting type="action" label="32135" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_openMyAccount&amp;query=0.3&amp;opensettings=true&amp;query2=6.1)" />
 		<setting type="action" label="32136" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_syncMyAccount&amp;opensettings=true&amp;query=6.2)" />
 		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=myAccountsSync)" />
+		<setting id="trakt.expires" type="text" label="" visible="false" default="" />
 		<setting id="trakt.username" type="text" label="40062" default="" enable="false" visible="true" />
 		<setting type="action" label="32153" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_traktAcctMyAccounts)" visible="!eq(-1,)" />
 		<setting id="trakt.token" type="text" label="" visible="false" default="" />
@@ -335,7 +336,6 @@
 
 		<setting type="lsep" label="GDrive" />
 		<setting type="action" label="32151" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_openMyAccount&amp;query=3.11&amp;opensettings=true&amp;query2=7.58)" visible="eq(1,)" />
-		<setting id="gdrive.url" type="text" label="GDrive Worker URL" default="" enable="false" />
 		<setting id="gdrive.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" enable="true" visible="!eq(-1,)" />
 
 		<setting type="lsep" label="Ororo" />
