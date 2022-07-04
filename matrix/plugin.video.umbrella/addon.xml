@@ -32,9 +32,10 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.39 - July 3, 2022[/COLOR][/B]
---[I] Fixed missing setting for Trakt. Should resolve "Re-Authorize Trakt" nonstop problems. [I]
---[I] Please Revoke then Re-Authorize Trakt. [I]
+[B][COLOR black]Update - v6.5.40 - July 4, 2022[/COLOR][/B]
+--[I] Fixed Trakt Re-Authorize running over and over again for 401. [I]
+--[I] For what we can do on plugin side this is fixed. [I]
+--[I] Any lists that are missing as a result of this change are being marked as private by Trakt. [I]
 		</news>
 	</extension>
 </addon>
