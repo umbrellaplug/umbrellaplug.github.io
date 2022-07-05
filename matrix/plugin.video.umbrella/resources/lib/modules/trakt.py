@@ -61,7 +61,7 @@ def getTrakt(url, post=None, extended=False, silent=False):
 			if extended: return response, response.headers
 			else: return response
 		elif status_code == '401': # Re-Auth token
-			if response.headers["x-private-user"] == 'true':
+			if response.headers.get('x-private-user') == 'true':
 				log_utils.log('X-Private-User Returned from URL:%s Cannot return these values.' % url, level=log_utils.LOGWARNING)
 				return None
 			success = re_auth(headers)

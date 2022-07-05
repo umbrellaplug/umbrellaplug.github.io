@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.39">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.41">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.5"/>
@@ -33,9 +33,7 @@
 		</assets>
 		<news>
 [B][COLOR black]Update - v6.5.40 - July 4, 2022[/COLOR][/B]
---[I] Fixed Trakt Re-Authorize running over and over again for 401. [I]
---[I] For what we can do on plugin side this is fixed. [I]
---[I] Any lists that are missing as a result of this change are being marked as private by Trakt. [I]
+--[I] Quick fix for index out of range. [I]
 		</news>
 	</extension>
 </addon>
