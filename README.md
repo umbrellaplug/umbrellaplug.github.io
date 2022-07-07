@@ -71,6 +71,11 @@ If opening an issue please verify there is not already an open issue for the sam
 **A:** NOPE. Ezra is doing a fine job.
 
 
+**Q:** How do I contact you?
+
+**A:** Reddit. u/umbrella_dev
+
+
 
 **Other Kodi Addons**
 
