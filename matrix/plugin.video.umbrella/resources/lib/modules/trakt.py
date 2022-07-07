@@ -932,37 +932,27 @@ def markSeasonAsNotWatched(imdb, tvdb, season):
 		return result['deleted']['episodes'] != 0
 	except: log_utils.error()
 
-# def markEpisodeAsWatched(imdb, tvdb, season, episode):
-	# try:
-		# season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
-		# result = getTraktAsJson('/sync/history', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": imdb, "tvdb": tvdb}}]})
-		# if result['added']['episodes'] == 0 and tvdb: # sometimes trakt fails to mark because of imdb_id issues, check tvdb only as fallback if it fails
-			# control.sleep(1000) # POST 1 call per sec rate-limit
-			# result = getTraktAsJson('/sync/history', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"tvdb": tvdb}}]})
-
-		# log_utils.log('result=%s' % str(result))
-
-		# return result['added']['episodes'] != 0
-	# except: log_utils.error()
-
-
+#commented out function previously here had good information in it. :)
 def markEpisodeAsWatched(imdb, tvdb, season, episode):
 	try:
-		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
+		season, episode = int('%01d' % int(season)), int('%01d' % int(episode)) #same
 		result = getTraktAsJson('/sync/history', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": imdb, "tvdb": tvdb}}]})
-		return result['added']['episodes'] != 0
+		if not result: return False
+		if result['added']['episodes'] == 0 and tvdb:
+			control.sleep(1000)
+			result = getTraktAsJson('/sync/history', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": tvdb}}]})
+			if not result: return False
+		return result['added']['episodes'] !=0
 	except: log_utils.error()
-
-
 
 def markEpisodeAsNotWatched(imdb, tvdb, season, episode):
 	try:
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
 		result = getTraktAsJson('/sync/history/remove', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": imdb, "tvdb": tvdb}}]})
-		if result['deleted']['episodes'] == 0 and tvdb: # sometimes trakt fails to mark because of imdb_id issues, check tvdb only as fallback if it fails
-			control.sleep(1000) # POST 1 call per sec rate-limit
-			result = getTraktAsJson('/sync/history/remove', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"tvdb": tvdb}}]})
-		return result['deleted']['episodes'] != 0
+		if result['deleted']['episodes'] == 0 and tvdb:
+			control.sleep(1000)
+			result = getTraktAsJson('/sync/history/remove', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": tvdb}}]})
+		return result['deleted']['episodes'] !=0
 	except: log_utils.error()
 
 def getMovieTranslation(id, lang, full=False):

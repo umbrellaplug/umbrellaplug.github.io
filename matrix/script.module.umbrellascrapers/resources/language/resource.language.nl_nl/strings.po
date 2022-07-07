@@ -578,3 +578,7 @@ msgstr ""
 msgctxt "#32143"
 msgid "[COLOR cyan]--Hoster Info--[/COLOR]"
 msgstr ""
+
+msgctxt "#32144"
+msgid "EXTRATORRENT"
+msgstr ""

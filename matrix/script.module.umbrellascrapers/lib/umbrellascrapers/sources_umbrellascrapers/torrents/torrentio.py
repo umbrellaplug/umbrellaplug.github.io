@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# updated by umbrella for Umbrellascrapers (updated 6-20-2022)
+# updated by umbrella for Umbrellascrapers (updated 7-05-2022)
 '''
 	Umbrellascrapers Project
 '''
@@ -8,8 +8,6 @@ from json import loads as jsloads
 import re
 from umbrellascrapers.modules import client
 from umbrellascrapers.modules import source_utils
-SERVER_ERROR = ('521 Origin Down', 'No results returned', 'Connection Time-out', 'Database maintenance')
-
 
 class source:
 	priority = 1
@@ -19,8 +17,6 @@ class source:
 	def __init__(self):
 		self.language = ['en']
 		self.base_link = "https://torrentio.strem.fun"
-		# self.movieSearch_link = '/language=english/stream/movie/%s.json'
-		# self.tvSearch_link = '/language=english/stream/series/%s:%s:%s.json'
 		self.movieSearch_link = '/providers=yts,eztv,rarbg,1337x,thepiratebay,kickasstorrents,torrentgalaxy|language=english/stream/movie/%s.json'
 		self.tvSearch_link = '/providers=yts,eztv,rarbg,1337x,thepiratebay,kickasstorrents,torrentgalaxy|language=english/stream/series/%s:%s:%s.json'
 		self.min_seeders = 0
@@ -29,10 +25,10 @@ class source:
 	def sources(self, data, hostDict):
 		sources = []
 		if not data: return sources
-		append = sources.append
+		sources_append = sources.append
 		try:
 			title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
-			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
+			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$', 's')
 			aliases = data['aliases']
 			episode_title = data['title'] if 'tvshowtitle' in data else None
 			year = data['year']
@@ -47,8 +43,8 @@ class source:
 				hdlr = year
 			# log_utils.log('url = %s' % url)
 			results = client.request(url, timeout=5)
-			if not results or any(value in results for value in SERVER_ERROR): return sources
-			files = jsloads(results)['streams']
+			try: files = jsloads(results)['streams']
+			except: return sources
 			_INFO = re.compile(r'👤.*')
 			undesirables = source_utils.get_undesirables()
 			check_foreign_audio = source_utils.check_foreign_audio()
@@ -61,13 +57,6 @@ class source:
 				hash = file['infoHash']
 				file_title = file['title'].split('\n')
 				file_info = [x for x in file_title if _INFO.match(x)][0]
-				# try:
-					# index = file_title.index(file_info)
-					# if index == 1: combo = file_title[0].replace(' ', '.')
-					# else: combo = ''.join(file_title[0:2]).replace(' ', '.')
-					# if '🇷🇺' in file_title[index+1] and not any(value in combo for value in ('.en.', '.eng.', 'english')): continue
-				# except: pass
-
 				name = source_utils.clean_name(file_title[0])
 
 				if not source_utils.check_title(title, aliases, name.replace('.(Archie.Bunker', ''), hdlr, year): continue
@@ -76,11 +65,6 @@ class source:
 				if undesirables and source_utils.remove_undesirables(name_info, undesirables): continue
 
 				url = 'magnet:?xt=urn:btih:%s&dn=%s' % (hash, name) 
-				# if not episode_title: #filter for eps returned in movie query (rare but movie and show exists for Run in 2020)
-					# ep_strings = [r'(?:\.|\-)s\d{2}e\d{2}(?:\.|\-|$)', r'(?:\.|\-)s\d{2}(?:\.|\-|$)', r'(?:\.|\-)season(?:\.|\-)\d{1,2}(?:\.|\-|$)']
-					# name_lower = name.lower()
-					# if any(re.search(item, name_lower) for item in ep_strings): continue
-
 				try:
 					seeders = int(re.search(r'(\d+)', file_info).group(1))
 					if self.min_seeders > seeders: continue
@@ -94,7 +78,7 @@ class source:
 				except: dsize = 0
 				info = ' | '.join(info)
 
-				append({'provider': 'torrentio', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info, 'quality': quality,
+				sources_append({'provider': 'torrentio', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info, 'quality': quality,
 							'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize})
 			except:
 				source_utils.scraper_error('TORRENTIO')
@@ -105,15 +89,15 @@ class source:
 		if not data: return sources
 		sources_append = sources.append
 		try:
-			title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
+			title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$', 's')
 			aliases = data['aliases']
 			imdb = data['imdb']
 			year = data['year']
 			season = data['season']
 			url = '%s%s' % (self.base_link, self.tvSearch_link % (imdb, season, data['episode']))
 			results = client.request(url, timeout=5)
-			if not results or any(value in results for value in SERVER_ERROR): return sources
-			files = jsloads(results)['streams']
+			try: files = jsloads(results)['streams']
+			except: return sources
 			_INFO = re.compile(r'👤.*')
 			undesirables = source_utils.get_undesirables()
 			check_foreign_audio = source_utils.check_foreign_audio()
@@ -126,13 +110,6 @@ class source:
 				hash = file['infoHash']
 				file_title = file['title'].split('\n')
 				file_info = [x for x in file_title if _INFO.match(x)][0]
-				# try:
-					# index = file_title.index(file_info)
-					# if index == 1: combo = file_title[0].replace(' ', '.')
-					# else: combo = ''.join(file_title[0:2]).replace(' ', '.')
-					# if '🇷🇺' in file_title[index+1] and not any(value in combo for value in ('.en.', '.eng.', 'english')): continue
-				# except: pass
-
 				name = source_utils.clean_name(file_title[0])
 
 				episode_start, episode_end = 0, 0
