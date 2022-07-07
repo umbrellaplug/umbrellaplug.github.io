@@ -57,7 +57,7 @@
 		<setting id="provider.bitlord" type="bool" label="32103" default="true" />
 		<setting id="provider.bitsearch" type="bool" label="32138" default="true" />
 		<setting id="provider.eztv" type="bool" label="32107" default="true" />
-		<setting id="provider.extratorrent" type="bool" label="32139" default="true" />
+		<setting id="provider.extratorrent" type="bool" label="32144" default="true" />
 		<setting id="provider.glodls" type="bool" label="32108" default="true" />
 		<setting id="provider.isohunt2" type="bool" label="32110" default="false" />
 		<setting id="provider.limetorrents" type="bool" label="32112" default="true" />
