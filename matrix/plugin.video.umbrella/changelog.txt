@@ -1,3 +1,9 @@
+[B][COLOR black]Update - v6.5.42 - July 5, 2022[/COLOR][/B]
+--[I] Possible fix for episodes not being marked as watched. [I]
+
+[B][COLOR black]Update - v6.5.41 - July 4, 2022[/COLOR][/B]
+--[I] Index out of range fix. [I]
+
 [B][COLOR black]Update - v6.5.40 - July 4, 2022[/COLOR][/B]
 --[I] Fixed Trakt Re-Authorize running over and over again for 401. [I]
 --[I] For what we can do on plugin side this is fixed. [I]
