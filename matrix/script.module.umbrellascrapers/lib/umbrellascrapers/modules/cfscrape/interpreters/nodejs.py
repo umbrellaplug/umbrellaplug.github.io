@@ -36,7 +36,7 @@ class ChallengeInterpreter(JavaScriptInterpreter):
                     'Your Node binary may be called `nodejs` rather than `node`, '
                     'in which case you may need to run `apt-get install nodejs-legacy` on some Debian-based systems.\n\n'
                     '(Please read the cloudscraper README\'s Dependencies section: '
-                    '\.)'
+                    'https://github.com/VeNoMouS/cloudscraper#dependencies.)'
                 )
             raise
         except Exception:

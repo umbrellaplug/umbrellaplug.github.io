@@ -1,3 +1,6 @@
+[B][COLOR black]Update - v6.5.46 - July 8, 2022[/COLOR][/B]
+--[I] Small bump to force scraper update. [I]
+
 [B][COLOR black]Update - v6.5.45 - July 7, 2022[/COLOR][/B]
 --[I] Update to router for "Play Random" [I]
 --[I] Update to Trakt for 401 and Lists that have been changed to private errors [I]

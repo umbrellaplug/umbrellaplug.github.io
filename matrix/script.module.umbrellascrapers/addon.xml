@@ -1,4 +1,4 @@
-<addon id="script.module.umbrellascrapers" name="Umbrella Scrapers" version="0.0.14" provider-name="Umbrella">
+<addon id="script.module.umbrellascrapers" name="Umbrella Scrapers" version="0.0.15" provider-name="Umbrella">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -25,9 +25,8 @@
 			<screenshot></screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v0.0.14 - July 5, 2022[/COLOR][/B]
---[I] Updates made for Torrientio.[/I]
---[I] Extra-Torrent....[/I]
+[B][COLOR black]Update - v0.0.15 - July 8, 2022[/COLOR][/B]
+--[I] Updates made to fix errors caused by me.[/I]
 		</news>
 	</extension>
 </addon>

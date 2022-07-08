@@ -28,7 +28,7 @@ SUBS = ('subita', 'subfrench', 'subspanish', 'subtitula', 'swesub', 'nl.subs')
 ENG_CHECK = ('.eng.', '.en.', 'english', 'multi')
 SRT_CHECK = ('with.srt', '.avi', '.mkv', '.mp4')
 
-UNDESIRABLES = ['1XBET','400p.octopus', '720p.octopus', '1080p.octopus', 'alexfilm', 'amedia', 'audiobook', 'baibako', 'bigsinema', 'bonus.disc', 'casstudio.tv', 'courage.bambey',
+UNDESIRABLES = ['1XBET', '400p.octopus', '720p.octopus', '1080p.octopus', 'alexfilm', 'amedia', 'audiobook', 'baibako', 'bigsinema', 'bonus.disc', 'casstudio.tv', 'courage.bambey',
 				'.cbr', '.cbz', 'coldfilm', 'dilnix', 'dutchreleaseteam', 'e.book.collection', 'empire.minutemen', 'eniahd', '.exe', 'exkinoray', 'extras.only',
 				'gears.media', 'gearsmedia', 'good.people', 'gostfilm', 'hamsterstudio', 'hdrezka', 'hdtvrip', 'hurtom', 'idea.film', 'ideafilm', 'jaskier', 'kapatejl6', 'kb.1080p',
 				'kb.720p', 'kb.400p', 'kerob', 'kinokopilka', 'kravec', 'kuraj.bambey', 'lakefilm', 'lostfilm', 'megapeer', 'minutemen.empire', 'newstudio',

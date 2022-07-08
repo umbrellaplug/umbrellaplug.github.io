@@ -89,7 +89,7 @@ def error(message=None, exception=True):
 		log(msg=message, caller=caller, level=LOGERROR)
 	except Exception as e:
 		import xbmc
-		xbmc.log('[ script.module.umbrellaonscrapers ] log_utils.error() Logging Failure: %s' % (e), LOGERROR)
+		xbmc.log('[ script.module.umbrellascrapers ] log_utils.error() Logging Failure: %s' % (e), LOGERROR)
 
 def clear_logFile():
 	cleared = False
@@ -106,7 +106,7 @@ def clear_logFile():
 		cleared = True
 	except Exception as e:
 		import xbmc
-		xbmc.log('[ script.module.umbrellaonscrapers ] log_utils.clear_logFile() Failure: %s' % (e), LOGERROR)
+		xbmc.log('[ script.module.umbrellascrapers ] log_utils.clear_logFile() Failure: %s' % (e), LOGERROR)
 		cleared = False
 	return cleared
 

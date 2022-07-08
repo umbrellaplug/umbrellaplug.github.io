@@ -37,7 +37,7 @@ class ChallengeInterpreter(JavaScriptInterpreter):
             sys.tracebacklimit = 0
             raise RuntimeError(
                 'ChakraCore library not found in current path or any of your system library paths, '
-                'please download from https://www.github.com/ ouS/cloudscraper/tree/ChakraCore/, '
+                'please download from https://www.github.com/VeNoMouS/cloudscraper/tree/ChakraCore/, '
                 'or https://github.com/Microsoft/ChakraCore/'
             )
 
