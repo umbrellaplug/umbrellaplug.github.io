@@ -42,37 +42,37 @@ Feel free to open issues, they are being looked at.
 If opening an issue please verify there is not already an open issue for the same thing.
 **Please** post a log with your issue. The more information the better.
 
+## Logs
+If you are reporting an issue, logs are going to be requested. Save yourself and me some time.
+Enable Logs: Go to Umbrella settings and select Debugging on the left hand side.
+Set your settings like this:
+
+Set your debug settings, reproduce the issue, then go to Tools > Logging Tools > Umbrella - Upload log file to pastebin
+Attach the URL to the issue you open.
+
 ## FAQ
 
 **Q:** Why do you have a seperate scraper package?
-
 **A:** At some point there may be a shared scraper package, but you would get the same results with every addon for searches. I will continue to maintain my own package so tweaks and modifications can be made for now. It also gives you the ability to set different scraper settings for different addons. I feel that is currently the best way.
 
-**Q:** Why should I use this instead of Venom?
 
+**Q:** Why should I use this instead of Venom?
 **A:** Venom has been retired. Respect the developer and let it go. 123Venom was an amazing developer, I chose this addon to clone because I used it and it worked well. If you don't want to use this plugin, don't. Please don't waste my time or yours with comparisons to Venom, I won't waste my time justifying why you should use an addon I maintain for free.
 
 
-
 **Q:** Do you take feature requests?
-
 **A:** Of course, open an issue.
 
 
-
 **Q:** What's the difference between this and Ezra?
-
 **A:** Ezra is a clone of Fen. This project is a clone of Venom. They use different code completely. I would run both.
 
 
-
 **Q:** Are you going to do a clone of Fen also?
-
 **A:** NOPE. Ezra is doing a fine job.
 
 
 **Q:** How do I contact you?
-
 **A:** Reddit. u/umbrella_dev
 
 

@@ -62,7 +62,7 @@ def getTrakt(url, post=None, extended=False, silent=False):
 			else: return response
 		elif status_code == '401': # Re-Auth token
 			if response.headers.get('x-private-user') == 'true':
-				log_utils.log('X-Private-User Returned from URL:%s Cannot return these values.' % url, level=log_utils.LOGWARNING)
+				log_utils.log('URL:%s Has a Private User Header:Ignoring' % url, level=log_utils.LOGWARNING)
 				return None
 			success = re_auth(headers)
 			if success: return getTrakt(url, extended=extended, silent=silent)
@@ -108,7 +108,6 @@ def re_auth(headers):
 			from resources.lib.modules import my_accounts
 			my_accounts.syncMyAccounts(silent=True)
 			return True
-
 		log_utils.log('Re-Authenticating Trakt Token', level=log_utils.LOGINFO)
 		oauth = urljoin(BASE_URL, '/oauth/token')
 		opost = {'client_id': V2_API_KEY, 'client_secret': CLIENT_SECRET, 'redirect_uri': REDIRECT_URI, 'grant_type': 'refresh_token', 'refresh_token': control.addon('script.module.myaccounts').getSetting('trakt.refresh')}
@@ -179,16 +178,16 @@ def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, r
 	success = False
 	if content_type == 'movie':
 		success = markMovieAsWatched(imdb)
-		update_syncMovies(imdb)
+		if success: update_syncMovies(imdb)
 	elif content_type == 'tvshow':
 		success = markTVShowAsWatched(imdb, tvdb)
-		cachesyncTV(imdb, tvdb)
+		if success: cachesyncTV(imdb, tvdb)
 	elif content_type == 'season':
 		success = markSeasonAsWatched(imdb, tvdb, season)
-		cachesyncTV(imdb, tvdb)
+		if success: cachesyncTV(imdb, tvdb)
 	elif content_type == 'episode':
 		success = markEpisodeAsWatched(imdb, tvdb, season, episode)
-		cachesyncTV(imdb, tvdb)
+		if success: cachesyncTV(imdb, tvdb)
 	else: success = False
 	control.hide()
 	if refresh: control.refresh()
@@ -900,15 +899,18 @@ def markTVShowAsWatched(imdb, tvdb):
 		if result['added']['episodes'] == 0 and tvdb: # sometimes trakt fails to mark because of imdb_id issues, check tvdb only as fallback if it fails
 			control.sleep(1000) # POST 1 call per sec rate-limit
 			result = getTraktAsJson('/sync/history', {"shows": [{"ids": {"tvdb": tvdb}}]})
+			if not result: return False
 		return result['added']['episodes'] != 0
 	except: log_utils.error()
 
 def markTVShowAsNotWatched(imdb, tvdb):
 	try:
 		result = getTraktAsJson('/sync/history/remove', {"shows": [{"ids": {"imdb": imdb, "tvdb": tvdb}}]})
+		if not result: return False
 		if result['deleted']['episodes'] == 0 and tvdb: # sometimes trakt fails to mark because of imdb_id issues, check tvdb only as fallback if it fails
 			control.sleep(1000) # POST 1 call per sec rate-limit
 			result = getTraktAsJson('/sync/history/remove', {"shows": [{"ids": {"tvdb": tvdb}}]})
+			if not result: return False
 		return result['deleted']['episodes'] != 0
 	except: log_utils.error()
 
@@ -916,9 +918,11 @@ def markSeasonAsWatched(imdb, tvdb, season):
 	try:
 		season = int('%01d' % int(season))
 		result = getTraktAsJson('/sync/history', {"shows": [{"seasons": [{"number": season}], "ids": {"imdb": imdb, "tvdb": tvdb}}]})
+		if not result: return False
 		if result['added']['episodes'] == 0 and tvdb: # sometimes trakt fails to mark because of imdb_id issues, check tvdb only as fallback if it fails
 			control.sleep(1000) # POST 1 call per sec rate-limit
 			result = getTraktAsJson('/sync/history', {"shows": [{"seasons": [{"number": season}], "ids": {"tvdb": tvdb}}]})
+			if not result: return False
 		return result['added']['episodes'] != 0
 	except: log_utils.error()
 
@@ -926,9 +930,11 @@ def markSeasonAsNotWatched(imdb, tvdb, season):
 	try:
 		season = int('%01d' % int(season))
 		result = getTraktAsJson('/sync/history/remove', {"shows": [{"seasons": [{"number": season}], "ids": {"imdb": imdb, "tvdb": tvdb}}]})
+		if not result: return False
 		if result['deleted']['episodes'] == 0 and tvdb: # sometimes trakt fails to mark because of imdb_id issues, check tvdb only as fallback if it fails
 			control.sleep(1000) # POST 1 call per sec rate-limit
 			result = getTraktAsJson('/sync/history/remove', {"shows": [{"seasons": [{"number": season}], "ids": {"tvdb": tvdb}}]})
+			if not result: return False
 		return result['deleted']['episodes'] != 0
 	except: log_utils.error()
 
@@ -949,9 +955,11 @@ def markEpisodeAsNotWatched(imdb, tvdb, season, episode):
 	try:
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
 		result = getTraktAsJson('/sync/history/remove', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": imdb, "tvdb": tvdb}}]})
+		if not result: return False
 		if result['deleted']['episodes'] == 0 and tvdb:
 			control.sleep(1000)
 			result = getTraktAsJson('/sync/history/remove', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": tvdb}}]})
+			if not result: return False
 		return result['deleted']['episodes'] !=0
 	except: log_utils.error()
 
@@ -1181,12 +1189,12 @@ def scrobbleResetItems(imdb_ids, tvdb_dicts=None, refresh=True, widgetRefresh=Fa
 					resume_id = resume_dict['resume_id']
 					headers['Authorization'] = 'Bearer %s' % control.addon('script.module.myaccounts').getSetting('trakt.token')
 					success = session.delete('https://api.trakt.tv/sync/playback/%s' % resume_id, headers=headers).status_code == 204
+					if not success: raise Exception()
 					items = [{'type': 'movie', 'movie': {'ids': {'imdb': imdb}}}]
 					timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
 					items[0].update({'paused_at': timestamp})
-					if success:
-						traktsync.delete_bookmark(items)
-						log_utils.log('Successfuly Removed Trakt Playback Progress: movie title=%s  with resume_id=%s' % (resume_dict['title'], str(resume_id)), __name__, level=log_utils.LOGDEBUG)
+					traktsync.delete_bookmark(items)
+					log_utils.log('Successfuly Removed Trakt Playback Progress: movie title=%s  with resume_id=%s' % (resume_dict['title'], str(resume_id)), __name__, level=log_utils.LOGDEBUG)
 					control.sleep(1000)
 				except: log_utils.log('Failed to Remove Trakt Playback Progress: movie title=%s  with resume_id=%s' % (resume_dict['title'], str(resume_id)), __name__, level=log_utils.LOGDEBUG)
 		else:
@@ -1196,18 +1204,18 @@ def scrobbleResetItems(imdb_ids, tvdb_dicts=None, refresh=True, widgetRefresh=Fa
 				try:
 					imdb, tvdb = dict.get('imdb'), dict.get('tvdb')
 					season, episode = dict.get('season'), dict.get('episode')
-					resume_info_index = [resume_info.index(i) for i in resume_info if i['tvdb'] == tvdb][0]
+					resume_info_index = [resume_info.index(i) for i in resume_info if i['tvdb'] == tvdb and i['season'] == int(season) and i['episode'] == int(episode)][0]
 					resume_dict = resume_info[resume_info_index]
+					label_string = resume_dict['tvshowtitle'] + ' - ' + 'S%02dE%02d' % (int(season), int(episode))
 					resume_id = resume_dict['resume_id']
 					headers['Authorization'] = 'Bearer %s' % control.addon('script.module.myaccounts').getSetting('trakt.token')
 					success = session.delete('https://api.trakt.tv/sync/playback/%s' % resume_id, headers=headers).status_code == 204
+					if not success: raise Exception()
 					items = [{'type': 'episode', 'episode': {'season': season, 'number': episode}, 'show': {'ids': {'imdb': imdb, 'tvdb': tvdb}}}]
 					timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
 					items[0].update({'paused_at': timestamp})
-					if success:
-						traktsync.delete_bookmark(items)
-						label_string = resume_dict['tvshowtitle'] + ' - ' + 'S%02dE%02d' % (int(season), int(episode))
-						log_utils.log('Successfuly Removed Trakt Playback Progress:  tvshowtitle=%s  with resume_id=%s' % (label_string, str(resume_id)), __name__, level=log_utils.LOGDEBUG)
+					traktsync.delete_bookmark(items)
+					log_utils.log('Successfuly Removed Trakt Playback Progress:  tvshowtitle=%s  with resume_id=%s' % (label_string, str(resume_id)), __name__, level=log_utils.LOGDEBUG)
 					control.sleep(1000)
 				except: log_utils.log('Failed to Remove Trakt Playback Progress:  tvshowtitle=%s  with resume_id=%s' % (label_string, str(resume_id)), __name__, level=log_utils.LOGDEBUG)
 		control.hide()
@@ -1219,7 +1227,9 @@ def scrobbleResetItems(imdb_ids, tvdb_dicts=None, refresh=True, widgetRefresh=Fa
 		else: return False
 	except:
 		log_utils.error()
+		control.hide()
 		return False
+
 
 
 #############    SERVICE SYNC    ######################
@@ -1381,6 +1391,9 @@ def sync_liked_lists(activities=None, forced=False):
 			def items_list(i):
 				list_item = i.get('list', {})
 				if any(list_item.get('privacy', '') == value for value in ('private', 'friends')): return
+				if list_item.get('user',{}).get('private') is True:
+					log_utils.log('(%s) has marked their list private in Trakt(Liked Lists) and is now causing you errors. Skipping this list' % list_item.get('user',{}).get('username'))
+					return
 				i['list']['content_type'] = ''
 				list_owner_slug = list_item.get('user', {}).get('ids', {}).get('slug', '')
 				trakt_id = list_item.get('ids', {}).get('trakt', '')
@@ -1466,6 +1479,7 @@ def sync_popular_lists(forced=False):
 		from datetime import timedelta
 		link = '/lists/popular?limit=300'
 		list_link = '/users/%s/lists/%s/items/movie,show'
+		official_link = '/lists/%s/items/movie,show'
 		db_last_popularList = traktsync.last_sync('last_popularlist_at')
 		cache_expiry = (datetime.utcnow() - timedelta(hours=168)).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 		cache_expiry = int(cleandate.iso_2_utc(cache_expiry))
@@ -1478,6 +1492,9 @@ def sync_popular_lists(forced=False):
 			def items_list(i):
 				list_item = i.get('list', {})
 				if any(list_item.get('privacy', '') == value for value in ('private', 'friends')): return
+				if list_item.get('user',{}).get('private') is True:
+					log_utils.log('(%s) has marked their list private in Trakt(Popular Lists) and is now causing you errors. Skipping this list' % list_item.get('user',{}).get('username'))
+					return
 				trakt_id = list_item.get('ids', {}).get('trakt', '')
 				exists = traktsync.fetch_public_list(trakt_id)
 				if exists:
@@ -1487,7 +1504,9 @@ def sync_popular_lists(forced=False):
 					else: return
 				i['list']['content_type'] = ''
 				list_owner_slug = list_item.get('user', {}).get('ids', {}).get('slug', '')
-				list_items = getTraktAsJson(list_link % (list_owner_slug, trakt_id), silent=True)
+				if not list_owner_slug: list_owner_slug = list_item.get('user',{}).get('username')
+				if list_item.get('type') == 'official': list_items = getTraktAsJson(official_link % trakt_id, silent=True)
+				else: list_items = getTraktAsJson(list_link % (list_owner_slug, trakt_id), silent=True)
 				if not list_items: return
 				movie_items = [x for x in list_items if x.get('type', '') == 'movie']
 				if len(movie_items) > 0: i['list']['content_type'] = 'movies'
@@ -1509,6 +1528,8 @@ def sync_trending_lists(forced=False):
 		from datetime import timedelta
 		link = '/lists/trending?limit=300'
 		list_link = '/users/%s/lists/%s/items/movie,show'
+		official_link = '/lists/%s/items/movie,show'
+
 		db_last_trendingList = traktsync.last_sync('last_trendinglist_at')
 		cache_expiry = (datetime.utcnow() - timedelta(hours=48)).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 		cache_expiry = int(cleandate.iso_2_utc(cache_expiry))
@@ -1521,6 +1542,9 @@ def sync_trending_lists(forced=False):
 			def items_list(i):
 				list_item = i.get('list', {})
 				if any(list_item.get('privacy', '') == value for value in ('private', 'friends')): return
+				if list_item.get('user',{}).get('private') is True:
+					log_utils.log('(%s) has marked their list private in Trakt(Trending Lists) and is now causing you errors. Skipping this list' % list_item.get('user',{}).get('username'))
+					return
 				trakt_id = list_item.get('ids', {}).get('trakt', '')
 				exists = traktsync.fetch_public_list(trakt_id)
 				if exists:
@@ -1530,7 +1554,9 @@ def sync_trending_lists(forced=False):
 					else: return
 				i['list']['content_type'] = ''
 				list_owner_slug = list_item.get('user', {}).get('ids', {}).get('slug', '')
-				list_items = getTraktAsJson(list_link % (list_owner_slug, trakt_id), silent=True)
+				if not list_owner_slug: list_owner_slug = list_item.get('user', {}).get('username')
+				if list_item.get('type') == 'official': list_items = getTraktAsJson(official_link % trakt_id, silent=True)
+				else: list_items = getTraktAsJson(list_link % (list_owner_slug, trakt_id), silent=True)
 				if not list_items: return
 				movie_items = [x for x in list_items if x.get('type', '') == 'movie']
 				if len(movie_items) != 0: i['list']['content_type'] = 'movies'

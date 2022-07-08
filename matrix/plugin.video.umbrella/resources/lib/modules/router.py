@@ -682,7 +682,8 @@ def router(params):
 				elif rtype == "episode":
 					try: control.notification(title=32536, message='%s - %01dx%02d - %s' % (rlist[rand]['tvshowtitle'], int(rlist[rand]['season']), int(rlist[rand]['episode']), rlist[rand]['title']))
 					except: pass
-				control.execute('RunPlugin(%s)' % r)
+				if 'play_Item' in r: control.execute('PlayMedia(%s)' % r)
+				else: control.execute('RunPlugin(%s)' % r)
 			except: control.notification(message=32537)
 
 	elif action == 'play': # for support of old style .strm library files

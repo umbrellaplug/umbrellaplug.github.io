@@ -729,18 +729,23 @@ class TVshows:
 
 		for item in items:
 			try:
-				if item.get('type', '') == 'officiallist': continue #seems bugy so until Justin replies hold off
 				list_item = item.get('list', {})
 				list_name = list_item.get('name', '')
 				list_id = list_item.get('ids', {}).get('trakt', '')
-				list_owner = list_item.get('user', {}).get('username', '')
-				list_owner_slug = list_item.get('user', {}).get('ids', {}).get('slug', '')
-				if any(list_item.get('privacy', '') == value for value in ('private', 'friends')): continue
-				list_url = self.traktlist_link % (list_owner_slug, list_id)
+
 				list_content = traktsync.fetch_public_list(list_id)
 				if not list_content: pass
 				else: 
 					if list_content.get('content_type', '') == 'movies': continue
+
+				list_owner = list_item.get('user', {}).get('username', '')
+				list_owner_slug = list_item.get('user', {}).get('ids', {}).get('slug', '')
+				if not list_owner_slug: list_owner_slug = list_owner.lower()
+				if any(list_item.get('privacy', '') == value for value in ('private', 'friends')): continue
+
+				if list_owner_slug == 'trakt': list_url = 'https://api.trakt.tv/lists/%s/items/?limit=%s&page=1' % (list_id, self.page_limit)
+				else: list_url = self.traktlist_link % (list_owner_slug, list_id)
+
 				label = '%s - [COLOR %s]%s[/COLOR]' % (list_name, self.highlight_color, list_owner)
 				self.list.append({'name': label, 'list_type': 'traktPulicList', 'url': list_url, 'list_owner': list_owner, 'list_name': list_name, 'list_id': list_id, 'context': list_url, 'next': next, 'image': 'trakt.png', 'icon': 'trakt.png', 'action': 'tvshows'})
 			except:
@@ -1028,9 +1033,12 @@ class TVshows:
 					if count:
 						item.setProperties({'WatchedEpisodes': str(count['watched']), 'UnWatchedEpisodes': str(count['unwatched'])})
 						item.setProperties({'TotalSeasons': str(meta.get('total_seasons', '')), 'TotalEpisodes': str(count['total'])})
+						item.setProperty('WatchedProgress', str(int(float(count['watched']) / float(count['total']) * 100)))
+						meta.update({'season': str(meta.get('total_seasons', '')), 'episode': str(count['total'])}) # some skins may require the library method to handle totals
 					else:
 						item.setProperties({'WatchedEpisodes': '0', 'UnWatchedEpisodes': str(meta.get('total_aired_episodes', ''))}) # for shows never watched
 						item.setProperties({'TotalSeasons': str(meta.get('total_seasons', '')), 'TotalEpisodes': str(meta.get('total_aired_episodes', ''))})
+						meta.update({'season': str(meta.get('total_seasons', '')), 'episode': str(meta.get('total_aired_episodes', ''))})
 				except: pass
 				item.setProperty('tmdb_id', str(tmdb))
 				if is_widget: item.setProperty('isUmbrella_widget', 'true')
@@ -1139,7 +1147,7 @@ class TVshows:
 			log_utils.error()
 
 		skin = control.skin
-		if skin == 'skin.arctic.horizon': pass
+		if skin in ('skin.arctic.horizon', 'skin.arctic.horizon.2'): pass
 		elif skin in ('skin.estuary', 'skin.aeon.nox.silvo'): content = ''
 		elif skin == 'skin.auramod':
 			if content not in ('actors', 'genres'): content = 'addons'

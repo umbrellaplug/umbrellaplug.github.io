@@ -724,18 +724,23 @@ class Movies:
 
 		for item in items:
 			try:
-				if item.get('type', '') == 'officiallist': continue #seems bugy so until Justin replies hold off
 				list_item = item.get('list', {})
 				list_name = list_item.get('name', '')
 				list_id = list_item.get('ids', {}).get('trakt', '')
-				list_owner = list_item.get('user', {}).get('username', '')
-				list_owner_slug = list_item.get('user', {}).get('ids', {}).get('slug', '')
-				if any(list_item.get('privacy', '') == value for value in ('private', 'friends')): continue
-				list_url = self.traktlist_link % (list_owner_slug, list_id)
+
 				list_content = traktsync.fetch_public_list(list_id)
 				if not list_content: pass
 				else: 
 					if list_content.get('content_type', '') == 'shows': continue
+
+				list_owner = list_item.get('user', {}).get('username', '')
+				list_owner_slug = list_item.get('user', {}).get('ids', {}).get('slug', '')
+				if not list_owner_slug: list_owner_slug = list_owner.lower()
+				if any(list_item.get('privacy', '') == value for value in ('private', 'friends')): continue
+
+				if list_owner_slug == 'trakt': list_url = 'https://api.trakt.tv/lists/%s/items/?limit=%s&page=1' % (list_id, self.page_limit)
+				else: list_url = self.traktlist_link % (list_owner_slug, list_id)
+
 				label = '%s - [COLOR %s]%s[/COLOR]' % (list_name, self.highlight_color, list_owner)
 				self.list.append({'name': label, 'list_type': 'traktPulicList', 'url': list_url, 'list_owner': list_owner, 'list_name': list_name, 'list_id': list_id, 'context': list_url, 'next': next, 'image': 'trakt.png', 'icon': 'trakt.png', 'action': 'movies'})
 			except:
@@ -1050,11 +1055,8 @@ class Movies:
 					resumetime = Bookmarks().get(name=label, imdb=imdb, tmdb=tmdb, year=str(year), runtime=runtime, ck=True)
 					# item.setProperty('TotalTime', str(meta['duration'])) # Adding this property causes the Kodi bookmark CM items to be added
 					item.setProperty('ResumeTime', str(resumetime))
-					try:
-						watched_percent = round(float(resumetime) / float(runtime) * 100, 1) # resumetime and runtime are both in seconds
-						item.setProperty('PercentPlayed', str(watched_percent))
+					try: item.setProperty('WatchedProgress', str(int(float(resumetime) / float(runtime) * 100))) # new prop Jurial added (resumetime and runtime are both in seconds)
 					except: pass
-
 				item.setInfo(type='video', infoLabels=control.metadataClean(meta))
 				item.addContextMenuItems(cm)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
@@ -1156,7 +1158,7 @@ class Movies:
 			log_utils.error()
 
 		skin = control.skin
-		if skin == 'skin.arctic.horizon': pass
+		if skin in ('skin.arctic.horizon', 'skin.arctic.horizon.2'): pass
 		elif skin in ('skin.estuary', 'skin.aeon.nox.silvo'): content = ''
 		elif skin == 'skin.auramod':
 			if content not in ('actors', 'genres'): content = 'addons'
