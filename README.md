@@ -80,7 +80,7 @@ Attach the URL to the issue you open.
 
 **Q:** How do I contact you?
 
-**A:** Reddit. u/umbrella_dev
+**A:** Reddit. [u/umbrella_dev](https://www.reddit.com/user/umbrella_dev)
 
 
 
