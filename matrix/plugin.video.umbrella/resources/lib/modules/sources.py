@@ -847,7 +847,15 @@ class Sources:
 
 		if getSetting('source.prioritize.hdrdv') == 'true': # filter to place HDR and DOLBY-VISION sources first
 			filter = []
-			filter += [i for i in self.sources if any(value in i.get('info', '') for value in (' HDR ', 'DOLBY-VISION'))]
+			#will need a new setting for put dolby above hdr
+			#filter += [i for i in self.sources if any(value in i.get('info', '') for value in (' HDR ', 'DOLBY-VISION'))]
+			if getSetting('source.prioritize.dolbyvisionfirst')=='true':
+				if not getSetting('remove.dolby.vision') == 'true':
+					filter += [i for i in self.sources if 'DOLBY-VISION' in i.get('info', '')] #dolby first... going to need to check on hdr to make sure it is not added twice
+				if not getSetting('remove.hdr') == 'true':
+					filter += [i for i in self.sources if ' HDR ' in i.get('info', '') and i not in filter] #warning about the spaces above.
+			else:
+				filter += [i for i in self.sources if any(value in i.get('info', '') for value in (' HDR ', 'DOLBY-VISION'))]
 			filter += [i for i in self.sources if i not in filter]
 			self.sources = filter
 

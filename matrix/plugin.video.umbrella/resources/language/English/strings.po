@@ -4291,3 +4291,8 @@ msgstr ""
 msgctxt "#40080"
 msgid "Trakt Tokens are out of sync and have been revoked. Please re-authorize Trakt in My Accounts module and reboot."
 msgstr ""
+
+
+msgctxt "#40081"
+msgid "Prioritize Dolby-Vision above HDR"
+msgstr ""

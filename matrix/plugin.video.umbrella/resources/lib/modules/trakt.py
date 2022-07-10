@@ -40,12 +40,13 @@ service_syncInterval = int(getSetting('trakt.service.syncInterval')) if getSetti
 
 def getTrakt(url, post=None, extended=False, silent=False):
 	try:
+		service_customTimeout = int(getSetting('trakt.service.timeoutInterval')) if getSetting('trakt.service.timeoutInterval') else int(30)
 		if not url.startswith(BASE_URL): url = urljoin(BASE_URL, url)
 		if post: post = jsdumps(post)
 		if getTraktCredentialsInfo(): headers['Authorization'] = 'Bearer %s' % control.addon('script.module.myaccounts').getSetting('trakt.token')
-
-		if post: response = session.post(url, data=post, headers=headers, timeout=20)
-		else: response = session.get(url, headers=headers, timeout=20)
+		log_utils.log('Using Another Cutting Corners Clone Timeout Length: %s' % (service_customTimeout), level=log_utils.LOGINFO)
+		if post: response = session.post(url, data=post, headers=headers, timeout=service_customTimeout)
+		else: response = session.get(url, headers=headers, timeout=service_customTimeout)
 		status_code = str(response.status_code)
 
 		# if status_code.startswith('5') or '<html' in response: # temp to log html maintenance response
@@ -86,6 +87,8 @@ def error_handler(url, response, status_code, silent=False):
 		if (not silent) and server_notification: control.notification(title=32315, message=33675)
 	elif status_code == '404':
 		log_utils.log('getTrakt() (404:NOT FOUND): URL=(%s): %s' % (url, str(response.text)), level=log_utils.LOGWARNING)
+	elif status_code == '400':
+		log_utils.log('getTrakt() (400:Bad Request): URL=(%s): %s' % (url, str(response.text)), level=log_utils.LOGWARNING)	
 
 def getTraktAsJson(url, post=None, silent=False):
 	try:

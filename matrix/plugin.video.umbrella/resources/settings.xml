@@ -203,6 +203,7 @@
 		<setting id="source.checkReboots" type="bool" label="32227" default="false" />
 		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=checkReboots)" />
 		<setting id="source.prioritize.hdrdv" type="bool" label="32195" default="false" />
+		<setting id="source.prioritize.dolbyvisionfirst" type="bool" label="40081" default="false" visible="eq(-1,true)" />
 		<setting id="source.prioritize.hevc" type="bool" label="32229" default="false" />
 		<setting id="source.enable.msizelimit" type="bool" label="32165" default="false" />
 		<setting id="source.min.moviesize" type="slider" label="32155" subsetting="true" option="float" range="0.0,0.1,10.0" default="0" visible="eq(-1,true)" />
@@ -245,26 +246,27 @@
 		<setting id="trakt.token" type="text" label="" visible="false" default="" />
 		<setting id="trakt.refresh" type="text" label="" visible="false" default="" />
 		<setting id="trakt.service.syncInterval" type="slider" label="Trakt service sync interval (in minutes)" default="15" range="5,60" option="int" visible="!eq(-4,)" />
-		<setting id="trakt.server.notifications" type="bool" label="33051" default="true" visible="!eq(-5,)" />
-		<setting id="trakt.general.notifications" type="bool" label="33052" default="true" visible="!eq(-6,)" />
-		<setting id="trakt.directProgress.scrape" type="bool" label="35492" default="false" visible="!eq(-7,)" />
-		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=directProgress)" visible="!eq(-8,)" />
-		<setting id="trakt.progressFlatten" type="bool" label="32017" default="true" enable="!eq(-9,)" />
-		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=progressFlatten)" visible="!eq(-10,)" />
-		<setting id="trakt.rating" type="enum" label="35187" lvalues="33564|35547" default="0" visible="!eq(-11,)" />
-		<setting id="trakt.scrobble" type="bool" label="32097" default="false" visible="!eq(-12,)" />
-		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=Trakt_Scrobble)" visible="!eq(-13,)" />
-		<setting id="trakt.scrobble.notify" type="bool" label="32099" subsetting="true" default="false" visible="!eq(-14,) + eq(-2,true)" />
-		<setting id="resume.source.alt" type="enum" label="32095" lvalues="32314" default="0" visible="!eq(-15,) + !eq(-3,true)" />
-		<setting id="resume.source" type="enum" label="32095" lvalues="32314|32096" default="0" visible="!eq(-16,) + eq(-4,true)" />
-		<setting id="trakt.progress.showunaired" type="bool" label="32572" default="false" visible="!eq(-17,)" />
-		<setting id="trakt.UpcomingProgress.prependDate" type="bool" label="32573" default="true" visible="!eq(-18,)" />
-		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=UpcomingProgressPrependDate)" visible="!eq(-19,)" />
-		<setting id="trakt.paginate.lists" type="bool" label="32188" default="true" visible="!eq(-20,)" />
+		<setting id="trakt.service.timeoutInterval" type="slider" label="Trakt service timeout (in seconds)" default="30" range="20,300" option="int" visible="!eq(-5,)" />
+		<setting id="trakt.server.notifications" type="bool" label="33051" default="true" visible="!eq(-6,)" />
+		<setting id="trakt.general.notifications" type="bool" label="33052" default="true" visible="!eq(-7,)" />
+		<setting id="trakt.directProgress.scrape" type="bool" label="35492" default="false" visible="!eq(-8,)" />
+		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=directProgress)" visible="!eq(-9,)" />
+		<setting id="trakt.progressFlatten" type="bool" label="32017" default="true" enable="!eq(-10,)" />
+		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=progressFlatten)" visible="!eq(-11,)" />
+		<setting id="trakt.rating" type="enum" label="35187" lvalues="33564|35547" default="0" visible="!eq(-12,)" />
+		<setting id="trakt.scrobble" type="bool" label="32097" default="false" visible="!eq(-13,)" />
+		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=Trakt_Scrobble)" visible="!eq(-14,)" />
+		<setting id="trakt.scrobble.notify" type="bool" label="32099" subsetting="true" default="false" visible="!eq(-15,) + eq(-2,true)" />
+		<setting id="resume.source.alt" type="enum" label="32095" lvalues="32314" default="0" visible="!eq(-16,) + !eq(-3,true)" />
+		<setting id="resume.source" type="enum" label="32095" lvalues="32314|32096" default="0" visible="!eq(-17,) + eq(-4,true)" />
+		<setting id="trakt.progress.showunaired" type="bool" label="32572" default="false" visible="!eq(-18,)" />
+		<setting id="trakt.UpcomingProgress.prependDate" type="bool" label="32573" default="true" visible="!eq(-19,)" />
+		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=UpcomingProgressPrependDate)" visible="!eq(-20,)" />
+		<setting id="trakt.paginate.lists" type="bool" label="32188" default="true" visible="!eq(-21,)" />
 		<setting type="lsep" label="35057" />
-		<setting id="trakt.HiddenManager.hideWatched" type="bool" label="32183" default="false" visible="!eq(-22,)" />
+		<setting id="trakt.HiddenManager.hideWatched" type="bool" label="32183" default="false" visible="!eq(-23,)" />
 		<setting type="lsep" label="32645" />
-		<setting id="autoTraktOnStart" type="bool" label="32646" default="False" enable="!eq(-24,)" />
+		<setting id="autoTraktOnStart" type="bool" label="32646" default="False" enable="!eq(-25,)" />
 		<setting id="schedTraktTime" type="slider" label="32647" default="0" range="0,24" option="int" enable="eq(-1,true)" />
 		<setting id="trakt.message2" type="text" label="32648" default="" enable="false" /> <!-- for dummy settings write on addon update -->
 	</category>
