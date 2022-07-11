@@ -203,7 +203,7 @@
 		<setting id="source.checkReboots" type="bool" label="32227" default="false" />
 		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=checkReboots)" />
 		<setting id="source.prioritize.hdrdv" type="bool" label="32195" default="false" />
-		<setting id="source.prioritize.dolbyvisionfirst" type="bool" label="40081" default="false" visible="eq(-1,true)" />
+		<setting id="source.prioritize.dolbyvisionfirst" type="bool" label="40081" subsetting="true" default="false" visible="eq(-1,true)" />
 		<setting id="source.prioritize.hevc" type="bool" label="32229" default="false" />
 		<setting id="source.enable.msizelimit" type="bool" label="32165" default="false" />
 		<setting id="source.min.moviesize" type="slider" label="32155" subsetting="true" option="float" range="0.0,0.1,10.0" default="0" visible="eq(-1,true)" />

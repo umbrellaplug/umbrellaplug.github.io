@@ -139,12 +139,12 @@
 [COLOR yellow]--[/COLOR][I] Change of icon, not much new added here yet.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.47">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.48">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.5" />
 		<import addon="script.module.myaccounts" />
-		<import addon="script.module.umbrellascrapers" version="0.0.15" />
+		<import addon="script.module.umbrellascrapers" version="0.0.16" />
 		<import addon="script.module.requests" />
 		<import addon="script.module.beautifulsoup4" />
 		<import addon="script.module.metahandler" optional="true" />
@@ -173,9 +173,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.47 - July 8, 2022[/COLOR][/B]
---[I] Re-Added Custom Timeout for Trakt for those with connection timeouts. [I]
---[I] Add swith to put Dolby-Vision above HDR in prioritized searches. [I]
+[B][COLOR black]Update - v6.5.48 - July 8, 2022[/COLOR][/B]
+--[I] Reverting scraper package. Bump to force scraper update. [I]
 		</news>
 	</extension>
 </addon><addon id="plugin.video.youtube" name="YouTube" version="6.8.18+matrix.1" provider-name="anxdpanic, bromix">
@@ -258,7 +257,7 @@
     <disclaimer lang="vi_VN">Plugin này không được xác nhận bởi Google</disclaimer>
     <disclaimer lang="zh_TW">此附加元件未由Google支持</disclaimer>
   </extension>
-</addon><addon id="repository.umbrella" name="Umbrella Repository" version="2.1.27" provider-name="Umbrella">
+</addon><addon id="repository.umbrella" name="Umbrella Repository" version="2.1.28" provider-name="Umbrella">
     <extension point="xbmc.addon.repository" name="Umbrella Repository">
         <dir minversion="19.0.0">
             <info compressed="false">https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/zips/addons.xml</info>
@@ -276,7 +275,7 @@
             <fanart>fanart.jpg</fanart>
         </assets>
     </extension>
-</addon><addon id="script.module.myaccounts" version="2.0.8" name="My Accounts" provider-name="Ezra Hubbard">
+</addon><addon id="script.module.myaccounts" version="2.0.9b" name="My Accounts" provider-name="Ezra Hubbard">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" version="2.19.1" />
@@ -304,11 +303,11 @@
 		<news>
 		</news>
 	</extension>
-</addon><addon id="script.module.umbrellascrapers" name="Umbrella Scrapers" version="0.0.15" provider-name="Umbrella">
+</addon><addon id="script.module.umbrellascrapers" name="UmbrellaScrapers Module" version="0.0.16" provider-name="Umbrella">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
-		<import addon="script.module.myaccounts" version="2.0.0" />
+		<import addon="script.module.myaccounts" version="2.0.5d" />
 	</requires>
 	<extension point="xbmc.python.pluginsource" library="lib/default.py">
 		<provides>executable</provides>
@@ -317,13 +316,13 @@
 	<extension point="xbmc.python.module" library="lib" /> 
 	<extension point="xbmc.addon.metadata">
 		<reuselanguageinvoker>false</reuselanguageinvoker>
-		<summary lang="en">Umbrella Scrapers Module</summary>
+		<summary lang="en">UmbrellaScrapers Module</summary>
 		<description>Scrape common video host for URL's to be playable in Kodi, simplifying addon development of video plugins requiring multi video hosts.</description>
 		<platform>all</platform>
 		<license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
 		<forum />
-		<website />
-		<source />
+		<website>https://github.com/umbrellaplug/script.module.umbrellascrapers</website>
+		<source>https://github.com/umbrellaplug/script.module.umbrellascrapers</source>
 		<disclaimer lang="en">The author is not responsible for the use of this addon. The author is not responsible for the content found using this addon. The author does not host or own any content found within this addon.[CR]The author is in no way affiliated with Kodi, Team Kodi, or the XBMC Foundation.[CR]This is a Non-profit resource, organized solely for educational purposes which is protected under the Fair-Use doctrine of the Copyright Act, Specifically section 107, which does promote freedom of expression, by permitting the unlicensed use of copyright-protected works.</disclaimer>
 		<assets>
 			<icon>icon.png</icon>
@@ -331,8 +330,8 @@
 			<screenshot />
 		</assets>
 		<news>
-[B][COLOR black]Update - v0.0.15 - July 8, 2022[/COLOR][/B]
---[I] Updates made to fix errors caused by me.[/I]
+[B][COLOR black]Update - v0.0.16 - July 10, 2022[/COLOR][/B]
+--[I] Reverted to original clone of scrapers and re-added changes due to crashing errors for some[/I]
 		</news>
 	</extension>
 </addon></addons>
