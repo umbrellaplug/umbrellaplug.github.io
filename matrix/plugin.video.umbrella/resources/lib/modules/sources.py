@@ -1123,7 +1123,6 @@ class Sources:
 		if control.addon('script.module.umbrellascrapers').getSetting('easynews.user'): self.prem_providers += [('easynews', int(getSetting('easynews.priority')))]
 		if control.addon('script.module.umbrellascrapers').getSetting('filepursuit.api'): self.prem_providers += [('filepursuit', int(getSetting('filepursuit.priority')))]
 		if control.addon('script.module.umbrellascrapers').getSetting('furk.user_name'): self.prem_providers += [('furk', int(getSetting('furk.priority')))]
-		if control.addon('script.module.umbrellascrapers').getSetting('gdrive.cloudflare_url'): self.prem_providers += [('gdrive', int(getSetting('gdrive.priority')))]
 		if control.addon('script.module.umbrellascrapers').getSetting('ororo.user'): self.prem_providers += [('ororo', int(getSetting('ororo.priority')))]
 		self.prem_providers += [(d.name, int(d.sort_priority)) for d in self.debrid_resolvers]
 

@@ -1,1 +1,0 @@
-[B]"seasonPacks"[/B] and [B]"showPacks"[/B] are only available if the addon calling umbrellascrapers supports this.  Without addon support the enabled pack scrapers will function as before and provide sources for single episodes and movies only!

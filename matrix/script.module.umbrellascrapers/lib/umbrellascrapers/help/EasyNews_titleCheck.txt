@@ -1,1 +1,0 @@
-EasyNews scraped results tend to contain matches even when the title may be missing in the links name.  Turning off the title check may help bring in more results, but may also bring in undesired results as well.  A good example is that occasionally titles may be abbreviated from EasyNews, yet valid, but this will fail the title check.
