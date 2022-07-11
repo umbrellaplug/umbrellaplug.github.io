@@ -1,8 +1,8 @@
-<addon id="script.module.umbrellascrapers" name="UmbrellaScrapers Module" version="0.0.16" provider-name="Umbrella">
+<addon id="script.module.umbrellascrapers" name="UmbrellaScrapers Module" version="0.0.17" provider-name="Umbrella">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
-		<import addon="script.module.myaccounts" version="2.0.5d" />
+		<import addon="script.module.myaccounts" />
 	</requires>
 	<extension point="xbmc.python.pluginsource" library="lib/default.py">
 		<provides>executable</provides>
@@ -25,8 +25,9 @@
 			<screenshot></screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v0.0.16 - July 10, 2022[/COLOR][/B]
---[I] Reverted to original clone of scrapers and re-added changes due to crashing errors for some[/I]
+[B][COLOR black]Update - v0.0.17 - July 10, 2022[/COLOR][/B]
+--[I]Remove some hosts that were causing numerous errors in logs.[/I]
+--[I]rlsbb and maxrls[/I]
 		</news>
 	</extension>
 </addon>

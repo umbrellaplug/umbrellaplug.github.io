@@ -144,7 +144,7 @@
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.5" />
 		<import addon="script.module.myaccounts" />
-		<import addon="script.module.umbrellascrapers" version="0.0.16" />
+		<import addon="script.module.umbrellascrapers" version="0.0.17" />
 		<import addon="script.module.requests" />
 		<import addon="script.module.beautifulsoup4" />
 		<import addon="script.module.metahandler" optional="true" />
@@ -173,8 +173,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.48 - July 8, 2022[/COLOR][/B]
---[I] Reverting scraper package. Bump to force scraper update. [I]
+[B][COLOR black]Update - v6.5.48 - July 10, 2022[/COLOR][/B]
+--[I] Update for issues with scraper. Removed a few troublesome hosts.[I]
 		</news>
 	</extension>
 </addon><addon id="plugin.video.youtube" name="YouTube" version="6.8.18+matrix.1" provider-name="anxdpanic, bromix">
@@ -257,7 +257,7 @@
     <disclaimer lang="vi_VN">Plugin này không được xác nhận bởi Google</disclaimer>
     <disclaimer lang="zh_TW">此附加元件未由Google支持</disclaimer>
   </extension>
-</addon><addon id="repository.umbrella" name="Umbrella Repository" version="2.1.28" provider-name="Umbrella">
+</addon><addon id="repository.umbrella" name="Umbrella Repository" version="2.1.29" provider-name="Umbrella">
     <extension point="xbmc.addon.repository" name="Umbrella Repository">
         <dir minversion="19.0.0">
             <info compressed="false">https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/zips/addons.xml</info>
@@ -303,11 +303,11 @@
 		<news>
 		</news>
 	</extension>
-</addon><addon id="script.module.umbrellascrapers" name="UmbrellaScrapers Module" version="0.0.16" provider-name="Umbrella">
+</addon><addon id="script.module.umbrellascrapers" name="UmbrellaScrapers Module" version="0.0.17" provider-name="Umbrella">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
-		<import addon="script.module.myaccounts" version="2.0.5d" />
+		<import addon="script.module.myaccounts" />
 	</requires>
 	<extension point="xbmc.python.pluginsource" library="lib/default.py">
 		<provides>executable</provides>
@@ -330,8 +330,9 @@
 			<screenshot />
 		</assets>
 		<news>
-[B][COLOR black]Update - v0.0.16 - July 10, 2022[/COLOR][/B]
---[I] Reverted to original clone of scrapers and re-added changes due to crashing errors for some[/I]
+[B][COLOR black]Update - v0.0.17 - July 10, 2022[/COLOR][/B]
+--[I]Remove some hosts that were causing numerous errors in logs.[/I]
+--[I]rlsbb and maxrls[/I]
 		</news>
 	</extension>
 </addon></addons>

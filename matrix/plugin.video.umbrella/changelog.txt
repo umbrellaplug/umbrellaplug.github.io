@@ -1,3 +1,6 @@
+[B][COLOR black]Update - v6.5.48 - July 10, 2022[/COLOR][/B]
+--[I] Update for issues with scraper. Removed a few troublesome hosts.[I]
+
 [B][COLOR black]Update - v6.5.47 - July 8, 2022[/COLOR][/B]
 --[I] Re-Added Custom Timeout for Trakt for those with connection timeouts. [I]
 --[I] Add swith to put Dolby-Vision above HDR in prioritized searches. [I]

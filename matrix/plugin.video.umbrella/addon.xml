@@ -3,7 +3,7 @@
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.5"/>
 		<import addon="script.module.myaccounts"  />
-		<import addon="script.module.umbrellascrapers" version="0.0.16" />
+		<import addon="script.module.umbrellascrapers" version="0.0.17" />
 		<import addon="script.module.requests" />
 		<import addon="script.module.beautifulsoup4" />
 		<import addon="script.module.metahandler" optional="true" />
@@ -32,8 +32,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.48 - July 8, 2022[/COLOR][/B]
---[I] Reverting scraper package. Bump to force scraper update. [I]
+[B][COLOR black]Update - v6.5.48 - July 10, 2022[/COLOR][/B]
+--[I] Update for issues with scraper. Removed a few troublesome hosts.[I]
 		</news>
 	</extension>
 </addon>
