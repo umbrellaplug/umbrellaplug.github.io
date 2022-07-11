@@ -336,10 +336,6 @@
 		<setting id="furk.api" type="text" label="32128" default="" enable="false" visible="!eq(-2,)" />
 		<setting id="furk.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" enable="true" visible="!eq(-3,)" />
 
-		<setting type="lsep" label="GDrive" />
-		<setting type="action" label="32151" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_openMyAccount&amp;query=3.11&amp;opensettings=true&amp;query2=7.58)" visible="eq(1,)" />
-		<setting id="gdrive.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" enable="true" visible="!eq(-1,)" />
-
 		<setting type="lsep" label="Ororo" />
 		<setting type="action" label="32151" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_openMyAccount&amp;query=3.11&amp;opensettings=true&amp;query2=7.62)" visible="eq(1,)" />
 		<setting id="ororo.username" type="text" label="40006" default="" enable="false" />
