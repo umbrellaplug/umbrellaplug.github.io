@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.48">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.49">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.5"/>
@@ -32,8 +32,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.48 - July 10, 2022[/COLOR][/B]
---[I] Update for issues with scraper. Removed a few troublesome hosts.[I]
+[B][COLOR black]Update - v6.5.49 - July 11, 2022[/COLOR][/B]
+--[I] Added Easy News back to scraping results.[I]
 		</news>
 	</extension>
 </addon>
