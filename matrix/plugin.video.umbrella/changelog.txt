@@ -1,5 +1,6 @@
 [B][COLOR black]Update - v6.5.49 - July 11, 2022[/COLOR][/B]
 --[I] Added Easy News back to scraping results.[I]
+--[I] Please make sure after enabled easy news in my accounts to go to Tools> Cache Functions> Clear Providers Cache[I]
 
 [B][COLOR black]Update - v6.5.48 - July 10, 2022[/COLOR][/B]
 --[I] Update for issues with scraper. Removed a few troublesome hosts.[I]
