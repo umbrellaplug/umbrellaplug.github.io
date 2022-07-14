@@ -1,22 +1,3 @@
-[B][COLOR black]June 30, 2022[/COLOR][/B]
---[I] Sorry about all the small updates the past few days. Working on tracking down an issue.[/I]
---[I] It's not just a phase mom.[/I]
-
-[B][COLOR black]June 30, 2022[/COLOR][/B]
---[I] Good communication among the Kodi Addon community.[/I]
---[I] Working to assist Ezra in clearing his issues.[/I]
-
-[B][COLOR black]June 25, 2022[/COLOR][/B]
---[I] Adding different color versions of new icon theme.[/I]
-
-[B][COLOR black]June 20, 2022[/COLOR][/B]
---[I] Switched to github for repo.[/I]
-
-[B][COLOR black]June 20, 2022[/COLOR][/B]
---[I] Updated scrapers. Checked them all..[/I]
-
-[B][COLOR black]June 16, 2022[/COLOR][/B]
---[I] Yay! News and Info is now working.[/I]
-
-[B][COLOR black]June 16, 2022[/COLOR][/B]
---[I] Working to get news and info working again to make sure information can be added.[/I]
+[B][COLOR black]July 13, 2022[/COLOR][/B]
+--[I] Currently working a couple of new sections.[/I]
+--[I] Monitoring Easy News close for any needed modifications or improvements.[/I]

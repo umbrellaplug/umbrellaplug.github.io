@@ -128,7 +128,7 @@
 		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=playnext)" />
 		<setting id="playnext.time" type="slider" label="40029" subsetting="true" visible="eq(-2,true)" default="60" option="int" range="10,300" />
 		<setting id="playnext.default.action" type="select" label="40065" subsetting="true" visible="eq(-3,true)" lvalues="32176|32177|32178" default="0" />
-		<setting id="stillwatching.count" type="slider" label="40026" subsetting="true" visible="eq(-4,true)" default="3" option="int" range="2,10" />
+		<setting id="stillwatching.count" type="slider" label="40026" subsetting="true" visible="eq(-4,true)" default="3" option="int" range="2,40" />
 		<setting id="stillwatching.default.action" type="select" label="40025" subsetting="true" visible="eq(-5,true)" lvalues="32176|32177|32178" default="2" />
 		<setting label="35056" type="lsep" />
 		<setting id="sort.imdbshows.type" type="select" label="35054" lvalues="33564|33039|35187|35188|35391|35392|35393" default="0" />

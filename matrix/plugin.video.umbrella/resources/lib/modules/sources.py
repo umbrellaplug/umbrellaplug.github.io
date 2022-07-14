@@ -69,8 +69,8 @@ class Sources:
 				log_utils.log('Playing preResolved_nextUrl = %s' % preResolved_nextUrl, level=log_utils.LOGDEBUG)
 				from resources.lib.modules import player
 				return player.Player().play_source(title, year, season, episode, imdb, tmdb, tvdb, preResolved_nextUrl, meta)
-			if title: title = self.getTitle(title).replace('$','s')
-			if tvshowtitle: tvshowtitle = self.getTitle(tvshowtitle).replace('$','s')
+			if title: title = self.getTitle(title)
+			if tvshowtitle: tvshowtitle = self.getTitle(tvshowtitle)
 			homeWindow.clearProperty(self.metaProperty)
 			homeWindow.setProperty(self.metaProperty, meta)
 			homeWindow.clearProperty(self.seasonProperty)
