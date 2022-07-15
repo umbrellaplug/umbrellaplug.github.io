@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="context.umbrella" name="Umbrella - Global Context Menu Items" provider-name="Umbrella" version="1.2.5">
+<addon id="context.umbrella" name="Umbrella - Global Context Menu Items" provider-name="Umbrella" version="1.2.6">
 	<requires>
 		<import addon="script.module.requests" version="2.19.1" />
 	</requires>
@@ -11,6 +11,15 @@
 					!String.IsEmpty(Window(home).Property(context.umbrella.settings)) +
 					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
 					String.IsEqual(ListItem.Property(isUmbrella_widget),true)
+				</visible>
+			</item>
+			<item library="addtoLibrary.py">
+				<label>[B][COLOR blue]Umbrella[/COLOR][/B] - Add to Library</label>
+				<visible>
+					!String.IsEmpty(Window(home).Property(context.umbrella.addtoLibrary)) +
+					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
+					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
+					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,tvshow) | String.IsEqual(ListItem.dbtype,season) | String.IsEqual(ListItem.dbtype,movie)]
 				</visible>
 			</item>
 			<item library="traktManager.py">

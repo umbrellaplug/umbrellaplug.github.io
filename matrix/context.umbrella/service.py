@@ -6,6 +6,7 @@ import xbmcgui
 
 properties = [
 	'context.umbrella.settings',
+	'context.umbrella.addtoLibrary',
 	'context.umbrella.traktManager',
 	'context.umbrella.clearProviders',
 	'context.umbrella.clearBookmark',

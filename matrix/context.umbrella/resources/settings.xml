@@ -5,6 +5,7 @@
 		<!-- <setting label="30001" type="bool" id="general.on.back" default="true" /> -->
 		<setting type="lsep" label="30002" />
 		<setting id="context.umbrella.settings" label="30012" type="bool" default="true" />
+		<setting id="context.umbrella.addtoLibrary" label="30022" type="bool" default="true" />
 		<setting id="context.umbrella.traktManager" label="30003" type="bool" default="true" />
 		<setting id="context.umbrella.clearProviders" label="30004" type="bool" default="true" />
 		<setting id="context.umbrella.clearBookmark" label="30013" type="bool" default="true" />

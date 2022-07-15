@@ -93,3 +93,11 @@ msgstr ""
 msgctxt "#30021"
 msgid "Rescrape Item with All Providers - Source Select"
 msgstr ""
+
+msgctxt "#30021"
+msgid "Rescrape Item with All Providers - Source Select"
+msgstr ""
+
+msgctxt "#30022"
+msgid "Add to Library"
+msgstr ""
