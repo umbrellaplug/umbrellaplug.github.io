@@ -1,4 +1,4 @@
-<addon id="script.module.umbrellascrapers" name="UmbrellaScrapers Module" version="0.0.18" provider-name="Umbrella">
+<addon id="script.module.umbrellascrapers" name="UmbrellaScrapers Module" version="0.0.19" provider-name="Umbrella">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -25,9 +25,9 @@
 			<screenshot></screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v0.0.18 - July 13, 2022[/COLOR][/B]
---[I]Removed btscene and zooqle[/I]
---[I]added dollar-sign fix to scrapers instead of plugin[/I]
+[B][COLOR black]Update - v0.0.19 - July 14, 2022[/COLOR][/B]
+--[I]Re-added File Pursuit to the scraping.[/I]
+--[I]Please clear your provider cache in tools.[/I]
 		</news>
 	</extension>
 </addon>
