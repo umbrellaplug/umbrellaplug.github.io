@@ -4287,3 +4287,19 @@ msgstr "[COLOR yellow]Icoon en fanart wissen[/COLOR]..."
 msgctxt "#40079"
 msgid "Icon and Fanart Successfully Cleared!"
 msgstr "Icoon en fanart succesvol gewist"
+
+msgctxt "#40080"
+msgid "Trakt Tokens are out of sync and have been revoked. Please re-authorize Trakt in My Accounts module and reboot."
+msgstr ""
+
+msgctxt "#40081"
+msgid "Prioritize Dolby-Vision above HDR"
+msgstr ""
+
+msgctxt "#40082"
+msgid "[COLOR black]Black[/COLOR]"
+msgstr ""
+
+msgctxt "#40083"
+msgid "Show List Owner"
+msgstr ""

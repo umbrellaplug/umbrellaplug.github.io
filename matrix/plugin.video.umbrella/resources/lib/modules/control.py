@@ -334,7 +334,7 @@ def autoTraktSubscription(tvshowtitle, year, imdb, tvdb): #---start adding TMDb 
 
 def getColor(n):
 	colorChart = ('blue', 'red', 'yellow', 'deeppink', 'cyan', 'lawngreen', 'gold', 'magenta', 'yellowgreen',
-						'skyblue', 'lime', 'limegreen', 'deepskyblue', 'white', 'whitesmoke', 'nocolor')
+						'skyblue', 'lime', 'limegreen', 'deepskyblue', 'white', 'whitesmoke', 'nocolor', 'black')
 	if not n: n = '8'
 	color = colorChart[int(n)]
 	return color

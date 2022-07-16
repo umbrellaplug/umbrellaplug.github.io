@@ -591,7 +591,10 @@ class TVshows:
 				list_id = item['trakt_id']
 				list_url = self.traktlist_link % (list_owner_slug, list_id)
 				next = ''
-				label = '%s - [COLOR %s]%s[/COLOR]' % (list_name, self.highlight_color, list_owner)
+				if getSetting('trakt.lists.showowner') == 'true':
+					label = '%s - [COLOR %s]%s[/COLOR]' % (list_name, self.highlight_color, list_owner)
+				else:
+					label = '%s' % (list_name)
 				self.list.append({'name': label, 'list_type': 'traktPulicList', 'url': list_url, 'list_owner': list_owner, 'list_name': list_name, 'list_id': list_id, 'context': list_url, 'next': next, 'image': 'trakt.png', 'icon': 'DefaultVideoPlaylists.png', 'action': 'tvshows'})
 			except:
 				from resources.lib.modules import log_utils
@@ -705,7 +708,10 @@ class TVshows:
 				list_id = item['trakt_id']
 				list_url = self.traktlist_link % (list_owner_slug, list_id)
 				next = ''
-				label = '%s - [COLOR %s]%s[/COLOR]' % (list_name, self.highlight_color, list_owner)
+				if getSetting('trakt.lists.showowner') == 'true':
+					label = '%s - [COLOR %s]%s[/COLOR]' % (list_name, self.highlight_color, list_owner)
+				else:
+					label = '%s' % (list_name)
 				self.list.append({'name': label, 'url': list_url, 'list_owner': list_owner, 'list_name': list_name, 'list_id': list_id, 'context': list_url, 'next': next, 'image': 'trakt.png', 'icon': 'DefaultVideoPlaylists.png', 'action': 'tvshows'})
 			except:
 				from resources.lib.modules import log_utils
@@ -745,8 +751,10 @@ class TVshows:
 
 				if list_owner_slug == 'trakt': list_url = 'https://api.trakt.tv/lists/%s/items/?limit=%s&page=1' % (list_id, self.page_limit)
 				else: list_url = self.traktlist_link % (list_owner_slug, list_id)
-
-				label = '%s - [COLOR %s]%s[/COLOR]' % (list_name, self.highlight_color, list_owner)
+				if getSetting('trakt.lists.showowner') == 'true':
+					label = '%s - [COLOR %s]%s[/COLOR]' % (list_name, self.highlight_color, list_owner)
+				else:
+					label = '%s' % (list_name)
 				self.list.append({'name': label, 'list_type': 'traktPulicList', 'url': list_url, 'list_owner': list_owner, 'list_name': list_name, 'list_id': list_id, 'context': list_url, 'next': next, 'image': 'trakt.png', 'icon': 'trakt.png', 'action': 'tvshows'})
 			except:
 				from resources.lib.modules import log_utils

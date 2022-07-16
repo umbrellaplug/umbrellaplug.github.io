@@ -8,7 +8,7 @@
 		<setting id="trakt.isauthed" type="text" default="" visible="false" />
 		<setting id="indicators.alt" type="enum" label="32313" lvalues="32314|32315" default="1" visible="!eq(-1,)" />
 		<setting id="indicators" type="enum" label="32313" lvalues="32314" default="0" visible="eq(-2,)" />
-		<setting id="highlight.color" type="select" label="40039" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32666|32667|32668|32669|32670|32671|32598" default="2" />
+		<setting id="highlight.color" type="select" label="40039" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32666|32667|32668|32669|32670|32671|32598|40082" default="2" />
 		<setting id="api.language" type="select" label="32316" values="AUTO|English|Bulgarian|Chinese|Croatian|Czech|Danish|Dutch|Finnish|French|German|Greek|Hebrew|Hungarian|Italian|Japanese|Korean|Norwegian|Polish|Portuguese|Romanian|Russian|Serbian|Slovak|Slovenian|Spanish|Swedish|Thai|Turkish|Ukrainian" default="English" />
 		<setting id="mpa.country" type="select" label="32391" values="Australia|Austria|Brazil|Bulgaria|Canada|China|Denmark|Estonia|Finland|France|Germany|Greece|Hungary|Hong Kong SAR China|India|Indonesia|Ireland|Italy|Japan|Kazakhstan|Latvia|Lithuania|Malaysia|Mexico|Netherlands|New Zealand|Norway|Philippines|Poland|Portugal|Romania|Russia|Saudi Arabia|Singapore|Slovakia|South Africa|South Korea|Spain|Sweden|Switzerland|Taiwan|Thailand|Turkey|Ukraine|United Arab Emirates|United Kingdom|United States|Vietnam" default="United States" />
 		<setting id="mpa.prefix" type="text" label="32392" subsetting="true" default="" />
@@ -22,7 +22,7 @@
 		<setting id="tmdb.imageResolutions" type="enum" label="32233" lvalues="32234|32235|32236|32237" default="1" />
 		<setting id="hidecinema" type="bool" label="32571" default="false" />
 		<setting id="hidecinema.rollback" type="slider" label="40063"  subsetting="true" default="6" range="1,12" option="int" visible="eq(-1,true)" />
-		<setting id="movie.unaired.identify" type="select" label="35526" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32666|32667|32668|32669|32670|32671|32598" default="8" />
+		<setting id="movie.unaired.identify" type="select" label="35526" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32666|32667|32668|32669|32670|32671|32598|40082" default="8" />
 		<setting id="notification.sound" type="bool" label="35527" default="false" />
 		<setting id="general.checkAddonUpdates" type="bool" label="35524" default="true" />
 		<setting type="lsep" label="35055" />
@@ -119,7 +119,7 @@
 		<setting id="flatten.tvshows" type="bool" label="32317" default="false" visible="true" />
 		<setting id="tv.specials" type="bool" label="32649" default="false" />
 		<setting id="showunaired" type="bool" label="32570" default="false" />
-		<setting id="unaired.identify" type="select" label="32608" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32666|32667|32668|32669|32670|32671|32598" default="8" enable="eq(-1,true)" />
+		<setting id="unaired.identify" type="select" label="32608" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32666|32667|32668|32669|32670|32671|32598|40082" default="8" enable="eq(-1,true)" />
 		<setting id="multi.unwatched.enabled" type="bool" label="32163" default="false" />
 		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=multi.unwatched)" visible="eq(-1,true)" />
 		<setting id="tvshows.calendar.extended" type="bool" label="32023" default="false" />
@@ -191,7 +191,7 @@
 		<setting type="lsep" label="32386" />
 		<setting id="progress.dialog" type="enum" label="32335" lvalues="32336|32337" default="0" />
 		<setting id="scrapers.timeout" type="slider" label="32312" default="60" range="10,90" option="int" />
-		<setting id="scraper.dialog.color" type="select" label="32164" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32666|32667|32668|32669|32670|32671|32598" default="5" />
+		<setting id="scraper.dialog.color" type="select" label="32164" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32666|32667|32668|32669|32670|32671|32598|40082" default="5" />
 		<setting id="terminate.onCloud.sources" type="bool" label="32007" default="true" />
 		<setting id="preemptive.termination" type="bool" label="32654" default="false" />
 		<setting id="preemptive.limit" type="slider" label="32655" default="25" range="1,50" option="int" visible="eq(-1,true)" />
@@ -226,7 +226,7 @@
 
 		<!-- Sources Select -->
 		<setting type="lsep" label="32387" />
-		<setting id="sources.highlight.color" type="select" label="32132" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32666|32667|32668|32669|32670|32671|32598" default="5" />
+		<setting id="sources.highlight.color" type="select" label="32132" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32666|32667|32668|32669|32670|32671|32598|40082" default="5" />
 		<setting id="sources.group.sort" type="select" label="32133" lvalues="32021|32022" default="0" visible="true" />
 		<setting id="sources.size.sort" type="bool" label="32134" default="true" />
 		<setting id="sources.sizeSort.reverse" type="bool" label="32212" subsetting="true" default="false" visible="eq(-1,true)" />
@@ -263,10 +263,11 @@
 		<setting id="trakt.UpcomingProgress.prependDate" type="bool" label="32573" default="true" visible="!eq(-19,)" />
 		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=UpcomingProgressPrependDate)" visible="!eq(-20,)" />
 		<setting id="trakt.paginate.lists" type="bool" label="32188" default="true" visible="!eq(-21,)" />
+		<setting id="trakt.lists.showowner" type="bool" label="40083" default="true" visible="!eq(-22,)" />
 		<setting type="lsep" label="35057" />
-		<setting id="trakt.HiddenManager.hideWatched" type="bool" label="32183" default="false" visible="!eq(-23,)" />
+		<setting id="trakt.HiddenManager.hideWatched" type="bool" label="32183" default="false" visible="!eq(-24,)" />
 		<setting type="lsep" label="32645" />
-		<setting id="autoTraktOnStart" type="bool" label="32646" default="False" enable="!eq(-25,)" />
+		<setting id="autoTraktOnStart" type="bool" label="32646" default="False" enable="!eq(-26,)" />
 		<setting id="schedTraktTime" type="slider" label="32647" default="0" range="0,24" option="int" enable="eq(-1,true)" />
 		<setting id="trakt.message2" type="text" label="32648" default="" enable="false" /> <!-- for dummy settings write on addon update -->
 	</category>
