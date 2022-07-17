@@ -4290,16 +4290,16 @@ msgstr "Icoon en fanart succesvol gewist"
 
 msgctxt "#40080"
 msgid "Trakt Tokens are out of sync and have been revoked. Please re-authorize Trakt in My Accounts module and reboot."
-msgstr ""
+msgstr "Trakt tokens lopen niet synchroon en zijn ingetrokken.  Autoriseer Trakt opnieuw in de module Mijn accounts en start opnieuw op."
 
 msgctxt "#40081"
 msgid "Prioritize Dolby-Vision above HDR"
-msgstr ""
+msgstr "Prioriteer Dolby-Vision boven HDR"
 
 msgctxt "#40082"
 msgid "[COLOR black]Black[/COLOR]"
-msgstr ""
+msgstr "[COLOR black]Zwart[/COLOR]"
 
 msgctxt "#40083"
 msgid "Show List Owner"
-msgstr ""
+msgstr "Toon lijst eigenaar"
