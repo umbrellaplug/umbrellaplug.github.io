@@ -4323,3 +4323,11 @@ msgstr ""
 msgctxt "#40088"
 msgid "MDBList Search Lists"
 msgstr ""
+
+msgctxt "#40089"
+msgid "MDBList - Top Lists"
+msgstr ""
+
+msgctxt "#40090"
+msgid "MBDList - User Lists"
+msgstr ""

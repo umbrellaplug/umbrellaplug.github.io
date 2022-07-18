@@ -1,0 +1,9 @@
+*.pyc
+*.pyo
+*.cookies
+*.DS_Store
+temp/*
+doc/build
+doc/resources
+.project
+.pydevproject

@@ -1,4 +1,7 @@
 
+[B][COLOR black]Update - v6.5.53 - July 19, 2022[/COLOR][/B]
+--[I] Additional settings for new lists to hide and show.[I]
+
 [B][COLOR black]Update - v6.5.52 - July 18, 2022[/COLOR][/B]
 --[I] Added MDBLists. Top List and User Lists[I]
 --[I] Added Black in every color selection.[I]

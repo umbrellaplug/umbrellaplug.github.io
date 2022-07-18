@@ -82,6 +82,8 @@
 		<setting id="navi.movie.tmdb.certificates" type="bool" label="32487" default="true" />
 		<setting id="navi.movie.collections" type="bool" label="32000" default="true" />
 		<setting id="navi.xmascollections" subsetting="true" type="bool" label="40064" enable="eq(-1,true)" default="false" />
+		<setting id="navi.movie.mdblist.topList" type="bool" label="40089" default="true" />
+		<setting id="navi.movie.mdblist.userList" type="bool" label="40090" default="true" />
 		<setting id="navi.movie.trakt.popularList" type="bool" label="32417" default="true" />
 		<setting id="navi.movie.trakt.trendingList" type="bool" label="32418" default="true" />
 		<setting id="navi.movie.trakt.searchList" type="bool" label="32419" default="true" />
@@ -109,6 +111,8 @@
 		<setting id="navi.tv.imdb.returningtvshows" type="bool" label="32474" default="true" />
 		<setting id="navi.tv.imdb.newtvshows" type="bool" label="32476" default="true" />
 		<setting id="navi.tv.tvmaze.calendar" type="bool" label="32450" default="true" />
+		<setting id="navi.tv.mdblist.topList" type="bool" label="40089" default="true" />
+		<setting id="navi.tv.mdblist.userList" type="bool" label="40090" default="true" />
 		<setting id="navi.tv.trakt.popularList" type="bool" label="32417" default="true" />
 		<setting id="navi.tv.trakt.trendingList" type="bool" label="32418" default="true" />
 		<setting id="navi.tv.trakt.searchList" type="bool" label="32419" default="true" />
