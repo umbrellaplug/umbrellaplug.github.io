@@ -4303,3 +4303,23 @@ msgstr ""
 msgctxt "#40083"
 msgid "Show List Owner"
 msgstr ""
+
+msgctxt "#40084"
+msgid "MDBList Top Lists"
+msgstr ""
+
+msgctxt "#40085"
+msgid "MDBList API Key"
+msgstr ""
+
+msgctxt "#40086"
+msgid "Paginate MDBList"
+msgstr ""
+
+msgctxt "#40087"
+msgid "MDBList User Lists"
+msgstr ""
+
+msgctxt "#40088"
+msgid "MDBList Search Lists"
+msgstr ""
