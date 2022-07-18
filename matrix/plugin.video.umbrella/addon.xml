@@ -1,7 +1,7 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.51">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.52">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
-		<import addon="context.umbrella" version="1.2.5"/>
+		<import addon="context.umbrella" version="1.2.6"/>
 		<import addon="script.module.myaccounts"  />
 		<import addon="script.module.umbrellascrapers" version="0.0.19" />
 		<import addon="script.module.requests" />
@@ -32,8 +32,10 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.51 - July 14, 2022[/COLOR][/B]
---[I] Added Filepursuit back to scrape results.[I]
+[B][COLOR black]Update - v6.5.52 - July 18, 2022[/COLOR][/B]
+--[I] Added MDBLists. Top List and User Lists[I]
+--[I] Added Black in every color selection.[I]
+--[I] Added setting to hide list owner names in trakt lists.[I]
 		</news>
 	</extension>
 </addon>

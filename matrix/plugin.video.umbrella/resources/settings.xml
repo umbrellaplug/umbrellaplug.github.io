@@ -319,6 +319,8 @@
 		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=ignoreM2ts)" visible="!eq(-9,) + eq(-10,true) + eq(-2,true)" />
 		<setting id="realdebrid.server.notifications" type="bool" label="33051" default="true" visible="!eq(-10,) + eq(-11,true)" />
 		<setting type="action" label="32153" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_rdAcctMyAccounts)" visible="!eq(-11,) + eq(-12,true)" />
+		<setting type="lsep" label="MDBList" />
+		<setting id="mdblist.api" type="text" label="40085" default="" enable="true" />
 		<setting type="lsep" label="Easy News" />
 		<setting type="action" label="32151" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_openMyAccount&amp;query=3.2&amp;opensettings=true&amp;query2=7.43)" visible="eq(1,)" />
 		<setting id="easynews.username" type="text" label="40006" default="" enable="false" />
