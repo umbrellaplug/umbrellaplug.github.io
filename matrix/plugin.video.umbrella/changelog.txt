@@ -1,4 +1,9 @@
 
+[B][COLOR black]Update - v6.5.52 - July 18, 2022[/COLOR][/B]
+--[I] Added MDBLists. Top List and User Lists[I]
+--[I] Added Black in every color selection.[I]
+--[I] Added setting to hide list owner names in trakt lists.[I]
+
 [B][COLOR black]Update - v6.5.51 - July 14, 2022[/COLOR][/B]
 --[I] Added Filepursuit back to scrape results.[I]
 

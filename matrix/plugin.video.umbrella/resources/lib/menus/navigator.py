@@ -98,6 +98,8 @@ class Navigator:
 			self.addDirectoryItem(32487 if self.indexLabels else 32463, 'movieCertificates&url=tmdb_certification', 'tmdb.png' if self.iconLogos else 'certificates.png', 'DefaultMovies.png')
 		if getMenuEnabled('navi.movie.collections'):
 			self.addDirectoryItem(32000, 'collections_Navigator', 'boxsets.png', 'DefaultSets.png')
+		if getSetting('mdblist.api') != '':
+			self.addDirectoryItem(40084, 'mdbTopListMovies', 'mdblist.png' if self.iconLogos else 'movies.png', 'DefaultMovies.png')
 		if getMenuEnabled('navi.movie.trakt.popularList'):
 			self.addDirectoryItem(32417, 'movies_PublicLists&url=trakt_popularLists', 'trakt.png' if self.iconLogos else 'movies.png', 'DefaultMovies.png')
 		if getMenuEnabled('navi.movie.trakt.trendingList'):
@@ -113,6 +115,8 @@ class Navigator:
 	def mymovies(self, lite=False):
 		self.accountCheck()
 		self.addDirectoryItem(32039, 'movieUserlists', 'userlists.png', 'DefaultVideoPlaylists.png')
+		if getSetting('mdblist.api') != '':
+			self.addDirectoryItem(40087, 'mdbUserListMovies', 'mdblist.png' if self.iconLogos else 'movies.png', 'DefaultMovies.png')
 		if self.traktCredentials:
 			if self.traktIndicators:
 				self.addDirectoryItem(35308, 'moviesUnfinished&url=traktunfinished', 'trakt.png', 'trakt.png', queue=True)
@@ -173,6 +177,8 @@ class Navigator:
 			self.addDirectoryItem(32476 if self.indexLabels else 32475, 'tvshows&url=premiere', 'imdb.png' if self.iconLogos else 'new-tvshows.png', 'DefaultRecentlyAddedEpisodes.png')
 		if getMenuEnabled('navi.tv.tvmaze.calendar'):
 			self.addDirectoryItem(32450 if self.indexLabels else 32027, 'calendars', 'tvmaze.png' if self.iconLogos else 'calendar.png', 'DefaultYear.png')
+		if getSetting('mdblist.api') != '':
+			self.addDirectoryItem(40084, 'mdbTopListTV', 'mdblist.png' if self.iconLogos else 'tvshows.png', 'DefaultMovies.png')
 		if getMenuEnabled('navi.tv.trakt.popularList'):
 			self.addDirectoryItem(32417, 'tv_PublicLists&url=trakt_popularLists', 'trakt.png' if self.iconLogos else 'tvshows.png', 'DefaultMovies.png')
 		if getMenuEnabled('navi.tv.trakt.trendingList'):
@@ -188,6 +194,8 @@ class Navigator:
 	def mytvshows(self, lite=False):
 		self.accountCheck()
 		self.addDirectoryItem(32040, 'tvUserlists', 'userlists.png', 'DefaultVideoPlaylists.png')
+		if getSetting('mdblist.api') != '':
+			self.addDirectoryItem(40087, 'mdbUserListTV', 'mdblist.png' if self.iconLogos else 'tvshows.png', 'DefaultMovies.png')
 		if self.traktCredentials:
 			if self.traktIndicators:
 				self.addDirectoryItem(35308, 'episodesUnfinished&url=traktunfinished', 'trakt.png', 'trakt.png', queue=True)
@@ -374,6 +382,8 @@ class Navigator:
 		self.addDirectoryItem(33043, 'tvSearch', 'trakt.png' if self.iconLogos else 'search.png', 'DefaultAddonsSearch.png')
 		self.addDirectoryItem(33044, 'moviePerson', 'imdb.png' if self.iconLogos else 'people-search.png', 'DefaultAddonsSearch.png', isFolder=False)
 		self.addDirectoryItem(33045, 'tvPerson', 'imdb.png' if self.iconLogos else 'people-search.png', 'DefaultAddonsSearch.png', isFolder=False)
+		#if getSetting('mdblist.api') != '':
+			#self.addDirectoryItem(40088, 'mdbListSearch', 'mdblist.png' if self.iconLogos else 'search.png', 'DefaultAddonsSearch.png')
 		self.endDirectory()
 
 	def views(self):

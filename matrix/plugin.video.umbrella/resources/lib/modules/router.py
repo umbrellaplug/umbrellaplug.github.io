@@ -20,7 +20,6 @@ def router(params):
 	url = params.get('url')
 	query = params.get('query')
 	source = params.get('source')
-
 	if action is None:
 		from resources.lib.menus import navigator
 		isUpdate = control.homeWindow.getProperty('umbrella.updated')
@@ -30,7 +29,6 @@ def router(params):
 			from resources.lib.modules import changelog
 			changelog.get('Umbrella')
 		navigator.Navigator().root()
-
 	####################################################
 	#---MOVIES
 	####################################################
@@ -110,7 +108,12 @@ def router(params):
 	elif action == 'movies_traktWatchListManager':
 		from resources.lib.menus import movies
 		movies.Movies().watchlistManager()
-
+	elif action == 'mdbTopListMovies':
+		from resources.lib.menus import movies
+		movies.Movies().getMBDTopLists()
+	elif action == 'mdbUserListMovies':
+		from resources.lib.menus import movies
+		movies.Movies().getMDBUserList()
 	####################################################
 	#---Collections
 	####################################################
@@ -171,6 +174,9 @@ def router(params):
 	elif action == 'tvshowPage':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().get(url)
+	elif action == 'mdbTopListTV':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().getMBDTopLists()
 	elif action == 'tmdbTvshows':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().getTMDb(url)
@@ -237,6 +243,9 @@ def router(params):
 	elif action == 'shows_traktWatchListManager':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().watchlistManager()
+	elif action == 'mdbUserListTV':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().getMDBUserList()
 
 	####################################################
 	#---SEASONS

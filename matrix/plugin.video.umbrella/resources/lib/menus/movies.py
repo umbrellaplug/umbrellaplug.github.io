@@ -18,6 +18,7 @@ from resources.lib.modules.playcount import getMovieIndicators, getMovieOverlay
 from resources.lib.modules import tools
 from resources.lib.modules import trakt
 from resources.lib.modules import views
+from resources.lib.modules import mdblist
 
 getLS = control.lang
 getSetting = control.setting
@@ -107,6 +108,8 @@ class Movies:
 		self.traktrecommendations_link = 'https://api.trakt.tv/recommendations/movies?limit=40'
 		self.trakt_popularLists_link = 'https://api.trakt.tv/lists/popular?limit=%s&page=1' % self.page_limit
 		self.trakt_trendingLists_link = 'https://api.trakt.tv/lists/trending?limit=%s&page=1' % self.page_limit
+		self.mbdlist_list_items = 'https://mdblist.com/api/lists/%s/items?apikey=%s&limit=%s&page=1' % ('%s', mdblist.mdblist_api, self.page_limit)
+		self.mbdlist_list_items = 'https://mdblist.com/api/lists/%s/items?apikey=%s&limit=%s&page=1' % ('%s', mdblist.mdblist_api, self.page_limit)
 
 	def get(self, url, idx=True, create_directory=True):
 		self.list = []
@@ -146,6 +149,9 @@ class Movies:
 					self.list = cache.get(self.imdb_list, 96, url, True)
 				else: self.list = cache.get(self.imdb_list, 96, url)
 				if idx: self.worker()
+			elif u in self.mbdlist_list_items:
+				self.list = self.mdb_list_items(url)
+				if idx: self.worker()
 			if self.list is None: self.list = []
 			if idx and create_directory: self.movieDirectory(self.list)
 			return self.list
@@ -177,7 +183,6 @@ class Movies:
 			if not self.list:
 				control.hide()
 				if self.notifications: control.notification(title=32001, message=33049)
-
 	def getTraktPublicLists(self, url, create_directory=True):
 		self.list = []
 		try:
@@ -195,6 +200,161 @@ class Movies:
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()
+	def getMBDTopLists(self, create_directory=True): 
+		self.list = []
+		try:
+			#self.list = cache.get(self.mbd_top_lists, 0)
+			self.list = self.mbd_top_lists()
+			if self.list is None: self.list = []
+			if create_directory: self.addDirectory(self.list)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+	def mbd_top_lists(self):
+		try:
+			listType = 'movie'
+			items = mdblist.getMDBTopList(self, listType)
+			next = ''
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+		for item in items:
+			try:
+				list_name = item.get('params', {}).get('list_name', '')
+				list_id = item.get('params', {}).get('list_id', '')
+				list_owner = item.get('unique_ids', {}).get('user', '')
+				list_count = item.get('params', {}).get('list_count', '')
+				list_url = self.mbdlist_list_items % (list_id)
+				label = '%s - (%s)' % (list_name, list_count)
+				self.list.append({'name': label, 'url': list_url, 'list_owner': list_owner, 'list_name': list_name, 'list_id': list_id, 'context': list_url, 'next': next, 'image': 'mdblist.png', 'icon': 'mdblist.png', 'action': 'movies'})
+			except:
+				from resources.lib.modules import log_utils
+				log_utils.error()
+		return self.list
+	def getMDBUserList(self, create_directory=True): 
+		self.list = []
+		try:
+			#self.list = cache.get(self.mbd_top_lists, 0)
+			self.list = self.mbd_user_lists()
+			if self.list is None: self.list = []
+			if create_directory: self.addDirectory(self.list)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+	def mbd_user_lists(self):
+		try:
+			listType = 'movie'
+			items = mdblist.getMDBUserList(self, listType)
+			next = ''
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+		for item in items:
+			try:
+				list_name = item.get('params', {}).get('list_name', '')
+				list_id = item.get('params', {}).get('list_id', '')
+				list_owner = item.get('unique_ids', {}).get('user', '')
+				list_count = item.get('params', {}).get('list_count', '')
+				list_url = self.mbdlist_list_items % (list_id)
+				label = '%s - (%s)' % (list_name, list_count)
+				self.list.append({'name': label, 'url': list_url, 'list_owner': list_owner, 'list_name': list_name, 'list_id': list_id, 'context': list_url, 'next': next, 'image': 'mdblist.png', 'icon': 'mdblist.png', 'action': 'movies'})
+			except:
+				from resources.lib.modules import log_utils
+				log_utils.error()
+		return self.list
+	def getTraktPublicLists(self, url, create_directory=True):
+		self.list = []
+		try:
+			try: url = getattr(self, url + '_link')
+			except: pass
+			if '/popular' in url:
+				self.list = cache.get(self.trakt_public_list, 168, url)
+			elif '/trending' in url:
+				self.list = cache.get(self.trakt_public_list, 48, url)
+			else:
+				self.list = cache.get(self.trakt_public_list, 24, url)
+			if self.list is None: self.list = []
+			if create_directory: self.addDirectory(self.list)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+	def getMBDTopLists(self, create_directory=True): 
+		self.list = []
+		try:
+			#self.list = cache.get(self.mbd_top_lists, 0)
+			self.list = self.mbd_top_lists()
+			if self.list is None: self.list = []
+			if create_directory: self.addDirectory(self.list)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+	def mbd_top_lists(self):
+		try:
+			listType = 'movie'
+			items = mdblist.getMDBTopList(self, listType)
+			next = ''
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+		for item in items:
+			try:
+				list_name = item.get('params', {}).get('list_name', '')
+				list_id = item.get('params', {}).get('list_id', '')
+				list_owner = item.get('unique_ids', {}).get('user', '')
+				list_count = item.get('params', {}).get('list_count', '')
+				list_url = self.mbdlist_list_items % (list_id)
+				label = '%s - (%s)' % (list_name, list_count)
+				self.list.append({'name': label, 'url': list_url, 'list_owner': list_owner, 'list_name': list_name, 'list_id': list_id, 'context': list_url, 'next': next, 'image': 'mdblist.png', 'icon': 'mdblist.png', 'action': 'movies'})
+			except:
+				from resources.lib.modules import log_utils
+				log_utils.error()
+		return self.list
+
+	def mdb_list_items(self, url, create_directory=True):
+		self.list = []
+		q = dict(parse_qsl(urlsplit(url).query))
+		index = int(q['page']) - 1
+		def mbdList_totalItems(url):
+			items = mdblist.getMDBItems(url)
+			if not items: return
+			for item in items:
+				try:
+					values = {}
+					values['title'] = item.get('title', '')
+					values['originaltitle'] = item.get('title', '')
+					try: values['premiered'] = item['release_year']
+					except: values['premiered'] = ''
+					values['year'] = str(item.get('release_year', '')) if item.get('release_year') else ''
+					values['imdb'] = str(item.get('imdb', '')) if item.get('imdb') else ''
+					values['rank'] = item.get('rank')
+					self.list.append(values)
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+			return self.list
+		self.list = mbdList_totalItems(url)
+		if not self.list: return
+		self.sort() # sort before local pagination
+		total_pages = 1
+		paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+		total_pages = len(paginated_ids)
+		self.list = paginated_ids[index]
+		try:
+			if int(q['limit']) != len(self.list): raise Exception()
+			if int(q['page']) == total_pages: raise Exception()
+			q.update({'page': str(int(q['page']) + 1)})
+			q = (urlencode(q)).replace('%2C', ',')
+			next = url.replace('?' + urlparse(url).query, '') + '?' + q
+		except: next = ''
+		for i in range(len(self.list)): self.list[i]['next'] = next
+		self.worker()
+		if self.list is None: self.list = []
+		if create_directory: self.movieDirectory(self.list)
+		return self.list
 
 	def unfinished(self, url, idx=True, create_directory=True):
 		self.list = []
@@ -1086,6 +1246,7 @@ class Movies:
 				u = urlparse(url).netloc.lower()
 				if u not in self.tmdb_link: url = '%s?action=moviePage&url=%s' % (sysaddon, quote_plus(url))
 				elif u in self.tmdb_link: url = '%s?action=tmdbmoviePage&url=%s' % (sysaddon, quote_plus(url))
+				elif u in self.mbdlist_list_items: url = '%s?action=moviePage&url=%s' % (sysaddon, quote_plus(url))
 				item = control.item(label=nextMenu, offscreen=True)
 				icon = control.addonNext()
 				item.setArt({'icon': icon, 'thumb': icon, 'poster': icon, 'banner': icon})
