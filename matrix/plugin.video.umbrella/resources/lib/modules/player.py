@@ -255,7 +255,6 @@ class Player(xbmc.Player):
 							playcount.markMovieDuringPlayback(self.imdb, '5')
 					except: pass
 					xbmc.sleep(2000)
-
 				elif self.media_type == 'episode':
 					try:
 						if watcher and property != '5':
@@ -413,16 +412,37 @@ class PlayNext(xbmc.Player):
 
 	def getNext_meta(self):
 		try:
+			
 			from urllib.parse import parse_qsl
 			current_position = control.playlist.getposition()
 			next_url = control.playlist[current_position + 1].getPath()
 			# next_url=videodb://tvshows/titles/16/2/571?season=2&tvshowid=16 # library playback returns this
 			params = dict(parse_qsl(next_url.replace('?', '')))
-			next_meta = jsloads(params.get('meta')) if params.get('meta') else '' # not available for library playback
-			return next_meta
+			#next_meta = jsloads(params.get('meta')) if params.get('meta') else '' # not available for library playback
+			next_meta = {}
+			#tmdbhelperbs
+			if 'plugin.video.themoviedb.helper' in next_url and not control.addonInstalled('service.upnext'):
+				tmdb = params.get('tmdb_id')
+				helper_season = params.get('season')
+				helper_episode = params.get('episode')
+				from resources.lib.menus import seasons, episodes
+				seasons = seasons.Seasons().tmdb_list(tvshowtitle='', imdb='', tmdb=tmdb, tvdb='', art=None)
+				for season in seasons:
+					if season.get('season') != helper_season: continue
+					else: break
+				items = episodes.Episodes().tmdb_list(tvshowtitle=season.get('tvshowtitle'), imdb=season.get('imdb'), tmdb=tmdb, tvdb=season.get('tvdb'), meta=season, season=helper_season)
+				for item in items:
+					if str(item.get('episode')) != helper_episode: continue #episode is a string.... important to note.
+					else: break
+				next_meta = {'tvshowtitle': item.get('tvshowtitle'), 'title': item.get('title'), 'year': item.get('year'), 'premiered': item.get('premiered'), 'season': helper_season, 'episode': helper_episode, 'imdb': item.get('imdb'),
+									'tmdb': item.get('tmdb'), 'tvdb': item.get('tvdb'), 'rating': item.get('rating'), 'landscape': '', 'fanart': item.get('fanart'), 'thumb': item.get('thumb'), 'duration': item.get('duration')}
+			elif 'plugin.video.umbrella' in next_url:
+				next_meta = jsloads(params.get('meta')) if params.get('meta') else ''
+			elif 'videob://' in next_url and not control.addonInstalled('service.upnext'):
+				log_utils.log('Library not supported currently.')
 		except:
 			log_utils.error()
-			return ''
+		return next_meta
 
 	def show_playnext_xml(self):
 		try:

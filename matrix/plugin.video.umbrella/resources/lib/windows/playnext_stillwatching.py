@@ -5,7 +5,7 @@
 
 from datetime import datetime, timedelta
 import xbmc
-from resources.lib.modules.control import getSourceHighlightColor, setting as getSetting, playerWindow
+from resources.lib.modules.control import getSourceHighlightColor, getPlayNextBackgroundColor, setting as getSetting, playerWindow
 from resources.lib.modules import tools
 from resources.lib.windows.base import BaseDialog
 
@@ -117,6 +117,7 @@ class StillWatchingXML(BaseDialog):
 			self.setProperty('umbrella.duration', str(int(next_duration)))
 			endtime = (datetime.now() + timedelta(seconds=next_duration)).strftime('%I:%M %p').lstrip('0') if next_duration else ''
 			self.setProperty('umbrella.endtime', endtime)
+			self.setProperty('umbrella.playnext.background.color', getPlayNextBackgroundColor())
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()

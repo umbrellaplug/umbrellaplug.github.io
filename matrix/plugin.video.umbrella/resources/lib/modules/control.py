@@ -158,6 +158,9 @@ def addonPath(addon):
 		try: return transPath(addonID.getAddonInfo('path').decode('utf-8'))
 		except: return transPath(addonID.getAddonInfo('path'))
 
+def addonInstalled(addon_id):
+	return condVisibility('System.HasAddon(%s)' % addon_id)
+
 def artPath():
 	theme = appearance()
 	return joinPath(xbmcaddon.Addon('plugin.video.umbrella').getAddonInfo('path'), 'resources', 'artwork', theme)
@@ -339,11 +342,21 @@ def getColor(n):
 	color = colorChart[int(n)]
 	return color
 
+def getBackgroundColor(n):
+	colorChart = ('FF12A0C7', 'blue', 'red', 'yellow', 'deeppink', 'cyan', 'lawngreen', 'gold', 'magenta', 'yellowgreen',
+						'skyblue', 'lime', 'limegreen', 'deepskyblue', 'white', 'whitesmoke', 'FF000000')
+	if not n: n = '0'
+	color = colorChart[int(n)]
+	return color 
+
 def getHighlightColor():
 	return getColor(setting('highlight.color'))
 
 def getSourceHighlightColor():
 	return getColor(setting('sources.highlight.color'))
+
+def getPlayNextBackgroundColor():
+	return getBackgroundColor(setting('playnext.background.color'))
 
 def getMenuEnabled(menu_title):
 	is_enabled = setting(menu_title).strip()

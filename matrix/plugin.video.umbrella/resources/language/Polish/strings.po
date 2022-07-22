@@ -4331,3 +4331,39 @@ msgstr ""
 msgctxt "#40090"
 msgid "MBDList - User Lists"
 msgstr ""
+
+msgctxt "#40089"
+msgid "MDBList - Top Lists"
+msgstr ""
+
+msgctxt "#40090"
+msgid "MBDList - User Lists"
+msgstr ""
+
+msgctxt "#40091"
+msgid "PlayNext Background Color"
+msgstr ""
+
+msgctxt "#40092"
+msgid "Pre-emptive Termination (Movie)"
+msgstr ""
+
+msgctxt "#40093"
+msgid "Pre-emptive Limit (Movie)"
+msgstr ""
+
+msgctxt "#40094"
+msgid "Min. Pre-emptive Res.(Movie)"
+msgstr ""
+
+msgctxt "#40095"
+msgid "Pre-emptive Termination (TV Shows)"
+msgstr ""
+
+msgctxt "#40096"
+msgid "Pre-emptive Limit (TV Shows)"
+msgstr ""
+
+msgctxt "#40097"
+msgid "Min. Pre-emptive Res. (TV Shows)"
+msgstr ""

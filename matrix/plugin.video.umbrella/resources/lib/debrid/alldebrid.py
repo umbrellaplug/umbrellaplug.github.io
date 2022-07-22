@@ -22,7 +22,7 @@ base_url = 'https://api.alldebrid.com/v4/'
 user_agent = 'Umbrella_for_Kodi'
 ad_icon = control.joinPath(control.artPath(), 'alldebrid.png')
 addonFanart = control.addonFanart()
-invalid_extensions = ('.bmp', '.gif', '.jpg', '.nfo', '.part', '.png', '.rar', '.sample.', '.srt', '.txt', '.zip')
+invalid_extensions = ('.bmp', '.exe', '.gif', '.jpg', '.nfo', '.part', '.png', '.rar', '.sample.', '.srt', '.txt', '.zip', '.clpi', '.mpls', '.bdmv', '.xml', '.crt', 'crl', 'sig')
 
 session = requests.Session()
 retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])

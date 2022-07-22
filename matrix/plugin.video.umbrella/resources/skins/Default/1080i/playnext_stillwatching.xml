@@ -25,7 +25,7 @@
 					<left>0</left>
 					<width>100%</width>
 					<height>100%</height>
-					<texture colordiffuse="FF12A0C7">common/bg.png</texture>
+					<texture colordiffuse="$INFO[Window().Property(umbrella.playnext.background.color)]">common/bg.png</texture>
 				</control>
 				<!-- Landscape - Fanart - Thumb - Progress Bar-->
 				<control type="group">
@@ -41,7 +41,7 @@
 					<control type="image">
 						<width>250</width>
 						<height>141</height>
-						<texture colordiffuse="FF12A0C7">common/white.png</texture>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.playnext.background.color)]">common/white.png</texture>
 						<visible>String.IsEmpty(Window.Property(umbrella.thumb)) + String.IsEmpty(Window.Property(umbrella.landscape)) + String.IsEmpty(Window.Property(umbrella.fanart))</visible>
 					</control>
 					<control type="textbox">

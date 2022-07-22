@@ -44,7 +44,6 @@ def getTrakt(url, post=None, extended=False, silent=False):
 		if not url.startswith(BASE_URL): url = urljoin(BASE_URL, url)
 		if post: post = jsdumps(post)
 		if getTraktCredentialsInfo(): headers['Authorization'] = 'Bearer %s' % control.addon('script.module.myaccounts').getSetting('trakt.token')
-		log_utils.log('Using Timeout Length: %s' % (service_customTimeout), level=log_utils.LOGINFO)
 		if post: response = session.post(url, data=post, headers=headers, timeout=service_customTimeout)
 		else: response = session.get(url, headers=headers, timeout=service_customTimeout)
 		status_code = str(response.status_code)

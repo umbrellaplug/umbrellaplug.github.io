@@ -1,4 +1,4 @@
-<addon id="script.module.umbrellascrapers" name="UmbrellaScrapers Module" version="0.0.19" provider-name="Umbrella">
+<addon id="script.module.umbrellascrapers" name="UmbrellaScrapers Module" version="0.0.20" provider-name="Umbrella">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -25,9 +25,9 @@
 			<screenshot></screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v0.0.19 - July 14, 2022[/COLOR][/B]
---[I]Re-added File Pursuit to the scraping.[/I]
---[I]Please clear your provider cache in tools.[/I]
+[B][COLOR black]Update - v0.0.20 - July 21, 2022[/COLOR][/B]
+--[I]Adjustments to exisiting scrapers.[/I]
+--[I]Added $ title check to hosters.[/I]
 		</news>
 	</extension>
 </addon>

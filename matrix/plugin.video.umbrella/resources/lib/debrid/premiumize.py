@@ -36,7 +36,7 @@ cache_check_url = '%s/cache/check' % BaseUrl
 list_services_path_url = '%s/services/list' % BaseUrl
 pm_icon = control.joinPath(control.artPath(), 'premiumize.png')
 addonFanart = control.addonFanart()
-invalid_extensions = ('.bmp', '.gif', '.jpg', '.nfo', '.part', '.png', '.rar', '.sample.', '.srt', '.txt', '.zip')
+invalid_extensions = ('.bmp', '.exe', '.gif', '.jpg', '.nfo', '.part', '.png', '.rar', '.sample.', '.srt', '.txt', '.zip', '.clpi', '.mpls', '.bdmv', '.xml', '.crt', 'crl', 'sig')
 
 session = requests.Session()
 retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])

@@ -47,6 +47,7 @@ class Sources:
 		self.dev_mode = getSetting('dev.mode.enable') == 'true'
 		self.dev_disable_single = getSetting('dev.disable.single') == 'true'
 		# self.dev_disable_single_filter = getSetting('dev.disable.single.filter') == 'true'
+		
 		self.dev_disable_season_packs = getSetting('dev.disable.season.packs') == 'true'
 		self.dev_disable_season_filter = getSetting('dev.disable.season.filter') == 'true'
 		self.dev_disable_show_packs = getSetting('dev.disable.show.packs') == 'true'
@@ -477,9 +478,13 @@ class Sources:
 			quality = getSetting('hosts.quality') or '0'
 			line1 = line2 = line3 = ""
 			terminate_onCloud = getSetting('terminate.onCloud.sources') == 'true'
-			pre_emp = getSetting('preemptive.termination') == 'true'
-			pre_emp_limit = int(getSetting('preemptive.limit'))
-			pre_emp_res = getSetting('preemptive.res') or '0'
+			pre_emp_movie = getSetting('preemptive.termination.movie') == 'true'
+			pre_emp_limit_movie = int(getSetting('preemptive.limit.movie'))
+			pre_emp_res_movie = getSetting('preemptive.res.movie') or '0'
+			pre_emp_tv = getSetting('preemptive.termination.tv') == 'true'
+			pre_emp_limit_tv = int(getSetting('preemptive.limit.tv'))
+			pre_emp_res_tv = getSetting('preemptive.res.tv') or '0'
+			#new settings for tv and movie isolated.
 			source_4k = source_1080 = source_720 = source_sd = total = 0
 			total_format = '[COLOR %s][B]%s[/B][/COLOR]'
 			pdiag_format = '[COLOR %s]4K:[/COLOR]  %s  |  [COLOR %s]1080p:[/COLOR]  %s  |  [COLOR %s]720p:[/COLOR]  %s  |  [COLOR %s]SD:[/COLOR]  %s' % (
@@ -501,11 +506,18 @@ class Sources:
 
 				if terminate_onCloud:
 					if len([e for e in self.scraper_sources if e['source'] == 'cloud']) > 0: break
-				if pre_emp:
-					if pre_emp_res == '0' and source_4k >= pre_emp_limit: break
-					elif pre_emp_res == '1' and source_1080 >= pre_emp_limit: break
-					elif pre_emp_res == '2' and source_720 >= pre_emp_limit: break
-					elif pre_emp_res == '3' and source_sd >= pre_emp_limit: break
+				if content == 'movie':
+					if pre_emp_movie:
+						if pre_emp_res_movie == '0' and source_4k >= pre_emp_limit_movie: break
+						elif pre_emp_res_movie == '1' and source_1080 >= pre_emp_limit_movie: break
+						elif pre_emp_res_movie == '2' and source_720 >= pre_emp_limit_movie: break
+						elif pre_emp_res_movie == '3' and source_sd >= pre_emp_limit_movie: break
+				else:
+					if pre_emp_tv:
+						if pre_emp_res_tv == '0' and source_4k >= pre_emp_limit_tv: break
+						elif pre_emp_res_tv == '1' and source_1080 >= pre_emp_limit_tv: break
+						elif pre_emp_res_tv == '2' and source_720 >= pre_emp_limit_tv: break
+						elif pre_emp_res_tv == '3' and source_sd >= pre_emp_limit_tv: break
 				if quality == '0':
 					source_4k = len([e for e in self.scraper_sources if e['quality'] == '4K'])
 					source_1080 = len([e for e in self.scraper_sources if e['quality'] == '1080p'])
@@ -1134,7 +1146,6 @@ class Sources:
 			except: return premium_hosters.hostprDict
 		self.hostprDict = providerscache.get(cache_prDict, 168)
 		self.sourcecfDict = premium_hosters.sourcecfDict
-
 	def calc_pack_size(self):
 		seasoncount, counts = None, None
 		try:

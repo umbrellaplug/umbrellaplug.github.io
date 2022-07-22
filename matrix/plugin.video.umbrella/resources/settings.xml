@@ -132,8 +132,9 @@
 		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=playnext)" />
 		<setting id="playnext.time" type="slider" label="40029" subsetting="true" visible="eq(-2,true)" default="60" option="int" range="10,300" />
 		<setting id="playnext.default.action" type="select" label="40065" subsetting="true" visible="eq(-3,true)" lvalues="32176|32177|32178" default="0" />
-		<setting id="stillwatching.count" type="slider" label="40026" subsetting="true" visible="eq(-4,true)" default="3" option="int" range="2,40" />
-		<setting id="stillwatching.default.action" type="select" label="40025" subsetting="true" visible="eq(-5,true)" lvalues="32176|32177|32178" default="2" />
+		<setting id="playnext.background.color" type="select" label="40091" subsetting="true" visible="eq(-4,true)" lvalues="33564|32589|32590|32591|32592|32593|32594|32595|32596|32597|32666|32667|32668|32669|32670|32671|40082" default="5" />
+		<setting id="stillwatching.count" type="slider" label="40026" subsetting="true" visible="eq(-5,true)" default="3" option="int" range="2,40" />
+		<setting id="stillwatching.default.action" type="select" label="40025" subsetting="true" visible="eq(-6,true)" lvalues="32176|32177|32178" default="2" />
 		<setting label="35056" type="lsep" />
 		<setting id="sort.imdbshows.type" type="select" label="35054" lvalues="33564|33039|35187|35188|35391|35392|35393" default="0" />
 		<setting id="sort.imdbshows.order" type="enum" label="33679" lvalues="33649|33650" default="0" subsetting="true" enable="!eq(-1,0)" />
@@ -197,9 +198,12 @@
 		<setting id="scrapers.timeout" type="slider" label="32312" default="60" range="10,90" option="int" />
 		<setting id="scraper.dialog.color" type="select" label="32164" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32666|32667|32668|32669|32670|32671|32598|40082" default="5" />
 		<setting id="terminate.onCloud.sources" type="bool" label="32007" default="true" />
-		<setting id="preemptive.termination" type="bool" label="32654" default="false" />
-		<setting id="preemptive.limit" type="slider" label="32655" default="25" range="1,50" option="int" visible="eq(-1,true)" />
-		<setting id="preemptive.res" type="enum" label="32659" values="4K|1080p|720p|480p(SD)" default="2" visible="eq(-2,true)" />
+		<setting id="preemptive.termination.movie" type="bool" label="40092" default="false" />
+		<setting id="preemptive.limit.movie" type="slider" label="40093" default="25" range="1,50" option="int" visible="eq(-1,true)" />
+		<setting id="preemptive.res.movie" type="enum" label="40094" values="4K|1080p|720p|480p(SD)" default="2" visible="eq(-2,true)" />
+		<setting id="preemptive.termination.tv" type="bool" label="40095" default="false" />
+		<setting id="preemptive.limit.tv" type="slider" label="40096" default="25" range="1,50" option="int" visible="eq(-1,true)" />
+		<setting id="preemptive.res.tv" type="enum" label="40097" values="4K|1080p|720p|480p(SD)" default="2" visible="eq(-2,true)" />
 
 		<!-- Sources Filtering Options -->
 		<setting type="lsep" label="32338" />

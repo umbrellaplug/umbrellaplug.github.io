@@ -44,7 +44,7 @@ class TMDb:
 			elif response.status_code == 404:
 				if getSetting('debug.level') == '1':
 					from resources.lib.modules import log_utils
-					log_utils.log('TMDb get_request() failed: (404:NOT FOUND) - URL: %s' % url, level=log_utils.LOGDEBUG)
+					log_utils.log('TMDb get_request() failed: (404:NOT FOUND) - URL: %s' % url, __name__, level=log_utils.LOGDEBUG)
 				return '404:NOT FOUND'
 			elif 'Retry-After' in response.headers: # API REQUESTS ARE BEING THROTTLED, INTRODUCE WAIT TIME (TMDb removed rate-limit on 12-6-20)
 				throttleTime = response.headers['Retry-After']

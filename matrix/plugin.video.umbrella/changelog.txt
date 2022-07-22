@@ -1,4 +1,11 @@
 
+[B][COLOR black]Update - v6.5.54 - July 22, 2022[/COLOR][/B]
+--[I] Fix for PlayNext with TMDBHelper.[I]
+--[I] Split Pre-Emp Settings into TV/Movie[I]
+--[I] Adjustments for incorrect values added to cloudflare.[I]
+--[I] Added color setting for PlayNext and Still Watching background.[I]
+--[I] Adjustments for All-Debrid and Premiumize file type exclusions.[I]
+
 [B][COLOR black]Update - v6.5.53 - July 19, 2022[/COLOR][/B]
 --[I] Additional settings for new lists to hide and show.[I]
 

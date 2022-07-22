@@ -35,7 +35,7 @@ hostprDict = ('4shared.com', 'vidcloud.r', 'fastfile.cc', 'rapidu.net', 'sky.fm'
 				'letsupload.cc', 'di.fm', 'letsupload.co', 'clipwatching.com', 'turbobit.cloud', 'fboom.me', 'brupload.net', 'soundcloud.com',
 				'prefiles.com', 'wdupload.com', 'easybytez.com', 'file-up.org')
 
-sourcecfDict = ('filepursuit','easynews','rapidmoviez', 'scenerls', 'extratorrent', 'limetorrents', 'torrentgalaxy')
+sourcecfDict = ('rapidmoviez', 'scenerls', 'extratorrent', 'limetorrents', 'torrentgalaxy') #cloudflare only providers
 
 # hostcapDict = ('flashx.tv', 'flashx.to', 'flashx.sx', 'flashx.bz', 'flashx.cc', 'hugefiles.cc', 'hugefiles.net', 'jetload.net', 'jetload.tv',
 					# 'jetload.to', 'kingfiles.net', 'streamin.to', 'thevideo.me', 'torba.se', 'uptobox.com', 'uptostream.com', 'vidup.io',
