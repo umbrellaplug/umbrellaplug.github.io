@@ -196,7 +196,7 @@
 						<visible>String.Contains(ListItem.Property(umbrella.source),UNCACHED)</visible>
 					</control>
 					<control type="label">
-						<description>Line2 direct or local links</description>
+						<description>Line2 direct or local links, exluding plexshare</description>
 						<left>180</left>
 						<top>50</top>
 						<width>1170</width>
@@ -206,7 +206,20 @@
 						<align>left</align>
 						<aligny>top</aligny>
 						<label>$INFO[ListItem.Property(umbrella.size_label)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.source)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.provider)]</label>
-						<visible>String.Contains(ListItem.Property(umbrella.source),DIRECT) | String.Contains(ListItem.Property(umbrella.source),LOCAL)</visible>
+						<visible>!String.Contains(ListItem.Property(umbrella.provider),PLEXSHARE) + [String.Contains(ListItem.Property(umbrella.source),DIRECT) | String.Contains(ListItem.Property(umbrella.source),LOCAL)]</visible>
+					</control>
+					<control type="label">
+						<description>Line2 plexshare links</description>
+						<left>180</left>
+						<top>50</top>
+						<width>1170</width>
+						<height>25</height>
+						<font>font12</font>
+						<textcolor>white</textcolor>
+						<align>left</align>
+						<aligny>top</aligny>
+						<label>$INFO[ListItem.Property(umbrella.size_label)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.source)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.provider)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.plexsource)]</label>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),PLEXSHARE) + [String.Contains(ListItem.Property(umbrella.source),DIRECT) | String.Contains(ListItem.Property(umbrella.source),LOCAL)]</visible>
 					</control>
 					<control type="label">
 						<description>Line2 hosters</description>
@@ -301,7 +314,7 @@
 						<visible>String.Contains(ListItem.Property(umbrella.source),UNCACHED)</visible>
 					</control>
 					<control type="label">
-						<description>Line2 direct or local links</description>
+						<description>Line2 direct or local links, exluding plexshare</description>
 						<left>180</left>
 						<top>50</top>
 						<width>1170</width>
@@ -311,7 +324,20 @@
 						<align>left</align>
 						<aligny>top</aligny>
 						<label>[B]$INFO[ListItem.Property(umbrella.size_label)]   [COLOR black]|[/COLOR]   $INFO[ListItem.Property(umbrella.source)]   [COLOR black]|[/COLOR]   $INFO[ListItem.Property(umbrella.provider)][/B]</label>
-						<visible>String.Contains(ListItem.Property(umbrella.source),DIRECT) | String.Contains(ListItem.Property(umbrella.source),LOCAL)</visible>
+						<visible>!String.Contains(ListItem.Property(umbrella.provider),PLEXSHARE) + [String.Contains(ListItem.Property(umbrella.source),DIRECT) | String.Contains(ListItem.Property(umbrella.source),LOCAL)]</visible>
+					</control>
+					<control type="label">
+						<description>Line2 plexshare links</description>
+						<left>180</left>
+						<top>50</top>
+						<width>1170</width>
+						<height>25</height>
+						<font>font12</font>
+						<textcolor>black</textcolor>
+						<align>left</align>
+						<aligny>top</aligny>
+						<label>[B]$INFO[ListItem.Property(umbrella.size_label)]   [COLOR black]|[/COLOR]   $INFO[ListItem.Property(umbrella.source)]   [COLOR black]|[/COLOR]   $INFO[ListItem.Property(umbrella.provider)]    [COLOR black]|[/COLOR]   $INFO[ListItem.Property(umbrella.plexsource)][/B]</label>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),PLEXSHARE) + [String.Contains(ListItem.Property(umbrella.source),DIRECT) | String.Contains(ListItem.Property(umbrella.source),LOCAL)]</visible>
 					</control>
 					<control type="label">
 						<description>Line2 hosters</description>
@@ -391,6 +417,17 @@
 						<visible>String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),3D)</visible>
 					</control>
 					<control type="image">
+						<description>AV1 Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>source/av1.png</texture>
+						<visible>String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),AV1)</visible>
+					</control>
+					<control type="image">
 						<description>HEVC/H.265 Icon</description>
 						<left>0</left>
 						<top>0</top>
@@ -399,7 +436,8 @@
 						<aligny>center</aligny>
 						<aspectratio>keep</aspectratio>
 						<texture>source/hevc.png</texture>
-						<visible>String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),HEVC) | [String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),DOLBY-VISION) | String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),HDR)] + !String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),HDRIP) + !String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),AVC)</visible>
+						<!-- <visible>String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),HEVC) | [String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),DOLBY-VISION) | String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),HDR)] + !String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),HDRIP) + !String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),AVC)</visible> -->
+						<visible>String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),HEVC)</visible>
 					</control>
 					<control type="image">
 						<description>AVC/H.264 Icon</description>
@@ -532,6 +570,17 @@
 						<aspectratio>keep</aspectratio>
 						<texture>source/dvd.png</texture>
 						<visible>String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),DVDRIP)</visible>
+					</control>
+					<control type="image">
+						<description>OPUS Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>audio/opus.png</texture>
+						<visible>String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),OPUS)</visible>
 					</control>
 					<control type="image">
 						<description>DOLBY-ATMOS Icon</description>

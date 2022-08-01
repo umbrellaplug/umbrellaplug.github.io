@@ -154,10 +154,10 @@ class Sources:
 			if not items:
 				control.sleep(200) ; control.hide() ; sysexit()
 ## - compare meta received to database and use largest(eventually switch to a request to fetch missing db meta for item)
-			self.imdb_user = getSetting('imdb.user').replace('ur', '')
-			self.tmdb_key = getSetting('tmdb.api.key')
+			self.imdb_user = getSetting('imdbuser').replace('ur', '')
+			self.tmdb_key = getSetting('tmdb.apikey')
 			if not self.tmdb_key: self.tmdb_key = 'bc96b19479c7db6c8ae805744d0bdfe2'
-			self.tvdb_key = getSetting('tvdb.api.key')
+			self.tvdb_key = getSetting('tvdb.apikey')
 			if self.mediatype == 'episode': self.user = str(self.imdb_user) + str(self.tvdb_key)
 			else: self.user = str(self.tmdb_key)
 			self.lang = control.apiLanguage()['tvdb']
@@ -772,6 +772,8 @@ class Sources:
 			except: log_utils.error()
 		if getSetting('remove.hevc') == 'true':
 			self.sources = [i for i in self.sources if 'HEVC' not in i.get('info', '')]
+		if getSetting('remove.av1') == 'true':
+			self.sources = [i for i in self.sources if 'AV1' not in i.get('info', '')]
 		if getSetting('remove.hdr') == 'true':
 			self.sources = [i for i in self.sources if ' HDR ' not in i.get('info', '')] # needs space before and aft because of "HDRIP"
 		if getSetting('remove.dolby.vision') == 'true':
@@ -850,6 +852,12 @@ class Sources:
 		elif getSetting('sources.size.sort') == 'true':
 			reverse_sort = True if getSetting('sources.sizeSort.reverse') == 'false' else False
 			self.sources.sort(key=lambda k: round(k.get('size', 0), 2), reverse=reverse_sort)
+
+		if getSetting('source.prioritize.av1') == 'true': # filter to place AV1 sources first
+			filter = []
+			filter += [i for i in self.sources if 'AV1' in i.get('info', '')]
+			filter += [i for i in self.sources if i not in filter]
+			self.sources = filter
 
 		if getSetting('source.prioritize.hevc') == 'true': # filter to place HEVC sources first
 			filter = []
@@ -1132,10 +1140,9 @@ class Sources:
 		self.debrid_resolvers = debrid.debrid_resolvers()
 
 		self.prem_providers = [] # for sorting by debrid and direct source links priority
-		if control.addon('script.module.umbrellascrapers').getSetting('easynews.user'): self.prem_providers += [('easynews', int(getSetting('easynews.priority')))]
-		if control.addon('script.module.umbrellascrapers').getSetting('filepursuit.api'): self.prem_providers += [('filepursuit', int(getSetting('filepursuit.priority')))]
-		if control.addon('script.module.umbrellascrapers').getSetting('furk.user_name'): self.prem_providers += [('furk', int(getSetting('furk.priority')))]
-		if control.addon('script.module.umbrellascrapers').getSetting('ororo.user'): self.prem_providers += [('ororo', int(getSetting('ororo.priority')))]
+		if control.setting('easynewsusername'): self.prem_providers += [('easynews', int(getSetting('easynews.priority')))]
+		if control.setting('filepursuit.api'): self.prem_providers += [('filepursuit', int(getSetting('filepursuit.priority')))]
+		if control.setting('furk.user.name'): self.prem_providers += [('furk', int(getSetting('furk.priority')))]
 		self.prem_providers += [(d.name, int(d.sort_priority)) for d in self.debrid_resolvers]
 
 		def cache_prDict():
@@ -1153,8 +1160,8 @@ class Sources:
 		except: log_utils.error()
 		if not seasoncount or not counts: # check metacache, 2nd fallback
 			try:
-				imdb_user = getSetting('imdb.user').replace('ur', '')
-				tvdb_key = getSetting('tvdb.api.key')
+				imdb_user = getSetting('imdbuser').replace('ur', '')
+				tvdb_key = getSetting('tvdb.apikey')
 				user = str(imdb_user) + str(tvdb_key)
 				meta_lang = control.apiLanguage()['tvdb']
 				if self.meta: imdb, tmdb, tvdb = self.meta.get('imdb', ''), self.meta.get('tmdb', ''), self.meta.get('tvdb', '')
@@ -1313,8 +1320,8 @@ class Sources:
 		except: pass
 		if not total_seasons or season_isAiring is None: # check metacache, 2nd fallback
 			try:
-				imdb_user = getSetting('imdb.user').replace('ur', '')
-				tvdb_key = getSetting('tvdb.api.key')
+				imdb_user = getSetting('imdbuser').replace('ur', '')
+				tvdb_key = getSetting('tvdb.apikey')
 				user = str(imdb_user) + str(tvdb_key)
 				meta_lang = control.apiLanguage()['tvdb']
 				ids = [{'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb}]

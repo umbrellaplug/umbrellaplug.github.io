@@ -4359,3 +4359,143 @@ msgstr ""
 msgctxt "#40097"
 msgid "Min. Pre-emptive Res. (TV Shows)"
 msgstr ""
+
+msgctxt "#40098"
+msgid "Next Episode in"
+msgstr 
+
+msgctxt "#40099"
+msgid "Watch Now"
+msgstr 
+
+msgctxt "#40100"
+msgid "Hide"
+msgstr
+
+msgctxt "#40101"
+msgid "Show Close/Hide Button"
+msgstr
+
+msgctxt "#40102"
+msgid "Use Skin Theme for PlayNext"
+msgstr
+
+msgctxt "#40103"
+msgid "Trakt Client ID"
+msgstr ""
+
+msgctxt "#40104"
+msgid "Trakt Client Secret"
+msgstr ""
+
+msgctxt "#40105"
+msgid "Trakt API Key"
+msgstr ""
+
+msgctxt "#40106"
+msgid "Use Custom Trakt API Keys"
+msgstr ""
+
+msgctxt "#40107"
+msgid "Trakt Authorized Successfully"
+msgstr ""
+
+msgctxt "#40108"
+msgid "Trakt Authorization Error"
+msgstr ""
+
+msgctxt "#40109"
+msgid "Trakt Authorization Revoked"
+msgstr ""
+
+msgctxt "#40110"
+msgid "Revoke Authorization"
+msgstr ""
+
+msgctxt "#40111"
+msgid "%s %s hours %s minutes"
+msgstr ""
+
+msgctxt "#40112"
+msgid "[B]Timezone:[/B] %s"
+msgstr ""
+
+msgctxt "#40113"
+msgid "[B]Joined:[/B] %s"
+msgstr ""
+
+msgctxt "#40114"
+msgid "[B]Private:[/B] %s"
+msgstr ""
+
+msgctxt "#40115"
+msgid "[B]VIP Status:[/B] %s"
+msgstr ""
+
+msgctxt "#40116"
+msgid "[B]Ratings Given:[/B] %s"
+msgstr ""
+
+msgctxt "#40117"
+msgid "[B]Movies:[/B] [B]%s[/B] Collected, [B]%s[/B] Watched for [B]%s[/B]"
+msgstr ""
+
+msgctxt "#40118"
+msgid "[B]Shows:[/B] [B]%s[/B] Collected, [B]%s[/B] Watched"
+msgstr ""
+
+msgctxt "#40119"
+msgid "[B]Episodes:[/B] [B]%s[/B] Watched for [B]%s[/B]"
+msgstr ""
+
+msgctxt "#40120"
+msgid "Account Expiry Notification"
+msgstr ""
+
+msgctxt "#40121"
+msgid "Authorization"
+msgstr ""
+
+msgctxt "#40122"
+msgid "Launch Umbrella on Kodi Start"
+msgstr ""
+
+msgctxt "#40123"
+msgid "[B]SETTINGS[/B] : Trakt"
+msgstr ""
+
+msgctxt "#40124"
+msgid "[B]SETTINGS[/B] : Meta Accounts"
+msgstr ""
+
+msgctxt "#40125"
+msgid "Get API Key"
+msgstr ""
+
+msgctxt "#40126"
+msgid "Clear API Key"
+msgstr 
+
+msgctxt "#40127"
+msgid "Error retrieving Furk Account Info"
+msgstr ""
+
+msgctxt "#40128"
+msgid "Account Found for Furk but not Premium."
+msgstr ""
+
+msgctxt "#40129"
+msgid "[B]Furk Username:[/B] %s"
+msgstr ""
+
+msgctxt "#40130"
+msgid "[B]Furk API Key:[/B] %s"
+msgstr ""
+
+msgctxt "#40131"
+msgid "Prioritize AV1 to top"
+msgstr ""
+
+msgctxt "#40132"
+msgid "Remove AV1 Sources"
+msgstr ""

@@ -54,10 +54,10 @@ class Player(xbmc.Player):
 			self.imdb, self.tmdb, self.tvdb = imdb or '', tmdb or '', tvdb or ''
 			self.ids = {'imdb': self.imdb, 'tmdb': self.tmdb, 'tvdb': self.tvdb}
 ## - compare meta received to database and use largest(eventually switch to a request to fetch missing db meta for item)
-			self.imdb_user = getSetting('imdb.user').replace('ur', '')
-			self.tmdb_key = getSetting('tmdb.api.key')
+			self.imdb_user = getSetting('imdbuser').replace('ur', '')
+			self.tmdb_key = getSetting('tmdb.apikey')
 			if not self.tmdb_key: self.tmdb_key = 'bc96b19479c7db6c8ae805744d0bdfe2'
-			self.tvdb_key = getSetting('tvdb.api.key')
+			self.tvdb_key = getSetting('tvdb.apikey')
 			if self.media_type == 'episode': self.user = str(self.imdb_user) + str(self.tvdb_key)
 			else: self.user = str(self.tmdb_key)
 			self.lang = control.apiLanguage()['tvdb']
@@ -339,7 +339,6 @@ class Player(xbmc.Player):
 			playerWindow.clearProperty('umbrella.preResolved_nextUrl')
 			playerWindow.clearProperty('umbrella.playlistStart_position')
 			clear_local_bookmarks() # clear all umbrella bookmarks from kodi database
-
 			if not self.onPlayBackStopped_ran or (self.playbackStopped_triggered and not self.onPlayBackStopped_ran): # Kodi callback unreliable and often not issued
 				self.onPlayBackStopped_ran = True
 				self.playbackStopped_triggered = False
@@ -354,9 +353,10 @@ class Player(xbmc.Player):
 					log_utils.log('[ plugin.video.umbrella ] container.refresh issued', level=log_utils.LOGDEBUG)
 					control.refresh() #not all skins refresh after playback stopped
 				control.playlist.clear()
-				# control.trigger_widget_refresh() # skinshortcuts handles widget refresh
+				#control.trigger_widget_refresh() # skinshortcuts handles widget refresh
 				xbmc.log('[ plugin.video.umbrella ] onPlayBackStopped callback', LOGINFO)
-				log_utils.log('[ plugin.video.umbrella ] onPlayBackStopped callback', level=log_utils.LOGDEBUG)
+			xbmc.log('[ plugin.video.umbrella ] Running System Exit from PlaybackStopped', LOGINFO)
+			sysexit(0)
 		except: log_utils.error()
 
 	def onPlayBackEnded(self):
@@ -367,7 +367,8 @@ class Player(xbmc.Player):
 		if control.playlist.getposition() == control.playlist.size() or control.playlist.size() == 1:
 			control.playlist.clear()
 		xbmc.log('[ plugin.video.umbrella ] onPlayBackEnded callback', LOGINFO)
-		log_utils.log('[ plugin.video.umbrella ] onPlayBackEnded callback', level=log_utils.LOGDEBUG)
+		xbmc.log('[ plugin.video.umbrella ] Running System Exit from PlayBackEnded', LOGINFO)
+		sysexit(0)
 
 	def onPlayBackError(self):
 		playerWindow.clearProperty('umbrella.preResolved_nextUrl')
@@ -376,7 +377,7 @@ class Player(xbmc.Player):
 		Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
 		log_utils.error()
 		xbmc.log('[ plugin.video.umbrella ] onPlayBackError callback', LOGINFO)
-		log_utils.log('[ plugin.video.umbrella ] onPlayBackError callback', level=log_utils.LOGDEBUG)
+		xbmc.log('[ plugin.video.umbrella ] Running System Exit from PlaybackError', LOGINFO)
 		sysexit(1)
 ##############################
 
@@ -448,8 +449,15 @@ class PlayNext(xbmc.Player):
 		try:
 			next_meta = self.getNext_meta()
 			if not next_meta: raise Exception()
+			#some changes here for playnext and themes.
+			skin = control.skin
 			from resources.lib.windows.playnext import PlayNextXML
-			window = PlayNextXML('playnext.xml', control.addonPath(control.addonId()), meta=next_meta)
+			if skin in ('skin.arctic.horizon.2') and control.setting('enable.playnext.theme')=='true':
+				window = PlayNextXML('ahplaynext.xml', control.addonPath(control.addonId()), meta=next_meta)
+			elif skin in ('skin.auramod') and control.setting('enable.playnext.theme')=='true':
+				window = PlayNextXML('auraplaynext.xml', control.addonPath(control.addonId()), meta=next_meta)
+			else:
+				window = PlayNextXML('playnext.xml', control.addonPath(control.addonId()), meta=next_meta)
 			window.run()
 			del window
 			self.play_next_triggered = True
@@ -461,8 +469,14 @@ class PlayNext(xbmc.Player):
 		try:
 			next_meta = self.getNext_meta()
 			if not next_meta: raise Exception()
+			skin = control.skin
 			from resources.lib.windows.playnext_stillwatching import StillWatchingXML
-			window = StillWatchingXML('playnext_stillwatching.xml', control.addonPath(control.addonId()), meta=next_meta)
+			if skin in ('skin.arctic.horizon.2') and control.setting('enable.playnext.theme')=='true':
+				window = StillWatchingXML('ahplaynext_stillwatching.xml', control.addonPath(control.addonId()), meta=next_meta)
+			elif skin in ('skin.auramod') and control.setting('enable.playnext.theme')=='true':
+				window = StillWatchingXML('auraplaynext_stillwatching.xml', control.addonPath(control.addonId()), meta=next_meta)
+			else:
+				window = StillWatchingXML('playnext_stillwatching.xml', control.addonPath(control.addonId()), meta=next_meta)
 			window.run()
 			del window
 			self.play_next_triggered = True

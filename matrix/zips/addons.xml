@@ -148,12 +148,11 @@
 [COLOR yellow]--[/COLOR][I] Change of icon, not much new added here yet.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.54">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.56">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.6" />
-		<import addon="script.module.myaccounts" version="2.0.9" />
-		<import addon="script.module.umbrellascrapers" version="0.0.20" />
+		<import addon="script.module.umbrellascrapers" version="0.0.21" />
 		<import addon="script.module.requests" />
 		<import addon="script.module.beautifulsoup4" />
 		<import addon="script.module.metahandler" version="5.0.0" optional="true" />
@@ -182,12 +181,15 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.54 - July 22, 2022[/COLOR][/B]
---[I] Fix for PlayNext with TMDBHelper.[I]
---[I] Split Pre-Emp Settings into TV/Movie[I]
---[I] Adjustments for incorrect values added to cloudflare.[I]
---[I] Added color setting for PlayNext and Still Watching background.[I]
---[I] Adjustments for All-Debrid and Premiumize file type exclusions.[I]
+[B][COLOR black]Update - v6.5.56 - July 31, 2022[/COLOR][/B]
+--[I] Removed "My Accounts"[I]
+--[I] ***ALL CREDENTIALS WILL NEED TO BE REAUTHORIZED***[I]
+--[I] Please update your credentials for debrid and trakt in Umbrella &gt; Tools &gt; Settings: Accounts[I]
+--[I] Sorry for any issues this update may cause you.[I]
+--[I] New PlayNext theme for Auramod Theme.[I]
+--[I] New Setting for AV1 File Format Identification.[I]
+--[I] New Setting Start Umbrella on Launch.[I]
+--[I] New identifier added for Opus sound files.[I]
 		</news>
 	</extension>
 </addon><addon id="plugin.video.youtube" name="YouTube" version="6.8.18+matrix.1" provider-name="anxdpanic, bromix">
@@ -270,7 +272,7 @@
     <disclaimer lang="vi_VN">Plugin này không được xác nhận bởi Google</disclaimer>
     <disclaimer lang="zh_TW">此附加元件未由Google支持</disclaimer>
   </extension>
-</addon><addon id="repository.umbrella" name="Umbrella Repository" version="2.1.37" provider-name="Umbrella">
+</addon><addon id="repository.umbrella" name="Umbrella Repository" version="2.1.38" provider-name="Umbrella">
     <extension point="xbmc.addon.repository" name="Umbrella Repository">
         <dir minversion="19.0.0">
             <info compressed="false">https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/zips/addons.xml</info>
@@ -346,11 +348,10 @@
 		<news>
 		</news>
 	</extension>
-</addon><addon id="script.module.umbrellascrapers" name="UmbrellaScrapers Module" version="0.0.20" provider-name="Umbrella">
+</addon><addon id="script.module.umbrellascrapers" name="UmbrellaScrapers Module" version="0.0.21" provider-name="Umbrella">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
-		<import addon="script.module.myaccounts" />
 	</requires>
 	<extension point="xbmc.python.pluginsource" library="lib/default.py">
 		<provides>executable</provides>
@@ -373,9 +374,10 @@
 			<screenshot />
 		</assets>
 		<news>
-[B][COLOR black]Update - v0.0.20 - July 21, 2022[/COLOR][/B]
---[I]Adjustments to exisiting scrapers.[/I]
---[I]Added $ title check to hosters.[/I]
+[B][COLOR black]Update - v0.0.21 - July 31, 2022[/COLOR][/B]
+--[I]Removed my accounts from scrapers.[/I]
+--[I]Likely the last update for UmbrellaScrapers.[/I]
+--[I]Moving to new scraper bundle next update.[/I]
 		</news>
 	</extension>
 </addon></addons>

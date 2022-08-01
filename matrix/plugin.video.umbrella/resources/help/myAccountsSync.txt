@@ -1,5 +1,2 @@
 
-If you changed account information in the [B]"My Accounts"[/B] addon outside of Umbrella you need to
-sync the new account information back to Umbrella with the [B]"sync(re) with My Accounts"[/B] option.
-If you made changed via the [B]"Open My Accounts Addon"[/B] here in Umbrella's settings, or Umbrella's
-UI, then this process is done for you.  A visible notification will alert you of the auto sync process.
+My accounts is not longer used in the Umbrella plugin. Some accounts may need to be synced with scrapers but most accounts are within the plugin now.

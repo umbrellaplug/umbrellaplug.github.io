@@ -34,8 +34,8 @@ class Collections:
 		self.today_date = (self.date_time).strftime('%Y-%m-%d')
 		self.lang = control.apiLanguage()['trakt']
 		self.traktCredentials = trakt.getTraktCredentialsInfo()
-		self.imdb_user = getSetting('imdb.user').replace('ur', '')
-		self.tmdb_key = getSetting('tmdb.api.key')
+		self.imdb_user = getSetting('imdbuser').replace('ur', '')
+		self.tmdb_key = getSetting('tmdb.apikey')
 		if self.tmdb_key == '' or self.tmdb_key is None: self.tmdb_key = 'bc96b19479c7db6c8ae805744d0bdfe2'
 		# self.user = str(self.imdb_user) + str(self.tmdb_key)
 		self.user = str(self.tmdb_key)

@@ -14,7 +14,7 @@ from resources.lib.modules import log_utils
 class tvMaze:
 	def __init__(self, show_id=None):
 		self.api_url = 'https://api.tvmaze.com/%s%s'
-		self.tvdb_apiKey = getSetting('tvdb.api.key')
+		self.tvdb_apiKey = getSetting('tvdb.apikey')
 		self.show_id = show_id
 
 	def showID(self, show_id=None):

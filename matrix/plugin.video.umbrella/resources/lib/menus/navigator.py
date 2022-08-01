@@ -20,8 +20,8 @@ class Navigator:
 		self.indexLabels = getSetting('index.labels') == 'true'
 		self.traktCredentials = getTraktCredentialsInfo()
 		self.traktIndicators = getTraktIndicatorsInfo()
-		self.imdbCredentials = getSetting('imdb.user') != ''
-		self.tmdbSessionID = getSetting('tmdb.session_id') != ''
+		self.imdbCredentials = getSetting('imdbuser') != ''
+		self.tmdbSessionID = getSetting('tmdb.sessionid') != ''
 		self.highlight_color = control.getHighlightColor()
 
 	def root(self):
@@ -33,7 +33,7 @@ class Navigator:
 		if getMenuEnabled('mylists.widget'):
 			self.addDirectoryItem(32003, 'mymovieNavigator', 'mymovies.png', 'DefaultVideoPlaylists.png')
 			self.addDirectoryItem(32004, 'mytvNavigator', 'mytvshows.png', 'DefaultVideoPlaylists.png')
-		if getMenuEnabled('navi.youtube'): self.addDirectoryItem('You Tube Videos', 'youtube', 'youtube.png', 'youtube.png')
+		if getMenuEnabled('navi.youtube'): self.addDirectoryItem('YouTube Videos', 'youtube', 'youtube.png', 'youtube.png')
 		self.addDirectoryItem(32010, 'tools_searchNavigator', 'search.png', 'DefaultAddonsSearch.png')
 		self.addDirectoryItem(32008, 'tools_toolNavigator', 'tools.png', 'tools.png')
 		downloads = True if getSetting('downloads') == 'true' and (len(control.listDir(getSetting('movie.download.path'))[0]) > 0 or len(control.listDir(getSetting('tv.download.path'))[0]) > 0) else False
@@ -232,22 +232,22 @@ class Navigator:
 		else: control.execute('ActivateWindow(Videos,plugin://plugin.video.umbrella/?action=tv_PublicLists&url=%s,return)' % (quote_plus(url)))
 
 	def tools(self):
-		if self.traktCredentials: self.addDirectoryItem(35057, 'tools_traktToolsNavigator', 'tools.png', 'DefaultAddonService.png', isFolder=True)
 		self.addDirectoryItem(32510, 'cache_Navigator', 'settings.png', 'DefaultAddonService.png', isFolder=True)
-		self.addDirectoryItem(32609, 'tools_openMyAccount', 'MyAccounts.png', 'DefaultAddonService.png', isFolder=False)
+		#self.addDirectoryItem(32609, 'tools_openMyAccount', 'MyAccounts.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(32506, 'tools_contextUmbrellaSettings', 'icon.png', 'DefaultAddonProgram.png', isFolder=False)
 		#-- Providers - 4
 		self.addDirectoryItem(32651, 'tools_umbrellascrapersSettings', 'umbrellascrapers.png', 'DefaultAddonService.png', isFolder=False)
-		self.addDirectoryItem(32523, 'tools_loggingNavigator', 'tools.png', 'DefaultAddonService.png')
-		self.addDirectoryItem(32083, 'tools_cleanSettings', 'settings.png', 'DefaultAddonProgram.png', isFolder=False)
 		#-- General - 0
 		self.addDirectoryItem(32043, 'tools_openSettings&query=0.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		#-- Accounts - 7
+		self.addDirectoryItem(32044, 'tools_openSettings&query=7.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(40124, 'tools_openSettings&query=8.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(40123, 'tools_openSettings&query=6.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		if self.traktCredentials: self.addDirectoryItem(35057, 'tools_traktToolsNavigator', 'tools.png', 'DefaultAddonService.png', isFolder=True)
 		#-- Navigation - 1
 		self.addDirectoryItem(32362, 'tools_openSettings&query=1.1', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#-- Playback - 3
 		self.addDirectoryItem(32045, 'tools_openSettings&query=3.1', 'tools.png', 'DefaultAddonService.png', isFolder=False)
-		#-- Accounts - 7
-		self.addDirectoryItem(32044, 'tools_openSettings&query=7.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#-- Downloads - 10
 		self.addDirectoryItem(32048, 'tools_openSettings&query=10.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#-- Subtitles - 11
@@ -255,6 +255,8 @@ class Navigator:
 		self.addDirectoryItem(32556, 'library_Navigator', 'tools.png', 'DefaultAddonService.png', isFolder=True)
 		self.addDirectoryItem(32049, 'tools_viewsNavigator', 'settings.png', 'DefaultAddonService.png', isFolder=True)
 		self.addDirectoryItem(32361, 'tools_resetViewTypes', 'settings.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(32083, 'tools_cleanSettings', 'settings.png', 'DefaultAddonProgram.png', isFolder=False)
+		self.addDirectoryItem(32523, 'tools_loggingNavigator', 'tools.png', 'DefaultAddonService.png')
 		self.endDirectory()
 
 	def traktTools(self):
@@ -274,8 +276,8 @@ class Navigator:
 		self.addDirectoryItem(32525, 'tools_clearLogFile', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
 		self.addDirectoryItem(32526, 'tools_ShowChangelog&name=Umbrella', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
 		self.addDirectoryItem(32527, 'tools_uploadLogFile&name=Umbrella', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
-		self.addDirectoryItem(32528, 'tools_viewLogFile&name=MyAccounts', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
-		self.addDirectoryItem(32529, 'tools_ShowChangelog&name=MyAccounts', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
+		#self.addDirectoryItem(32528, 'tools_viewLogFile&name=MyAccounts', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
+		#self.addDirectoryItem(32529, 'tools_ShowChangelog&name=MyAccounts', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
 		self.addDirectoryItem(32530, 'tools_viewLogFile&name=umbrellascrapers', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
 		self.addDirectoryItem(32531, 'tools_ShowChangelog&name=umbrellascrapers', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
 		self.addDirectoryItem(32532, 'tools_viewLogFile&name=Kodi', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
@@ -334,20 +336,20 @@ class Navigator:
 		self.endDirectory()
 
 	def alldebrid_service(self):
-		if getSetting('alldebrid.token'):
+		if getSetting('alldebridtoken'):
 			self.addDirectoryItem('All-Debrid: Cloud Storage', 'ad_CloudStorage', 'alldebrid.png', 'DefaultAddonService.png')
 			self.addDirectoryItem('All-Debrid: Transfers', 'ad_Transfers', 'alldebrid.png', 'DefaultAddonService.png')
 			self.addDirectoryItem('All-Debrid: Account Info', 'ad_AccountInfo', 'alldebrid.png', 'DefaultAddonService.png', isFolder=False)
 		else:
-			self.addDirectoryItem('[I]Please visit My Accounts for setup[/I]', 'tools_openMyAccount&amp;query=1.4', 'alldebrid.png', 'DefaultAddonService.png', isFolder=False)
+			self.addDirectoryItem('[I]Please setup in Accounts[/I]', 'tools_openSettings&query=7.0', 'alldebrid.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 
 	def easynews_service(self):
-		if getSetting('easynews.username'):
+		if getSetting('easynewsusername'):
 			self.addDirectoryItem('Easy News: Search', 'en_Search', 'search.png', 'DefaultAddonsSearch.png')
 			self.addDirectoryItem('Easy News: Account Info', 'en_AccountInfo', 'easynews.png', 'DefaultAddonService.png', isFolder=False)
 		else:
-			self.addDirectoryItem('[I]Please visit My Accounts for setup[/I]', 'tools_openMyAccount&amp;query=3.5', 'easynews.png', 'DefaultAddonService.png', isFolder=False)
+			self.addDirectoryItem('[I]Please setup in Accounts[/I]', 'tools_openSettings&query=7.4', 'easynews.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 
 	def furk_service(self):
@@ -356,25 +358,25 @@ class Navigator:
 			self.addDirectoryItem('Furk: User Files', 'furk_UserFiles', 'furk.png', 'DefaultAddonService.png')
 			self.addDirectoryItem('Furk: Account Info', 'furk_AccountInfo', 'furk.png', 'DefaultAddonService.png', isFolder=False)
 		else:
-			self.addDirectoryItem('[I]Please visit My Accounts for setup[/I]', 'tools_openMyAccount&amp;query=3.5', 'furk.png', 'DefaultAddonService.png', isFolder=False)
+			self.addDirectoryItem('[I]Please setup in Accounts[/I]', 'tools_openSettings&query=7.6', 'furk.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 
 	def premiumize_service(self):
-		if getSetting('premiumize.token'):
+		if getSetting('premiumizetoken'):
 			self.addDirectoryItem('Premiumize: My Files', 'pm_MyFiles', 'premiumize.png', 'DefaultAddonService.png')
 			self.addDirectoryItem('Premiumize: Transfers', 'pm_Transfers', 'premiumize.png', 'DefaultAddonService.png')
 			self.addDirectoryItem('Premiumize: Account Info', 'pm_AccountInfo', 'premiumize.png', 'DefaultAddonService.png', isFolder=False)
 		else:
-			self.addDirectoryItem('[I]Please visit My Accounts for setup[/I]', 'tools_openMyAccount&amp;query=1.11', 'premiumize.png', 'DefaultAddonService.png', isFolder=False)
+			self.addDirectoryItem('[I]Please setup in Accounts[/I]', 'tools_openSettings&query=7.1', 'premiumize.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 
 	def realdebrid_service(self):
-		if getSetting('realdebrid.token'):
+		if getSetting('realdebridtoken'):
 			self.addDirectoryItem('Real-Debrid: Torrent Transfers', 'rd_UserTorrentsToListItem', 'realdebrid.png', 'DefaultAddonService.png')
 			self.addDirectoryItem('Real-Debrid: My Downloads', 'rd_MyDownloads&query=1', 'realdebrid.png', 'DefaultAddonService.png')
 			self.addDirectoryItem('Real-Debrid: Account Info', 'rd_AccountInfo', 'realdebrid.png', 'DefaultAddonService.png', isFolder=False )
 		else:
-			self.addDirectoryItem('[I]Please visit My Accounts for setup[/I]', 'tools_openMyAccount&amp;query=1.18', 'realdebrid.png', 'DefaultAddonService.png', isFolder=False)
+			self.addDirectoryItem('[I]Please setup in Accounts[/I]', 'tools_openSettings&query=7.2', 'realdebrid.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 
 	def search(self):
@@ -382,6 +384,10 @@ class Navigator:
 		self.addDirectoryItem(33043, 'tvSearch', 'trakt.png' if self.iconLogos else 'search.png', 'DefaultAddonsSearch.png')
 		self.addDirectoryItem(33044, 'moviePerson', 'imdb.png' if self.iconLogos else 'people-search.png', 'DefaultAddonsSearch.png', isFolder=False)
 		self.addDirectoryItem(33045, 'tvPerson', 'imdb.png' if self.iconLogos else 'people-search.png', 'DefaultAddonsSearch.png', isFolder=False)
+		if getSetting('easynewsusername'):
+			self.addDirectoryItem('Easy News: Search', 'en_Search', 'search.png', 'DefaultAddonsSearch.png')
+		if getSetting('furk.api'):
+			self.addDirectoryItem('Furk: Search', 'furk_Search', 'search.png', 'DefaultAddonsSearch.png')
 		#if getSetting('mdblist.api') != '':
 			#self.addDirectoryItem(40088, 'mdbListSearch', 'mdblist.png' if self.iconLogos else 'search.png', 'DefaultAddonsSearch.png')
 		self.endDirectory()

@@ -8,6 +8,7 @@ import xbmc
 from resources.lib.modules.control import getSourceHighlightColor, getPlayNextBackgroundColor, setting as getSetting, playerWindow
 from resources.lib.modules import tools
 from resources.lib.windows.base import BaseDialog
+from resources.lib.modules import control
 
 monitor = xbmc.Monitor()
 
@@ -119,6 +120,15 @@ class PlayNextXML(BaseDialog):
 			endtime = (datetime.now() + timedelta(seconds=next_duration)).strftime('%I:%M %p').lstrip('0') if next_duration else ''
 			self.setProperty('umbrella.endtime', endtime)
 			self.setProperty('umbrella.playnext.background.color', getPlayNextBackgroundColor())
+			if getSetting('playnext.hidebutton') == 'false':
+				self.setProperty('umbrella.hidebutton','true')
+			skin = control.skin
+			if skin in ('skin.arctic.horizon.2'):
+				self.setProperty('using.arctic2', 'true')
+				gradientColor = xbmc.getInfoLabel('Skin.String(gradientcolor.name)') or 'ff00bfa5'
+				selectColor = xbmc.getInfoLabel('Skin.String(focuscolor.name)') or 'ff0091ea'
+				self.setProperty('skin.gradientColor', gradientColor)
+				self.setProperty('skin.selectColor', selectColor)
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()

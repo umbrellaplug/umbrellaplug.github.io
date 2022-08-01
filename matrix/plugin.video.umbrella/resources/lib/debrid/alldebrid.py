@@ -19,7 +19,7 @@ from resources.lib.modules.source_utils import supported_video_extensions
 getLS = control.lang
 getSetting = control.setting
 base_url = 'https://api.alldebrid.com/v4/'
-user_agent = 'Umbrella_for_Kodi'
+user_agent = 'Umbrella'
 ad_icon = control.joinPath(control.artPath(), 'alldebrid.png')
 addonFanart = control.addonFanart()
 invalid_extensions = ('.bmp', '.exe', '.gif', '.jpg', '.nfo', '.part', '.png', '.rar', '.sample.', '.srt', '.txt', '.zip', '.clpi', '.mpls', '.bdmv', '.xml', '.crt', 'crl', 'sig')
@@ -33,7 +33,7 @@ class AllDebrid:
 	name = "AllDebrid"
 	sort_priority = getSetting('alldebrid.priority')
 	def __init__(self):
-		self.token = getSetting('alldebrid.token')
+		self.token = getSetting('alldebridtoken')
 		self.timeout = 20
 		self.server_notifications = getSetting('alldebrid.server.notifications')
 		self.store_to_cloud = getSetting('alldebrid.saveToCloud') == 'true'
@@ -107,7 +107,7 @@ class AllDebrid:
 			try:
 				control.progressDialog.close()
 				self.token = str(response['apikey'])
-				control.setSetting('alldebrid.token', self.token)
+				control.setSetting('alldebridtoken', self.token)
 			except:
 				self.token = 'failed'
 				control.notification(message=40021, icon=ad_icon)
@@ -134,14 +134,14 @@ class AllDebrid:
 		if self.token in (None, '', 'failed'): return
 		control.sleep(2000)
 		account_info = self._get('user')
-		control.setSetting('alldebrid.username', str(account_info['user']['username']))
+		control.setSetting('alldebridusername', str(account_info['user']['username']))
 		control.notification(message=40010, icon=ad_icon)
 		log_utils.log(40010, __name__, log_utils.LOGWARNING)
 
 	def revoke_auth(self):
 		try:
-			control.setSetting('alldebrid.token', '')
-			control.setSetting('alldebrid.username', '')
+			control.setSetting('alldebridtoken', '')
+			control.setSetting('alldebridusername', '')
 			control.okDialog(title=40059, message=40009)
 		except: log_utils.error()
 

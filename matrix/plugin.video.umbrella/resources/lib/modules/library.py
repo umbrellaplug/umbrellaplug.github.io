@@ -20,7 +20,7 @@ folder_setup = False
 service_update = control.setting('library.service.update') == 'true'
 service_notification = control.setting('library.service.notification') == 'true'
 general_notification = control.setting('library.general.notification') == 'true'
-tmdb_session_id = control.setting('tmdb.session_id')
+tmdb_session_id = control.setting('tmdb.sessionid')
 
 
 class lib_tools:
@@ -232,7 +232,7 @@ class libmovies:
 			try:
 				if 'trakt' in url:
 					from resources.lib.menus import movies
-					items = movies.Movies().trakt_list(url, control.setting('trakt.username').strip())
+					items = movies.Movies().trakt_list(url, control.setting('trakt.user.name').strip())
 				if 'themoviedb' in url:
 					from resources.lib.indexers import tmdb
 					if '/list/' not in url: items = tmdb.Movies().tmdb_list(url)
@@ -328,7 +328,7 @@ class libmovies:
 				if 'traktcollection' in url: url = 'https://api.trakt.tv/users/me/collection/movies'
 				if 'traktwatchlist' in url: url = 'https://api.trakt.tv/users/me/watchlist/movies'
 				from resources.lib.menus import movies
-				items = movies.Movies().trakt_list(url, control.setting('trakt.username').strip())
+				items = movies.Movies().trakt_list(url, control.setting('trakt.user.name').strip())
 			if 'tmdb' in url:
 				if 'tmdb_watchlist' in url:
 					url = 'https://api.themoviedb.org/3/account/{account_id}/watchlist/movies?api_key=%s&session_id=%s' % ('%s', tmdb_session_id)
@@ -434,7 +434,7 @@ class libtvshows:
 			try:
 				if 'trakt' in url:
 					from resources.lib.menus import tvshows
-					items = tvshows.TVshows().trakt_list(url, control.setting('trakt.username').strip())
+					items = tvshows.TVshows().trakt_list(url, control.setting('trakt.user.name').strip())
 				if 'themoviedb' in url:
 					from resources.lib.indexers import tmdb
 					if '/list/' not in url: items = tmdb.TVshows().tmdb_list(url)
@@ -550,7 +550,7 @@ class libtvshows:
 				if 'traktcollection' in url: url = 'https://api.trakt.tv/users/me/collection/shows'
 				if 'traktwatchlist' in url: url = 'https://api.trakt.tv/users/me/watchlist/shows'
 				from resources.lib.menus import tvshows
-				items = tvshows.TVshows().trakt_list(url, control.setting('trakt.username').strip())
+				items = tvshows.TVshows().trakt_list(url, control.setting('trakt.user.name').strip())
 			if 'tmdb' in url:
 				if 'tmdb_watchlist' in url:
 					url = 'https://api.themoviedb.org/3/account/{account_id}/watchlist/tv?api_key=%s&session_id=%s' % ('%s', tmdb_session_id)

@@ -6,6 +6,7 @@
 from resources.lib.modules import control, log_utils, my_accounts
 from sys import version_info, platform as sys_platform
 from threading import Thread
+import xbmc
 window = control.homeWindow
 pythonVersion = '{}.{}.{}'.format(version_info[0], version_info[1], version_info[2])
 plugin = 'plugin://plugin.video.umbrella/'
@@ -50,8 +51,17 @@ class SettingsMonitor(control.monitor_class):
 class SyncMyAccounts:
 	def run(self):
 		control.log('[ plugin.video.umbrella ]  Sync "My Accounts" Service Starting...', LOGINFO)
-		my_accounts.syncMyAccounts(silent=True)
+		#my_accounts.syncMyAccounts(silent=True)
+		control.log('[ plugin.video.umbrella ]  This service has been removed and will not longer sync in the next update.', LOGINFO)
 		return control.log('[ plugin.video.umbrella ]  Finished Sync "My Accounts" Service', LOGINFO)
+
+class checkAutoStart:
+	def run(self):
+		control.log('[ plugin.video.umbrella ]  Checking for AutoStart....', LOGINFO)
+		if control.setting('umbrella.autostart') == 'true': 
+			control.execute('RunAddon(plugin.video.umbrella)')
+		return control.log('[ plugin.video.umbrella ] Finished AutoStart Check', LOGINFO)
+
 
 class ReuseLanguageInvokerCheck:
 	def run(self):
@@ -173,7 +183,7 @@ try:
 	addonVersion = control.addon('plugin.video.umbrella').getAddonInfo('version')
 	repoVersion = control.addon('repository.umbrella').getAddonInfo('version')
 	fsVersion = control.addon('script.module.umbrellascrapers').getAddonInfo('version')
-	maVersion = control.addon('script.module.myaccounts').getAddonInfo('version')
+	#maVersion = control.addon('script.module.myaccounts').getAddonInfo('version')
 	log_utils.log('########   CURRENT Umbrella VERSIONS REPORT   ########', level=LOGINFO)
 	log_utils.log('##   Platform: %s' % str(sys_platform), level=LOGINFO)
 	log_utils.log('##   Kodi Version: %s' % str(kodiVersion), level=LOGINFO)
@@ -181,17 +191,68 @@ try:
 	log_utils.log('##   plugin.video.umbrella Version: %s' % str(addonVersion), level=LOGINFO)
 	log_utils.log('##   repository.umbrella Version: %s' % str(repoVersion), level=LOGINFO)
 	log_utils.log('##   script.module.umbrellascrapers Version: %s' % str(fsVersion), level=LOGINFO)
-	log_utils.log('##   script.module.myaccounts Version: %s' % str(maVersion), level=LOGINFO)
 	log_utils.log('######   UMBRELLA SERVICE ENTERING KEEP ALIVE   #####', level=LOGINFO)
 except:
 	log_utils.log('## ERROR GETTING Umbrella VERSION - Missing Repo or failed Install ', level=LOGINFO)
 
 def getTraktCredentialsInfo():
-	username = control.setting('trakt.username').strip()
-	token = control.setting('trakt.token')
-	refresh = control.setting('trakt.refresh')
+	username = control.setting('trakt.user.name').strip()
+	token = control.setting('trakt.user.token')
+	refresh = control.setting('trakt.refreshtoken')
 	if (username == '' or token == '' or refresh == ''): return False
 	return True
+
+class PremAccntNotification:
+	def run(self):
+		from datetime import datetime
+		from resources.lib.debrid import alldebrid
+		from resources.lib.debrid import premiumize
+		from resources.lib.debrid import realdebrid
+		xbmc.log('[ plugin.video.umbrella ]  Debrid Account Expiry Notification Service Starting...', LOGINFO)
+		self.duration = [(15, 10), (11, 7), (8, 4), (5, 2), (3, 0)]
+		if control.setting('alldebridusername') != '' and control.setting('alldebridexpirynotice') == 'true':
+			account_info = alldebrid.AllDebrid().account_info()['user']
+			if account_info:
+				if not account_info['isSubscribed']:
+					# log_utils.log('AD account_info = %s' % account_info, log_utils.LOGINFO)
+					expires = datetime.fromtimestamp(account_info['premiumUntil'])
+					days_remaining = (expires - datetime.today()).days # int
+					if self.withinRangeCheck('alldebrid', days_remaining):
+						control.notification(message='AllDebrid Account expires in %s days' % days_remaining, icon=control.joinPath(control.artPath(), 'alldebrid.png'))
+
+		if control.setting('premiumizeusername') != '' and control.setting('premiumizeexpirynotice') == 'true':
+			account_info = premiumize.Premiumize().account_info()
+			if account_info:
+				# log_utils.log('PM account_info = %s' % account_info, log_utils.LOGINFO)
+				expires = datetime.fromtimestamp(account_info['premium_until'])
+				days_remaining = (expires - datetime.today()).days # int
+				if self.withinRangeCheck('premiumize', days_remaining):
+					control.notification(message='Premiumize.me Account expires in %s days' % days_remaining, icon=control.joinPath(control.artPath(), 'premiumize.png'))
+
+		if control.setting('realdebridusername') != '' and control.setting('realdebridexpirynotice') == 'true':
+			account_info = realdebrid.RealDebrid().account_info()
+			if account_info:
+				import time
+				# log_utils.log('RD account_info = %s' % account_info, log_utils.LOGINFO)
+				FormatDateTime = "%Y-%m-%dT%H:%M:%S.%fZ"
+				try: expires = datetime.strptime(account_info['expiration'], FormatDateTime)
+				except: expires = datetime(*(time.strptime(account_info['expiration'], FormatDateTime)[0:6]))
+				days_remaining = (expires - datetime.today()).days # int
+				if self.withinRangeCheck('realdebrid', days_remaining):
+					control.notification(message='Real-Debrid Account expires in %s days' % days_remaining, icon=control.joinPath(control.artPath(), 'realdebrid.png'))
+
+	def withinRangeCheck(self, debrid_provider, days_remaining):
+		if days_remaining < 15:
+			try: current_notification_range = int(control.setting('%s.notification.range' % debrid_provider))
+			except: current_notification_range = 5
+			for index, day_range in enumerate(self.duration):
+				if day_range[0] > days_remaining > day_range[1] and current_notification_range != index:
+					control.setSetting('%s.notification.range' % debrid_provider, str(index))
+					return True
+			return False
+		else:
+			control.setSetting('%s.notification.range' % debrid_provider, '')
+			return False
 
 def main():
 	while not control.monitor.abortRequested():
@@ -200,6 +261,7 @@ def main():
 		libraryService = None
 		CheckSettingsFile().run()
 		SyncMyAccounts().run()
+		PremAccntNotification().run()
 		ReuseLanguageInvokerCheck().run()
 		if control.setting('library.service.update') == 'true':
 			libraryService = Thread(target=LibraryService().run)
@@ -207,6 +269,7 @@ def main():
 		if control.setting('general.checkAddonUpdates') == 'true':
 			AddonCheckUpdate().run()
 		VersionIsUpdateCheck().run()
+		checkAutoStart().run()
 
 		syncTraktService = Thread(target=SyncTraktService().run) # run service in case user auth's trakt later, sync will loop and do nothing without valid auth'd account
 		syncTraktService.start()

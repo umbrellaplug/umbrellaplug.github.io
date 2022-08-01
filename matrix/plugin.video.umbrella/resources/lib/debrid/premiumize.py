@@ -17,7 +17,7 @@ from resources.lib.modules.source_utils import supported_video_extensions
 
 getLS = control.lang
 getSetting = control.setting
-CLIENT_ID = '522962560' # used to auth
+CLIENT_ID = '149408327' # used to auth
 BaseUrl = 'https://www.premiumize.me/api'
 folder_list_url = '%s/folder/list' % BaseUrl
 folder_rename_url = '%s/folder/rename' % BaseUrl
@@ -49,7 +49,7 @@ class Premiumize:
 	def __init__(self):
 		self.hosts = []
 		self.patterns = []
-		self.token = getSetting('premiumize.token')
+		self.token = getSetting('premiumizetoken')
 		self.headers = {'User-Agent': 'Umbrella for Kodi', 'Authorization': 'Bearer %s' % self.token}
 		self.server_notifications = getSetting('premiumize.server.notifications')
 		self.store_to_cloud = getSetting('premiumize.saveToCloud') == 'true'
@@ -119,8 +119,8 @@ class Premiumize:
 		self.headers = {'User-Agent': 'Umbrella for Kodi', 'Authorization': 'Bearer %s' % self.token}
 		control.sleep(500)
 		account_info = self.account_info()
-		control.setSetting('premiumize.token', token['access_token'])
-		control.setSetting('premiumize.username', str(account_info['customer_id']))
+		control.setSetting('premiumizetoken', token['access_token'])
+		control.setSetting('premiumizeusername', str(account_info['customer_id']))
 		return False, True
 
 	def add_headers_to_url(self, url):
@@ -531,3 +531,11 @@ class Premiumize:
 			if 'status' in response:
 				if response.get('status') == 'success': control.refresh()
 		except: log_utils.error()
+
+	def revoke(self):
+		try:
+			control.setSetting('premiumizetoken', '')
+			control.setSetting('premiumizeusername', '')
+			control.dialog.ok(control.lang(40057), control.lang(40109))
+		except:
+			log_utils.error()

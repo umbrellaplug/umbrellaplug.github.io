@@ -20,41 +20,41 @@ def clean_settings():
 		content += '\n</settings>'
 		return content
 
-	for addon_id in ('plugin.video.umbrella', 'script.module.umbrellascrapers'):
-		try:
-			removed_settings = []
-			active_settings = []
-			current_user_settings = []
-			addon = control.addon(id=addon_id)
-			addon_name = addon.getAddonInfo('name')
-			addon_dir = control.transPath(addon.getAddonInfo('path'))
-			profile_dir = control.transPath(addon.getAddonInfo('profile'))
-			active_settings_xml = control.joinPath(addon_dir, 'resources', 'settings.xml')
-			root = ET.parse(active_settings_xml).getroot()
-			for item in root.findall('./category/setting'):
-				setting_id = item.get('id')
-				if setting_id:
-					active_settings.append(setting_id)
-			settings_xml = control.joinPath(profile_dir, 'settings.xml')
-			root = ET.parse(settings_xml).getroot()
-			for item in root:
-				dict_item = {}
-				setting_id = item.get('id')
-				setting_default = item.get('default')
-				setting_value = item.text
-				dict_item['id'] = setting_id
-				if setting_value:
-					dict_item['value'] = setting_value
-				if setting_default:
-					dict_item['default'] = setting_default
-				current_user_settings.append(dict_item)
-			new_content = _make_content(current_user_settings)
-			nfo_file = control.openFile(settings_xml, 'w')
-			nfo_file.write(new_content)
-			nfo_file.close()
-			control.sleep(200)
-			control.notification(title=addon_name, message=control.lang(32084).format(str(len(removed_settings))))
-		except:
-			from resources.lib.modules import log_utils
-			log_utils.error()
-			control.notification(title=addon_name, message=32115)
+
+	try:
+		removed_settings = []
+		active_settings = []
+		current_user_settings = []
+		addon = control.addon('plugin.video.umbrella')
+		addon_name = addon.getAddonInfo('name')
+		addon_dir = control.transPath(addon.getAddonInfo('path'))
+		profile_dir = control.transPath(addon.getAddonInfo('profile'))
+		active_settings_xml = control.joinPath(addon_dir, 'resources', 'settings.xml')
+		root = ET.parse(active_settings_xml).getroot()
+		for item in root.findall('./category/setting'):
+			setting_id = item.get('id')
+			if setting_id:
+				active_settings.append(setting_id)
+		settings_xml = control.joinPath(profile_dir, 'settings.xml')
+		root = ET.parse(settings_xml).getroot()
+		for item in root:
+			dict_item = {}
+			setting_id = item.get('id')
+			setting_default = item.get('default')
+			setting_value = item.text
+			dict_item['id'] = setting_id
+			if setting_value:
+				dict_item['value'] = setting_value
+			if setting_default:
+				dict_item['default'] = setting_default
+			current_user_settings.append(dict_item)
+		new_content = _make_content(current_user_settings)
+		nfo_file = control.openFile(settings_xml, 'w')
+		nfo_file.write(new_content)
+		nfo_file.close()
+		control.sleep(200)
+		control.notification(title=addon_name, message=control.lang(32084).format(str(len(removed_settings))))
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+		control.notification(title=addon_name, message=32115)

@@ -28,6 +28,7 @@ playerWindow = xbmcgui.Window(12005)
 item = xbmcgui.ListItem
 progressDialog = xbmcgui.DialogProgress()
 progressDialogBG = xbmcgui.DialogProgressBG()
+progress_line = '%s[CR]%s[CR]%s'
 
 addItem = xbmcplugin.addDirectoryItem
 content = xbmcplugin.setContent
@@ -364,12 +365,12 @@ def getMenuEnabled(menu_title):
 	return True
 
 def trigger_widget_refresh():
-	import time
-	timestr = time.strftime("%Y%m%d%H%M%S", time.gmtime())
-	homeWindow.setProperty("widgetreload", timestr)
-	homeWindow.setProperty('widgetreload-episodes', timestr)
-	homeWindow.setProperty('widgetreload-movies', timestr)
-	# execute('UpdateLibrary(video,/fake/path/to/force/refresh/on/home)') # make sure this is ok coupled with above
+	# import time
+	# timestr = time.strftime("%Y%m%d%H%M%S", time.gmtime())
+	# homeWindow.setProperty("widgetreload", timestr)
+	# homeWindow.setProperty('widgetreload-episodes', timestr)
+	# homeWindow.setProperty('widgetreload-movies', timestr)
+	execute('UpdateLibrary(video,/fake/path/to/force/refresh/on/home)') # make sure this is ok coupled with above
 
 def refresh_playAction(): # for umbrella global CM play actions
 	autoPlay = 'true' if setting('play.mode') == '1' else ''
@@ -392,3 +393,29 @@ def metadataClean(metadata):
 					'tvshowtitle', 'premiered', 'status', 'set', 'setoverview', 'tag', 'imdbnumber', 'code', 'aired', 'credits', 'lastplayed',
 					'album', 'artist', 'votes', 'path', 'trailer', 'dateadded', 'mediatype', 'dbid')
 	return {k: v for k, v in iter(metadata.items()) if k in allowed}
+
+def reload_addon():
+    disable_enable_addon()
+    update_local_addon()
+
+def disable_enable_addon():
+    #attempting to fix Crashy Crasherson
+    jsonrpc('{"jsonrpc": "2.0", "id":1, "method": "Addons.SetAddonEnabled", "params": {"addonid": "plugin.video.umbrella", "enabled": false }}')
+    xbmc.log('[ plugin.video.umbrella ] umbrella disabled', 1)
+    jsonrpc('{"jsonrpc": "2.0", "id":1, "method": "Addons.SetAddonEnabled", "params": {"addonid": "plugin.video.umbrella", "enabled": true }}')
+    xbmc.log('[ plugin.video.umbrella ] umbrella re-enabled', 1)
+
+def update_local_addon():
+    execute('UpdateLocalAddons')
+
+def jsondate_to_datetime(jsondate_object, resformat, remove_time=False):
+	import _strptime  # fix bug in python import
+	from datetime import datetime
+	import time
+	if remove_time:
+		try: datetime_object = datetime.strptime(jsondate_object, resformat).date()
+		except TypeError: datetime_object = datetime(*(time.strptime(jsondate_object, resformat)[0:6])).date()
+	else:
+		try: datetime_object = datetime.strptime(jsondate_object, resformat)
+		except TypeError: datetime_object = datetime(*(time.strptime(jsondate_object, resformat)[0:6]))
+	return datetime_object

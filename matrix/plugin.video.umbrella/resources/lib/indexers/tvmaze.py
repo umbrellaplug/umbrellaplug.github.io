@@ -62,8 +62,8 @@ class TVshows(TVMaze):
 		self.list = []
 		self.meta = []
 		self.threads = []
-		self.tvdb_key = getSetting('tvdb.api.key')
-		self.imdb_user = getSetting('imdb.user').replace('ur', '')
+		self.tvdb_key = getSetting('tvdb.apikey')
+		self.imdb_user = getSetting('imdbuser').replace('ur', '')
 		self.user = str(self.imdb_user) + str(self.tvdb_key)
 		self.enable_fanarttv = getSetting('enable.fanarttv') == 'true'
 

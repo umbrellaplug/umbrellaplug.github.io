@@ -37,6 +37,7 @@ class Furk:
 		self.files = []
 		self.api_key = control.setting('furk.api')
 		self.highlight_color = control.getHighlightColor()
+		self.login_link = "login/login?login=%s&pwd=%s"
 
 	def user_files(self):
 		if not self.api_key: return
@@ -244,46 +245,64 @@ class Furk:
 			log_utils.error()
 
 	def account_info_to_dialog(self):
-		if not self.api_key: return
+		from datetime import datetime
+		try:
+			username = control.setting('furk.user.name')
+			api_key = control.setting('furk.api')
+			items = []
+			items += ['Username: ' % username]
+			return control.selectDialog(items, 'Furk')
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+	def account_info_to_dialog(self):
+		from datetime import datetime
+		import time
 		from resources.lib.windows.textviewer import TextViewerXML
 		try:
 			control.busy()
-			url = (base_link + account_info_link % (self.api_key))
-			account_info = session.get(url, timeout=20).json()
-			if not account_info:
-				control.hide()
-				return control.notification(message=32221, icon=furk_icon)
-			account_type = account_info['premium']['name']
-			month_time_left = float(account_info['premium']['bw_month_time_left']) / 60 / 60 / 24
-			try: total_time_left = float(account_info['premium']['time_left']) / 60 / 60 / 24
-			except: total_time_left = ''
-			try: renewal_date = account_info['premium']['to_dt']
-			except: renewal_date = ''
-			try: is_not_last_month = account_info['premium']['is_not_last_month']
-			except: is_not_last_month = ''
-			try: bw_used_month = float(account_info['premium']['bw_used_month']) / 1073741824
-			except: bw_used_month = ''
-			try: bw_limit_month = float(account_info['premium']['bw_limit_month']) / 1073741824
-			except: bw_limit_month = ''
-			try: rem_bw_limit_month = bw_limit_month - bw_used_month
-			except: rem_bw_limit_month = ''
+			username = control.setting('furk.user.name')
+			api_key = control.setting('furk.api')
 			body = []
 			append = body.append
-			append(getLS(32489) % account_type.upper()) # Account
-			append(getLS(32490) % str(round(bw_limit_month, 0))) # Monthly Limit
-			append(getLS(32491)) # Current Month
-			append('        - %s' % getLS(32492) % str(round(month_time_left, 2))) # Days Remaining
-			append('        - %s GB' % getLS(32493) % str(round(bw_used_month, 2))) # Data Used
-			append('        - %s GB' % getLS(32494) % str(round(rem_bw_limit_month, 2))) # Data Remaining
-			if not account_type == 'LIFETIME':
-				append(getLS(32495)) # Current Subscription
-				append('[B]        - %s' % getLS(32492) % str(round(total_time_left, 0))) # Days Remaining
-				if is_not_last_month == '1': append('        - %s' % getLS(32496) % renewal_date) # Resets On
-				else: append('        - %s' % getLS(32497) % renewal_date) # Renewal Needed On
+			append(getLS(40129) % username)  # Username
+			append(getLS(40130) % api_key)  # Plan
 			control.hide()
-			windows = TextViewerXML('textviewer.xml', control.addonPath(control.addonId()), heading='[B]FURK[/B]', text='\n\n'.join(body))
+			windows = TextViewerXML('textviewer.xml', control.addonPath(control.addonId()), heading='[B]Furk[/B]', text='\n\n'.join(body))
 			windows.run()
 			del windows
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()
+			control.hide()
+
+	def get_api(self):
+		try:
+			username = control.setting('furk.user.name')
+			userpass = control.setting('furk.pass.word')
+			api_key = control.setting('furk.api')
+			if api_key == '':
+				if username == '' or userpass == '': return
+				link = (base_link + self.login_link % (username, userpass))
+				p = requests.post(link, timeout=20).json()
+				if p['status'] == 'ok':
+					api_key = p['api_key']
+					control.setSetting('furk.api', api_key)
+					furkmessage = control.notification(message='Furk API Key Saved.')
+				else: 
+					furkmessage = control.notification(message='Issue saving Furk key. Please check username and password.')
+			return furkmessage
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			return control.notification(message='Issue Saving Furk API Key. Please check username and password.')
+
+	def clear_api(self):
+		try:
+			control.setSetting('furk.api', '')
+			furkmessage = control.notification(message='Furk Key Cleared')
+			return furkmessage
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			return control.notification(message='Issue Clearing Furk API Key. Please check username and password.')

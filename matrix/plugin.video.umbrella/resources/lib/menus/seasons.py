@@ -29,7 +29,7 @@ class Seasons:
 		self.date_time = datetime.now()
 		self.today_date = (self.date_time).strftime('%Y-%m-%d')
 		self.tmdb_poster_path = 'https://image.tmdb.org/t/p/w342'
-		self.trakt_user = getSetting('trakt.username').strip()
+		self.trakt_user = getSetting('trakt.user.name').strip()
 		self.traktCredentials = trakt.getTraktCredentialsInfo()
 		self.showunaired = getSetting('showunaired') == 'true'
 		self.unairedcolor = control.getColor(getSetting('unaired.identify'))
