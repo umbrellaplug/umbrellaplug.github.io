@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.56">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.57">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.6"/>
@@ -31,7 +31,7 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.56 - July 31, 2022[/COLOR][/B]
+[B][COLOR black]Update - v6.5.57 - July 31, 2022[/COLOR][/B]
 --[I] Removed "My Accounts"[I]
 --[I] ***ALL CREDENTIALS WILL NEED TO BE REAUTHORIZED***[I]
 --[I] Please update your credentials for debrid and trakt in Umbrella > Tools > Settings: Accounts[I]
@@ -40,6 +40,7 @@
 --[I] New Setting for AV1 File Format Identification.[I]
 --[I] New Setting Start Umbrella on Launch.[I]
 --[I] New identifier added for Opus sound files.[I]
+--[I] Small bump for fix with MDBList module.[I]
 		</news>
 	</extension>
 </addon>

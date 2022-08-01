@@ -1,4 +1,15 @@
 
+[B][COLOR black]Update - v6.5.57 - July 31, 2022[/COLOR][/B]
+--[I] Removed "My Accounts"[I]
+--[I] ***ALL CREDENTIALS WILL NEED TO BE REAUTHORIZED***[I]
+--[I] Please update your credentials for debrid and trakt in Umbrella > Tools > Settings: Accounts[I]
+--[I] Sorry for any issues this update may cause you.[I]
+--[I] New PlayNext theme for Auramod Theme.[I]
+--[I] New Setting for AV1 File Format Identification.[I]
+--[I] New Setting Start Umbrella on Launch.[I]
+--[I] New identifier added for Opus sound files.[I]
+--[I] Small bump for fix with MDBList module.[I]
+
 [B][COLOR black]Update - v6.5.56 - July 31, 2022[/COLOR][/B]
 --[I] Removed "My Accounts"[I]
 --[I] Please update your credentials for debrid and trakt in Umbrella > Tools > Settings: Accounts[I]

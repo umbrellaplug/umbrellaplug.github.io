@@ -5,18 +5,12 @@
 """
 
 
-from distutils.log import error
-from json import dumps as jsdumps
-import re
 import requests
-
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-from urllib.parse import urljoin
-from resources.lib.database import cache
 from resources.lib.modules import control
 from resources.lib.modules import log_utils
-from xbmcaddon import Addon as KodiAddon
+
 #mdblist use your own key
 #trakt limiting users lists now. lets see if we can start using some other list providers.
 #yes I know this needs cleanup.
