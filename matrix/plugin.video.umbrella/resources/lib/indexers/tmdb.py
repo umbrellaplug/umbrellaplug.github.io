@@ -11,14 +11,13 @@ from threading import Thread
 from urllib3.util.retry import Retry
 from resources.lib.database import cache, metacache, fanarttv_cache
 from resources.lib.indexers.fanarttv import FanartTv
-from resources.lib.modules.control import setting as getSetting, notification, sleep, apiLanguage, mpaCountry, trailer as control_trailer, yesnoDialog
+from resources.lib.modules.control import setting as getSetting, notification, sleep, apiLanguage, mpaCountry, openSettings, trailer as control_trailer, yesnoDialog
 
 base_link = "https://api.themoviedb.org/3/"
 image_path = "https://image.tmdb.org/t/p/%s"
 session = requests.Session()
 retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
 session.mount('https://api.themoviedb.org', HTTPAdapter(max_retries=retries, pool_maxsize=100))
-
 
 
 class TMDb:
@@ -45,7 +44,7 @@ class TMDb:
 			elif response.status_code == 404:
 				if getSetting('debug.level') == '1':
 					from resources.lib.modules import log_utils
-					log_utils.log('TMDb get_request() failed: (404:NOT FOUND) - URL: %s' % url, __name__, level=log_utils.LOGDEBUG)
+					log_utils.log('TMDb get_request() failed: (404:NOT FOUND) - URL: %s' % url, level=log_utils.LOGDEBUG)
 				return '404:NOT FOUND'
 			elif 'Retry-After' in response.headers: # API REQUESTS ARE BEING THROTTLED, INTRODUCE WAIT TIME (TMDb removed rate-limit on 12-6-20)
 				throttleTime = response.headers['Retry-After']
@@ -473,8 +472,8 @@ class TVshows(TMDb):
 		self.show_link = base_link + 'tv/%s?api_key=%s&language=%s&append_to_response=credits,content_ratings,external_ids,alternative_titles,videos' % ('%s', self.API_key, self.lang)
 		# 'append_to_response=translations, aggregate_credits' (DO NOT USE, response data way to massive and bogs the response time)
 		self.art_link = base_link + 'tv/%s/images?api_key=%s' % ('%s', self.API_key)
-		self.tvdb_key = getSetting('tvdb.apikey')
-		self.imdb_user = getSetting('imdbuser').replace('ur', '')
+		self.tvdb_key = getSetting('tvdb.api.key')
+		self.imdb_user = getSetting('imdb.user').replace('ur', '')
 		self.user = str(self.imdb_user) + str(self.tvdb_key)
 		self.date_time = datetime.now()
 		self.today_date = (self.date_time).strftime('%Y-%m-%d')
@@ -1048,11 +1047,16 @@ class TVshows(TMDb):
 class Auth:
 	def __init__(self):
 		self.auth_base_link = '%s%s' % (base_link, 'authentication')
+		self.API_key = getSetting('tmdb.apikey')
+		if not self.API_key: self.API_key = 'bc96b19479c7db6c8ae805744d0bdfe2'
 
-	def create_session_id(self):
+	def create_session_id(self, fromSettings=0):
 		try:
 			from resources.lib.modules.control import setSetting
-			if getSetting('tmdbusername') == '' or getSetting('tmdbpassword') == '': return notification(message='TMDb Account info missing', icon='ERROR')
+			if getSetting('tmdbusername') == '' or getSetting('tmdbpassword') == '':
+				if fromSettings == 1:
+						openSettings('8.1', 'plugin.video.umbrella')
+				return notification(message='TMDb Account info missing', icon='ERROR')
 			url = self.auth_base_link + '/token/new?api_key=%s' % self.API_key
 			result = requests.get(url).json()
 			token = result.get('request_token')
@@ -1064,20 +1068,30 @@ class Auth:
 							"request_token": "%s" % token}
 			result2 = requests.post(url2, data=post2).json()
 			url3 = self.auth_base_link + '/session/new?api_key=%s' % self.API_key
-			post3 = {"request_token": "%s" % token}
-			result3 = requests.post(url3, data=post3).json()
-			if result3.get('success') is True:
-				session_id = result3.get('session_id')
-				msg = '%s' % ('username =' + username + '[CR]password =' + password + '[CR]token = ' + token + '[CR]confirm?')
-				if yesnoDialog(msg, '', ''):
-					setSetting('tmdb.sessionid', session_id)
-					notification(message='TMDb Successfully Authorized')
-				else: notification(message='TMDb Authorization Cancelled')
+			if result2.get('success') is True:
+				post3 = {"request_token": "%s" % token}
+				result3 = requests.post(url3, data=post3).json()
+				if result3.get('success') is True:
+					session_id = result3.get('session_id')
+					msg = '%s' % ('username =' + username + '[CR]password =' + password + '[CR]token = ' + token + '[CR]confirm?')
+					if yesnoDialog(msg, '', ''):
+						setSetting('tmdb.sessionid', session_id)
+						notification(message='TMDb Successfully Authorized')
+						if fromSettings == 1:
+							openSettings('8.1', 'plugin.video.umbrella')
+					else: 
+						notification(message='TMDb Authorization Cancelled')
+						if fromSettings == 1:
+							openSettings('8.1', 'plugin.video.umbrella')
+			else:
+				if fromSettings == 1:
+						openSettings('8.1', 'plugin.video.umbrella')
+				return notification(message='Please check TMDB Account Info and Password.', icon='ERROR')
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()
 
-	def revoke_session_id(self):
+	def revoke_session_id(self, fromSettings=0):
 		try:
 			from resources.lib.modules.control import setSetting
 			if getSetting('tmdb.sessionid') == '': return

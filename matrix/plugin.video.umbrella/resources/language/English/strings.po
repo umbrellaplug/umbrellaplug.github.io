@@ -4499,3 +4499,7 @@ msgstr ""
 msgctxt "#40132"
 msgid "Remove AV1 Sources"
 msgstr ""
+
+msgctxt "#40133"
+msgid "Premiumize Authorization Revoked"
+msgstr ""

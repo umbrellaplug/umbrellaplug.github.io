@@ -93,10 +93,10 @@ def router(params):
 		movies.Movies().userlists()
 	elif action == 'traktAuth':
 		from resources.lib.modules import trakt as Trakt
-		Trakt.traktAuth()
+		Trakt.traktAuth(fromSettings=1)
 	elif action == 'traktRevoke':
 		from resources.lib.modules import trakt as Trakt
-		Trakt.traktRevoke()
+		Trakt.traktRevoke(fromSettings=1)
 	elif action == 'traktAccountInfo':
 		from resources.lib.modules import trakt as Trakt
 		Trakt.getTraktAccountInfo()
@@ -305,10 +305,10 @@ def router(params):
 			alldebrid.AllDebrid().account_info_to_dialog()
 		elif action == 'ad_Revoke':
 			from resources.lib.debrid import alldebrid
-			alldebrid.AllDebrid().revoke_auth()
+			alldebrid.AllDebrid().revoke_auth(fromSettings=1)
 		elif action == 'ad_Authorize':
 			from resources.lib.debrid import alldebrid
-			alldebrid.AllDebrid().auth()
+			alldebrid.AllDebrid().auth(fromSettings=1)
 		elif action == 'ad_Transfers':
 			from resources.lib.debrid import alldebrid
 			alldebrid.AllDebrid().user_transfers_to_listItem()
@@ -377,10 +377,10 @@ def router(params):
 			premiumize.Premiumize().account_info_to_dialog()
 		elif action == 'pm_Authorize':
 			from resources.lib.debrid import premiumize
-			premiumize.Premiumize().auth()
+			premiumize.Premiumize().auth(fromSettings=1)
 		elif action == 'pm_Revoke':
 			from resources.lib.debrid import premiumize
-			premiumize.Premiumize().revoke()
+			premiumize.Premiumize().revoke(fromSettings=1)
 		elif action == 'pm_MyFiles':
 			from resources.lib.debrid import premiumize
 			premiumize.Premiumize().my_files_to_listItem(params.get('id'), name)
@@ -409,10 +409,10 @@ def router(params):
 			realdebrid.RealDebrid().account_info_to_dialog()
 		elif action == 'rd_Authorize':
 			from resources.lib.debrid import realdebrid
-			realdebrid.RealDebrid().auth()
+			realdebrid.RealDebrid().auth(fromSettings=1)
 		elif action == 'rd_Revoke':
 			from resources.lib.debrid import realdebrid
-			realdebrid.RealDebrid().reset_authorization()
+			realdebrid.RealDebrid().reset_authorization(fromSettings=1)
 		elif action == 'rd_UserTorrentsToListItem':
 			from resources.lib.debrid import realdebrid
 			realdebrid.RealDebrid().user_torrents_to_listItem()
@@ -740,10 +740,10 @@ def router(params):
 	####################################################
 	elif action == 'tmdb_Auth':
 		from resources.lib.indexers.tmdb import Auth as tmdb_auth
-		tmdb_auth().create_session_id()
+		tmdb_auth().create_session_id(fromSettings=1)
 	elif action == 'tmdb_Revoke':
 		from resources.lib.indexers.tmdb import Auth as tmdb_auth
-		tmdb_auth().revoke_session_id()
+		tmdb_auth().revoke_session_id(fromSettings=1)
 	elif action == 'fk_getApiKey':
 		from resources.lib.debrid import furk
 		furk.Furk().get_api()

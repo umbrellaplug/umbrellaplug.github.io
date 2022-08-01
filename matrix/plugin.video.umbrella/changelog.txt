@@ -1,4 +1,8 @@
 
+[B][COLOR black]Update - v6.5.58 - August 1, 2022[/COLOR][/B]
+--[I] Made authorizations return to setting after authorized or revoked.[I]
+--[I] Fixed issues with Authorizing TMDB[I]
+
 [B][COLOR black]Update - v6.5.57 - July 31, 2022[/COLOR][/B]
 --[I] Removed "My Accounts"[I]
 --[I] ***ALL CREDENTIALS WILL NEED TO BE REAUTHORIZED***[I]

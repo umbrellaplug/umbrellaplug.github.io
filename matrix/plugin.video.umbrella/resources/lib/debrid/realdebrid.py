@@ -120,7 +120,7 @@ class RealDebrid:
 			return response
 		except: log_utils.error()
 
-	def auth_loop(self):
+	def auth_loop(self, fromSettings=0):
 		control.sleep(self.auth_step*1000)
 		url = 'client_id=%s&code=%s' % (self.client_ID, self.device_code)
 		url = oauth_base_url + credentials_url % url
@@ -136,9 +136,11 @@ class RealDebrid:
 			except:
 				log_utils.error()
 				control.okDialog(title='default', message=40019)
+				if fromSettings == 1:
+					control.openSettings('7.2', 'plugin.video.umbrella')
 			return
 
-	def auth(self):
+	def auth(self, fromSettings=0):
 		self.secret = ''
 		self.client_ID = 'X245A4XAIBGVM'
 		url = 'client_id=%s&new_credentials=yes' % self.client_ID
@@ -155,8 +157,8 @@ class RealDebrid:
 			if progressDialog.iscanceled():
 				progressDialog.close()
 				break
-			self.auth_loop()
-		if self.secret: self.get_token()
+			self.auth_loop(fromSettings=fromSettings)
+		if self.secret: self.get_token(fromSettings=fromSettings)
 
 	def account_info(self):
 		return self._get('user')
@@ -758,7 +760,7 @@ class RealDebrid:
 			log_utils.error()
 			return False
 
-	def get_token(self):
+	def get_token(self, fromSettings=0):
 		try:
 			url = oauth_base_url + 'token'
 			postData = {'client_id': self.client_ID, 'client_secret': self.secret, 'code': self.device_code, 'grant_type': 'http://oauth.net/grant_type/device/1.0'}
@@ -768,6 +770,8 @@ class RealDebrid:
 			if 'Temporarily Down For Maintenance' in response.text:
 				if self.server_notifications: control.notification(message='Real-Debrid Temporarily Down For Maintenance', icon=rd_icon)
 				log_utils.log('Real-Debrid Temporarily Down For Maintenance', level=log_utils.LOGWARNING)
+				if fromSettings == 1:
+					control.openSettings('7.2', 'plugin.video.umbrella')
 				return False, response.text
 			else: response = response.json()
 
@@ -775,6 +779,8 @@ class RealDebrid:
 				message = response.get('error')
 				if self.server_notifications: control.notification(message=message, icon=rd_icon)
 				log_utils.log('Real-Debrid Error:  %s' % message, level=log_utils.LOGWARNING)
+				if fromSettings == 1:
+					control.openSettings('7.2', 'plugin.video.umbrella')
 				return False, response
 
 			self.token = response['access_token']
@@ -787,17 +793,25 @@ class RealDebrid:
 			control.setSetting('realdebridtoken', self.token)
 			#control.addon('script.module.myaccounts').setSetting('realdebridtoken', self.token)
 			control.setSetting('realdebridrefresh', response['refresh_token'])
+			if fromSettings == 1:
+				control.openSettings('7.2', 'plugin.video.umbrella')
+				control.notification(message="Real Debrid Authorized", icon=rd_icon)
 			return True, None
 		except:
 			log_utils.error('Real Debrid Authorization Failed : ')
+			if fromSettings == 1:
+				control.openSettings('7.2', 'plugin.video.umbrella')
 			return False, None
 
-	def reset_authorization(self):
+	def reset_authorization(self, fromSettings=0):
 		try:
 			control.setSetting('realdebrid.clientid', '')
 			control.setSetting('realdebridsecret', '')
 			control.setSetting('realdebridtoken', '')
 			control.setSetting('realdebridrefresh', '')
 			control.setSetting('realdebridusername', '')
+			if fromSettings == 1:
+				control.openSettings('7.2', 'plugin.video.umbrella')
 			control.dialog.ok(getLS(40058), getLS(32320))
+
 		except: log_utils.error()

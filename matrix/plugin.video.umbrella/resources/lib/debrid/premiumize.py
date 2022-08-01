@@ -85,7 +85,7 @@ class Premiumize:
 		except: log_utils.error()
 		return response
 
-	def auth(self):
+	def auth(self, fromSettings=0):
 		data = {'client_id': CLIENT_ID, 'response_type': 'device_code'}
 		token = session.post('https://www.premiumize.me/token', data=data, timeout=15).json()
 		expiry = float(token['expires_in'])
@@ -97,22 +97,26 @@ class Premiumize:
 		progressDialog.create(getLS(40054))
 		progressDialog.update(-1, line % (getLS(32513) % token['verification_uri'], getLS(32514) % token['user_code']))
 		while poll_again and not token_ttl <= 0 and not progressDialog.iscanceled():
-			poll_again, success = self.poll_token(token['device_code'])
+			poll_again, success = self.poll_token(token['device_code'], fromSettings=fromSettings)
 			progress_percent = 100 - int((float((expiry - token_ttl) / expiry) * 100))
 			progressDialog.update(progress_percent)
 			control.sleep(token['interval'] * 1000)
 			token_ttl -= int(token['interval'])
 		progressDialog.close()
 		if success:
+			if fromSettings == 1:
+				control.openSettings('7.1', 'plugin.video.umbrella')
 			control.notification(message=40052, icon=pm_icon)
 			log_utils.log('Premiumize.me Successfully Authorized', level=log_utils.LOGDEBUG)
 
-	def poll_token(self, device_code):
+	def poll_token(self, device_code, fromSettings=0):
 		data = {'client_id': CLIENT_ID, 'code': device_code, 'grant_type': 'device_code'}
 		token = session.post('https://www.premiumize.me/token', data=data, timeout=15).json()
 		if 'error' in token:
 			if token['error'] == "access_denied":
 				control.okDialog(title='default', message=getLS(40020))
+				if fromSettings == 1:
+					control.openSettings('7.1', 'plugin.video.umbrella')
 				return False, False
 			return True, False
 		self.token = token['access_token']
@@ -532,10 +536,12 @@ class Premiumize:
 				if response.get('status') == 'success': control.refresh()
 		except: log_utils.error()
 
-	def revoke(self):
+	def revoke(self, fromSettings=0):
 		try:
 			control.setSetting('premiumizetoken', '')
 			control.setSetting('premiumizeusername', '')
 			control.dialog.ok(control.lang(40057), control.lang(40109))
+			if fromSettings == 1:
+				control.openSettings('7.1', 'plugin.video.umbrella')
 		except:
 			log_utils.error()

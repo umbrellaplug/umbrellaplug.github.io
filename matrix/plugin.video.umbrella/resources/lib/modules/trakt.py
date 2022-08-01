@@ -119,7 +119,7 @@ def re_auth(headers):
 			return False
 	except: log_utils.error()
 
-def traktAuth():
+def traktAuth(fromSettings=0):
 	import time as time
 	try:
 		traktDeviceCode = getTraktDeviceCode()
@@ -138,13 +138,17 @@ def traktAuth():
 				control.setSetting('trakt.user.name', str(username['username']))
 			except: pass
 			control.notification(message=40107, icon=trakt_icon)
+			if fromSettings == 1:
+				control.openSettings('6.0', 'plugin.video.umbrella')
 			return True
+		if fromSettings == 1:
+				control.openSettings('6.0', 'plugin.video.umbrella')
 		control.notification(message=40108, icon=trakt_icon)
 		return False
 	except:
 		log_utils.error()
 
-def traktRevoke():
+def traktRevoke(fromSettings=0):
 		data = {"token": control.setting('trakt.user.token')}
 		try: 
 			getTrakt('oauth/revoke', post=data)
@@ -153,7 +157,10 @@ def traktRevoke():
 		control.setSetting('trakt.token.expires', '')
 		control.setSetting('trakt.user.token', '')
 		control.setSetting('trakt.refreshtoken', '')
+		if fromSettings == 1:
+			control.openSettings('6.0', 'plugin.video.umbrella')
 		control.dialog.ok(control.lang(32315), control.lang(40109))
+
 
 def getTraktDeviceCode():
 	try:
