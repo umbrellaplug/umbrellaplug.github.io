@@ -1,6 +1,3 @@
-[submodule "matrix/script.module.myaccounts"]
-	path = matrix/script.module.myaccounts
-	url = https://github.com/Ezra-Hubbard/script.module.myaccounts
 [submodule "matrix/script.module.umbrellascrapers"]
 	path = matrix/script.module.umbrellascrapers
 	url = https://github.com/umbrellaplug/script.module.umbrellascrapers
