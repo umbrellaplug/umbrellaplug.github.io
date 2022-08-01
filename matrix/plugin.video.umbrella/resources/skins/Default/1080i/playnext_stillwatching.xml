@@ -246,6 +246,7 @@
 							<alttexturefocus border="10" colordiffuse="FF172A91">common/button3.png</alttexturefocus>
 							<alttexturenofocus border="10" colordiffuse="FF212121">common/button3.png</alttexturenofocus>
 							<pulseonselect>no</pulseonselect>
+							<visible>String.IsEmpty(Window().Property(umbrella.hidebutton))</visible>
 						</control>
 					</control>
 					<control type="image">
@@ -274,6 +275,7 @@
 						<height>45</height>
 						<aspect>keep</aspect>
 						<texture colordiffuse="ddffffff">common/close.png</texture>
+						<visible>String.IsEmpty(Window().Property(umbrella.hidebutton))</visible>
 					</control>
 
 					<!-- Time and EndTime -->

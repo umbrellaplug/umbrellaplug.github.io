@@ -20,9 +20,10 @@ retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 50
 session.mount('https://api.themoviedb.org', HTTPAdapter(max_retries=retries, pool_maxsize=100))
 
 
+
 class TMDb:
 	def __init__(self):
-		self.API_key = getSetting('tmdb.api.key')
+		self.API_key = getSetting('tmdb.apikey')
 		if not self.API_key: self.API_key = 'bc96b19479c7db6c8ae805744d0bdfe2'
 		self.set_resolutions()
 		self.lang = apiLanguage()['tmdb']
@@ -472,8 +473,8 @@ class TVshows(TMDb):
 		self.show_link = base_link + 'tv/%s?api_key=%s&language=%s&append_to_response=credits,content_ratings,external_ids,alternative_titles,videos' % ('%s', self.API_key, self.lang)
 		# 'append_to_response=translations, aggregate_credits' (DO NOT USE, response data way to massive and bogs the response time)
 		self.art_link = base_link + 'tv/%s/images?api_key=%s' % ('%s', self.API_key)
-		self.tvdb_key = getSetting('tvdb.api.key')
-		self.imdb_user = getSetting('imdb.user').replace('ur', '')
+		self.tvdb_key = getSetting('tvdb.apikey')
+		self.imdb_user = getSetting('imdbuser').replace('ur', '')
 		self.user = str(self.imdb_user) + str(self.tvdb_key)
 		self.date_time = datetime.now()
 		self.today_date = (self.date_time).strftime('%Y-%m-%d')
@@ -1051,13 +1052,13 @@ class Auth:
 	def create_session_id(self):
 		try:
 			from resources.lib.modules.control import setSetting
-			if getSetting('tmdb.username') == '' or getSetting('tmdb.password') == '': return notification(message='TMDb Account info missing', icon='ERROR')
+			if getSetting('tmdbusername') == '' or getSetting('tmdbpassword') == '': return notification(message='TMDb Account info missing', icon='ERROR')
 			url = self.auth_base_link + '/token/new?api_key=%s' % self.API_key
 			result = requests.get(url).json()
 			token = result.get('request_token')
 			url2 = self.auth_base_link + '/token/validate_with_login?api_key=%s' % self.API_key
-			username = getSetting('tmdb.username')
-			password = getSetting('tmdb.password')
+			username = getSetting('tmdbusername')
+			password = getSetting('tmdbpassword')
 			post2 = {"username": "%s" % username,
 							"password": "%s" % password,
 							"request_token": "%s" % token}
@@ -1069,7 +1070,7 @@ class Auth:
 				session_id = result3.get('session_id')
 				msg = '%s' % ('username =' + username + '[CR]password =' + password + '[CR]token = ' + token + '[CR]confirm?')
 				if yesnoDialog(msg, '', ''):
-					setSetting('tmdb.session_id', session_id)
+					setSetting('tmdb.sessionid', session_id)
 					notification(message='TMDb Successfully Authorized')
 				else: notification(message='TMDb Authorization Cancelled')
 		except:
@@ -1079,18 +1080,18 @@ class Auth:
 	def revoke_session_id(self):
 		try:
 			from resources.lib.modules.control import setSetting
-			if getSetting('tmdb.session_id') == '': return
+			if getSetting('tmdb.sessionid') == '': return
 			url = self.auth_base_link + '/session?api_key=%s' % self.API_key
-			post = {"session_id": "%s" % getSetting('tmdb.session_id')}
+			post = {"session_id": "%s" % getSetting('tmdb.sessionid')}
 			result = requests.delete(url, data=post).json()
 			if result.get('success') is True:
-				setSetting('tmdb.session_id', '')
+				setSetting('tmdb.sessionid', '')
 				notification(message='TMDb session_id successfully deleted')
 			else:
 				from resources.lib.modules import log_utils
 				log_utils.log('TMDb Revoke session_id FAILED: %s' % result.get('status_message', ''), __name__, log_utils.LOGWARNING)
 				if 'id is invalid or not found' in result.get('status_message', ''):
-					setSetting('tmdb.session_id', '')
+					setSetting('tmdb.sessionid', '')
 					notification(message=result.get('status_message', ''), icon='ERROR')
 				else: notification(message='TMDb session_id deletion FAILED', icon='ERROR')
 		except:

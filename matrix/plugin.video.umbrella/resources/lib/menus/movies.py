@@ -33,13 +33,13 @@ class Movies:
 		self.date_time = datetime.now()
 		self.today_date = (self.date_time).strftime('%Y-%m-%d')
 		self.hidecinema = getSetting('hidecinema') == 'true'
-		self.trakt_user = getSetting('trakt.username').strip()
+		self.trakt_user = getSetting('trakt.user.name').strip()
 		self.traktCredentials = trakt.getTraktCredentialsInfo()
 		self.lang = control.apiLanguage()['trakt']
-		self.imdb_user = getSetting('imdb.user').replace('ur', '')
-		self.tmdb_key = getSetting('tmdb.api.key')
+		self.imdb_user = getSetting('imdbuser').replace('ur', '')
+		self.tmdb_key = getSetting('tmdb.apikey')
 		if not self.tmdb_key: self.tmdb_key = 'bc96b19479c7db6c8ae805744d0bdfe2'
-		self.tmdb_session_id = getSetting('tmdb.session_id')
+		self.tmdb_session_id = getSetting('tmdb.sessionid')
 		# self.user = str(self.imdb_user) + str(self.tmdb_key)
 		self.user = str(self.tmdb_key)
 		self.enable_fanarttv = getSetting('enable.fanarttv') == 'true'

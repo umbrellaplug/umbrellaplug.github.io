@@ -9,8 +9,11 @@ from urllib.parse import unquote, unquote_plus
 VIDEO_3D = ('.3d.', '.sbs.', '.hsbs', 'sidebyside', 'side.by.side', 'stereoscopic', '.tab.', '.htab.', 'topandbottom', 'top.and.bottom')
 
 DOLBY_VISION = ('dolby.vision', 'dolbyvision', '.dovi.', '.dv.')
-HDR = ('2160p.uhd.bluray', '2160p.uhd.blu.ray', '2160p.bluray.hevc.truehd', '2160p.blu.ray.hevc.truehd',
-			'2160p.bluray.hevc.dts.hd.ma', '2160p.blu.ray.hevc.dts.hd.ma', '.hdr.', 'hdr10', 'hdr.10',
+HDR = ('2160p.bluray.hevc.truehd', '2160p.bluray.hevc.dts', '2160p.bluray.hevc.lpcm',
+			'2160p.blu.ray.hevc.truehd', '2160p.blu.ray.hevc.dts',
+			'2160p.uhd.bluray', '2160p.uhd.blu.ray',
+			'2160p.us.bluray.hevc.truehd', '2160p.us.bluray.hevc.dts',
+			'.hdr.', 'hdr10', 'hdr.10',
 			'uhd.bluray.2160p', 'uhd.blu.ray.2160p')
 HDR_true = ('.hdr.', 'hdr10', 'hdr.10')
 
@@ -30,11 +33,12 @@ SCR = ('scr.', 'screener')
 HC = ('.hc', 'korsub', 'kor.sub')
 
 DOLBY_TRUEHD = ('true.hd', 'truehd')
-DOLBY_DIGITALPLUS = ('dolby.digital.plus', 'dolbydigital.plus', 'dolbydigitalplus', 'dd.plus.', 'ddplus', '.ddp.', 'ddp2', 'ddp5', 'ddp7', 'eac3', '.e.ac3')
+DOLBY_DIGITALPLUS = ('dolby.digital.plus', 'dolbydigital.plus', 'dolbydigitalplus', 'dd.plus.', 'ddplus', '.ddp.', 'ddp2', 'ddp5', 'ddp7', 'eac3', '.e.ac3', 'e.ac.3')
+
 DOLBY_DIGITALEX = ('.dd.ex.', 'ddex', 'dolby.ex.', 'dolby.digital.ex.', 'dolbydigital.ex.')
 DOLBYDIGITAL = ('dd2.', 'dd5', 'dd7', 'dolbyd.', 'dolby.digital', 'dolbydigital', '.ac3', '.ac.3.', '.dd.')
 
-DTSX = ('dts.x.', 'dtsx')
+DTSX = ('.dts.x.', 'dtsx')
 DTS_HDMA = ('hd.ma', 'hdma')
 DTS_HD = ('dts.hd.', 'dtshd')
 
@@ -122,9 +126,11 @@ def getFileType(name_info=None, url=None):
 		elif any(value in fmt for value in HDR): file_type += ' HDR /'
 		elif all(i in fmt for i in ('2160p', 'remux')): file_type += ' HDR /'
 		if ' DOLBY-VISION ' in file_type:
-			if any(value in fmt for value in HDR_true): file_type += ' HDR /' # for hybrid DV and HDR sources
+			# if any(value in fmt for value in HDR_true) or 'hybrid' in fmt: file_type += ' HDR /' # for hybrid DV and HDR sources
+			if any(value in fmt for value in HDR_true) or any(value in fmt for value in ('hybrid', 'remux.sl.dv.')): file_type += ' HDR /' # for hybrid DV and HDR sources. "remux.sl.dv" is used by plexshares as hybrid sources
 
 		if any(value in fmt for value in CODEC_H264): file_type += ' AVC /'
+		elif '.av1.' in fmt: file_type += ' AV1 /'
 		elif any(value in fmt for value in CODEC_H265): file_type += ' HEVC /'
 		elif any(i in file_type for i in (' HDR ', ' DOLBY-VISION ')): file_type += ' HEVC /'
 		elif any(value in fmt for value in CODEC_XVID): file_type += ' XVID /'
@@ -145,6 +151,8 @@ def getFileType(name_info=None, url=None):
 		elif any(value in fmt for value in SCR): file_type += ' SCR /'
 		elif any(value in fmt for value in HDRIP): file_type += ' HDRIP /'
 
+		#if 'opus' in fmt: file_type += ' OPUS /'
+
 		if 'atmos' in fmt: file_type += ' ATMOS /'
 		if any(value in fmt for value in DOLBY_TRUEHD): file_type += ' DOLBY-TRUEHD /'
 		if any(value in fmt for value in DOLBY_DIGITALPLUS): file_type += ' DD+ /'
@@ -154,7 +162,7 @@ def getFileType(name_info=None, url=None):
 		if 'aac' in fmt: file_type += ' AAC /'
 		elif 'mp3' in fmt: file_type += ' MP3 /'
 		elif 'flac' in fmt: file_type += ' FLAC /'
-		# elif 'opus' in fmt and not fmt.endswith('opus.'): file_type += ' OPUS /' #OPUS also a group titles endswith
+		elif 'opus' in fmt and not fmt.endswith('opus.'): file_type += ' OPUS /' #OPUS also a group titles endswith
 
 		if any(value in fmt for value in DTSX): file_type += ' DTS-X /'
 		elif any(value in fmt for value in DTS_HDMA): file_type += ' DTS-HD MA /'

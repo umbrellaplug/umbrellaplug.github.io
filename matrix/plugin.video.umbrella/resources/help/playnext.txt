@@ -8,3 +8,6 @@ for Episodes.  See [COLOR red][B]"System - Settings - Player - Videos - Play nex
 select [B][COLOR red]Episodes[/B][/COLOR].
 
 NOTE: If you call up [B]Source Select[/B] continual playback will not function.  Continual playback ONLY operates in AutoPlay mode per above.
+
+PlayNext now has some themes that go with skins included in it. If you have a skin that it has a theme for and you set the setting for 
+Enable Playnext Theme it will automatically apply the theme for that skin. More themes will be added later.

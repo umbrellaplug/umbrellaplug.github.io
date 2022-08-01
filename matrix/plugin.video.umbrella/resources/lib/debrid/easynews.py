@@ -45,8 +45,8 @@ class EasyNews:
 	def _get_auth(self):
 		auth = None
 		try:
-			username = getSetting('easynews.username')
-			password = getSetting('easynews.password')
+			username = getSetting('easynewsusername')
+			password = getSetting('easynewspassword')
 			if username == '' or password == '': return auth
 			user_info = '%s:%s' % (username, password)
 			user_info = user_info.encode('utf-8')

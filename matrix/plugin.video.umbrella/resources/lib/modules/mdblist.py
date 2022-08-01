@@ -70,7 +70,6 @@ def _map_top_list(response, listType):
     return items
 def getMDBItems(url):
 	try:
-		log_utils.log('Trying to get the items from MDBList', level=log_utils.LOGINFO)
 		response = session.get(url, timeout=20)
 		if isinstance(response, dict): 
 			log_utils.log(response.error, level=log_utils.LOGINFO)
@@ -98,7 +97,6 @@ def _map_list_items(response):
     return items
 def getMDBUserList(self, listType):
 	try:
-		log_utils.log('Trying to user lists from MDBList', level=log_utils.LOGINFO)
 		response = session.get(mdblist_baseurl + mdblist_user_list + mdblist_api, timeout=20)
 		if isinstance(response, dict): 
 			log_utils.log(response.error, level=log_utils.LOGINFO)

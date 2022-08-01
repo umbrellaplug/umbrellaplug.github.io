@@ -48,10 +48,10 @@ class RealDebrid:
 		self.hosters = None
 		self.hosts = None
 		self.cache_check_results = {}
-		self.token = getSetting('realdebrid.token')
-		self.client_ID = getSetting('realdebrid.client_id')
+		self.token = getSetting('realdebridtoken')
+		self.client_ID = getSetting('realdebrid.clientid')
 		if self.client_ID == '': self.client_ID = 'X245A4XAIBGVM'
-		self.secret = getSetting('realdebrid.secret')
+		self.secret = getSetting('realdebridsecret')
 		self.device_code = ''
 		self.auth_timeout = 0
 		self.auth_step = 0
@@ -126,7 +126,7 @@ class RealDebrid:
 		url = oauth_base_url + credentials_url % url
 		response = session.get(url)
 		if 'error' in response.text:
-			return control.okDialog(title='default', message=40019)
+			return #
 		else:
 			try:
 				response = response.json()
@@ -738,9 +738,9 @@ class RealDebrid:
 
 	def refresh_token(self):
 		try:
-			self.client_ID = getSetting('realdebrid.client_id')
-			self.secret = getSetting('realdebrid.secret')
-			self.device_code = getSetting('realdebrid.refresh')
+			self.client_ID = getSetting('realdebrid.clientid')
+			self.secret = getSetting('realdebridsecret')
+			self.device_code = getSetting('realdebridrefresh')
 			if not self.client_ID or not self.secret or not self.device_code: return False # avoid if previous refresh attempt revoked accnt, loops twice.
 			log_utils.log('Refreshing Expired Real Debrid Token: | %s | %s |' % (self.client_ID, self.device_code), level=log_utils.LOGDEBUG)
 			success, error = self.get_token()
@@ -781,12 +781,12 @@ class RealDebrid:
 			control.sleep(500)
 			account_info = self.account_info()
 			username = account_info['username']
-			control.setSetting('realdebrid.username', username)
-			control.setSetting('realdebrid.client_id', self.client_ID)
-			control.setSetting('realdebrid.secret', self.secret,)
-			control.setSetting('realdebrid.token', self.token)
-			control.addon('script.module.myaccounts').setSetting('realdebrid.token', self.token)
-			control.setSetting('realdebrid.refresh', response['refresh_token'])
+			control.setSetting('realdebridusername', username)
+			control.setSetting('realdebrid.clientid', self.client_ID)
+			control.setSetting('realdebridsecret', self.secret,)
+			control.setSetting('realdebridtoken', self.token)
+			#control.addon('script.module.myaccounts').setSetting('realdebridtoken', self.token)
+			control.setSetting('realdebridrefresh', response['refresh_token'])
 			return True, None
 		except:
 			log_utils.error('Real Debrid Authorization Failed : ')
@@ -794,10 +794,10 @@ class RealDebrid:
 
 	def reset_authorization(self):
 		try:
-			control.setSetting('realdebrid.client_id', '')
-			control.setSetting('realdebrid.secret', '')
-			control.setSetting('realdebrid.token', '')
-			control.setSetting('realdebrid.refresh', '')
-			control.setSetting('realdebrid.username', '')
+			control.setSetting('realdebrid.clientid', '')
+			control.setSetting('realdebridsecret', '')
+			control.setSetting('realdebridtoken', '')
+			control.setSetting('realdebridrefresh', '')
+			control.setSetting('realdebridusername', '')
 			control.dialog.ok(getLS(40058), getLS(32320))
 		except: log_utils.error()

@@ -6,6 +6,7 @@
 from urllib.parse import quote_plus
 from resources.lib.modules import control
 
+
 def router(params):
 	action = params.get('action')
 	name = params.get('name')
@@ -90,6 +91,15 @@ def router(params):
 	elif action == 'movieUserlists':
 		from resources.lib.menus import movies
 		movies.Movies().userlists()
+	elif action == 'traktAuth':
+		from resources.lib.modules import trakt as Trakt
+		Trakt.traktAuth()
+	elif action == 'traktRevoke':
+		from resources.lib.modules import trakt as Trakt
+		Trakt.traktRevoke()
+	elif action == 'traktAccountInfo':
+		from resources.lib.modules import trakt as Trakt
+		Trakt.getTraktAccountInfo()
 	elif action == 'movies_PublicLists':
 		from resources.lib.menus import movies
 		movies.Movies().getTraktPublicLists(url)
@@ -293,9 +303,12 @@ def router(params):
 		elif action == 'ad_AccountInfo':
 			from resources.lib.debrid import alldebrid
 			alldebrid.AllDebrid().account_info_to_dialog()
-		# elif action == 'ad_Authorize':
-			# from resources.lib.debrid import alldebrid
-			# alldebrid.AllDebrid().auth()
+		elif action == 'ad_Revoke':
+			from resources.lib.debrid import alldebrid
+			alldebrid.AllDebrid().revoke_auth()
+		elif action == 'ad_Authorize':
+			from resources.lib.debrid import alldebrid
+			alldebrid.AllDebrid().auth()
 		elif action == 'ad_Transfers':
 			from resources.lib.debrid import alldebrid
 			alldebrid.AllDebrid().user_transfers_to_listItem()
@@ -362,9 +375,12 @@ def router(params):
 		elif action == 'pm_AccountInfo':
 			from resources.lib.debrid import premiumize
 			premiumize.Premiumize().account_info_to_dialog()
-		# elif action == 'pm_Authorize':
-			# from resources.lib.debrid import premiumize
-			# premiumize.Premiumize().auth()
+		elif action == 'pm_Authorize':
+			from resources.lib.debrid import premiumize
+			premiumize.Premiumize().auth()
+		elif action == 'pm_Revoke':
+			from resources.lib.debrid import premiumize
+			premiumize.Premiumize().revoke()
 		elif action == 'pm_MyFiles':
 			from resources.lib.debrid import premiumize
 			premiumize.Premiumize().my_files_to_listItem(params.get('id'), name)
@@ -391,9 +407,12 @@ def router(params):
 		elif action == 'rd_AccountInfo':
 			from resources.lib.debrid import realdebrid
 			realdebrid.RealDebrid().account_info_to_dialog()
-		# elif action == 'rd_Authorize':
-			# from resources.lib.debrid import realdebrid
-			# realdebrid.RealDebrid().auth()
+		elif action == 'rd_Authorize':
+			from resources.lib.debrid import realdebrid
+			realdebrid.RealDebrid().auth()
+		elif action == 'rd_Revoke':
+			from resources.lib.debrid import realdebrid
+			realdebrid.RealDebrid().reset_authorization()
 		elif action == 'rd_UserTorrentsToListItem':
 			from resources.lib.debrid import realdebrid
 			realdebrid.RealDebrid().user_torrents_to_listItem()
@@ -534,31 +553,31 @@ def router(params):
 		elif action == 'tools_cleanSettings':
 			from resources.lib.modules import clean_settings
 			clean_settings.clean_settings()
-		elif action == 'tools_openMyAccount':
-			from myaccounts import openMASettings
-			from resources.lib.modules import my_accounts
-			openMASettings(query)
-			control.sleep(500)
-			while control.condVisibility('Window.IsVisible(addonsettings)') or control.homeWindow.getProperty('myaccounts.active') == 'true':
-				control.sleep(500)
-			control.sleep(100)
-			my_accounts.syncMyAccounts()
-			control.sleep(100)
-			if params.get('opensettings') == 'true':
-				control.openSettings(params.get('query2'), 'plugin.video.umbrella')
-		elif action == 'tools_syncMyAccount':
-			from resources.lib.modules import my_accounts
-			my_accounts.syncMyAccounts()
-			if params.get('opensettings') == 'true':
-				control.openSettings(query, 'plugin.video.umbrella')
-		elif action == 'tools_traktAcctMyAccounts':
-			control.execute('RunScript(script.module.myaccounts, action=traktAcct)')
-		elif action == 'tools_adAcctMyAccounts':
-			control.execute('RunScript(script.module.myaccounts, action=alldebridAcct)')
-		elif action == 'tools_pmAcctMyAccounts':
-			control.execute('RunScript(script.module.myaccounts, action=premiumizeAcct)')
-		elif action == 'tools_rdAcctMyAccounts':
-			control.execute('RunScript(script.module.myaccounts, action=realdebridAcct)')
+		# elif action == 'tools_openMyAccount':
+		# 	from myaccounts import openMASettings
+		# 	from resources.lib.modules import my_accounts
+		# 	openMASettings(query)
+		# 	control.sleep(500)
+		# 	while control.condVisibility('Window.IsVisible(addonsettings)') or control.homeWindow.getProperty('myaccounts.active') == 'true':
+		# 		control.sleep(500)
+		# 	control.sleep(100)
+		# 	my_accounts.syncMyAccounts()
+		# 	control.sleep(100)
+		# 	if params.get('opensettings') == 'true':
+		# 		control.openSettings(params.get('query2'), 'plugin.video.umbrella')
+		# elif action == 'tools_syncMyAccount':
+		# 	from resources.lib.modules import my_accounts
+		# 	my_accounts.syncMyAccounts()
+		# 	if params.get('opensettings') == 'true':
+		# 		control.openSettings(query, 'plugin.video.umbrella')
+		# elif action == 'tools_traktAcctMyAccounts':
+		# 	control.execute('RunScript(script.module.myaccounts, action=traktAcct)')
+		# elif action == 'tools_adAcctMyAccounts':
+		# 	control.execute('RunScript(script.module.myaccounts, action=alldebridAcct)')
+		# elif action == 'tools_pmAcctMyAccounts':
+		# 	control.execute('RunScript(script.module.myaccounts, action=premiumizeAcct)')
+		# elif action == 'tools_rdAcctMyAccounts':
+		# 	control.execute('RunScript(script.module.myaccounts, action=realdebridAcct)')
 		elif action == 'tools_openSettings':
 			control.openSettings(query)
 		elif action == 'tools_contextUmbrellaSettings':
@@ -716,7 +735,21 @@ def router(params):
 			control.queueItem()
 			if name is None: control.notification(title=35515, message=35519)
 			else: control.notification(title=name, message=35519)
-
+	####################################################
+	#---Account Actions
+	####################################################
+	elif action == 'tmdb_Auth':
+		from resources.lib.indexers.tmdb import Auth as tmdb_auth
+		tmdb_auth().create_session_id()
+	elif action == 'tmdb_Revoke':
+		from resources.lib.indexers.tmdb import Auth as tmdb_auth
+		tmdb_auth().revoke_session_id()
+	elif action == 'fk_getApiKey':
+		from resources.lib.debrid import furk
+		furk.Furk().get_api()
+	elif action == 'fk_revokeApiKey':
+		from resources.lib.debrid import furk
+		furk.Furk().clear_api()
 	####################################################
 	#---Playcount
 	####################################################
@@ -780,7 +813,6 @@ def router(params):
 			elif select == 4: sources.Sources(custom_query='true').play(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, meta, select='0', rescrape='true')
 			elif select == 5: sources.Sources(all_providers='true', custom_query='true').play(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, meta, select='0', rescrape='true')
 			elif select == 6: sources.Sources(all_providers='true', filterless_scrape='true').play(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, meta, select='0', rescrape='true')
-
 	####################################################
 	#---Library Actions
 	####################################################

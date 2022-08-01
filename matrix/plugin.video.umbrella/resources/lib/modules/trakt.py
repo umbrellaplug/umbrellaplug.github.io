@@ -4,13 +4,13 @@
 """
 
 from datetime import datetime
+from dis import code_info
 from json import dumps as jsdumps
+from logging import exception
 import re
 import requests
-from myaccounts.modules.trakt import Trakt
 from requests.adapters import HTTPAdapter
 from threading import Thread
-from time import time
 from urllib3.util.retry import Retry
 from urllib.parse import urljoin
 from resources.lib.database import cache, traktsync
@@ -22,13 +22,7 @@ getLS = control.lang
 getSetting = control.setting
 setSetting = control.setSetting
 BASE_URL = 'https://api.trakt.tv'
-ma_trakt= Trakt()
-V2_API_KEY = ma_trakt.client_id
-CLIENT_SECRET = ma_trakt.client_secret
-#V2_API_KEY = 'removedkey'
-#CLIENT_SECRET = 'removedclientsecret'
-
-headers = {'Content-Type': 'application/json', 'trakt-api-key': V2_API_KEY, 'trakt-api-version': '2'}
+headers = {'Content-Type': 'application/json', 'trakt-api-key': '', 'trakt-api-version': '2'}
 REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
 session = requests.Session()
 retries = Retry(total=4, backoff_factor=0.3, status_forcelist=[429, 500, 502, 503, 504, 520, 521, 522, 524, 530])
@@ -36,27 +30,19 @@ session.mount('https://api.trakt.tv', HTTPAdapter(max_retries=retries, pool_maxs
 highlight_color = control.getHighlightColor()
 server_notification = getSetting('trakt.server.notifications') == 'true'
 service_syncInterval = int(getSetting('trakt.service.syncInterval')) if getSetting('trakt.service.syncInterval') else 15
-
+trakt_icon = control.joinPath(control.artPath(), 'trakt.png')
 
 def getTrakt(url, post=None, extended=False, silent=False):
 	try:
-		service_customTimeout = int(getSetting('trakt.service.timeoutInterval')) if getSetting('trakt.service.timeoutInterval') else int(30)
 		if not url.startswith(BASE_URL): url = urljoin(BASE_URL, url)
+		if headers['trakt-api-key'] == '': headers['trakt-api-key']=traktClientID()
 		if post: post = jsdumps(post)
-		if getTraktCredentialsInfo(): headers['Authorization'] = 'Bearer %s' % control.addon('script.module.myaccounts').getSetting('trakt.token')
-		if post: response = session.post(url, data=post, headers=headers, timeout=service_customTimeout)
-		else: response = session.get(url, headers=headers, timeout=service_customTimeout)
+		if getTraktCredentialsInfo(): headers['Authorization'] = 'Bearer %s' % getSetting('trakt.user.token')
+		if post: response = session.post(url, data=post, headers=headers, timeout=20)
+		else: response = session.get(url, headers=headers, timeout=20)
 		status_code = str(response.status_code)
 
-		# if status_code.startswith('5') or '<html' in response: # temp to log html maintenance response
-		# 	log_utils.log('status_code=%s' % status_code, __name__)
-		# 	log_utils.log('response.headers=%s' % str(response.headers), __name__)
-		# 	log_utils.log('response=%s' % response, __name__)
-		# 	log_utils.log('response.text=%s' % str(response.text), __name__)
-		# 	log_utils.log('response.content=%s' % str(response.content), __name__)
-
 		error_handler(url, response, status_code, silent=silent)
-
 		if response and status_code in ('200', '201'):
 			if extended: return response, response.headers
 			else: return response
@@ -86,8 +72,6 @@ def error_handler(url, response, status_code, silent=False):
 		if (not silent) and server_notification: control.notification(title=32315, message=33675)
 	elif status_code == '404':
 		log_utils.log('getTrakt() (404:NOT FOUND): URL=(%s): %s' % (url, str(response.text)), level=log_utils.LOGWARNING)
-	elif status_code == '400':
-		log_utils.log('getTrakt() (400:Bad Request): URL=(%s): %s' % (url, str(response.text)), level=log_utils.LOGWARNING)	
 
 def getTraktAsJson(url, post=None, silent=False):
 	try:
@@ -103,21 +87,13 @@ def getTraktAsJson(url, post=None, silent=False):
 
 def re_auth(headers):
 	try:
-		ma_token = control.addon('script.module.myaccounts').getSetting('trakt.token')
-		ma_refresh = control.addon('script.module.myaccounts').getSetting('trakt.refresh')
-		if ma_token != getSetting('trakt.token') or ma_refresh != getSetting('trakt.refresh'):
-			log_utils.log('Syncing My Accounts Trakt Token', level=log_utils.LOGINFO)
-			from resources.lib.modules import my_accounts
-			my_accounts.syncMyAccounts(silent=True)
-			return True
-		log_utils.log('Re-Authenticating Trakt Token', level=log_utils.LOGINFO)
 		oauth = urljoin(BASE_URL, '/oauth/token')
-		opost = {'client_id': V2_API_KEY, 'client_secret': CLIENT_SECRET, 'redirect_uri': REDIRECT_URI, 'grant_type': 'refresh_token', 'refresh_token': control.addon('script.module.myaccounts').getSetting('trakt.refresh')}
+		opost = {'client_id': traktClientID(), 'client_secret': traktClientSecret(), 'redirect_uri': REDIRECT_URI, 'grant_type': 'refresh_token', 'refresh_token': getSetting('trakt.refreshtoken')}
 		response = session.post(url=oauth, data=jsdumps(opost), headers=headers, timeout=20)
 		status_code = str(response.status_code)
 
 		error_handler(oauth, response, status_code)
-
+		import time as time
 		if status_code not in ('401', '403', '405'):
 			try: response = response.json()
 			except:
@@ -130,12 +106,12 @@ def re_auth(headers):
 			token, refresh = response['access_token'], response['refresh_token']
 			expires = str(time() + 7776000)
 			setSetting('trakt.isauthed', 'true')
-			setSetting('trakt.token', token)
-			setSetting('trakt.refresh', refresh)
-			setSetting('trakt.expires', expires)
-			control.addon('script.module.myaccounts').setSetting('trakt.token', token)
-			control.addon('script.module.myaccounts').setSetting('trakt.refresh', refresh)
-			control.addon('script.module.myaccounts').setSetting('trakt.expires', expires)
+			setSetting('trakt.user.token', token)
+			setSetting('trakt.refreshtoken', refresh)
+			setSetting('trakt.token.expires', expires)
+			#control.addon('script.module.myaccounts').setSetting('trakt.user.token', token)
+			#control.addon('script.module.myaccounts').setSetting('trakt.refreshtoken', refresh)
+			#control.addon('script.module.myaccounts').setSetting('trakt.token.expires', expires)
 			log_utils.log('Trakt Token Successfully Re-Authorized: expires on %s' % str(datetime.fromtimestamp(float(expires))), level=log_utils.LOGDEBUG)
 			return True
 		else:
@@ -143,8 +119,144 @@ def re_auth(headers):
 			return False
 	except: log_utils.error()
 
+def traktAuth():
+	import time as time
+	try:
+		traktDeviceCode = getTraktDeviceCode()
+		deviceCode = getTraktDeviceToken(traktDeviceCode)
+		if deviceCode:
+			deviceCode = deviceCode.json()
+			expires_at = time.time() + 7776000
+			control.setSetting('trakt.token.expires', str(expires_at))
+			control.setSetting('trakt.user.token', deviceCode["access_token"])
+			control.setSetting('trakt.refreshtoken', deviceCode["refresh_token"])
+			control.sleep(1000)
+			try:
+				headers['Authorization'] = 'Bearer %s' % getSetting('trakt.user.token')
+				user = getTrakt('users/me', post=None)
+				username = user.json()
+				control.setSetting('trakt.user.name', str(username['username']))
+			except: pass
+			control.notification(message=40107, icon=trakt_icon)
+			return True
+		control.notification(message=40108, icon=trakt_icon)
+		return False
+	except:
+		log_utils.error()
+
+def traktRevoke():
+		data = {"token": control.setting('trakt.user.token')}
+		try: 
+			getTrakt('oauth/revoke', post=data)
+		except: pass
+		control.setSetting('trakt.user.name', '')
+		control.setSetting('trakt.token.expires', '')
+		control.setSetting('trakt.user.token', '')
+		control.setSetting('trakt.refreshtoken', '')
+		control.dialog.ok(control.lang(32315), control.lang(40109))
+
+def getTraktDeviceCode():
+	try:
+		data = {'client_id': traktClientID()}
+		dCode = getTrakt('oauth/device/code', post=data)
+		result = dCode.json()
+		return result
+	except: 
+		log_utils.error()
+		return ''
+
+def getTraktDeviceToken(traktDeviceCode):
+	import time as time 
+	try:
+		data = {"code": traktDeviceCode["device_code"],
+				"client_id": traktClientID(),
+				"client_secret": traktClientSecret()}
+		start = time.time()
+		expires_in = traktDeviceCode['expires_in']
+		verification_url = control.lang(32513) % str(traktDeviceCode['verification_url'])
+		user_code = control.lang(32514) % str(traktDeviceCode['user_code'])
+		control.progressDialog.create(control.lang(32073), control.progress_line % (verification_url, user_code, ''))
+		try:
+			time_passed = 0
+			while not control.progressDialog.iscanceled() and time_passed < expires_in:
+				try:
+					#response = getTrakt('oauth/device/token', post=data, silent=True)
+					url = urljoin(BASE_URL, 'oauth/device/token')
+					response = requests.post(url, json=data,headers=headers, timeout=20)
+					if response.status_code == 400:
+						time_passed = time.time() - start
+						progress = int(100)-int(100 * time_passed / expires_in)
+						control.progressDialog.update(progress)
+						control.sleep(max(traktDeviceCode['interval'], 1)*1000)
+				except requests.HTTPError as e:
+					log_utils.log('Request Error: %s' % str(e), __name__, log_utils.LOGDEBUG)
+					if e.response.status_code != 400: raise e
+					progress = int(100)-int(100 * time_passed / expires_in)
+					control.progressDialog.update(progress)
+					control.sleep(max(traktDeviceCode['interval'], 1)*1000)
+				else:
+					if not response: continue
+					else: return response
+		finally:
+			control.progressDialog.close()
+		return None
+	except:
+		log_utils.error()
+
+def getTraktAccountInfo():
+	from datetime import datetime, timedelta
+	try:
+		account_info, stats = getTraktAccountSettings()
+		username = account_info['user']['username']
+		timezone = account_info['account']['timezone']
+		joined = control.jsondate_to_datetime(account_info['user']['joined_at'], "%Y-%m-%dT%H:%M:%S.%fZ")
+		private = account_info['user']['private']
+		vip = account_info['user']['vip']
+		if vip: vip = '%s Years' % str(account_info['user']['vip_years'])
+		total_given_ratings = stats['ratings']['total']
+		movies_collected = stats['movies']['collected']
+		movies_watched = stats['movies']['watched']
+		movie_minutes = stats['movies']['minutes']
+		if movie_minutes == 0: movies_watched_minutes = ['0 days', '0:00:00']
+		elif movie_minutes < 1440: movies_watched_minutes = ['0 days', "{:0>8}".format(str(timedelta(minutes=movie_minutes)))]
+		else: movies_watched_minutes = ("{:0>8}".format(str(timedelta(minutes=movie_minutes)))).split(', ')
+		movies_watched_minutes = control.lang(40111) % (movies_watched_minutes[0], movies_watched_minutes[1].split(':')[0], movies_watched_minutes[1].split(':')[1])
+		shows_collected = stats['shows']['collected']
+		shows_watched = stats['shows']['watched']
+		episodes_watched = stats['episodes']['watched']
+		episode_minutes = stats['episodes']['minutes']
+		if episode_minutes == 0: episodes_watched_minutes = ['0 days', '0:00:00']
+		elif episode_minutes < 1440: episodes_watched_minutes = ['0 days', "{:0>8}".format(str(timedelta(minutes=episode_minutes)))]
+		else: episodes_watched_minutes = ("{:0>8}".format(str(timedelta(minutes=episode_minutes)))).split(', ')
+		episodes_watched_minutes = control.lang(40111) % (episodes_watched_minutes[0], episodes_watched_minutes[1].split(':')[0], episodes_watched_minutes[1].split(':')[1])
+		heading = control.lang(32315)
+		items = []
+		items += [control.lang(40036) % username]
+		items += [control.lang(40112) % timezone]
+		items += [control.lang(40113) % joined]
+		items += [control.lang(40114) % private]
+		items += [control.lang(40115) % vip]
+		items += [control.lang(40116) % str(total_given_ratings)]
+		items += [control.lang(40117) % (movies_collected, movies_watched, movies_watched_minutes)]
+		items += [control.lang(40118) % (shows_collected, shows_watched)]
+		items += [control.lang(40119) % (episodes_watched, episodes_watched_minutes)]
+		return control.selectDialog(items, heading)
+	except:
+		log_utils.error()
+		return
+
+def getTraktAccountSettings():
+	#account_info = self.call("users/settings", with_auth=True)
+	#stats = self.call("users/%s/stats" % account_info['user']['ids']['slug'], with_auth=True)
+	headers['Authorization'] = 'Bearer %s' % getSetting('trakt.user.token')
+	account_info = getTrakt('users/settings', post=None)
+	account_info_encoded = account_info.json()
+	stats = getTrakt('users/%s/stats' % account_info_encoded['user']['ids']['slug'])
+	stats_encoded = stats.json()
+	return account_info_encoded, stats_encoded
+
 def getTraktCredentialsInfo():
-	username, token, refresh = getSetting('trakt.username').strip(), getSetting('trakt.token'), getSetting('trakt.refresh')
+	username, token, refresh = getSetting('trakt.user.name').strip(), getSetting('trakt.user.token'), getSetting('trakt.refreshtoken')
 	if (username == '' or token == '' or refresh == ''): return False
 	return True
 
@@ -229,7 +341,7 @@ def unwatch(content_type, name, imdb=None, tvdb=None, season=None, episode=None,
 
 def like_list(list_owner, list_name, list_id):
 	try:
-		headers['Authorization'] = 'Bearer %s' % control.addon('script.module.myaccounts').getSetting('trakt.token')
+		headers['Authorization'] = 'Bearer %s' % getSetting('trakt.user.token')
 		# resp_code = client._basic_request('https://api.trakt.tv/users/%s/lists/%s/like' % (list_owner, list_id), headers=headers, method='POST', ret_code=True)
 		resp_code = session.post('https://api.trakt.tv/users/%s/lists/%s/like' % (list_owner, list_id), headers=headers).status_code
 		if resp_code == 204:
@@ -241,7 +353,7 @@ def like_list(list_owner, list_name, list_id):
 
 def unlike_list(list_owner, list_name, list_id):
 	try:
-		headers['Authorization'] = 'Bearer %s' % control.addon('script.module.myaccounts').getSetting('trakt.token')
+		headers['Authorization'] = 'Bearer %s' % getSetting('trakt.user.token')
 		# resp_code = client._basic_request('https://api.trakt.tv/users/%s/lists/%s/like' % (list_owner, list_id), headers=headers, method='DELETE', ret_code=True)
 		resp_code = session.delete('https://api.trakt.tv/users/%s/lists/%s/like' % (list_owner, list_id), headers=headers).status_code
 		if resp_code == 204:
@@ -255,7 +367,7 @@ def remove_liked_lists(trakt_ids):
 	if not trakt_ids: return
 	success = None
 	try:
-		headers['Authorization'] = 'Bearer %s' % control.addon('script.module.myaccounts').getSetting('trakt.token')
+		headers['Authorization'] = 'Bearer %s' % getSetting('trakt.user.token')
 		for id in trakt_ids:
 			list_owner = id.get('list_owner')
 			list_id = id.get('trakt_id')
@@ -1154,7 +1266,7 @@ def scrobbleReset(imdb, tmdb=None, tvdb=None, season=None, episode=None, refresh
 		content_type = 'movie' if not episode else 'episode'
 		resume_info = traktsync.fetch_bookmarks(imdb, tmdb, tvdb, season, episode, ret_type='resume_info')
 		if resume_info == '0': return control.hide() # returns string "0" if no data in db 
-		headers['Authorization'] = 'Bearer %s' % control.addon('script.module.myaccounts').getSetting('trakt.token')
+		headers['Authorization'] = 'Bearer %s' % getSetting('trakt.user.token')
 		success = session.delete('https://api.trakt.tv/sync/playback/%s' % resume_info[1], headers=headers).status_code == 204
 		if content_type == 'movie':
 			items = [{'type': 'movie', 'movie': {'ids': {'imdb': imdb}}}]
@@ -1189,7 +1301,7 @@ def scrobbleResetItems(imdb_ids, tvdb_dicts=None, refresh=True, widgetRefresh=Fa
 					resume_info_index = [resume_info.index(i) for i in resume_info if i['imdb'] == imdb][0]
 					resume_dict = resume_info[resume_info_index]
 					resume_id = resume_dict['resume_id']
-					headers['Authorization'] = 'Bearer %s' % control.addon('script.module.myaccounts').getSetting('trakt.token')
+					headers['Authorization'] = 'Bearer %s' % getSetting('trakt.user.token')
 					success = session.delete('https://api.trakt.tv/sync/playback/%s' % resume_id, headers=headers).status_code == 204
 					if not success: raise Exception()
 					items = [{'type': 'movie', 'movie': {'ids': {'imdb': imdb}}}]
@@ -1210,7 +1322,7 @@ def scrobbleResetItems(imdb_ids, tvdb_dicts=None, refresh=True, widgetRefresh=Fa
 					resume_dict = resume_info[resume_info_index]
 					label_string = resume_dict['tvshowtitle'] + ' - ' + 'S%02dE%02d' % (int(season), int(episode))
 					resume_id = resume_dict['resume_id']
-					headers['Authorization'] = 'Bearer %s' % control.addon('script.module.myaccounts').getSetting('trakt.token')
+					headers['Authorization'] = 'Bearer %s' % getSetting('trakt.user.token')
 					success = session.delete('https://api.trakt.tv/sync/playback/%s' % resume_id, headers=headers).status_code == 204
 					if not success: raise Exception()
 					items = [{'type': 'episode', 'episode': {'season': season, 'number': episode}, 'show': {'ids': {'imdb': imdb, 'tvdb': tvdb}}}]
@@ -1296,7 +1408,7 @@ def sync_playbackProgress(activities=None, forced=False):
 def sync_watchedProgress(activities=None, forced=False):
 	try:
 		from resources.lib.menus import episodes
-		trakt_user = getSetting('trakt.username').strip()
+		trakt_user = getSetting('trakt.user.name').strip()
 		lang = control.apiLanguage()['tmdb']
 		direct = getSetting('trakt.directProgress.scrape') == 'true'
 		url = 'https://api.trakt.tv/users/me/watched/shows'
@@ -1574,3 +1686,14 @@ def sync_trending_lists(forced=False):
 			traktsync.insert_public_lists(thrd_items, service_type='last_trendinglist_at', new_sync=False)
 			if forced: log_utils.log('Forced - Trakt Trending Lists Sync Complete', __name__, log_utils.LOGDEBUG)
 	except: log_utils.error()
+
+def traktClientID():
+	traktId = '87e3f055fc4d8fcfd96e61a47463327ca877c51e8597b448e132611c5a677b13'
+	if (getSetting('trakt.clientid') != '' and getSetting('trakt.clientid') is not None) and getSetting('traktuserkey.customenabled') == 'true':
+		traktId = getSetting('trakt.clientid')
+	return traktId
+def traktClientSecret():
+	traktSecret = '4a1957a52d5feb98fafde53193e51f692fa9bdcd0cc13cf44a5e39975539edf0'
+	if (getSetting('trakt.clientsecret') != '' and getSetting('trakt.clientsecret') is not None) and getSetting('traktuserkey.customenabled') == 'true':
+		traktSecret = getSetting('trakt.clientsecret')
+	return traktSecret

@@ -25,6 +25,7 @@
 		<setting id="movie.unaired.identify" type="select" label="35526" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32666|32667|32668|32669|32670|32671|32598|40082" default="8" />
 		<setting id="notification.sound" type="bool" label="35527" default="false" />
 		<setting id="general.checkAddonUpdates" type="bool" label="35524" default="true" />
+		<setting id="umbrella.autostart" type="bool" label="40122" default="false" />
 		<setting type="lsep" label="35055" />
 		<setting id="sort.imdbmovies.type" type="select" label="35054" lvalues="33564|33039|35187|35188|35391|35392|35393" default="0" />
 		<setting id="sort.imdbmovies.order" type="enum" label="33679" lvalues="33649|33650" default="0" subsetting="true" enable="!eq(-1,0)" />
@@ -127,14 +128,17 @@
 		<setting id="multi.unwatched.enabled" type="bool" label="32163" default="false" />
 		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=multi.unwatched)" visible="eq(-1,true)" />
 		<setting id="tvshows.calendar.extended" type="bool" label="32023" default="false" />
+		<!-- PlayNext -->
 		<setting type="lsep" label="40027" />
 		<setting id="enable.playnext" type="bool" label="40028" default="false" />
+		<setting id="enable.playnext.theme" type="bool" label="40102" default="true" visible="eq(-1,true)"/>
 		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=playnext)" />
-		<setting id="playnext.time" type="slider" label="40029" subsetting="true" visible="eq(-2,true)" default="60" option="int" range="10,300" />
-		<setting id="playnext.default.action" type="select" label="40065" subsetting="true" visible="eq(-3,true)" lvalues="32176|32177|32178" default="0" />
-		<setting id="playnext.background.color" type="select" label="40091" subsetting="true" visible="eq(-4,true)" lvalues="33564|32589|32590|32591|32592|32593|32594|32595|32596|32597|32666|32667|32668|32669|32670|32671|40082" default="5" />
-		<setting id="stillwatching.count" type="slider" label="40026" subsetting="true" visible="eq(-5,true)" default="3" option="int" range="2,40" />
-		<setting id="stillwatching.default.action" type="select" label="40025" subsetting="true" visible="eq(-6,true)" lvalues="32176|32177|32178" default="2" />
+		<setting id="playnext.time" type="slider" label="40029" subsetting="true" visible="eq(-3,true)" default="60" option="int" range="10,300" />
+		<setting id="playnext.default.action" type="select" label="40065" subsetting="true" visible="eq(-4,true)" lvalues="32176|32177|32178" default="0" />
+		<setting id="playnext.background.color" type="select" label="40091" subsetting="true" visible="eq(-5,true)" lvalues="33564|32589|32590|32591|32592|32593|32594|32595|32596|32597|32666|32667|32668|32669|32670|32671|40082" default="0" />
+		<setting id="playnext.hidebutton" type="bool" label="40101" subsetting="true" visible="eq(-6,true)" default="true"/>
+		<setting id="stillwatching.count" type="slider" label="40026" subsetting="true" visible="eq(-7,true)" default="3" option="int" range="2,40" />
+		<setting id="stillwatching.default.action" type="select" label="40025" subsetting="true" visible="eq(-8,true)" lvalues="32176|32177|32178" default="2" />
 		<setting label="35056" type="lsep" />
 		<setting id="sort.imdbshows.type" type="select" label="35054" lvalues="33564|33039|35187|35188|35391|35392|35393" default="0" />
 		<setting id="sort.imdbshows.order" type="enum" label="33679" lvalues="33649|33650" default="0" subsetting="true" enable="!eq(-1,0)" />
@@ -212,6 +216,7 @@
 		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=checkReboots)" />
 		<setting id="source.prioritize.hdrdv" type="bool" label="32195" default="false" />
 		<setting id="source.prioritize.dolbyvisionfirst" type="bool" label="40081" subsetting="true" default="false" visible="eq(-1,true)" />
+		<setting id="source.prioritize.av1" type="bool" label="40131" default="false" />
 		<setting id="source.prioritize.hevc" type="bool" label="32229" default="false" />
 		<setting id="source.enable.msizelimit" type="bool" label="32165" default="false" />
 		<setting id="source.min.moviesize" type="slider" label="32155" subsetting="true" option="float" range="0.0,0.1,10.0" default="0" visible="eq(-1,true)" />
@@ -225,6 +230,7 @@
 		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=removeDolbyVision)" visible="eq(-1,true)" />
 		<setting id="remove.hdr" type="bool" label="32389" default="false" />
 		<setting id="remove.hevc" type="bool" label="32363" default="false" />
+		<setting id="remove.av1" type="bool" label="40132" default="false" />
 		<setting id="remove.cam.sources" type="bool" label="32160" default="false" />
 		<setting id="remove.sd.sources" type="bool" label="32161" default="false" />
 		<setting id="remove.3D.sources" type="bool" label="32051" default="true" />
@@ -245,136 +251,124 @@
 	<!-- Trakt - 6 -->
 	<category label="32315">
 		<setting type="lsep" label="32315" />
-		<setting type="action" label="32135" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_openMyAccount&amp;query=0.3&amp;opensettings=true&amp;query2=6.1)" />
-		<setting type="action" label="32136" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_syncMyAccount&amp;opensettings=true&amp;query=6.2)" />
-		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=myAccountsSync)" />
-		<setting id="trakt.expires" type="text" label="" visible="false" default="" />
-		<setting id="trakt.username" type="text" label="40062" default="" enable="false" visible="true" />
-		<setting type="action" label="32153" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_traktAcctMyAccounts)" visible="!eq(-1,)" />
-		<setting id="trakt.token" type="text" label="" visible="false" default="" />
-		<setting id="trakt.refresh" type="text" label="" visible="false" default="" />
-		<setting id="trakt.service.syncInterval" type="slider" label="Trakt service sync interval (in minutes)" default="15" range="5,60" option="int" visible="!eq(-4,)" />
-		<setting id="trakt.service.timeoutInterval" type="slider" label="Trakt service timeout (in seconds)" default="30" range="20,300" option="int" visible="!eq(-5,)" />
-		<setting id="trakt.server.notifications" type="bool" label="33051" default="true" visible="!eq(-6,)" />
-		<setting id="trakt.general.notifications" type="bool" label="33052" default="true" visible="!eq(-7,)" />
-		<setting id="trakt.directProgress.scrape" type="bool" label="35492" default="false" visible="!eq(-8,)" />
-		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=directProgress)" visible="!eq(-9,)" />
-		<setting id="trakt.progressFlatten" type="bool" label="32017" default="true" enable="!eq(-10,)" />
-		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=progressFlatten)" visible="!eq(-11,)" />
-		<setting id="trakt.rating" type="enum" label="35187" lvalues="33564|35547" default="0" visible="!eq(-12,)" />
-		<setting id="trakt.scrobble" type="bool" label="32097" default="false" visible="!eq(-13,)" />
-		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=Trakt_Scrobble)" visible="!eq(-14,)" />
-		<setting id="trakt.scrobble.notify" type="bool" label="32099" subsetting="true" default="false" visible="!eq(-15,) + eq(-2,true)" />
-		<setting id="resume.source.alt" type="enum" label="32095" lvalues="32314" default="0" visible="!eq(-16,) + !eq(-3,true)" />
-		<setting id="resume.source" type="enum" label="32095" lvalues="32314|32096" default="0" visible="!eq(-17,) + eq(-4,true)" />
-		<setting id="trakt.progress.showunaired" type="bool" label="32572" default="false" visible="!eq(-18,)" />
-		<setting id="trakt.UpcomingProgress.prependDate" type="bool" label="32573" default="true" visible="!eq(-19,)" />
-		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=UpcomingProgressPrependDate)" visible="!eq(-20,)" />
-		<setting id="trakt.paginate.lists" type="bool" label="32188" default="true" visible="!eq(-21,)" />
-		<setting id="trakt.lists.showowner" type="bool" label="40083" default="true" visible="!eq(-22,)" />
+		<setting id="traktuserkey.customenabled" type="bool" visible="eq(3,)" label="40106" default="false" />
+		<setting id="trakt.clientid" type="text" visible="eq(-1,true) + eq(2,)" label="40103" default="" />
+		<setting id="trakt.clientsecret" type="text" visible="eq(-2,true)+ eq(1,)" option="hidden" label="40104" default="" />
+		<setting id="trakt.user.token" type="text" visible="false" label="" default="" />
+		<setting id="trakt.user.name" type="text" default="" label="40062" enable="false" visible="!eq(-1,)" />
+		<setting type="action" label="32153" action="RunPlugin(plugin://plugin.video.umbrella/?action=traktAccountInfo)" visible="!eq(-2,)" />
+		<setting type="action" label="32306" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=traktAuth)" visible="eq(-3,)" />
+		<setting type="action" label="40110" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=traktRevoke)" visible="!eq(-4,)" />
+		<setting id="trakt.token.expires" type="text" label="" visible="false" default="" />
+		<setting id="trakt.refreshtoken" type="text" label="" visible="false" default="" />
+		<setting id="trakt.service.syncInterval" type="slider" label="Trakt service sync interval (in minutes)" default="15" range="5,60" option="int" visible="!eq(-7,)" />
+		<setting id="trakt.server.notifications" type="bool" label="33051" default="true" visible="!eq(-8,)" />
+		<setting id="trakt.general.notifications" type="bool" label="33052" default="true" visible="!eq(-9,)" />
+		<setting id="trakt.directProgress.scrape" type="bool" label="35492" default="false" visible="!eq(-10,)" />
+		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=directProgress)" visible="!eq(-11,)" />
+		<setting id="trakt.progressFlatten" type="bool" label="32017" default="true" enable="!eq(-12,)" visible="!eq(-12,)" />
+		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=progressFlatten)" visible="!eq(-13,)" />
+		<setting id="trakt.rating" type="enum" label="35187" lvalues="33564|35547" default="0" visible="!eq(-14,)" />
+		<setting id="trakt.scrobble" type="bool" label="32097" default="false" visible="!eq(-15,)" />
+		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=Trakt_Scrobble)" visible="!eq(-16,)" />
+		<setting id="trakt.scrobble.notify" type="bool" label="32099" subsetting="true" default="false" visible="!eq(-17,) + eq(-2,true)" />
+		<setting id="resume.source.alt" type="enum" label="32095" lvalues="32314" default="0" visible="!eq(-18,) + !eq(-3,true)" />
+		<setting id="resume.source" type="enum" label="32095" lvalues="32314|32096" default="0" visible="!eq(-19,) + eq(-4,true)" />
+		<setting id="trakt.progress.showunaired" type="bool" label="32572" default="false" visible="!eq(-20,)" />
+		<setting id="trakt.UpcomingProgress.prependDate" type="bool" label="32573" default="true" visible="!eq(-21,)" />
+		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=UpcomingProgressPrependDate)" visible="!eq(-22,)" />
+		<setting id="trakt.paginate.lists" type="bool" label="32188" default="true" visible="!eq(-23,)" />
+		<setting id="trakt.lists.showowner" type="bool" label="40083" default="true" visible="!eq(-24,)" />
 		<setting type="lsep" label="35057" />
-		<setting id="trakt.HiddenManager.hideWatched" type="bool" label="32183" default="false" visible="!eq(-24,)" />
-		<setting type="lsep" label="32645" />
-		<setting id="autoTraktOnStart" type="bool" label="32646" default="False" enable="!eq(-26,)" />
-		<setting id="schedTraktTime" type="slider" label="32647" default="0" range="0,24" option="int" enable="eq(-1,true)" />
-		<setting id="trakt.message2" type="text" label="32648" default="" enable="false" /> <!-- for dummy settings write on addon update -->
+		<setting id="trakt.HiddenManager.hideWatched" type="bool" label="32183" default="false" visible="!eq(-26,)" />
+		<setting type="lsep" label="32645"  />
+		<setting id="autoTraktOnStart" type="bool" label="32646" default="False" visible="!eq(-27,)" enable="!eq(-27,)" />
+		<setting id="schedTraktTime" type="slider" label="32647" default="0" range="0,24" option="int" visible="!eq(-28,)" enable="eq(-1,true)" />
+		<setting id="trakt.message2" type="text" label="32648" default="" visible="!eq(-29,)" enable="false" /> <!-- for dummy settings write on addon update -->
 	</category>
 
 	<!-- Accounts - 7 -->
 	<category label="32346">
-		<setting type="action" label="32135" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_openMyAccount&amp;query=1.0&amp;opensettings=true&amp;query2=7.0)" />
-		<setting type="action" label="32136" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_syncMyAccount&amp;opensettings=true&amp;query=7.1)" />
-		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=myAccountsSync)" />
-
 		<setting type="lsep" label="40059" />
-		<setting type="action" label="32151" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_openMyAccount&amp;query=1.5&amp;opensettings=true&amp;query2=7.4)" visible="eq(2,)" />
+		<setting type="action" label="40121" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=ad_Authorize)" visible="eq(3,)" />
+		<setting type="action" label="40110" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=ad_Revoke)" visible="!eq(2,)" />
 		<setting id="alldebrid.enable" type="bool" label="32081" default="true" visible="!eq(1,)" />
-		<setting id="alldebrid.token" type="text" label="32152" default="" visible="false" />
-		<setting id="alldebrid.username" type="text" label="40006" default="" enable="false" visible="!eq(-1,) + eq(-2,true)" />
-		<setting id="alldebrid.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" visible="!eq(-2,) + eq(-3,true)" />
-		<setting id="alldebrid.saveToCloud" type="bool" label="32684" default="false" visible="!eq(-3,) + eq(-4,true)" />
-		<setting id="ad_cloud.enabled" type="bool" label="32050" default="false" visible="!eq(-4,) + eq(-5,true)" />
-		<setting id="ad_cloud.ignore.m2ts" type="bool" label="32052" subsetting="true" default="true" visible="!eq(-5,) + eq(-6,true) + eq(-1,true)" />
-		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=ignoreM2ts)" visible="!eq(-6,) + eq(-7,true) + eq(-2,true)" />
-		<setting id="alldebrid.server.notifications" type="bool" label="33051" default="true" visible="!eq(-7,) + eq(-8,true)" />
-		<setting type="action" label="32153" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_adAcctMyAccounts)" visible="!eq(-8,) + eq(-9,true)" />
+		<setting id="alldebridtoken" type="text" label="32152" default="" visible="false" />
+		<setting id="alldebridusername" type="text" label="40006" default="" enable="false" visible="!eq(-1,) + eq(-2,true)" />
+		<setting id="alldebridexpirynotice" type="bool" label="40120" default="true" visible="!eq(-2,)" />
+		<setting id="alldebrid.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" visible="!eq(-3,) + eq(-4,true)" />
+		<setting id="alldebrid.saveToCloud" type="bool" label="32684" default="false" visible="!eq(-4,) + eq(-5,true)" />
+		<setting id="ad_cloud.enabled" type="bool" label="32050" default="false" visible="!eq(-5,) + eq(-6,true)" />
+		<setting id="ad_cloud.ignore.m2ts" type="bool" label="32052" subsetting="true" default="true" visible="!eq(-6,) + eq(-7,true) + eq(-1,true)" />
+		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=ignoreM2ts)" visible="!eq(-7,) + eq(-8,true) + eq(-2,true)" />
+		<setting id="alldebrid.server.notifications" type="bool" label="33051" default="true" visible="!eq(-8,) + eq(-9,true)" />
+		<setting type="action" label="32153" action="RunPlugin(plugin://plugin.video.umbrella/?action=ad_AccountInfo)" visible="!eq(-9,) + eq(-10,true)" />
 
 		<setting type="lsep" label="40057" />
-		<setting type="action" label="32151" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_openMyAccount&amp;query=1.13&amp;opensettings=true&amp;query2=7.16)" visible="eq(2,)" />
+		<setting type="action" label="40121" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=pm_Authorize)" visible="eq(3,)" />
+		<setting type="action" label="40110" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=pm_Revoke)" visible="!eq(2,)" />
 		<setting id="premiumize.enable" type="bool" label="32081" default="true" visible="!eq(1,)" />
-		<setting id="premiumize.token" type="text" label="32154" default="" visible="false" />
-		<setting id="premiumize.username" type="text" label="40006" default="" enable="false" visible="!eq(-1,) + eq(-2,true)" />
-		<setting id="premiumize.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" visible="!eq(-2,) + eq(-3,true)" />
-		<setting id="premiumize.saveToCloud" type="bool" label="32684" default="false" visible="!eq(-3,) + eq(-4,true)" />
-		<setting id="pm_cloud.enabled" type="bool" label="32050" default="false" visible="!eq(-4,) + eq(-5,true)" />
-		<setting id="pm_cloud.ignore.m2ts" type="bool" label="32052" subsetting="true" default="true" visible="!eq(-5,) + eq(-6,true) + eq(-1,true)" />
-		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=ignoreM2ts)" visible="!eq(-6,) + eq(-7,true) + eq(-2,true)" />
-		<setting id="premiumize.server.notifications" type="bool" label="33051" default="true" visible="!eq(-7,) + eq(-8,true)" />
-		<setting type="action" label="32153" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_pmAcctMyAccounts)" visible="!eq(-8,) + eq(-9,true)" />
+		<setting id="premiumizetoken" type="text" label="32154" default="" visible="false" />
+		<setting id="premiumizeusername" type="text" label="40006" default="" enable="false" visible="!eq(-1,) + eq(-2,true)" />
+		<setting id="premiumizeexpirynotice" type="bool" label="40120" default="true" visible="!eq(-2,)" />
+		<setting id="premiumize.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" visible="!eq(-3,) + eq(-4,true)" />
+		<setting id="premiumize.saveToCloud" type="bool" label="32684" default="false" visible="!eq(-4,) + eq(-5,true)" />
+		<setting id="pm_cloud.enabled" type="bool" label="32050" default="false" visible="!eq(-5,) + eq(-6,true)" />
+		<setting id="pm_cloud.ignore.m2ts" type="bool" label="32052" subsetting="true" default="true" visible="!eq(-6,) + eq(-7,true) + eq(-1,true)" />
+		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=ignoreM2ts)" visible="!eq(-7,) + eq(-8,true) + eq(-2,true)" />
+		<setting id="premiumize.server.notifications" type="bool" label="33051" default="true" visible="!eq(-8,) + eq(-9,true)" />
+		<setting type="action" label="32153" action="RunPlugin(plugin://plugin.video.umbrella/?action=pm_AccountInfo)" visible="!eq(-9,) + eq(-10,true)" />
 
 		<setting type="lsep" label="40058" />
-		<setting type="action" label="32151" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_openMyAccount&amp;query=1.21&amp;opensettings=true&amp;query2=7.28)" visible="eq(2,)" />
+		<setting type="action" label="40121" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=rd_Authorize)" visible="eq(3,)" />
+		<setting type="action" label="40110" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=rd_Revoke)" visible="!eq(2,)" />
 		<setting id="realdebrid.enable" type="bool" label="32081" default="true" visible="!eq(1,)" />
-		<setting id="realdebrid.token" type="text" label="realdebrid token" default="" visible="false" />
-		<setting id="realdebrid.username" type="text" label="40006" default="" enable="false" visible="!eq(-1,) + eq(-2,true)" />
-		<setting id="realdebrid.client_id" type="text" label="realdebrid client_id" default="" visible="false" />
-		<setting id="realdebrid.refresh" type="text" label="realdebrid refresh" default="" visible="false" />
-		<setting id="realdebrid.secret" type="text" label="realdebrid secret" default="" visible="false" />
-		<setting id="realdebrid.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" visible="!eq(-5,) + eq(-6,true)" />
-		<setting id="realdebrid.saveToCloud" type="bool" label="32684" default="false" visible="!eq(-6,) +eq(-7,true)" />
-		<setting id="rd_cloud.enabled" type="bool" label="32050" default="false" visible="!eq(-7,) + eq(-8,true)" />
-		<setting id="rd_cloud.ignore.m2ts" type="bool" label="32052" subsetting="true" default="true" visible="!eq(-8,) + eq(-9,true) + eq(-1,true)" />
-		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=ignoreM2ts)" visible="!eq(-9,) + eq(-10,true) + eq(-2,true)" />
-		<setting id="realdebrid.server.notifications" type="bool" label="33051" default="true" visible="!eq(-10,) + eq(-11,true)" />
-		<setting type="action" label="32153" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_rdAcctMyAccounts)" visible="!eq(-11,) + eq(-12,true)" />
-		<setting type="lsep" label="MDBList" />
-		<setting id="mdblist.api" type="text" label="40085" default="" enable="true" />
+		<setting id="realdebridtoken" type="text" label="realdebrid token" default="" visible="false" />
+		<setting id="realdebridexpirynotice" type="bool" label="40120" default="true" visible="!eq(-1,)" />
+		<setting id="realdebridusername" type="text" label="40006" default="" enable="false" visible="!eq(-1,) + eq(-2,true)" />
+		<setting id="realdebrid.clientid" type="text" label="realdebrid client_id" default="" visible="false" />
+		<setting id="realdebridrefresh" type="text" label="realdebrid refresh" default="" visible="false" />
+		<setting id="realdebridsecret" type="text" label="realdebrid secret" default="" visible="false" />
+		<setting id="realdebrid.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" visible="!eq(-6,) + eq(-7,true)" />
+		<setting id="realdebrid.saveToCloud" type="bool" label="32684" default="false" visible="!eq(-7,) +eq(-8,true)" />
+		<setting id="rd_cloud.enabled" type="bool" label="32050" default="false" visible="!eq(-8,) + eq(-9,true)" />
+		<setting id="rd_cloud.ignore.m2ts" type="bool" label="32052" subsetting="true" default="true" visible="!eq(-9,) + eq(-10,true) + eq(-1,true)" />
+		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=ignoreM2ts)" visible="!eq(-10,) + eq(-11,true) + eq(-2,true)" />
+		<setting id="realdebrid.server.notifications" type="bool" label="33051" default="true" visible="!eq(-11,) + eq(-12,true)" />
+		<setting type="action" label="32153" action="RunPlugin(plugin://plugin.video.umbrella/?action=rd_AccountInfo)" visible="!eq(-12,) + eq(-13,true)" />
 		<setting type="lsep" label="Easy News" />
-		<setting type="action" label="32151" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_openMyAccount&amp;query=3.2&amp;opensettings=true&amp;query2=7.43)" visible="eq(1,)" />
-		<setting id="easynews.username" type="text" label="40006" default="" enable="false" />
-		<setting id="easynews.password" type="text" label="32307" option="hidden" default="" enable="false" visible="!eq(-1,)" />
-		<setting id="easynews.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" enable="true" visible="!eq(-2,)" />
+		<setting id="easynewsusername" type="text" label="40006" default="" />
+		<setting id="easynewspassword" type="text" label="32307" option="hidden" default=""/>
+		<setting id="easynews.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" enable="true" visible="!eq(-2,)+!eq(-1,)" />
 
 		<setting type="lsep" label="Filepursuit" />
-		<setting type="action" label="32151" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_openMyAccount&amp;query=3.2&amp;opensettings=true&amp;query2=7.48)" visible="eq(1,)" />
-		<setting id="filepursuit.api" type="text" label="32309" default="" enable="false" />
+		<setting id="filepursuit.api" type="text" label="32309" default="" />
 		<setting id="filepursuit.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" enable="true" visible="!eq(-1,)" />
-
 		<setting type="lsep" label="Furk.net" />
-		<setting type="action" label="32151" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_openMyAccount&amp;query=3.7&amp;opensettings=true&amp;query2=7.52)" visible="eq(1,)" />
-		<setting id="furk.username" type="text" label="32126" default="" enable="false" />
-		<setting id="furk.password" type="text" label="32127" option="hidden" default="" enable="false" visible="!eq(-1,)" />
-		<setting id="furk.api" type="text" label="32128" default="" enable="false" visible="!eq(-2,)" />
-		<setting id="furk.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" enable="true" visible="!eq(-3,)" />
-
-		<setting type="lsep" label="Ororo" />
-		<setting type="action" label="32151" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_openMyAccount&amp;query=3.11&amp;opensettings=true&amp;query2=7.62)" visible="eq(1,)" />
-		<setting id="ororo.username" type="text" label="40006" default="" enable="false" />
-		<setting id="ororo.password" type="text" label="32307" default="" enable="false" visible="!eq(-1,)" />
-		<setting id="ororo.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" enable="true" visible="!eq(-2,)" />
+		<setting id="furk.user.name" type="text" label="32126" default=""  />
+		<setting id="furk.pass.word" type="text" label="32127" option="hidden" default=""  visible="" />
+		<setting id="furk.api" type="text" label="32128" enable="false" visible="!eq(-2,)" />
+		<setting id="furk.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" enable="true" visible="!eq(-1,)" />
+		<setting type="action" label="40125" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=fk_getApiKey)" visible="eq(-2,)+!eq(-4,)+!eq(-3,)" />
+		<setting type="action" label="40126" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=fk_revokeApiKey)" visible="eq(-1,)+!eq(-3,)" />
 	</category>
 
 	<!-- Accounts(Meta) - 8 -->
 	<category label="32390">
-		<setting type="action" label="32135" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_openMyAccount&amp;query=2.0&amp;opensettings=true&amp;query2=8.0)" />
-		<setting type="action" label="32136" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_syncMyAccount&amp;opensettings=true&amp;query=8.1)" />
-		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=myAccountsSync)" />
-
 		<setting type="lsep" label="FANART.TV" />
-		<setting type="action" label="32151" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_openMyAccount&amp;query=2.1&amp;opensettings=true&amp;query2=8.4)" visible="eq(1,)" />
-		<setting id="fanart_tv.api_key" type="text" label="Fanart API" default="" enable="false" />
-
+		<setting id="fanart_tv.api_key" type="text" label="Fanart API" default="" />
 		<setting type="lsep" label="TMDb" />
-		<setting type="action" label="32151" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_openMyAccount&amp;query=2.4&amp;opensettings=true&amp;query2=8.7)" visible="eq(1,)" />
-		<setting id="tmdb.api.key" type="text" label="TMDb API" option="hidden" default="" enable="false" />
-		<setting id="tmdb.username" type="text" label="TMDb username" default="" enable="false" />
-		<setting id="tmdb.password" type="text" label="TMDb password" default="" enable="false" />
+		<setting id="tmdb.apikey" type="text" label="TMDb API" default=""/>
+		<setting id="tmdbusername" type="text" label="TMDb username" default="" />
+		<setting id="tmdbpassword" type="text" label="TMDb password" option="hidden" default="" />
 		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=tmdbUser)" />
-		<setting id="tmdb.session_id" type="text" default="" label="session_id" enable="false" />
-
+		<setting id="tmdb.sessionid" type="text" default="" label="session_id" enable="false" />
+		<setting type="action" label="40121" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tmdb_Auth)" visible="eq(-1,)" />
+		<setting type="action" label="40009" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tmdb_Revoke)" visible="!eq(-2,)" />
 		<setting type="lsep" label="IMDb" />
-		<setting type="action" label="32151" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_openMyAccount&amp;query=2.18&amp;opensettings=true&amp;query2=8.14)" visible="eq(1,)" />
-		<setting id="imdb.user" type="text" label="32303" default="" enable="false" />
+		<setting id="imdbuser" type="text" label="32303" default="" />
+		<setting type="lsep" label="MDBList" />
+		<setting id="mdblist.api" type="text" label="40085" default="" enable="true" />
 	</category>
 
 	<!-- Library - 9-->

@@ -7,9 +7,9 @@ from resources.lib.modules.control import setting as getSetting
 
 def debrid_resolvers(order_matters=True):
 	try:
-		ad_enabled = getSetting('alldebrid.token') != '' and getSetting('alldebrid.enable') == 'true'
-		pm_enabled = getSetting('premiumize.token') != '' and getSetting('premiumize.enable') == 'true'
-		rd_enabled = getSetting('realdebrid.token') != '' and getSetting('realdebrid.enable') == 'true'
+		ad_enabled = getSetting('alldebridtoken') != '' and getSetting('alldebrid.enable') == 'true'
+		pm_enabled = getSetting('premiumizetoken') != '' and getSetting('premiumize.enable') == 'true'
+		rd_enabled = getSetting('realdebridtoken') != '' and getSetting('realdebrid.enable') == 'true'
 		premium_resolvers = []
 		if ad_enabled:
 			from resources.lib.debrid import alldebrid

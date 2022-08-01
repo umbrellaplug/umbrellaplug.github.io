@@ -245,6 +245,17 @@
 						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),3D)</visible>
 					</control>
 					<control type="image">
+						<description>AV1 Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>source/av1.png</texture>
+						<visible>String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),AV1)</visible>
+					</control>
+					<control type="image">
 						<description>HEVC/H.265 Icon</description>
 						<left>0</left>
 						<top>0</top>
@@ -253,7 +264,8 @@
 						<aligny>center</aligny>
 						<aspectratio>keep</aspectratio>
 						<texture>source/hevc.png</texture>
-						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),HEVC) | [String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),DOLBY-VISION) | String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),HDR)] + !String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),HDRIP) + !String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),AVC)</visible>
+						<!-- <visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),HEVC) | [String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),DOLBY-VISION) | String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),HDR)] + !String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),HDRIP) + !String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),AVC)</visible> -->
+						<visible>String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),HEVC)</visible>
 					</control>
 					<control type="image">
 						<description>AVC/H.264 Icon</description>
@@ -386,6 +398,17 @@
 						<aspectratio>keep</aspectratio>
 						<texture>source/dvd.png</texture>
 						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),DVDRIP)</visible>
+					</control>
+					<control type="image">
+						<description>OPUS Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>audio/opus.png</texture>
+						<visible>String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),OPUS)</visible>
 					</control>
 					<control type="image">
 						<description>DOLBY-ATMOS Icon</description>

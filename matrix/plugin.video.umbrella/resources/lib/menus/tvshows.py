@@ -36,8 +36,8 @@ class TVshows:
 		self.highlight_color = control.getHighlightColor()
 		self.date_time = datetime.now()
 		self.today_date = (self.date_time).strftime('%Y-%m-%d')
-		self.imdb_user = getSetting('imdb.user').replace('ur', '')
-		self.tvdb_key = getSetting('tvdb.api.key')
+		self.imdb_user = getSetting('imdbuser').replace('ur', '')
+		self.tvdb_key = getSetting('tvdb.apikey')
 		self.user = str(self.imdb_user) + str(self.tvdb_key)
 
 		self.imdb_link = 'https://www.imdb.com'
@@ -62,7 +62,7 @@ class TVshows:
 		self.imdbratings_link = 'https://www.imdb.com/user/ur%s/ratings?sort=your_rating,desc&mode=detail&start=1' % self.imdb_user # IMDb ratings does not take title_type so filter in imdb_list() function
 		self.anime_link = 'https://www.imdb.com/search/keyword/?keywords=anime&title_type=tvSeries,miniSeries&release_date=,date[0]&sort=moviemeter,asc&count=%s&start=1' % self.page_limit
 
-		self.trakt_user = getSetting('trakt.username').strip()
+		self.trakt_user = getSetting('trakt.user.name').strip()
 		self.traktCredentials = trakt.getTraktCredentialsInfo()
 		self.trakt_link = 'https://api.trakt.tv'
 		self.search_link = 'https://api.trakt.tv/search/show?limit=%s&page=1&query=' % self.search_page_limit
@@ -79,10 +79,10 @@ class TVshows:
 		self.trakt_trendingLists_link = 'https://api.trakt.tv/lists/trending?limit=40&page=1'
 
 		self.tvmaze_link = 'https://www.tvmaze.com'
-		self.tmdb_key = getSetting('tmdb.api.key')
+		self.tmdb_key = getSetting('tmdb.apikey')
 		if self.tmdb_key == '' or self.tmdb_key is None:
 			self.tmdb_key = 'bc96b19479c7db6c8ae805744d0bdfe2'
-		self.tmdb_session_id = getSetting('tmdb.session_id')
+		self.tmdb_session_id = getSetting('tmdb.sessionid')
 		self.tmdb_link = 'https://api.themoviedb.org'
 		self.tmdb_userlists_link = 'https://api.themoviedb.org/3/account/{account_id}/lists?api_key=%s&language=en-US&session_id=%s&page=1' % ('%s', self.tmdb_session_id) # used by library import only
 		self.tmdb_popular_link = 'https://api.themoviedb.org/3/tv/popular?api_key=%s&language=en-US&region=US&page=1'
