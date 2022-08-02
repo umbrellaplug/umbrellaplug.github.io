@@ -226,6 +226,7 @@
 		<setting id="source.max.epsize" type="slider" label="32158" subsetting="true" option="float" range="0.5,0.3,200" default="10" visible="eq(-2,true)" />
 		<setting id="remove.duplicates" type="bool" label="32035" default="true" />
 		<setting id="remove.duplicates.logging" type="bool" label="32159" subsetting="true" default="true" visible="eq(-1,true)" />
+		<setting id="remove.duplicates.popup" type="bool" label="40135" subsetting="true" default="false" visible="eq(-2,true)" />
 		<setting id="remove.dolby.vision" type="bool" label="32388" default="false" />
 		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=removeDolbyVision)" visible="eq(-1,true)" />
 		<setting id="remove.hdr" type="bool" label="32389" default="false" />
