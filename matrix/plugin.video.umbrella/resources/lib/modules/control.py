@@ -419,3 +419,11 @@ def jsondate_to_datetime(jsondate_object, resformat, remove_time=False):
 		try: datetime_object = datetime.strptime(jsondate_object, resformat)
 		except TypeError: datetime_object = datetime(*(time.strptime(jsondate_object, resformat)[0:6]))
 	return datetime_object
+
+def syncAccounts():
+		setSetting('easynews.user', addon('script.module.cocoscrapers').getSetting('easynews.user'))
+		setSetting('easynews.password', addon('script.module.cocoscrapers').getSetting('easynews.password'))
+		setSetting('furk.user_name', addon('script.module.cocoscrapers').getSetting('furk.user_name'))
+		setSetting('furk.user_pass', addon('script.module.cocoscrapers').getSetting('furk.user_pass'))
+		setSetting('filepursuit.api', addon('script.module.cocoscrapers').getSetting('filepursuit.api'))
+	

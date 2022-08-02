@@ -1010,7 +1010,7 @@ msgid "Authorization..."
 msgstr ""
 
 msgctxt "#32307"
-msgid "password"
+msgid "Password"
 msgstr ""
 
 msgctxt "#32308"
@@ -2362,7 +2362,7 @@ msgid ""
 msgstr ""
 
 msgctxt "#32651"
-msgid "[B]Umbrella Scrapers[/B] Settings"
+msgid "[B]CoCo Scrapers[/B] Settings"
 msgstr ""
 
 msgctxt "#32652"
@@ -3993,7 +3993,7 @@ msgid "Priority"
 msgstr ""
 
 msgctxt "#40006"
-msgid "username"
+msgid "Username"
 msgstr ""
 
 msgctxt "#40007"
@@ -4502,4 +4502,8 @@ msgstr ""
 
 msgctxt "#40133"
 msgid "Premiumize Authorization Revoked"
+msgstr ""
+
+msgctxt "#40134"
+msgid "Manage in CocoScrapers"
 msgstr ""

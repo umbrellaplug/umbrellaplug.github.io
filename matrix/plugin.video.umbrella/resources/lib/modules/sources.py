@@ -20,7 +20,7 @@ from resources.lib.modules import log_utils
 from resources.lib.modules import string_tools
 from resources.lib.modules.source_utils import supported_video_extensions, getFileType, aliases_check
 from resources.lib.cloud_scrapers import cloudSources
-from umbrellascrapers import sources as fs_sources
+from cocoscrapers import sources as fs_sources
 
 homeWindow = control.homeWindow
 playerWindow = control.playerWindow
@@ -1140,7 +1140,7 @@ class Sources:
 		self.debrid_resolvers = debrid.debrid_resolvers()
 
 		self.prem_providers = [] # for sorting by debrid and direct source links priority
-		if control.setting('easynewsusername'): self.prem_providers += [('easynews', int(getSetting('easynews.priority')))]
+		if control.setting('easynews.user'): self.prem_providers += [('easynews', int(getSetting('easynews.priority')))]
 		if control.setting('filepursuit.api'): self.prem_providers += [('filepursuit', int(getSetting('filepursuit.priority')))]
 		if control.setting('furk.user.name'): self.prem_providers += [('furk', int(getSetting('furk.priority')))]
 		self.prem_providers += [(d.name, int(d.sort_priority)) for d in self.debrid_resolvers]

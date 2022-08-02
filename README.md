@@ -4,7 +4,7 @@ This is the home of umbrella.
 
 Please let me know if you have any questions or issues. 
 Currently for Kodi 19 and working for Nexus Alphas (with lots of warnings).
-Clone of V
+Clone of Venom
 
 ## Installation Instructions:
 From Kodi:
@@ -37,6 +37,11 @@ Currently Supported Debrid Providers:
 
 **The plugin will not work without at least 1 debrid account**
 
+##Update Issues
+The package for scrapers has been changed. This is going to cause issues updating for some people. 
+If you download Cocoscrapers from repo then attempt to update it will work. 
+You need to have cocoscrapers installed to update.
+
 ## Issues
 Feel free to open issues, they are being looked at.
 If opening an issue please verify there is not already an open issue for the same thing.
@@ -68,16 +73,6 @@ Attach the URL to the issue you open.
 **A:** Of course, open an issue.
 
 
-**Q:** What's the difference between this and Ezra?
-
-**A:** Ezra is a clone of Fen. This project is a clone of Venom. They use different code completely. I would run both.
-
-
-**Q:** Are you going to do a clone of Fen also?
-
-**A:** NOPE. Ezra is doing a fine job.
-
-
 **Q:** How do I contact you?
 
 **A:** Reddit. [u/umbrella_dev](https://www.reddit.com/user/umbrella_dev)
@@ -86,11 +81,14 @@ Attach the URL to the issue you open.
 
 **Other Kodi Addons**
 
+[Fen](https://github.com/Tikipeter/repository.tikipeter)
+
+[Fen Clone: POV](https://github.com/kodifitzwell/repo)
+
 [Fen Clone: Ezra](https://github.com/Ezra-Hubbard/)
 
 [Seren](https://github.com/nixgates/)
 
-[Venom Clone: Kingpin](https://github.com/Wilson-Fisk/kingpin)
 
 
 

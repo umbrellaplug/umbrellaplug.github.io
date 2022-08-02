@@ -1,4 +1,8 @@
 
+[B][COLOR black]Update - v6.5.59 - August 2, 2022[/COLOR][/B]
+--[I] CocoScrapers are now included.[I]
+--[I] Please remove UmbrellaScrapers. They are no longer being used.[I]
+
 [B][COLOR black]Update - v6.5.58 - August 1, 2022[/COLOR][/B]
 --[I] Made authorizations return to setting after authorized or revoked.[I]
 --[I] Fixed issues with Authorizing TMDB[I]

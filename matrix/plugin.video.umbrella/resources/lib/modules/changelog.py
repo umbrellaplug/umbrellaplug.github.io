@@ -8,7 +8,7 @@ from resources.lib.windows.textviewer import TextViewerXML
 
 
 def get(name):
-	nameDict = {'Umbrella': 'plugin.video.umbrella', 'umbrellascrapers': 'script.module.umbrellascrapers'}
+	nameDict = {'Umbrella': 'plugin.video.umbrella'}
 	addon_path = addonPath(nameDict[name])
 	addon_version = addonVersion(nameDict[name])
 	changelog_file = joinPath(addon_path, 'changelog.txt')

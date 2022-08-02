@@ -236,7 +236,7 @@ class Navigator:
 		#self.addDirectoryItem(32609, 'tools_openMyAccount', 'MyAccounts.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(32506, 'tools_contextUmbrellaSettings', 'icon.png', 'DefaultAddonProgram.png', isFolder=False)
 		#-- Providers - 4
-		self.addDirectoryItem(32651, 'tools_umbrellascrapersSettings', 'umbrellascrapers.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(32651, 'tools_cocoScrapersSettings', 'cocoscrapers.png', 'DefaultAddonService.png', isFolder=False)
 		#-- General - 0
 		self.addDirectoryItem(32043, 'tools_openSettings&query=0.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#-- Accounts - 7
@@ -276,10 +276,6 @@ class Navigator:
 		self.addDirectoryItem(32525, 'tools_clearLogFile', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
 		self.addDirectoryItem(32526, 'tools_ShowChangelog&name=Umbrella', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
 		self.addDirectoryItem(32527, 'tools_uploadLogFile&name=Umbrella', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
-		#self.addDirectoryItem(32528, 'tools_viewLogFile&name=MyAccounts', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
-		#self.addDirectoryItem(32529, 'tools_ShowChangelog&name=MyAccounts', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
-		self.addDirectoryItem(32530, 'tools_viewLogFile&name=umbrellascrapers', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
-		self.addDirectoryItem(32531, 'tools_ShowChangelog&name=umbrellascrapers', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
 		self.addDirectoryItem(32532, 'tools_viewLogFile&name=Kodi', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
 		self.addDirectoryItem(32198, 'tools_uploadLogFile&name=Kodi', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
 		self.endDirectory()
