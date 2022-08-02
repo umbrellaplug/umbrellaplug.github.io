@@ -4500,3 +4500,11 @@ msgstr "Prioriteit geven aan AV1 naar boven"
 msgctxt "#40132"
 msgid "Remove AV1 Sources"
 msgstr "AV1-bronnen verwijderen"
+
+msgctxt "#40133"
+msgid "Premiumize Authorization Revoked"
+msgstr ""
+
+msgctxt "#40134"
+msgid "Manage in CocoScrapers"
+msgstr ""

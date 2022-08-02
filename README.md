@@ -55,12 +55,13 @@ Set your settings like this:
 
 Set your debug settings, reproduce the issue, then go to Tools > Logging Tools > Umbrella - Upload log file to pastebin
 Attach the URL to the issue you open.
+If you logs are requested and you do not post them within 48 hours your issue will be closed without being looked at.
 
 ## FAQ
 
-**Q:** Why do you have a seperate scraper package?
+**Q:** Why do you use the same scraper package as other addons?
 
-**A:** At some point there may be a shared scraper package, but you would get the same results with every addon for searches. I will continue to maintain my own package so tweaks and modifications can be made for now. It also gives you the ability to set different scraper settings for different addons. I feel that is currently the best way.
+**A:** Scrapers are a project on their own. I do not wish to develop scrapers. I have partnered with another developer to use scrapers provided by an outside source.
 
 
 **Q:** Why should I use this instead of Venom?
