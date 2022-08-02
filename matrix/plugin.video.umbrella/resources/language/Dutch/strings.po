@@ -44,7 +44,7 @@ msgstr "Mijn Series"
 
 msgctxt "#32005"
 msgid "Main"
-msgstr "Hoofd"
+msgstr "Main"
 
 msgctxt "#32006"
 msgid "New Episodes"
@@ -4234,7 +4234,7 @@ msgstr "Standaard actie PlayNext"
 
 msgctxt "#40066"
 msgid "[B]Plan:[/B] %s"
-msgstr ""
+msgstr "[B]Plan:[/B] %s"
 
 msgctxt "#40067"
 msgid "Clear Providers Cache After Changing Scraper Provider"
@@ -4306,79 +4306,79 @@ msgstr "Toon lijst eigenaar"
 
 msgctxt "#40084"
 msgid "MDBList Top Lists"
-msgstr ""
+msgstr "MDBL lijst toplijsten"
 
 msgctxt "#40085"
 msgid "MDBList API Key"
-msgstr ""
+msgstr "MDBList API sleutel"
 
 msgctxt "#40086"
 msgid "Paginate MDBList"
-msgstr ""
+msgstr "Paginate MDBList"
 
 msgctxt "#40087"
 msgid "MDBList User Lists"
-msgstr ""
+msgstr "MDBList gebruikerslijsten"
 
 msgctxt "#40088"
 msgid "MDBList Search Lists"
-msgstr ""
+msgstr "MDBList zoeklijsten"
 
 msgctxt "#40089"
 msgid "MDBList - Top Lists"
-msgstr ""
+msgstr "MDBList - Toplijsten"
 
 msgctxt "#40090"
 msgid "MBDList - User Lists"
-msgstr ""
+msgstr "MBDList - Gebruikerslijsten"
 
 msgctxt "#40091"
 msgid "PlayNext Background Color"
-msgstr ""
+msgstr "PlayNext achtergrondkleur"
 
 msgctxt "#40092"
 msgid "Pre-emptive Termination (Movie)"
-msgstr ""
+msgstr "Preventieve beëindiging (film)"
 
 msgctxt "#40093"
 msgid "Pre-emptive Limit (Movie)"
-msgstr ""
+msgstr "Preventieve limiet (film)"
 
 msgctxt "#40094"
 msgid "Min. Pre-emptive Res.(Movie)"
-msgstr ""
+msgstr "Min.  Preventief onderzoek (film)"
 
 msgctxt "#40095"
 msgid "Pre-emptive Termination (TV Shows)"
-msgstr ""
+msgstr "Preventieve beëindiging (Series)"
 
 msgctxt "#40096"
 msgid "Pre-emptive Limit (TV Shows)"
-msgstr ""
+msgstr "Preventieve limiet (Series)"
 
 msgctxt "#40097"
 msgid "Min. Pre-emptive Res. (TV Shows)"
-msgstr ""
+msgstr "Min.  Preventief onderzoek. (Series)"
 
 msgctxt "#40098"
 msgid "Next Episode in"
-msgstr 
+msgstr "Volgende aflevering in"
 
 msgctxt "#40099"
 msgid "Watch Now"
-msgstr 
+msgstr "Kijk nu"
 
 msgctxt "#40100"
 msgid "Hide"
-msgstr
+msgstr "Verbergen"
 
 msgctxt "#40101"
 msgid "Show Close/Hide Button"
-msgstr
+msgstr "Knop Sluiten/Verbergen tonen"
 
 msgctxt "#40102"
 msgid "Use Skin Theme for PlayNext"
-msgstr
+msgstr "Skinthema gebruiken voor PlayNext"
 
 msgctxt "#40103"
 msgid "Trakt Client ID"
@@ -4386,116 +4386,117 @@ msgstr ""
 
 msgctxt "#40104"
 msgid "Trakt Client Secret"
-msgstr ""
+msgstr "Trakt Cliënt geheim"
 
 msgctxt "#40105"
 msgid "Trakt API Key"
-msgstr ""
+msgstr "Trakt API sleutel"
 
 msgctxt "#40106"
 msgid "Use Custom Trakt API Keys"
-msgstr ""
+msgstr "Aangepaste Trakt API sleutels gebruiken"
 
 msgctxt "#40107"
 msgid "Trakt Authorized Successfully"
-msgstr ""
+msgstr "Trakt succesvol geautoriseerd""
 
 msgctxt "#40108"
 msgid "Trakt Authorization Error"
-msgstr ""
+msgstr "Trakt autorisatiefout"
 
 msgctxt "#40109"
 msgid "Trakt Authorization Revoked"
-msgstr ""
+msgstr "Trakt autorisatie ingetrokken"
 
 msgctxt "#40110"
 msgid "Revoke Authorization"
-msgstr ""
+msgstr "Autorisatie intrekken"
 
 msgctxt "#40111"
 msgid "%s %s hours %s minutes"
-msgstr ""
+msgstr "%s %s uur %s minuten"
 
 msgctxt "#40112"
 msgid "[B]Timezone:[/B] %s"
-msgstr ""
+msgstr "[B]Tijdzone:[/B] %s"
 
 msgctxt "#40113"
 msgid "[B]Joined:[/B] %s"
-msgstr ""
+msgstr "[B]lid geworden:[/B] %s"
 
 msgctxt "#40114"
 msgid "[B]Private:[/B] %s"
-msgstr ""
+msgstr "[B]Privé:[/B] %s"
 
 msgctxt "#40115"
 msgid "[B]VIP Status:[/B] %s"
-msgstr ""
+msgstr "[B]VIP status:[/B] %s"
 
 msgctxt "#40116"
 msgid "[B]Ratings Given:[/B] %s"
-msgstr ""
+msgstr "[B]Gegeven beoordelingen:[/B] %s"
 
 msgctxt "#40117"
 msgid "[B]Movies:[/B] [B]%s[/B] Collected, [B]%s[/B] Watched for [B]%s[/B]"
-msgstr ""
+msgstr "[B]Films:[/B] [B]%s[/B] Collectie, [B]%s[/B] Gekeken voor [B]%s[/B]"
 
 msgctxt "#40118"
 msgid "[B]Shows:[/B] [B]%s[/B] Collected, [B]%s[/B] Watched"
-msgstr ""
+msgstr "[B]Shows:[/B] [B]%s[/B] Collectie, [B]%s[/B] Bekeken"
 
 msgctxt "#40119"
 msgid "[B]Episodes:[/B] [B]%s[/B] Watched for [B]%s[/B]"
-msgstr ""
+msgstr "[B]Afleveringen:[/B] [B]%s[/B] Gekeken voor [B]%s[/B]"
 
 msgctxt "#40120"
 msgid "Account Expiry Notification"
-msgstr ""
+msgstr "Melding verlopen account"
 
 msgctxt "#40121"
 msgid "Authorization"
-msgstr ""
+msgstr "Autorisatie"
 
 msgctxt "#40122"
 msgid "Launch Umbrella on Kodi Start"
-msgstr ""
+msgstr "Start Umbrella op Kodi Start"
 
 msgctxt "#40123"
 msgid "[B]SETTINGS[/B] : Trakt"
-msgstr ""
+msgstr "[B]INSTELLINGEN[/B] : Trakt"
 
 msgctxt "#40124"
 msgid "[B]SETTINGS[/B] : Meta Accounts"
-msgstr ""
+msgstr "[B]INSTELLINGEN[/B] : Meta accounts"
 
 msgctxt "#40125"
 msgid "Get API Key"
-msgstr ""
+msgstr "API sleutel ophalen"
 
 msgctxt "#40126"
 msgid "Clear API Key"
-msgstr 
+msgstr "API sleutel wissen"
+
 
 msgctxt "#40127"
 msgid "Error retrieving Furk Account Info"
-msgstr ""
+msgstr "Fout bij ophalen van Furk accountgegevens"
 
 msgctxt "#40128"
 msgid "Account Found for Furk but not Premium."
-msgstr ""
+msgstr "Account gevonden voor Furk maar niet Premium."
 
 msgctxt "#40129"
 msgid "[B]Furk Username:[/B] %s"
-msgstr ""
+msgstr "[B]Furk gebruikersnaam:[/B] %s"
 
 msgctxt "#40130"
 msgid "[B]Furk API Key:[/B] %s"
-msgstr ""
+msgstr "[B]Furk API  sleutel:[/B] %s"
 
 msgctxt "#40131"
 msgid "Prioritize AV1 to top"
-msgstr ""
+msgstr "Prioriteit geven aan AV1 naar boven"
 
 msgctxt "#40132"
 msgid "Remove AV1 Sources"
-msgstr ""
+msgstr "AV1-bronnen verwijderen"
