@@ -50,10 +50,9 @@ class SettingsMonitor(control.monitor_class):
 
 class SyncMyAccounts:
 	def run(self):
-		control.log('[ plugin.video.umbrella ]  Sync "My Accounts" Service Starting...', LOGINFO)
-		#my_accounts.syncMyAccounts(silent=True)
-		control.log('[ plugin.video.umbrella ]  This service has been removed and will not longer sync in the next update.', LOGINFO)
-		return control.log('[ plugin.video.umbrella ]  Finished Sync "My Accounts" Service', LOGINFO)
+		control.log('[ plugin.video.umbrella ]  Sync Accounts with Scraper Starting...', LOGINFO)
+		control.syncAccounts()
+		return control.log('[ plugin.video.umbrella ]  Finished Sync with Scraper', LOGINFO)
 
 class checkAutoStart:
 	def run(self):
@@ -135,7 +134,7 @@ class VersionIsUpdateCheck:
 			if isUpdate:
 				window.setProperty('umbrella.updated', 'true')
 				curVersion = control.getUmbrellaVersion()
-				clearDB_version = '6.5.20' # set to desired version to force any db clearing needed
+				clearDB_version = '6.5.58' # set to desired version to force any db clearing needed
 				do_cacheClear = (int(oldVersion.replace('.', '')) < int(clearDB_version.replace('.', '')) <= int(curVersion.replace('.', '')))
 				if do_cacheClear:
 					clr_fanarttv = False
@@ -182,7 +181,7 @@ try:
 	kodiVersion = control.getKodiVersion(full=True)
 	addonVersion = control.addon('plugin.video.umbrella').getAddonInfo('version')
 	repoVersion = control.addon('repository.umbrella').getAddonInfo('version')
-	fsVersion = control.addon('script.module.umbrellascrapers').getAddonInfo('version')
+	fsVersion = control.addon('script.module.cocoscrapers').getAddonInfo('version')
 	#maVersion = control.addon('script.module.myaccounts').getAddonInfo('version')
 	log_utils.log('########   CURRENT Umbrella VERSIONS REPORT   ########', level=LOGINFO)
 	log_utils.log('##   Platform: %s' % str(sys_platform), level=LOGINFO)
@@ -190,7 +189,7 @@ try:
 	log_utils.log('##   python Version: %s' % pythonVersion, level=LOGINFO)
 	log_utils.log('##   plugin.video.umbrella Version: %s' % str(addonVersion), level=LOGINFO)
 	log_utils.log('##   repository.umbrella Version: %s' % str(repoVersion), level=LOGINFO)
-	log_utils.log('##   script.module.umbrellascrapers Version: %s' % str(fsVersion), level=LOGINFO)
+	log_utils.log('##   script.module.cocoscrapers Version: %s' % str(fsVersion), level=LOGINFO)
 	log_utils.log('######   UMBRELLA SERVICE ENTERING KEEP ALIVE   #####', level=LOGINFO)
 except:
 	log_utils.log('## ERROR GETTING Umbrella VERSION - Missing Repo or failed Install ', level=LOGINFO)

@@ -4507,3 +4507,11 @@ msgstr ""
 msgctxt "#40132"
 msgid "Remove AV1 Sources"
 msgstr ""
+
+msgctxt "#40133"
+msgid "Premiumize Authorization Revoked"
+msgstr ""
+
+msgctxt "#40134"
+msgid "Manage in CocoScrapers"
+msgstr ""

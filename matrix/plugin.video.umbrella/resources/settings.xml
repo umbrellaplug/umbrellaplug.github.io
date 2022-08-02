@@ -171,7 +171,7 @@
 
 	<!-- Providers - 4 -->
 	<category label="32345">
-		<setting type="action" label="32651" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_umbrellascrapersSettings&amp;opensettings=true&amp;query=4.1)" />
+		<setting type="action" label="32651" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_cocoScrapersSettings&amp;opensettings=true&amp;query=1.0)" />
 		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=Providers)" />
 		<setting type="lsep" label="40067" />
 		<setting type="action" label="32611" action="RunPlugin(plugin://plugin.video.umbrella/?action=cache_clearSources)" />
@@ -337,20 +337,22 @@
 		<setting id="realdebrid.server.notifications" type="bool" label="33051" default="true" visible="!eq(-11,) + eq(-12,true)" />
 		<setting type="action" label="32153" action="RunPlugin(plugin://plugin.video.umbrella/?action=rd_AccountInfo)" visible="!eq(-12,) + eq(-13,true)" />
 		<setting type="lsep" label="Easy News" />
-		<setting id="easynewsusername" type="text" label="40006" default="" />
-		<setting id="easynewspassword" type="text" label="32307" option="hidden" default=""/>
-		<setting id="easynews.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" enable="true" visible="!eq(-2,)+!eq(-1,)" />
-
+		<setting id="easynews.user" type="text" label="40006" default="" enable="false" />
+		<setting id="easynews.password" type="text" label="32307" default="" option="hidden" enable="false" />
+		<setting id="easynews.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" enable="true" visible="!eq(-1,)" />
+		<setting type="action" label="40134" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_cocoScrapersSettings&amp;query=EasyNews)" visible="true" />
 		<setting type="lsep" label="Filepursuit" />
-		<setting id="filepursuit.api" type="text" label="32309" default="" />
+		<setting id="filepursuit.api" type="text" label="32309" default="" enable="false"/>
 		<setting id="filepursuit.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" enable="true" visible="!eq(-1,)" />
+		<setting type="action" label="40134" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_cocoScrapersSettings&amp;query=FilePursuit)" visible="true" />
+		
 		<setting type="lsep" label="Furk.net" />
-		<setting id="furk.user.name" type="text" label="32126" default=""  />
-		<setting id="furk.pass.word" type="text" label="32127" option="hidden" default=""  visible="" />
+		<setting id="furk.user_name" type="text" label="32126" default="" enable="false"  />
+		<setting id="furk.user_pass" type="text" label="32127" option="hidden" enable="false" default=""  visible="" />
 		<setting id="furk.api" type="text" label="32128" enable="false" visible="!eq(-2,)" />
-		<setting id="furk.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" enable="true" visible="!eq(-1,)" />
-		<setting type="action" label="40125" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=fk_getApiKey)" visible="eq(-2,)+!eq(-4,)+!eq(-3,)" />
-		<setting type="action" label="40126" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=fk_revokeApiKey)" visible="eq(-1,)+!eq(-3,)" />
+		<setting id="furk.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" enable="true" visible="!eq(-3,)" />
+		<setting type="action" label="40134" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_cocoScrapersSettings&amp;query=Furk)" visible="true" />
+		
 	</category>
 
 	<!-- Accounts(Meta) - 8 -->

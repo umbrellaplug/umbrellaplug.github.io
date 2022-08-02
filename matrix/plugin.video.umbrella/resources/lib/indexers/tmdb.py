@@ -1101,13 +1101,20 @@ class Auth:
 			if result.get('success') is True:
 				setSetting('tmdb.sessionid', '')
 				notification(message='TMDb session_id successfully deleted')
+				if fromSettings == 1:
+					openSettings('8.1', 'plugin.video.umbrella')
 			else:
 				from resources.lib.modules import log_utils
 				log_utils.log('TMDb Revoke session_id FAILED: %s' % result.get('status_message', ''), __name__, log_utils.LOGWARNING)
 				if 'id is invalid or not found' in result.get('status_message', ''):
 					setSetting('tmdb.sessionid', '')
 					notification(message=result.get('status_message', ''), icon='ERROR')
-				else: notification(message='TMDb session_id deletion FAILED', icon='ERROR')
+					if fromSettings == 1:
+						openSettings('8.1', 'plugin.video.umbrella')
+				else:
+					if fromSettings == 1:
+						openSettings('8.1', 'plugin.video.umbrella')
+					notification(message='TMDb session_id deletion FAILED', icon='ERROR')
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()

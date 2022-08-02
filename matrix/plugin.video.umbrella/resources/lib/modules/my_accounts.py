@@ -90,35 +90,3 @@ def syncMyAccounts(silent=False):
 	from resources.lib.modules import log_utils
 	#log_utils.error()
 	log_utils.log('My accounts sync function removed.', level=log_utils.LOGWARNING)
-
-def getAllScraper():
-	dict1 = dict(getFilepursuit(), **getFurk())
-	dict2 = dict(dict1, **getEasyNews())
-	return dict2
-
-def getFilepursuit():
-	filePursuit = {'filepursuit': {}}
-	filePursuit['filepursuit']['api_key'] = control.setting('filepursuit.api.key')
-	return filePursuit
-
-
-def getFurk():
-	furk = {'furk': {}}
-	furk['furk']['username'] = control.setting('furk.user.name')
-	furk['furk']['password'] = control.setting('furk.pass.word')
-	furk['furk']['api_key'] = control.setting('furk.api.key')
-	return furk
-
-
-def getEasyNews():
-	easyNews = {'easyNews': {}}
-	easyNews['easyNews']['username'] = control.setting('easynewsusername')
-	easyNews['easyNews']['password'] = control.setting('easynewspassword')
-	return easyNews
-
-
-def getOrro():
-	ororo = {'ororo': {}}
-	ororo['ororo']['email'] = control.setting('ororo.email')
-	ororo['ororo']['password'] = control.setting('ororo.password')
-	return ororo

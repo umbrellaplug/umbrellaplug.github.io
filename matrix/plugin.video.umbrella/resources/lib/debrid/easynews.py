@@ -45,8 +45,8 @@ class EasyNews:
 	def _get_auth(self):
 		auth = None
 		try:
-			username = getSetting('easynewsusername')
-			password = getSetting('easynewspassword')
+			username = control.addon('script.module.cocoscrapers').getSetting('easynews.user')
+			password = control.addon('script.module.cocoscrapers').getSetting('easynews.password')
 			if username == '' or password == '': return auth
 			user_info = '%s:%s' % (username, password)
 			user_info = user_info.encode('utf-8')

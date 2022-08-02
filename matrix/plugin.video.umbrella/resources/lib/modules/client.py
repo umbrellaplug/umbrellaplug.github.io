@@ -123,7 +123,7 @@ def request(url, close=True, redirect=True, error=False, proxy=None, post=None, 
 						from resources.lib.modules import log_utils
 						log_utils.log('client module calling cfscrape: url=%s' % url, level=log_utils.LOGDEBUG)
 						try:
-							from umbrellascrapers.modules import cfscrape
+							from cocoscrapers.modules import cfscrape
 							if isinstance(post, dict): data = post
 							else:
 								try: data = parse_qs(post)
