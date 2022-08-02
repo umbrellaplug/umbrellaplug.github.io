@@ -37,7 +37,7 @@ Currently Supported Debrid Providers:
 
 **The plugin will not work without at least 1 debrid account**
 
-##Update Issues
+## Update Issues
 The package for scrapers has been changed. This is going to cause issues updating for some people. 
 If you download Cocoscrapers from repo then attempt to update it will work. 
 You need to have cocoscrapers installed to update.
