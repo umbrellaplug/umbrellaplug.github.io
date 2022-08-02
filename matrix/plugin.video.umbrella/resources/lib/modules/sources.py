@@ -917,8 +917,9 @@ class Sources:
 				except: log_utils.error('Error filter_dupes: ')
 			if not larger: append(i) # sublist['name'] len() was larger, or "torrentio" so do not append
 		item_title = homeWindow.getProperty(self.labelProperty)
-		if control.getSetting('remove.duplicates.popup') != 'true' and (self.mediatype == 'movie' or (self.mediatype == 'episode' and not self.enable_playnext)):
-			control.notification(title=item_title, message='Removed %s duplicate sources from list' % (len(self.sources) - len(filter)))
+		if (self.mediatype == 'movie' or (self.mediatype == 'episode' and not self.enable_playnext)):
+			if getSetting('remove.duplicates.popup') != 'true':
+				control.notification(title=item_title, message='Removed %s duplicate sources from list' % (len(self.sources) - len(filter)))
 		log_utils.log('Removed %s duplicate sources for (%s) from list' % (len(self.sources) - len(filter), item_title), level=log_utils.LOGDEBUG)
 		return filter
 
