@@ -78,7 +78,6 @@ class Player(xbmc.Player):
 			self.meta = meta
 			poster, thumb, season_poster, fanart, banner, clearart, clearlogo, discart, meta = self.getMeta(meta)
 			self.offset = Bookmarks().get(name=self.name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, year=self.year, runtime=meta.get('duration') if meta else 0)
-
 			if self.offset == '-1':
 				log_utils.log('User requested playback cancel', level=log_utils.LOGDEBUG)
 				control.notification(message=32328)
@@ -283,6 +282,7 @@ class Player(xbmc.Player):
 			if (int(self.current_time) > 180 and (self.getWatchedPercent() < 85)): # kodi may at times not issue "onPlayBackStopped" callback
 				self.playbackStopped_triggered = True
 				self.onPlayBackStopped()
+			elif self.getWatchedPercent() >= 85: self._end_playback()
 
 	def isPlayingFile(self):
 		if self._running_path is None or self._running_path.startswith("plugin://"):
@@ -301,6 +301,10 @@ class Player(xbmc.Player):
 				rpc = '{"jsonrpc": "2.0", "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid": %s, "playcount": 1 }, "id": 1 }' % str(self.DBID)
 			control.jsonrpc(rpc)
 		except: log_utils.error()
+
+	def _end_playback(self):
+		self.onPlayBackEnded()
+		self.onPlayBackEnded_ran = True
 
 ### Kodi player callback methods ###
 	def onAVStarted(self): # Kodi docs suggests "Use onAVStarted() instead of onPlayBackStarted() as of v18"
@@ -323,7 +327,6 @@ class Player(xbmc.Player):
 		if self.traktCredentials:
 			trakt.scrobbleReset(imdb=self.imdb, tmdb=self.tmdb, tvdb=self.tvdb, season=self.season, episode=self.episode, refresh=False) # refresh issues container.refresh()
 		xbmc.log('[ plugin.video.umbrella ] onAVStarted callback', LOGINFO)
-		log_utils.log('[ plugin.video.umbrella ] onAVStarted callback', level=log_utils.LOGDEBUG)
 
 	def onPlayBackSeek(self, time, seekOffset):
 		seekOffset /= 1000
@@ -348,18 +351,18 @@ class Player(xbmc.Player):
 				watcher = self.getWatchedPercent()
 				seekable = (int(self.current_time) > 180 and (watcher < 85))
 				if watcher >= 85: self.libForPlayback() # only write playcount to local lib
-
 				if getSetting('crefresh') == 'true' and seekable:
 					log_utils.log('[ plugin.video.umbrella ] container.refresh issued', level=log_utils.LOGDEBUG)
 					control.refresh() #not all skins refresh after playback stopped
 				control.playlist.clear()
 				#control.trigger_widget_refresh() # skinshortcuts handles widget refresh
 				xbmc.log('[ plugin.video.umbrella ] onPlayBackStopped callback', LOGINFO)
-			xbmc.log('[ plugin.video.umbrella ] Running System Exit from PlaybackStopped', LOGINFO)
-			sysexit(0)
+				control.sleep(1000)
+				sysexit('Attempting to prevent reuselanguageinvoker crashes with a system exit.')
 		except: log_utils.error()
 
 	def onPlayBackEnded(self):
+		if self.onPlayBackEnded_ran: return
 		Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
 		# if self.traktCredentials:
 			# trakt.scrobbleReset(imdb=self.imdb, tmdb=self.tmdb, tvdb=self.tvdb, season=self.season, episode=self.episode, refresh=False) # refresh issues container.refresh()
@@ -367,8 +370,8 @@ class Player(xbmc.Player):
 		if control.playlist.getposition() == control.playlist.size() or control.playlist.size() == 1:
 			control.playlist.clear()
 		xbmc.log('[ plugin.video.umbrella ] onPlayBackEnded callback', LOGINFO)
-		xbmc.log('[ plugin.video.umbrella ] Running System Exit from PlayBackEnded', LOGINFO)
-		sysexit(0)
+		control.sleep(1000)
+		sysexit('Attempting to prevent reuselanguageinvoker crashes with a system exit.')
 
 	def onPlayBackError(self):
 		playerWindow.clearProperty('umbrella.preResolved_nextUrl')
@@ -377,7 +380,6 @@ class Player(xbmc.Player):
 		Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
 		log_utils.error()
 		xbmc.log('[ plugin.video.umbrella ] onPlayBackError callback', LOGINFO)
-		xbmc.log('[ plugin.video.umbrella ] Running System Exit from PlaybackError', LOGINFO)
 		sysexit(1)
 ##############################
 
@@ -649,7 +651,9 @@ class Bookmarks:
 			finally:
 				dbcur.close() ; dbcon.close()
 			if not match: return offset
-			offset = str(match[1])
+			#offset = str(match[1]) 
+			#changed to correct issue with resumes.
+			offset = float(match[1])
 		if ck: return offset
 		minutes, seconds = divmod(float(offset), 60)
 		hours, minutes = divmod(minutes, 60)
