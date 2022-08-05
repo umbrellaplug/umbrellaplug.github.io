@@ -1,4 +1,7 @@
 
+[B][COLOR black]Update - v6.5.61 - August 4, 2022[/COLOR][/B]
+--[I] Added hide unaired for seasons also.[I]
+
 [B][COLOR black]Update - v6.5.60 - August 4, 2022[/COLOR][/B]
 --[I] Added fix for resume issues.[I]
 --[I] Added a requested language for tmdb meta requests.[I]

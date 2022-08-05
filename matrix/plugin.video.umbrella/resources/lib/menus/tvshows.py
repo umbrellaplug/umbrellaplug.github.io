@@ -33,6 +33,7 @@ class TVshows:
 		self.enable_fanarttv = getSetting('enable.fanarttv') == 'true'
 		self.prefer_tmdbArt = getSetting('prefer.tmdbArt') == 'true'
 		self.unairedcolor = control.getColor(getSetting('unaired.identify'))
+		self.showunaired = getSetting('showunaired') == 'true'
 		self.highlight_color = control.getHighlightColor()
 		self.date_time = datetime.now()
 		self.today_date = (self.date_time).strftime('%Y-%m-%d')
@@ -1091,7 +1092,8 @@ class TVshows:
 				try:
 					premiered = i['premiered']
 					if (not premiered and i['status'] in ('Rumored', 'Planned', 'In Production', 'Post Production', 'Upcoming')) or (int(re.sub('[^0-9]', '', premiered)) > int(re.sub('[^0-9]', '', str(self.today_date)))):
-						label = '[COLOR %s]%s [I][Coming Soon][/I][/COLOR]' % (self.unairedcolor, label)
+						if self.showunaired: label = '[COLOR %s]%s [I][Coming Soon][/I][/COLOR]' % (self.unairedcolor, label)
+						else: continue
 				except: pass
 				try: indicators = getSeasonIndicators(imdb, tvdb)
 				except: indicators = None
