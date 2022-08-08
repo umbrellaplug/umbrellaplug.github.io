@@ -32,6 +32,7 @@ class Episodes:
 		self.notifications = notifications
 		self.enable_fanarttv = getSetting('enable.fanarttv') == 'true'
 		self.prefer_tmdbArt = getSetting('prefer.tmdbArt') == 'true'
+		self.progress_showunaired = getSetting('trakt.progress.showunaired') == 'true'
 		self.showunaired = getSetting('showunaired') == 'true'
 		self.unairedcolor = control.getColor(getSetting('unaired.identify'))
 		self.showspecials = getSetting('tv.specials') == 'true'
@@ -336,12 +337,10 @@ class Episodes:
 					elif not values['premiered']:
 						values['unaired'] = 'true'
 						unaired_count += 1
-						if not self.showunaired: continue
 						pass
 					elif int(re.sub(r'[^0-9]', '', str(values['premiered']))) > int(re.sub(r'[^0-9]', '', str(self.today_date))):
 						values['unaired'] = 'true'
 						unaired_count += 1
-						if not self.showunaired: continue
 				except:
 					from resources.lib.modules import log_utils
 					log_utils.error()
@@ -370,7 +369,7 @@ class Episodes:
 			result = trakt.getTrakt(url).json()
 		except: return
 		items = []
-		progress_showunaired = getSetting('trakt.progress.showunaired') == 'true'
+		# progress_showunaired = getSetting('trakt.progress.showunaired') == 'true'
 		for item in result:
 			try:
 				values = {} ; num_1 = 0
@@ -471,16 +470,13 @@ class Episodes:
 						if values['status'].lower() == 'ended': pass
 						elif not air_date:
 							values['unaired'] = 'true'
-							if not progress_showunaired: return
 						elif int(re.sub(r'[^0-9]', '', air_date)) > int(re.sub(r'[^0-9]', '', str(self.today_date))):
 							values['unaired'] = 'true'
-							if not progress_showunaired: return
 						elif int(re.sub(r'[^0-9]', '', air_date)) == int(re.sub(r'[^0-9]', '', str(self.today_date))):
 							if air_time:
 								time_now = (self.date_time).strftime('%X')
 								if int(re.sub(r'[^0-9]', '', air_time)) > int(re.sub(r'[^0-9]', '', str(time_now))[:4]):
 									values['unaired'] = 'true'
-									if not progress_showunaired: return
 							else: pass
 					except:
 						from resources.lib.modules import log_utils
@@ -589,8 +585,7 @@ class Episodes:
 		if not items: items = self.trakt_list(url, user)
 		def items_list(i):
 			values = i
-			tmdb = i['tmdb']
-			tvdb = i['tvdb']
+			tmdb, tvdb = i['tmdb'], i['tvdb']
 			try:
 				seasonEpisodes = cache.get(tmdb_indexer().get_seasonEpisodes_meta, 96, tmdb, i['season'])
 				if not seasonEpisodes: return
@@ -715,6 +710,15 @@ class Episodes:
 		if not is_widget: control.playlist.clear()
 		settingFanart = getSetting('fanart') == 'true'
 		addonPoster, addonFanart, addonBanner = control.addonPoster(), control.addonFanart(), control.addonBanner()
+
+
+
+		try: traktUpcomingProgress = False if 'traktUpcomingProgress' not in items[0] else True
+		except: traktUpcomingProgress = False
+
+
+
+
 		try: traktProgress = False if 'traktProgress' not in items[0] else True
 		except: traktProgress = False
 		if traktProgress and self.trakt_directProgressScrape: progressMenu = getLS(32016)
@@ -756,6 +760,16 @@ class Episodes:
 
 		for i in items:
 			try:
+
+
+				if traktUpcomingProgress: pass
+				elif traktProgress:
+					if not self.progress_showunaired and i.get('unaired', '') == 'true': continue
+				else:
+					if not self.showunaired and i.get('unaired', '') == 'true': continue
+
+
+
 				tvshowtitle, title, imdb, tmdb, tvdb = i.get('tvshowtitle'), i.get('title'), i.get('imdb', ''), i.get('tmdb', ''), i.get('tvdb', '')
 				year, season, episode, premiered = i.get('year', ''), i.get('season'), i.get('episode'), i.get('premiered', '')
 				trailer, runtime = i.get('trailer', ''), i.get('duration')
@@ -773,7 +787,11 @@ class Episodes:
 						air_datetime = tools.convert_time(stringTime=i.get('lastplayed', ''), zoneFrom='utc', zoneTo='local', formatInput='%Y-%m-%dT%H:%M:%S.000Z', formatOutput='%b %d %Y %I:%M %p', remove_zeroes=True)
 						labelProgress = labelProgress + '[COLOR %s]  [%s][/COLOR]' % (self.highlight_color, air_datetime)
 					except: pass
-				if upcoming_prependDate and (i.get('traktUpcomingProgress') is True): # uses TMDb premiered
+
+
+				if upcoming_prependDate and traktUpcomingProgress is True: # uses TMDb premiered
+
+
 					try:
 						if premiered and i.get('airtime'): combined='%sT%s' % (premiered, i.get('airtime', ''))
 						else: raise Exception()
@@ -794,7 +812,9 @@ class Episodes:
 					except: pass
 				systitle, systvshowtitle, syspremiered = quote_plus(title), quote_plus(tvshowtitle), quote_plus(premiered)
 				meta = dict((k, v) for k, v in iter(i.items()) if v is not None and v != '')
-				meta.update({'code': imdb, 'imdbnumber': imdb, 'mediatype': 'episode', 'tag': [imdb, tmdb]}) # "tag" and "tagline" for movies only, but works in my skin mod so leave
+				if isMultiList and multi_unwatchedEnabled: mediatype = 'tvshow'
+				else: mediatype = 'episode'
+				meta.update({'code': imdb, 'imdbnumber': imdb, 'mediatype': mediatype, 'tag': [imdb, tmdb]}) # "tag" and "tagline" for movies only, but works in my skin mod so leave
 				try: meta.update({'genre': cleangenre.lang(meta['genre'], self.lang)})
 				except: pass
 				try: meta.update({'title': i['label']})
@@ -857,7 +877,6 @@ class Episodes:
 					if watched:
 						meta.update({'playcount': 1, 'overlay': 5})
 						cm.append((unwatchedMenu, 'RunPlugin(%s?action=playcount_Episode&name=%s&imdb=%s&tvdb=%s&season=%s&episode=%s&query=4)' % (sysaddon, systvshowtitle, imdb, tvdb, season, episode)))
-						# meta.update({'lastplayed': trakt.watchedShowsTime(tvdb, season, episode)}) # no skin support
 					else:
 						meta.update({'playcount': 0, 'overlay': 4})
 						cm.append((watchedMenu, 'RunPlugin(%s?action=playcount_Episode&name=%s&imdb=%s&tvdb=%s&season=%s&episode=%s&query=5)' % (sysaddon, systvshowtitle, imdb, tvdb, season, episode)))
@@ -923,11 +942,11 @@ class Episodes:
 				blabel = tvshowtitle + ' S%02dE%02d' % (int(season), int(episode))
 
 				if not i.get('unaired') == 'true':
-					if not runtime: runtime = 45
+					if not runtime: runtime = 2700
 					resumetime = Bookmarks().get(name=blabel, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, year=str(year), runtime=runtime, ck=True)
 					# item.setProperty('TotalTime', str(runtime)) # Adding this property causes the Kodi bookmark CM items to be added
 					item.setProperty('ResumeTime', str(resumetime))
-					try: item.setProperty('percentplayed', str(round(float(resumetime) / float(runtime) * 100, 1))) # resumetime and runtime are both in minutes
+					try: item.setProperty('WatchedProgress', str(int(float(resumetime) / float(runtime) * 100))) # resumetime and runtime are both in minutes
 					except: pass
 
 				try: # Year is the shows year, not the seasons year. Extract year from premier date for infoLabels to have "season_year."
@@ -935,7 +954,12 @@ class Episodes:
 					meta.update({'year': season_year})
 				except: pass
 				item.setUniqueIDs({'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb})
-				if upcoming_prependDate and i.get('traktUpcomingProgress') is True:
+
+
+				if upcoming_prependDate and traktUpcomingProgress is True:
+
+
+
 					try:
 						if premiered and meta.get('airtime'): combined='%sT%s' % (premiered, meta.get('airtime', ''))
 						else: raise Exception()

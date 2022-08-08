@@ -148,7 +148,7 @@
 [COLOR yellow]--[/COLOR][I] Change of icon, not much new added here yet.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.61">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.62">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.6" />
@@ -181,8 +181,11 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.61 - August 4, 2022[/COLOR][/B]
---[I] Added hide unaired for seasons also.[I]
+[B][COLOR black]Update - v6.5.62 - August 8, 2022[/COLOR][/B]
+--[I] More edits for hiding un-aired episodes.[I]
+--[I] Adjustments to force Kodi settings if Playnext enabled.[I]
+--[I] Fix for skin breaking on studio content type.[I]
+--[I] System Exit adjustments[I]
 		</news>
 	</extension>
 </addon><addon id="plugin.video.youtube" name="YouTube" version="6.8.18+matrix.1" provider-name="anxdpanic, bromix">

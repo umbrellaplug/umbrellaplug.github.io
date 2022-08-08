@@ -40,6 +40,7 @@ class Player(xbmc.Player):
 		self.enable_playnext = getSetting('enable.playnext') == 'true'
 		self.playnext_time = int(getSetting('playnext.time')) or 60
 		self.traktCredentials = trakt.getTraktCredentialsInfo()
+		self.onPlayBackEnded_ran = False
 
 	def play_source(self, title, year, season, episode, imdb, tmdb, tvdb, url, meta, debridPackCall=False):
 		try:
@@ -227,6 +228,7 @@ class Player(xbmc.Player):
 
 		xbmc.sleep(5000)
 		playlist_skip = False
+		self.onPlayBackEnded_ran = False
 		try: running_path = self.getPlayingFile() # original video that playlist playback started with
 		except: running_path = ''
 
@@ -277,9 +279,7 @@ class Player(xbmc.Player):
 		homeWindow.clearProperty(pname)
 		if playlist_skip: pass
 		else:
-			# # self.onPlayBackEnded() # check, kodi may at times not issue "onPlayBackEnded" callback
-			# if self.media_length - self.current_time > 60: # kodi may at times not issue "onPlayBackStopped" callback
-			if (int(self.current_time) > 180 and (self.getWatchedPercent() < 85)): # kodi may at times not issue "onPlayBackStopped" callback
+			if (int(self.current_time) > 180 and (self.getWatchedPercent() < 85)): # kodi is unreliable issuing callback "onPlayBackStopped" and "onPlayBackEnded"
 				self.playbackStopped_triggered = True
 				self.onPlayBackStopped()
 			elif self.getWatchedPercent() >= 85: self._end_playback()
@@ -356,22 +356,18 @@ class Player(xbmc.Player):
 					control.refresh() #not all skins refresh after playback stopped
 				control.playlist.clear()
 				#control.trigger_widget_refresh() # skinshortcuts handles widget refresh
+				#control.checkforSkin(action='off')
 				xbmc.log('[ plugin.video.umbrella ] onPlayBackStopped callback', LOGINFO)
-				control.sleep(1000)
-				sysexit('Attempting to prevent reuselanguageinvoker crashes with a system exit.')
 		except: log_utils.error()
 
 	def onPlayBackEnded(self):
 		if self.onPlayBackEnded_ran: return
 		Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
-		# if self.traktCredentials:
-			# trakt.scrobbleReset(imdb=self.imdb, tmdb=self.tmdb, tvdb=self.tvdb, season=self.season, episode=self.episode, refresh=False) # refresh issues container.refresh()
 		self.libForPlayback()
 		if control.playlist.getposition() == control.playlist.size() or control.playlist.size() == 1:
 			control.playlist.clear()
 		xbmc.log('[ plugin.video.umbrella ] onPlayBackEnded callback', LOGINFO)
-		control.sleep(1000)
-		sysexit('Attempting to prevent reuselanguageinvoker crashes with a system exit.')
+		#control.checkforSkin(action='off')
 
 	def onPlayBackError(self):
 		playerWindow.clearProperty('umbrella.preResolved_nextUrl')
@@ -380,6 +376,7 @@ class Player(xbmc.Player):
 		Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
 		log_utils.error()
 		xbmc.log('[ plugin.video.umbrella ] onPlayBackError callback', LOGINFO)
+		#control.checkforSkin(action='off')
 		sysexit(1)
 ##############################
 

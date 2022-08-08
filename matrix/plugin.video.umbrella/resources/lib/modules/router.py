@@ -647,6 +647,8 @@ def router(params):
 	#---Play
 	####################################################
 	elif action and action.startswith('play_'):
+		#control.checkPlayNextEpisodes()
+		#control.checkforSkin(action='on')
 		if action == 'play_Item':
 			from resources.lib.modules import sources
 			sources.Sources(params.get('all_providers')).play(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, params.get('premiered'), params.get('meta'), params.get('select'), params.get('rescrape'))

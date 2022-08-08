@@ -1224,7 +1224,7 @@ class Movies:
 					resumetime = Bookmarks().get(name=label, imdb=imdb, tmdb=tmdb, year=str(year), runtime=runtime, ck=True)
 					# item.setProperty('TotalTime', str(meta['duration'])) # Adding this property causes the Kodi bookmark CM items to be added
 					item.setProperty('ResumeTime', str(resumetime))
-					try: item.setProperty('WatchedProgress', str(int(float(resumetime) / float(runtime) * 100))) # new prop Jurial added (resumetime and runtime are both in seconds)
+					try: item.setProperty('WatchedProgress', str(int(float(resumetime) / float(runtime) * 100)))
 					except: pass
 				item.setInfo(type='video', infoLabels=control.metadataClean(meta))
 				item.addContextMenuItems(cm)
@@ -1329,7 +1329,7 @@ class Movies:
 
 		skin = control.skin
 		if skin in ('skin.arctic.horizon', 'skin.arctic.horizon.2'): pass
-		elif skin in ('skin.estuary', 'skin.aeon.nox.silvo'): content = ''
+		elif skin in ('skin.estuary', 'skin.aeon.nox.silvo', 'skin.pellucid'): content = ''
 		elif skin == 'skin.auramod':
 			if content not in ('actors', 'genres'): content = 'addons'
 			else: content = ''

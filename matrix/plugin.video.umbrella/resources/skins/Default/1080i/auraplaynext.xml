@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <window>
-    <defaultcontrol always="true">3012</defaultcontrol>
+    <defaultcontrol always="true">3011</defaultcontrol>
     <zorder>0</zorder>
     <controls>
         <control type="label" id="3000"><visible>false</visible></control>
@@ -8,7 +8,7 @@
         <control type="label" id="3002"><visible>false</visible></control>
         <control type="label" id="3003"><visible>false</visible></control>
         <control type="label" id="3004"><visible>false</visible></control>
-
+        <control type="label" id="3014"><visible>false</visible></control>
         <control type="group">
             <include>Animation_FadeIn_Slide</include>
             <include>Animation_FadeOut</include>
@@ -84,8 +84,6 @@
                 <label>$INFO[Player.TimeRemaining(ss)]</label>
                 <visible>!Integer.IsGreater(Player.TimeRemaining,61)</visible>
             </control>
-
-
             <control type="label" description="text">
                 <left>20</left>
                 <right>120</right>
@@ -96,8 +94,7 @@
                 <label>$INFO[Control.GetLabel(3002),, ]$INFO[Control.GetLabel(3000)]</label>
                 <textcolor>Selected</textcolor>
             </control>
-
-            <control type="button" id="3012">
+           <control type="button" id="3011">
                 <description>Play</description>
                 <right>64</right>
                 <bottom>8</bottom>
@@ -107,8 +104,8 @@
                 <align>center</align>
                 <aligny>center</aligny>
                 <textoffsetx>0</textoffsetx>
-                <onleft>3013</onleft>
-                <onright>3013</onright>
+                <onleft>3011</onleft>
+                <onright>3012</onright>
                 <font>font_tiny_bold</font>
                 <textcolor>main_fg_100</textcolor>
                 <focusedcolor>Selected</focusedcolor>
@@ -123,9 +120,9 @@
                 <height>32</height>
                 <texture>common/playwhite.png</texture>
                 <aspectratio>keep</aspectratio>
-                <animation effect="fade" start="100" end="50" time="0" condition="!Control.HasFocus(3012)">Conditional</animation>
+                <animation effect="fade" start="100" end="50" time="0" condition="!Control.HasFocus(3011)">Conditional</animation>
             </control>
-            <control type="button" id="3013">
+            <control type="button" id="3012">
                 <description>Cancel</description>
                 <right>8</right>
                 <bottom>8</bottom>
@@ -135,7 +132,7 @@
                 <align>center</align>
                 <aligny>center</aligny>
                 <textoffsetx>0</textoffsetx>
-                <onleft>3012</onleft>
+                <onleft>3011</onleft>
                 <onright>3012</onright>
                 <font>font_tiny_bold</font>
                 <textcolor>main_fg_100</textcolor>

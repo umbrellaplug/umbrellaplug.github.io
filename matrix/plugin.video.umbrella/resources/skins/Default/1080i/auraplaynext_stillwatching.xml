@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <window>
-    <defaultcontrol always="true">4012</defaultcontrol>
+    <defaultcontrol always="true">3011</defaultcontrol>
     <zorder>0</zorder>
     <controls>
         <control type="label" id="4000"><visible>false</visible></control>
@@ -106,7 +106,7 @@
                 <textcolor>Selected</textcolor>
             </control>
 
-            <control type="button" id="4012">
+            <control type="button" id="3011">
                 <description>Play</description>
                 <right>64</right>
                 <bottom>8</bottom>
@@ -116,8 +116,8 @@
                 <align>center</align>
                 <aligny>center</aligny>
                 <textoffsetx>0</textoffsetx>
-                <onleft>4013</onleft>
-                <onright>4013</onright>
+                <onleft>3011</onleft>
+                <onright>3012</onright>
                 <font>font_tiny_bold</font>
                 <textcolor>main_fg_100</textcolor>
                 <focusedcolor>Selected</focusedcolor>
@@ -132,9 +132,9 @@
                 <height>32</height>
                 <texture>common/playwhite.png</texture>
                 <aspectratio>keep</aspectratio>
-                <animation effect="fade" start="100" end="50" time="0" condition="!Control.HasFocus(4012)">Conditional</animation>
+                <animation effect="fade" start="100" end="50" time="0" condition="!Control.HasFocus(3011)">Conditional</animation>
             </control>
-            <control type="button" id="4013">
+            <control type="button" id="3012">
                 <description>Cancel</description>
                 <right>8</right>
                 <bottom>8</bottom>
@@ -144,8 +144,8 @@
                 <align>center</align>
                 <aligny>center</aligny>
                 <textoffsetx>0</textoffsetx>
-                <onleft>4012</onleft>
-                <onright>4012</onright>
+                <onleft>3011</onleft>
+                <onright>3012</onright>
                 <font>font_tiny_bold</font>
                 <textcolor>main_fg_100</textcolor>
                 <focusedcolor>Selected</focusedcolor>

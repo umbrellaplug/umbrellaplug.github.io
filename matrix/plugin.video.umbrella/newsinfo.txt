@@ -1,3 +1,3 @@
-[B][COLOR black]July 13, 2022[/COLOR][/B]
---[I] Please install CocoScrapers from repo.[/I]
---[I] If you're update fails for a missing dependency you need to download the scraper package.[/I]
+[B][COLOR black]August 8th, 2022[/COLOR][/B]
+--[I] Please report issues to GitHub.[/I]
+--[I] https://github.com/umbrellaplug[/I]

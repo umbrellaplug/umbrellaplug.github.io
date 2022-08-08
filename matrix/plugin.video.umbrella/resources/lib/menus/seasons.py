@@ -86,11 +86,11 @@ class Seasons:
 					if values['status'].lower() == 'ended': pass # season level unaired
 					elif not values['premiered']:
 						values['unaired'] = 'true'
-						if not self.showunaired: continue
+						# if not self.showunaired: continue # remove at seasonDirectory() instead so cache clear not required on setting change
 						pass
 					elif int(re.sub(r'[^0-9]', '', str(values['premiered']))) > int(re.sub(r'[^0-9]', '', str(self.today_date))):
 						values['unaired'] = 'true'
-						if not self.showunaired: continue
+						# if not self.showunaired: continue # remove at seasonDirectory() instead so cache clear not required on setting change
 				except:
 					from resources.lib.modules import log_utils
 					log_utils.error()
@@ -144,6 +144,7 @@ class Seasons:
 			except: indicators = None
 		for i in items:
 			try:
+				if not self.showunaired and i.get('unaired', '') == 'true': continue
 				title, year, season = i.get('tvshowtitle'), i.get('year', ''), i.get('season')
 				label = '%s %s' % (labelMenu, season)
 				try:
@@ -197,6 +198,7 @@ class Seasons:
 					if count:
 						item.setProperties({'WatchedEpisodes': str(count['watched']), 'UnWatchedEpisodes': str(count['unwatched'])})
 						item.setProperties({'TotalSeasons': str(meta.get('total_seasons', '')), 'TotalEpisodes': str(count['total'])})
+						item.setProperty('WatchedProgress', str(int(float(count['watched']) / float(count['total']) * 100)))
 					else:
 						if meta.get('status') != 'Returning Series' or (meta.get('status') == 'Returning Series' and meta.get('last_episode_to_air', {}).get('season_number') > int(season)):
 							item.setProperties({'WatchedEpisodes': '0', 'UnWatchedEpisodes': str(meta.get('counts', {}).get(str(season), ''))})

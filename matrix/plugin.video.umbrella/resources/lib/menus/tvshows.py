@@ -217,6 +217,7 @@ class TVshows:
 			self.list = cache.get(self.trakt_list, 24, self.progress_link, self.trakt_user)
 		except: self.list = cache.get(self.trakt_list, 0, self.progress_link, self.trakt_user)
 
+		if self.list is None: self.list = []
 		for i in self.list:
 			imdb, tvdb = i.get('imdb'), i.get('tvdb')
 			try: indicators = getSeasonIndicators(imdb, tvdb)
@@ -765,6 +766,7 @@ class TVshows:
 				list_owner_slug = list_item.get('user', {}).get('ids', {}).get('slug', '')
 				if not list_owner_slug: list_owner_slug = list_owner.lower()
 				if any(list_item.get('privacy', '') == value for value in ('private', 'friends')): continue
+				if list_item.get('user', {}).get('private') is True: continue
 
 				if list_owner_slug == 'trakt': list_url = 'https://api.trakt.tv/lists/%s/items/?limit=%s&page=1' % (list_id, self.page_limit)
 				else: list_url = self.traktlist_link % (list_owner_slug, list_id)
@@ -1269,7 +1271,7 @@ class TVshows:
 
 		skin = control.skin
 		if skin in ('skin.arctic.horizon', 'skin.arctic.horizon.2'): pass
-		elif skin in ('skin.estuary', 'skin.aeon.nox.silvo'): content = ''
+		elif skin in ('skin.estuary', 'skin.aeon.nox.silvo','skin.pellucid'): content = ''
 		elif skin == 'skin.auramod':
 			if content not in ('actors', 'genres'): content = 'addons'
 			else: content = ''

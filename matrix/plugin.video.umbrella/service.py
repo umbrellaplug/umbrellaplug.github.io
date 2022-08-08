@@ -46,6 +46,7 @@ class SettingsMonitor(control.monitor_class):
 		refreshed = control.make_settings_dict()
 		control.refresh_playAction()
 		control.refresh_libPath()
+		control.checkPlayNextEpisodes()
 		control.refresh_debugReversed()
 
 class SyncMyAccounts:
@@ -262,6 +263,7 @@ def main():
 		SyncMyAccounts().run()
 		PremAccntNotification().run()
 		ReuseLanguageInvokerCheck().run()
+		control.checkPlayNextEpisodes()
 		if control.setting('library.service.update') == 'true':
 			libraryService = Thread(target=LibraryService().run)
 			libraryService.start()
