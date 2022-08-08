@@ -1,5 +1,5 @@
 
-[B][COLOR black]Update - v6.5.62 - August 8, 2022[/COLOR][/B]
+[B][COLOR black]Update - v6.5.63 - August 8, 2022[/COLOR][/B]
 --[I] More edits for hiding un-aired episodes.[I]
 --[I] Adjustments to force Kodi settings if Playnext enabled.[I]
 --[I] Fix for skin breaking on studio content type.[I]
