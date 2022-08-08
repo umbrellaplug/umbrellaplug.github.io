@@ -345,7 +345,7 @@ def getColor(n):
 
 def getBackgroundColor(n):
 	colorChart = ('FF12A0C7', 'blue', 'red', 'yellow', 'deeppink', 'cyan', 'lawngreen', 'gold', 'magenta', 'yellowgreen',
-						'skyblue', 'lime', 'limegreen', 'deepskyblue', 'white', 'whitesmoke', 'FF000000', '00000000')
+						'skyblue', 'lime', 'limegreen', 'deepskyblue', 'white', 'whitesmoke', 'FF000000')
 	if not n: n = '0'
 	color = colorChart[int(n)]
 	return color 
