@@ -407,7 +407,7 @@ def disable_enable_addon():
 
 def update_local_addon():
     execute('UpdateLocalAddons')
-
+    
 def jsondate_to_datetime(jsondate_object, resformat, remove_time=False):
 	import _strptime  # fix bug in python import
 	from datetime import datetime
@@ -426,7 +426,14 @@ def syncAccounts():
 	setSetting('furk.user_name', addon('script.module.cocoscrapers').getSetting('furk.user_name'))
 	setSetting('furk.user_pass', addon('script.module.cocoscrapers').getSetting('furk.user_pass'))
 	setSetting('filepursuit.api', addon('script.module.cocoscrapers').getSetting('filepursuit.api'))
-	
+	setSetting('plex.token', addon('script.module.cocoscrapers').getSetting('plex.token'))
+	setSetting('plex.client_id', addon('script.module.cocoscrapers').getSetting('plex.client_id'))
+	setSetting('plex.device_id', addon('script.module.cocoscrapers').getSetting('plex.device_id'))
+	setSetting('plexshare.sourceTitle', addon('script.module.cocoscrapers').getSetting('plexshare.sourceTitle'))
+	setSetting('plexshare.accessToken', addon('script.module.cocoscrapers').getSetting('plexshare.accessToken'))
+	setSetting('plexshare.url', addon('script.module.cocoscrapers').getSetting('plexshare.url'))
+
+
 def checkPlayNextEpisodes():
 	# 0 Music Videos
 	# 1 TV Shows
@@ -448,7 +455,6 @@ def checkPlayNextEpisodes():
 			selectActionSetting = 0
 		if selectActionSetting != 1:
 			jsonrpc('{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"myvideos.selectaction", "value":1}, "id":1}')
-
 	else:
 		from resources.lib.modules import log_utils
 		log_utils.log('Playnext is not enabled.')
@@ -475,8 +481,4 @@ def checkforSkin(action):
 				jsonrpc('{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"myvideos.selectaction", "value":[1]}, "id":1}')
 			elif action == 'off':
 				jsonrpc('{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"myvideos.selectaction", "value":[3]}, "id":1}')
-		
-
-
-	
 

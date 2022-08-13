@@ -128,7 +128,6 @@ def getFileType(name_info=None, url=None):
 		if ' DOLBY-VISION ' in file_type:
 			# if any(value in fmt for value in HDR_true) or 'hybrid' in fmt: file_type += ' HDR /' # for hybrid DV and HDR sources
 			if any(value in fmt for value in HDR_true) or any(value in fmt for value in ('hybrid', 'remux.sl.dv.')): file_type += ' HDR /' # for hybrid DV and HDR sources. "remux.sl.dv" is used by plexshares as hybrid sources
-
 		if any(value in fmt for value in CODEC_H264): file_type += ' AVC /'
 		elif '.av1.' in fmt: file_type += ' AV1 /'
 		elif any(value in fmt for value in CODEC_H265): file_type += ' HEVC /'
