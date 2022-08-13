@@ -1,4 +1,8 @@
 
+[B][COLOR black]Update - v6.5.65 - August 12, 2022[/COLOR][/B]
+--[I] Added PlexShare Compatibility.[I]
+--[I] Small bump in version to trigger update with scrapers.[I]
+
 [B][COLOR black]Update - v6.5.64 - August 10, 2022[/COLOR][/B]
 --[I] Added PlexShare Compatibility.[I]
 
