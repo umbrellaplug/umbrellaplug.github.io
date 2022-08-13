@@ -304,7 +304,8 @@ class Sources:
 						if not w.is_alive(): break
 						control.sleep(200)
 					if not self.url: continue
-					if not any(x in self.url.lower() for x in video_extensions):
+					# if not any(x in self.url.lower() for x in video_extensions):
+					if not any(x in self.url.lower() for x in video_extensions) and 'plex.direct:' not in self.url:
 						log_utils.log('Playback not supported for (playItem()): %s' % self.url, level=log_utils.LOGWARNING)
 						continue
 					log_utils.log('Playing url from playItem(): %s' % self.url, level=log_utils.LOGDEBUG)
@@ -588,7 +589,8 @@ class Sources:
 					if not url:
 						log_utils.log('preResolve failed for : next_sources[i]=%s' % str(next_sources[i]), level=log_utils.LOGWARNING)
 						continue
-					if not any(x in url.lower() for x in video_extensions):
+					# if not any(x in url.lower() for x in video_extensions):
+					if not any(x in url.lower() for x in video_extensions) and 'plex.direct:' not in url:
 						log_utils.log('preResolve Playback not supported for (sourcesAutoPlay()): %s' % url, level=log_utils.LOGWARNING)
 						continue
 					if url:
@@ -933,16 +935,17 @@ class Sources:
 		for i in range(len(items)):
 			try:
 				src_provider = items[i]['debrid'] if items[i].get('debrid') else ('%s - %s' % (items[i]['source'], items[i]['provider']))
-				label = '[COLOR %s]%s[CR]%s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), items[i]['name'], str(round(items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
+				label = '[COLOR %s]%s[CR]%02d.)%s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), i+1, items[i]['name'], str(round(items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
 				control.sleep(100)
 				try:
 					if progressDialog.iscanceled(): break
 					progressDialog.update(int((100 / float(len(items))) * i), label)
-				except: progressDialog.update(int((100 / float(len(items))) * i), '[COLOR %s]Resolving...[/COLOR]%s' % (self.highlight_color, items[i]['name']))
+				except: progressDialog.update(int((100 / float(len(items))) * i), '[COLOR %s]Resolving...[/COLOR]%02d.)%s' % (self.highlight_color, i+1, items[i]['name']))
 				try:
 					if control.monitor.abortRequested(): return sysexit()
 					url = self.sourcesResolve(items[i])
-					if not any(x in url.lower() for x in video_extensions):
+					# if not any(x in url.lower() for x in video_extensions):
+					if not any(x in url.lower() for x in video_extensions) and 'plex.direct:' not in url:
 						log_utils.log('Playback not supported for (sourcesAutoPlay()): %s' % url, level=log_utils.LOGWARNING)
 						continue
 					if url:
@@ -1144,6 +1147,7 @@ class Sources:
 		if control.setting('easynews.user'): self.prem_providers += [('easynews', int(getSetting('easynews.priority')))]
 		if control.setting('filepursuit.api'): self.prem_providers += [('filepursuit', int(getSetting('filepursuit.priority')))]
 		if control.setting('furk.user.name'): self.prem_providers += [('furk', int(getSetting('furk.priority')))]
+		if control.setting('plexshare.accessToken'): self.prem_providers += [('plexshare', int(getSetting('plexshare.priority')))]
 		self.prem_providers += [(d.name, int(d.sort_priority)) for d in self.debrid_resolvers]
 
 		def cache_prDict():

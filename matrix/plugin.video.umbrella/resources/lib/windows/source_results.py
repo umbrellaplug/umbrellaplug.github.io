@@ -157,6 +157,7 @@ class SourceResultsXML(BaseDialog):
 					listitem.setProperty('umbrella.source_dict', jsdumps([item]))
 					listitem.setProperty('umbrella.debrid', self.debrid_abv(item.get('debrid')))
 					listitem.setProperty('umbrella.provider', item.get('provider').upper())
+					listitem.setProperty('umbrella.plexsource', item.get('plexsource', '').upper())
 					listitem.setProperty('umbrella.source', item.get('source').upper())
 					listitem.setProperty('umbrella.seeders', str(item.get('seeders')))
 					listitem.setProperty('umbrella.hash', item.get('hash', 'N/A'))
