@@ -30,6 +30,7 @@ def router(params):
 			from resources.lib.modules import changelog
 			changelog.get('Umbrella')
 		navigator.Navigator().root()
+		control.syncAccounts()
 	####################################################
 	#---MOVIES
 	####################################################
@@ -611,6 +612,15 @@ def router(params):
 				control.syncAccounts()
 				control.sleep(100)
 				control.openSettings('7.4', 'plugin.video.umbrella')
+			elif query == 'Plex':
+				control.openSettings('1.1', 'script.module.cocoscrapers')
+				control.sleep(500)
+				while control.condVisibility('Window.IsVisible(addonsettings)') or control.homeWindow.getProperty('cocoscrapers.active') == 'true':
+					control.sleep(500)
+				control.sleep(100)
+				control.syncAccounts()
+				control.sleep(100)
+				control.openSettings('7.7', 'plugin.video.umbrella')
 			else:
 				control.openSettings('0.0','script.module.cocoscrapers')
 		elif action == 'tools_traktManager':
