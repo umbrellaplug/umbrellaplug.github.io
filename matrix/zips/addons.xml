@@ -148,7 +148,7 @@
 [COLOR yellow]--[/COLOR][I] Change of icon, not much new added here yet.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.65">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.66">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.6" />
@@ -181,9 +181,11 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.65 - August 12, 2022[/COLOR][/B]
---[I] Added PlexShare Compatibility.[I]
---[I] Small bump in version to trigger update with scrapers.[I]
+[B][COLOR black]Update - v6.5.66 - August 14, 2022[/COLOR][/B]
+--[I] Fixed issue with easy news username not being detected by plugin from cocoscrapers.[I]
+--[I] Thanks to reddit user u/retrobushwacker for pointing this issue out.[I]
+--[I] Easy news premium section changed to point at Cocoscrapers now.[I]
+
 		</news>
 	</extension>
 </addon><addon id="plugin.video.youtube" name="YouTube" version="6.8.18+matrix.1" provider-name="anxdpanic, bromix">
