@@ -1,4 +1,9 @@
 
+[B][COLOR black]Update - v6.5.66 - August 14, 2022[/COLOR][/B]
+--[I] Fixed issue with easy news username not being detected by plugin from cocoscrapers.[I]
+--[I] Thanks to reddit user u/retrobushwacker for pointing this issue out.[I]
+--[I] Easy news premium section changed to point at Cocoscrapers now.[I]
+
 [B][COLOR black]Update - v6.5.65 - August 12, 2022[/COLOR][/B]
 --[I] Added PlexShare Compatibility.[I]
 --[I] Small bump in version to trigger update with scrapers.[I]

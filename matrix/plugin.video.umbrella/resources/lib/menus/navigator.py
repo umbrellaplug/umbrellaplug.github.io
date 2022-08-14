@@ -341,11 +341,11 @@ class Navigator:
 		self.endDirectory()
 
 	def easynews_service(self):
-		if getSetting('easynewsusername'):
+		if getSetting('easynews.user'):
 			self.addDirectoryItem('Easy News: Search', 'en_Search', 'search.png', 'DefaultAddonsSearch.png')
 			self.addDirectoryItem('Easy News: Account Info', 'en_AccountInfo', 'easynews.png', 'DefaultAddonService.png', isFolder=False)
 		else:
-			self.addDirectoryItem('[I]Please setup in Accounts[/I]', 'tools_openSettings&query=7.4', 'easynews.png', 'DefaultAddonService.png', isFolder=False)
+			self.addDirectoryItem('[I]Please setup in CocoScrapers[/I]', 'tools_cocoScrapersSettings&query=EasyNews', 'easynews.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 
 	def furk_service(self):
@@ -354,7 +354,7 @@ class Navigator:
 			self.addDirectoryItem('Furk: User Files', 'furk_UserFiles', 'furk.png', 'DefaultAddonService.png')
 			self.addDirectoryItem('Furk: Account Info', 'furk_AccountInfo', 'furk.png', 'DefaultAddonService.png', isFolder=False)
 		else:
-			self.addDirectoryItem('[I]Please setup in Accounts[/I]', 'tools_openSettings&query=7.6', 'furk.png', 'DefaultAddonService.png', isFolder=False)
+			self.addDirectoryItem('[I]Please setup in CocoScrapers[/I]', 'tools_cocoScrapersSettings&query=Furk', 'furk.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 
 	def premiumize_service(self):
@@ -380,7 +380,7 @@ class Navigator:
 		self.addDirectoryItem(33043, 'tvSearch', 'trakt.png' if self.iconLogos else 'search.png', 'DefaultAddonsSearch.png')
 		self.addDirectoryItem(33044, 'moviePerson', 'imdb.png' if self.iconLogos else 'people-search.png', 'DefaultAddonsSearch.png', isFolder=False)
 		self.addDirectoryItem(33045, 'tvPerson', 'imdb.png' if self.iconLogos else 'people-search.png', 'DefaultAddonsSearch.png', isFolder=False)
-		if getSetting('easynewsusername'):
+		if getSetting('easynews.user'):
 			self.addDirectoryItem('Easy News: Search', 'en_Search', 'search.png', 'DefaultAddonsSearch.png')
 		if getSetting('furk.api'):
 			self.addDirectoryItem('Furk: Search', 'furk_Search', 'search.png', 'DefaultAddonsSearch.png')
