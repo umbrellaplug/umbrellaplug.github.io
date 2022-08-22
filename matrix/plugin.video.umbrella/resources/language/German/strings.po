@@ -4511,3 +4511,7 @@ msgstr ""
 msgctxt "#40135"
 msgid "Do not show removed duplicates popup"
 msgstr ""
+
+msgctxt "#40136"
+msgid "Sort Episodes Descending (Default Ascending)"
+msgstr ""
