@@ -76,7 +76,10 @@ class Episodes:
 						append(Thread(target=get_episodes, args=(tvshowtitle, imdb, tmdb, tvdb, meta, i['season_number'])))
 					[i.start() for i in threads]
 					[i.join() for i in threads]
-					self.list = sorted(all_episodes, key=lambda k: (k['season'], k['episode']), reverse=False)
+					if getSetting('flatten.desc') == 'true':
+						self.list = sorted(all_episodes, key=lambda k: (k['season'], k['episode']), reverse=True)
+					else:
+						self.list = sorted(all_episodes, key=lambda k: (k['season'], k['episode']), reverse=False)
 				except: 
 					from resources.lib.modules import log_utils
 					log_utils.error()

@@ -108,6 +108,8 @@ def done(title, dest, downloaded):
 
 def doDownload(url, dest, title, image, headers):
 	file = dest.rsplit(os.sep, 1)[-1]
+	if 'User-Agent' not in headers:
+		headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:103.0) Gecko/20100101 Firefox/103.0'})
 	resp = getResponse(url, headers, 0)
 	if not resp:
 		control.hide()

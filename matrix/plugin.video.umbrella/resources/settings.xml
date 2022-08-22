@@ -122,6 +122,7 @@
 	<!-- TV Shows - 2 -->
 	<category label="32002">
 		<setting id="flatten.tvshows" type="bool" label="32317" default="false" visible="true" />
+		<setting id="flatten.desc" type="bool" subsetting="True" label="40136" default="false" visible="eq(-1,true)" />
 		<setting id="tv.specials" type="bool" label="32649" default="false" />
 		<setting id="showunaired" type="bool" label="32570" default="false" />
 		<setting id="unaired.identify" type="select" label="32608" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32666|32667|32668|32669|32670|32671|32598|40082" default="8" enable="eq(-1,true)" />
@@ -355,13 +356,16 @@
 		<setting id="filepursuit.api" type="text" label="32309" default="" enable="false"/>
 		<setting id="filepursuit.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" enable="true" visible="!eq(-1,)" />
 		<setting type="action" label="40134" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_cocoScrapersSettings&amp;query=FilePursuit)" visible="true" />
-		
 		<setting type="lsep" label="Furk.net" />
 		<setting id="furk.user_name" type="text" label="32126" default="" enable="false"  />
 		<setting id="furk.user_pass" type="text" label="32127" option="hidden" enable="false" default=""  visible="" />
 		<setting id="furk.api" type="text" label="32128" enable="false" visible="!eq(-2,)" />
 		<setting id="furk.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" enable="true" visible="!eq(-3,)" />
 		<setting type="action" label="40134" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_cocoScrapersSettings&amp;query=Furk)" visible="true" />
+		<setting type="lsep" label="GDrive" />
+		<setting id="gdrive.cloudflare_url" type="text" label="GDrive Worker URL" default="" enable="false" />
+		<setting id="gdrive.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" enable="true" visible="!eq(-1,)" />
+		<setting type="action" label="40134" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_cocoScrapersSettings)" visible="eq(1,)" />
 		
 	</category>
 

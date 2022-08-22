@@ -1,3 +1,7 @@
+[B][COLOR black]Update - v6.5.67 - August 21, 2022[/COLOR][/B]
+--[I] GDrive Re-Added[I]
+--[I] Scraper version bump. [I]
+--[I] Added setting to sort flattened seasons descending. [I]
 
 [B][COLOR black]Update - v6.5.66 - August 14, 2022[/COLOR][/B]
 --[I] Fixed issue with easy news username not being detected by plugin from cocoscrapers.[I]

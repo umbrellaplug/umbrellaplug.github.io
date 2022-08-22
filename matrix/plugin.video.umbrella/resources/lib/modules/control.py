@@ -432,6 +432,7 @@ def syncAccounts():
 	setSetting('plexshare.sourceTitle', addon('script.module.cocoscrapers').getSetting('plexshare.sourceTitle'))
 	setSetting('plexshare.accessToken', addon('script.module.cocoscrapers').getSetting('plexshare.accessToken'))
 	setSetting('plexshare.url', addon('script.module.cocoscrapers').getSetting('plexshare.url'))
+	setSetting('gdrive.cloudflare_url', addon('script.module.cocoscrapers').getSetting('gdrive.cloudflare_url'))
 
 
 def checkPlayNextEpisodes():

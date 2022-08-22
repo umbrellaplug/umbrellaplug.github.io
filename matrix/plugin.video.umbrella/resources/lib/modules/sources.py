@@ -1147,6 +1147,7 @@ class Sources:
 		if control.setting('easynews.user'): self.prem_providers += [('easynews', int(getSetting('easynews.priority')))]
 		if control.setting('filepursuit.api'): self.prem_providers += [('filepursuit', int(getSetting('filepursuit.priority')))]
 		if control.setting('furk.user.name'): self.prem_providers += [('furk', int(getSetting('furk.priority')))]
+		if control.setting('gdrive.cloudflare_url'): self.prem_providers += [('gdrive', int(getSetting('gdrive.priority')))]
 		if control.setting('plexshare.accessToken'): self.prem_providers += [('plexshare', int(getSetting('plexshare.priority')))]
 		self.prem_providers += [(d.name, int(d.sort_priority)) for d in self.debrid_resolvers]
 

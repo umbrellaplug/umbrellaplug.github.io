@@ -1652,7 +1652,7 @@ def sync_trending_lists(forced=False):
 		official_link = '/lists/%s/items/movie,show'
 
 		db_last_trendingList = traktsync.last_sync('last_trendinglist_at')
-		cache_expiry = (datetime.utcnow() - timedelta(hours=48)).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+		cache_expiry = (datetime.utcnow() - timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 		cache_expiry = int(cleandate.iso_2_utc(cache_expiry))
 		if (cache_expiry > db_last_trendingList) or forced:
 			if not forced: log_utils.log('Trakt Trending Lists Sync Update...(local db latest "trendinglist_at" = %s, cache expiry = %s)' % \
