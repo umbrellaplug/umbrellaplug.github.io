@@ -169,15 +169,63 @@
 		<setting type="lsep" label="32372" />
 		<setting id="crefresh" type="bool" label="32373" default="false" />
 	</category>
+	<!-- Sorting and Filtering 4 -->
+	<category label="40137">
+		<setting type="lsep" label="40143" />
+		<setting id="source.prioritize.hdrdv" type="bool" label="32195" default="false" />
+		<setting id="source.prioritize.dolbyvisionfirst" type="bool" label="40081" subsetting="true" default="false" visible="eq(-1,true)" />
+		<setting id="source.prioritize.av1" type="bool" label="40131" default="false" />
+		<setting id="source.prioritize.hevc" type="bool" label="32229" default="false" />
+		<setting type="lsep" label="40144" />
+		<setting id="hosts.quality" type="enum" label="32339" values="4K|1080p|720p|480p(SD)" default="0" />
+		<setting id="source.checkReboots" type="bool" label="32227" default="false" />
+		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=checkReboots)" />
+		<setting id="source.enable.msizelimit" type="bool" label="32165" default="false" />
+		<setting id="source.min.moviesize" type="slider" label="32155" subsetting="true" option="float" range="0.0,0.1,10.0" default="0" visible="eq(-1,true)" />
+		<setting id="source.max.moviesize" type="slider" label="32156" subsetting="true" option="float" range="0.5,0.3,200" default="10" visible="eq(-2,true)" />
+		<setting id="source.enable.esizelimit" type="bool" label="32166" default="false" />
+		<setting id="source.min.epsize" type="slider" label="32157" subsetting="true" option="float" range="0.0,0.1,10.0" default="0" visible="eq(-1,true)" />
+		<setting id="source.max.epsize" type="slider" label="32158" subsetting="true" option="float" range="0.5,0.3,200" default="10" visible="eq(-2,true)" />
+		<setting id="remove.duplicates" type="bool" label="32035" default="true" />
+		<setting id="remove.duplicates.logging" type="bool" label="32159" subsetting="true" default="true" visible="eq(-1,true)" />
+		<setting id="remove.duplicates.popup" type="bool" label="40135" subsetting="true" default="false" visible="eq(-2,true)" />
+		<setting id="torrent.remove.uncached" type="bool" label="32162" default="true" />
+		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=removeUncached)" />
+		<setting type="lsep" label="40145" />
+		<setting id="remove.dolby.vision" type="bool" label="32388" default="false" />
+		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=removeDolbyVision)" visible="eq(-1,true)" />
+		<setting id="remove.hdr" type="bool" label="32389" default="false" />
+		<setting id="remove.hevc" type="bool" label="32363" default="false" />
+		<setting id="remove.av1" type="bool" label="40132" default="false" />
+		<setting id="remove.avc" type="bool" label="40138" default="false" />
+		<setting id="remove.divx" type="bool" label="40139" default="false" />
+		<setting id="remove.mp4" type="bool" label="40140" default="false" />
+		<setting id="remove.mpeg" type="bool" label="40141" default="false" />
+		<setting id="remove.wmv" type="bool" label="40142" default="false" />
+		<setting id="remove.cam.sources" type="bool" label="32160" default="false" />
+		<setting id="remove.sd.sources" type="bool" label="32161" default="false" />
+		<setting id="remove.3D.sources" type="bool" label="32051" default="true" />
+		<setting id="torrent.min.seeders" type="slider" label="32638" default="1" range="1,100" option="int" visible="false" /> <!-- Hard coded by umbrellascrapers so not visible for now -->
+		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=videoCodecFilters)" />
+		<setting type="lsep" label="40146" />
+		<setting id="remove.audio.opus" type="bool" label="40156" default="false" />
+		<setting id="remove.audio.dd" type="bool" label="40148" default="false" />
+		<setting id="remove.audio.ddplus" type="bool" label="40149" default="false" />
+		<setting id="remove.audio.atmos" type="bool" label="40155" default="false" />
+		<setting id="remove.audio.ddtruehd" type="bool" label="40161" default="false" />
+		<setting id="remove.audio.dts" type="bool" label="40150" default="false" />
+		<setting id="remove.audio.dtshd" type="bool" label="40151" default="false" />
+		<setting id="remove.audio.dtshdma" type="bool" label="40152" default="false" />
+		<setting id="remove.audio.dtsx" type="bool" label="40153" default="false" />
+		<setting id="remove.audio.mp3" type="bool" label="40154" default="false" />
+		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=audioCodecFilters)" />
+		<setting type="lsep" label="40147" />
+		<setting id="remove.channel.2ch" type="bool" label="40157" default="false" />
+		<setting id="remove.channel.6ch" type="bool" label="40158" default="false" />
+		<setting id="remove.channel.7ch" type="bool" label="40159" default="false" />
+		<setting id="remove.channel.8ch" type="bool" label="40160" default="false" />
 
-	<!-- Providers - 4 -->
-	<category label="32345">
-		<setting type="action" label="32651" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_cocoScrapersSettings&amp;opensettings=true&amp;query=1.0)" />
-		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=Providers)" />
-		<setting type="lsep" label="40067" />
-		<setting type="action" label="32611" action="RunPlugin(plugin://plugin.video.umbrella/?action=cache_clearSources)" />
 	</category>
-
 	<!-- Source Options - 5 -->
 	<category label="32074">
 		<!-- Scraper Preperation -->
@@ -209,36 +257,6 @@
 		<setting id="preemptive.termination.tv" type="bool" label="40095" default="false" />
 		<setting id="preemptive.limit.tv" type="slider" label="40096" default="25" range="1,50" option="int" visible="eq(-1,true)" />
 		<setting id="preemptive.res.tv" type="enum" label="40097" values="4K|1080p|720p|480p(SD)" default="2" visible="eq(-2,true)" />
-
-		<!-- Sources Filtering Options -->
-		<setting type="lsep" label="32338" />
-		<setting id="hosts.quality" type="enum" label="32339" values="4K|1080p|720p|480p(SD)" default="0" />
-		<setting id="source.checkReboots" type="bool" label="32227" default="false" />
-		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=checkReboots)" />
-		<setting id="source.prioritize.hdrdv" type="bool" label="32195" default="false" />
-		<setting id="source.prioritize.dolbyvisionfirst" type="bool" label="40081" subsetting="true" default="false" visible="eq(-1,true)" />
-		<setting id="source.prioritize.av1" type="bool" label="40131" default="false" />
-		<setting id="source.prioritize.hevc" type="bool" label="32229" default="false" />
-		<setting id="source.enable.msizelimit" type="bool" label="32165" default="false" />
-		<setting id="source.min.moviesize" type="slider" label="32155" subsetting="true" option="float" range="0.0,0.1,10.0" default="0" visible="eq(-1,true)" />
-		<setting id="source.max.moviesize" type="slider" label="32156" subsetting="true" option="float" range="0.5,0.3,200" default="10" visible="eq(-2,true)" />
-		<setting id="source.enable.esizelimit" type="bool" label="32166" default="false" />
-		<setting id="source.min.epsize" type="slider" label="32157" subsetting="true" option="float" range="0.0,0.1,10.0" default="0" visible="eq(-1,true)" />
-		<setting id="source.max.epsize" type="slider" label="32158" subsetting="true" option="float" range="0.5,0.3,200" default="10" visible="eq(-2,true)" />
-		<setting id="remove.duplicates" type="bool" label="32035" default="true" />
-		<setting id="remove.duplicates.logging" type="bool" label="32159" subsetting="true" default="true" visible="eq(-1,true)" />
-		<setting id="remove.duplicates.popup" type="bool" label="40135" subsetting="true" default="false" visible="eq(-2,true)" />
-		<setting id="remove.dolby.vision" type="bool" label="32388" default="false" />
-		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=removeDolbyVision)" visible="eq(-1,true)" />
-		<setting id="remove.hdr" type="bool" label="32389" default="false" />
-		<setting id="remove.hevc" type="bool" label="32363" default="false" />
-		<setting id="remove.av1" type="bool" label="40132" default="false" />
-		<setting id="remove.cam.sources" type="bool" label="32160" default="false" />
-		<setting id="remove.sd.sources" type="bool" label="32161" default="false" />
-		<setting id="remove.3D.sources" type="bool" label="32051" default="true" />
-		<setting id="torrent.min.seeders" type="slider" label="32638" default="1" range="1,100" option="int" visible="false" /> <!-- Hard coded by umbrellascrapers so not visible for now -->
-		<setting id="torrent.remove.uncached" type="bool" label="32162" default="true" />
-		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=removeUncached)" />
 
 		<!-- Sources Select -->
 		<setting type="lsep" label="32387" />
@@ -365,7 +383,7 @@
 		<setting type="lsep" label="GDrive" />
 		<setting id="gdrive.cloudflare_url" type="text" label="GDrive Worker URL" default="" enable="false" />
 		<setting id="gdrive.priority" type="slider" label="40005" option="int" range="1,1,10" default="10" enable="true" visible="!eq(-1,)" />
-		<setting type="action" label="40134" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_cocoScrapersSettings)" visible="eq(1,)" />
+		<setting type="action" label="40134" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_cocoScrapersSettings)" visible="eq(-1,)" />
 		
 	</category>
 
@@ -431,8 +449,16 @@
 		<setting id="subtitles.message1" type="text" label="32358" enable="false" />
 		<setting id="subtitles.message2" type="text" label="32359" enable="false" />
 	</category>
+	<!-- Providers - 12 -->
+	<category label="32345">
+		<setting type="action" label="32651" option="close" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_cocoScrapersSettings&amp;opensettings=true&amp;query=1.0)" />
+		<setting type="action" label="32137" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=Providers)" />
+		<setting type="lsep" label="40067" />
+		<setting type="action" label="32611" action="RunPlugin(plugin://plugin.video.umbrella/?action=cache_clearSources)" />
+	</category>
 
-	<!-- Debugging - 12 -->
+
+	<!-- Debugging - 13 -->
 	<category label="32616">
 		<setting id="debug.enabled" type="bool" label="32374" default="false" />
 		<setting id="debug.level" type="enum" label="35528" lvalues="35529|35530" default="0" visible="eq(-1,true)" />
@@ -454,7 +480,7 @@
 		<setting id="dev.disable.show.filter" type="bool" label="32146" subsetting="true" default="false" visible="eq(-9,true)" enable="eq(-1,false)" />
 	</category>
 
-	<!-- Short Cuts - 13 -->
+	<!-- Short Cuts - 14 -->
 	<category label="Shortcuts">
 		<setting type="action" label="35066" action="RunPlugin(plugin://plugin.video.umbrella/?action=tools_forceTraktSync)" />
 		<setting type="action" label="32610" action="RunPlugin(plugin://plugin.video.umbrella/?action=cache_clearAll)" />

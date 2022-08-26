@@ -1,3 +1,9 @@
+[B][COLOR black]Update - v6.5.68 - August 24, 2022[/COLOR][/B]
+--[I] Video Filters Added.[I]
+--[I] Audio Filters Added.[I]
+--[I] Sorting and Filtering Sources now in a new category in settings.[I]
+--[I] Create Strm Context Menu Option Added.[I]
+
 [B][COLOR black]Update - v6.5.67 - August 21, 2022[/COLOR][/B]
 --[I] GDrive Re-Added[I]
 --[I] Scraper version bump. [I]

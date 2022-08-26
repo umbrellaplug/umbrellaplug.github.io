@@ -456,6 +456,23 @@ def router(params):
 		pass # Placeholder. This is a non-clickable menu item for notes, etc.
 
 	####################################################
+	#---Strm
+	####################################################
+	elif action == 'createStrm':
+		caller = params.get('caller')
+		image = params.get('image')
+		if caller == 'sources':
+				control.busy()
+				try:
+					from json import loads as jsloads
+					from resources.lib.modules import sources
+					from resources.lib.modules import downloader
+					downloader.createStrm(name, image, sources.Sources().sourcesResolve(jsloads(source)[0]), title)
+				except:
+					import traceback
+					traceback.print_exc()
+
+	####################################################
 	#---Download
 	####################################################
 	elif action and action.startswith('download'):

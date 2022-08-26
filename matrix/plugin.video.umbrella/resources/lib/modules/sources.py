@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-	Umbrella Add-on
+	Umbrella Add-on Updated 8-25-22
 """
 
 from datetime import datetime, timedelta
@@ -775,7 +775,17 @@ class Sources:
 		if getSetting('remove.hevc') == 'true':
 			self.sources = [i for i in self.sources if 'HEVC' not in i.get('info', '')]
 		if getSetting('remove.av1') == 'true':
-			self.sources = [i for i in self.sources if 'AV1' not in i.get('info', '')]
+			self.sources = [i for i in self.sources if ' AV1 ' not in i.get('info', '')]
+		if getSetting('remove.avc') == 'true':
+			self.sources = [i for i in self.sources if ' AVC ' not in i.get('info', '')]
+		if getSetting('remove.divx') == 'true':
+			self.sources = [i for i in self.sources if ' DIVX ' not in i.get('info', '')]
+		if getSetting('remove.mp4') == 'true':
+			self.sources = [i for i in self.sources if ' MP4 ' not in i.get('info', '')]
+		if getSetting('remove.mpeg') == 'true':
+			self.sources = [i for i in self.sources if ' MPEG ' not in i.get('info', '')]
+		if getSetting('remove.wmv') == 'true':
+			self.sources = [i for i in self.sources if ' WMV ' not in i.get('info', '')]
 		if getSetting('remove.hdr') == 'true':
 			self.sources = [i for i in self.sources if ' HDR ' not in i.get('info', '')] # needs space before and aft because of "HDRIP"
 		if getSetting('remove.dolby.vision') == 'true':
@@ -787,6 +797,34 @@ class Sources:
 				self.sources = [i for i in self.sources if i['quality'] != 'SD']
 		if getSetting('remove.3D.sources') == 'true':
 			self.sources = [i for i in self.sources if '3D' not in i.get('info', '')]
+		if getSetting('remove.audio.opus') == 'true':   #start of audio codec filters
+			self.sources = [i for i in self.sources if ' OPUS ' not in i.get('info', '')]
+		if getSetting('remove.audio.atmos') == 'true': 
+			self.sources = [i for i in self.sources if ' ATMOS ' not in i.get('info', '')]
+		if getSetting('remove.audio.dd') == 'true': 
+			self.sources = [i for i in self.sources if ' DOLBYDIGITAL ' not in i.get('info', '')]
+		if getSetting('remove.audio.ddplus') == 'true': 
+			self.sources = [i for i in self.sources if ' DD+ ' not in i.get('info', '')]
+		if getSetting('remove.audio.dts') == 'true': 
+			self.sources = [i for i in self.sources if ' DTS ' not in i.get('info', '')]
+		if getSetting('remove.audio.dtshd') == 'true': 
+			self.sources = [i for i in self.sources if ' DTS-HD ' not in i.get('info', '')]
+		if getSetting('remove.audio.dtshdma') == 'true': 
+			self.sources = [i for i in self.sources if ' DTS-HD MA ' not in i.get('info', '')]
+		if getSetting('remove.audio.dtsx') == 'true': 
+			self.sources = [i for i in self.sources if ' DTS-X ' not in i.get('info', '')]
+		if getSetting('remove.audio.ddtruehd') == 'true': 
+			self.sources = [i for i in self.sources if ' DOLBY-TRUEHD ' not in i.get('info', '')]
+		if getSetting('remove.audio.mp3') == 'true': 
+			self.sources = [i for i in self.sources if ' MP3 ' not in i.get('info', '')]
+		if getSetting('remove.channel.2ch') == 'true':  # start of audio channel filters
+			self.sources = [i for i in self.sources if ' 2CH ' not in i.get('info', '')]
+		if getSetting('remove.channel.6ch') == 'true':
+			self.sources = [i for i in self.sources if ' 6CH ' not in i.get('info', '')]
+		if getSetting('remove.channel.7ch') == 'true':
+			self.sources = [i for i in self.sources if ' 7CH ' not in i.get('info', '')]
+		if getSetting('remove.channel.8ch') == 'true':
+			self.sources = [i for i in self.sources if ' 8CH ' not in i.get('info', '')]
 
 		local = [i for i in self.sources if 'local' in i and i['local'] is True] # for library and videoscraper (skips cache check)
 		self.sources = [i for i in self.sources if not i in local]

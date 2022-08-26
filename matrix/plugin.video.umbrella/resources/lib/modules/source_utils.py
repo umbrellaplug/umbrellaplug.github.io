@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-	Umbrella Add-on
+	Umbrella Add-on Updated 8-25-22
 """
 
 import re
@@ -137,6 +137,7 @@ def getFileType(name_info=None, url=None):
 
 		if '.wmv' in fmt: file_type += ' WMV /'
 		elif any(value in fmt for value in CODEC_MPEG): file_type += ' MPEG /'
+		elif '.mp4' in fmt: file_type += ' MP4 /'
 		elif '.avi' in fmt: file_type += ' AVI /'
 		elif any(value in fmt for value in CODEC_MKV): file_type += ' MKV /'
 

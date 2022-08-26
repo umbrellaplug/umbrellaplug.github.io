@@ -79,6 +79,7 @@ class SourceResultsXML(BaseDialog):
 				source = chosen_source.getProperty('umbrella.source')
 				if not 'UNCACHED' in source and self.dnlds_enabled:
 					cm_list += [('[B]Download[/B]', 'download')]
+					cm_list += [('[B]Create Strm File[/B]', 'strmFile')]
 				if re_match(r'^CACHED.*TORRENT', source):
 					debrid = chosen_source.getProperty('umbrella.debrid')
 					cm_list += [('[B]Save to %s Cloud[/B]' % debrid, 'saveToCloud')]
@@ -105,6 +106,19 @@ class SourceResultsXML(BaseDialog):
 					try: new_sysname = quote_plus(chosen_source.getProperty('umbrella.name'))
 					except: new_sysname = sysname
 					self.execute_code('RunPlugin(plugin://plugin.video.umbrella/?action=download&name=%s&image=%s&source=%s&caller=sources&title=%s)' %
+										(new_sysname, quote_plus(poster), quote_plus(source_dict), sysname))
+					self.selected = (None, '')
+				elif cm_action == 'strmFile':
+					sysname = quote_plus(self.meta.get('title'))
+					poster = self.meta.get('poster', '')
+					if 'tvshowtitle' in self.meta and 'season' in self.meta and 'episode' in self.meta:
+						sysname = quote_plus(self.meta.get('tvshowtitle'))
+						poster = self.meta.get('season_poster') or self.meta.get('poster')
+						sysname += quote_plus(' S%02dE%02d' % (int(self.meta['season']), int(self.meta['episode'])))
+					elif 'year' in self.meta: sysname += quote_plus(' (%s)' % self.meta['year'])
+					try: new_sysname = quote_plus(chosen_source.getProperty('umbrella.name'))
+					except: new_sysname = sysname
+					self.execute_code('RunPlugin(plugin://plugin.video.umbrella/?action=createStrm&name=%s&image=%s&source=%s&caller=sources&title=%s)' %
 										(new_sysname, quote_plus(poster), quote_plus(source_dict), sysname))
 					self.selected = (None, '')
 				elif cm_action == 'saveToCloud':

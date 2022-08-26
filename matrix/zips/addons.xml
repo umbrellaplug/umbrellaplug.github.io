@@ -148,7 +148,7 @@
 [COLOR yellow]--[/COLOR][I] Change of icon, not much new added here yet.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.67">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.68">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.6" />
@@ -181,10 +181,11 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.67 - August 21, 2022[/COLOR][/B]
---[I] GDrive Re-Added[I]
---[I] Scraper version bump. [I]
---[I] Added setting to sort flattened seasons descending. [I]
+[B][COLOR black]Update - v6.5.68 - August 24, 2022[/COLOR][/B]
+--[I] Video Filters Added.[I]
+--[I] Audio Filters Added.[I]
+--[I] Sorting and Filtering Sources now in a new category in settings.[I]
+--[I] Create Strm Context Menu Option Added.[I]
 		</news>
 	</extension>
 </addon><addon id="plugin.video.youtube" name="YouTube" version="6.8.18+matrix.1" provider-name="anxdpanic, bromix">

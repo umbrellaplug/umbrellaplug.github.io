@@ -227,7 +227,7 @@ msgid "Enable cloud scraper"
 msgstr ""
 
 msgctxt "#32051"
-msgid "Remove 3D sources"
+msgid "Remove 3D"
 msgstr ""
 
 msgctxt "#32052"
@@ -663,7 +663,7 @@ msgid "Do not spam log with removed duplicates"
 msgstr ""
 
 msgctxt "#32160"
-msgid "Remove CAM sources"
+msgid "Remove CAM Sources"
 msgstr ""
 
 msgctxt "#32161"
@@ -1234,7 +1234,7 @@ msgid "[B]SETTINGS[/B] : Navigation"
 msgstr ""
 
 msgctxt "#32363"
-msgid "Remove HEVC sources"
+msgid "Remove HEVC"
 msgstr ""
 
 msgctxt "#32364"
@@ -1334,11 +1334,11 @@ msgid "Sources Select"
 msgstr ""
 
 msgctxt "#32388"
-msgid "Remove Dolby Vision sources"
+msgid "Remove Dolby Vision"
 msgstr ""
 
 msgctxt "#32389"
-msgid "Remove HDR sources"
+msgid "Remove HDR"
 msgstr ""
 
 msgctxt "#32390"
@@ -2362,7 +2362,7 @@ msgid ""
 msgstr ""
 
 msgctxt "#32651"
-msgid "[B]CoCo Scrapers[/B] Settings"
+msgid "[B]Coco Scrapers[/B] Settings"
 msgstr ""
 
 msgctxt "#32652"
@@ -4497,7 +4497,7 @@ msgid "Prioritize AV1 to top"
 msgstr ""
 
 msgctxt "#40132"
-msgid "Remove AV1 Sources"
+msgid "Remove AV1"
 msgstr ""
 
 msgctxt "#40133"
@@ -4514,4 +4514,108 @@ msgstr ""
 
 msgctxt "#40136"
 msgid "Sort Episodes Descending (Default Ascending)"
+msgstr ""
+
+msgctxt "#40137"
+msgid "Sorting and Filters"
+msgstr ""
+
+msgctxt "#40138"
+msgid "Remove AVC"
+msgstr ""
+
+msgctxt "#40139"
+msgid "Remove DIVX"
+msgstr ""
+
+msgctxt "#40140"
+msgid "Remove MP4"
+msgstr ""
+
+msgctxt "#40141"
+msgid "Remove MPEG"
+msgstr ""
+
+msgctxt "#40142"
+msgid "Remove WMV"
+msgstr ""
+
+msgctxt "#40143"
+msgid "Source Sorting Options"
+msgstr ""
+
+msgctxt "#40144"
+msgid "Source Filtering Options"
+msgstr ""
+
+msgctxt "#40145"
+msgid "Source Filtering (Video)"
+msgstr ""
+
+msgctxt "#40146"
+msgid "Source Filtering (Audio Codec)"
+msgstr ""
+
+msgctxt "#40147"
+msgid "Source Filtering (Audio Channel)"
+msgstr ""
+
+msgctxt "#40148"
+msgid "Remove Dolby Digital"
+msgstr ""
+
+msgctxt "#40149"
+msgid "Remove Dolby Digital Plus"
+msgstr ""
+
+msgctxt "#40150"
+msgid "Remove DTS"
+msgstr ""
+
+msgctxt "#40151"
+msgid "Remove DTS-HD"
+msgstr ""
+
+msgctxt "#40152"
+msgid "Remove DTS-HDMA"
+msgstr ""
+
+msgctxt "#40153"
+msgid "Remove DTS-X"
+msgstr ""
+
+msgctxt "#40154"
+msgid "Remove MP3"
+msgstr ""
+
+msgctxt "#40155"
+msgid "Remove Dolby Digital Atmos"
+msgstr ""
+
+msgctxt "#40156"
+msgid "Remove OPUS"
+msgstr ""
+
+msgctxt "#40157"
+msgid "Remove 2 Channel"
+msgstr ""
+
+msgctxt "#40158"
+msgid "Remove 6 Channel"
+msgstr ""
+
+msgctxt "#40159"
+msgid "Remove 7 Channel"
+msgstr ""
+
+msgctxt "#40160"
+msgid "Remove 8 Channel"
+msgstr ""
+
+msgctxt "#40161"
+msgid "Remove Dolby Digital TrueHD"
+msgstr ""
+
+msgctxt "#40162"
+msgid "[B]SETTINGS:[/B] Sorting and Filters"
 msgstr ""
