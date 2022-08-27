@@ -156,7 +156,7 @@ msgstr "Collectie"
 
 msgctxt "#32033"
 msgid "Watchlist"
-msgstr "Volglijst"
+msgstr "Kijklijst"
 
 msgctxt "#32034"
 msgid "IMDb"
@@ -188,7 +188,7 @@ msgstr "Serie Lijst"
 
 msgctxt "#32041"
 msgid "Episode Lists"
-msgstr "Afleverings lijst"
+msgstr "Aflevering lijst"
 
 msgctxt "#32042"
 msgid "No Trakt or IMDb account found."
@@ -228,7 +228,7 @@ msgstr "Cloud scraper inschakelen"
 
 msgctxt "#32051"
 msgid "Remove 3D sources"
-msgstr "3D-bronnen verwijderen"
+msgstr "verwijder 3D bronnen"
 
 msgctxt "#32052"
 msgid "Ignore m2ts in cloud files"
@@ -292,7 +292,7 @@ msgstr "Bekeken in Umbrella"
 
 msgctxt "#32067"
 msgid "Unwatched in Umbrella"
-msgstr "Niet bekeken in Umbrella"
+msgstr "Niet-bekeken in Umbrella"
 
 msgctxt "#32068"
 msgid "Watched in Trakt"
@@ -596,7 +596,7 @@ msgstr "Enkele scraper filter uitschakelen"
 
 msgctxt "#32143"
 msgid "Disable season pack scraping"
-msgstr "Seizoenspakket scrapen uitschakelen"
+msgstr "Seizoen pakket scrapen uitschakelen"
 
 msgctxt "#32144"
 msgid "Disable season pack scraper filter"
@@ -604,11 +604,11 @@ msgstr "Seizoen pakket scraper filter uitschakelen"
 
 msgctxt "#32145"
 msgid "Disable show pack scraping"
-msgstr "Showpack scraper filter uitschakelen"
+msgstr "Serie pakket scraper filter uitschakelen"
 
 msgctxt "#32146"
 msgid "Disable show pack scraper filter"
-msgstr "Showpack scraper filter uitschakelen"
+msgstr "Serie pakket scraper filter uitschakelen"
 
 msgctxt "#32147"
 msgid "Developer mode"
@@ -664,7 +664,7 @@ msgstr "Log geen spam met verwijderde duplicaten"
 
 msgctxt "#32160"
 msgid "Remove CAM sources"
-msgstr "CAM bronnen verwijderen"
+msgstr "verwijder CAM bronnen"
 
 msgctxt "#32161"
 msgid "Remove SD sources (only if better quality exists)"
@@ -692,7 +692,7 @@ msgstr "Limiet voor afleverings bestandsgrootte inschakelen"
 
 msgctxt "#32167"
 msgid "Title Search Limit (Movies and TV Shows)"
-msgstr "Titel Zoeklimiet (films en series)"
+msgstr "Titel zoeklimiet (films en series)"
 
 msgctxt "#32168"
 msgid "Play Next"
@@ -780,7 +780,7 @@ msgstr "Lijsten pagineren indien mogelijk"
 
 msgctxt "#32189"
 msgid "Clear Umbrella Log File"
-msgstr "Umbrella-logbestand wissen"
+msgstr "Umbrella logbestand wissen"
 
 msgctxt "#32190"
 msgid "Select All"
@@ -788,7 +788,7 @@ msgstr "Selecteer alles"
 
 msgctxt "#32191"
 msgid "%s - Lang Downloaded from OPENSUBTILES.ORG"
-msgstr "%s - Lang Gedownload van OPENSUBTILES.ORG"
+msgstr "%s - Taal gedownload van OPENSUBTILES.ORG"
 
 msgctxt "#32192"
 msgid "Enable notification of subtitle downloads"
@@ -808,11 +808,11 @@ msgstr "Geef prioriteit aan HDR en Dolby-Vision naar boven"
 
 msgctxt "#32196"
 msgid "Umbrella log file uploaded to:"
-msgstr "Umbrella-logbestand geüpload naar:"
+msgstr "Umbrella logbestand geüpload naar:"
 
 msgctxt "#32197"
 msgid "Write Umbrella log in reverse order"
-msgstr "Schrijf Umbrella-log in omgekeerde volgorde"
+msgstr "Schrijf Umbrella log in omgekeerde volgorde"
 
 msgctxt "#32198"
 msgid "[B]Kodi - Upload log file to pastebin[/B]"
@@ -820,15 +820,15 @@ msgstr "[B]Kodi - Upload logbestand naar pastebin[/B]"
 
 msgctxt "#32199"
 msgid "Kodi log file uploaded to:"
-msgstr "Kodi-logbestand geüpload naar:"
+msgstr "Kodi logbestand geüpload naar:"
 
 msgctxt "#32200"
 msgid "check title"
-msgstr "controleer titel"
+msgstr "Controleer titel"
 
 msgctxt "#32201"
 msgid "check year"
-msgstr "controleer jaar"
+msgstr "Controleer jaar"
 
 msgctxt "#32202"
 msgid "Recent Episodes"
@@ -840,7 +840,7 @@ msgstr "Aankomende afleveringen"
 
 msgctxt "#32204"
 msgid "Season Premieres"
-msgstr "Seizoenpremières"
+msgstr "Seizoen premières"
 
 msgctxt "#32205"
 msgid "Use default "Rescrape" option vs Menu"
@@ -848,7 +848,7 @@ msgstr "Gebruik de standaard "Rescrape" optie vs Menu"
 
 msgctxt "#32206"
 msgid "selected default"
-msgstr "geselecteerde standaard"
+msgstr "Geselecteerd standaard"
 
 msgctxt "#32207"
 msgid "Rescrape Item - AutoPlay"
@@ -908,7 +908,7 @@ msgstr "[B]Resterende gegevens:[/B] %s"
 
 msgctxt "#32221"
 msgid "Error retrieving EasyNews Account Info"
-msgstr "Fout bij ophalen van EasyNews-accountgegevens"
+msgstr "Fout bij ophalen van EasyNews accountgegevens"
 
 msgctxt "#32222"
 msgid "Enter search Term"
@@ -916,27 +916,23 @@ msgstr "Voer zoekterm in"
 
 msgctxt "#32223"
 msgid "Enable AllDebrid Menu"
-msgstr "AllDebrid-menu inschakelen"
+msgstr "AllDebrid menu inschakelen"
 
 msgctxt "#32224"
 msgid "Enable EasyNews Menu"
-msgstr "EasyNews-menu inschakelen"
+msgstr "EasyNews menu inschakelen"
 
 msgctxt "#32225"
 msgid "Enable Premiumize.me Menu"
-msgstr "Premiumize.me-menu inschakelen"
+msgstr "Premiumize.me menu inschakelen"
 
 msgctxt "#32226"
 msgid "Enable Real-Debrid Menu"
-msgstr "Real-Debrid-menu inschakelen"
+msgstr "Real-Debrid menu inschakelen"
 
 msgctxt "#32227"
 msgid "Require Year in source for known Reboot shows"
 msgstr "Jaar in bron vereisen voor bekende reboot-shows"
-
-msgctxt "#32228"
-msgid ""
-msgstr ""
 
 msgctxt "#32229"
 msgid "Prioritize HEVC to top"
@@ -944,11 +940,11 @@ msgstr "Geef prioriteit aan HEVC naar boven"
 
 msgctxt "#32230"
 msgid "check IMDb Movie meta"
-msgstr "check IMDb Movie meta"
+msgstr "Check IMDb Movie meta"
 
 msgctxt "#32231"
 msgid "check IMDb Show meta"
-msgstr "check IMDb Showmeta"
+msgstr "Check IMDb Showmeta"
 
 msgctxt "#32232"
 msgid "Rescrape Item [COLOR %s][B]Filterless(FS)[/B][/COLOR] with [COLOR %s][B]All Providers[/B][/COLOR] - Source Select"
@@ -956,7 +952,7 @@ msgstr "Rescrape item [COLOR %s][B]Filterless(FS)[/B][/COLOR] met [COLOR %s][B]A
 
 msgctxt "#32233"
 msgid "TMDb image resolutions"
-msgstr "TMDb-beeldresoluties"
+msgstr "TMDb beeldresoluties"
 
 msgctxt "#32234"
 msgid "Low"
@@ -974,24 +970,9 @@ msgctxt "#32237"
 msgid "Original"
 msgstr "Origineel"
 
-msgctxt "#32238"
-msgid ""
-msgstr ""
-
-
-
-
-
-
-
-
 msgctxt "#32301"
 msgid "Enabled"
 msgstr "Ingeschakeld"
-
-msgctxt "#32302"
-msgid ""
-msgstr ""
 
 msgctxt "#32303"
 msgid "User"
@@ -1223,7 +1204,7 @@ msgstr "In dat geval kies uw eigen ondertiteling."
 
 msgctxt "#32360"
 msgid "Providers Language"
-msgstr "Taal van bronnen"
+msgstr "Taal van Aanbieders"
 
 msgctxt "#32361"
 msgid "[B]UMBRELLA[/B] : Reset View Types"
@@ -1235,7 +1216,7 @@ msgstr "[B]INSTELLINGEN[/B] : Navigatie"
 
 msgctxt "#32363"
 msgid "Remove HEVC sources"
-msgstr "Remove HEVC sources"
+msgstr "Verwijderen HEVC bronnen"
 
 msgctxt "#32364"
 msgid "Disable CloudFlare protected providers"
@@ -1283,7 +1264,7 @@ msgstr "Foutopsporing inschakelen"
 
 msgctxt "#32375"
 msgid "TV "Networks" menu options"
-msgstr "TV "Netwerken" menu opties"
+msgstr "Serie "Netwerken" menu opties"
 
 msgctxt "#32376"
 msgid "List Mode"
@@ -1291,15 +1272,15 @@ msgstr "Lijstmodus"
 
 msgctxt "#32377"
 msgid "This Season's Shows"
-msgstr "Shows van dit seizoen"
+msgstr "Series van dit seizoen"
 
 msgctxt "#32378"
 msgid "View All Shows"
-msgstr "Bekijk alle shows"
+msgstr "Bekijk alle Series"
 
 msgctxt "#32379"
 msgid "Allowed Shows"
-msgstr "Toegestane shows"
+msgstr "Toegestane Series"
 
 msgctxt "#32380"
 msgid "Airing"
@@ -1335,7 +1316,7 @@ msgstr "Bronnen selecteren"
 
 msgctxt "#32388"
 msgid "Remove Dolby Vision sources"
-msgstr "Verwijder Dolby Vision bronnen"
+msgstr "Verwijder Dolby-Vision bronnen"
 
 msgctxt "#32389"
 msgid "Remove HDR sources"
@@ -1343,7 +1324,7 @@ msgstr "Verwijder HDR bronnen"
 
 msgctxt "#32390"
 msgid "Accounts(Meta)"
-msgstr "rekeningen (meta)"
+msgstr "Accounts(meta)"
 
 msgctxt "#32391"
 msgid "Certification Country (MPAA)"
@@ -1365,14 +1346,6 @@ msgctxt "#32395"
 msgid "No matching Subtitle language found"
 msgstr "Geen overeenkomende ondertiteltaal gevonden""
 
-msgctxt "#32396"
-msgid ""
-msgstr ""
-
-msgctxt "#32397"
-msgid ""
-msgstr ""
-
 msgctxt "#32398"
 msgid "Resolving Canceled"
 msgstr "Oplossen geannuleerd"
@@ -1389,10 +1362,6 @@ msgctxt "#32401"
 msgid "No stream available"
 msgstr "Geen stream beschikbaar"
 
-msgctxt "#32402"
-msgid ""
-msgstr ""
-
 msgctxt "#32403"
 msgid "[B]Download[/B]"
 msgstr "[B]Downloaden[/B]"
@@ -1400,10 +1369,6 @@ msgstr "[B]Downloaden[/B]"
 msgctxt "#32404"
 msgid "[COLOR %s]Time Elapsed:[/COLOR][COLOR %s]  %s seconds[/COLOR]"
 msgstr "[COLOR %s]Tijd Verstreken:[/COLOR][COLOR %s]  %s seconden[/COLOR]"
-
-msgctxt "#32405"
-msgid ""
-msgstr ""
 
 msgctxt "#32406"
 msgid "[COLOR %s]Remaining Providers:[/COLOR][COLOR %s] %s[/COLOR]"
@@ -1413,53 +1378,17 @@ msgctxt "#32407"
 msgid "[COLOR %s]Unfiltered Total:[/COLOR][COLOR %s]  %s[/COLOR]"
 msgstr "[COLOR %s]Ongefilterd totaal:[/COLOR][COLOR %s]  %s[/COLOR]"
 
-msgctxt "#32408"
-msgid ""
-msgstr ""
-
-msgctxt "#32409"
-msgid ""
-msgstr ""
-
-msgctxt "#32410"
-msgid ""
-msgstr ""
-
-msgctxt "#32411"
-msgid ""
-msgstr ""
-
-msgctxt "#32412"
-msgid ""
-msgstr ""
-
-msgctxt "#32413"
-msgid ""
-msgstr ""
-
-msgctxt "#32414"
-msgid ""
-msgstr ""
-
-msgctxt "#32415"
-msgid ""
-msgstr ""
-
-msgctxt "#32416"
-msgid ""
-msgstr ""
-
 msgctxt "#32417"
 msgid "Trakt Popular Lists"
 msgstr "Trakt populaire lijsten"
 
 msgctxt "#32418"
 msgid "Trakt Trending Lists"
-msgstr "Trakt-trendlijsten"
+msgstr "Trakt Trending lijsten"
 
 msgctxt "#32419"
 msgid "Search Trakt Lists"
-msgstr "Zoek Trakt-lijsten"
+msgstr "Zoek Trakt lijsten"
 
 msgctxt "#32420"
 msgid "In Theaters"
@@ -1508,10 +1437,6 @@ msgstr "Populair"
 msgctxt "#32431"
 msgid "Popular (TMDb)"
 msgstr "Populair (TMDb)"
-
-msgctxt "#32432"
-msgid ""
-msgstr ""
 
 msgctxt "#32433"
 msgid "Popular (Trakt)"
@@ -1773,18 +1698,6 @@ msgctxt "#32497"
 msgid "[B]Renewal Needed On:[/B] %s"
 msgstr "[B]Verlenging nodig op:[/B] %s"
 
-msgctxt "#32498"
-msgid ""
-msgstr ""
-
-msgctxt "#32499"
-msgid ""
-msgstr ""
-
-msgctxt "#32500"
-msgid ""
-msgstr ""
-
 msgctxt "#32501"
 msgid "Start from beginning"
 msgstr "Start vanaf het begin"
@@ -1797,29 +1710,9 @@ msgctxt "#32503"
 msgid "Resume"
 msgstr "Doorgaan"
 
-msgctxt "#32504"
-msgid ""
-msgstr ""
-
-msgctxt "#32505"
-msgid ""
-msgstr ""
-
 msgctxt "#32506"
 msgid "[B]Umbrella Global Context[/B] Settings"
 msgstr "[B]Global context van Umbrella[/B] Instellingen"
-
-msgctxt "#32507"
-msgid ""
-msgstr ""
-
-msgctxt "#32508"
-msgid ""
-msgstr ""
-
-msgctxt "#32509"
-msgid ""
-msgstr ""
 
 msgctxt "#32510"
 msgid "[B]Cache Functions[/B]"
@@ -1827,7 +1720,7 @@ msgstr "[B]Cache functies[/B]"
 
 msgctxt "#32511"
 msgid "An account already exists."
-msgstr "Een account bestaat reeds."
+msgstr "Deze account bestaat al."
 
 msgctxt "#32512"
 msgid "Do you want to reset?"
@@ -1903,23 +1796,15 @@ msgstr "[B]Mijn accounts - Changelog weergeven[/B]"
 
 msgctxt "#32530"
 msgid "[B]umbrellascrapers - View Log File[/B]"
-msgstr "[B]umbrellascrapers - Logbestand bekijken[/B]"
+msgstr "[B]CocoScrapers - Logbestand bekijken[/B]"
 
 msgctxt "#32531"
 msgid "[B]umbrellascrapers - Show Changelog[/B]"
-msgstr "[B]umbrellascrapers - Changelog weergeven[/B]"
+msgstr "[B]CocoScrapers - Changelog weergeven[/B]"
 
 msgctxt "#32532"
 msgid "[B]View Kodi Log File[/B]"
-msgstr "[B]Kodi-logbestand bekijken[/B]"
-
-msgctxt "#32533"
-msgid ""
-msgstr ""
-
-msgctxt "#32534"
-msgid ""
-msgstr ""
+msgstr "[B]Kodi logbestand bekijken[/B]"
 
 msgctxt "#32535"
 msgid "Play Random"
@@ -1933,25 +1818,13 @@ msgctxt "#32537"
 msgid "Nothing found to play"
 msgstr "Niets gevonden om af te spelen"
 
-msgctxt "#32538"
-msgid ""
-msgstr ""
-
-msgctxt "#32539"
-msgid ""
-msgstr ""
-
-msgctxt "#32540"
-msgid ""
-msgstr ""
-
 msgctxt "#32541"
 msgid "Library"
 msgstr "Bibliotheek"
 
 msgctxt "#32542"
 msgid "folders will be imported to library if they are added to media sources."
-msgstr "mappen worden geïmporteerd naar de bibliotheek als ze worden toegevoegd aan mediabronnen."
+msgstr "Mappen worden geïmporteerd naar de bibliotheek als ze worden toegevoegd aan mediabronnen."
 
 msgctxt "#32543"
 msgid "Movies"
@@ -2027,19 +1900,19 @@ msgstr "[B]UMBRELLA[/B]: Serie  map ..."
 
 msgctxt "#32561"
 msgid "[B]TRAKT[/B] : Import Collection..."
-msgstr "[B]TRAKT[/B]: Collectie importeren ..."
+msgstr "[B]TRAKT[/B]: Collectie van films importeren ..."
 
 msgctxt "#32562"
 msgid "[B]TRAKT[/B] : Import Watchlist..."
-msgstr "[B]TRAKT[/B]: kijklijst importeren ..."
+msgstr "[B]TRAKT[/B]: Kijklijst van films importeren ..."
 
 msgctxt "#32563"
 msgid "[B]TRAKT[/B] : Import TV Collection..."
-msgstr "[B]TRAKT[/B]: Serie collectie importeren ..."
+msgstr "[B]TRAKT[/B]: Collectie van series importeren ..."
 
 msgctxt "#32564"
 msgid "[B]TRAKT[/B] : Import TV Watchlist..."
-msgstr "[B]TRAKT[/B]: Serie kijklijst importeren ..."
+msgstr "[B]TRAKT[/B]: Kijklijst van series importeren ..."
 
 msgctxt "#32565"
 msgid "Include episodes with unknown air dates"
@@ -2061,46 +1934,6 @@ msgctxt "#32573"
 msgid "Trakt Upcoming Progress prepend date"
 msgstr "Trakt aanstaande voortgangsdatum "
 
-msgctxt "#32574"
-msgid ""
-msgstr ""
-
-msgctxt "#32575"
-msgid ""
-msgstr ""
-
-msgctxt "#32576"
-msgid ""
-msgstr ""
-
-msgctxt "#32577"
-msgid ""
-msgstr ""
-
-msgctxt "#32578"
-msgid ""
-msgstr ""
-
-msgctxt "#32579"
-msgid ""
-msgstr ""
-
-msgctxt "#32580"
-msgid ""
-msgstr ""
-
-msgctxt "#32581"
-msgid ""
-msgstr ""
-
-msgctxt "#32582"
-msgid ""
-msgstr ""
-
-msgctxt "#32583"
-msgid ""
-msgstr ""
-
 msgctxt "#32584"
 msgid "Sort order for Trakt Watched Progress"
 msgstr "Sorteervolgorde voor Trakt Bekeken Progress"
@@ -2112,10 +1945,6 @@ msgstr "Onlangs uitgezonden"
 msgctxt "#32586"
 msgid "Recently watched"
 msgstr "Onlangs bekeken"
-
-msgctxt "#32587"
-msgid ""
-msgstr ""
 
 msgctxt "#32588"
 msgid "Debrid(Hoster) Source Color"
@@ -2169,14 +1998,6 @@ msgctxt "#32600"
 msgid "Preparing sources"
 msgstr "Bronnen voorbereiden"
 
-msgctxt "#32601"
-msgid ""
-msgstr ""
-
-msgctxt "#32602"
-msgid ""
-msgstr ""
-
 msgctxt "#32603"
 msgid "[COLOR %s][I]New search...[/I][/COLOR]"
 msgstr "[COLOR %s][I]Nieuwe zoekopdracht...[/I][/COLOR]"
@@ -2188,14 +2009,6 @@ msgstr "[B]UMBRELLA[/B] : Verwijder zoekgeschiedenis..."
 msgctxt "#32605"
 msgid "Click to clear search history"
 msgstr "Klik om de zoekgeschiedenis te wissen"
-
-msgctxt "#32606"
-msgid ""
-msgstr ""
-
-msgctxt "#32607"
-msgid ""
-msgstr ""
 
 msgctxt "#32608"
 msgid "Unaired Season/Episode Color"
@@ -2257,34 +2070,6 @@ msgctxt "#32622"
 msgid "Main Menu"
 msgstr "Hoofdmenu"
 
-msgctxt "#32623"
-msgid ""
-msgstr ""
-
-msgctxt "#32624"
-msgid ""
-msgstr ""
-
-msgctxt "#32625"
-msgid ""
-msgstr ""
-
-msgctxt "#32626"
-msgid ""
-msgstr ""
-
-msgctxt "#32627"
-msgid ""
-msgstr ""
-
-msgctxt "#32628"
-msgid ""
-msgstr ""
-
-msgctxt "#32629"
-msgid ""
-msgstr ""
-
 msgctxt "#32630"
 msgid "Show Season 0 in Browse Seasons"
 msgstr "Laat seizoen 0 zien in Bladeren in seizoenen"
@@ -2317,21 +2102,13 @@ msgctxt "#32639"
 msgid "View Uncached Torrents"
 msgstr "Bekijk niet gecachete torrents"
 
-msgctxt "#32640"
-msgid ""
-msgstr ""
-
-msgctxt "#32641"
-msgid ""
-msgstr ""
-
 msgctxt "#32642"
 msgid "Provider filters"
 msgstr "Provider filters"
 
 msgctxt "#32643"
 msgid "[B]UMBRELLA[/B]: Settings"
-msgstr ""[B]UMBRELLA[/B]: instellingen"
+msgstr "[B]UMBRELLA[/B]: instellingen"
 
 msgctxt "#32644"
 msgid "Trakt Bookmarks"
@@ -2357,10 +2134,6 @@ msgctxt "#32649"
 msgid "Include Special Episodes (Season 0)"
 msgstr "Inclusief speciale afleveringen (seizoen 0)"
 
-msgctxt "#32650"
-msgid ""
-msgstr ""
-
 msgctxt "#32651"
 msgid "[B]Umbrella Scrapers[/B] Settings"
 msgstr "[B]Umbrella Scrapers[/B] instellingen"
@@ -2369,17 +2142,13 @@ msgctxt "#32652"
 msgid "Title Already Exists in Library"
 msgstr "Titel bestaat al in bibliotheek"
 
-msgctxt "#32653"
-msgid ""
-msgstr ""
-
 msgctxt "#32654"
 msgid "Pre-emptive Termination"
 msgstr "Preventieve beëindiging"
 
 msgctxt "#32655"
 msgid "Pre-emptive Limit"
-msgstr "Pre-emptieve limiet"
+msgstr "Preventief limiet"
 
 msgctxt "#32656"
 msgid "Autoplay SD Quality only"
@@ -2415,7 +2184,7 @@ msgstr "Trakt gebruikerslijst importeren..."
 
 msgctxt "#32664"
 msgid "Importing Trakt Liked List..."
-msgstr "Trakt Likes lijst importeren..."
+msgstr "Trakt Liked lijst importeren..."
 
 msgctxt "#32665"
 msgid "Check Host for Valid URL"
@@ -2447,19 +2216,19 @@ msgstr "[COLOR whitesmoke]Witte rook[/COLOR]"
 
 msgctxt "#32672"
 msgid "[B]TRAKT[/B] : Import Movie User List..."
-msgstr "[B]TRAKT[/B] : Film gebruikers lijst importeren..."
+msgstr "[B]TRAKT[/B] : Gebruikerslijst met Films importeren..."
 
 msgctxt "#32673"
 msgid "[B]TRAKT[/B] : Import Movie Liked List..."
-msgstr "[B]TRAKT[/B] : Lijst met films likes importeren..."
+msgstr "[B]TRAKT[/B] : Liked Lijst met films importeren..."
 
 msgctxt "#32674"
 msgid "[B]TRAKT[/B] : Import TV User List..."
-msgstr "[B]TRAKT[/B] : Serie gebruikerslijst importeren..."
+msgstr "[B]TRAKT[/B] : Gebruikerslijst met Series importeren..."
 
 msgctxt "#32675"
 msgid "[B]TRAKT[/B] : Import TV Liked List..."
-msgstr "[B]TRAKT[/B] : Lijst met Series likes importeren..."
+msgstr "[B]TRAKT[/B] : Liked Lijst met Series importeren..."
 
 msgctxt "#32676"
 msgid "[B]UMBRELLA[/B] : Clean library..."
@@ -2497,88 +2266,9 @@ msgctxt "#32684"
 msgid "Store resolved items in cloud"
 msgstr "Opgeloste items opslaan in de cloud"
 
-msgctxt "#32685"
-msgid ""
-msgstr ""
-
-msgctxt "#32686"
-msgid ""
-msgstr ""
-
-
-
-
-
-
-
-
-msgctxt "#33000"
-msgid ""
-msgstr ""
-
-msgctxt "#33001"
-msgid ""
-msgstr ""
-
-msgctxt "#33002"
-msgid ""
-msgstr ""
-
-msgctxt "#33003"
-msgid ""
-msgstr ""
-
-msgctxt "#33004"
-msgid ""
-msgstr ""
-
 msgctxt "#33005"
 msgid "Enable startup notice"
 msgstr "Opstartmelding inschakelen"
-
-msgctxt "#33006"
-msgid ""
-msgstr ""
-
-msgctxt "#33007"
-msgid ""
-msgstr ""
-
-msgctxt "#33008"
-msgid ""
-msgstr ""
-
-msgctxt "#33009"
-msgid ""
-msgstr ""
-
-msgctxt "#33010"
-msgid ""
-msgstr ""
-
-msgctxt "#33011"
-msgid ""
-msgstr ""
-
-msgctxt "#33012"
-msgid ""
-msgstr ""
-
-msgctxt "#33013"
-msgid ""
-msgstr ""
-
-msgctxt "#33014"
-msgid ""
-msgstr ""
-
-msgctxt "#33015"
-msgid ""
-msgstr ""
-
-msgctxt "#33016"
-msgid ""
-msgstr ""
 
 msgctxt "#33017"
 msgid "New value = [B]%s[/B]: Successfully changed."
@@ -2586,7 +2276,7 @@ msgstr "Nieuwe waarde = [B]%s[/B]: succesvol gewijzigd."
 
 msgctxt "#33018"
 msgid "[B]Reuse Langauage Invoker[/B] is currently set to [B]%s[/B].\n\nDo you wish to change this setting to [B]%s[/B]?"
-msgstr ""[B]Taalaanroeper opnieuw gebruiken[/B] is momenteel ingesteld op [B]%s[/B].\n\nWilt u deze instelling wijzigen in: [B]%s[/B]?""
+msgstr "[B]Taalaanroeper opnieuw gebruiken[/B] is momenteel ingesteld op [B]%s[/B].\n\nWilt u deze instelling wijzigen in: [B]%s[/B]?""
 
 msgctxt "#33019"
 msgid "Enabling this setting may cause instability issues.\nTest at your own free will.\nContinue?"
@@ -2608,69 +2298,9 @@ msgctxt "#33023"
 msgid "[B]Reuse Language Invoker[/B] SETTING/XML mismatch"
 msgstr "[B]Taalaanroeper opnieuw gebruiken[/B] INSTELLING/XML komt niet overeen"
 
-msgctxt "#33024"
-msgid ""
-msgstr ""
-
-msgctxt "#33025"
-msgid ""
-msgstr ""
-
-msgctxt "#33026"
-msgid ""
-msgstr ""
-
-msgctxt "#33027"
-msgid ""
-msgstr ""
-
-msgctxt "#33028"
-msgid ""
-msgstr ""
-
-msgctxt "#33029"
-msgid ""
-msgstr ""
-
-msgctxt "#33030"
-msgid ""
-msgstr ""
-
-msgctxt "#33031"
-msgid ""
-msgstr ""
-
-msgctxt "#33032"
-msgid ""
-msgstr ""
-
-msgctxt "#33033"
-msgid ""
-msgstr ""
-
 msgctxt "#33034"
 msgid "No Debrid Account setup, account is required!"
-msgstr "Geen Debrid account instellen, account is vereist!"
-
-msgctxt "#33035"
-msgid ""
-msgstr ""
-
-msgctxt "#33036"
-msgid ""
-msgstr ""
-
-msgctxt "#33037"
-msgid ""
-msgstr ""
-
-msgctxt "#33038"
-msgid ""
-msgstr ""
-
-msgctxt "#33039"
-msgid "Title"
-msgstr "Titel"
+msgstr "Geen Debrid account ingesteld, account is vereist!"
 
 msgctxt "#33040"
 msgid "Description"
@@ -2678,7 +2308,7 @@ msgstr "Omschrijving"
 
 msgctxt "#33041"
 msgid "Searches"
-msgstr "zoekopdrachten"
+msgstr "Zoekopdrachten"
 
 msgctxt "#33042"
 msgid "Search Movies..."
@@ -2728,143 +2358,13 @@ msgctxt "#33053"
 msgid "%s has been hidden from your %s"
 msgstr "%s is verborgen voor je %s"
 
-msgctxt "#33054"
-msgid ""
-msgstr ""
-
-msgctxt "#33055"
-msgid ""
-msgstr ""
-
-msgctxt "#33055"
-msgid ""
-msgstr ""
-
-msgctxt "#33056"
-msgid ""
-msgstr ""
-
-msgctxt "#33057"
-msgid ""
-msgstr ""
-
-msgctxt "#33058"
-msgid ""
-msgstr ""
-
-msgctxt "#33059"
-msgid ""
-msgstr ""
-
-
-
-
-
-
-
-
 msgctxt "#33486"
 msgid "Close"
 msgstr "Sluiten"
 
-msgctxt "#33487"
-msgid ""
-msgstr ""
-
-msgctxt "#33488"
-msgid ""
-msgstr ""
-
-msgctxt "#33489"
-msgid ""
-msgstr ""
-
-msgctxt "#33490"
-msgid ""
-msgstr ""
-
-msgctxt "#33491"
-msgid ""
-msgstr ""
-
-msgctxt "#33492"
-msgid ""
-msgstr ""
-
-msgctxt "#33493"
-msgid ""
-msgstr ""
-
-msgctxt "#33494"
-msgid ""
-msgstr ""
-
-msgctxt "#33495"
-msgid ""
-msgstr ""
-
-msgctxt "#33496"
-msgid ""
-msgstr ""
-
-msgctxt "#33497"
-msgid ""
-msgstr ""
-
-msgctxt "#33498"
-msgid ""
-msgstr ""
-
-msgctxt "#33499"
-msgid ""
-msgstr ""
-
-msgctxt "#33500"
-msgid ""
-msgstr ""
-
-
-
-
-
-
-
-
 msgctxt "#33564"
 msgid "Default"
 msgstr "Standaard"
-
-msgctxt "#33565"
-msgid ""
-msgstr ""
-
-msgctxt "#33566"
-msgid ""
-msgstr ""
-
-msgctxt "#33567"
-msgid ""
-msgstr ""
-
-msgctxt "#33568"
-msgid ""
-msgstr ""
-
-msgctxt "#33569"
-msgid ""
-msgstr ""
-
-msgctxt "#33570"
-msgid ""
-msgstr ""
-
-msgctxt "#33571"
-msgid ""
-msgstr ""
-
-msgctxt "#33572"
-msgid ""
-msgstr ""
 
 msgctxt "#33573"
 msgid "Add Show to your [COLOR %s][B]Watchlist[/B][/COLOR]"
@@ -2930,65 +2430,6 @@ msgctxt "#33588"
 msgid "Enable Umbrella Global Context menu"
 msgstr "Umbrella Global contextmenu inschakelen"
 
-msgctxt "#33589"
-msgid ""
-msgstr ""
-
-msgctxt "#33590"
-msgid ""
-msgstr ""
-
-msgctxt "#33591"
-msgid ""
-msgstr ""
-
-msgctxt "#33592"
-msgid ""
-msgstr ""
-
-msgctxt "#33593"
-msgid ""
-msgstr ""
-
-msgctxt "#33594"
-msgid ""
-msgstr ""
-
-msgctxt "#33595"
-msgid ""
-msgstr ""
-
-msgctxt "#33596"
-msgid ""
-msgstr ""
-
-msgctxt "#33597"
-msgid ""
-msgstr ""
-
-msgctxt "#33598"
-msgid ""
-msgstr ""
-
-msgctxt "#33599"
-msgid ""
-msgstr ""
-
-msgctxt "#33600"
-msgid ""
-msgstr ""
-
-
-
-
-
-
-
-
-msgctxt "#33648"
-msgid ""
-msgstr ""
-
 msgctxt "#33649"
 msgid "Ascending"
 msgstr "Oplopend"
@@ -3003,7 +2444,7 @@ msgstr "Markeer als [COLOR %s][B]Bekeken[/B][/COLOR] Item"
 
 msgctxt "#33652"
 msgid "Mark As [COLOR %s][B]Unwatched[/B][/COLOR] Item"
-msgstr "Markeer als [COLOR %s][B]niet bekeken[/B][/COLOR] Item"
+msgstr "Markeer als [COLOR %s][B]niet-bekeken[/B][/COLOR] Item"
 
 msgctxt "#33653"
 msgid "[COLOR %s][B]Rate[/B][/COLOR] Item"
@@ -3019,7 +2460,7 @@ msgstr "Markeer het item als [COLOR red][B]Bekeken[/B][/COLOR]"
 
 msgctxt "#33656"
 msgid "Mark the item as [COLOR red][B]Unwatched[/B][/COLOR]"
-msgstr "Markeer het item als [COLOR red][B]niet bekeken[/B][/COLOR]"
+msgstr "Markeer het item als [COLOR red][B]niet-bekeken[/B][/COLOR]"
 
 msgctxt "#33657"
 msgid "Provide a rating for the item"
@@ -3039,55 +2480,7 @@ msgstr "IMDb Charts"
 
 msgctxt "#33661"
 msgid "Trakt List Addition Succeeded"
-msgstr "Toevoeging van Trakt lijst geslaagd"
-
-msgctxt "#33662"
-msgid ""
-msgstr ""
-
-msgctxt "#33663"
-msgid ""
-msgstr ""
-
-msgctxt "#33664"
-msgid ""
-msgstr ""
-
-msgctxt "#33665"
-msgid ""
-msgstr ""
-
-msgctxt "#33666"
-msgid ""
-msgstr ""
-
-msgctxt "#33667"
-msgid ""
-msgstr ""
-
-msgctxt "#33668"
-msgid ""
-msgstr ""
-
-msgctxt "#33669"
-msgid ""
-msgstr ""
-
-msgctxt "#33670"
-msgid ""
-msgstr ""
-
-msgctxt "#33671"
-msgid ""
-msgstr ""
-
-msgctxt "#33672"
-msgid ""
-msgstr ""
-
-msgctxt "#33673"
-msgid ""
-msgstr ""
+msgstr "Toevoeging van Trakt lijst gelukt"
 
 msgctxt "#33674"
 msgid "Trakt Throttling Applied, Sleeping for %s seconds"
@@ -3113,13 +2506,6 @@ msgctxt "#33679"
 msgid "Sorting Order"
 msgstr "Sorteer volgorde"
 
-
-
-
-
-
-
-
 msgctxt "#33786"
 msgid "No Trakt Result"
 msgstr "Geen Trakt resultaat"
@@ -3128,42 +2514,17 @@ msgctxt "#33787"
 msgid "Trakt Rate Limit Reached"
 msgstr "Trakt Beoordeel Limiet bereikt"
 
-
-
-
-
-
-
-
 msgctxt "#33890"
 msgid "Season Count"
 msgstr "Seizoen Telling"
 
 msgctxt "#33891"
 msgid "Unwatched Count"
-msgstr "Niet bekeken telling"
-
-msgctxt "#33892"
-msgid ""
-msgstr ""
-
-
-
-
-
-
-
+msgstr "Niet-bekeken telling"
 
 msgctxt "#33942"
 msgid "The Umbrella library path does not appear in the Kodi file sources and automatic library updates are therefore not possible. Please manually add the library path from Umbrella's settings to the Kodi file sources. If the path in the settings were not changed, Umbrella will use a directory in the addon profile to store library data."
 msgstr "Het Umbrella bibliotheekpad verschijnt niet in de Kodi bestandsbronnen en automatische bibliotheekupdates zijn daarom niet mogelijk. Voeg handmatig het bibliotheekpad van de instellingen van Umbrella toe aan de Kodi bestandsbronnen. Als het pad in de instellingen niet is gewijzigd, gebruikt Umbrella een map in het addon profiel om bibliotheekgegevens op te slaan."
-
-
-
-
-
-
-
 
 msgctxt "#35017"
 msgid "Air Information"
@@ -3203,11 +2564,11 @@ msgstr "Na titel"
 
 msgctxt "#35026"
 msgid "Before Plot"
-msgstr "voor plot"
+msgstr "Voor plot"
 
 msgctxt "#35027"
 msgid "After Plot"
-msgstr "na plot"
+msgstr "Na plot"
 
 msgctxt "#35028"
 msgid "Day"
@@ -3228,66 +2589,6 @@ msgstr "Uitzending label dag"
 msgctxt "#35032"
 msgid "[B]Airs[/B]:"
 msgstr "[B]Uitzendingen[/B]:"
-
-msgctxt "#35033"
-msgid ""
-msgstr ""
-
-msgctxt "#35034"
-msgid ""
-msgstr ""
-
-msgctxt "#35035"
-msgid ""
-msgstr ""
-
-msgctxt "#35036"
-msgid ""
-msgstr ""
-
-msgctxt "#35037"
-msgid ""
-msgstr ""
-
-msgctxt "#35038"
-msgid ""
-msgstr ""
-
-msgctxt "#35039"
-msgid ""
-msgstr ""
-
-msgctxt "#35040"
-msgid ""
-msgstr ""
-
-msgctxt "#35041"
-msgid ""
-msgstr ""
-
-msgctxt "#35042"
-msgid ""
-msgstr ""
-
-msgctxt "#35043"
-msgid ""
-msgstr ""
-
-msgctxt "#35044"
-msgid ""
-msgstr ""
-
-msgctxt "#35045"
-msgid ""
-msgstr ""
-
-msgctxt "#35046"
-msgid ""
-msgstr ""
-
-msgctxt "#35047"
-msgid ""
-msgstr ""
 
 msgctxt "#35048"
 msgid "Air Label Time"
@@ -3315,7 +2616,7 @@ msgstr "Periode"
 
 msgctxt "#35054"
 msgid "IMDb list sorting"
-msgstr "IMDb lijst sorteren sort"
+msgstr "IMDb lijst sorteren"
 
 msgctxt "#35055"
 msgid "My Movies and list sort options"
@@ -3323,7 +2624,7 @@ msgstr "Mijn films en lijstsorteeropties"
 
 msgctxt "#35056"
 msgid "My TVShows and list sort options"
-msgstr "Mijn series en sorteeropties voor lijsten"
+msgstr "Mijn series en lijstsorteeropties"
 
 msgctxt "#35057"
 msgid "[B]Trakt Management Tools[/B]"
@@ -3365,29 +2666,6 @@ msgctxt "#35066"
 msgid "[COLOR %s][B]Force Trakt Sync to local database[/B][/COLOR]"
 msgstr "[COLOR %s][B]Forceer Trakt Sync naar lokale database[/B][/COLOR]"
 
-msgctxt "#35067"
-msgid ""
-msgstr ""
-
-msgctxt "#35068"
-msgid ""
-msgstr ""
-
-msgctxt "#35069"
-msgid ""
-msgstr ""
-
-msgctxt "#35070"
-msgid ""
-msgstr ""
-
-
-
-
-
-
-
-
 msgctxt "#35187"
 msgid "Rating"
 msgstr "Beoordeling"
@@ -3428,23 +2706,9 @@ msgctxt "#35196"
 msgid "Failed To Add To Local Library"
 msgstr "Toevoegen aan lokale bibliotheek mislukt"
 
-
-
-
-
-
-
-
 msgctxt "#35308"
 msgid "Finish Watching"
 msgstr "Klaar met kijken"
-
-
-
-
-
-
-
 
 msgctxt "#35391"
 msgid "Date Premiered"
@@ -3458,68 +2722,9 @@ msgctxt "#35393"
 msgid "Date Watched"
 msgstr "Datum bekeken"
 
-msgctxt "#35394"
-msgid ""
-msgstr ""
-
-msgctxt "#35395"
-msgid ""
-msgstr ""
-
-msgctxt "#35396"
-msgid ""
-msgstr ""
-
-msgctxt "#35397"
-msgid ""
-msgstr ""
-
-msgctxt "#35398"
-msgid ""
-msgstr ""
-
-msgctxt "#35399"
-msgid ""
-msgstr ""
-
-msgctxt "#35400"
-msgid ""
-msgstr ""
-
-
-
-
-
-
-
-
 msgctxt "#35485"
 msgid "Note"
 msgstr "Opmerking"
-
-msgctxt "#35486"
-msgid ""
-msgstr ""
-
-msgctxt "#35487"
-msgid ""
-msgstr ""
-
-msgctxt "#35488"
-msgid ""
-msgstr ""
-
-msgctxt "#35489"
-msgid ""
-msgstr ""
-
-msgctxt "#35490"
-msgid ""
-msgstr ""
-
-msgctxt "#35491"
-msgid ""
-msgstr ""
 
 msgctxt "#35492"
 msgid "Direct Progress Scraping"
@@ -3536,22 +2741,6 @@ msgstr "De stream kan niet worden gevonden in de bibliotheek. Dit kan worden ver
 msgctxt "#35495"
 msgid "Add %s To Library"
 msgstr "Toevoegen %s aan de bibliotheek"
-
-msgctxt "#35496"
-msgid ""
-msgstr ""
-
-msgctxt "#35497"
-msgid ""
-msgstr ""
-
-msgctxt "#35498"
-msgid ""
-msgstr ""
-
-msgctxt "#35499"
-msgid ""
-msgstr ""
 
 msgctxt "#35500"
 msgid "Watch"
@@ -3595,11 +2784,11 @@ msgstr "Aflevering informatie"
 
 msgctxt "#35510"
 msgid "Marked As Watched"
-msgstr "Gemarkeerd als Bekeken"
+msgstr "Gemarkeerd als bekeken"
 
 msgctxt "#35511"
 msgid "Marked As Unwatched"
-msgstr "Gemarkeerd als niet bekeken"
+msgstr "Gemarkeerd als niet-bekeken"
 
 msgctxt "#35512"
 msgid "Mark"
@@ -3607,7 +2796,7 @@ msgstr "Markeer"
 
 msgctxt "#35513"
 msgid "Marked"
-msgstr "gemarkeerd"
+msgstr "Gemarkeerd"
 
 msgctxt "#35514"
 msgid "Scrape"
@@ -3653,13 +2842,9 @@ msgctxt "#35524"
 msgid "Notify Me About Available Updates"
 msgstr "Houd mij op de hoogte van beschikbare updates"
 
-msgctxt "#35525"
-msgid ""
-msgstr ""
-
 msgctxt "#35526"
 msgid "Movie theatrical unreleased color"
-msgstr "Film theatrale onuitgebrachte kleur"
+msgstr "Film theatraal onuitgebrachte kleur"
 
 msgctxt "#35527"
 msgid "Enable Notification Sound"
@@ -3671,7 +2856,7 @@ msgstr "Log niveau"
 
 msgctxt "#35529"
 msgid "Normal"
-msgstr "normaal"
+msgstr "Normaal"
 
 msgctxt "#35530"
 msgid "Debug(Extra info)"
@@ -3685,161 +2870,9 @@ msgctxt "#35532"
 msgid "Cache and Metacache successfully cleared!"
 msgstr "Cache en Metacache succesvol gewist!"
 
-msgctxt "#35533"
-msgid ""
-msgstr ""
-
-msgctxt "#35534"
-msgid ""
-msgstr ""
-
-msgctxt "#35535"
-msgid ""
-msgstr ""
-
-msgctxt "#35536"
-msgid ""
-msgstr ""
-
-msgctxt "#35537"
-msgid ""
-msgstr ""
-
-msgctxt "#35538"
-msgid ""
-msgstr ""
-
-msgctxt "#35539"
-msgid ""
-msgstr ""
-
-msgctxt "#35540"
-msgid ""
-msgstr ""
-
-msgctxt "#35541"
-msgid ""
-msgstr ""
-
-msgctxt "#35542"
-msgid ""
-msgstr ""
-
-msgctxt "#35543"
-msgid ""
-msgstr ""
-
-msgctxt "#35544"
-msgid ""
-msgstr ""
-
-msgctxt "#35545"
-msgid ""
-msgstr ""
-
-msgctxt "#35546"
-msgid ""
-msgstr ""
-
 msgctxt "#35547"
 msgid "Force"
 msgstr "Forceren"
-
-msgctxt "#35548"
-msgid ""
-msgstr ""
-
-msgctxt "#35549"
-msgid ""
-msgstr ""
-
-msgctxt "#35550"
-msgid ""
-msgstr ""
-
-msgctxt "#35551"
-msgid ""
-msgstr ""
-
-msgctxt "#35552"
-msgid ""
-msgstr ""
-
-msgctxt "#35553"
-msgid ""
-msgstr ""
-
-msgctxt "#35554"
-msgid ""
-msgstr ""
-
-msgctxt "#35555"
-msgid ""
-msgstr ""
-
-msgctxt "#35556"
-msgid ""
-msgstr ""
-
-msgctxt "#35557"
-msgid ""
-msgstr ""
-
-msgctxt "#35558"
-msgid ""
-msgstr ""
-
-msgctxt "#35559"
-msgid ""
-msgstr ""
-
-msgctxt "#35560"
-msgid ""
-msgstr ""
-
-msgctxt "#35561"
-msgid ""
-msgstr ""
-
-msgctxt "#35562"
-msgid ""
-msgstr ""
-
-msgctxt "#35563"
-msgid ""
-msgstr ""
-
-msgctxt "#35564"
-msgid ""
-msgstr ""
-
-msgctxt "#35565"
-msgid ""
-msgstr ""
-
-msgctxt "#35566"
-msgid ""
-msgstr ""
-
-msgctxt "#35567"
-msgid ""
-msgstr ""
-
-msgctxt "#35568"
-msgid ""
-msgstr ""
-
-msgctxt "#35569"
-msgid ""
-msgstr ""
-
-msgctxt "#35570"
-msgid ""
-msgstr ""
-
-msgctxt "#35571"
-msgid ""
-msgstr ""
 
 msgctxt "#35572"
 msgid "Progress Sorting"
@@ -3851,142 +2884,7 @@ msgstr "Kalender sorteren"
 
 msgctxt "#35574"
 msgid "Watchlist Sorting"
-msgstr "kijklijst sorteren"
-
-msgctxt "#35575"
-msgid ""
-msgstr ""
-
-msgctxt "#35576"
-msgid ""
-msgstr ""
-
-msgctxt "#35577"
-msgid ""
-msgstr ""
-
-msgctxt "#35578"
-msgid ""
-msgstr ""
-
-msgctxt "#35579"
-msgid ""
-msgstr ""
-
-msgctxt "#35580"
-msgid ""
-msgstr ""
-
-msgctxt "#35581"
-msgid ""
-msgstr ""
-
-msgctxt "#35582"
-msgid ""
-msgstr ""
-
-msgctxt "#35583"
-msgid ""
-msgstr ""
-
-msgctxt "#35584"
-msgid ""
-msgstr ""
-
-msgctxt "#35585"
-msgid ""
-msgstr ""
-
-msgctxt "#35586"
-msgid ""
-msgstr ""
-
-msgctxt "#35587"
-msgid ""
-msgstr ""
-
-msgctxt "#35588"
-msgid ""
-msgstr ""
-
-msgctxt "#35589"
-msgid ""
-msgstr ""
-
-msgctxt "#35589"
-msgid ""
-msgstr ""
-
-msgctxt "#35590"
-msgid ""
-msgstr ""
-
-msgctxt "#35591"
-msgid ""
-msgstr ""
-
-msgctxt "#35592"
-msgid ""
-msgstr ""
-
-msgctxt "#35593"
-msgid ""
-msgstr ""
-
-msgctxt "#35594"
-msgid ""
-msgstr ""
-
-msgctxt "#35595"
-msgid ""
-msgstr ""
-
-msgctxt "#35596"
-msgid ""
-msgstr ""
-
-msgctxt "#355977"
-msgid ""
-msgstr ""
-
-msgctxt "#35598"
-msgid ""
-msgstr ""
-
-msgctxt "#35599"
-msgid ""
-msgstr ""
-
-msgctxt "#35600"
-msgid ""
-msgstr ""
-
-
-
-
-
-
-
-
-msgctxt "#40000"
-msgid ""
-msgstr ""
-
-msgctxt "#40001"
-msgid ""
-msgstr ""
-
-msgctxt "#40002"
-msgid ""
-msgstr ""
-
-msgctxt "#40003"
-msgid ""
-msgstr ""
-
-msgctxt "#40004"
-msgid ""
-msgstr ""
+msgstr "Kijklijst sorteren"
 
 msgctxt "#40005"
 msgid "Priority"
@@ -3994,7 +2892,7 @@ msgstr "Prioriteit"
 
 msgctxt "#40006"
 msgid "username"
-msgstr "gebruikersnaam"
+msgstr "Gebruikersnaam"
 
 msgctxt "#40007"
 msgid "[B]Restart Transfer?: %s[/B]"
@@ -4046,7 +2944,7 @@ msgstr "Umbrella: Cloud overdracht"
 
 msgctxt "#40019"
 msgid "Authentication with Real-Debrid has failed, please try again"
-msgstr "Verificatie met Real-Debrid is mislukt, probeer het opnieuw"
+msgstr "Authenticatie met Real-Debrid is mislukt, probeer het opnieuw"
 
 msgctxt "#40020"
 msgid "Authentication with Premiumize.me has failed, please try again"
@@ -4110,7 +3008,7 @@ msgstr "Meta provider labels toevoegen..ex. (IMDb)"
 
 msgctxt "#40035"
 msgid "[B]Email:[/B] %s"
-msgstr "[B]E-mail:[/B] %s"
+msgstr "[B]Email:[/B] %s"
 
 msgctxt "#40036"
 msgid "[B]Username:[/B] %s"
@@ -4182,7 +3080,7 @@ msgstr "Preminumize.me succesvol geautoriseerd"
 
 msgctxt "#40053"
 msgid "AllDebrid Torrent Settings"
-msgstr "Alle Debrid Torrent-instellingen"
+msgstr "Alle Debrid Torrent instellingen"
 
 msgctxt "#40054"
 msgid "Premiumize.me Auth"
@@ -4250,11 +3148,11 @@ msgstr "Originals inschakelen (bijv. Netflix)"
 
 msgctxt "#40070"
 msgid "Originals"
-msgstr "originelen"
+msgstr "Originelen"
 
 msgctxt "#40071"
 msgid "Originals (TVMaze)"
-msgstr "originelen (TVMaze)"
+msgstr "Originelen (TVMaze)"
 
 msgctxt "#40072"
 msgid "Watched Progress"
@@ -4278,7 +3176,7 @@ msgstr "[COLOR %s][B]Scrobble Reset[/B][/COLOR] Item"
 
 msgctxt "#40077"
 msgid "Originals (TMDb)"
-msgstr "originelen (TMDb)"
+msgstr "Originelen (TMDb)"
 
 msgctxt "#40078"
 msgid "Clear [COLOR yellow]Icon and Fanart [/COLOR]..."
@@ -4382,7 +3280,7 @@ msgstr "Skinthema gebruiken voor PlayNext"
 
 msgctxt "#40103"
 msgid "Trakt Client ID"
-msgstr ""
+msgstr "Trakt Client ID"
 
 msgctxt "#40104"
 msgid "Trakt Client Secret"
@@ -4476,7 +3374,6 @@ msgctxt "#40126"
 msgid "Clear API Key"
 msgstr "API sleutel wissen"
 
-
 msgctxt "#40127"
 msgid "Error retrieving Furk Account Info"
 msgstr "Fout bij ophalen van Furk accountgegevens"
@@ -4499,20 +3396,124 @@ msgstr "Prioriteit geven aan AV1 naar boven"
 
 msgctxt "#40132"
 msgid "Remove AV1 Sources"
-msgstr "AV1-bronnen verwijderen"
+msgstr "Verwijder AV1 bronnen"
 
 msgctxt "#40133"
 msgid "Premiumize Authorization Revoked"
-msgstr ""
+msgstr "Premiumize autorisatie ingetrokken"
 
 msgctxt "#40134"
 msgid "Manage in CocoScrapers"
-msgstr ""
+msgstr "Beheer in CocoScrapers"
 
 msgctxt "#40135"
 msgid "Do not show removed duplicates popup"
-msgstr ""
+msgstr "Pop-up voor verwijderde duplicaten niet weergeven"
 
 msgctxt "#40136"
 msgid "Sort Episodes Descending (Default Ascending)"
-msgstr ""
+msgstr "Afleveringen sorteren aflopend (standaard oplopend)"
+
+msgctxt "#40137"
+msgid "Sorting and Filters"
+msgstr "Sorteren en filteren"
+
+msgctxt "#40138"
+msgid "Remove AVC"
+msgstr "Verwijder AVC"
+
+msgctxt "#40139"
+msgid "REMOVE DIVX"
+msgstr "Verwijder DIVX"
+
+msgctxt "#40140"
+msgid "Remove MP4"
+msgstr "Verwijder MP4"
+
+msgctxt "#40141"
+msgid "Remove MPEG"
+msgstr "Verwijder MPEG"
+
+msgctxt "#40142"
+msgid "Remove WMV"
+msgstr "Verwijder WMV"
+
+msgctxt "#40143"
+msgid "Source Sorting Options"
+msgstr "Opties voor het sorteren van bronnen"
+
+msgctxt "#40144"
+msgid "Source Filtering Options"
+msgstr "Bronfilter opties"
+
+msgctxt "#40145"
+msgid "Source Filtering (Video)"
+msgstr "Bronfiltering (video)"
+
+msgctxt "#40146"
+msgid "Source Filtering (Audio Codec)"
+msgstr "Bronfiltering (Audiocodec)"
+
+msgctxt "#40147"
+msgid "Source Filtering (Audio Channel)"
+msgstr "Bronfiltering (Audiokanaal)"
+
+msgctxt "#40148"
+msgid "Remove Dolby Digital"
+msgstr "Verwijder Dolby Digital"
+
+msgctxt "#40149"
+msgid "Remove Dolby Digital Plus"
+msgstr "Verwijder Dolby Digital Plus"
+
+msgctxt "#40150"
+msgid "Remove DTS"
+msgstr "Verwijder DTS"
+
+msgctxt "#40151"
+msgid "Remove DTS-HD"
+msgstr "Verwijder DTS-HD"
+
+msgctxt "#40152"
+msgid "Remove DTS-HDMA"
+msgstr "Verwijder DTS-HDMA"
+
+msgctxt "#40153"
+msgid "Remove DTS-X"
+msgstr "Verwijder DTS-X"
+
+msgctxt "#40154"
+msgid "Remove MP3"
+msgstr "Verwijder MP3"
+
+msgctxt "#40155"
+msgid "Remove Dolby Digital Atmos"
+msgstr "Verwijder Dolby Atmos"
+
+msgctxt "#40156"
+msgid "Remove OPUS"
+msgstr "Verwijder OPUS"
+
+msgctxt "#40157"
+msgid "Remove 2 Channel"
+msgstr "Verwijder 2 kanalen"
+
+msgctxt "#40158"
+msgid "Remove 6 Channel"
+msgstr "Verwijder 6 kanalen"
+
+msgctxt "#40159"
+msgid "Remove 7 Channel"
+msgstr "Verwijder 7 kanalen"
+
+msgctxt "#40160"
+msgid "Remove 8 Channel"
+msgstr "Verwijder 8 kanalen"
+
+msgctxt "#40161"
+msgid "Remove Dolby Digital TrueHD"
+msgstr "Verwijder Dolby TrueHD"
+
+msgctxt "#40162"
+msgid "[B]SETTINGS:[/B] Sorting and Filters"
+msgstr "[B]INSTELLINGEN:[/B] Sorteren en Filters"
