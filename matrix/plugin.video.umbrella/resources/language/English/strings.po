@@ -663,7 +663,7 @@ msgid "Do not spam log with removed duplicates"
 msgstr ""
 
 msgctxt "#32160"
-msgid "Remove CAM Sources"
+msgid "Remove CAM"
 msgstr ""
 
 msgctxt "#32161"
@@ -716,11 +716,11 @@ msgstr ""
 
 msgctxt "#32173"
 msgid "Continue watching"
-msgstr 
+msgstr ""
 
 msgctxt "#32174"
 msgid "Default Play Next Action in...."
-msgstr 
+msgstr ""
 
 msgctxt "#32175"
 msgid "Still Watching in...."
@@ -934,10 +934,6 @@ msgctxt "#32227"
 msgid "Require Year in source for known Reboot shows"
 msgstr ""
 
-msgctxt "#32228"
-msgid ""
-msgstr ""
-
 msgctxt "#32229"
 msgid "Prioritize HEVC to top"
 msgstr ""
@@ -974,23 +970,8 @@ msgctxt "#32237"
 msgid "Original"
 msgstr ""
 
-msgctxt "#32238"
-msgid ""
-msgstr ""
-
-
-
-
-
-
-
-
 msgctxt "#32301"
 msgid "Enabled"
-msgstr ""
-
-msgctxt "#32302"
-msgid ""
 msgstr ""
 
 msgctxt "#32303"
@@ -1365,14 +1346,6 @@ msgctxt "#32395"
 msgid "No matching Subtitle language found"
 msgstr ""
 
-msgctxt "#32396"
-msgid ""
-msgstr ""
-
-msgctxt "#32397"
-msgid ""
-msgstr ""
-
 msgctxt "#32398"
 msgid "Resolving Canceled"
 msgstr ""
@@ -1389,10 +1362,6 @@ msgctxt "#32401"
 msgid "No stream available"
 msgstr ""
 
-msgctxt "#32402"
-msgid ""
-msgstr ""
-
 msgctxt "#32403"
 msgid "[B]Download[/B]"
 msgstr ""
@@ -1401,52 +1370,12 @@ msgctxt "#32404"
 msgid "[COLOR %s]Time Elapsed:[/COLOR][COLOR %s]  %s seconds[/COLOR]"
 msgstr ""
 
-msgctxt "#32405"
-msgid ""
-msgstr ""
-
 msgctxt "#32406"
 msgid "[COLOR %s]Remaining Providers:[/COLOR][COLOR %s] %s[/COLOR]"
 msgstr ""
 
 msgctxt "#32407"
 msgid "[COLOR %s]Unfiltered Total:[/COLOR][COLOR %s]  %s[/COLOR]"
-msgstr ""
-
-msgctxt "#32408"
-msgid ""
-msgstr ""
-
-msgctxt "#32409"
-msgid ""
-msgstr ""
-
-msgctxt "#32410"
-msgid ""
-msgstr ""
-
-msgctxt "#32411"
-msgid ""
-msgstr ""
-
-msgctxt "#32412"
-msgid ""
-msgstr ""
-
-msgctxt "#32413"
-msgid ""
-msgstr ""
-
-msgctxt "#32414"
-msgid ""
-msgstr ""
-
-msgctxt "#32415"
-msgid ""
-msgstr ""
-
-msgctxt "#32416"
-msgid ""
 msgstr ""
 
 msgctxt "#32417"
@@ -1507,10 +1436,6 @@ msgstr ""
 
 msgctxt "#32431"
 msgid "Popular (TMDb)"
-msgstr ""
-
-msgctxt "#32432"
-msgid ""
 msgstr ""
 
 msgctxt "#32433"
@@ -1773,18 +1698,6 @@ msgctxt "#32497"
 msgid "[B]Renewal Needed On:[/B] %s"
 msgstr ""
 
-msgctxt "#32498"
-msgid ""
-msgstr ""
-
-msgctxt "#32499"
-msgid ""
-msgstr ""
-
-msgctxt "#32500"
-msgid ""
-msgstr ""
-
 msgctxt "#32501"
 msgid "Start from beginning"
 msgstr ""
@@ -1797,28 +1710,8 @@ msgctxt "#32503"
 msgid "Resume"
 msgstr ""
 
-msgctxt "#32504"
-msgid ""
-msgstr ""
-
-msgctxt "#32505"
-msgid ""
-msgstr ""
-
 msgctxt "#32506"
 msgid "[B]Umbrella Global Context[/B] Settings"
-msgstr ""
-
-msgctxt "#32507"
-msgid ""
-msgstr ""
-
-msgctxt "#32508"
-msgid ""
-msgstr ""
-
-msgctxt "#32509"
-msgid ""
 msgstr ""
 
 msgctxt "#32510"
@@ -1913,14 +1806,6 @@ msgctxt "#32532"
 msgid "[B]View Kodi Log File[/B]"
 msgstr ""
 
-msgctxt "#32533"
-msgid ""
-msgstr ""
-
-msgctxt "#32534"
-msgid ""
-msgstr ""
-
 msgctxt "#32535"
 msgid "Play Random"
 msgstr ""
@@ -1931,18 +1816,6 @@ msgstr ""
 
 msgctxt "#32537"
 msgid "Nothing found to play"
-msgstr ""
-
-msgctxt "#32538"
-msgid ""
-msgstr ""
-
-msgctxt "#32539"
-msgid ""
-msgstr ""
-
-msgctxt "#32540"
-msgid ""
 msgstr ""
 
 msgctxt "#32541"
@@ -2062,46 +1935,7 @@ msgid "Trakt Upcoming Progress prepend date"
 msgstr ""
 
 msgctxt "#32574"
-msgid ""
-msgstr ""
-
-msgctxt "#32575"
-msgid ""
-msgstr ""
-
-msgctxt "#32576"
-msgid ""
-msgstr ""
-
-msgctxt "#32577"
-msgid ""
-msgstr ""
-
-msgctxt "#32578"
-msgid ""
-msgstr ""
-
-msgctxt "#32579"
-msgid ""
-msgstr ""
-
-msgctxt "#32580"
-msgid ""
-msgstr ""
-
-msgctxt "#32581"
-msgid ""
-msgstr ""
-
-msgctxt "#32582"
-msgid ""
-msgstr ""
-
-msgctxt "#32583"
-msgid ""
-msgstr ""
-
-msgctxt "#32584"
+msgmsgctxt "#32584"
 msgid "Sort order for Trakt Watched Progress"
 msgstr ""
 
@@ -2111,10 +1945,6 @@ msgstr ""
 
 msgctxt "#32586"
 msgid "Recently watched"
-msgstr ""
-
-msgctxt "#32587"
-msgid ""
 msgstr ""
 
 msgctxt "#32588"
@@ -2169,14 +1999,6 @@ msgctxt "#32600"
 msgid "Preparing sources"
 msgstr ""
 
-msgctxt "#32601"
-msgid ""
-msgstr ""
-
-msgctxt "#32602"
-msgid ""
-msgstr ""
-
 msgctxt "#32603"
 msgid "[COLOR %s][I]New search...[/I][/COLOR]"
 msgstr ""
@@ -2187,14 +2009,6 @@ msgstr ""
 
 msgctxt "#32605"
 msgid "Click to clear search history"
-msgstr ""
-
-msgctxt "#32606"
-msgid ""
-msgstr ""
-
-msgctxt "#32607"
-msgid ""
 msgstr ""
 
 msgctxt "#32608"
@@ -2257,34 +2071,6 @@ msgctxt "#32622"
 msgid "Main Menu"
 msgstr ""
 
-msgctxt "#32623"
-msgid ""
-msgstr ""
-
-msgctxt "#32624"
-msgid ""
-msgstr ""
-
-msgctxt "#32625"
-msgid ""
-msgstr ""
-
-msgctxt "#32626"
-msgid ""
-msgstr ""
-
-msgctxt "#32627"
-msgid ""
-msgstr ""
-
-msgctxt "#32628"
-msgid ""
-msgstr ""
-
-msgctxt "#32629"
-msgid ""
-msgstr ""
-
 msgctxt "#32630"
 msgid "Show Season 0 in Browse Seasons"
 msgstr ""
@@ -2315,14 +2101,6 @@ msgstr ""
 
 msgctxt "#32639"
 msgid "View Uncached Torrents"
-msgstr ""
-
-msgctxt "#32640"
-msgid ""
-msgstr ""
-
-msgctxt "#32641"
-msgid ""
 msgstr ""
 
 msgctxt "#32642"
@@ -2357,20 +2135,12 @@ msgctxt "#32649"
 msgid "Include Special Episodes (Season 0)"
 msgstr ""
 
-msgctxt "#32650"
-msgid ""
-msgstr ""
-
 msgctxt "#32651"
 msgid "[B]Coco Scrapers[/B] Settings"
 msgstr ""
 
 msgctxt "#32652"
 msgid "Title Already Exists in Library"
-msgstr ""
-
-msgctxt "#32653"
-msgid ""
 msgstr ""
 
 msgctxt "#32654"
@@ -2497,87 +2267,8 @@ msgctxt "#32684"
 msgid "Store resolved items in cloud"
 msgstr ""
 
-msgctxt "#32685"
-msgid ""
-msgstr ""
-
-msgctxt "#32686"
-msgid ""
-msgstr ""
-
-
-
-
-
-
-
-
-msgctxt "#33000"
-msgid ""
-msgstr ""
-
-msgctxt "#33001"
-msgid ""
-msgstr ""
-
-msgctxt "#33002"
-msgid ""
-msgstr ""
-
-msgctxt "#33003"
-msgid ""
-msgstr ""
-
-msgctxt "#33004"
-msgid ""
-msgstr ""
-
 msgctxt "#33005"
 msgid "Enable startup notice"
-msgstr ""
-
-msgctxt "#33006"
-msgid ""
-msgstr ""
-
-msgctxt "#33007"
-msgid ""
-msgstr ""
-
-msgctxt "#33008"
-msgid ""
-msgstr ""
-
-msgctxt "#33009"
-msgid ""
-msgstr ""
-
-msgctxt "#33010"
-msgid ""
-msgstr ""
-
-msgctxt "#33011"
-msgid ""
-msgstr ""
-
-msgctxt "#33012"
-msgid ""
-msgstr ""
-
-msgctxt "#33013"
-msgid ""
-msgstr ""
-
-msgctxt "#33014"
-msgid ""
-msgstr ""
-
-msgctxt "#33015"
-msgid ""
-msgstr ""
-
-msgctxt "#33016"
-msgid ""
 msgstr ""
 
 msgctxt "#33017"
@@ -2608,64 +2299,8 @@ msgctxt "#33023"
 msgid "[B]Reuse Language Invoker[/B] SETTING/XML mismatch"
 msgstr ""
 
-msgctxt "#33024"
-msgid ""
-msgstr ""
-
-msgctxt "#33025"
-msgid ""
-msgstr ""
-
-msgctxt "#33026"
-msgid ""
-msgstr ""
-
-msgctxt "#33027"
-msgid ""
-msgstr ""
-
-msgctxt "#33028"
-msgid ""
-msgstr ""
-
-msgctxt "#33029"
-msgid ""
-msgstr ""
-
-msgctxt "#33030"
-msgid ""
-msgstr ""
-
-msgctxt "#33031"
-msgid ""
-msgstr ""
-
-msgctxt "#33032"
-msgid ""
-msgstr ""
-
-msgctxt "#33033"
-msgid ""
-msgstr ""
-
 msgctxt "#33034"
 msgid "No Debrid Account setup, account is required!"
-msgstr ""
-
-msgctxt "#33035"
-msgid ""
-msgstr ""
-
-msgctxt "#33036"
-msgid ""
-msgstr ""
-
-msgctxt "#33037"
-msgid ""
-msgstr ""
-
-msgctxt "#33038"
-msgid ""
 msgstr ""
 
 msgctxt "#33039"
@@ -2728,142 +2363,12 @@ msgctxt "#33053"
 msgid "%s has been hidden from your %s"
 msgstr ""
 
-msgctxt "#33054"
-msgid ""
-msgstr ""
-
-msgctxt "#33055"
-msgid ""
-msgstr ""
-
-msgctxt "#33055"
-msgid ""
-msgstr ""
-
-msgctxt "#33056"
-msgid ""
-msgstr ""
-
-msgctxt "#33057"
-msgid ""
-msgstr ""
-
-msgctxt "#33058"
-msgid ""
-msgstr ""
-
-msgctxt "#33059"
-msgid ""
-msgstr ""
-
-
-
-
-
-
-
-
 msgctxt "#33486"
 msgid "Close"
 msgstr ""
 
-msgctxt "#33487"
-msgid ""
-msgstr ""
-
-msgctxt "#33488"
-msgid ""
-msgstr ""
-
-msgctxt "#33489"
-msgid ""
-msgstr ""
-
-msgctxt "#33490"
-msgid ""
-msgstr ""
-
-msgctxt "#33491"
-msgid ""
-msgstr ""
-
-msgctxt "#33492"
-msgid ""
-msgstr ""
-
-msgctxt "#33493"
-msgid ""
-msgstr ""
-
-msgctxt "#33494"
-msgid ""
-msgstr ""
-
-msgctxt "#33495"
-msgid ""
-msgstr ""
-
-msgctxt "#33496"
-msgid ""
-msgstr ""
-
-msgctxt "#33497"
-msgid ""
-msgstr ""
-
-msgctxt "#33498"
-msgid ""
-msgstr ""
-
-msgctxt "#33499"
-msgid ""
-msgstr ""
-
-msgctxt "#33500"
-msgid ""
-msgstr ""
-
-
-
-
-
-
-
-
 msgctxt "#33564"
 msgid "Default"
-msgstr ""
-
-msgctxt "#33565"
-msgid ""
-msgstr ""
-
-msgctxt "#33566"
-msgid ""
-msgstr ""
-
-msgctxt "#33567"
-msgid ""
-msgstr ""
-
-msgctxt "#33568"
-msgid ""
-msgstr ""
-
-msgctxt "#33569"
-msgid ""
-msgstr ""
-
-msgctxt "#33570"
-msgid ""
-msgstr ""
-
-msgctxt "#33571"
-msgid ""
-msgstr ""
-
-msgctxt "#33572"
-msgid ""
 msgstr ""
 
 msgctxt "#33573"
@@ -2930,65 +2435,6 @@ msgctxt "#33588"
 msgid "Enable Umbrella Global Context menu"
 msgstr ""
 
-msgctxt "#33589"
-msgid ""
-msgstr ""
-
-msgctxt "#33590"
-msgid ""
-msgstr ""
-
-msgctxt "#33591"
-msgid ""
-msgstr ""
-
-msgctxt "#33592"
-msgid ""
-msgstr ""
-
-msgctxt "#33593"
-msgid ""
-msgstr ""
-
-msgctxt "#33594"
-msgid ""
-msgstr ""
-
-msgctxt "#33595"
-msgid ""
-msgstr ""
-
-msgctxt "#33596"
-msgid ""
-msgstr ""
-
-msgctxt "#33597"
-msgid ""
-msgstr ""
-
-msgctxt "#33598"
-msgid ""
-msgstr ""
-
-msgctxt "#33599"
-msgid ""
-msgstr ""
-
-msgctxt "#33600"
-msgid ""
-msgstr ""
-
-
-
-
-
-
-
-
-msgctxt "#33648"
-msgid ""
-msgstr ""
-
 msgctxt "#33649"
 msgid "Ascending"
 msgstr ""
@@ -3041,52 +2487,8 @@ msgctxt "#33661"
 msgid "Trakt List Addition Succeeded"
 msgstr ""
 
-msgctxt "#33662"
-msgid ""
-msgstr ""
-
-msgctxt "#33663"
-msgid ""
-msgstr ""
-
-msgctxt "#33664"
-msgid ""
-msgstr ""
-
 msgctxt "#33665"
 msgid "Season Lists"
-msgstr ""
-
-msgctxt "#33666"
-msgid ""
-msgstr ""
-
-msgctxt "#33667"
-msgid ""
-msgstr ""
-
-msgctxt "#33668"
-msgid ""
-msgstr ""
-
-msgctxt "#33669"
-msgid ""
-msgstr ""
-
-msgctxt "#33670"
-msgid ""
-msgstr ""
-
-msgctxt "#33671"
-msgid ""
-msgstr ""
-
-msgctxt "#33672"
-msgid ""
-msgstr ""
-
-msgctxt "#33673"
-msgid ""
 msgstr ""
 
 msgctxt "#33674"
@@ -3113,13 +2515,6 @@ msgctxt "#33679"
 msgid "Sorting Order"
 msgstr ""
 
-
-
-
-
-
-
-
 msgctxt "#33786"
 msgid "No Trakt Result"
 msgstr ""
@@ -3127,13 +2522,6 @@ msgstr ""
 msgctxt "#33787"
 msgid "Trakt Rate Limit Reached"
 msgstr ""
-
-
-
-
-
-
-
 
 msgctxt "#33890"
 msgid "Season Count"
@@ -3143,27 +2531,9 @@ msgctxt "#33891"
 msgid "Unwatched Count"
 msgstr ""
 
-msgctxt "#33892"
-msgid ""
-msgstr ""
-
-
-
-
-
-
-
-
 msgctxt "#33942"
 msgid "The Umbrella library path does not appear in the Kodi file sources and automatic library updates are therefore not possible. Please manually add the library path from Umbrella's settings to the Kodi file sources. If the path in the settings were not changed, Umbrella will use a directory in the addon profile to store library data."
 msgstr ""
-
-
-
-
-
-
-
 
 msgctxt "#35017"
 msgid "Air Information"
@@ -3227,66 +2597,6 @@ msgstr ""
 
 msgctxt "#35032"
 msgid "[B]Airs[/B]:"
-msgstr ""
-
-msgctxt "#35033"
-msgid ""
-msgstr ""
-
-msgctxt "#35034"
-msgid ""
-msgstr ""
-
-msgctxt "#35035"
-msgid ""
-msgstr ""
-
-msgctxt "#35036"
-msgid ""
-msgstr ""
-
-msgctxt "#35037"
-msgid ""
-msgstr ""
-
-msgctxt "#35038"
-msgid ""
-msgstr ""
-
-msgctxt "#35039"
-msgid ""
-msgstr ""
-
-msgctxt "#35040"
-msgid ""
-msgstr ""
-
-msgctxt "#35041"
-msgid ""
-msgstr ""
-
-msgctxt "#35042"
-msgid ""
-msgstr ""
-
-msgctxt "#35043"
-msgid ""
-msgstr ""
-
-msgctxt "#35044"
-msgid ""
-msgstr ""
-
-msgctxt "#35045"
-msgid ""
-msgstr ""
-
-msgctxt "#35046"
-msgid ""
-msgstr ""
-
-msgctxt "#35047"
-msgid ""
 msgstr ""
 
 msgctxt "#35048"
@@ -3365,29 +2675,6 @@ msgctxt "#35066"
 msgid "[COLOR %s][B]Force Trakt Sync to local database[/B][/COLOR]"
 msgstr ""
 
-msgctxt "#35067"
-msgid ""
-msgstr ""
-
-msgctxt "#35068"
-msgid ""
-msgstr ""
-
-msgctxt "#35069"
-msgid ""
-msgstr ""
-
-msgctxt "#35070"
-msgid ""
-msgstr ""
-
-
-
-
-
-
-
-
 msgctxt "#35187"
 msgid "Rating"
 msgstr ""
@@ -3428,23 +2715,9 @@ msgctxt "#35196"
 msgid "Failed To Add To Local Library"
 msgstr ""
 
-
-
-
-
-
-
-
 msgctxt "#35308"
 msgid "Finish Watching"
 msgstr ""
-
-
-
-
-
-
-
 
 msgctxt "#35391"
 msgid "Date Premiered"
@@ -3458,67 +2731,8 @@ msgctxt "#35393"
 msgid "Date Watched"
 msgstr ""
 
-msgctxt "#35394"
-msgid ""
-msgstr ""
-
-msgctxt "#35395"
-msgid ""
-msgstr ""
-
-msgctxt "#35396"
-msgid ""
-msgstr ""
-
-msgctxt "#35397"
-msgid ""
-msgstr ""
-
-msgctxt "#35398"
-msgid ""
-msgstr ""
-
-msgctxt "#35399"
-msgid ""
-msgstr ""
-
-msgctxt "#35400"
-msgid ""
-msgstr ""
-
-
-
-
-
-
-
-
 msgctxt "#35485"
 msgid "Note"
-msgstr ""
-
-msgctxt "#35486"
-msgid ""
-msgstr ""
-
-msgctxt "#35487"
-msgid ""
-msgstr ""
-
-msgctxt "#35488"
-msgid ""
-msgstr ""
-
-msgctxt "#35489"
-msgid ""
-msgstr ""
-
-msgctxt "#35490"
-msgid ""
-msgstr ""
-
-msgctxt "#35491"
-msgid ""
 msgstr ""
 
 msgctxt "#35492"
@@ -3535,22 +2749,6 @@ msgstr ""
 
 msgctxt "#35495"
 msgid "Add %s To Library"
-msgstr ""
-
-msgctxt "#35496"
-msgid ""
-msgstr ""
-
-msgctxt "#35497"
-msgid ""
-msgstr ""
-
-msgctxt "#35498"
-msgid ""
-msgstr ""
-
-msgctxt "#35499"
-msgid ""
 msgstr ""
 
 msgctxt "#35500"
@@ -3653,10 +2851,6 @@ msgctxt "#35524"
 msgid "Notify Me About Available Updates"
 msgstr ""
 
-msgctxt "#35525"
-msgid ""
-msgstr ""
-
 msgctxt "#35526"
 msgid "Movie theatrical unreleased color"
 msgstr ""
@@ -3685,160 +2879,8 @@ msgctxt "#35532"
 msgid "Cache and Metacache successfully cleared!"
 msgstr ""
 
-msgctxt "#35533"
-msgid ""
-msgstr ""
-
-msgctxt "#35534"
-msgid ""
-msgstr ""
-
-msgctxt "#35535"
-msgid ""
-msgstr ""
-
-msgctxt "#35536"
-msgid ""
-msgstr ""
-
-msgctxt "#35537"
-msgid ""
-msgstr ""
-
-msgctxt "#35538"
-msgid ""
-msgstr ""
-
-msgctxt "#35539"
-msgid ""
-msgstr ""
-
-msgctxt "#35540"
-msgid ""
-msgstr ""
-
-msgctxt "#35541"
-msgid ""
-msgstr ""
-
-msgctxt "#35542"
-msgid ""
-msgstr ""
-
-msgctxt "#35543"
-msgid ""
-msgstr ""
-
-msgctxt "#35544"
-msgid ""
-msgstr ""
-
-msgctxt "#35545"
-msgid ""
-msgstr ""
-
-msgctxt "#35546"
-msgid ""
-msgstr ""
-
 msgctxt "#35547"
 msgid "Force"
-msgstr ""
-
-msgctxt "#35548"
-msgid ""
-msgstr ""
-
-msgctxt "#35549"
-msgid ""
-msgstr ""
-
-msgctxt "#35550"
-msgid ""
-msgstr ""
-
-msgctxt "#35551"
-msgid ""
-msgstr ""
-
-msgctxt "#35552"
-msgid ""
-msgstr ""
-
-msgctxt "#35553"
-msgid ""
-msgstr ""
-
-msgctxt "#35554"
-msgid ""
-msgstr ""
-
-msgctxt "#35555"
-msgid ""
-msgstr ""
-
-msgctxt "#35556"
-msgid ""
-msgstr ""
-
-msgctxt "#35557"
-msgid ""
-msgstr ""
-
-msgctxt "#35558"
-msgid ""
-msgstr ""
-
-msgctxt "#35559"
-msgid ""
-msgstr ""
-
-msgctxt "#35560"
-msgid ""
-msgstr ""
-
-msgctxt "#35561"
-msgid ""
-msgstr ""
-
-msgctxt "#35562"
-msgid ""
-msgstr ""
-
-msgctxt "#35563"
-msgid ""
-msgstr ""
-
-msgctxt "#35564"
-msgid ""
-msgstr ""
-
-msgctxt "#35565"
-msgid ""
-msgstr ""
-
-msgctxt "#35566"
-msgid ""
-msgstr ""
-
-msgctxt "#35567"
-msgid ""
-msgstr ""
-
-msgctxt "#35568"
-msgid ""
-msgstr ""
-
-msgctxt "#35569"
-msgid ""
-msgstr ""
-
-msgctxt "#35570"
-msgid ""
-msgstr ""
-
-msgctxt "#35571"
-msgid ""
 msgstr ""
 
 msgctxt "#35572"
@@ -3851,141 +2893,6 @@ msgstr ""
 
 msgctxt "#35574"
 msgid "Watchlist Sorting"
-msgstr ""
-
-msgctxt "#35575"
-msgid ""
-msgstr ""
-
-msgctxt "#35576"
-msgid ""
-msgstr ""
-
-msgctxt "#35577"
-msgid ""
-msgstr ""
-
-msgctxt "#35578"
-msgid ""
-msgstr ""
-
-msgctxt "#35579"
-msgid ""
-msgstr ""
-
-msgctxt "#35580"
-msgid ""
-msgstr ""
-
-msgctxt "#35581"
-msgid ""
-msgstr ""
-
-msgctxt "#35582"
-msgid ""
-msgstr ""
-
-msgctxt "#35583"
-msgid ""
-msgstr ""
-
-msgctxt "#35584"
-msgid ""
-msgstr ""
-
-msgctxt "#35585"
-msgid ""
-msgstr ""
-
-msgctxt "#35586"
-msgid ""
-msgstr ""
-
-msgctxt "#35587"
-msgid ""
-msgstr ""
-
-msgctxt "#35588"
-msgid ""
-msgstr ""
-
-msgctxt "#35589"
-msgid ""
-msgstr ""
-
-msgctxt "#35589"
-msgid ""
-msgstr ""
-
-msgctxt "#35590"
-msgid ""
-msgstr ""
-
-msgctxt "#35591"
-msgid ""
-msgstr ""
-
-msgctxt "#35592"
-msgid ""
-msgstr ""
-
-msgctxt "#35593"
-msgid ""
-msgstr ""
-
-msgctxt "#35594"
-msgid ""
-msgstr ""
-
-msgctxt "#35595"
-msgid ""
-msgstr ""
-
-msgctxt "#35596"
-msgid ""
-msgstr ""
-
-msgctxt "#355977"
-msgid ""
-msgstr ""
-
-msgctxt "#35598"
-msgid ""
-msgstr ""
-
-msgctxt "#35599"
-msgid ""
-msgstr ""
-
-msgctxt "#35600"
-msgid ""
-msgstr ""
-
-
-
-
-
-
-
-
-msgctxt "#40000"
-msgid ""
-msgstr ""
-
-msgctxt "#40001"
-msgid ""
-msgstr ""
-
-msgctxt "#40002"
-msgid ""
-msgstr ""
-
-msgctxt "#40003"
-msgid ""
-msgstr ""
-
-msgctxt "#40004"
-msgid ""
 msgstr ""
 
 msgctxt "#40005"
@@ -4589,7 +3496,7 @@ msgid "Remove MP3"
 msgstr ""
 
 msgctxt "#40155"
-msgid "Remove Dolby Digital Atmos"
+msgid "Remove Dolby Atmos"
 msgstr ""
 
 msgctxt "#40156"
@@ -4613,7 +3520,7 @@ msgid "Remove 8 Channel"
 msgstr ""
 
 msgctxt "#40161"
-msgid "Remove Dolby Digital TrueHD"
+msgid "Remove Dolby TrueHD"
 msgstr ""
 
 msgctxt "#40162"
