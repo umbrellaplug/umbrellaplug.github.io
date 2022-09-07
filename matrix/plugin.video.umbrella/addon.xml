@@ -1,7 +1,7 @@
 <addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.68">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
-		<import addon="context.umbrella" version="1.2.6" />
+		<import addon="context.umbrella" version="1.2.7" />
 		<import addon="script.module.cocoscrapers" version="1.0.3" />
 		<import addon="script.module.requests" />
 		<import addon="script.module.beautifulsoup4" />
@@ -31,11 +31,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.68 - August 24, 2022[/COLOR][/B]
---[I] Video Filters Added.[I]
---[I] Audio Filters Added.[I]
---[I] Sorting and Filtering Sources now in a new category in settings.[I]
---[I] Create Strm Context Menu Option Added.[I]
+[B][COLOR black]Update - v6.5.69 - August 26, 2022[/COLOR][/B]
+--[I] Settings format adjusted for latest kodi requirements.[I]
 		</news>
 	</extension>
 </addon>

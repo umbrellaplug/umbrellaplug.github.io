@@ -450,36 +450,5 @@ def checkPlayNextEpisodes():
 			nextEpisodeSetting = 0
 		if nextEpisodeSetting != 2:
 			jsonrpc('{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"videoplayer.autoplaynextitem", "value":[2]}, "id":1}')
-		try:
-			selectActionSetting = selectAction.get('result')['value']
-		except:
-			selectActionSetting = 0
-		if selectActionSetting != 1:
-			jsonrpc('{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"myvideos.selectaction", "value":1}, "id":1}')
-	else:
-		from resources.lib.modules import log_utils
-		log_utils.log('Playnext is not enabled.')
-
-def checkforSkin(action):
-	#checking for skin and turning on/off information on play.
-	# 0 choose
-	# 1 play
-	# 2 resume
-	# 3 information
-	# 4 queue item
-	from resources.lib.modules import log_utils
-	log_utils.log('Checking for skin.')
-	if skin in ('skin.auramod'):
-		from resources.lib.modules import log_utils
-		log_utils.log('need to turn on or off information button. due to auramod')
-		if setting('enable.playnext') == 'true':
-			selectActionSetting = jsloads(jsonrpc('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"myvideos.selectaction"}, "id":1}'))
-			try:
-				selectAction = selectActionSetting.get('result')['value'][0]
-			except:
-				selectAction = 0
-			if selectAction != 1 and action == 'on':
-				jsonrpc('{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"myvideos.selectaction", "value":[1]}, "id":1}')
-			elif action == 'off':
-				jsonrpc('{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"myvideos.selectaction", "value":[3]}, "id":1}')
+	else:pass
 

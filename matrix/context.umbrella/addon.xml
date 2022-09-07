@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="context.umbrella" name="Umbrella - Global Context Menu Items" provider-name="Umbrella" version="1.2.6">
+<addon id="context.umbrella" name="Umbrella - Global Context Menu Items" provider-name="Umbrella" version="1.2.7">
 	<requires>
 		<import addon="script.module.requests" version="2.19.1" />
 	</requires>
@@ -144,8 +144,8 @@
 			<screenshot></screenshot>
 		</assets>
 		<news>
-[B][COLOR red]Update - v1.2.3 - June. 21, 2022[/COLOR][/B]
-[COLOR yellow]--[/COLOR][I] Change of icon, not much new added here yet.[/I]
+[B][COLOR red]Update - v1.2.7 - Sept 1st, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I] Changed to new settings format.[/I]
 		</news>
 	</extension>
 </addon>

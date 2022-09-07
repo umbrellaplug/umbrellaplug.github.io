@@ -356,7 +356,6 @@ class Player(xbmc.Player):
 					control.refresh() #not all skins refresh after playback stopped
 				control.playlist.clear()
 				#control.trigger_widget_refresh() # skinshortcuts handles widget refresh
-				#control.checkforSkin(action='off')
 				xbmc.log('[ plugin.video.umbrella ] onPlayBackStopped callback', LOGINFO)
 		except: log_utils.error()
 
@@ -367,7 +366,6 @@ class Player(xbmc.Player):
 		if control.playlist.getposition() == control.playlist.size() or control.playlist.size() == 1:
 			control.playlist.clear()
 		xbmc.log('[ plugin.video.umbrella ] onPlayBackEnded callback', LOGINFO)
-		#control.checkforSkin(action='off')
 
 	def onPlayBackError(self):
 		playerWindow.clearProperty('umbrella.preResolved_nextUrl')
@@ -376,7 +374,6 @@ class Player(xbmc.Player):
 		Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
 		log_utils.error()
 		xbmc.log('[ plugin.video.umbrella ] onPlayBackError callback', LOGINFO)
-		#control.checkforSkin(action='off')
 		sysexit(1)
 ##############################
 

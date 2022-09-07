@@ -17,7 +17,7 @@ def set_reuselanguageinvoker():
 		if current_value:
 			new_value = 'true' if current_value == 'false' else 'false'
 			if not control.yesnoDialog(control.lang(33018) % (current_value, new_value), '', ''):
-				return control.openSettings(query='12.6')
+				return control.openSettings(query='13.6')
 			if new_value == 'true':
 				if not control.yesnoDialog(control.lang(33019), '', ''): return
 			item.text = new_value

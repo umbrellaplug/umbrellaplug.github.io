@@ -31,7 +31,7 @@ def clean_settings():
 		profile_dir = control.transPath(addon.getAddonInfo('profile'))
 		active_settings_xml = control.joinPath(addon_dir, 'resources', 'settings.xml')
 		root = ET.parse(active_settings_xml).getroot()
-		for item in root.findall('./category/setting'):
+		for item in root.findall('./section/category/group/setting'):
 			setting_id = item.get('id')
 			if setting_id:
 				active_settings.append(setting_id)
