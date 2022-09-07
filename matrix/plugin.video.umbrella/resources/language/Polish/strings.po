@@ -4523,3 +4523,295 @@ msgstr ""
 msgctxt "#40136"
 msgid "Sort Episodes Descending (Default Ascending)"
 msgstr ""
+
+msgctxt "#40137"
+msgid "Sorting and Filters"
+msgstr ""
+
+msgctxt "#40138"
+msgid "Remove AVC"
+msgstr ""
+
+msgctxt "#40139"
+msgid "Remove DIVX"
+msgstr ""
+
+msgctxt "#40140"
+msgid "Remove MP4"
+msgstr ""
+
+msgctxt "#40141"
+msgid "Remove MPEG"
+msgstr ""
+
+msgctxt "#40142"
+msgid "Remove WMV"
+msgstr ""
+
+msgctxt "#40143"
+msgid "Source Sorting Options"
+msgstr ""
+
+msgctxt "#40144"
+msgid "Source Filtering Options"
+msgstr ""
+
+msgctxt "#40145"
+msgid "Source Filtering (Video)"
+msgstr ""
+
+msgctxt "#40146"
+msgid "Source Filtering (Audio Codec)"
+msgstr ""
+
+msgctxt "#40147"
+msgid "Source Filtering (Audio Channel)"
+msgstr ""
+
+msgctxt "#40148"
+msgid "Remove Dolby Digital"
+msgstr ""
+
+msgctxt "#40149"
+msgid "Remove Dolby Digital Plus"
+msgstr ""
+
+msgctxt "#40150"
+msgid "Remove DTS"
+msgstr ""
+
+msgctxt "#40151"
+msgid "Remove DTS-HD"
+msgstr ""
+
+msgctxt "#40152"
+msgid "Remove DTS-HDMA"
+msgstr ""
+
+msgctxt "#40153"
+msgid "Remove DTS-X"
+msgstr ""
+
+msgctxt "#40154"
+msgid "Remove MP3"
+msgstr ""
+
+msgctxt "#40155"
+msgid "Remove Dolby Atmos"
+msgstr ""
+
+msgctxt "#40156"
+msgid "Remove OPUS"
+msgstr ""
+
+msgctxt "#40157"
+msgid "Remove 2 Channel"
+msgstr ""
+
+msgctxt "#40158"
+msgid "Remove 6 Channel"
+msgstr ""
+
+msgctxt "#40159"
+msgid "Remove 7 Channel"
+msgstr ""
+
+msgctxt "#40160"
+msgid "Remove 8 Channel"
+msgstr ""
+
+msgctxt "#40161"
+msgid "Remove Dolby TrueHD"
+msgstr ""
+
+msgctxt "#40162"
+msgid "[B]SETTINGS:[/B] Sorting and Filters"
+msgstr ""
+
+msgctxt "#40163"
+msgid "Shortcuts"
+msgstr ""
+
+msgctxt "#40164"
+msgid "Select from different icon packages to use in the addon."
+msgstr ""
+
+msgctxt "#40165"
+msgid "FANART.TV"
+msgstr ""
+
+msgctxt "#40166"
+msgid "TMDb"
+msgstr ""
+
+msgctxt "#40168"
+msgid "Fanart API"
+msgstr ""
+
+msgctxt "#40167"
+msgid "TMDb API"
+msgstr ""
+
+msgctxt "#40169"
+msgid "TMDb Username"
+msgstr ""
+
+msgctxt "#40170"
+msgid "TMDb Password"
+msgstr ""
+
+msgctxt "#40171"
+msgid "IMDb Username"
+msgstr ""
+
+msgctxt "#40172"
+msgid "MDBList"
+msgstr ""
+
+msgctxt "#40173"
+msgid "session_id"
+msgstr ""
+
+msgctxt "#40174"
+msgid "With this setting enabled, Source Select settings will be overridden for episodes and set to Auto Select"
+msgstr ""
+
+msgctxt "#40175"
+msgid "4K"
+msgstr ""
+
+msgctxt "#40176"
+msgid "1080p"
+msgstr ""
+
+msgctxt "#40177"
+msgid "720p"
+msgstr ""
+
+msgctxt "#40178"
+msgid "480p(SD)"
+msgstr ""
+
+msgctxt "#40179"
+msgid "Turn reuselanguageinvoker Off"
+msgstr ""
+
+msgctxt "#40180"
+msgid "Turn reuselanguageinvoker On"
+msgstr ""
+
+msgctxt "#40181"
+msgid "Turn 'reuselanguageinvoker' on within addon."
+msgstr ""
+
+msgctxt "#40182"
+msgid "Turn 'reuselanguageinvoker' off within addon."
+msgstr ""
+
+msgctxt "#40183"
+msgid "General settings category for settings that effect multiple things throughout the addon and general settings for the addon."
+msgstr ""
+
+msgctxt "#40184"
+msgid "Navigation settings category for turning on and off different features and areas of the addon like sections on main menus and within tv and movie sections."
+msgstr ""
+
+msgctxt "#40185"
+msgid "TV Show settings category for settings related to television shows. Includes Playnext and TV Show list options."
+msgstr ""
+
+msgctxt "#40186"
+msgid "Playback settings category for settings related to video playback."
+msgstr ""
+
+msgctxt "#40187"
+msgid "Sorting and Filtering settings category for settings related to sources and sorting and filtering results from sources."
+msgstr ""
+
+msgctxt "#40188"
+msgid "Source settings category for settings related to sources and how results for sources are presented."
+msgstr ""
+
+msgctxt "#40189"
+msgid "Trakt settings category for Trakt authorization and settings exclusive to Trakt."
+msgstr ""
+
+msgctxt "#40190"
+msgid "Account settings category for Account setups and authorizations. Includes Real Debrid, All Debrid, Premiumize, Easy News, Furk, and File Pursuit."
+msgstr ""
+
+msgctxt "#40191"
+msgid "Meta Account settings category for Meta Account setups and authorizations. Includes TMDb, MDBList, Fanart, and IMDb."
+msgstr ""
+
+msgctxt "#40192"
+msgid "Library settings category for personal library setup and organization."
+msgstr ""
+
+msgctxt "#40193"
+msgid "Download settings category for downloads. Includes folders and file formatting."
+msgstr ""
+
+msgctxt "#40194"
+msgid "Download settings category for subtitles. Automatic subtitle settings."
+msgstr ""
+
+msgctxt "#40195"
+msgid "Provider settings category for Providers. These settings need to be set and changed within CocoScrapers."
+msgstr ""
+
+msgctxt "#40196"
+msgid "Plexshare"
+msgstr ""
+
+msgctxt "#40197"
+msgid "Plex Token"
+msgstr ""
+
+msgctxt "#40198"
+msgid "Plex Client ID"
+msgstr ""
+
+msgctxt "#40199"
+msgid "Plex Device ID"
+msgstr ""
+
+msgctxt "#40200"
+msgid "Plexshare Source Title"
+msgstr ""
+
+msgctxt "#40201"
+msgid "Plexshare accessToken"
+msgstr ""
+
+msgctxt "#40202"
+msgid "Plexshare url"
+msgstr ""
+
+msgctxt "#40203"
+msgid "FilePursuit"
+msgstr ""
+
+msgctxt "#40204"
+msgid "Furk.net"
+msgstr ""
+
+msgctxt "#40205"
+msgid "GDrive"
+msgstr ""
+
+msgctxt "#40206"
+msgid "GDrive Worker URL"
+msgstr ""
+
+msgctxt "#40207"
+msgid "Debugging settings for developers and advanced users."
+msgstr ""
+
+msgctxt "#40208"
+msgid "Helpful shortcuts for quick access."
+msgstr ""
+
+msgctxt "#40209"
+msgid "Auto-update library from Trakt list(s)"
+msgstr ""

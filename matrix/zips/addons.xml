@@ -148,7 +148,7 @@
 [COLOR yellow]--[/COLOR][I] Changed to new settings format.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.68">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.69">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.7" />
@@ -182,6 +182,7 @@
 		</assets>
 		<news>
 [B][COLOR black]Update - v6.5.69 - August 26, 2022[/COLOR][/B]
+--[I] Nice[I]
 --[I] Settings format adjusted for latest kodi requirements.[I]
 		</news>
 	</extension>

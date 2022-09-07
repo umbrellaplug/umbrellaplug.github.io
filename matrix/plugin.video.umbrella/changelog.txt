@@ -1,3 +1,8 @@
+
+[B][COLOR black]Update - v6.5.69 - August 26, 2022[/COLOR][/B]
+--[I] Nice[I]
+--[I] Settings format adjusted for latest kodi requirements.[I]
+
 [B][COLOR black]Update - v6.5.68 - August 24, 2022[/COLOR][/B]
 --[I] Video Filters Added.[I]
 --[I] Audio Filters Added.[I]
