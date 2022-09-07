@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="context.umbrella" name="Umbrella - Global Context Menu Items" provider-name="Umbrella" version="1.2.6">
+<addons><addon id="context.umbrella" name="Umbrella - Global Context Menu Items" provider-name="Umbrella" version="1.2.7">
 	<requires>
 		<import addon="script.module.requests" version="2.19.1" />
 	</requires>
@@ -144,14 +144,14 @@
 			<screenshot />
 		</assets>
 		<news>
-[B][COLOR red]Update - v1.2.3 - June. 21, 2022[/COLOR][/B]
-[COLOR yellow]--[/COLOR][I] Change of icon, not much new added here yet.[/I]
+[B][COLOR red]Update - v1.2.7 - Sept 1st, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I] Changed to new settings format.[/I]
 		</news>
 	</extension>
 </addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.68">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
-		<import addon="context.umbrella" version="1.2.6" />
+		<import addon="context.umbrella" version="1.2.7" />
 		<import addon="script.module.cocoscrapers" version="1.0.3" />
 		<import addon="script.module.requests" />
 		<import addon="script.module.beautifulsoup4" />
@@ -181,11 +181,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.68 - August 24, 2022[/COLOR][/B]
---[I] Video Filters Added.[I]
---[I] Audio Filters Added.[I]
---[I] Sorting and Filtering Sources now in a new category in settings.[I]
---[I] Create Strm Context Menu Option Added.[I]
+[B][COLOR black]Update - v6.5.69 - August 26, 2022[/COLOR][/B]
+--[I] Settings format adjusted for latest kodi requirements.[I]
 		</news>
 	</extension>
 </addon><addon id="plugin.video.youtube" name="YouTube" version="6.8.18+matrix.1" provider-name="anxdpanic, bromix">
