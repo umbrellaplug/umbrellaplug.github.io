@@ -148,7 +148,7 @@
 [COLOR yellow]--[/COLOR][I] Changed to new settings format.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.71">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.72">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.7" />
@@ -181,7 +181,7 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.71 - Sept 29th, 2022[/COLOR][/B]
+[B][COLOR black]Update - v6.5.72 - Sept 29th, 2022[/COLOR][/B]
 --[I] Update to allow management of imported lists from trakt to library.[I]
 --[I] New list selection window for adding, removing, and managing imported lists.[I]
 --[I] New automatic list update with only new content.[I]
@@ -190,6 +190,7 @@
 --[I] Settings added for movie and episode filter by internet speed.[I]
 --[I] Adjustments made for some foreign language titles.[I]
 --[I] Several small settings fixes and adjustments.[I]
+--[I] Language strings merged in from github. -thank you user Wil83[I]
 		</news>
 	</extension>
 </addon><addon id="plugin.video.youtube" name="YouTube" version="6.8.18+matrix.1" provider-name="anxdpanic, bromix">

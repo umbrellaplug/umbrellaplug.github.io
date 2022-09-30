@@ -1,5 +1,5 @@
 
-[B][COLOR black]Update - v6.5.71 - Sept 29th, 2022[/COLOR][/B]
+[B][COLOR black]Update - v6.5.72 - Sept 29th, 2022[/COLOR][/B]
 --[I] Update to allow management of imported lists from trakt to library.[I]
 --[I] New list selection window for adding, removing, and managing imported lists.[I]
 --[I] New automatic list update with only new content.[I]
@@ -8,6 +8,7 @@
 --[I] Settings added for movie and episode filter by internet speed.[I]
 --[I] Adjustments made for some foreign language titles.[I]
 --[I] Several small settings fixes and adjustments.[I]
+--[I] Language strings merged in from github. -thank you user Wil83[I]
 
 [B][COLOR black]Update - v6.5.70 - Sept 9th, 2022[/COLOR][/B]
 --[I] Changes made to attempt to help with crashing on some skins.[I]

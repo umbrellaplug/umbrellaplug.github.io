@@ -3520,11 +3520,11 @@ msgstr "[B]INSTELLINGEN:[/B] Sorteren en Filters"
 
 msgctxt "#40163"
 msgid "Shortcuts"
-msgstr "Sneltoetsen"
+msgstr ""
 
 msgctxt "#40164"
 msgid "Select from different icon packages to use in the addon."
-msgstr "Kies uit verschillende pictogrampakketten om in de add-on te gebruiken."
+msgstr ""
 
 msgctxt "#40165"
 msgid "FANART.TV"
@@ -3544,15 +3544,15 @@ msgstr ""
 
 msgctxt "#40169"
 msgid "TMDb Username"
-msgstr "TMDb gebruikersnaam"
+msgstr ""
 
 msgctxt "#40170"
 msgid "TMDb Password"
-msgstr "TMDb wachtwoord"
+msgstr ""
 
 msgctxt "#40171"
 msgid "IMDb Username"
-msgstr "IMDb gebruikersnaam"
+msgstr ""
 
 msgctxt "#40172"
 msgid "MDBList"
@@ -3564,7 +3564,7 @@ msgstr ""
 
 msgctxt "#40174"
 msgid "With this setting enabled, Source Select settings will be overridden for episodes and set to Auto Select"
-msgstr "Als deze instelling zijn ingeschakeld, worden de instellingen voor Bronselectie genegeerd voor afleveringen en ingesteld op Auto Select"
+msgstr ""
 
 msgctxt "#40175"
 msgid "4K"
@@ -3584,71 +3584,71 @@ msgstr ""
 
 msgctxt "#40179"
 msgid "Turn reuselanguageinvoker Off"
-msgstr "Zet reuselanguageinvoker uit"
+msgstr ""
 
 msgctxt "#40180"
 msgid "Turn reuselanguageinvoker On"
-msgstr "Zet reuselanguageinvoker aan"
+msgstr ""
 
 msgctxt "#40181"
 msgid "Turn 'reuselanguageinvoker' on within addon."
-msgstr "Zet 'reuselanguageinvoker' aan binnen addon."
+msgstr ""
 
 msgctxt "#40182"
 msgid "Turn 'reuselanguageinvoker' off within addon."
-msgstr "Zet 'reuselanguageinvoker' uit binnen addon."
+msgstr ""
 
 msgctxt "#40183"
 msgid "General settings category for settings that effect multiple things throughout the addon and general settings for the addon."
-msgstr "Categorie algemene instellingen voor instellingen die van invloed zijn op meerdere dingen in de addon en algemene instellingen voor de addon."
+msgstr ""
 
 msgctxt "#40184"
 msgid "Navigation settings category for turning on and off different features and areas of the addon like sections on main menus and within tv and movie sections."
-msgstr "Categorie navigatie instellingen voor het in- en uitschakelen van verschillende functies en delen van de addon, zoals secties in hoofdmenu's en binnen serie- en filmsecties."
+msgstr ""
 
 msgctxt "#40185"
 msgid "TV Show settings category for settings related to television shows. Includes Playnext and TV Show list options."
-msgstr "Categorie Serie instellingen voor instellingen met betrekking tot televisieprogramma's.  Inclusief Playnext en TV Show lijst opties.""
+msgstr ""
 
 msgctxt "#40186"
 msgid "Playback settings category for settings related to video playback."
-msgstr "Categorie Afspeelinstellingen voor instellingen met betrekking tot het afspelen van video.""
+msgstr ""
 
 msgctxt "#40187"
 msgid "Sorting and Filtering settings category for settings related to sources and sorting and filtering results from sources."
-msgstr "Sorteer en filterinstellingen categorie voor instellingen met betrekking tot bronnen en sorteer en filterresultaten van bronnen."
+msgstr ""
 
 msgctxt "#40188"
 msgid "Source settings category for settings related to sources and how results for sources are presented."
-msgstr "Categorie broninstellingen voor instellingen met betrekking tot bronnen en hoe resultaten voor bronnen worden gepresenteerd."
+msgstr ""
 
 msgctxt "#40189"
 msgid "Trakt settings category for Trakt authorization and settings exclusive to Trakt."
-msgstr "Trakt instellingen categorie voor Trakt autorisatie en instellingen exclusief voor Trakt."
+msgstr ""
 
 msgctxt "#40190"
 msgid "Account settings category for Account setups and authorizations. Includes Real Debrid, All Debrid, Premiumize, Easy News, Furk, and File Pursuit."
-msgstr "Categorie accountinstellingen voor accountinstellingen en autorisaties.  Inclusief Real Debrid, All Debrid, Premiumize, Easy News, Furk en File Pursuit."
+msgstr ""
 
 msgctxt "#40191"
 msgid "Meta Account settings category for Meta Account setups and authorizations. Includes TMDb, MDBList, Fanart, and IMDb."
-msgstr "Meta Account instellingen categorie voor Meta Account instellingen en autorisaties.  Omvat TMDb, MDBList, Fanart en IMDb."
+msgstr ""
 
 msgctxt "#40192"
 msgid "Library settings category for personal library setup and organization."
-msgstr "Categorie bibliotheekinstellingen voor persoonlijke bibliotheekconfiguratie en  organisatie."
+msgstr ""
 
 msgctxt "#40193"
 msgid "Download settings category for downloads. Includes folders and file formatting."
-msgstr "Categorie download instellingen voor downloads.  Inclusief mappen en bestandsopmaak."
+msgstr ""
 
 msgctxt "#40194"
 msgid "Download settings category for subtitles. Automatic subtitle settings."
-msgstr "Download instellingen categorie voor ondertitels.  Automatische ondertitelinstellingen."
+msgstr ""
 
 msgctxt "#40195"
 msgid "Provider settings category for Providers. These settings need to be set and changed within CocoScrapers."
-msgstr "Categorie met providerinstellingen voor providers.  Deze instellingen moeten binnen CocoScrapers worden ingesteld en gewijzigd."
+msgstr ""
 
 msgctxt "#40196"
 msgid "Plexshare"
@@ -3696,15 +3696,15 @@ msgstr ""
 
 msgctxt "#40207"
 msgid "Debugging settings for developers and advanced users."
-msgstr "Foutopsporingsinstellingen voor ontwikkelaars en geavanceerde gebruikers."
+msgstr ""
 
 msgctxt "#40208"
 msgid "Helpful shortcuts for quick access."
-msgstr "Handige snelkoppelingen voor snelle toegang."
+msgstr ""
 
 msgctxt "#40209"
 msgid "Auto-update library from Trakt list(s)"
-msgstr "Bibliotheek automatisch bijwerken vanuit Trakt-lijst(en)"
+msgstr ""
 
 msgctxt "#40210"
 msgid "Updating library from Trakt List(s)."
