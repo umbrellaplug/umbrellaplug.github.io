@@ -12,6 +12,7 @@ from urllib3.util.retry import Retry
 from resources.lib.database import cache, metacache, fanarttv_cache
 from resources.lib.indexers.fanarttv import FanartTv
 from resources.lib.modules.control import setting as getSetting, notification, sleep, apiLanguage, mpaCountry, openSettings, trailer as control_trailer, yesnoDialog
+from resources.lib.modules.log_utils import LOGINFO
 
 base_link = "https://api.themoviedb.org/3/"
 image_path = "https://image.tmdb.org/t/p/%s"
@@ -611,6 +612,7 @@ class TVshows(TMDb):
 		try:
 			result = None
 			url = self.show_link % tmdb
+			from resources.lib.modules import log_utils
 			result = self.get_request(url)
 		except:
 			from resources.lib.modules import log_utils
@@ -642,7 +644,8 @@ class TVshows(TMDb):
 			meta['last_air_date'] = result.get('last_air_date', '')
 			meta['last_episode_to_air'] = result.get('last_episode_to_air', '')
 			meta['next_episode_to_air'] = result.get('next_episode_to_air', '')
-			meta['tvshowtitle'] = result.get('name')
+			#meta['tvshowtitle'] = result.get('name') #changed to adjust for some foreign titles.
+			meta['tvshowtitle'] = result.get('original_name')
 			networks = result.get('networks', {})
 			try: meta['studio'] = [x['name'] for x in networks if x['logo_path']][0] # use single studio name that has a logo in hopes skin also has logo 
 			except:

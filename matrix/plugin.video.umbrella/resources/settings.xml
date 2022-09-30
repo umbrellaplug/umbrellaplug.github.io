@@ -1494,12 +1494,34 @@
 					</constraints>
 					<control type="button" format="action"/>
 				</setting>
-				<setting id="source.enable.msizelimit" type="boolean" label="32165" help="">
+				<setting id="source.filtermbysize" type="integer" label="40237" help="">
 					<level>0</level>
-					<default>false</default>
-					<control type="toggle"/>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="Off">0</option>
+							<option label="Max Size">1</option>
+							<option label="Speed">2</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
 				</setting>
-				<setting id="source.min.moviesize" type="number" label="32155" help="" parent="source.enable.msizelimit">
+				<setting id="source.movie.linespeed" type="integer" label="40233" help="" parent="source.filtermbysize">
+					<level>0</level>
+					<default>20</default>
+					<constraints>
+						<allowempty>false</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="source.filtermbysize">2</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="integer">
+						<heading>40233</heading>
+					</control>
+				</setting>
+				<setting id="source.min.moviesize" type="number" label="32155" help="" parent="source.filtermbysize">
 					<level>0</level>
 					<default>0</default>
 					<constraints>
@@ -1509,14 +1531,14 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="source.enable.msizelimit">true</condition>
+							<condition operator="is" setting="source.filtermbysize">1</condition>
 						</dependency>
 					</dependencies>
 					<control type="slider" format="number">
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="source.max.moviesize" type="number" label="32156" help="" parent="source.enable.msizelimit">
+				<setting id="source.max.moviesize" type="number" label="32156" help="" parent="source.filtermbysize">
 					<level>0</level>
 					<default>10</default>
 					<constraints>
@@ -1526,19 +1548,26 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="source.enable.msizelimit">true</condition>
+							<condition operator="is" setting="source.filtermbysize">1</condition>
 						</dependency>
 					</dependencies>
 					<control type="slider" format="number">
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="source.enable.esizelimit" type="boolean" label="32166" help="">
+				<setting id="source.filterebysize" type="integer" label="40238" help="">
 					<level>0</level>
-					<default>false</default>
-					<control type="toggle"/>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="Off">0</option>
+							<option label="Max Size">1</option>
+							<option label="Speed">2</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
 				</setting>
-				<setting id="source.min.epsize" type="number" label="32157" help="" parent="source.enable.esizelimit">
+				<setting id="source.min.epsize" type="number" label="32157" help="" parent="source.filterebysize">
 					<level>0</level>
 					<default>0</default>
 					<constraints>
@@ -1548,14 +1577,14 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="source.enable.esizelimit">true</condition>
+							<condition operator="is" setting="source.filterebysize">1</condition>
 						</dependency>
 					</dependencies>
 					<control type="slider" format="number">
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="source.max.epsize" type="number" label="32158" help="" parent="source.enable.esizelimit">
+				<setting id="source.max.epsize" type="number" label="32158" help="" parent="source.filterebysize">
 					<level>0</level>
 					<default>10</default>
 					<constraints>
@@ -1565,11 +1594,26 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="source.enable.esizelimit">true</condition>
+							<condition operator="is" setting="source.filterebysize">1</condition>
 						</dependency>
 					</dependencies>
 					<control type="slider" format="number">
 						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="source.episode.linespeed" type="integer" label="40233" help="" parent="source.filterebysize">
+					<level>0</level>
+					<default>20</default>
+					<constraints>
+						<allowempty>false</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="source.filterebysize">2</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="integer">
+						<heading>40233</heading>
 					</control>
 				</setting>
 				<setting id="remove.duplicates" type="boolean" label="32035" help="">
@@ -2282,7 +2326,7 @@
 						<heading/>
 					</control>
 				</setting>
-				<setting id="trakt.service.syncInterval" type="integer" label="Trakt service sync interval (in minutes)" help="">
+				<setting id="trakt.service.syncInterval" type="integer" label="40232" help="">
 					<level>0</level>
 					<default>15</default>
 					<constraints>
@@ -3773,12 +3817,17 @@
 				</setting>
 			</group>
 			<group id="2" label="32542">
+				<setting id="library.general.notification" type="boolean" label="32078" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
 				<setting id="library.service.update" type="boolean" label="32545" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="library.service.notification" type="boolean" label="32546" help="">
+				<setting id="library.service.notification" type="boolean" label="32546" help="" parent="library.service.update">
 					<level>0</level>
 					<default>true</default>
 					<dependencies>
@@ -3788,18 +3837,77 @@
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
-				<setting id="library.general.notification" type="boolean" label="32078" help="">
+			</group>
+			<group id="3">
+				<setting id="library.autoimportlists" type="boolean" label="40209" help="">
 					<level>0</level>
 					<default>false</default>
 					<dependencies>
 						<dependency type="enable">
-							<condition operator="is" setting="library.service.update">true</condition>
+							<condition operator="is" setting="library.service.update">True</condition>
 						</dependency>
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
+				<setting id="library.autoimportlists_last" type="string" label="40220" help="" parent="library.autoimportlists">
+					<level>0</level>
+					<default>Never</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="infoBool">false</condition>
+						</dependency>
+						<dependency type="visible">
+							<condition operator="is" setting="library.autoimportlists">True</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_traktImportListManager)</data>
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="library.autoimportlists.number" type="string" label="40221" help="" parent="library.autoimportlists">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="library.autoimportlists">True</condition>
+						</dependency>
+						<dependency type="enable">
+							<condition on="property" name="infoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_traktImportListManager)</data>
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="library.autoimportlists.select" type="string" label="40222" help="" parent="library.autoimportlists">
+					<level>0</level>
+					<default></default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="library.autoimportlists">True</condition>
+						</dependency>
+						<dependency type="enable">
+							<condition operator="is" setting="library.autoimportlists">True</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_traktImportListManager&amp;query=settings)</data>
+						<close>true</close>
+					</control>
+				</setting>
 			</group>
-			<group id="3">
+			<group id="4">
 				<setting id="library.update" type="boolean" label="32547" help="">
 					<level>0</level>
 					<default>true</default>
@@ -3811,7 +3919,7 @@
 					<control type="toggle"/>
 				</setting>
 			</group>
-			<group id="4">
+			<group id="5">
 				<setting id="library.importdelay" type="boolean" label="32148" help="">
 					<level>0</level>
 					<default>true</default>
@@ -3825,6 +3933,11 @@
 				<setting id="library.include_unknown" type="boolean" label="32565" help="">
 					<level>0</level>
 					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="library.include_unaired" type="boolean" label="40231" help="">
+					<level>0</level>
+					<default>false</default>
 					<control type="toggle"/>
 				</setting>
 				<setting id="library.strm.use_tmdbhelper" type="boolean" label="32149" help="">

@@ -255,6 +255,15 @@ def context(items=None, labels=None):
 		else: return False
 	else: return dialog.contextmenu(labels)
 
+def multiSelect(title=None, items=None, preselect=None):
+    if items:
+        labels = [i for i in items]
+        if preselect == None:
+            return dialog.multiselect(title, labels)
+        else:
+            return dialog.multiselect(title, labels, preselect=preselect)
+    else: return
+
 ####################################################
 # --- Built-in
 ####################################################

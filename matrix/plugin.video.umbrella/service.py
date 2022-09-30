@@ -167,7 +167,7 @@ class SyncTraktCollection:
 
 class LibraryService:
 	def run(self):
-		control.log('[ plugin.video.umbrella ]  Library Update Service Starting (Update check every 6hrs)...', LOGINFO)
+		control.log('[ plugin.video.umbrella ]  Library Update Service Starting (Every 6 Hours)...', LOGINFO)
 		from resources.lib.modules import library
 		library.lib_tools().service() # method contains control.monitor().waitForAbort() while loop every 6hrs
 
