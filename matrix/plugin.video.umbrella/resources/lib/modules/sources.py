@@ -393,6 +393,7 @@ class Sources:
 
 	def getSources_dialog(self, title, year, imdb, tvdb, season, episode, tvshowtitle, premiered, timeout=90):
 		try:
+
 			content = 'movie' if tvshowtitle is None else 'episode'
 			if self.filterless_scrape: homeWindow.setProperty('fs_filterless_search', 'true')
 			if self.custom_query == 'true':
@@ -744,10 +745,16 @@ class Sources:
 		if not self.isPrescrape: control.busy()
 		if getSetting('remove.duplicates') == 'true': self.sources = self.filter_dupes()
 		if self.mediatype == 'movie':
-			if getSetting('source.enable.msizelimit') == 'true':
+			if getSetting('source.filtermbysize') == '1':
 				try:
 					movie_minSize, movie_maxSize = float(getSetting('source.min.moviesize')), float(getSetting('source.max.moviesize'))
 					self.sources = [i for i in self.sources if (i.get('size', 0) >= movie_minSize and i.get('size', 0) <= movie_maxSize)]
+				except: log_utils.error()
+			if getSetting('source.filtermbysize') == '2':
+				try:
+					duration = self.meta['duration'] or 5400
+					max_size = (0.125 * (0.90 * float(getSetting('source.movie.linespeed', '20'))) * duration)/1000
+					self.sources = [i for i in self.sources if (i.get('size', 0) <= max_size)]
 				except: log_utils.error()
 		else:
 			self.sources = [i for i in self.sources if 'movie.collection' not in i.get('name_info', '')] # rare but a few retuned from "complete" show pack scrape returned as "movie.collection"
@@ -759,10 +766,16 @@ class Sources:
 						log_utils.log('tvshowtitle(%s) is a REBOOT, filtering for year match per enabled setting' % self.tvshowtitle, level= log_utils.LOGDEBUG)
 						self.sources = [i for i in self.sources if self.year in i.get('name')]
 				except: log_utils.error()
-			if getSetting('source.enable.esizelimit') == 'true':
+			if getSetting('source.filterebysize') == '1':
 				try:
 					episode_minSize, episode_maxSize = float(getSetting('source.min.epsize')), float(getSetting('source.max.epsize'))
 					self.sources = [i for i in self.sources if (i.get('size', 0) >= episode_minSize and i.get('size', 0) <= episode_maxSize)]
+				except: log_utils.error()
+			if getSetting('source.filterebysize') == '2':
+				try:
+					duration = self.meta['duration'] or 2400
+					max_size = (0.125 * (0.90 * float(getSetting('source.episode.linespeed', '20'))) * duration)/1000
+					self.sources = [i for i in self.sources if (i.get('size', 0) <= max_size)]
 				except: log_utils.error()
 			try: self.sources = self.calc_pack_size()
 			except: pass

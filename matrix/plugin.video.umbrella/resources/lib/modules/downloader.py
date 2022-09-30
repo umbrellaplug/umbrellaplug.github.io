@@ -5,15 +5,32 @@
 
 import os
 import re
-from urllib.parse import parse_qsl, urlparse
+import ssl
+from urllib.parse import parse_qsl, urlparse, unquote
 from urllib.request import urlopen, Request
 from resources.lib.modules import control
 from resources.lib.modules import log_utils
-# from resources.lib.modules.source_utils import supported_video_extensions
+homeWindow = control.homeWindow
+ctx = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+levels =['../../../..', '../../..', '../..', '..']
+video_extensions = ('.3gp', '.avi', '.divx', '.flv', '.m4v', '.mp4', '.mpeg', '.mpg', '.m2ts', '.mov', '.mkv', '.wmv', '.webm', '.xvid')
 
 
-def download(name, image, url, meta_name=None):
-# def download(name, image, url, meta_name=None, selected_source): # future for re-write, pack file support
+def download(name, image, url, meta_name=None, pack=None): # needs re-write, pack file support
+
+	log_utils.log('name: %s' % name, __name__)
+	log_utils.log('image: %s' % image, __name__)
+	log_utils.log('url: %s' % url, __name__)
+	log_utils.log('meta_name: %s' % meta_name, __name__)
+	log_utils.log('pack: %s' % pack, __name__)
+
+
+	test = url.rsplit('/', 1)[1].split('|')[0]
+	log_utils.log('test: %s' % str(test), __name__)
+	test = unquote(test)
+	log_utils.log('test2: %s' % str(test), __name__)
+
+
 	if not url: return control.hide()
 	try:
 		file_format = control.setting('downloads.file.format')
@@ -22,20 +39,38 @@ def download(name, image, url, meta_name=None):
 		url = url.split('|')[0]
 		try: transname = name.translate(None, '\/:*?"<>|').strip('.')
 		except: transname = name.translate(name.maketrans('', '', '\/:*?"<>|')).strip('.')  # maketrans() is in string module for py2
-		ext_list = ('.3gp', '.divx', '.xvid', '.m4v', '.mp4', '.mpeg', '.mpg', '.m2ts', '.mov', '.mkv', '.flv', '.avi', '.wmv', '.webm')
-		for i in ext_list: transname = transname.rstrip(i)
-		if meta_name:
-			try: content = re.search(r'(.+?)\sS(\d*)E\d*$', meta_name).groups()
+
+		# for i in video_extensions: transname = transname.rstrip(i)
+
+		# if pack == 'season':
+		if pack in ('season', 'show'):
+			# content = url.rsplit('/', 1)[1].split('|')[0]
+			content = unquote(url.rsplit('/', 1)[1].split('|')[0])
+			log_utils.log('content: %s' % str(content), __name__)
+			try: content = re.search(r'(.+?)(?:|\.| - |-|.-.|\s)(?:S|s|\s|\.)(\d{1,2})(?!\d)(?:|\.| - |-|.-.|x|\s)(?:E|e|\s|.)([0-2]{1}[0-9]{1})(?!\w)', content, re.I).groups()
+			except: content = ()
+			log_utils.log('content: %s' % str(content), __name__)
+			# transname = url.rsplit('/', 1)[1].split('|')[0]
+			transname = unquote(url.rsplit('/', 1)[1].split('|')[0])
+
+
+		elif meta_name:
+			try: content = re.search(r'(.+?)\sS(\d*)E\d*$', meta_name, re.I).groups()
 			except: content = ()
 			if file_format == '0':
 				try: transname = meta_name.translate(None, '\/:*?"<>|').strip('.')
 				except: transname = meta_name.translate(meta_name.maketrans('', '', '\/:*?"<>|')).strip('.')
 		else:
-			try: content = re.search(r'(.+?)(?:|\.| - |-|.-.|\s)(?:S|s|\s|\.)(\d{1,2})(?!\d)(?:|\.| - |-|.-.|x|\s)(?:E|e|\s|.)([0-2]{1}[0-9]{1})(?!\w)', name.replace('\'', '')).groups()
+			try: content = re.search(r'(.+?)(?:|\.| - |-|.-.|\s)(?:S|s|\s|\.)(\d{1,2})(?!\d)(?:|\.| - |-|.-.|x|\s)(?:E|e|\s|.)([0-2]{1}[0-9]{1})(?!\w)', name.replace('\'', ''), re.I).groups()
 			except: content = ()
-		levels =['../../../..', '../../..', '../..', '..']
+		log_utils.log('content: %s' % str(content), __name__)
+
+		for i in video_extensions: transname = transname.rstrip(i)
+
+
 		if len(content) == 0:
 			dest = control.transPath(control.setting('movie.download.path'))
+			if not dest: dest = 'special://profile/addon_data/plugin.video.umbrella/Movies/'
 			for level in levels:
 				try: control.makeFile(os.path.abspath(os.path.join(dest, level)))
 				except: pass
@@ -56,26 +91,35 @@ def download(name, image, url, meta_name=None):
 			control.makeFile(dest)
 		else:
 			dest = control.transPath(control.setting('tv.download.path'))
+			if not dest: dest = 'special://profile/addon_data/plugin.video.umbrella/TVShows/'
 			for level in levels:
 				try: control.makeFile(os.path.abspath(os.path.join(dest, level)))
-				except: pass
+				except:
+					log_utils.error()
+					pass
 			control.makeFile(dest)
 			try: transtvshowtitle = content[0].translate(None, '\/:*?"<>|').strip('.').replace('.', ' ')
 			except: transtvshowtitle = content[0].translate(content[0].maketrans('', '', '\/:*?"<>|')).strip('.').replace('.', ' ')
 			if not meta_name:
 				transtvshowtitle = titlecase(re.sub(r'[^A-Za-z0-9\s-]+', ' ', transtvshowtitle))
 			dest = os.path.join(dest, transtvshowtitle)
+
+			log_utils.log('dest: %s' % dest, __name__)
+
 			control.makeFile(dest)
 			dest = os.path.join(dest, 'Season %01d' % int(content[1]))
 			control.makeFile(dest)
 			if file_format == '0' and not meta_name:
 				transname = transtvshowtitle + ' S%sE%s' % (content[1], content[2])
 		ext = os.path.splitext(urlparse(url).path)[1][1:]
-		if not ext in ('3gp', 'divx', 'xvid', 'm4v', 'mp4', 'mpeg', 'mpg', 'm2ts', 'mov', 'mkv', 'flv', 'avi', 'wmv', 'webm'):
-			ext = 'mp4'
+
+		log_utils.log('ext: %s' % ext, __name__)
+
+		if not ext in ('3gp', 'divx', 'xvid', 'm4v', 'mp4', 'mpeg', 'mpg', 'm2ts', 'mov', 'mkv', 'flv', 'avi', 'wmv', 'webm'): ext = 'mp4'
 		dest = os.path.join(dest, transname + '.' + ext)
-		doDownload(url, dest, name, image, headers)
-	except: log_utils.error()
+		# doDownload(url, dest, name, image, headers)
+		doDownload(url, dest, transname + '.' + ext, image, headers)
+	except: log_utils.error('url: %s' % url)
 
 def getResponse(url, headers, size):
 	try:
@@ -83,44 +127,52 @@ def getResponse(url, headers, size):
 			size = int(size)
 			headers['Range'] = 'bytes=%d-' % size
 		req = Request(url, headers=headers)
-		resp = urlopen(req, timeout=30)
+		resp = urlopen(req, context=ctx, timeout=30)
 		return resp
 	except:
-		log_utils.error()
+		log_utils.error('url: %s: ' % url)
 		return None
 
 def done(title, dest, downloaded):
 	try:
 		playing = control.player.isPlaying()
-		text = control.homeWindow.getProperty('GEN-DOWNLOADED')
+		text = homeWindow.getProperty('GEN-DOWNLOADED')
 		# if len(text) > 0: text += '[CR]'
 		if len(text) > 0: text += '\n'
 		if downloaded:
 			text += '%s : %s' % (dest.rsplit(os.sep)[-1], '[COLOR forestgreen]Download succeeded[/COLOR]')
 		else:
 			text += '%s : %s' % (dest.rsplit(os.sep)[-1], '[COLOR red]Download failed[/COLOR]')
-		control.homeWindow.setProperty('GEN-DOWNLOADED', text)
+		homeWindow.setProperty('GEN-DOWNLOADED', text)
 		if (not downloaded) or (not playing): 
 			control.okDialog(title, text)
-			control.homeWindow.clearProperty('GEN-DOWNLOADED')
+			homeWindow.clearProperty('GEN-DOWNLOADED')
 	except:
 		log_utils.error()
 
 def doDownload(url, dest, title, image, headers):
+
+	log_utils.log('url: %s' % url, __name__)
+	log_utils.log('dest: %s' % dest, __name__)
+	log_utils.log('title: %s' % title, __name__)
+	log_utils.log('image: %s' % image, __name__)
+	log_utils.log('headers: %s' % headers, __name__)
+
+
 	file = dest.rsplit(os.sep, 1)[-1]
 	if 'User-Agent' not in headers:
 		headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:103.0) Gecko/20100101 Firefox/103.0'})
 	resp = getResponse(url, headers, 0)
 	if not resp:
 		control.hide()
-		return control.okDialog(title, dest + 'Download failed: No response from server')
+		return control.okDialog(title, dest + '[CR]Download failed: No response from server')
 	try: content = int(resp.headers['Content-Length'])
 	except: content = 0
 	try: resumable = 'bytes' in resp.headers['Accept-Ranges'].lower()
 	except: resumable = False
 	if content < 1:
 		control.hide()
-		return control.okDialog(title, file + 'Unknown filesize: Unable to download')
+		return control.okDialog(title, file + '[CR]Unknown filesize: Unable to download')
 	size = 1024 * 1024
 	gb = str(round(content / float(1073741824), 2))
 	if content < size:
@@ -141,7 +193,7 @@ def doDownload(url, dest, title, image, headers):
 		for c in chunks: downloaded += len(c)
 		percent = min(100 * downloaded / content, 100)
 		if percent >= notify:
-			control.notification(title=str(int(percent)) + '%', message=title, icon=image, time=3000) #xbmcgui.Dialog().notification() auto scroll time to complete supercedes allowed "time=" to run in Silvo, removed dest
+			control.notification(title=str(int(percent)) + '%', message=title, icon=image, time=3000) # xbmcgui.Dialog().notification() auto scroll time to complete supercedes allowed "time=" to run in Silvo, removed dest
 			notify += 20
 		chunk = None
 		error = False
@@ -155,22 +207,22 @@ def doDownload(url, dest, title, image, headers):
 						f.write(c)
 						del c
 					f.close()
-					log_utils.log('Download Complete: %s' % (dest), level=log_utils.LOGDEBUG)
+					log_utils.log('Download Complete: %s' % dest, level=log_utils.LOGDEBUG)
 					return done(title, dest, True)
 		except Exception as e:
-			log_utils.error('DOWNNLOADER EXCEPTION: ')
+			log_utils.error('title: %s - DOWNNLOADER EXCEPTION (A RETRY WILL BE ATTEMPTED): '% title)
 			error = True
 			sleep = 10
 			errno = 0
 			if hasattr(e, 'errno'):
 				errno = e.errno
-			if errno == 10035: # 'A non-blocking socket operation could not be completed immediately'
+			if errno == 10035: # A non-blocking socket operation could not be completed immediately
 				pass
-			if errno == 10054: #'An existing connection was forcibly closed by the remote host'
-				errors = 10 #force resume
+			if errno == 10054: # An existing connection was forcibly closed by the remote host
+				errors = 10 # force resume
 				sleep  = 30
-			if errno == 11001: # 'getaddrinfo failed'
-				errors = 10 #force resume
+			if errno == 11001: # getaddrinfo failed
+				errors = 10 # force resume
 				sleep  = 30
 		if chunk:
 			errors = 0
@@ -185,21 +237,25 @@ def doDownload(url, dest, title, image, headers):
 			count  += 1
 			control.sleep(sleep*1000)
 		if (resumable and errors > 0) or errors >= 10:
-			if (not resumable and resume >= 50) or resume >= 500: # Give up!
-				log_utils.log('Download Canceled: %s - too many errors whilst downloading' % (dest), level=log_utils.LOGWARNING)
+			if (not resumable and resume >= 25) or resume >= 50: # Give up!
+				log_utils.log('Download Canceled: %s too many errors whilst downloading' % dest, level=log_utils.LOGWARNING)
 				return done(title, dest, False)
 			resume += 1
-			errors  = 0
+			errors = 0
 			if resumable:
 				chunks  = []
 				resp = getResponse(url, headers, total) # create new response
+				if not resp:
+					control.hide()
+					log_utils.log('Download failed: %s No response from server' % dest, level=log_utils.LOGWARNING)
+					return control.okDialog(title, dest + '[CR]Download failed: No response from server')
 			else: pass
 
 def titlecase(string): # not perfect but close enough
 	try:
 		articles = ['a', 'an', 'the', 'vs', 'v']
 		word_list = re.split(' ', string)
-		sw_num = re.match(r'^(19|20[0-9]{2})', string)
+		sw_num = re.match(r'^(19|20)[0-9]{2}', string)
 		final = [word_list[0].capitalize()]
 		pos = 1
 		for word in word_list[1:]:

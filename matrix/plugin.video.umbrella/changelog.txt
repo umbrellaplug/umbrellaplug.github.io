@@ -1,4 +1,17 @@
 
+[B][COLOR black]Update - v6.5.71 - Sept 29th, 2022[/COLOR][/B]
+--[I] Update to allow management of imported lists from trakt to library.[I]
+--[I] New list selection window for adding, removing, and managing imported lists.[I]
+--[I] New automatic list update with only new content.[I]
+--[I] Changes to all list imports for increase in speed.[I]
+--[I] New setting for library import unaired episodes.[I]
+--[I] Settings added for movie and episode filter by internet speed.[I]
+--[I] Adjustments made for some foreign language titles.[I]
+--[I] Several small settings fixes and adjustments.[I]
+
+[B][COLOR black]Update - v6.5.70 - Sept 9th, 2022[/COLOR][/B]
+--[I] Changes made to attempt to help with crashing on some skins.[I]
+
 [B][COLOR black]Update - v6.5.69 - August 26, 2022[/COLOR][/B]
 --[I] Nice[I]
 --[I] Settings format adjusted for latest kodi requirements.[I]

@@ -4815,3 +4815,119 @@ msgstr ""
 msgctxt "#40209"
 msgid "Auto-update library from Trakt list(s)"
 msgstr ""
+
+msgctxt "#40210"
+msgid "Updating library from Trakt List(s)."
+msgstr ""
+
+msgctxt "#40211"
+msgid "Please select list(s)"
+msgstr ""
+
+msgctxt "#40212"
+msgid "Update library now?"
+msgstr ""
+
+msgctxt "#40213"
+msgid "List: %s  has [B]%s[/B] items. Are you sure you want to add to library?"
+msgstr ""
+
+msgctxt "#40214"
+msgid "List Import Canceled."
+msgstr ""
+
+msgctxt "#40215"
+msgid "Auto-update lists at time"
+msgstr ""
+
+msgctxt "#40216"
+msgid "Last Update"
+msgstr ""
+
+msgctxt "#40217"
+msgid "[B]List(s) Import Manager - Library[/B]"
+msgstr ""
+
+msgctxt "#40218"
+msgid "No Lists Found on Imported Lists Database"
+msgstr ""
+
+msgctxt "#40219"
+msgid "Service Checking Library"
+msgstr ""
+
+msgctxt "#40220"
+msgid "Last Import:"
+msgstr ""
+
+msgctxt "#40221"
+msgid "# of List Importing:"
+msgstr ""
+
+msgctxt "#40222"
+msgid "Select Lists to Import"
+msgstr ""
+
+msgctxt "#40223"
+msgid "Import Now"
+msgstr ""
+
+msgctxt "#40224"
+msgid "In-Progress"
+msgstr ""
+
+msgctxt "#40225"
+msgid "List Cleared from Database."
+msgstr ""
+
+msgctxt "#40226"
+msgid "Error Clearing List"
+msgstr ""
+
+msgctxt "#40227"
+msgid "Import in progress already, are you sure you want to start import?"
+msgstr ""
+
+msgctxt "#40228"
+msgid "Please use list import management window from settings for list imports."
+msgstr ""
+
+msgctxt "#40229"
+msgid "Trakt Import Completed."
+msgstr ""
+
+msgctxt "#40230"
+msgid "Trakt Import Error."
+msgstr ""
+
+msgctxt "#40231"
+msgid "Include unaired episodes"
+msgstr ""
+
+msgctxt "#40232"
+msgid "Trakt service sync interval (in minutes)"
+msgstr ""
+
+msgctxt "#40233"
+msgid "Internet Speed (Mbps)"
+msgstr ""
+
+msgctxt "#40234"
+msgid "Speed"
+msgstr ""
+
+msgctxt "#40235"
+msgid "Max Size"
+msgstr ""
+
+msgctxt "#40236"
+msgid "Off"
+msgstr ""
+
+msgctxt "#40237"
+msgid "Filter Movies by Size"
+msgstr ""
+
+msgctxt "#40238"
+msgid "Filter Episodes by Size"
+msgstr ""

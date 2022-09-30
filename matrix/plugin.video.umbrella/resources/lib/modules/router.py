@@ -3,11 +3,17 @@
 	Umbrella Add-on
 """
 
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, parse_qsl
 from resources.lib.modules import control
 
 
-def router(params):
+def router(argv2):
+	try:
+		params = dict(parse_qsl(argv2.replace('?', '')))
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+		params = {}
 	action = params.get('action')
 	name = params.get('name')
 	title = params.get('title')
@@ -482,13 +488,30 @@ def router(params):
 		elif action == 'download':
 			caller = params.get('caller')
 			image = params.get('image')
+			from resources.lib.modules import log_utils
+			log_utils.log('caller: %s' % caller, __name__)
+			log_utils.log('title: %s' % title, __name__)
+
+
 			if caller == 'sources': # future, move to downloader module for pack support
 				control.busy()
 				try:
 					from json import loads as jsloads
 					from resources.lib.modules import sources
 					from resources.lib.modules import downloader
-					downloader.download(name, image, sources.Sources().sourcesResolve(jsloads(source)[0]), title)
+
+
+					from resources.lib.modules import log_utils
+					log_utils.log('source: %s' % str(source), __name__)
+
+					info = jsloads(source)[0]
+					pack = info.get('package')
+					log_utils.log('pack: %s' % pack, __name__)
+
+
+					# downloader.download(name, image, sources.Sources().sourcesResolve(jsloads(source)[0]), title)
+					downloader.download(name, image, sources.Sources().sourcesResolve(jsloads(source)[0]), title, pack)
+
 				except:
 					import traceback
 					traceback.print_exc()
@@ -669,6 +692,12 @@ def router(params):
 		elif action == 'tools_traktLikedListManager':
 			from resources.lib.menus import movies
 			movies.Movies().likedListsManager()
+		elif action == 'tools_traktImportListManager':
+			isFromSettings=False
+			if query == 'settings':
+				isFromSettings=True
+			from resources.lib.modules import library
+			library.lib_tools().importListsManager(isFromSettings)
 
 	####################################################
 	#---Play
@@ -883,8 +912,9 @@ def router(params):
 			from resources.lib.modules import library
 			library.libmovies().range(url, name)
 		elif action == 'library_moviesListToLibrary':
-			from resources.lib.menus import movies
-			movies.Movies().moviesListToLibrary(url)
+			# from resources.lib.menus import movies
+			# movies.Movies().moviesListToLibrary(url)
+			control.notification(message=40228)
 		elif action == 'library_moviesToLibrarySilent':
 			from resources.lib.modules import library
 			library.libmovies().silent(url)
@@ -895,8 +925,9 @@ def router(params):
 			from resources.lib.modules import library
 			library.libtvshows().range(url, name)
 		elif action == 'library_tvshowsListToLibrary':
-			from resources.lib.menus import tvshows
-			tvshows.TVshows().tvshowsListToLibrary(url)
+			# from resources.lib.menus import tvshows
+			# tvshows.TVshows().tvshowsListToLibrary(url)
+			control.notification(message=40228)
 		elif action == 'library_tvshowsToLibrarySilent':
 			from resources.lib.modules import library
 			library.libtvshows().silent(url)
@@ -921,7 +952,7 @@ def router(params):
 			library.lib_tools().total_setup()
 		# elif action == 'library_monitor_userlist':
 		# 	from resources.lib.modules import library
-		# 	library.lib_tools().monitor_userlist()
+		# 	library.libuserlist().userlist()
 
 	####################################################
 	#---Cache
