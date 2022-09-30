@@ -3524,7 +3524,7 @@ msgstr ""
 
 msgctxt "#40164"
 msgid "Select from different icon packages to use in the addon."
-msgstr ""
+msgstr "Kies uit verschillende pictogrampakketten om in de addon te gebruiken."
 
 msgctxt "#40165"
 msgid "FANART.TV"
@@ -3544,15 +3544,15 @@ msgstr ""
 
 msgctxt "#40169"
 msgid "TMDb Username"
-msgstr ""
+msgstr "TMDb gebruikersnaam"
 
 msgctxt "#40170"
 msgid "TMDb Password"
-msgstr ""
+msgstr "TMDb wachtwoord"
 
 msgctxt "#40171"
 msgid "IMDb Username"
-msgstr ""
+msgstr "IMDb gebruikersnaam"
 
 msgctxt "#40172"
 msgid "MDBList"
@@ -3564,7 +3564,7 @@ msgstr ""
 
 msgctxt "#40174"
 msgid "With this setting enabled, Source Select settings will be overridden for episodes and set to Auto Select"
-msgstr ""
+msgstr "Als deze instelling is ingeschakeld, worden de instellingen voor Bronselectie genegeerd voor afleveringen en ingesteld op Auto Select"
 
 msgctxt "#40175"
 msgid "4K"
@@ -3600,39 +3600,39 @@ msgstr ""
 
 msgctxt "#40183"
 msgid "General settings category for settings that effect multiple things throughout the addon and general settings for the addon."
-msgstr ""
+msgstr "Categorie algemene instellingen voor instellingen die van invloed zijn op meerdere dingen in de addon en algemene instellingen voor de addon."
 
 msgctxt "#40184"
 msgid "Navigation settings category for turning on and off different features and areas of the addon like sections on main menus and within tv and movie sections."
-msgstr ""
+msgstr "Categorie navigatie instellingen voor het in- en uitschakelen van verschillende functies en delen van de addon, zoals secties in hoofdmenu's en binnen tv- en film secties."
 
 msgctxt "#40185"
 msgid "TV Show settings category for settings related to television shows. Includes Playnext and TV Show list options."
-msgstr ""
+msgstr "Categorie serie instellingen voor instellingen met betrekking tot televisieprogramma's.  Inclusief Playnext en serie lijst opties."
 
 msgctxt "#40186"
 msgid "Playback settings category for settings related to video playback."
-msgstr ""
+msgstr "Categorie Afspeelinstellingen voor instellingen met betrekking tot het afspelen van video."
 
 msgctxt "#40187"
 msgid "Sorting and Filtering settings category for settings related to sources and sorting and filtering results from sources."
-msgstr ""
+msgstr "Sorteer en filterinstellingencategorie voor instellingen met betrekking tot bronnen en sorteer en filterresultaten van bronnen."
 
 msgctxt "#40188"
 msgid "Source settings category for settings related to sources and how results for sources are presented."
-msgstr ""
+msgstr "Categorie broninstellingen voor instellingen met betrekking tot bronnen en hoe resultaten voor bronnen worden gepresenteerd."
 
 msgctxt "#40189"
 msgid "Trakt settings category for Trakt authorization and settings exclusive to Trakt."
-msgstr ""
+msgstr "Trakt instellingencategorie voor Trakt autorisatie en instellingen exclusief voor Trakt."
 
 msgctxt "#40190"
 msgid "Account settings category for Account setups and authorizations. Includes Real Debrid, All Debrid, Premiumize, Easy News, Furk, and File Pursuit."
-msgstr ""
+msgstr "Categorie accountinstellingen voor accountinstellingen en autorisaties.  Inclusief Real Debrid, All Debrid, Premiumize, Easy News, Furk en File Pursuit."
 
 msgctxt "#40191"
 msgid "Meta Account settings category for Meta Account setups and authorizations. Includes TMDb, MDBList, Fanart, and IMDb."
-msgstr ""
+msgstr "Meta Account instellingen categorie voor Meta Account instellingen en autorisaties.  Omvat TMDb, MDBList, Fanart en IMDb."
 
 msgctxt "#40192"
 msgid "Library settings category for personal library setup and organization."
@@ -3640,15 +3640,15 @@ msgstr ""
 
 msgctxt "#40193"
 msgid "Download settings category for downloads. Includes folders and file formatting."
-msgstr ""
+msgstr "Categorie bibliotheekinstellingen voor persoonlijke bibliotheekconfiguratie en organisatie."
 
 msgctxt "#40194"
 msgid "Download settings category for subtitles. Automatic subtitle settings."
-msgstr ""
+msgstr "Download instellingen categorie voor ondertitels.  Automatische ondertitelinstellingen."
 
 msgctxt "#40195"
 msgid "Provider settings category for Providers. These settings need to be set and changed within CocoScrapers."
-msgstr ""
+msgstr "Categorie met providerinstellingen voor providers.  Deze instellingen moeten binnen CocoScrapers worden ingesteld en gewijzigd."
 
 msgctxt "#40196"
 msgid "Plexshare"
@@ -3696,128 +3696,128 @@ msgstr ""
 
 msgctxt "#40207"
 msgid "Debugging settings for developers and advanced users."
-msgstr ""
+msgstr "Foutopsporingsinstellingen voor ontwikkelaars en geavanceerde gebruikers."
 
 msgctxt "#40208"
 msgid "Helpful shortcuts for quick access."
-msgstr ""
+msgstr "Handige snelkoppelingen voor snelle toegang."
 
 msgctxt "#40209"
 msgid "Auto-update library from Trakt list(s)"
-msgstr ""
+msgstr "Bibliotheek automatisch bijwerken vanuit Trakt lijst(en)"
 
 msgctxt "#40210"
 msgid "Updating library from Trakt List(s)."
-msgstr ""
+msgstr "Bibliotheek bijwerken vanuit Trakt Lijst(en).
 
 msgctxt "#40211"
 msgid "Please select list(s)"
-msgstr ""
+msgstr "Selecteer lijst(en)"
 
 msgctxt "#40212"
 msgid "Update library now?"
-msgstr ""
+msgstr "Bibliotheek nu bijwerken?"
 
 msgctxt "#40213"
 msgid "List: %s  has [B]%s[/B] items. Are you sure you want to add to library?"
-msgstr ""
+msgstr "Lijst: %s heeft [B]%s[/B] items.  Weet je zeker dat je wilt toevoegen aan de bibliotheek?"
 
 msgctxt "#40214"
 msgid "List Import Canceled."
-msgstr ""
+msgstr "Lijst import geannuleerd."
 
 msgctxt "#40215"
 msgid "Auto-update lists at time"
-msgstr ""
+msgstr "Lijsten automatisch bijwerken"
 
 msgctxt "#40216"
 msgid "Last Update"
-msgstr ""
+msgstr "Laatste update"
 
 msgctxt "#40217"
 msgid "[B]List(s) Import Manager - Library[/B]"
-msgstr ""
+msgstr "[B]Lijst(en) Import manager - Bibliotheek[/B]"
 
 msgctxt "#40218"
 msgid "No Lists Found on Imported Lists Database"
-msgstr ""
+msgstr "Geen lijsten gevonden in database met geïmporteerde lijsten"
 
 msgctxt "#40219"
 msgid "Service Checking Library"
-msgstr ""
+msgstr "Bibliotheek voor servicecontrole"
 
 msgctxt "#40220"
 msgid "Last Import:"
-msgstr ""
+msgstr "Laatste import:"
 
 msgctxt "#40221"
 msgid "# of List Importing:"
-msgstr ""
+msgstr "# van lijst importeren:"
 
 msgctxt "#40222"
 msgid "Select Lists to Import"
-msgstr ""
+msgstr "Selecteer lijsten om te importeren"
 
 msgctxt "#40223"
 msgid "Import Now"
-msgstr ""
+msgstr "Nu importeren"
 
 msgctxt "#40224"
 msgid "In-Progress"
-msgstr ""
+msgstr "Bezig"
 
 msgctxt "#40225"
 msgid "List Cleared from Database."
-msgstr ""
+msgstr "Lijst gewist uit database."
 
 msgctxt "#40226"
 msgid "Error Clearing List"
-msgstr ""
+msgstr "Lijst met fouten wissen"
 
 msgctxt "#40227"
 msgid "Import in progress already, are you sure you want to start import?"
-msgstr ""
+msgstr "Import wordt al uitgevoerd, weet u zeker dat u wilt beginnen met importeren?"
 
 msgctxt "#40228"
 msgid "Please use list import management window from settings for list imports."
-msgstr ""
+msgstr "Gebruik het venster voor lijst import beheer uit de instellingen voor het importeren van lijsten."
 
 msgctxt "#40229"
 msgid "Trakt Import Completed."
-msgstr ""
+msgstr "Trakt import voltooid."
 
 msgctxt "#40230"
 msgid "Trakt Import Error."
-msgstr ""
+msgstr "Fout bij importeren van Trakt."
 
 msgctxt "#40231"
 msgid "Include unaired episodes"
-msgstr ""
+msgstr "Niet uitgezonden afleveringen"
 
 msgctxt "#40232"
 msgid "Trakt service sync interval (in minutes)"
-msgstr ""
+msgstr "Trakt service synchronisatie interval (in minuten)"
 
 msgctxt "#40233"
 msgid "Internet Speed (Mbps)"
-msgstr ""
+msgstr "Internetsnelheid (Mbps)"
 
 msgctxt "#40234"
 msgid "Speed"
-msgstr ""
+msgstr "Snelheid"
 
 msgctxt "#40235"
 msgid "Max Size"
-msgstr ""
+msgstr "Maximale grootte"
 
 msgctxt "#40236"
 msgid "Off"
-msgstr ""
+msgstr "Uit"
 
 msgctxt "#40237"
 msgid "Filter Movies by Size"
-msgstr ""
+msgstr "Films filteren op grootte"
 
 msgctxt "#40238"
 msgid "Filter Episodes by Size"
-msgstr ""
+msgstr "Afleveringen filteren op grootte"
