@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.72">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.73">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.7" />
@@ -35,6 +35,7 @@
 --[I] Super spooky October update.[I]
 --[I] Changes made for title substitution.[I]
 --[I] Fixes for Trakt liking lists.[I]
+--[I] Hungarian language strings added. Thanks github user 1nf5um[I]
 		</news>
 	</extension>
 </addon>
