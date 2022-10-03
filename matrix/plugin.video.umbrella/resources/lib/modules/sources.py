@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-	Umbrella Add-on Updated 8-25-22
+	Umbrella Add-on Updated 10-3-22
 """
 
 from datetime import datetime, timedelta
@@ -107,13 +107,14 @@ class Sources:
 				if tvshowtitle == 'The End of the F***ing World': tvshowtitle = 'The End of the Fucking World'
 				if self.useTitleSubs:
 					tvshowtitle = self.subTitle(tvshowtitle)
-					self.meta.update({'tvshowtitle': tvshowtitle})
-					p_label = '[COLOR %s]%s (%s)[/COLOR]' % (self.highlight_color, title, year) if tvshowtitle is None else \
-					'[COLOR %s]%s (S%02dE%02d)[/COLOR]' % (self.highlight_color, tvshowtitle, int(season), int(episode))
-					homeWindow.clearProperty(self.labelProperty)
-					homeWindow.setProperty(self.labelProperty, p_label)
-					homeWindow.clearProperty(self.metaProperty)
-					homeWindow.setProperty(self.metaProperty, jsdumps(self.meta))
+					if self.meta:
+						self.meta.update({'tvshowtitle': tvshowtitle})
+						p_label = '[COLOR %s]%s (%s)[/COLOR]' % (self.highlight_color, title, year) if tvshowtitle is None else \
+						'[COLOR %s]%s (S%02dE%02d)[/COLOR]' % (self.highlight_color, tvshowtitle, int(season), int(episode))
+						homeWindow.clearProperty(self.labelProperty)
+						homeWindow.setProperty(self.labelProperty, p_label)
+						homeWindow.clearProperty(self.metaProperty)
+						homeWindow.setProperty(self.metaProperty, jsdumps(self.meta))
 				self.total_seasons, self.season_isAiring = self.get_season_info(imdb, tmdb, tvdb, meta, season)
 			if rescrape: self.clr_item_providers(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered)
 			items = providerscache.get(self.getSources, 48, title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered)
@@ -1187,8 +1188,13 @@ class Sources:
 
 	def subTitle(self, tvshowtitle):
 		#need to make a table and check for substitutions.
-		from resources.lib.database import titlesubs
-		tvshowtitle = titlesubs.substitute_get(tvshowtitle)
+		try:
+			from resources.lib.database import titlesubs
+			subtvshowtitle = titlesubs.substitute_get(tvshowtitle)
+			if subtvshowtitle:
+				tvshowtitle = subtvshowtitle
+		except:
+			tvshowtitle = tvshowtitle
 		return tvshowtitle
 
 	def getSubsList(self):
