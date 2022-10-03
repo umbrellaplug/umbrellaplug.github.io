@@ -1,4 +1,9 @@
 
+[B][COLOR black]Update - v6.5.73 - Oct 2nd, 2022[/COLOR][/B]
+--[I] Super spooky October update.[I]
+--[I] Changes made for title substitution.[I]
+--[I] Fixes for Trakt liking lists.[I]
+
 [B][COLOR black]Update - v6.5.72 - Sept 29th, 2022[/COLOR][/B]
 --[I] Update to allow management of imported lists from trakt to library.[I]
 --[I] New list selection window for adding, removing, and managing imported lists.[I]

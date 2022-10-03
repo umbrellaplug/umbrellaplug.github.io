@@ -21,6 +21,7 @@ getLangString = xbmcaddon.Addon().getLocalizedString
 
 dialog = xbmcgui.Dialog()
 numeric_input = xbmcgui.INPUT_NUMERIC
+alpha_input = xbmcgui.INPUT_ALPHANUM
 getCurrentDialogId = xbmcgui.getCurrentWindowDialogId()
 getCurrentWindowId = xbmcgui.getCurrentWindowId()
 homeWindow = xbmcgui.Window(10000)
@@ -76,6 +77,7 @@ searchFile = joinPath(dataPath, 'search.db')
 libcacheFile = joinPath(dataPath, 'library.db')
 cacheFile = joinPath(dataPath, 'cache.db')
 traktSyncFile = joinPath(dataPath, 'traktSync.db')
+subsFile = joinPath(dataPath, 'substitute.db')
 fanarttvCacheFile = joinPath(dataPath, 'fanarttv.db')
 trailer = 'plugin://plugin.video.youtube/play/?video_id=%s'
 

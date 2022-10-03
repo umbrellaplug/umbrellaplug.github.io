@@ -3821,3 +3821,43 @@ msgstr ""
 msgctxt "#40238"
 msgid "Filter Episodes by Size"
 msgstr ""
+
+msgctxt "#40239"
+msgid "Substitute Title Name(s)"
+msgstr ""
+
+msgctxt "#40240"
+msgid "List of Substitutes"
+msgstr ""
+
+msgctxt "#40241"
+msgid "Original Title:"
+msgstr ""
+
+msgctxt "#40242"
+msgid "Substitute Title:"
+msgstr ""
+
+msgctxt "#40243"
+msgid "Add New"
+msgstr ""
+
+msgctxt "#40244"
+msgid "Current Title"
+msgstr ""
+
+msgctxt "#40245"
+msgid "Please enter the current title being used you would like to substitute:"
+msgstr ""
+
+msgctxt "#40246"
+msgid "Substitute Title"
+msgstr ""
+
+msgctxt "#40247"
+msgid "Please enter the the title to use when scraping:"
+msgstr ""
+
+msgctxt "#40248"
+msgid "New substitute added"
+msgstr ""

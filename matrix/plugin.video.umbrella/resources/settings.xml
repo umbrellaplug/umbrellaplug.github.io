@@ -1961,6 +1961,26 @@
 					</constraints>
 					<control type="button" format="action"/>
 				</setting>
+				<setting id="sources.useTitleSubs" type="boolean" label="40239" help="" parent="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="sources.useTitleSubsList" type="action" label="40240" help="" parent="sources.useTitleSubs">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_subsList)</data>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="sources.useTitleSubs">true</condition>
+						</dependency>
+					</dependencies>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action"/>
+				</setting>
 			</group>
 			<group id="2" label="32386">
 				<setting id="progress.dialog" type="integer" label="32335" help="">

@@ -594,6 +594,9 @@ def router(argv2):
 		elif action == 'tools_cleanSettings':
 			from resources.lib.modules import clean_settings
 			clean_settings.clean_settings()
+		elif action == 'tools_subsList':
+			from resources.lib.modules import sources
+			sources.Sources().getSubsList()
 		# elif action == 'tools_openMyAccount':
 		# 	from myaccounts import openMASettings
 		# 	from resources.lib.modules import my_accounts

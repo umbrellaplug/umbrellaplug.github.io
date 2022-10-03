@@ -10,7 +10,7 @@ import _strptime # import _strptime to workaround python 2 bug with threads
 from sys import exit as sysexit
 from threading import Thread
 from time import time
-from urllib.parse import unquote
+from urllib.parse import unquote, urlencode
 from sqlite3 import dbapi2 as database
 from resources.lib.database import metacache, providerscache
 from resources.lib.modules import cleandate
@@ -32,6 +32,7 @@ season_expiry = timedelta(hours=48)
 show_expiry = timedelta(hours=48)
 video_extensions = supported_video_extensions()
 
+
 class Sources:
 	def __init__(self, all_providers=False, custom_query=False, filterless_scrape=False):
 		self.sources = []
@@ -46,6 +47,7 @@ class Sources:
 		self.enable_playnext = getSetting('enable.playnext') == 'true'
 		self.dev_mode = getSetting('dev.mode.enable') == 'true'
 		self.dev_disable_single = getSetting('dev.disable.single') == 'true'
+		self.useTitleSubs = getSetting('sources.useTitleSubs') == 'true'
 		# self.dev_disable_single_filter = getSetting('dev.disable.single.filter') == 'true'
 		
 		self.dev_disable_season_packs = getSetting('dev.disable.season.packs') == 'true'
@@ -103,6 +105,15 @@ class Sources:
 				if getSetting('imdb.Showmeta.check') == 'true':
 					tvshowtitle, year = self.imdb_meta_chk(imdb, tvshowtitle, year)
 				if tvshowtitle == 'The End of the F***ing World': tvshowtitle = 'The End of the Fucking World'
+				if self.useTitleSubs:
+					tvshowtitle = self.subTitle(tvshowtitle)
+					self.meta.update({'tvshowtitle': tvshowtitle})
+					p_label = '[COLOR %s]%s (%s)[/COLOR]' % (self.highlight_color, title, year) if tvshowtitle is None else \
+					'[COLOR %s]%s (S%02dE%02d)[/COLOR]' % (self.highlight_color, tvshowtitle, int(season), int(episode))
+					homeWindow.clearProperty(self.labelProperty)
+					homeWindow.setProperty(self.labelProperty, p_label)
+					homeWindow.clearProperty(self.metaProperty)
+					homeWindow.setProperty(self.metaProperty, jsdumps(self.meta))
 				self.total_seasons, self.season_isAiring = self.get_season_info(imdb, tmdb, tvdb, meta, season)
 			if rescrape: self.clr_item_providers(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered)
 			items = providerscache.get(self.getSources, 48, title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered)
@@ -393,7 +404,6 @@ class Sources:
 
 	def getSources_dialog(self, title, year, imdb, tvdb, season, episode, tvshowtitle, premiered, timeout=90):
 		try:
-
 			content = 'movie' if tvshowtitle is None else 'episode'
 			if self.filterless_scrape: homeWindow.setProperty('fs_filterless_search', 'true')
 			if self.custom_query == 'true':
@@ -1174,6 +1184,48 @@ class Sources:
 	def getTitle(self, title):
 		title = string_tools.normalize(title)
 		return title
+
+	def subTitle(self, tvshowtitle):
+		#need to make a table and check for substitutions.
+		from resources.lib.database import titlesubs
+		tvshowtitle = titlesubs.substitute_get(tvshowtitle)
+		return tvshowtitle
+
+	def getSubsList(self):
+		try:
+			control.hide()
+			from resources.lib.database import titlesubs
+			addedSubs = titlesubs.all_substitutes(self)
+			items = [{'originalTitle': i['originalTitle'],'subTitle':i['subTitle']} for i in addedSubs]
+			from resources.lib.windows.title_sublist_manager import TitleSublistManagerXML
+			window = TitleSublistManagerXML('title_sublist_manager.xml', control.addonPath(control.addonId()), results=items)
+			selected_items = window.run()
+			if selected_items:
+				self.removeSubs(selected_items)
+			del window
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def addNewSub(self):
+		original_title = control.dialog.input('[COLOR %s]%s[/COLOR]' % (self.highlight_color,  getLS(40245)), type=control.alpha_input)
+		if original_title: 
+			sub_title = control.dialog.input('[COLOR %s]%s[/COLOR]' % (self.highlight_color, getLS(40247)), type=control.alpha_input)
+			if sub_title:
+				from resources.lib.database import titlesubs
+				addedSubs = titlesubs.sub_insert(original_title, sub_title)
+				if addedSubs: control.notification(message=40248)
+
+
+	def removeSubs(self, items):
+		try:
+			if len(items) > 0:
+				for v in items:
+					removeitem = str(v.get('originalTitle'))
+					from resources.lib.database import titlesubs
+					titlesubs.clear_substitute('substitle', removeitem)
+		except:
+			log_utils.error()
 
 	def getConstants(self):
 		self.metaProperty = 'plugin.video.umbrella.container.meta'
