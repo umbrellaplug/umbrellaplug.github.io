@@ -4633,6 +4633,42 @@
 					</constraints>
 					<control type="button" format="action"/>
 				</setting>
+				<setting id="alldebrid.notification.range" type="string" label="" help="">
+					<level>0</level>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
+				</setting>
+				<setting id="premiumize.notification.range" type="string" label="" help="">
+					<level>0</level>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
+				</setting>
+				<setting id="realdebrid.notification.range" type="string" label="" help="">
+					<level>0</level>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
+				</setting>
 			</group>
 		</category>
 	</section>
