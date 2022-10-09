@@ -3824,40 +3824,40 @@ msgstr "Afleveringen filteren op grootte"
 
 msgctxt "#40239"
 msgid "Substitute Title Name(s)"
-msgstr ""
+msgstr "Vervangende titel naam (namen)"
 
 msgctxt "#40240"
 msgid "List of Substitutes"
-msgstr ""
+msgstr "Lijst met vervangers"
 
 msgctxt "#40241"
 msgid "Original Title:"
-msgstr ""
+msgstr "Originele titel:"
 
 msgctxt "#40242"
 msgid "Substitute Title:"
-msgstr ""
+msgstr "Vervangende titel:"
 
 msgctxt "#40243"
 msgid "Add New"
-msgstr ""
+msgstr "Nieuw toevoegen"
 
 msgctxt "#40244"
 msgid "Current Title"
-msgstr ""
+msgstr "Huidige titel"
 
 msgctxt "#40245"
 msgid "Please enter the current title being used you would like to substitute:"
-msgstr ""
+msgstr "Voer de huidige titel in die u wilt vervangen:"
 
 msgctxt "#40246"
 msgid "Substitute Title"
-msgstr ""
+msgstr "Vervangende titel"
 
 msgctxt "#40247"
 msgid "Please enter the the title to use when scraping:"
-msgstr ""
+msgstr "Voer de titel in die u wilt gebruiken bij het scrapen:"
 
 msgctxt "#40248"
 msgid "New substitute added"
-msgstr ""
+msgstr "Nieuwe vervanger toegevoegd"
