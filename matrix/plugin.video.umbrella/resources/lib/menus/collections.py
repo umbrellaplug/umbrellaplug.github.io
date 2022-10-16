@@ -61,7 +61,7 @@ class Collections:
 		self.addDirectoryItem('12 Rounds (2009-2015)', 'collections&url=%s' % quote_plus(self.tmdb_link % '13120'), 'collectionboxset.png', 'DefaultVideoPlaylists.png')
 		self.addDirectoryItem('300 (2007-2014)', 'collections&url=%s' % quote_plus(self.tmdb_link % '13132'), 'collectionboxset.png', 'DefaultVideoPlaylists.png')
 		self.addDirectoryItem('48 Hrs. (1982-1990)', 'collections&url=%s' % quote_plus(self.tmdb_link % '33259'), 'collectionboxset.png', 'DefaultVideoPlaylists.png')
-		self.addDirectoryItem('Ace Ventura (1994-1995)', 'collections&url=%s' % quote_plus(self.tmdb_link % '33260'), 'collectionboxset.png', 'DefaultVideoPlaylists.png')
+		self.addDirectoryItem('Ace Ventura (1994-1995)', 'collections&url=%s' % quote_plus(self.tmdb_link % '33260'), 'https://assets.fanart.tv/fanart/movies/3167/movieposter/ace-ventura-collection-5783ce46b408a.jpg', 'https://assets.fanart.tv/fanart/movies/3167/moviethumb/ace-ventura-collection-5d49919488f09.jpg')
 		self.addDirectoryItem('Airplane (1980-1982)', 'collections&url=%s' % quote_plus(self.tmdb_link % '33261'), 'collectionboxset.png', 'DefaultVideoPlaylists.png')
 		self.addDirectoryItem('Airport (1970-1979)', 'collections&url=%s' % quote_plus(self.tmdb_link % '33262'), 'collectionboxset.png', 'DefaultVideoPlaylists.png')
 		self.addDirectoryItem('American Graffiti (1973-1979)', 'collections&url=%s' % quote_plus(self.tmdb_link % '33263'), 'collectionboxset.png', 'DefaultVideoPlaylists.png')

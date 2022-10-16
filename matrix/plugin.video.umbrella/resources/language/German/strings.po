@@ -4964,3 +4964,14 @@ msgctxt "#40248"
 msgid "New substitute added"
 msgstr ""
 
+msgctxt "#40249"
+msgid "# of hours to delay"
+msgstr ""
+
+msgctxt "#40250"
+msgid "Unable to save file. File named incorrectly please try a different file."
+msgstr ""
+
+msgctxt "#40251"
+msgid "Service interval (hours)"
+msgstr ""

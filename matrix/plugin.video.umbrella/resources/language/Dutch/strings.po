@@ -3824,40 +3824,52 @@ msgstr "Afleveringen filteren op grootte"
 
 msgctxt "#40239"
 msgid "Substitute Title Name(s)"
-msgstr "Vervangende titel naam (namen)"
+msgstr ""
 
 msgctxt "#40240"
 msgid "List of Substitutes"
-msgstr "Lijst met vervangers"
+msgstr ""
 
 msgctxt "#40241"
 msgid "Original Title:"
-msgstr "Originele titel:"
+msgstr ""
 
 msgctxt "#40242"
 msgid "Substitute Title:"
-msgstr "Vervangende titel:"
+msgstr ""
 
 msgctxt "#40243"
 msgid "Add New"
-msgstr "Nieuw toevoegen"
+msgstr ""
 
 msgctxt "#40244"
 msgid "Current Title"
-msgstr "Huidige titel"
+msgstr ""
 
 msgctxt "#40245"
 msgid "Please enter the current title being used you would like to substitute:"
-msgstr "Voer de huidige titel in die u wilt vervangen:"
+msgstr ""
 
 msgctxt "#40246"
 msgid "Substitute Title"
-msgstr "Vervangende titel"
+msgstr ""
 
 msgctxt "#40247"
 msgid "Please enter the the title to use when scraping:"
-msgstr "Voer de titel in die u wilt gebruiken bij het scrapen:"
+msgstr ""
 
 msgctxt "#40248"
 msgid "New substitute added"
-msgstr "Nieuwe vervanger toegevoegd"
+msgstr ""
+
+msgctxt "#40249"
+msgid "# of hours to delay"
+msgstr ""
+
+msgctxt "#40250"
+msgid "Unable to save file. File named incorrectly please try a different file."
+msgstr ""
+
+msgctxt "#40251"
+msgid "Service interval (hours)"
+msgstr ""
