@@ -148,11 +148,11 @@
 [COLOR yellow]--[/COLOR][I] Changed to new settings format.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.75">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.76">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.7" />
-		<import addon="script.module.cocoscrapers" version="1.0.4" />
+		<import addon="script.module.cocoscrapers" version="1.0.5" />
 		<import addon="script.module.requests" />
 		<import addon="script.module.beautifulsoup4" />
 		<import addon="script.module.metahandler" version="5.0.0" optional="true" />
@@ -181,8 +181,17 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.75 - Oct 3rd, 2022[/COLOR][/B]
---[I] More settings adjustments.[I]
+[B][COLOR black]Update - v6.5.76 - Oct 15th, 2022[/COLOR][/B]
+--[I] Another super spooky October update![I]
+--[I] Mainly bug fixes. More enchancements and hopefully revised Playnext coming in next update.[I]
+--[BUG FIX] Finish watching missing meta information.
+--[BUG FIX] Adjustments made for mixed content lists. tvshows and movies on one list.
+--[BUG FIX] Fixed incorrect duration showing for episode times.
+--[BUG FIX] Changes made for some types of downloads going to movies instead of tv shows folder.
+--[ENHANCEMENT] Added networks to meta data on movies for skins that show network.
+--[ENHANCEMENT] Changed requirement for new CocoScrapers package with improved scraping with language codes in titles.
+--[ENHANCEMENT] Added slider to set hour intervals for library update.
+--[ENHANCEMENT] Added slider to set delay for import to library by hours.
 		</news>
 	</extension>
 </addon><addon id="plugin.video.youtube" name="YouTube" version="6.8.18+matrix.1" provider-name="anxdpanic, bromix">

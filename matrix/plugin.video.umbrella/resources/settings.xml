@@ -3847,6 +3847,23 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="library.import.hours" type="integer" label="40251" help="" parent="library.service.update">
+					<level>0</level>
+					<default>6</default>
+					<constraints>
+						<minimum>1</minimum>
+						<step>1</step>
+						<maximum>24</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="library.service.update">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
 				<setting id="library.service.notification" type="boolean" label="32546" help="" parent="library.service.update">
 					<level>0</level>
 					<default>true</default>
@@ -3942,8 +3959,28 @@
 			<group id="5">
 				<setting id="library.importdelay" type="boolean" label="32148" help="">
 					<level>0</level>
-					<default>true</default>
+					<default>false</default>
 					<control type="toggle"/>
+				</setting>
+				<setting id="library.importdelay.time" type="integer" label="40249" help="" parent="library.importdelay">
+					<level>0</level>
+					<default>24</default>
+					<dependencies>
+						<dependency type="enable">
+								<condition operator="is" setting="library.importdelay">True</condition>
+						</dependency>
+						<dependency type="visible">
+								<condition operator="is" setting="library.importdelay">True</condition>
+						</dependency>
+					</dependencies>
+					<constraints>
+						<minimum>1</minimum>
+						<step>1</step>
+						<maximum>24</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
 				</setting>
 				<setting id="library.include_specials" type="boolean" label="32649" help="">
 					<level>0</level>

@@ -7,6 +7,8 @@ from hashlib import md5
 from json import dumps as jsdumps, loads as jsloads
 from sys import argv, exit as sysexit
 from sqlite3 import dbapi2 as database
+from datetime import datetime
+from urllib.parse import quote_plus
 import xbmc
 from resources.lib.database.cache import clear_local_bookmarks
 from resources.lib.database.metacache import fetch as fetch_metacache
@@ -15,6 +17,11 @@ from resources.lib.modules import control
 from resources.lib.modules import log_utils
 from resources.lib.modules import playcount
 from resources.lib.modules import trakt
+from resources.lib.modules import tools
+from resources.lib.modules import cleangenre
+import re
+import xbmcgui
+import xbmcplugin
 
 LOGINFO = 1
 getLS = control.lang
@@ -41,11 +48,16 @@ class Player(xbmc.Player):
 		self.playnext_time = int(getSetting('playnext.time')) or 60
 		self.traktCredentials = trakt.getTraktCredentialsInfo()
 		self.onPlayBackEnded_ran = False
+		self.highlight_color = control.getHighlightColor()
+		self.backupPlaynextMethod = False
+		self.playnext_module = None
+		self.builtList = None
 
 	def play_source(self, title, year, season, episode, imdb, tmdb, tvdb, url, meta, debridPackCall=False):
 		try:
 			from sys import argv # some functions like ActivateWindow() throw invalid handle less this is imported here.
 			if not url: raise Exception
+
 			self.media_type = 'movie' if season is None or episode is None else 'episode'
 			self.title, self.year = title, str(year)
 			if self.media_type == 'movie':
@@ -83,7 +95,11 @@ class Player(xbmc.Player):
 				log_utils.log('User requested playback cancel', level=log_utils.LOGDEBUG)
 				control.notification(message=32328)
 				return control.cancelPlayback()
-
+			# if self.enable_playnext and not self.play_next_triggered and self.media_type == 'episode':
+			# 	if control.playlist.size() == 0:
+			# 		self.buildPlayList(episode, url)
+			# 		self.builtList = True
+			# 		log_utils.log('Playnext Enabled but no playlist found. Using backup method.', level=log_utils.LOGDEBUG)
 			item = control.item(path=url)
 			item.setUniqueIDs(self.ids)
 			if self.media_type == 'episode':
@@ -94,13 +110,18 @@ class Player(xbmc.Player):
 			item.setInfo(type='video', infoLabels=control.metadataClean(meta))
 			item.setProperty('IsPlayable', 'true')
 			if debridPackCall: control.player.play(url, item) # seems this is only way browseDebrid pack files will play and have meta marked as watched
-			else: control.resolve(int(argv[1]), True, item)
+			else: 
+				if not self.builtList:
+					control.resolve(int(argv[1]), True, item)
 			homeWindow.setProperty('script.trakt.ids', jsdumps(self.ids))
 			self.keepAlive()
 			homeWindow.clearProperty('script.trakt.ids')
 		except:
 			log_utils.error()
 			return control.cancelPlayback()
+
+
+
 
 	def getMeta(self, meta):
 		try:
@@ -231,10 +252,11 @@ class Player(xbmc.Player):
 		self.onPlayBackEnded_ran = False
 		try: running_path = self.getPlayingFile() # original video that playlist playback started with
 		except: running_path = ''
-
 		if playerWindow.getProperty('umbrella.playlistStart_position'): pass
 		else:
 			if control.playlist.size() > 1: playerWindow.setProperty('umbrella.playlistStart_position', str(control.playlist.getposition()))
+			else:
+				if self.backupPlaynextMethod: playerWindow.setProperty('umbrella.playlistStart_position', str(self.episode))
 
 		while self.isPlayingVideo() and not control.monitor.abortRequested():
 			try:
@@ -262,6 +284,7 @@ class Player(xbmc.Player):
 							homeWindow.setProperty(pname, '5')
 							playcount.markEpisodeDuringPlayback(self.imdb, self.tvdb, self.season, self.episode, '5')
 						if self.enable_playnext and not self.play_next_triggered:
+							#need to get episodes here and add to playlist in right order.
 							if int(control.playlist.size()) > 1:
 								if self.preScrape_triggered == False:
 									xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_preScrapeNext)')
@@ -269,6 +292,18 @@ class Player(xbmc.Player):
 								remaining_time = self.getRemainingTime()
 								if remaining_time < (self.playnext_time + 1) and remaining_time != 0:
 									xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_nextWindowXML)')
+									self.play_next_triggered = True
+							if self.backupPlaynextMethod:
+								if self.preScrape_triggered == False:
+									url = '?action=play_preScrapeNextBackup&title=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s' % (
+										self.title, self.imdb, self.tmdb, self.tvdb, self.season, self.episode)
+									xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/%s)' % (url))
+									self.preScrape_triggered = True
+								remaining_time = self.getRemainingTime()
+								if remaining_time < (self.playnext_time + 1) and remaining_time != 0:
+									url = '?action=play_nextWindowXMLBackup&title=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s' % (
+										self.title, self.imdb, self.tmdb, self.tvdb, self.season, self.episode)
+									xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/%s)' % (url))
 									self.play_next_triggered = True
 					except: log_utils.error()
 					xbmc.sleep(1000)
@@ -341,6 +376,8 @@ class Player(xbmc.Player):
 		try:
 			playerWindow.clearProperty('umbrella.preResolved_nextUrl')
 			playerWindow.clearProperty('umbrella.playlistStart_position')
+			playerWindow.clearProperty('prescrape.url')
+
 			clear_local_bookmarks() # clear all umbrella bookmarks from kodi database
 			if not self.onPlayBackStopped_ran or (self.playbackStopped_triggered and not self.onPlayBackStopped_ran): # Kodi callback unreliable and often not issued
 				self.onPlayBackStopped_ran = True
@@ -383,6 +420,8 @@ class PlayNext(xbmc.Player):
 		self.enable_playnext = getSetting('enable.playnext') == 'true'
 		self.stillwatching_count = int(getSetting('stillwatching.count'))
 		self.playing_file = None
+		self.today_date = (datetime.now()).strftime('%Y-%m-%d')
+		self.nextUrl = ''
 
 	def display_xml(self):
 		try:

@@ -325,11 +325,11 @@ class Movies(TMDb):
 			if self.lang != 'en' and meta['plot'] in ('', None, 'None'): meta['plot'] = self.get_en_overview(tmdb)
 			# meta['?'] = result.get('popularity', '')
 			meta['poster'] = '%s%s' % (self.poster_path, result['poster_path']) if result.get('poster_path') else ''
-			# production_companies = result.get('production_companies', {})
-			# try: meta['studio'] = [x['name'] for x in production_companies if x['logo_path']][0] # Silvo seems to use "studio" icons in place of "thumb" for movies in list view
-			# except:
-				# try: meta['studio'] = production_companies[0].get('name')
-				# except: meta['studio'] = ''
+			production_companies = result.get('production_companies', {})
+			try: meta['studio'] = [x['name'] for x in production_companies if x['logo_path']][0] # Silvo seems to use "studio" icons in place of "thumb" for movies in list view
+			except:
+				try: meta['studio'] = production_companies[0].get('name')
+				except: meta['studio'] = ''
 			try: meta['country_codes'] = [i['iso_3166_1'] for i in result['production_countries']]
 			except: meta['country_codes'] = ''
 			meta['premiered'] = str(result.get('release_date', '')) if result.get('release_date') else ''
@@ -757,6 +757,8 @@ class TVshows(TMDb):
 				except: episode_meta['writer'] = ''
 				episode_meta['tmdb_epID'] = episode['id']
 				episode_meta['title'] = episode['name']
+				try: episode_meta['duration'] = episode['runtime']
+				except: episode_meta['duration'] = ''
 				episode_meta['season'] = episode['season_number']
 				episode_meta['plot'] = episode.get('overview', '') if episode.get('overview') else ''
 				if self.lang != 'en' and episode_meta['plot'] in ('', None, 'None'): episode_meta['plot'] = self.get_en_overview(tmdb, episode_meta['season'], episode_meta['episode'], 'episode')

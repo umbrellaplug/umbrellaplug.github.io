@@ -23,6 +23,7 @@ service_update = control.setting('library.service.update') == 'true'
 service_notification = control.setting('library.service.notification') == 'true'
 general_notification = control.setting('library.general.notification') == 'true'
 include_unaired = control.setting('library.include_unaired') == 'true'
+daily_import = control.setting('library.import.daily') == 'true'
 tmdb_session_id = control.setting('tmdb.sessionid')
 getLS = control.lang
 trakt_user = control.setting('trakt.user.name').strip()
@@ -177,7 +178,8 @@ class lib_tools:
 		while not control.monitor.abortRequested():
 			try:
 				last_service = control.homeWindow.getProperty(self.property)
-				t1 = timedelta(hours=6)
+				library_hours = float(control.setting('library.import.hours'))
+				t1 = timedelta(hours=library_hours)
 				t2 = cleandate.datetime_from_string(str(last_service), '%Y-%m-%d %H:%M:%S.%f', False)
 				t3 = datetime.now()
 				check = abs(t3 - t2) >= t1
@@ -368,6 +370,8 @@ class lib_tools:
 				full_list.append(x)
 			for x in lmovie_items:
 				full_list.append(x)
+			#myfull_list = [i for n, i in enumerate(full_list) if i not in full_list[:n]]
+			full_list = [i for n, i in enumerate(full_list) if i.get('list_id') not in [y.get('list_id') for y in full_list[n + 1:]]]
 		except:
 			full_list = []
 		return full_list
@@ -729,7 +733,9 @@ class libtvshows:
 		self.include_unknown = control.setting('library.include_unknown') or 'true'
 		self.date_time = datetime.utcnow()
 		if control.setting('library.importdelay') != 'true': self.date = self.date_time.strftime('%Y%m%d')
-		else: self.date = (self.date_time - timedelta(hours=24)).strftime('%Y%m%d')
+		else:
+			hoursSet = float(control.setting('library.importdelay.time'))
+			self.date = (self.date_time - timedelta(hours=hoursSet)).strftime('%Y%m%d')
 		self.block = False
 
 	def auto_tv_setup(self):
@@ -1018,7 +1024,9 @@ class libepisodes:
 		self.include_unknown = control.setting('library.include_unknown') or 'true'
 		self.date_time = datetime.utcnow()
 		if control.setting('library.importdelay') != 'true': self.date = self.date_time.strftime('%Y%m%d')
-		else: self.date = (self.date_time - timedelta(hours=24)).strftime('%Y%m%d')
+		else:
+			hoursSet = int(control.setting('library.importdelay.time'))
+			self.date = (self.date_time - timedelta(hours=hoursSet)).strftime('%Y%m%d')
 
 	def update(self):
 		# if control.setting('library.service.update') == 'false': control.notification(message=32106)
@@ -1081,7 +1089,9 @@ class libepisodes:
 		# __init__ doesn't get called from services so self.date never gets updated and new episodes are not added to the library
 		self.date_time = datetime.now()
 		if control.setting('library.importdelay') != 'true': self.date = self.date_time.strftime('%Y%m%d')
-		else: self.date = (self.date_time - timedelta(hours=24)).strftime('%Y%m%d')
+		else:
+			hoursSet = int(control.setting('library.importdelay.time'))
+			self.date = (self.date_time - timedelta(hours=hoursSet)).strftime('%Y%m%d')
 		for item in items:
 			it = None
 			if control.monitor.abortRequested():

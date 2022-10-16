@@ -17,7 +17,6 @@ video_extensions = ('.3gp', '.avi', '.divx', '.flv', '.m4v', '.mp4', '.mpeg', '.
 
 
 def download(name, image, url, meta_name=None, pack=None): # needs re-write, pack file support
-
 	log_utils.log('name: %s' % name, __name__)
 	log_utils.log('image: %s' % image, __name__)
 	log_utils.log('url: %s' % url, __name__)
@@ -27,7 +26,7 @@ def download(name, image, url, meta_name=None, pack=None): # needs re-write, pac
 
 	test = url.rsplit('/', 1)[1].split('|')[0]
 	log_utils.log('test: %s' % str(test), __name__)
-	test = unquote(test)
+	test = unquote(test).replace(" ","")
 	log_utils.log('test2: %s' % str(test), __name__)
 
 
@@ -48,7 +47,15 @@ def download(name, image, url, meta_name=None, pack=None): # needs re-write, pac
 			content = unquote(url.rsplit('/', 1)[1].split('|')[0])
 			log_utils.log('content: %s' % str(content), __name__)
 			try: content = re.search(r'(.+?)(?:|\.| - |-|.-.|\s)(?:S|s|\s|\.)(\d{1,2})(?!\d)(?:|\.| - |-|.-.|x|\s)(?:E|e|\s|.)([0-2]{1}[0-9]{1})(?!\w)', content, re.I).groups()
-			except: content = ()
+			except:
+				content = ()
+				if meta_name:
+					try: content = re.search(r'(.+?)\sS(\d*)E\d*$', meta_name, re.I).groups()
+					except: 
+						content = ()
+						if file_format == '0':
+							try: transname = meta_name.translate(None, '\/:*?"<>|').strip('.')
+							except: transname = meta_name.translate(meta_name.maketrans('', '', '\/:*?"<>|')).strip('.')
 			log_utils.log('content: %s' % str(content), __name__)
 			# transname = url.rsplit('/', 1)[1].split('|')[0]
 			transname = unquote(url.rsplit('/', 1)[1].split('|')[0])
@@ -86,6 +93,13 @@ def download(name, image, url, meta_name=None, pack=None): # needs re-write, pac
 					dest = os.path.join(dest, movietitle + ' (' + movie_info[1] + ')')
 					if file_format == '0':
 						transname = movietitle + ' (' + movie_info[1] + ')'
+					# else:
+					# 	try:
+					# 		s = re.sub(r'^[\w,\s-]+\.[A-Za-z]{3}$)','', transname)
+					# 	except:
+					# 		s = None
+					# 	if not s:
+					# 		return control.notification(title=control.lang(33586), message=control.lang(40250), icon=image, time=3000)
 				else:
 					dest = os.path.join(dest, transname)
 			control.makeFile(dest)
@@ -111,6 +125,13 @@ def download(name, image, url, meta_name=None, pack=None): # needs re-write, pac
 			control.makeFile(dest)
 			if file_format == '0' and not meta_name:
 				transname = transtvshowtitle + ' S%sE%s' % (content[1], content[2])
+			# else:
+			# 	try:
+			# 		s = re.sub(r'^[\w,\s-]+\.[A-Za-z]{3}$)','', transname)
+			# 	except:
+			# 		s = None
+			# 	if not s:
+			# 		return control.notification(title=control.lang(33586), message=control.lang(40250), icon=image, time=3000)
 		ext = os.path.splitext(urlparse(url).path)[1][1:]
 
 		log_utils.log('ext: %s' % ext, __name__)

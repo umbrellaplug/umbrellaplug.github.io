@@ -1,4 +1,7 @@
 
+[B][COLOR black]Update - v6.5.75 - Oct 3rd, 2022[/COLOR][/B]
+--[I] More settings adjustments.[I]
+
 [B][COLOR black]Update - v6.5.74 - Oct 3rd, 2022[/COLOR][/B]
 --[I] Small patch for issues scraping TV Shows from library.[I]
 --[I] Super spooky October update.[I]

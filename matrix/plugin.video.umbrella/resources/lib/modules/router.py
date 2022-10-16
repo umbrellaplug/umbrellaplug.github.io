@@ -56,6 +56,9 @@ def router(argv2):
 	elif action == 'movies':
 		from resources.lib.menus import movies
 		movies.Movies().get(url)
+	elif action == 'mixed' and 'movies' in url:
+		from resources.lib.menus import movies
+		movies.Movies().get(url)
 	elif action == 'moviePage':
 		from resources.lib.menus import movies
 		movies.Movies().get(url)
@@ -186,6 +189,9 @@ def router(argv2):
 		from resources.lib.menus import navigator
 		navigator.Navigator().mytvshows(lite=True)
 	elif action == 'tvshows':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().get(url)
+	elif action == 'mixed' and 'movies' not in url:
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().get(url)
 	elif action == 'tvshowPage':
@@ -713,10 +719,18 @@ def router(argv2):
 		elif action == "play_preScrapeNext":
 			from resources.lib.modules.player import PlayNext
 			PlayNext().prescrapeNext()
+		elif action == "play_preScrapeNextBackup":
+			from resources.lib.modules.player import PlayNext
+			PlayNext().prescrapeNextBackup(title, imdb, tmdb, tvdb, season, episode)
 		elif action == "play_nextWindowXML":
 			from resources.lib.modules.player import PlayNext
 			play_next = PlayNext()
 			play_next.display_xml()
+			del play_next
+		elif action == "play_nextWindowXMLBackup":
+			from resources.lib.modules.player import PlayNext
+			play_next = PlayNext()
+			play_next.display_backup_xml(title, imdb, tmdb, tvdb, season, episode)
 			del play_next
 		elif action == 'play_All': # context menu works same as "Play from Here"
 			control.player2().play(control.playlist) 

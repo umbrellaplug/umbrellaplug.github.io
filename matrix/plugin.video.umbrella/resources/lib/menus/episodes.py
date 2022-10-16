@@ -330,7 +330,7 @@ class Episodes:
 				values['counts'] = showSeasons.get('counts')
 				values['studio'] = showSeasons.get('studio')
 				values['genre'] = showSeasons.get('genre')
-				try: values['duration'] = int(showSeasons.get('duration')) # showSeasons already converted to seconds
+				try: values['duration'] = (int(seasonEpisodes.get('episodes')[(int(item.get('episode'))-1)].get('duration'))*60) # showSeasons already converted to seconds
 				except: values['duration'] = ''
 				values['mpaa'] = showSeasons.get('mpaa')
 				values['status'] = showSeasons.get('status')
@@ -590,6 +590,7 @@ class Episodes:
 			values = i
 			tmdb, tvdb = i['tmdb'], i['tvdb']
 			try:
+				itemyear = tmdb_indexer().get_showSeasons_meta(tmdb)
 				seasonEpisodes = cache.get(tmdb_indexer().get_seasonEpisodes_meta, 96, tmdb, i['season'])
 				if not seasonEpisodes: return
 				try: episode_meta = [x for x in seasonEpisodes.get('episodes') if x.get('episode') == i['episode']][0] # to pull just the episode meta we need
@@ -599,6 +600,7 @@ class Episodes:
 					seasonEpisodes.pop('premiered') # this is series premiered so pop
 				values.update(seasonEpisodes)
 				values.update(episode_meta)
+				values['year'] = itemyear.get('year')
 				for k in ('episodes',): values.pop(k, None) # pop() keys from seasonEpisodes that are not needed anymore
 				try: # used for fanart fetch since not available in seasonEpisodes request
 					art = cache.get(tmdb_indexer().get_art, 96, tmdb)
@@ -710,7 +712,7 @@ class Episodes:
 			control.hide() ; control.notification(title=32326, message=33049)
 		sysaddon, syshandle = 'plugin://plugin.video.umbrella/', int(argv[1])
 		is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
-		if not is_widget: control.playlist.clear()
+		#if not is_widget: control.playlist.clear()
 		settingFanart = getSetting('fanart') == 'true'
 		addonPoster, addonFanart, addonBanner = control.addonPoster(), control.addonFanart(), control.addonBanner()
 
