@@ -96,13 +96,20 @@ class Seasons:
 					log_utils.error()
 				values['total_episodes'] = item['episode_count'] # will be total for the specific season only
 				values['season_title'] = item['name']
+				values['title']= item['name']
 				values['plot'] = item['overview'] or showSeasons['plot']
 				try: values['poster'] = self.tmdb_poster_path + item['poster_path']
 				except: values['poster'] = ''
 				if not values['poster'] and art: values['poster'] = art['poster'] if 'poster' in art else ''
 				values['season_poster'] = values['poster']
 				values['season'] = str(int(item['season_number']))
-				if self.enable_fanarttv: values['season_poster2'] = FanartTv().get_season_poster(tvdb, values['season'])
+				if self.enable_fanarttv: 
+					values['season_poster2'] = FanartTv().get_season_poster(tvdb, values['season'])
+					lanscapebefore = FanartTv().get_season_landscape(tvdb, values['season'])
+					if lanscapebefore == '':
+						values['landscape2'] = item['landscape']
+					else:
+						values['landscape2'] = lanscapebefore
 				if art:
 					values['fanart'] = art['fanart']
 					values['icon'] = art['icon']
@@ -110,7 +117,6 @@ class Seasons:
 					values['banner'] = art['banner']
 					values['clearlogo'] = art['clearlogo']
 					values['clearart'] = art['clearart']
-					values['landscape'] = art['landscape']
 					values['tvshow.poster'] = art['tvshow.poster'] # not used in seasonDirectory() atm
 				for k in ('seasons',): values.pop(k, None) # pop() keys from showSeasons that are not needed anymore
 				list.append(values)
@@ -161,13 +167,15 @@ class Seasons:
 				else: season_poster = meta.get('season_poster2') or meta.get('season_poster') or poster
 				fanart = ''
 				if settingFanart: fanart = meta.get('fanart') or addonFanart
+				if settingFanart: landscape = meta.get('landscape2')
+				else: landscape = meta.get('landscape')
 				icon = meta.get('icon') or poster
 				banner = meta.get('banner') or addonBanner
 				art = {}
 				art.update({'poster': season_poster, 'tvshow.poster': poster, 'season.poster': season_poster, 'fanart': fanart, 'icon': icon, 'thumb': season_poster, 'banner': banner,
-						'clearlogo': meta.get('clearlogo', ''), 'tvshow.clearlogo': meta.get('clearlogo', ''), 'clearart': meta.get('clearart', ''), 'tvshow.clearart': meta.get('clearart', ''), 'landscape': meta.get('landscape')})
+						'clearlogo': meta.get('clearlogo', ''), 'tvshow.clearlogo': meta.get('clearlogo', ''), 'clearart': meta.get('clearart', ''), 'tvshow.clearart': meta.get('clearart', ''), 'landscape': landscape})
 				# for k in ('poster2', 'poster3', 'fanart2', 'fanart3', 'banner2', 'banner3'): meta.pop(k, None)
-				meta.update({'poster': poster, 'fanart': fanart, 'banner': banner, 'thumb': season_poster, 'season_poster': season_poster, 'icon': icon})
+				meta.update({'poster': poster, 'fanart': fanart, 'banner': banner, 'thumb': season_poster, 'season_poster': season_poster, 'icon': icon, 'title': label})
 				sysmeta = quote_plus(jsdumps(meta))
 				url = '%s?action=episodes&tvshowtitle=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&meta=%s&season=%s' % (sysaddon, systitle, year, imdb, tmdb, tvdb, sysmeta, season)
 ####-Context Menu and Overlays-####

@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.76">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.78">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.7" />
@@ -31,17 +31,13 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.76 - Oct 15th, 2022[/COLOR][/B]
---[I] Another super spooky October update![I]
---[I] Mainly bug fixes. More enchancements and hopefully revised Playnext coming in next update.[I]
---[BUG FIX][I] Finish watching missing meta information.[I]
---[BUG FIX][I] Adjustments made for mixed content lists. tvshows and movies on one list.[I]
---[BUG FIX][I] Fixed incorrect duration showing for episode times.[I]
---[BUG FIX][I] Changes made for some types of downloads going to movies instead of tv shows folder.[I]
---[ENHANCEMENT][I] Added networks to meta data on movies for skins that show network.[I]
---[ENHANCEMENT][I] Changed requirement for new CocoScrapers package with improved scraping with language codes in titles.[I]
---[ENHANCEMENT][I] Added slider to set hour intervals for library update.[I]
---[ENHANCEMENT][I] Added slider to set delay for import to library by hours.[I]
+[B][COLOR black]Update - v6.5.78 - Nov 4th, 2022[/COLOR][/B]
+--[BUG FIX][I] Reverted slider for 24 hour import delay back to 24 hour toggle.[I]
+--[BUG FIX][I] Seasons "title" missing in some views.[I]
+--[BUG FIX][I] Library Import - Episodes were being imported that were no longer on lists to be imported.
+--[ENHANCEMENT][I] Added landscape seasons art from Fanart.[I]
+--[ENHANCEMENT][I] Playnext backup method for widgets.[I]
+--[INFORMATION][I] Arctic Horizon 2 is not supported. Issues opened concerning this skin will be immediately closed.[I]
 		</news>
 	</extension>
 </addon>
