@@ -171,7 +171,13 @@ class FanartTv:
 				landscape = art['showbackground']
 			landscape = self.parse_art(landscape)
 		except: landscape = ''
-		extended_art = {'extended': True, 'poster2': poster2, 'banner2': banner2, 'fanart2': fanart2, 'clearlogo': clearlogo, 'clearart': clearart, 'landscape': landscape, 'season_posters': season_posters}
+		try:
+			if 'seasonthumb' in art: season_thumbs = art['seasonthumb']
+			else:
+				if 'showbackground' not in art: raise Exception()
+				season_thumbs = art['showbackground']
+		except: season_thumbs = ''
+		extended_art = {'extended': True, 'poster2': poster2, 'banner2': banner2, 'fanart2': fanart2, 'clearlogo': clearlogo, 'clearart': clearart, 'landscape': landscape,'season_thumbs': season_thumbs, 'season_posters': season_posters}
 		return extended_art
 
 	def get_season_poster(self, tvdb, season):
@@ -185,6 +191,21 @@ class FanartTv:
 				season_posters = [i for i in season_posters if i.get('season') == str(season)]
 				season_poster = self.parse_art(season_posters)
 				return season_poster
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def get_season_landscape(self, tvdb, season):
+		if not tvdb or not season: return None
+		try:
+			from resources.lib.database import fanarttv_cache
+			extended_art = fanarttv_cache.get(self.get_tvshow_art, 336, tvdb)
+			if not extended_art: return None
+			season_landscapes = extended_art.get('season_thumbs', {})
+			if season_landscapes:
+				season_landscapes = [i for i in season_landscapes if i.get('season') == str(season)]
+				season_landscape = self.parse_art(season_landscapes)
+				return season_landscape
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()
