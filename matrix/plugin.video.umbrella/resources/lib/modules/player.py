@@ -97,7 +97,7 @@ class Player(xbmc.Player):
 			if 'castandart' in meta: item.setCast(meta.get('castandart', ''))
 			item.setInfo(type='video', infoLabels=control.metadataClean(meta))
 			item.setProperty('IsPlayable', 'true')
-			if int(control.playlist.size()) < 1 and self.media_type == 'episode': #this is the change made for play next from widget.
+			if int(control.playlist.size()) < 1 and self.media_type == 'episode' and self.enable_playnext: #this is the change made for play next from widget.
 				episodelabel = '%sx%02d %s' % (int(season), int(episode), self.meta.get('title'))
 				item.setLabel(episodelabel) #set the episode name here.
 				control.playlist.clear()

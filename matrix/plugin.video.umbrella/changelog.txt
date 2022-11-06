@@ -1,4 +1,10 @@
 
+[B][COLOR black]Update - v6.5.80 - Nov 6th, 2022[/COLOR][/B]
+--[BUG FIX][I] Fix for popup after video ends.[I]
+
+[B][COLOR black]Update - v6.5.79 - Nov 5th, 2022[/COLOR][/B]
+--[BUG FIX][I] Changes stashed for seasonal so bug fix could be pushed.[I]
+
 [B][COLOR black]Update - v6.5.78 - Nov 4th, 2022[/COLOR][/B]
 --[BUG FIX][I] Reverted slider for 24 hour import delay back to 24 hour toggle.[I]
 --[BUG FIX][I] Seasons "title" missing in some views.[I]
