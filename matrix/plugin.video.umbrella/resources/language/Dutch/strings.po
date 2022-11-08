@@ -3872,4 +3872,12 @@ msgstr "Kan bestand niet opslaan.  Bestand met een verkeerde naam, probeer een a
 
 msgctxt "#40251"
 msgid "Service interval (hours)"
-msgstr "Onderhoudsinterval (uren)"
+msgstr "Onderhoudsinterval (uren)""
+
+msgctxt "#40252"
+msgid "Unreleased movies may not appear with chosen colors in some views if using skins due to inconsistent use of item properties throughout views."
+msgstr ""
+
+msgctxt "#40253"
+msgid "Unairied episodes may not appear with chosen colors in some views if using skins due to inconsistent use of item properties throughout views."
+msgstr ""

@@ -7,7 +7,7 @@ from hashlib import md5
 from json import dumps as jsdumps, loads as jsloads
 from sys import argv, exit as sysexit
 from sqlite3 import dbapi2 as database
-from datetime import datetime
+from unicodedata import name
 from urllib.parse import quote_plus
 import xbmc
 from resources.lib.database.cache import clear_local_bookmarks
@@ -17,11 +17,7 @@ from resources.lib.modules import control
 from resources.lib.modules import log_utils
 from resources.lib.modules import playcount
 from resources.lib.modules import trakt
-from resources.lib.modules import tools
-from resources.lib.modules import cleangenre
-import re
-import xbmcgui
-import xbmcplugin
+from resources.lib.modules import playlist
 
 LOGINFO = 1
 getLS = control.lang
@@ -48,16 +44,12 @@ class Player(xbmc.Player):
 		self.playnext_time = int(getSetting('playnext.time')) or 60
 		self.traktCredentials = trakt.getTraktCredentialsInfo()
 		self.onPlayBackEnded_ran = False
-		self.highlight_color = control.getHighlightColor()
-		self.backupPlaynextMethod = False
-		self.playnext_module = None
-		self.builtList = None
+		self.prefer_tmdbArt = getSetting('prefer.tmdbArt') == 'true'
 
 	def play_source(self, title, year, season, episode, imdb, tmdb, tvdb, url, meta, debridPackCall=False):
 		try:
 			from sys import argv # some functions like ActivateWindow() throw invalid handle less this is imported here.
 			if not url: raise Exception
-
 			self.media_type = 'movie' if season is None or episode is None else 'episode'
 			self.title, self.year = title, str(year)
 			if self.media_type == 'movie':
@@ -95,11 +87,7 @@ class Player(xbmc.Player):
 				log_utils.log('User requested playback cancel', level=log_utils.LOGDEBUG)
 				control.notification(message=32328)
 				return control.cancelPlayback()
-			# if self.enable_playnext and not self.play_next_triggered and self.media_type == 'episode':
-			# 	if control.playlist.size() == 0:
-			# 		self.buildPlayList(episode, url)
-			# 		self.builtList = True
-			# 		log_utils.log('Playnext Enabled but no playlist found. Using backup method.', level=log_utils.LOGDEBUG)
+
 			item = control.item(path=url)
 			item.setUniqueIDs(self.ids)
 			if self.media_type == 'episode':
@@ -109,19 +97,21 @@ class Player(xbmc.Player):
 			if 'castandart' in meta: item.setCast(meta.get('castandart', ''))
 			item.setInfo(type='video', infoLabels=control.metadataClean(meta))
 			item.setProperty('IsPlayable', 'true')
-			if debridPackCall: control.player.play(url, item) # seems this is only way browseDebrid pack files will play and have meta marked as watched
-			else: 
-				if not self.builtList:
-					control.resolve(int(argv[1]), True, item)
+			if int(control.playlist.size()) < 1 and self.media_type == 'episode' and self.enable_playnext: #this is the change made for play next from widget.
+				episodelabel = '%sx%02d %s' % (int(season), int(episode), self.meta.get('title'))
+				item.setLabel(episodelabel) #set the episode name here.
+				control.playlist.clear()
+				control.playlist.add(url, item)
+				playerWindow.setProperty('umbrella.playlistStart_position', str(0))
+				control.player.play(control.playlist)
+			elif debridPackCall: control.player.play(url, item) # seems this is only way browseDebrid pack files will play and have meta marked as watched
+			else: control.resolve(int(argv[1]), True, item)
 			homeWindow.setProperty('script.trakt.ids', jsdumps(self.ids))
 			self.keepAlive()
 			homeWindow.clearProperty('script.trakt.ids')
 		except:
 			log_utils.error()
 			return control.cancelPlayback()
-
-
-
 
 	def getMeta(self, meta):
 		try:
@@ -252,11 +242,10 @@ class Player(xbmc.Player):
 		self.onPlayBackEnded_ran = False
 		try: running_path = self.getPlayingFile() # original video that playlist playback started with
 		except: running_path = ''
+
 		if playerWindow.getProperty('umbrella.playlistStart_position'): pass
 		else:
 			if control.playlist.size() > 1: playerWindow.setProperty('umbrella.playlistStart_position', str(control.playlist.getposition()))
-			else:
-				if self.backupPlaynextMethod: playerWindow.setProperty('umbrella.playlistStart_position', str(self.episode))
 
 		while self.isPlayingVideo() and not control.monitor.abortRequested():
 			try:
@@ -284,7 +273,6 @@ class Player(xbmc.Player):
 							homeWindow.setProperty(pname, '5')
 							playcount.markEpisodeDuringPlayback(self.imdb, self.tvdb, self.season, self.episode, '5')
 						if self.enable_playnext and not self.play_next_triggered:
-							#need to get episodes here and add to playlist in right order.
 							if int(control.playlist.size()) > 1:
 								if self.preScrape_triggered == False:
 									xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_preScrapeNext)')
@@ -293,18 +281,8 @@ class Player(xbmc.Player):
 								if remaining_time < (self.playnext_time + 1) and remaining_time != 0:
 									xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_nextWindowXML)')
 									self.play_next_triggered = True
-							if self.backupPlaynextMethod:
-								if self.preScrape_triggered == False:
-									url = '?action=play_preScrapeNextBackup&title=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s' % (
-										self.title, self.imdb, self.tmdb, self.tvdb, self.season, self.episode)
-									xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/%s)' % (url))
-									self.preScrape_triggered = True
-								remaining_time = self.getRemainingTime()
-								if remaining_time < (self.playnext_time + 1) and remaining_time != 0:
-									url = '?action=play_nextWindowXMLBackup&title=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s' % (
-										self.title, self.imdb, self.tmdb, self.tvdb, self.season, self.episode)
-									xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/%s)' % (url))
-									self.play_next_triggered = True
+							if int(control.playlist.size()) == 1:
+								self.buildPlaylist()
 					except: log_utils.error()
 					xbmc.sleep(1000)
 
@@ -318,6 +296,64 @@ class Player(xbmc.Player):
 				self.playbackStopped_triggered = True
 				self.onPlayBackStopped()
 			elif self.getWatchedPercent() >= 85: self._end_playback()
+
+	def buildPlaylist(self):
+		seasonPlaynext = False
+		currentEpisode = self.episode
+		currentSeason = self.season
+		from resources.lib.menus import episodes
+		items = episodes.Episodes().get(self.meta.get('tvshowtitle'), self.meta.get('year'), self.imdb, self.tmdb, self.tvdb, self.meta, self.season, create_directory=True)
+		sysaddon, syshandle = 'plugin://plugin.video.umbrella/', int(argv[1])
+		try:
+			for count, i in enumerate(items):
+				try:
+					tvshowtitle, title, imdb, tmdb, tvdb = i.get('tvshowtitle'), i.get('title'), i.get('imdb', ''), i.get('tmdb', ''), i.get('tvdb', '')
+					year, season, episode, premiered = i.get('year', ''), i.get('season'), i.get('episode'), i.get('premiered', '')
+					runtime = i.get('duration')
+					if 'label' not in i: i['label'] = title
+					if (not i['label'] or i['label'] == '0'): label = '%sx%02d  %s %s' % (season, int(episode), 'Episode', episode)
+					else: label = '%sx%02d  %s' % (season, int(episode), i['label'])
+					systitle, systvshowtitle, syspremiered = quote_plus(title), quote_plus(tvshowtitle), quote_plus(premiered)
+					meta = dict((k, v) for k, v in iter(i.items()) if v is not None and v != '')
+					mediatype = 'episode'
+					meta.update({'code': imdb, 'imdbnumber': imdb, 'mediatype': mediatype, 'tag': [imdb, tmdb]}) # "tag" and "tagline" for movies only, but works in my skin mod so leave
+					try: meta.update({'title': i['label']})
+					except: pass
+					if self.prefer_tmdbArt: poster = meta.get('poster3') or meta.get('poster') or meta.get('poster2')
+					else: poster = meta.get('poster2') or meta.get('poster3') or meta.get('poster')
+					season_poster = meta.get('season_poster') or poster
+					landscape = meta.get('landscape')
+					fanart = ''
+					thumb = meta.get('thumb') or landscape or fanart or season_poster
+					icon = meta.get('icon') or season_poster or poster
+					banner = meta.get('banner')
+					art = {}
+					art.update({'poster': season_poster, 'tvshow.poster': poster, 'season.poster': season_poster, 'fanart': fanart, 'icon': icon, 'thumb': thumb, 'banner': banner,
+							'clearlogo': meta.get('clearlogo', ''), 'tvshow.clearlogo': meta.get('clearlogo', ''), 'clearart': meta.get('clearart', ''), 'tvshow.clearart': meta.get('clearart', ''), 'landscape': thumb})
+					for k in ('metacache', 'poster2', 'poster3', 'fanart2', 'fanart3', 'banner2', 'banner3', 'trailer'): meta.pop(k, None)
+					meta.update({'poster': poster, 'fanart': fanart, 'banner': banner, 'thumb': thumb, 'icon': icon})
+					sysmeta = quote_plus(jsdumps(meta))
+					url = '%s?action=play_Item&title=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&tvshowtitle=%s&premiered=%s&meta=%s' % (
+											sysaddon, systitle, year, imdb, tmdb, tvdb, season, episode, systvshowtitle, syspremiered, sysmeta)
+					item = control.item(label=label, offscreen=True)
+					if 'castandart' in i: item.setCast(i['castandart'])
+					item.setUniqueIDs({'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb})
+					info = {'episode': int(episode), 'sortepisode': int(episode), 'season': int(season), 'sortseason': int(season), 'year': str(year), 'premiered': i.get('premiered', ''), 'aired': meta.get('airtime', ''), 'imdbnumber': imdb, 'duration': runtime, 'dateadded': '', 'rating': i.get('rating'), 'votes': i.get('votes'), 'mediatype': self.media_type, 'title': i.get('title'), 'originaltitle': i.get('title'), 'sorttitle': i.get('title'), 'plot': i.get('plot'), 'plotoutline': i.get('plot'), 'tvshowtitle': tvshowtitle, 'director': [i.get('director')], 'writer': [i.get('writer')], 'genre': [i.get('genre')], 'studio': [i.get('studio')], 'playcount': 0}
+					if int(episode) > int(currentEpisode):
+						if not i.get('unaired')== 'true':
+							item.setContentLookup(False)
+							item.addStreamInfo("video", {})
+							cm = []
+							item.addContextMenuItems(cm)
+							item.setInfo("video", info)
+							item.setArt(art)
+							item.setProperty('IsPlayable', 'true')
+							item.setProperty('tvshow.tmdb_id', tmdb)
+							control.playlist.add(url=url, listitem=item)
+				except:
+					log_utils.error()
+		except:
+			log_utils.error()
 
 	def isPlayingFile(self):
 		if self._running_path is None or self._running_path.startswith("plugin://"):
@@ -376,8 +412,6 @@ class Player(xbmc.Player):
 		try:
 			playerWindow.clearProperty('umbrella.preResolved_nextUrl')
 			playerWindow.clearProperty('umbrella.playlistStart_position')
-			playerWindow.clearProperty('prescrape.url')
-
 			clear_local_bookmarks() # clear all umbrella bookmarks from kodi database
 			if not self.onPlayBackStopped_ran or (self.playbackStopped_triggered and not self.onPlayBackStopped_ran): # Kodi callback unreliable and often not issued
 				self.onPlayBackStopped_ran = True
@@ -393,6 +427,7 @@ class Player(xbmc.Player):
 					control.refresh() #not all skins refresh after playback stopped
 				control.playlist.clear()
 				#control.trigger_widget_refresh() # skinshortcuts handles widget refresh
+				#control.checkforSkin(action='off')
 				xbmc.log('[ plugin.video.umbrella ] onPlayBackStopped callback', LOGINFO)
 		except: log_utils.error()
 
@@ -403,6 +438,7 @@ class Player(xbmc.Player):
 		if control.playlist.getposition() == control.playlist.size() or control.playlist.size() == 1:
 			control.playlist.clear()
 		xbmc.log('[ plugin.video.umbrella ] onPlayBackEnded callback', LOGINFO)
+		#control.checkforSkin(action='off')
 
 	def onPlayBackError(self):
 		playerWindow.clearProperty('umbrella.preResolved_nextUrl')
@@ -411,6 +447,7 @@ class Player(xbmc.Player):
 		Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
 		log_utils.error()
 		xbmc.log('[ plugin.video.umbrella ] onPlayBackError callback', LOGINFO)
+		#control.checkforSkin(action='off')
 		sysexit(1)
 ##############################
 
@@ -420,8 +457,6 @@ class PlayNext(xbmc.Player):
 		self.enable_playnext = getSetting('enable.playnext') == 'true'
 		self.stillwatching_count = int(getSetting('stillwatching.count'))
 		self.playing_file = None
-		self.today_date = (datetime.now()).strftime('%Y-%m-%d')
-		self.nextUrl = ''
 
 	def display_xml(self):
 		try:
