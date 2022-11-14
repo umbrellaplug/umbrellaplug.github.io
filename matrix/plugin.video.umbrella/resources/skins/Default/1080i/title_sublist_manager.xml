@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <window>
-	<!-- <defaultcontrol>2050</defaultcontrol> -->
+	<defaultcontrol>2051</defaultcontrol>
 	<controls>
 		<control type="image">
 			<description>background</description>

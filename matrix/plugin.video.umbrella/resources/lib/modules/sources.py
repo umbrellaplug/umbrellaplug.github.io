@@ -54,6 +54,7 @@ class Sources:
 		self.dev_disable_season_filter = getSetting('dev.disable.season.filter') == 'true'
 		self.dev_disable_show_packs = getSetting('dev.disable.show.packs') == 'true'
 		self.dev_disable_show_filter = getSetting('dev.disable.show.filter') == 'true'
+		self.uncached_nopopup = getSetting('sources.nocachepopup') == 'true'
 		self.highlight_color = control.getHighlightColor()
 
 	def play(self, title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, meta, select, rescrape=None):
@@ -127,11 +128,12 @@ class Sources:
 				filter += [i for i in items if i not in uncached_items]
 				if filter: pass
 				elif not filter:
-					if control.yesnoDialog('No cached torrents returned. Would you like to view the uncached torrents to cache yourself?', '', ''):
-						control.cancelPlayback()
-						select = '0'
-						self.uncached_chosen = True
-						filter += uncached_items
+					if not self.uncached_nopopup:
+						if control.yesnoDialog('No cached torrents returned. Would you like to view the uncached torrents to cache yourself?', '', ''):
+							control.cancelPlayback()
+							select = '0'
+							self.uncached_chosen = True
+							filter += uncached_items
 				items = filter
 				if not items:
 					self.url = url

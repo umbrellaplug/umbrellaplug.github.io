@@ -74,6 +74,10 @@ class Navigator:
 			self.addDirectoryItem(32443 if self.indexLabels else 32442, 'movies&url=trakttrending', 'trakt.png' if self.iconLogos else 'trending.png', 'trending.png')
 		if getMenuEnabled('navi.movie.trakt.recommended'):
 			self.addDirectoryItem(32445 if self.indexLabels else 32444, 'movies&url=traktrecommendations', 'trakt.png' if self.iconLogos else 'highly-rated.png', 'DefaultMovies.png')
+		if getMenuEnabled('navi.movie.trakt.recentlywatched'):
+			self.addDirectoryItem(40255 if self.indexLabels else 40256, 'movies&url=traktbasedonrecent', 'trakt.png' if self.iconLogos else 'years.png', 'DefaultMovies.png')
+		if getMenuEnabled('navi.movie.trakt.traktsimilar'):
+			self.addDirectoryItem(40260 if self.indexLabels else 40261, 'movies&url=traktbasedonsimilar', 'trakt.png' if self.iconLogos else 'years.png', 'DefaultMovies.png')
 		if getMenuEnabled('navi.movie.imdb.featured'):
 			self.addDirectoryItem(32447 if self.indexLabels else 32446, 'movies&url=featured', 'imdb.png' if self.iconLogos else 'movies.png', 'movies.png')
 		if getMenuEnabled('navi.movie.imdb.oscarwinners'):
@@ -124,7 +128,7 @@ class Navigator:
 			self.addDirectoryItem(32683, 'movies&url=traktwatchlist', 'trakt.png', 'trakt.png', queue=True, context=(32551, 'library_moviesToLibrary&url=traktwatchlist&name=traktwatchlist'))
 			self.addDirectoryItem(32032, 'movies&url=traktcollection', 'trakt.png', 'trakt.png', queue=True, context=(32551, 'library_moviesToLibrary&url=traktcollection&name=traktcollection'))
 			self.addDirectoryItem('My Liked Lists', 'movies_LikedLists', 'trakt.png', 'trakt.png', queue=True)
-		if self.imdbCredentials: self.addDirectoryItem(32682, 'movies&url=imdbwatchlist', 'imdb.png', 'imdb.png', queue=True)
+		if self.imdbCredentials: self.addDirectoryItem(32682, 'movies&url=imdbwatchlist', 'imdb.png', 'imdb.png', queue=True) #watchlist broken currently 10-2022
 		if not lite:
 			self.addDirectoryItem(32031, 'movieliteNavigator', 'movies.png', 'DefaultMovies.png')
 			self.addDirectoryItem(33044, 'moviePerson', 'imdb.png' if self.iconLogos else 'people-search.png', 'DefaultAddonsSearch.png', isFolder=False)
@@ -150,6 +154,10 @@ class Navigator:
 			self.addDirectoryItem(32449 if self.indexLabels else 32448, 'tvshows&url=rating', 'imdb.png' if self.iconLogos else 'highly-rated.png', 'DefaultTVShows.png')
 		if getMenuEnabled('navi.tv.trakt.recommended'):
 			self.addDirectoryItem(32445 if self.indexLabels else 32444, 'tvshows&url=traktrecommendations', 'trakt.png' if self.iconLogos else 'highly-rated.png', 'DefaultTVShows.png', queue=True)
+		if getMenuEnabled('navi.tv.trakt.recentlywatched'):
+			self.addDirectoryItem(40255 if self.indexLabels else 40256, 'tvshows&url=traktbasedonrecent', 'trakt.png' if self.iconLogos else 'years.png', 'DefaultTVShows.png')
+		if getMenuEnabled('navi.tv.trakt.traktsimilar'):
+			self.addDirectoryItem(40260 if self.indexLabels else 40261, 'tvshows&url=traktbasedonsimilar', 'trakt.png' if self.iconLogos else 'years.png', 'DefaultMovies.png')
 		if getMenuEnabled('navi.tv.imdb.genres'):
 			self.addDirectoryItem(32456 if self.indexLabels else 32455, 'tvGenres&url=genre', 'imdb.png' if self.iconLogos else 'genres.png', 'DefaultGenre.png')
 		if getMenuEnabled('navi.tv.tmdb.genres'):

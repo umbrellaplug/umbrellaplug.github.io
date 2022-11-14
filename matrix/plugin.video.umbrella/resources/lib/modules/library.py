@@ -794,7 +794,6 @@ class libtvshows:
 			if service_notification and not control.condVisibility('Window.IsVisible(infodialog)') and not control.condVisibility('Player.HasVideo'):
 				control.notification(title='Updating from list: ' + list_name + ' - ' + type, message=32552)
 			for i in items:
-				#import web_pdb; web_pdb.set_trace()
 				if control.monitor.abortRequested(): return sysexit()
 				try:
 					files_added = self.add(i['title'], i['year'], i['imdb'], i['tmdb'], i['tvdb'], range=True)
@@ -1026,7 +1025,6 @@ class libepisodes:
 			self.date = (self.date_time - timedelta(hours=24)).strftime('%Y%m%d')
 
 	def update(self):
-		#import web_pdb; web_pdb.set_trace()
 		# if control.setting('library.service.update') == 'false': control.notification(message=32106)
 		contains = lib_tools().ckKodiSources()
 		if not contains: return control.notification(message=32107)
@@ -1110,7 +1108,6 @@ class libepisodes:
 					it += [{'tvshowtitle': i['tvshowtitle'], 'status': status, 'title': i['title'], 'year': i['year'], 'imdb': i['imdb'], 'tmdb': i['tmdb'], 'tvdb': i['tvdb'], 'season': i['season'], 'episode': i['episode'], 'premiered': i['premiered']} for i in episodes]
 					# it += [{'tvshowtitle': i['tvshowtitle'], 'status': status, 'title': i['title'], 'year': i['year'], 'imdb': i['imdb'], 'tmdb': i['tmdb'], 'tvdb': i['tvdb'], 'season': i['season'], 'episode': i['episode'], 'premiered': i['premiered'], 'aliases': i['aliases'], 'country_codes': i['country_codes']} for i in episodes]
 				# if not status or any(value in status for value in ('continuing', 'returning series')): raise Exception() # only write db entry for completed(Ended) shows
-				#import web_pdb; web_pdb.set_trace()
 				if status == 'ended':
 					dbcur.execute('''INSERT INTO tvshows Values (?, ?)''', (item['tvdb'], repr(it)))
 					dbcur.connection.commit()

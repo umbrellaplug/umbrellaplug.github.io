@@ -3890,3 +3890,35 @@ msgstr ""
 msgctxt "#40253"
 msgid "Unairied episodes may not appear with chosen colors in some views if using skins due to inconsistent use of item properties throughout views."
 msgstr ""
+
+msgctxt "#40254"
+msgid "Hide popup for uncached torrents if no results."
+msgstr ""
+
+msgctxt "#40255"
+msgid "Based on Recently Watched (Trakt)"
+msgstr ""
+
+msgctxt "#40256"
+msgid "Based on Recently Watched"
+msgstr ""
+
+msgctxt "#40257"
+msgid "Because you watched"
+msgstr ""
+
+msgctxt "#40258"
+msgid "Show list titles if available"
+msgstr ""
+
+msgctxt "#40259"
+msgid "Similar to"
+msgstr ""
+
+msgctxt "#40260"
+msgid "Similar to Recently Watched (Trakt)"
+msgstr ""
+
+msgctxt "#40261"
+msgid "Similar to Recently Watched"
+msgstr ""

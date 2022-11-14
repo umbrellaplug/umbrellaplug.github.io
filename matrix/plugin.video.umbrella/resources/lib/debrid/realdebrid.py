@@ -221,7 +221,8 @@ class RealDebrid:
 		except: return
 		extensions = supported_video_extensions()
 		try:
-			file_info = [i for i in torrent_files['files'] if i['path'].lower().endswith(tuple(extensions))]
+			#file_info = [i for i in torrent_files['files'] if i['path'].lower().endswith(tuple(extensions))] original before tiki change
+			file_info = [i for i in torrent_files['files'] if i['selected'] == 1 and i['path'].lower().endswith(tuple(extensions))]
 			file_urls = torrent_files['links']
 			for c, i in enumerate(file_info):
 				try: i.update({'url_link': file_urls[c]})

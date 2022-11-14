@@ -1,3 +1,10 @@
+[B][COLOR black]Update - v6.5.83 - Nov 10th, 2022[/COLOR][/B]
+--[ENHANCEMENT][I] Changed amount of results pulled to generate based on list to 20 for tv and movies.[I]
+
+[B][COLOR black]Update - v6.5.82 - Nov 9th, 2022[/COLOR][/B]
+--[BUG FIX][I] Added option to hide "show uncached results" popup[I]
+--[ENHANCEMENT][I] Add a "Based on Recently Watched" list to Movies.[I]
+--[INFORMATION][I] Add a "Based on Recently Watched" list to TV Shows.[I]
 
 [B][COLOR black]Update - v6.5.80 - Nov 6th, 2022[/COLOR][/B]
 --[BUG FIX][I] Fix for popup after video ends.[I]

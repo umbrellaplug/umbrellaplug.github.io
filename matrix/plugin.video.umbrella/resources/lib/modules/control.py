@@ -19,6 +19,7 @@ addonName = addonInfo('name')
 addonVersion = addonInfo('version')
 getLangString = xbmcaddon.Addon().getLocalizedString
 
+
 dialog = xbmcgui.Dialog()
 numeric_input = xbmcgui.INPUT_NUMERIC
 alpha_input = xbmcgui.INPUT_ALPHANUM
@@ -84,6 +85,10 @@ trailer = 'plugin://plugin.video.youtube/play/?video_id=%s'
 def getKodiVersion(full=False):
 	if full: return xbmc.getInfoLabel("System.BuildVersion")
 	else: return int(xbmc.getInfoLabel("System.BuildVersion")[:2])
+
+def setContainerName(value):
+	import sys
+	xbmcplugin.setPluginCategory(int(sys.argv[1]), value)
 
 def setting(id, fallback=None):
 	try: settings_dict = jsloads(homeWindow.getProperty('umbrella_settings'))

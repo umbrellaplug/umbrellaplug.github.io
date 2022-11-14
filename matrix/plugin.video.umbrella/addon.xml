@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.80">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.85">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.7" />
@@ -31,8 +31,11 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.80 - Nov 6th, 2022[/COLOR][/B]
---[BUG FIX][I] Fix for popup after video ends.[I]
+[B][COLOR black]Update - v6.5.85 - Nov 14th, 2022[/COLOR][/B]
+--[ENHANCEMENT][I] Changed amount of results pulled to generate based on list to 20 for tv and movies.[I]
+--[ENHANCEMENT][I] Added similar to lists for tv and movies.[I]
+--[FIX][I] Adjusted URL for similar shows.[I]
+--[FIX][I] Added some checks for real-debrid cloud files.[I]
 		</news>
 	</extension>
 </addon>
