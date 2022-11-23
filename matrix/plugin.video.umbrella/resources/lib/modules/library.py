@@ -23,7 +23,6 @@ service_update = control.setting('library.service.update') == 'true'
 service_notification = control.setting('library.service.notification') == 'true'
 general_notification = control.setting('library.general.notification') == 'true'
 include_unaired = control.setting('library.include_unaired') == 'true'
-daily_import = control.setting('library.import.daily') == 'true'
 tmdb_session_id = control.setting('tmdb.sessionid')
 getLS = control.lang
 trakt_user = control.setting('trakt.user.name').strip()
@@ -178,7 +177,10 @@ class lib_tools:
 		while not control.monitor.abortRequested():
 			try:
 				last_service = control.homeWindow.getProperty(self.property)
-				library_hours = float(control.setting('library.import.hours'))
+				try:
+					library_hours = float(control.setting('library.import.hours'))
+				except:
+					library_hours = int(6)
 				t1 = timedelta(hours=library_hours)
 				t2 = cleandate.datetime_from_string(str(last_service), '%Y-%m-%d %H:%M:%S.%f', False)
 				t3 = datetime.now()
@@ -202,6 +204,7 @@ class lib_tools:
 					self.updateSettings()
 				except: log_utils.error()
 				if control.setting('library.service.update') == 'false' or service_update is False: continue
+				libepisodes().update()
 				libmovies().list_update()
 				libtvshows().list_update()
 				#libuserlist().check_update_time()
@@ -220,6 +223,7 @@ class lib_tools:
 		try:
 			allTraktItems = lib_tools().getAllTraktLists()
 			lib_tools().updateLists(selected_items, allTraktItems)
+			libepisodes().update()
 			libmovies().list_update()
 			libtvshows().list_update()
 			last_service_setting = datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -482,13 +486,13 @@ class libmovies:
 					content = i['mediatype']
 				except:
 					content = None
-				if content == 'movies' or content == None:
+				if content == 'movies' or content == None or content == 'movie':
 					try:
 						files_added = self.add('%s (%s)' % (i['title'], i['year']), i['title'], i['year'], i['imdb'], i['tmdb'], range=True)
 						if general_notification and files_added > 0: control.notification(title='%s (%s)' % (i['title'], i['year']), message=32554)
 						if files_added > 0: total_added += 1
 					except: log_utils.error()
-				elif content == 'tvshows':
+				elif content == 'tvshows' or content == 'tvshow':
 					try:
 						files_added = libtvshows().add(i['title'], i['year'], i['imdb'], i['tmdb'], i['tvdb'], range=True)
 						if files_added is None: continue
@@ -731,8 +735,7 @@ class libtvshows:
 		self.include_unknown = control.setting('library.include_unknown') or 'true'
 		self.date_time = datetime.utcnow()
 		if control.setting('library.importdelay') != 'true': self.date = self.date_time.strftime('%Y%m%d')
-		else:
-			self.date = (self.date_time - timedelta(hours=24)).strftime('%Y%m%d')
+		else: self.date = (self.date_time - timedelta(hours=24)).strftime('%Y%m%d')
 		self.block = False
 
 	def auto_tv_setup(self):
@@ -803,7 +806,6 @@ class libtvshows:
 				except: log_utils.error()
 		if self.library_update == 'true' and not control.condVisibility('Library.IsScanningVideo') and total_added > 0:
 			if contains:
-				libepisodes().update()
 				control.sleep(10000)
 				control.execute('UpdateLibrary(video)')
 			elif service_notification: control.notification(message=32103)
@@ -1021,8 +1023,7 @@ class libepisodes:
 		self.include_unknown = control.setting('library.include_unknown') or 'true'
 		self.date_time = datetime.utcnow()
 		if control.setting('library.importdelay') != 'true': self.date = self.date_time.strftime('%Y%m%d')
-		else:
-			self.date = (self.date_time - timedelta(hours=24)).strftime('%Y%m%d')
+		else: self.date = (self.date_time - timedelta(hours=24)).strftime('%Y%m%d')
 
 	def update(self):
 		# if control.setting('library.service.update') == 'false': control.notification(message=32106)
@@ -1085,8 +1086,7 @@ class libepisodes:
 		# __init__ doesn't get called from services so self.date never gets updated and new episodes are not added to the library
 		self.date_time = datetime.now()
 		if control.setting('library.importdelay') != 'true': self.date = self.date_time.strftime('%Y%m%d')
-		else:
-			self.date = (self.date_time - timedelta(hours=24)).strftime('%Y%m%d')
+		else: self.date = (self.date_time - timedelta(hours=24)).strftime('%Y%m%d')
 		for item in items:
 			it = None
 			if control.monitor.abortRequested():

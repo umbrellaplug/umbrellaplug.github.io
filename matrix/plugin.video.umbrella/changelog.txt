@@ -1,3 +1,26 @@
+[B][COLOR black]Update - v6.5.89 - Nov 22th, 2022[/COLOR][/B]
+--[FIX][I] Library update for episodes restored.[I]
+--[FIX][I] Reverted player back to 6.5.85 code.[I]
+--[INFO][I] There is currently an issue with playnext. I am aware of it and working on it.[I]
+--[INFO][I] If you are getting playback failed or issues. Turn off play next for now.[I]
+
+[B][COLOR black]Update - v6.5.88 - Nov 20th, 2022[/COLOR][/B]
+--[FIX][I] Reverted player back to 6.5.85 code.[I]
+--[FIX][I] Library update for episodes restored.[I]
+
+[B][COLOR black]Update - v6.5.86/87 - Nov 19th, 2022[/COLOR][/B]
+--[FIX][I] Adjustments for playing packs with playnext enabled and auto-resume.[I]
+--[FIX][I] Adjustments to library import for errors with checking content types.[I]
+
+[B][COLOR black]Update - v6.5.86 - Nov 19th, 2022[/COLOR][/B]
+--[FIX][I] Adjustments to library import for errors with checking content types.[I]
+
+[B][COLOR black]Update - v6.5.85 - Nov 14th, 2022[/COLOR][/B]
+--[ENHANCEMENT][I] Changed amount of results pulled to generate based on list to 20 for tv and movies.[I]
+--[ENHANCEMENT][I] Added similar to lists for tv and movies.[I]
+--[FIX][I] Adjusted URL for similar shows.[I]
+--[FIX][I] Added some checks for real-debrid cloud files.[I]
+
 [B][COLOR black]Update - v6.5.83 - Nov 10th, 2022[/COLOR][/B]
 --[ENHANCEMENT][I] Changed amount of results pulled to generate based on list to 20 for tv and movies.[I]
 

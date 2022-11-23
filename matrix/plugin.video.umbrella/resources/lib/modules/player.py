@@ -31,6 +31,7 @@ class Player(xbmc.Player):
 		xbmc.Player.__init__(self)
 		self.play_next_triggered = False
 		self.preScrape_triggered = False
+		self.playlist_built = False
 		self.playbackStopped_triggered = False
 		self.playback_resumed = False
 		self.onPlayBackStopped_ran = False
@@ -98,12 +99,19 @@ class Player(xbmc.Player):
 			item.setInfo(type='video', infoLabels=control.metadataClean(meta))
 			item.setProperty('IsPlayable', 'true')
 			if int(control.playlist.size()) < 1 and self.media_type == 'episode' and self.enable_playnext: #this is the change made for play next from widget.
-				episodelabel = '%sx%02d %s' % (int(season), int(episode), self.meta.get('title'))
-				item.setLabel(episodelabel) #set the episode name here.
-				control.playlist.clear()
-				control.playlist.add(url, item)
-				playerWindow.setProperty('umbrella.playlistStart_position', str(0))
-				control.player.play(control.playlist)
+				try:
+					episodelabel = '%sx%02d %s' % (int(season), int(episode), self.meta.get('title'))
+					if self.meta.get('title'):
+						item.setLabel(episodelabel) #set the episode name here.
+						control.playlist.add(url, item)
+						playerWindow.setProperty('umbrella.playlistStart_position', str(0))
+						control.player.play(control.playlist)
+					else:
+						if debridPackCall: control.player.play(url, item) # seems this is only way browseDebrid pack files will play and have meta marked as watched
+						else: control.resolve(int(argv[1]), True, item)
+				except:
+					if debridPackCall: control.player.play(url, item) # seems this is only way browseDebrid pack files will play and have meta marked as watched
+					else: control.resolve(int(argv[1]), True, item)
 			elif debridPackCall: control.player.play(url, item) # seems this is only way browseDebrid pack files will play and have meta marked as watched
 			else: control.resolve(int(argv[1]), True, item)
 			homeWindow.setProperty('script.trakt.ids', jsdumps(self.ids))
@@ -281,8 +289,9 @@ class Player(xbmc.Player):
 								if remaining_time < (self.playnext_time + 1) and remaining_time != 0:
 									xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_nextWindowXML)')
 									self.play_next_triggered = True
-							if int(control.playlist.size()) == 1:
+							if int(control.playlist.size()) == 1 and self.playlist_built == False:
 								self.buildPlaylist()
+								self.playlist_built = True
 					except: log_utils.error()
 					xbmc.sleep(1000)
 

@@ -50,6 +50,7 @@ monitor = monitor_class()
 player = xbmc.Player()
 player2 = xbmc.Player
 playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
+playlistM = xbmc.PlayList(xbmc.PLAYLIST_MUSIC)
 skin = xbmc.getSkinDir()
 
 deleteDir = xbmcvfs.rmdir
