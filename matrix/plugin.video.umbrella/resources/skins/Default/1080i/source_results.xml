@@ -273,6 +273,7 @@
 						<align>left</align>
 						<aligny>bottom</aligny>
 						<label>[B]$INFO[ListItem.Property(umbrella.count)]  $INFO[ListItem.Property(umbrella.name)][/B]</label>
+						<scroll>true</scroll>
 					</control>
 					<control type="label">
 						<description>Line2 cloud file</description>

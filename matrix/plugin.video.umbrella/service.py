@@ -101,11 +101,14 @@ class AddonCheckUpdate:
 		try:
 			import re
 			import requests
-			repo_xml = requests.get('https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/plugin.video.umbrella/addon.xml')
+			local_version = control.getUmbrellaVersion() # 5 char max so pre-releases do try to compare more chars than github version 6.5.941
+			if len(local_version) > 6: #test version
+				repo_xml = requests.get('https://raw.githubusercontent.com/umbrellaplug/umbrellatest/master/matrix/plugin.video.umbrella/addon.xml')
+			else:
+				repo_xml = requests.get('https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/plugin.video.umbrella/addon.xml')
 			if not repo_xml.status_code == 200:
 				return control.log('[ plugin.video.umbrella ]  Could not connect to remote repo XML: status code = %s' % repo_xml.status_code, LOGINFO)
 			repo_version = re.findall(r'<addon id=\"plugin.video.umbrella\".+version=\"(\d*.\d*.\d*)\"', repo_xml.text)[0]
-			local_version = control.getUmbrellaVersion()[:6] # 5 char max so pre-releases do try to compare more chars than github version
 			def check_version_numbers(current, new): # Compares version numbers and return True if github version is newer
 				current = current.split('.')
 				new = new.split('.')
@@ -160,14 +163,21 @@ class VersionIsUpdateCheck:
 
 class SyncTraktCollection:
 	def run(self):
-		control.log('[ plugin.video.umbrella ]  Trakt Collection Sync Starting...', LOGINFO)
-		control.execute('RunPlugin(%s?action=library_tvshowsToLibrarySilent&url=traktcollection)' % plugin)
-		control.execute('RunPlugin(%s?action=library_moviesToLibrarySilent&url=traktcollection)' % plugin)
-		control.log('[ plugin.video.umbrella ]  Trakt Collection Sync Complete', LOGINFO)
+		control.log('[ plugin.video.umbrella ]  Trakt Collection Sync Disabled...', LOGINFO)
+		#control.log('[ plugin.video.umbrella ]  Trakt Collection Sync Starting...', LOGINFO)
+		#control.execute('RunPlugin(%s?action=library_tvshowsToLibrarySilent&url=traktcollection)' % plugin)
+		#control.log('[ plugin.video.umbrella ]  Trakt Collection Sync TV Shows Complete', LOGINFO)
+		#control.execute('RunPlugin(%s?action=library_moviesToLibrarySilent&url=traktcollection)' % plugin)
+		#control.log('[ plugin.video.umbrella ]  Trakt Collection Sync Movies Complete', LOGINFO)
+		#control.log('[ plugin.video.umbrella ]  Trakt Collection Sync Complete', LOGINFO)
 
 class LibraryService:
 	def run(self):
-		control.log('[ plugin.video.umbrella ]  Library Update Service Starting (Every 6 Hours)...', LOGINFO)
+		try:
+			library_hours = float(control.setting('library.import.hours'))
+		except:
+			library_hours = int(6)
+		control.log('[ plugin.video.umbrella ]  Library Update Service Starting (Runs Every %s Hours)...' % library_hours,  LOGINFO)
 		from resources.lib.modules import library
 		library.lib_tools().service() # method contains control.monitor().waitForAbort() while loop every 6hrs
 
@@ -179,17 +189,31 @@ class SyncTraktService:
 		trakt.trakt_service_sync() # method contains "control.monitor().waitForAbort()" while loop every "service_syncInterval" minutes
 
 try:
+	testUmbrella = False
 	kodiVersion = control.getKodiVersion(full=True)
 	addonVersion = control.addon('plugin.video.umbrella').getAddonInfo('version')
-	repoVersion = control.addon('repository.umbrella').getAddonInfo('version')
+	if len(str(control.getUmbrellaVersion())) > 6:
+		repoVersion = control.addon('repository.umbrellatest').getAddonInfo('version')
+		repoName = 'repository.umbrellatest'
+		testUmbrella = True
+	else:
+		try:
+			repoVersion = control.addon('repository.umbrella').getAddonInfo('version')
+			repoName = 'repository.umbrella'
+		except:
+			repoVersion = 'unknown'
+			repoName = 'Unknown Repo'
+		
 	fsVersion = control.addon('script.module.cocoscrapers').getAddonInfo('version')
 	#maVersion = control.addon('script.module.myaccounts').getAddonInfo('version')
 	log_utils.log('########   CURRENT Umbrella VERSIONS REPORT   ########', level=LOGINFO)
+	if testUmbrella == True:
+		log_utils.log('########   TEST Umbrella Version   ########', level=LOGINFO)
 	log_utils.log('##   Platform: %s' % str(sys_platform), level=LOGINFO)
 	log_utils.log('##   Kodi Version: %s' % str(kodiVersion), level=LOGINFO)
 	log_utils.log('##   python Version: %s' % pythonVersion, level=LOGINFO)
 	log_utils.log('##   plugin.video.umbrella Version: %s' % str(addonVersion), level=LOGINFO)
-	log_utils.log('##   repository.umbrella Version: %s' % str(repoVersion), level=LOGINFO)
+	log_utils.log('##   %s Version: %s' % (str(repoName), str(repoVersion)), level=LOGINFO)
 	log_utils.log('##   script.module.cocoscrapers Version: %s' % str(fsVersion), level=LOGINFO)
 	log_utils.log('######   UMBRELLA SERVICE ENTERING KEEP ALIVE   #####', level=LOGINFO)
 except:
@@ -275,16 +299,16 @@ def main():
 		syncTraktService = Thread(target=SyncTraktService().run) # run service in case user auth's trakt later, sync will loop and do nothing without valid auth'd account
 		syncTraktService.start()
 
-		if getTraktCredentialsInfo():
-			if control.setting('autoTraktOnStart') == 'true':
-				SyncTraktCollection().run()
-			if int(control.setting('schedTraktTime')) > 0:
-				import threading
-				log_utils.log('#################### STARTING TRAKT SCHEDULING ################', level=LOGINFO)
-				log_utils.log('#################### SCHEDULED TIME FRAME '+ control.setting('schedTraktTime')  + ' HOURS ###############', level=LOGINFO)
-				timeout = 3600 * int(control.setting('schedTraktTime'))
-				schedTrakt = threading.Timer(timeout, SyncTraktCollection().run) # this only runs once at the designated interval time to wait...not repeating
-				schedTrakt.start()
+		# if getTraktCredentialsInfo():
+		# 	if control.setting('autoTraktOnStart') == 'true':
+		# 		SyncTraktCollection().run()
+		# 	if int(control.setting('schedTraktTime')) > 0:
+		# 		import threading
+		# 		log_utils.log('#################### STARTING TRAKT SCHEDULING ################', level=LOGINFO)
+		# 		log_utils.log('#################### SCHEDULED TIME FRAME '+ control.setting('schedTraktTime')  + ' HOURS ###############', level=LOGINFO)
+		# 		timeout = 3600 * int(control.setting('schedTraktTime'))
+		# 		schedTrakt = threading.Timer(timeout, SyncTraktCollection().run) # this only runs once at the designated interval time to wait...not repeating
+		# 		schedTrakt.start()
 		break
 	SettingsMonitor().waitForAbort()
 	control.log('[ plugin.video.umbrella ]  Settings Monitor Service Stopping...', LOGINFO)

@@ -91,7 +91,7 @@
 				<width>1350</width>
 				<height>900</height>
 				<onright>2051</onright>
-				<onleft>2053</onleft>
+				<onleft>2052</onleft>
 				<onup>2050</onup>
 				<ondown>2050</ondown>
 				<scrolltime tween="sine">400</scrolltime>
@@ -279,7 +279,7 @@
 					<control type="button" id="2052">
 						<description>Cancel Button</description>
 						<left>140</left>
-						<onright>2053</onright>
+						<onright>2050</onright>
 						<onleft>2051</onleft>
 						<width>120</width>
 						<height>70</height>
@@ -287,23 +287,6 @@
 						<texturefocus colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/button5.png</texturefocus>
 						<texturenofocus>common/button5.png</texturenofocus>
 						<label>$ADDON[plugin.video.umbrella 32180]</label>
-						<font>font12</font>
-						<align>center</align>
-						<textcolor>white</textcolor>
-						<focusedcolor>white</focusedcolor>
-						<visible>true</visible>
-					</control>
-					<control type="button" id="2053">
-						<description>Import Now Button</description>
-						<left>280</left>
-						<onright>2050</onright>
-						<onleft>2052</onleft>
-						<width>200</width>
-						<height>70</height>
-						<textoffsetx>0</textoffsetx>
-						<texturefocus colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/button5.png</texturefocus>
-						<texturenofocus>common/button5.png</texturenofocus>
-						<label>$ADDON[plugin.video.umbrella 40223]</label>
 						<font>font12</font>
 						<align>center</align>
 						<textcolor>white</textcolor>

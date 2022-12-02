@@ -3572,7 +3572,7 @@ msgid "session_id"
 msgstr ""
 
 msgctxt "#40174"
-msgid "With this setting enabled, Source Select settings will be overridden for episodes and set to Auto Select"
+msgid "With this setting enabled, Source Select settings will be overridden for TV Shows and set to AutoPlay."
 msgstr ""
 
 msgctxt "#40175"
@@ -3764,7 +3764,7 @@ msgid "# of List Importing:"
 msgstr ""
 
 msgctxt "#40222"
-msgid "Select Lists to Import"
+msgid "Select Lists to Auto-Import"
 msgstr ""
 
 msgctxt "#40223"
@@ -3921,4 +3921,36 @@ msgstr ""
 
 msgctxt "#40261"
 msgid "Similar to Recently Watched"
+msgstr ""
+
+msgctxt "#40262"
+msgid "Select Lists to Manually Import Now (One-time)"
+msgstr ""
+
+msgctxt "#40263"
+msgid "Used to select which Trakt lists to auto import into library. Collection, Watchlist, Liked Lists, and User Lists can be auto-imported. This import repeats."
+msgstr ""
+
+msgctxt "#40264"
+msgid "Used to select Trakt lists to  import into library now. Collection, Watchlist, Liked Lists, and User Lists can be imported."
+msgstr ""
+
+msgctxt "#40265"
+msgid "Movie select action"
+msgstr ""
+
+msgctxt "#40266"
+msgid "TV select action"
+msgstr ""
+
+msgctxt "#40267"
+msgid "If Continuous playback (Playnext) is enabled under "TV shows" section Source Select settings will be overridden for TV Shows and set to AutoPlay automatically."
+msgstr ""
+
+msgctxt "#40268"
+msgid "Recently Released (TMDb)"
+msgstr ""
+
+msgctxt "#40269"
+msgid "Recently Released"
 msgstr ""

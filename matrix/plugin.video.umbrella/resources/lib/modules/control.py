@@ -390,8 +390,10 @@ def trigger_widget_refresh():
 	execute('UpdateLibrary(video,/fake/path/to/force/refresh/on/home)') # make sure this is ok coupled with above
 
 def refresh_playAction(): # for umbrella global CM play actions
-	autoPlay = 'true' if setting('play.mode') == '1' else ''
-	homeWindow.setProperty('umbrella.autoPlay.enabled', autoPlay)
+	autoPlayTV = 'true' if setting('play.mode.tv') == '1' else ''
+	homeWindow.setProperty('umbrella.autoPlaytv.enabled', autoPlayTV)
+	autoPlayMovie = 'true' if setting('play.mode.movie') == '1' else ''
+	homeWindow.setProperty('umbrella.autoPlayMovie.enabled', autoPlayMovie)
 
 def refresh_libPath(): # for umbrella global CM library actions
 	homeWindow.setProperty('umbrella.movieLib.path', transPath(setting('library.movie')))
@@ -467,5 +469,6 @@ def checkPlayNextEpisodes():
 			nextEpisodeSetting = 0
 		if nextEpisodeSetting != 2:
 			jsonrpc('{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"videoplayer.autoplaynextitem", "value":[2]}, "id":1}')
+		setSetting('play.mode.tv', '1')
 	else:pass
 

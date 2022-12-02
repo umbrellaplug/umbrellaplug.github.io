@@ -34,6 +34,7 @@ class Movies:
 		self.notifications = notifications
 		self.date_time = datetime.now()
 		self.today_date = (self.date_time).strftime('%Y-%m-%d')
+		self.yesterday_date = datetime.now() - timedelta(days=1)
 		self.hidecinema = getSetting('hidecinema') == 'true'
 		self.trakt_user = getSetting('trakt.user.name').strip()
 		self.traktCredentials = trakt.getTraktCredentialsInfo()
@@ -61,6 +62,7 @@ class Movies:
 		self.tmdb_certification_link = 'https://api.themoviedb.org/3/discover/movie?api_key=%s&language=en-US&region=US&primary_release_date.lte=%s&certification_country=US&certification=%s&sort_by=%s&page=1' % ('%s', self.today_date, '%s', self.tmdb_DiscoverSort())
 		self.tmdb_recommendations = 'https://api.themoviedb.org/3/movie/%s/recommendations?api_key=%s&language=en-US&region=US&page=1'
 		self.tmdb_similar = 'https://api.themoviedb.org/3/movie/%s/similar?api_key=%s&language=en-US&region=US&page=1'
+		self.tmdb_discovery_released_link = 'https://api.themoviedb.org/3/discover/movie?api_key=%s&language=en-US&region=US&release_date.gte=%s&release_date.lte=%s&with_release_type=4|5&page=1'% ('%s', (self.yesterday_date-timedelta(days=30)).strftime('%Y-%m-%d'), self.yesterday_date.strftime('%Y-%m-%d'))
 
 		self.imdb_link = 'https://www.imdb.com'
 		self.persons_link = 'https://www.imdb.com/search/name/?count=100&name='
@@ -402,6 +404,27 @@ class Movies:
 			if self.useContainerTitles:
 				try: control.setContainerName(getLS(40259)+' '+item.get('title'))
 				except: pass
+			next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.movieDirectory(self.list)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			return
+
+	def tmdb_released_formats(self, create_directory=True):
+		self.list = []
+		try:
+			historyurl = 'https://api.trakt.tv/users/me/history/movies?limit=20&page=1'
+			randomItems = self.trakt_list(historyurl, self.trakt_user)
+			if not randomItems: return
+			import random
+			item = randomItems[random.randint(0, len(randomItems) - 1)]
+			url = self.tmdb_released
+			self.list = tmdb_indexer().tmdb_list(url)
 			next = ''
 			for i in range(len(self.list)): self.list[i]['next'] = next
 			self.worker()
@@ -777,13 +800,17 @@ class Movies:
 	def traktCollection(self, url, create_directory=True):
 		self.list = []
 		try:
-			q = dict(parse_qsl(urlsplit(url).query))
-			index = int(q['page']) - 1
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q['page']) - 1
+			except:
+				q = dict(parse_qsl(urlsplit(url).query))
 			self.list = traktsync.fetch_collection('movies_collection')
-			self.sort() # sort before local pagination
-			if getSetting('trakt.paginate.lists') == 'true' and self.list:
-				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
-				self.list = paginated_ids[index]
+			if create_directory:
+				self.sort() # sort before local pagination
+				if getSetting('trakt.paginate.lists') == 'true' and self.list:
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					self.list = paginated_ids[index]
 			try:
 				if int(q['limit']) != len(self.list): raise Exception()
 				q.update({'page': str(int(q['page']) + 1)})
@@ -1274,7 +1301,7 @@ class Movies:
 			control.hide() ; control.notification(title=32001, message=33049)
 		from resources.lib.modules.player import Bookmarks
 		sysaddon, syshandle = 'plugin://plugin.video.umbrella/', int(argv[1])
-		play_mode = getSetting('play.mode')
+		play_mode = getSetting('play.mode.movie')
 		rescrape_useDefault = getSetting('rescrape.default') == 'true'
 		rescrape_method = getSetting('rescrape.default2')
 		is_widget = 'plugin' not in control.infoLabel('Container.PluginName')

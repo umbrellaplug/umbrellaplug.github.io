@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-3
 """
 	Umbrella Add-on
 """
@@ -57,14 +57,14 @@ class TraktImportListManagerXML(BaseDialog):
 				elif focus_id == 2052: # Cancel Button
 					self.selected_items = None
 					self.close()
-				elif focus_id == 2053: # Import Now Button
-					self.selected_items = []
-					for item in self.item_list:
-						if item.getProperty('umbrella.isSelected') == 'true':
-							self.selected_items.append({'type': item.getProperty('umbrella.action'), 'list_name': item.getProperty('umbrella.list_name'), 'url': item.getProperty('umbrella.url')})
-					itemtopass = self.selected_items
-					self.close()
-					lib_tools().importNow(itemtopass)
+				# elif focus_id == 2053: # Import Now Button
+				# 	self.selected_items = []
+				# 	for item in self.item_list:
+				# 		if item.getProperty('umbrella.isSelected') == 'true':
+				# 			self.selected_items.append({'type': item.getProperty('umbrella.action'), 'list_name': item.getProperty('umbrella.list_name'), 'url': item.getProperty('umbrella.url')})
+				# 	itemtopass = self.selected_items
+				# 	self.close()
+				# 	lib_tools().importNow(itemtopass)
 			elif action in self.context_actions:
 				cm = []
 				chosen_listitem = self.item_list[self.get_position(self.window_id)]

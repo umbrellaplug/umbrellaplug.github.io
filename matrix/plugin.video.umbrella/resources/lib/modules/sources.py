@@ -141,7 +141,9 @@ class Sources:
 			else: uncached_items += [i for i in items if re.match(r'^uncached.*torrent', i['source'])]
 			if select is None:
 				if episode is not None and self.enable_playnext: select = '1'
-				else: select = getSetting('play.mode')
+				elif episode == None:
+					select = getSetting('play.mode.movie')
+				else: select = getSetting('play.mode.tv')
 			title = tvshowtitle if tvshowtitle is not None else title
 			self.imdb = imdb ; self.tmdb = tmdb ; self.tvdb = tvdb ; self.title = title ; self.year = year
 			self.season = season ; self.episode = episode
@@ -1155,7 +1157,7 @@ class Sources:
 
 	def alterSources(self, url, meta):
 		try:
-			if getSetting('play.mode') == '1' or (self.enable_playnext and 'episode' in meta): url += '&select=0'
+			if getSetting('play.mode.tv') == '1' or (self.enable_playnext and 'episode' in meta) or getSetting('play.mode.movie') == '1': url += '&select=0'
 			else: url += '&select=1'
 			control.execute('PlayMedia(%s)' % url)
 		except: log_utils.error()

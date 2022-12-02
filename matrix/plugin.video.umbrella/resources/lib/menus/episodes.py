@@ -742,7 +742,7 @@ class Episodes:
 		multi_unwatchedEnabled = getSetting('multi.unwatched.enabled') == 'true'
 		try: airEnabled = getSetting('tvshows.air.enabled') if 'ForceAirEnabled' not in items[0] else 'true'
 		except: airEnabled = 'false'
-		play_mode = getSetting('play.mode')
+		play_mode = getSetting('play.mode.tv')
 		rescrape_useDefault = getSetting('rescrape.default') == 'true'
 		rescrape_method = getSetting('rescrape.default2')
 		enable_playnext = getSetting('enable.playnext') == 'true'

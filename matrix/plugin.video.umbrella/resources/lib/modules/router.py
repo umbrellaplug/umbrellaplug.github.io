@@ -707,6 +707,12 @@ def router(argv2):
 				isFromSettings=True
 			from resources.lib.modules import library
 			library.lib_tools().importListsManager(isFromSettings)
+		elif action == 'tools_traktImportListsNow':
+			isFromSettings=False
+			if query == 'settings':
+				isFromSettings=True
+			from resources.lib.modules import library
+			library.lib_tools().importListsNow(isFromSettings)
 
 	####################################################
 	#---Play
@@ -719,9 +725,6 @@ def router(argv2):
 		elif action == "play_preScrapeNext":
 			from resources.lib.modules.player import PlayNext
 			PlayNext().prescrapeNext()
-		elif action == "play_preScrapeNextBackup":
-			from resources.lib.modules.player import PlayNext
-			PlayNext().prescrapeNextBackup(title, imdb, tmdb, tvdb, season, episode)
 		elif action == "play_nextWindowXML":
 			from resources.lib.modules.player import PlayNext
 			play_next = PlayNext()

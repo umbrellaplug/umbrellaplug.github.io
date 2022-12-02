@@ -54,6 +54,8 @@ class Navigator:
 			self.addDirectoryItem(32425 if self.indexLabels else 32424, 'movies&url=traktanticipated', 'trakt.png' if self.iconLogos else 'in-theaters.png', 'DefaultMovies.png')
 		if getMenuEnabled('navi.movie.tmdb.upcoming'):
 			self.addDirectoryItem(32427 if self.indexLabels else 32426, 'tmdbmovies&url=tmdb_upcoming', 'tmdb.png' if self.iconLogos else 'in-theaters.png', 'DefaultMovies.png')
+		if getMenuEnabled('navi.movie.tmdb.discoverreleased'):
+			self.addDirectoryItem(40268 if self.indexLabels else 40269, 'tmdbmovies&url=tmdb_discovery_released', 'tmdb.png' if self.iconLogos else 'trending.png', 'DefaultMovies.png')
 		if getMenuEnabled('navi.movie.imdb.popular'):
 			self.addDirectoryItem(32429 if self.indexLabels else 32428, 'movies&url=mostpopular', 'imdb.png' if self.iconLogos else 'most-popular.png', 'DefaultMovies.png')
 		if getMenuEnabled('navi.movie.tmdb.popular'):
@@ -125,8 +127,8 @@ class Navigator:
 			if self.traktIndicators:
 				self.addDirectoryItem(35308, 'moviesUnfinished&url=traktunfinished', 'trakt.png', 'trakt.png', queue=True)
 				self.addDirectoryItem(32036, 'movies&url=trakthistory', 'trakt.png', 'trakt.png', queue=True)
-			self.addDirectoryItem(32683, 'movies&url=traktwatchlist', 'trakt.png', 'trakt.png', queue=True, context=(32551, 'library_moviesToLibrary&url=traktwatchlist&name=traktwatchlist'))
-			self.addDirectoryItem(32032, 'movies&url=traktcollection', 'trakt.png', 'trakt.png', queue=True, context=(32551, 'library_moviesToLibrary&url=traktcollection&name=traktcollection'))
+			self.addDirectoryItem(32683, 'movies&url=traktwatchlist', 'trakt.png', 'trakt.png')
+			self.addDirectoryItem(32032, 'movies&url=traktcollection', 'trakt.png', 'trakt.png')
 			self.addDirectoryItem('My Liked Lists', 'movies_LikedLists', 'trakt.png', 'trakt.png', queue=True)
 		if self.imdbCredentials: self.addDirectoryItem(32682, 'movies&url=imdbwatchlist', 'imdb.png', 'imdb.png', queue=True) #watchlist broken currently 10-2022
 		if not lite:
@@ -213,8 +215,10 @@ class Navigator:
 				self.addDirectoryItem(32203, 'calendar&url=mycalendarUpcoming', 'trakt.png', 'trakt.png', queue=True)
 				self.addDirectoryItem(32204, 'calendar&url=mycalendarPremiers', 'trakt.png', 'trakt.png', queue=True)
 				self.addDirectoryItem(32036, 'calendar&url=trakthistory', 'trakt.png', 'trakt.png', queue=True)
-			self.addDirectoryItem(32683, 'tvshows&url=traktwatchlist', 'trakt.png', 'trakt.png', context=(32551, 'library_tvshowsToLibrary&url=traktwatchlist&name=traktwatchlist'))
-			self.addDirectoryItem(32032, 'tvshows&url=traktcollection', 'trakt.png', 'trakt.png', context=(32551, 'library_tvshowsToLibrary&url=traktcollection&name=traktcollection'))
+			#self.addDirectoryItem(32683, 'tvshows&url=traktwatchlist', 'trakt.png', 'trakt.png', context=(32551, 'library_tvshowsToLibrary&url=traktwatchlist&name=traktwatchlist'))
+			#self.addDirectoryItem(32032, 'tvshows&url=traktcollection', 'trakt.png', 'trakt.png', context=(32551, 'library_tvshowsToLibrary&url=traktcollection&name=traktcollection'))
+			self.addDirectoryItem(32683, 'tvshows&url=traktwatchlist', 'trakt.png', 'trakt.png')
+			self.addDirectoryItem(32032, 'tvshows&url=traktcollection', 'trakt.png', 'trakt.png')
 			self.addDirectoryItem('My Liked Lists', 'shows_LikedLists', 'trakt.png', 'trakt.png', queue=True)
 		if self.imdbCredentials: self.addDirectoryItem(32682, 'tvshows&url=imdbwatchlist', 'imdb.png', 'imdb.png')
 		if not lite:
@@ -278,7 +282,7 @@ class Navigator:
 		self.addDirectoryItem(35063, 'movies_traktCollectionManager', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(35064, 'shows_traktCollectionManager', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(35065, 'tools_traktLikedListManager', 'tools.png', 'DefaultAddonService.png', isFolder=False)
-		self.addDirectoryItem(40217, 'tools_traktImportListManager', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		#self.addDirectoryItem(40217, 'tools_traktImportListManager', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(35066, 'tools_forceTraktSync', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 

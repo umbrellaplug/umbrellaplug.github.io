@@ -662,6 +662,11 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="navi.movie.tmdb.discoverreleased" type="boolean" label="40268" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
 				<setting id="navi.movie.trakt.popular" type="boolean" label="32433" help="">
 					<level>0</level>
 					<default>true</default>
@@ -1884,6 +1889,37 @@
 							<option label="32334">1</option>
 						</options>
 					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="list" format="string">
+						<heading>32331</heading>
+					</control>
+				</setting>
+				<setting id="play.mode.movie" type="integer" label="40265" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32333">0</option>
+							<option label="32334">1</option>
+						</options>
+					</constraints>
+					<control type="list" format="string">
+						<heading>32331</heading>
+					</control>
+				</setting>
+				<setting id="play.mode.tv" type="integer" label="40266" help="40267">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32333">0</option>
+							<option label="32334">1</option>
+						</options>
+					</constraints>
 					<control type="list" format="string">
 						<heading>32331</heading>
 					</control>
@@ -2609,34 +2645,27 @@
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
-			</group>
-			<group id="2" label="35057">
 				<setting id="trakt.HiddenManager.hideWatched" type="boolean" label="32183" help="">
 					<level>0</level>
 					<default>false</default>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="!is" setting="trakt.user.token"/>
+							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
-			</group>
-			<group id="3" label="32645">
 				<setting id="autoTraktOnStart" type="boolean" label="32646" help="">
 					<level>0</level>
 					<default>False</default>
 					<dependencies>
-						<dependency type="enable">
-							<condition operator="!is" setting="trakt.user.name"/>
-						</dependency>
 						<dependency type="visible">
-							<condition operator="!is" setting="trakt.user.name"/>
+							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
-				<setting id="schedTraktTime" type="integer" label="32647" help="">
+				<setting id="schedTraktTime" type="integer" label="" help="">
 					<level>0</level>
 					<default>0</default>
 					<constraints>
@@ -2644,29 +2673,23 @@
 						<maximum>24</maximum>
 					</constraints>
 					<dependencies>
-						<dependency type="enable">
-							<condition operator="is" setting="autoTraktOnStart">true</condition>
-						</dependency>
 						<dependency type="visible">
-							<condition operator="!is" setting="trakt.user.name"/>
+							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 					</dependencies>
 					<control type="slider" format="integer">
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="trakt.message2" type="string" label="32648" help="">
+				<setting id="trakt.message2" type="string" label="" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
 					<dependencies>
-						<dependency type="enable">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
 						<dependency type="visible">
-							<condition operator="!is" setting="trakt.user.name"/>
+							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 					</dependencies>
 					<control type="edit" format="string">
@@ -3919,6 +3942,9 @@
 						<dependency type="enable">
 							<condition operator="is" setting="library.service.update">True</condition>
 						</dependency>
+						<dependency type="visible">
+							<condition operator="is" setting="trakt.isauthed"/>
+						</dependency>
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
@@ -3934,6 +3960,9 @@
 						</dependency>
 						<dependency type="visible">
 							<condition operator="is" setting="library.autoimportlists">True</condition>
+						</dependency>
+						<dependency type="visible">
+							<condition operator="is" setting="trakt.isauthed"/>
 						</dependency>
 					</dependencies>
 					<control type="button" format="action">
@@ -3954,13 +3983,16 @@
 						<dependency type="enable">
 							<condition on="property" name="infoBool">false</condition>
 						</dependency>
+						<dependency type="visible">
+							<condition operator="is" setting="trakt.isauthed"/>
+						</dependency>
 					</dependencies>
 					<control type="button" format="action">
 						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_traktImportListManager)</data>
 						<close>true</close>
 					</control>
 				</setting>
-				<setting id="library.autoimportlists.select" type="string" label="40222" help="" parent="library.autoimportlists">
+				<setting id="library.autoimportlists.select" type="string" label="40222" help="40263" parent="library.autoimportlists">
 					<level>0</level>
 					<default></default>
 					<constraints>
@@ -3973,9 +4005,28 @@
 						<dependency type="enable">
 							<condition operator="is" setting="library.autoimportlists">True</condition>
 						</dependency>
+						<dependency type="visible">
+							<condition operator="is" setting="trakt.isauthed"/>
+						</dependency>
 					</dependencies>
 					<control type="button" format="action">
 						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_traktImportListManager&amp;query=settings)</data>
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="library.autoimportlists.selectimportNow" type="string" label="40262" help="40264">
+					<level>0</level>
+					<default></default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="trakt.isauthed"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_traktImportListsNow&amp;query=settings)</data>
 						<close>true</close>
 					</control>
 				</setting>

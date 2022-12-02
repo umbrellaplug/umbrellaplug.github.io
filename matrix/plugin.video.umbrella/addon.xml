@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.89">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.94">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.7" />
@@ -31,11 +31,23 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.89 - Nov 22th, 2022[/COLOR][/B]
---[FIX][I] Library update for episodes restored.[I]
---[FIX][I] Reverted player back to 6.5.85 code.[I]
---[INFO][I] There is currently an issue with playnext. I am aware of it and working on it.[I]
---[INFO][I] If you are getting playback failed or issues. Turn off play next for now.[I]
+[B][COLOR black]Update - v6.5.90-94 - Dec 1st, 2022[/COLOR][/B]
+--[FIX][I] Removed entire Sync Trakt Collection section from settings.[I]
+--[FIX][I] Adjusted Trakt Sync for devices that do not have "System.InternetState".[I]
+--[FIX][I] Adjustment for trakt watchlist and collection imports.[I]
+--[FIX][I] Fixed typo causing tables to not be dropped correctly when updating lists.[I]
+--[FIX][I] Changed name for recently released TMDB list. Small adjustment for logging.[I]
+--[FIX][I] Adjustment to watchlist activity for sync.[I]
+--[FIX][I] Additional logging for watchlist sync.[I]
+--[FIX][I] Trakt revoke now deletes Trakt Cache.[I]
+--[Enhancement][I] Movies and TV Source Select options broken into different settings.[I]
+--[ENHANCEMENT][I] Add collection to list imports.[I]
+--[ENHANCEMENT][I] Made manual import now and automatic import different settings.[I]
+--[ENHANCEMENT][I] Added recently released on media formats for lists.[I]
+--[ENHANCEMENT][I] Made changes to version comparison to allow for test version detection.[I]
+--[ENHANCEMENT][I] Movies and TV Source Select options broken into different settings.[I]
+--[INFORMATION][I] All list importing settings have been moved to the "Library" section of settings.[I]
+--[CREDIT][I] Thanks to user "-fr1sty" for reporting internetstate and library import issues.
 		</news>
 	</extension>
 </addon>
