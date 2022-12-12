@@ -1,3 +1,9 @@
+
+[B][COLOR black]Update - v6.5.95 - Dec 11th, 2022[/COLOR][/B]
+--[FIX][I] Removed test version detection to stop accidentally deleting trakt and settings.[I]
+--[INFORMATION][I] Sorry for any issues this may have caused anyone.[I]
+--[ENHANCEMENT][I] Changed cocoscrapers required version to force update.[I]
+
 [B][COLOR black]Update - v6.5.90-94 - Dec 1st, 2022[/COLOR][/B]
 --[FIX][I] Removed entire Sync Trakt Collection section from settings.[I]
 --[FIX][I] Adjusted Trakt Sync for devices that do not have "System.InternetState".[I]

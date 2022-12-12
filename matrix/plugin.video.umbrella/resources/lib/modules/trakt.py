@@ -159,8 +159,8 @@ def traktRevoke(fromSettings=0):
 		control.setSetting('trakt.refreshtoken', '')
 		try:	
 			from resources.lib.database import traktsync
-			clr_traktSync = {'bookmarks': False, 'hiddenProgress': False, 'liked_lists': False, 'movies_collection': False, 'movies_watchlist': False, 'popular_lists': False,
-					'public_lists': False, 'shows_collection': False, 'shows_watchlist': False, 'trending_lists': False, 'user_lists': False, 'watched': False}
+			clr_traktSync = {'bookmarks': True, 'hiddenProgress': True, 'liked_lists': True, 'movies_collection': True, 'movies_watchlist': True, 'popular_lists': True,
+					'public_lists': True, 'shows_collection': True, 'shows_watchlist': True, 'trending_lists': True, 'user_lists': True, 'watched': True}
 			cleared = traktsync.delete_tables(clr_traktSync)
 			if cleared:
 				log_utils.log('Trakt tables cleared after revoke.', level=log_utils.LOGINFO)

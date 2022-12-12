@@ -3,10 +3,12 @@
 	Umbrella Add-on
 """
 
-from resources.lib.modules import control, log_utils, my_accounts
+from resources.lib.modules import control, log_utils
 from sys import version_info, platform as sys_platform
 from threading import Thread
 import xbmc
+import time
+from datetime import timedelta
 window = control.homeWindow
 pythonVersion = '{}.{}.{}'.format(version_info[0], version_info[1], version_info[2])
 plugin = 'plugin://plugin.video.umbrella/'
@@ -101,14 +103,11 @@ class AddonCheckUpdate:
 		try:
 			import re
 			import requests
-			local_version = control.getUmbrellaVersion() # 5 char max so pre-releases do try to compare more chars than github version 6.5.941
-			if len(local_version) > 6: #test version
-				repo_xml = requests.get('https://raw.githubusercontent.com/umbrellaplug/umbrellatest/master/matrix/plugin.video.umbrella/addon.xml')
-			else:
-				repo_xml = requests.get('https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/plugin.video.umbrella/addon.xml')
+			repo_xml = requests.get('https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/plugin.video.umbrella/addon.xml')
 			if not repo_xml.status_code == 200:
 				return control.log('[ plugin.video.umbrella ]  Could not connect to remote repo XML: status code = %s' % repo_xml.status_code, LOGINFO)
 			repo_version = re.findall(r'<addon id=\"plugin.video.umbrella\".+version=\"(\d*.\d*.\d*)\"', repo_xml.text)[0]
+			local_version = control.getUmbrellaVersion()[:6] # 5 char max so pre-releases do try to compare more chars than github version
 			def check_version_numbers(current, new): # Compares version numbers and return True if github version is newer
 				current = current.split('.')
 				new = new.split('.')
@@ -163,7 +162,7 @@ class VersionIsUpdateCheck:
 
 class SyncTraktCollection:
 	def run(self):
-		control.log('[ plugin.video.umbrella ]  Trakt Collection Sync Disabled...', LOGINFO)
+		control.log('[ plugin.video.umbrella ]  Trakt Collection Sync Import Disabled...', LOGINFO)
 		#control.log('[ plugin.video.umbrella ]  Trakt Collection Sync Starting...', LOGINFO)
 		#control.execute('RunPlugin(%s?action=library_tvshowsToLibrarySilent&url=traktcollection)' % plugin)
 		#control.log('[ plugin.video.umbrella ]  Trakt Collection Sync TV Shows Complete', LOGINFO)
@@ -189,31 +188,17 @@ class SyncTraktService:
 		trakt.trakt_service_sync() # method contains "control.monitor().waitForAbort()" while loop every "service_syncInterval" minutes
 
 try:
-	testUmbrella = False
 	kodiVersion = control.getKodiVersion(full=True)
 	addonVersion = control.addon('plugin.video.umbrella').getAddonInfo('version')
-	if len(str(control.getUmbrellaVersion())) > 6:
-		repoVersion = control.addon('repository.umbrellatest').getAddonInfo('version')
-		repoName = 'repository.umbrellatest'
-		testUmbrella = True
-	else:
-		try:
-			repoVersion = control.addon('repository.umbrella').getAddonInfo('version')
-			repoName = 'repository.umbrella'
-		except:
-			repoVersion = 'unknown'
-			repoName = 'Unknown Repo'
-		
+	repoVersion = control.addon('repository.umbrella').getAddonInfo('version')
 	fsVersion = control.addon('script.module.cocoscrapers').getAddonInfo('version')
 	#maVersion = control.addon('script.module.myaccounts').getAddonInfo('version')
 	log_utils.log('########   CURRENT Umbrella VERSIONS REPORT   ########', level=LOGINFO)
-	if testUmbrella == True:
-		log_utils.log('########   TEST Umbrella Version   ########', level=LOGINFO)
 	log_utils.log('##   Platform: %s' % str(sys_platform), level=LOGINFO)
 	log_utils.log('##   Kodi Version: %s' % str(kodiVersion), level=LOGINFO)
 	log_utils.log('##   python Version: %s' % pythonVersion, level=LOGINFO)
 	log_utils.log('##   plugin.video.umbrella Version: %s' % str(addonVersion), level=LOGINFO)
-	log_utils.log('##   %s Version: %s' % (str(repoName), str(repoVersion)), level=LOGINFO)
+	log_utils.log('##   repository.umbrella Version: %s' % str(repoVersion), level=LOGINFO)
 	log_utils.log('##   script.module.cocoscrapers Version: %s' % str(fsVersion), level=LOGINFO)
 	log_utils.log('######   UMBRELLA SERVICE ENTERING KEEP ALIVE   #####', level=LOGINFO)
 except:
@@ -239,31 +224,45 @@ class PremAccntNotification:
 			if account_info:
 				if not account_info['isSubscribed']:
 					# log_utils.log('AD account_info = %s' % account_info, log_utils.LOGINFO)
-					expires = datetime.fromtimestamp(account_info['premiumUntil'])
+					try:
+						expires = datetime.fromtimestamp(account_info['premiumUntil'])
+					except:
+						expires = datetime.today()-timedelta(days=1)
+						control.notification(message='AllDebrid Account has no expiration. Invalid or free account.', icon=control.joinPath(control.artPath(), 'alldebrid.png'))
 					days_remaining = (expires - datetime.today()).days # int
-					if self.withinRangeCheck('alldebrid', days_remaining):
-						control.notification(message='AllDebrid Account expires in %s days' % days_remaining, icon=control.joinPath(control.artPath(), 'alldebrid.png'))
+					if days_remaining >= 0:
+						if self.withinRangeCheck('alldebrid', days_remaining):
+							control.notification(message='AllDebrid Account expires in %s days' % days_remaining, icon=control.joinPath(control.artPath(), 'alldebrid.png'))
 
 		if control.setting('premiumizeusername') != '' and control.setting('premiumizeexpirynotice') == 'true':
 			account_info = premiumize.Premiumize().account_info()
 			if account_info:
 				# log_utils.log('PM account_info = %s' % account_info, log_utils.LOGINFO)
-				expires = datetime.fromtimestamp(account_info['premium_until'])
+				try: 
+					expires = datetime.fromtimestamp(account_info['premium_until'])
+				except:
+					expires = datetime.today()-timedelta(days=1)
+					control.notification(message='Premiumize.me Account has no expiration. Invalid or free account.', icon=control.joinPath(control.artPath(), 'premiumize.png'))
 				days_remaining = (expires - datetime.today()).days # int
-				if self.withinRangeCheck('premiumize', days_remaining):
-					control.notification(message='Premiumize.me Account expires in %s days' % days_remaining, icon=control.joinPath(control.artPath(), 'premiumize.png'))
+				if days_remaining >= 0:
+					if self.withinRangeCheck('premiumize', days_remaining):
+						control.notification(message='Premiumize.me Account expires in %s days' % days_remaining, icon=control.joinPath(control.artPath(), 'premiumize.png'))
 
 		if control.setting('realdebridusername') != '' and control.setting('realdebridexpirynotice') == 'true':
 			account_info = realdebrid.RealDebrid().account_info()
 			if account_info:
-				import time
 				# log_utils.log('RD account_info = %s' % account_info, log_utils.LOGINFO)
 				FormatDateTime = "%Y-%m-%dT%H:%M:%S.%fZ"
 				try: expires = datetime.strptime(account_info['expiration'], FormatDateTime)
-				except: expires = datetime(*(time.strptime(account_info['expiration'], FormatDateTime)[0:6]))
+				except: 
+					try: expires = datetime(*(time.strptime(account_info['expiration'], FormatDateTime)[0:6]))
+					except: 
+						expires = datetime.today()-timedelta(days=1)
+						control.notification(message='Real-Debrid Account has no expiration. Invalid or free account.', icon=control.joinPath(control.artPath(), 'realdebrid.png'))
 				days_remaining = (expires - datetime.today()).days # int
-				if self.withinRangeCheck('realdebrid', days_remaining):
-					control.notification(message='Real-Debrid Account expires in %s days' % days_remaining, icon=control.joinPath(control.artPath(), 'realdebrid.png'))
+				if days_remaining >= 0:
+					if self.withinRangeCheck('realdebrid', days_remaining):
+						control.notification(message='Real-Debrid Account expires in %s days' % days_remaining, icon=control.joinPath(control.artPath(), 'realdebrid.png'))
 
 	def withinRangeCheck(self, debrid_provider, days_remaining):
 		if days_remaining < 15:
