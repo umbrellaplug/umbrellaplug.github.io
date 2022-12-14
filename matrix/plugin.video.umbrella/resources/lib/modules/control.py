@@ -460,15 +460,18 @@ def checkPlayNextEpisodes():
 	# 2 Episodes
 	# 3 Movies
 	# 4 Uncategorized
-	if setting('enable.playnext') == 'true': #we have to check for the episodes settings now
-		nextEpisode = jsloads(jsonrpc('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"videoplayer.autoplaynextitem"}, "id":1}'))
-		selectAction = jsloads(jsonrpc('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"myvideos.selectaction"}, "id":1}'))
-		try:
-			nextEpisodeSetting = nextEpisode.get('result')['value'][0]
-		except:
-			nextEpisodeSetting = 0
-		if nextEpisodeSetting != 2:
-			jsonrpc('{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"videoplayer.autoplaynextitem", "value":[2]}, "id":1}')
-		setSetting('play.mode.tv', '1')
-	else:pass
-
+	try:
+		if setting('enable.playnext') == 'true': #we have to check for the episodes settings now
+			nextEpisode = jsloads(jsonrpc('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"videoplayer.autoplaynextitem"}, "id":1}'))
+			#selectAction = jsloads(jsonrpc('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"myvideos.selectaction"}, "id":1}'))
+			try:
+				nextEpisodeSetting = nextEpisode.get('result')['value'][0]
+			except:
+				nextEpisodeSetting = 0
+			if nextEpisodeSetting != 2:
+				jsonrpc('{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"videoplayer.autoplaynextitem", "value":[2]}, "id":1}')
+			setSetting('play.mode.tv', '1')
+		else:pass
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()

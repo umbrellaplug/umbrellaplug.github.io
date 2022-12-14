@@ -3954,3 +3954,19 @@ msgstr ""
 msgctxt "#40269"
 msgid "Recently Released"
 msgstr ""
+
+msgctxt "#40330"
+msgid "Trending Today (TMDB)"
+msgstr ""
+
+msgctxt "#40331"
+msgid "Trending this Week (TMDB)"
+msgstr ""
+
+msgctxt "#40332"
+msgid "Movie Search Provider"
+msgstr ""
+
+msgctxt "#40333"
+msgid "TV Show Search Provider"
+msgstr ""

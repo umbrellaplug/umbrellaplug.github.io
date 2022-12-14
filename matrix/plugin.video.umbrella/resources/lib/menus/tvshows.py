@@ -80,6 +80,9 @@ class TVshows:
 		self.trakt_popularLists_link = 'https://api.trakt.tv/lists/popular?limit=40&page=1' # use limit=40 due to filtering out Movie only lists
 		self.trakt_trendingLists_link = 'https://api.trakt.tv/lists/trending?limit=40&page=1'
 		self.tmdb_similar = 'https://api.themoviedb.org/3/tv/%s/similar?api_key=%s&language=en-US&region=US&page=1'
+		self.tmdb_recentday = 'https://api.themoviedb.org/3/trending/tv/day?api_key=%s&language=en-US&region=US&page=1'
+		self.tmdb_recentweek = 'https://api.themoviedb.org/3/trending/tv/week?api_key=%s&language=en-US&region=US&page=1'
+		self.search_tmdb_link = 'https://api.themoviedb.org/3/search/tv/?api_key=%s&language=en-US&query=%s&region=US&page=1'% ('%s','%s')
 
 		self.tvmaze_link = 'https://www.tvmaze.com'
 		self.tmdb_key = getSetting('tmdb.apikey')
@@ -112,6 +115,12 @@ class TVshows:
 				return self.trakt_based_on_recent()
 			if url == 'traktbasedonsimilar':
 				return self.trakt_based_on_similar()
+			if url == 'tmdbrecentday':
+				return self.tmdb_trending_recentday()
+			if url == 'tmdbrecentweek':
+				return self.tmdb_trending_recentweek()
+			elif u in self.search_tmdb_link and url != 'tmdbrecentday' and url != 'tmdbrecentweek':
+				return self.getTMDb(url)
 			if u in self.trakt_link and '/users/' in url:
 				try:
 					if '/users/me/' not in url: raise Exception()
@@ -264,6 +273,40 @@ class TVshows:
 			from resources.lib.modules import log_utils
 			log_utils.error()
 			return self.list
+
+	def tmdb_trending_recentday(self, create_directory=True):
+		self.list = []
+		try:
+			url = self.tmdb_recentday
+			#self.list = tmdb_indexer().tmdb_list(url)
+			self.list = cache.get(tmdb_indexer().tmdb_list,6, url)
+			next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.tvshowDirectory(self.list)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			return
+
+	def tmdb_trending_recentweek(self, create_directory=True):
+		self.list = []
+		try:
+			url = self.tmdb_recentweek
+			#self.list = tmdb_indexer().tmdb_list(url)
+			self.list = cache.get(tmdb_indexer().tmdb_list,24, url)
+			next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.tvshowDirectory(self.list)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			return
 
 	def traktHiddenManager(self, idx=True):
 		control.busy()
@@ -438,12 +481,24 @@ class TVshows:
 			log_utils.error()
 		finally:
 			dbcur.close() ; dbcon.close()
-		url = self.search_link + quote_plus(q)
+		if self.traktCredentials:
+			if getSetting('searchtv.indexer')== '1':
+				url = self.search_link + quote_plus(q)
+			else:
+				url = self.search_tmdb_link % ('%s', quote_plus(q))
+		else:
+			url = self.search_tmdb_link % ('%s', quote_plus(q))
 		control.closeAll()
 		control.execute('ActivateWindow(Videos,plugin://plugin.video.umbrella/?action=tvshows&url=%s,return)' % (quote_plus(url)))
 
 	def search_term(self, name):
-		url = self.search_link + quote_plus(name)
+		if self.traktCredentials:
+			if getSetting('searchtv.indexer')== '1':
+				url = self.search_link + quote_plus(name)
+			else:
+				url = self.search_tmdb_link % ('%s', quote_plus(name))
+		else:
+			url = self.search_tmdb_link % ('%s', quote_plus(name))
 		self.get(url)
 
 	def person(self):
@@ -1081,7 +1136,7 @@ class TVshows:
 			if self.list[i]['metacache']: return
 			imdb, tmdb, tvdb = self.list[i].get('imdb', ''), self.list[i].get('tmdb', ''), self.list[i].get('tvdb', '')
 			from resources.lib.modules import log_utils
-			log_utils.log('### TV Show Super Function: ids={imdb: %s, tmdb: %s, tvdb: %s} ' % (self.list[i].get('imdb', ''), self.list[i].get('tmdb', ''), self.list[i].get('tvdb', '')), __name__, log_utils.LOGDEBUG) # newlognov
+			log_utils.log('[ plugin.video.umbrella ] TV Show Super Function: ids={imdb: %s, tmdb: %s, tvdb: %s} ' % (self.list[i].get('imdb', ''), self.list[i].get('tmdb', ''), self.list[i].get('tvdb', '')), __name__, log_utils.LOGDEBUG) # newlognov
 #### -- Missing id's lookup -- ####
 			trakt_ids = None
 			if (not tmdb or not tvdb) and imdb: trakt_ids = trakt.IdLookup('imdb', imdb, 'show')

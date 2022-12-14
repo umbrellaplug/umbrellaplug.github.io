@@ -1,4 +1,10 @@
 
+[B][COLOR black]Update - v6.5.96 - Dec 13th, 2022[/COLOR][/B]
+--[FIX][I] Change made to control module for checking settings with settings monitor.[I]
+--[ENHANCEMENT][I] Added ablity to change provider for search from trakt to tmdb.[I]
+--[ENHANCEMENT][I] Added trending today for tmdb for Movies and TV.[I]
+--[ENHANCEMENT][I] Added trending this week for tmdb for Movies and TV.[I]
+
 [B][COLOR black]Update - v6.5.95 - Dec 11th, 2022[/COLOR][/B]
 --[FIX][I] Removed test version detection to stop accidentally deleting trakt and settings.[I]
 --[INFORMATION][I] Sorry for any issues this may have caused anyone.[I]

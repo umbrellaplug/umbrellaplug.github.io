@@ -63,6 +63,9 @@ class Movies:
 		self.tmdb_recommendations = 'https://api.themoviedb.org/3/movie/%s/recommendations?api_key=%s&language=en-US&region=US&page=1'
 		self.tmdb_similar = 'https://api.themoviedb.org/3/movie/%s/similar?api_key=%s&language=en-US&region=US&page=1'
 		self.tmdb_discovery_released_link = 'https://api.themoviedb.org/3/discover/movie?api_key=%s&language=en-US&region=US&release_date.gte=%s&release_date.lte=%s&with_release_type=4|5&page=1'% ('%s', (self.yesterday_date-timedelta(days=30)).strftime('%Y-%m-%d'), self.yesterday_date.strftime('%Y-%m-%d'))
+		self.tmdb_recentday = 'https://api.themoviedb.org/3/trending/movie/day?api_key=%s&language=en-US&region=US&page=1'
+		self.tmdb_recentweek = 'https://api.themoviedb.org/3/trending/movie/week?api_key=%s&language=en-US&region=US&page=1'
+		self.search_tmdb_link = 'https://api.themoviedb.org/3/search/movie/?api_key=%s&language=en-US&query=%s&region=US&page=1'% ('%s','%s')
 
 		self.imdb_link = 'https://www.imdb.com'
 		self.persons_link = 'https://www.imdb.com/search/name/?count=100&name='
@@ -129,6 +132,12 @@ class Movies:
 				return self.trakt_based_on_recent()
 			elif url == 'traktbasedonsimilar':
 				return self.trakt_based_on_similar()
+			if url == 'tmdbrecentday':
+				return self.tmdb_trending_recentday()
+			if url == 'tmdbrecentweek':
+				return self.tmdb_trending_recentweek()
+			elif u in self.search_tmdb_link and url != 'tmdbrecentday' and url != 'tmdbrecentweek':
+				return self.getTMDb(url)
 			elif u in self.trakt_link and '/users/' in url:
 				try:
 					isTraktHistory = (url.split('&page=')[0] in self.trakthistory_link)
@@ -418,13 +427,41 @@ class Movies:
 	def tmdb_released_formats(self, create_directory=True):
 		self.list = []
 		try:
-			historyurl = 'https://api.trakt.tv/users/me/history/movies?limit=20&page=1'
-			randomItems = self.trakt_list(historyurl, self.trakt_user)
-			if not randomItems: return
-			import random
-			item = randomItems[random.randint(0, len(randomItems) - 1)]
 			url = self.tmdb_released
 			self.list = tmdb_indexer().tmdb_list(url)
+			next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.movieDirectory(self.list)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			return
+
+	def tmdb_trending_recentday(self, create_directory=True):
+		self.list = []
+		try:
+			url = self.tmdb_recentday
+			self.list = cache.get(tmdb_indexer().tmdb_list, 6, url)
+			next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.movieDirectory(self.list)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			return
+
+	def tmdb_trending_recentweek(self, create_directory=True):
+		self.list = []
+		try:
+			url = self.tmdb_recentweek
+			self.list = cache.get(tmdb_indexer().tmdb_list, 24, url)
+			#self.list = tmdb_indexer().tmdb_list(url)
 			next = ''
 			for i in range(len(self.list)): self.list[i]['next'] = next
 			self.worker()
@@ -615,13 +652,27 @@ class Movies:
 			log_utils.error()
 		finally:
 			dbcur.close() ; dbcon.close()
-		url = self.search_link + quote_plus(q)
+		#need debugger here
+		if self.traktCredentials:
+			if getSetting('searchmovie.indexer')== '1':
+				url = self.search_link + quote_plus(q)
+			else:
+				url = self.search_tmdb_link % ('%s', quote_plus(q))
+		else:
+			url = self.search_tmdb_link % ('%s', quote_plus(q))
 		control.closeAll()
 		control.execute('ActivateWindow(Videos,plugin://plugin.video.umbrella/?action=movies&url=%s,return)' % (quote_plus(url)))
 
 	def search_term(self, name):
-		url = self.search_link + quote_plus(name)
+		if self.traktCredentials:
+			if getSetting('searchmovie.indexer')== '1':
+				url = self.search_link + quote_plus(name)
+			else:
+				url = self.search_tmdb_link % ('%s', quote_plus(name))
+		else:
+			url = self.search_tmdb_link % ('%s', quote_plus(name))
 		self.get(url)
+
 
 	def person(self):
 		k = control.keyboard('', getLS(32010))
