@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="repository.umbrella" name="Umbrella Repository" version="2.1.43" provider-name="Umbrella">
+<addon id="repository.umbrella" name="Umbrella Repository" version="2.1.44" provider-name="Umbrella">
     <extension point="xbmc.addon.repository" name="Umbrella Repository">
-        <dir minversion="18.1.901">
+        <dir minversion="18.9.701">
             <info compressed="false">https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/zips/addons.xml</info>
             <checksum>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/zips/addons.xml.md5</checksum>
             <datadir zip="true">https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/zips/</datadir>
