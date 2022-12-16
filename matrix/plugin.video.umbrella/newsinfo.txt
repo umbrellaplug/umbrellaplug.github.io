@@ -1,6 +1,6 @@
 
 [B][COLOR red]December 16th, 2022[/COLOR][/B]
---[I] Trakt is still down as of 6am cst. They are working on bringing the site back up firs, then the api. 
+--[I] Trakt is still down as of 6am cst. They are working on bringing the site back up first, then the api. 
 
 [B][COLOR red]December 15th, 2022[/COLOR][/B]
 --[I] Trakt is still down. They are working on recovering. Hopefully it will be back up soon.[/I]
