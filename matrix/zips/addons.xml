@@ -148,7 +148,7 @@
 [COLOR yellow]--[/COLOR][I] Changed to new settings format.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.96">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.97">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.7" />
@@ -181,11 +181,10 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.96 - Dec 13th, 2022[/COLOR][/B]
---[FIX][I] Change made to control module for checking settings with settings monitor.[I]
---[ENHANCEMENT][I] Added ablity to change provider for search from trakt to tmdb.[I]
---[ENHANCEMENT][I] Added trending today for tmdb for Movies and TV.[I]
---[ENHANCEMENT][I] Added trending this week for tmdb for Movies and TV.[I]
+[B][COLOR black]Update - v6.5.97 - Dec 18th, 2022[/COLOR][/B]
+--[FIX][I] Changes made to control module to only write to setting if setting is not already set.[I]
+--[FIX][I] Possible fix for blank settings.[I]
+--[FIX][I] New option added in Tools section to fix blank settings.[I]
 		</news>
 	</extension>
 </addon><addon id="plugin.video.youtube" name="YouTube" version="6.8.18+matrix.1" provider-name="anxdpanic, bromix">

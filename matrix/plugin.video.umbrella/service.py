@@ -62,7 +62,7 @@ class checkAutoStart:
 		control.log('[ plugin.video.umbrella ]  Checking for AutoStart....', LOGINFO)
 		if control.setting('umbrella.autostart') == 'true': 
 			control.execute('RunAddon(plugin.video.umbrella)')
-		return control.log('[ plugin.video.umbrella ] Finished AutoStart Check', LOGINFO)
+		return control.log('[ plugin.video.umbrella ]  Finished AutoStart Check', LOGINFO)
 
 
 class ReuseLanguageInvokerCheck:

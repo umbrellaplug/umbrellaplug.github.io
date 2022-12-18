@@ -29,10 +29,8 @@ iconLogos = getSetting('icon.logos') != 'Traditional'
 
 def getMDBTopList(self, listType):
 	try:
-		log_utils.log('Trying to get the top list from MDBList', level=log_utils.LOGINFO)
 		response = session.get(mdblist_baseurl + mdblist_top_list + mdblist_api, timeout=20)
-		if isinstance(response, dict): 
-			log_utils.log(response.error, level=log_utils.LOGINFO)
+		if isinstance(response, dict):
 			return None
 		items = _map_top_list(response, listType)
 		return items
@@ -66,7 +64,7 @@ def getMDBItems(url):
 	try:
 		response = session.get(url, timeout=20)
 		if isinstance(response, dict): 
-			log_utils.log(response.error, level=log_utils.LOGINFO)
+			log_utils.log(response.error, level=log_utils.LOGDEBUG)
 			return None
 		items = _map_list_items(response)
 		return items
@@ -93,7 +91,7 @@ def getMDBUserList(self, listType):
 	try:
 		response = session.get(mdblist_baseurl + mdblist_user_list + mdblist_api, timeout=20)
 		if isinstance(response, dict): 
-			log_utils.log(response.error, level=log_utils.LOGINFO)
+			log_utils.log(response.error, level=log_utils.LOGDEBUG)
 			return None
 		items = _map_user_list_items(response, listType)
 		return items

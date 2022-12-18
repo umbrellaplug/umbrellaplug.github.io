@@ -455,11 +455,6 @@ def syncAccounts():
 
 
 def checkPlayNextEpisodes():
-	# 0 Music Videos
-	# 1 TV Shows
-	# 2 Episodes
-	# 3 Movies
-	# 4 Uncategorized
 	try:
 		if setting('enable.playnext') == 'true': #we have to check for the episodes settings now
 			nextEpisode = jsloads(jsonrpc('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"videoplayer.autoplaynextitem"}, "id":1}'))
@@ -470,8 +465,21 @@ def checkPlayNextEpisodes():
 				nextEpisodeSetting = 0
 			if nextEpisodeSetting != 2:
 				jsonrpc('{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"videoplayer.autoplaynextitem", "value":[2]}, "id":1}')
-			setSetting('play.mode.tv', '1')
+			if not xbmc.getCondVisibility('Window.IsActive(settings)'):
+				if setting('play.mode.tv') != '1':
+					setSetting('play.mode.tv', '1')
 		else:pass
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+
+def removeCorruptSettings():
+    #added 12-18 to attempt to correct corrupted settings.xml files.
+	try:
+		if yesnoDialog('Delete settings file to try to fix blank settings?', 'You will need to re-authenticate services.','' , '[B]Confirm Clear[/B]', 'Ok', 'Cancel') == 1: return
+		deleteFile(settingsFile)
+		current_profile = infoLabel('system.profilename')
+		execute('LoadProfile(%s)' % current_profile)
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()

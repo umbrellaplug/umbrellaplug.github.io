@@ -1,4 +1,9 @@
 
+[B][COLOR black]Update - v6.5.97 - Dec 18th, 2022[/COLOR][/B]
+--[FIX][I] Changes made to control module to only write to setting if setting is not already set.[I]
+--[FIX][I] Possible fix for blank settings.[I]
+--[FIX][I] New option added in Tools section to fix blank settings.[I]
+
 [B][COLOR black]Update - v6.5.96 - Dec 13th, 2022[/COLOR][/B]
 --[FIX][I] Change made to control module for checking settings with settings monitor.[I]
 --[ENHANCEMENT][I] Added ablity to change provider for search from trakt to tmdb.[I]

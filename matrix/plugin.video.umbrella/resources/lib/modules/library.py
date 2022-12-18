@@ -949,19 +949,14 @@ class libtvshows:
 		control.hide()
 		contains = lib_tools().ckKodiSources()
 		if service_notification and not control.condVisibility('Window.IsVisible(infodialog)') and not control.condVisibility('Player.HasVideo'):
-			control.notification(message=32645)
-		from resources.lib.modules import log_utils
-		log_utils.log('#### silent service called to update library', __name__, log_utils.LOGINFO) # newlognov
+			control.notification(message=32645)		
 		from resources.lib.menus import tvshows
 		items = tvshows.TVshows().get(url, idx=False)
 		if not items: items = []
 		total_added = 0
-		log_utils.log('#### number items to add: %s' % len(items), __name__, log_utils.LOGINFO) # newlognov
 		for i in items:
 			if control.monitor.abortRequested(): return sysexit()
 			try:
-				from resources.lib.modules import log_utils
-				log_utils.log('#### adding item: (%s) ids={imdb: %s, tmdb: %s, tvdb: %s year: %s}' % (i['title'], i['imdb'], i['tmdb'], i['tvdb'], i['year']), __name__, log_utils.LOGINFO) # newlognov
 				files_added = self.add(i['title'], i['year'], i['imdb'], i['tmdb'], i['tvdb'], range=True)
 				if general_notification and files_added > 0: control.notification(title=i['title'], message=32554)
 				if files_added:

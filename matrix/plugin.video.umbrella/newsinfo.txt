@@ -1,3 +1,6 @@
+[B][COLOR red]December 18th, 2022[/COLOR][/B]
+--[I] Trakt Site is back up. API is still down as of 5pm cst. 
+
 [B][COLOR red]December 15th, 2022[/COLOR][/B]
 --[I] Trakt is still down. They are working on recovering. Hopefully it will be back up soon.[/I]
 --[I] Trakt is the provider in the plugin for searches and several lists.[/I]
