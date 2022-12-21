@@ -1,12 +1,5 @@
-
-[B][COLOR red]December 18th, 2022[/COLOR][/B]
---[I] Trakt Site is back up. API is still down as of 5pm cst. 
---[I] Trakt is still down. They are working on recovering. Hopefully it will be back up soon.[/I]
---[I] Trakt is the provider in the plugin for searches and several lists.[/I]
---[I] An update has been pushed to allow for using TMDB as your search provider.[/I]
---[I] Two new lists were added to movies and tv sections for trending from TMDB to assist till Trakt is back up.[/I]
---[I] If you are having issues please make sure you update your addon to version 6.5.96 or higher and please revoke and reauthorize any providers.[/I]
-
+[B][COLOR red]December 21st, 2022[/COLOR][/B]
+--[I] Trakt is up and running.
 
 --[I] Please report issues to GitHub.[/I]
 --[I] https://github.com/umbrellaplug[/I]

@@ -837,7 +837,7 @@ class libtvshows:
 					items = tvshows.TVshows().traktWatchlist(url, create_directory=None)
 					items = libmovies().checkListDB(items, url)
 				if 'trakt' in url and 'me/collection' in url:
-					from resources.lib.menus import movies
+					from resources.lib.menus import tvshows
 					items = tvshows.TVshows().traktCollection(url, create_directory=None)
 					items = libmovies().checkListDB(items, url)
 				if 'themoviedb' in url:

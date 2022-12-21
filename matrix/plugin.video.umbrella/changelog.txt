@@ -1,4 +1,8 @@
 
+[B][COLOR black]Update - v6.5.98 - Dec 21st, 2022[/COLOR][/B]
+--[FIX][I] Typo found and corrected for TV Show Collection import.[I]
+--[CREDIT][I] Thanks to reddit user bevigilant for the bug report/logs.[I]
+
 [B][COLOR black]Update - v6.5.97 - Dec 18th, 2022[/COLOR][/B]
 --[FIX][I] Changes made to control module to only write to setting if setting is not already set.[I]
 --[FIX][I] Possible fix for blank settings.[I]
