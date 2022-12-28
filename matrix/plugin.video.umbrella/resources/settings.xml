@@ -387,7 +387,7 @@
 				</setting>
 				<setting id="movie.unaired.identify" type="integer" label="35526" help="40252">
 					<level>0</level>
-					<default>42</default>
+					<default>34</default>
 					<constraints>
 						<options>
 							<option label="40082">0</option>
@@ -426,6 +426,7 @@
 							<option label="40310">33</option>
 							<option label="40311">34</option>
 							<option label="40312">35</option>
+							<option label="32590">36</option>
 						</options>
 					</constraints>
 					<control type="list" format="string">
@@ -1085,7 +1086,7 @@
 				</setting>
 				<setting id="unaired.identify" type="integer" label="32608" help="40253">
 					<level>0</level>
-					<default>42</default>
+					<default>22</default>
 					<constraints>
 						<options>
 							<option label="40082">0</option>
@@ -1124,6 +1125,7 @@
 							<option label="40310">33</option>
 							<option label="40311">34</option>
 							<option label="40312">35</option>
+							<option label="32590">36</option>
 						</options>
 					</constraints>
 					<dependencies>
@@ -1223,6 +1225,7 @@
 							<option label="40310">33</option>
 							<option label="40311">34</option>
 							<option label="40312">35</option>
+							<option label="32590">36</option>
 						</options>
 					</constraints>
 					<dependencies>
@@ -2380,6 +2383,7 @@
 							<option label="40310">33</option>
 							<option label="40311">34</option>
 							<option label="40312">35</option>
+							<option label="32590">36</option>
 						</options>
 					</constraints>
 					<control type="list" format="string">
@@ -2528,6 +2532,7 @@
 							<option label="40310">33</option>
 							<option label="40311">34</option>
 							<option label="40312">35</option>
+							<option label="32590">36</option>
 						</options>
 					</constraints>
 					<control type="list" format="string">
@@ -2575,6 +2580,7 @@
 							<option label="40310">33</option>
 							<option label="40311">34</option>
 							<option label="40312">35</option>
+							<option label="32590">36</option>
 						</options>
 					</constraints>
 					<dependencies>
@@ -2627,6 +2633,7 @@
 							<option label="40310">33</option>
 							<option label="40311">34</option>
 							<option label="40312">35</option>
+							<option label="32590">36</option>
 						</options>
 					</constraints>
 					<dependencies>
@@ -2679,6 +2686,7 @@
 							<option label="40310">33</option>
 							<option label="40311">34</option>
 							<option label="40312">35</option>
+							<option label="32590">36</option>
 						</options>
 					</constraints>
 					<dependencies>
@@ -2731,6 +2739,7 @@
 							<option label="40310">33</option>
 							<option label="40311">34</option>
 							<option label="40312">35</option>
+							<option label="32590">36</option>
 						</options>
 					</constraints>
 					<dependencies>
@@ -2783,6 +2792,7 @@
 							<option label="40310">33</option>
 							<option label="40311">34</option>
 							<option label="40312">35</option>
+							<option label="32590">36</option>
 						</options>
 					</constraints>
 					<dependencies>
@@ -2835,6 +2845,7 @@
 							<option label="40310">33</option>
 							<option label="40311">34</option>
 							<option label="40312">35</option>
+							<option label="32590">36</option>
 						</options>
 					</constraints>
 					<dependencies>

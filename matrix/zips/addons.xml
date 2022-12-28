@@ -148,7 +148,7 @@
 [COLOR yellow]--[/COLOR][I] Changed to new settings format.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.0">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.01">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.7" />
@@ -181,7 +181,7 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.6.0 - Dec 28th, 2022[/COLOR][/B]
+[B][COLOR black]Update - v6.6.01 - Dec 28th, 2022[/COLOR][/B]
 --[SPECIAL THANKS][I] Special Thanks to TikiPeter(Fen) and u/Mammoth-Bullfrog-274. Both have contributed and helped a ton and without their help, Umbrella would not exist. It is appreciated.[I]
 --[INFORMATION][I] There are a lot of changes on this update. Testing has been done, but bugs always happen. Please report any issues.[I]
 --[ENHANCEMENT][I] 17 to 35 color selections! "Buddy the Elf, What's your favorite color?"[I]
@@ -201,6 +201,7 @@
 --[ENHANCEMENT][I] Added ability to only try 1 link on source selection.[I]
 --[ENHANCEMENT][I] Simkl Authentication added. More Coming. Really no point authenticating, but more will be added in the next update.[I]
 --[ENHANCEMENT][I] Adjusted transparency on background art not being correct. Thanks Peter![I]
+--[FIX][I] Added red back changed defaults that were too high.[/I]
 --[FIX][I] IMDB Watchlists corrected.[/I]
 --[FIX][I] Removed test version detection to stop accidentally deleting trakt and settings.[I]
 --[FIX][I] Adding missing still watching file in for ah2 style playnext.[/I]

@@ -366,14 +366,14 @@ def autoTraktSubscription(tvshowtitle, year, imdb, tvdb): #---start adding TMDb 
 
 def getBackgroundColor(n):
 	colorChart = ('black','white', 'lightgray', 'gray', 'beige', 'darkgoldenrod', 'gold', 'yellow', 'peru', 'orangered',
-						'pink','deeppink','fuchsia','lightcoral', 'darkred', 'maroon', 'blueviolet', 'darkorchid', 'purple', 'indigo', 'darkslateblue', 'slateblue','navy', 'blue', 'deepskyblue', 'dodgerblue','skyblue', 'powderblue', 'turquoise', 'cyan', 'aqua','aquamarine','greenyellow','mediumspringgreen','green', 'lime')
+						'pink','deeppink','fuchsia','lightcoral', 'darkred', 'maroon', 'blueviolet', 'darkorchid', 'purple', 'indigo', 'darkslateblue', 'slateblue','navy', 'blue', 'deepskyblue', 'dodgerblue','skyblue', 'powderblue', 'turquoise', 'cyan', 'aqua','aquamarine','greenyellow','mediumspringgreen','green', 'lime','red')
 	if not n: n = '0'
 	color = colorChart[int(n)]
 	return color 
 
 def getColor(n):
 	colorChart = ('black','white', 'lightgray', 'gray', 'beige', 'darkgoldenrod', 'gold', 'yellow', 'peru', 'orangered',
-						'pink','deeppink','fuchsia','lightcoral', 'darkred', 'maroon', 'blueviolet', 'darkorchid', 'purple', 'indigo', 'darkslateblue', 'slateblue','navy', 'blue', 'deepskyblue', 'dodgerblue','skyblue', 'powderblue', 'turquoise', 'cyan', 'aqua','aquamarine','greenyellow','mediumspringgreen','green', 'lime')
+						'pink','deeppink','fuchsia','lightcoral', 'darkred', 'maroon', 'blueviolet', 'darkorchid', 'purple', 'indigo', 'darkslateblue', 'slateblue','navy', 'blue', 'deepskyblue', 'dodgerblue','skyblue', 'powderblue', 'turquoise', 'cyan', 'aqua','aquamarine','greenyellow','mediumspringgreen','green', 'lime', 'red')
 	if not n: n = '0'
 	color = colorChart[int(n)]
 	return color
