@@ -1,5 +1,3 @@
-[B][COLOR red]December 21st, 2022[/COLOR][/B]
---[I] Trakt is up and running.
-
+[B][COLOR black]August 8th, 2022[/COLOR][/B]
 --[I] Please report issues to GitHub.[/I]
 --[I] https://github.com/umbrellaplug[/I]

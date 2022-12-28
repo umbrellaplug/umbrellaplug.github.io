@@ -95,26 +95,45 @@
 				</setting>
 				<setting id="highlight.color" type="integer" label="40039" help="">
 					<level>0</level>
-					<default>2</default>
+					<default>7</default>
 					<constraints>
 						<options>
-							<option label="32589">0</option>
-							<option label="32590">1</option>
-							<option label="32591">2</option>
-							<option label="32592">3</option>
-							<option label="32593">4</option>
-							<option label="32594">5</option>
+							<option label="40082">0</option>
+							<option label="32670">1</option>
+							<option label="40283">2</option>
+							<option label="40284">3</option>
+							<option label="40285">4</option>
+							<option label="40286">5</option>
 							<option label="32595">6</option>
-							<option label="32596">7</option>
-							<option label="32597">8</option>
-							<option label="32666">9</option>
-							<option label="32667">10</option>
-							<option label="32668">11</option>
-							<option label="32669">12</option>
-							<option label="32670">13</option>
-							<option label="32671">14</option>
-							<option label="32598">15</option>
-							<option label="40082">16</option>
+							<option label="32591">7</option>
+							<option label="40287">8</option>
+							<option label="40288">9</option>
+							<option label="40289">10</option>
+							<option label="32592">11</option>
+							<option label="40290">12</option>
+							<option label="40291">13</option>
+							<option label="40292">14</option>
+							<option label="40293">15</option>
+							<option label="40294">16</option>
+							<option label="40295">17</option>
+							<option label="40296">18</option>
+							<option label="40297">19</option>
+							<option label="40298">20</option>
+							<option label="40299">21</option>
+							<option label="40300">22</option>
+							<option label="40301">23</option>
+							<option label="32669">24</option>
+							<option label="40302">25</option>
+							<option label="40303">26</option>
+							<option label="40304">27</option>
+							<option label="40305">28</option>
+							<option label="40306">29</option>
+							<option label="40307">30</option>
+							<option label="40308">31</option>
+							<option label="40309">32</option>
+							<option label="40310">33</option>
+							<option label="40311">34</option>
+							<option label="40312">35</option>
 						</options>
 					</constraints>
 					<control type="list" format="string">
@@ -368,26 +387,45 @@
 				</setting>
 				<setting id="movie.unaired.identify" type="integer" label="35526" help="40252">
 					<level>0</level>
-					<default>8</default>
+					<default>42</default>
 					<constraints>
 						<options>
-							<option label="32589">0</option>
-							<option label="32590">1</option>
-							<option label="32591">2</option>
-							<option label="32592">3</option>
-							<option label="32593">4</option>
-							<option label="32594">5</option>
+							<option label="40082">0</option>
+							<option label="32670">1</option>
+							<option label="40283">2</option>
+							<option label="40284">3</option>
+							<option label="40285">4</option>
+							<option label="40286">5</option>
 							<option label="32595">6</option>
-							<option label="32596">7</option>
-							<option label="32597">8</option>
-							<option label="32666">9</option>
-							<option label="32667">10</option>
-							<option label="32668">11</option>
-							<option label="32669">12</option>
-							<option label="32670">13</option>
-							<option label="32671">14</option>
-							<option label="32598">15</option>
-							<option label="40082">16</option>
+							<option label="32591">7</option>
+							<option label="40287">8</option>
+							<option label="40288">9</option>
+							<option label="40289">10</option>
+							<option label="32592">11</option>
+							<option label="40290">12</option>
+							<option label="40291">13</option>
+							<option label="40292">14</option>
+							<option label="40293">15</option>
+							<option label="40294">16</option>
+							<option label="40295">17</option>
+							<option label="40296">18</option>
+							<option label="40297">19</option>
+							<option label="40298">20</option>
+							<option label="40299">21</option>
+							<option label="40300">22</option>
+							<option label="40301">23</option>
+							<option label="32669">24</option>
+							<option label="40302">25</option>
+							<option label="40303">26</option>
+							<option label="40304">27</option>
+							<option label="40305">28</option>
+							<option label="40306">29</option>
+							<option label="40307">30</option>
+							<option label="40308">31</option>
+							<option label="40309">32</option>
+							<option label="40310">33</option>
+							<option label="40311">34</option>
+							<option label="40312">35</option>
 						</options>
 					</constraints>
 					<control type="list" format="string">
@@ -1047,26 +1085,45 @@
 				</setting>
 				<setting id="unaired.identify" type="integer" label="32608" help="40253">
 					<level>0</level>
-					<default>8</default>
+					<default>42</default>
 					<constraints>
 						<options>
-							<option label="32589">0</option>
-							<option label="32590">1</option>
-							<option label="32591">2</option>
-							<option label="32592">3</option>
-							<option label="32593">4</option>
-							<option label="32594">5</option>
+							<option label="40082">0</option>
+							<option label="32670">1</option>
+							<option label="40283">2</option>
+							<option label="40284">3</option>
+							<option label="40285">4</option>
+							<option label="40286">5</option>
 							<option label="32595">6</option>
-							<option label="32596">7</option>
-							<option label="32597">8</option>
-							<option label="32666">9</option>
-							<option label="32667">10</option>
-							<option label="32668">11</option>
-							<option label="32669">12</option>
-							<option label="32670">13</option>
-							<option label="32671">14</option>
-							<option label="32598">15</option>
-							<option label="40082">16</option>
+							<option label="32591">7</option>
+							<option label="40287">8</option>
+							<option label="40288">9</option>
+							<option label="40289">10</option>
+							<option label="32592">11</option>
+							<option label="40290">12</option>
+							<option label="40291">13</option>
+							<option label="40292">14</option>
+							<option label="40293">15</option>
+							<option label="40294">16</option>
+							<option label="40295">17</option>
+							<option label="40296">18</option>
+							<option label="40297">19</option>
+							<option label="40298">20</option>
+							<option label="40299">21</option>
+							<option label="40300">22</option>
+							<option label="40301">23</option>
+							<option label="32669">24</option>
+							<option label="40302">25</option>
+							<option label="40303">26</option>
+							<option label="40304">27</option>
+							<option label="40305">28</option>
+							<option label="40306">29</option>
+							<option label="40307">30</option>
+							<option label="40308">31</option>
+							<option label="40309">32</option>
+							<option label="40310">33</option>
+							<option label="40311">34</option>
+							<option label="40312">35</option>
 						</options>
 					</constraints>
 					<dependencies>
@@ -1108,25 +1165,104 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="enable.playnext.theme" type="boolean" label="40102" help="">
+				<setting id="playnext.theme" type="integer" label="40319" help="" parent="enable.playnext">
 					<level>0</level>
-					<default>true</default>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="40316">0</option>
+							<option label="40317">1</option>
+							<option label="40318">2</option>
+						</options>
+					</constraints>
 					<dependencies>
 						<dependency type="visible">
 							<condition operator="is" setting="enable.playnext">true</condition>
 						</dependency>
 					</dependencies>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="playnext.background.color" type="integer" label="40091" help="" parent="enable.playnext">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="40082">0</option>
+							<option label="32670">1</option>
+							<option label="40283">2</option>
+							<option label="40284">3</option>
+							<option label="40285">4</option>
+							<option label="40286">5</option>
+							<option label="32595">6</option>
+							<option label="32591">7</option>
+							<option label="40287">8</option>
+							<option label="40288">9</option>
+							<option label="40289">10</option>
+							<option label="32592">11</option>
+							<option label="40290">12</option>
+							<option label="40291">13</option>
+							<option label="40292">14</option>
+							<option label="40293">15</option>
+							<option label="40294">16</option>
+							<option label="40295">17</option>
+							<option label="40296">18</option>
+							<option label="40297">19</option>
+							<option label="40298">20</option>
+							<option label="40299">21</option>
+							<option label="40300">22</option>
+							<option label="40301">23</option>
+							<option label="32669">24</option>
+							<option label="40302">25</option>
+							<option label="40303">26</option>
+							<option label="40304">27</option>
+							<option label="40305">28</option>
+							<option label="40306">29</option>
+							<option label="40307">30</option>
+							<option label="40308">31</option>
+							<option label="40309">32</option>
+							<option label="40310">33</option>
+							<option label="40311">34</option>
+							<option label="40312">35</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="enable.playnext">true</condition>
+							<condition operator="is" setting="playnext.theme">0</condition>
+						</dependency>
+					</dependencies>
+					<control type="list" format="string">
+						<heading>40091</heading>
+					</control>
+				</setting>
+				<setting id="enable.playnext.theme" type="boolean" label="40102" help="" parent="enable.playnext">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
 					<control type="toggle"/>
 				</setting>
-				<setting id="showHelpPlayNext" type="action" label="32137" help="">
+				<setting id="playnext.method" type="integer" label="40323" help="" parent="enable.playnext">
 					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=playnext)</data>
+					<default>0</default>
 					<constraints>
-						<allowempty>true</allowempty>
+						<options>
+							<option label="40320">0</option>
+							<option label="40321">1</option>
+							<option label="40322">2</option>
+						</options>
 					</constraints>
-					<control type="button" format="action"/>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="enable.playnext">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="spinner" format="string"/>
 				</setting>
-				<setting id="playnext.time" type="integer" label="40029" help="" parent="">
+				<setting id="playnext.time" type="integer" label="40329" help="" parent="playnext.method">
 					<level>0</level>
 					<default>60</default>
 					<constraints>
@@ -1136,13 +1272,86 @@
 					<dependencies>
 						<dependency type="visible">
 							<condition operator="is" setting="enable.playnext">true</condition>
+							<condition operator="is" setting="playnext.method">0</condition>
 						</dependency>
 					</dependencies>
 					<control type="slider" format="integer">
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="playnext.default.action" type="integer" label="40065" help="" parent="">
+				<setting id="playnext.percent" type="integer" label="40321" help="" parent="playnext.method">>
+					<level>0</level>
+					<default>80</default>
+					<constraints>
+						<minimum>30</minimum>
+						<maximum>100</maximum>
+						<step>5</step>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="enable.playnext">true</condition>
+							<condition operator="is" setting="playnext.method">1</condition>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="playnext.sub.backupmethod" type="integer" label="40327" help="" parent="enable.playnext">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="40320">0</option>
+							<option label="40321">1</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="enable.playnext">true</condition>
+							<condition operator="is" setting="playnext.method">2</condition>
+						</dependency>
+					</dependencies>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="playnext.sub.seconds" type="integer" label="40325" help="" parent="playnext.sub.backupmethod">
+					<level>0</level>
+					<default>60</default>
+					<constraints>
+						<minimum>10</minimum>
+						<maximum>300</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="enable.playnext">true</condition>
+							<condition operator="is" setting="playnext.method">2</condition>
+							<condition operator="is" setting="playnext.sub.backupmethod">0</condition>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="playnext.sub.percent" type="integer" label="40324" help="" parent="playnext.sub.backupmethod">>
+					<level>0</level>
+					<default>80</default>
+					<constraints>
+						<minimum>30</minimum>
+						<maximum>100</maximum>
+						<step>5</step>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="enable.playnext">true</condition>
+							<condition operator="is" setting="playnext.method">2</condition>
+							<condition operator="is" setting="playnext.sub.backupmethod">1</condition>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="playnext.default.action" type="integer" label="40065" help="" parent="enable.playnext">
 					<level>0</level>
 					<default>0</default>
 					<constraints>
@@ -1161,40 +1370,7 @@
 						<heading>40065</heading>
 					</control>
 				</setting>
-				<setting id="playnext.background.color" type="integer" label="40091" help="" parent="">
-					<level>0</level>
-					<default>0</default>
-					<constraints>
-						<options>
-							<option label="33564">0</option>
-							<option label="32589">1</option>
-							<option label="32590">2</option>
-							<option label="32591">3</option>
-							<option label="32592">4</option>
-							<option label="32593">5</option>
-							<option label="32594">6</option>
-							<option label="32595">7</option>
-							<option label="32596">8</option>
-							<option label="32597">9</option>
-							<option label="32666">10</option>
-							<option label="32667">11</option>
-							<option label="32668">12</option>
-							<option label="32669">13</option>
-							<option label="32670">14</option>
-							<option label="32671">15</option>
-							<option label="40082">16</option>
-						</options>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="enable.playnext">true</condition>
-						</dependency>
-					</dependencies>
-					<control type="list" format="string">
-						<heading>40091</heading>
-					</control>
-				</setting>
-				<setting id="playnext.hidebutton" type="boolean" label="40101" help="" parent="">
+				<setting id="playnext.hidebutton" type="boolean" label="40101" help="" parent="enable.playnext">
 					<level>0</level>
 					<default>true</default>
 					<dependencies>
@@ -1204,7 +1380,7 @@
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
-				<setting id="stillwatching.count" type="integer" label="40026" help="" parent="">
+				<setting id="stillwatching.count" type="integer" label="40026" help="" parent="enable.playnext">
 					<level>0</level>
 					<default>3</default>
 					<constraints>
@@ -1220,7 +1396,7 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="stillwatching.default.action" type="integer" label="40025" help="" parent="">
+				<setting id="stillwatching.default.action" type="integer" label="40025" help="" parent="enable.playnext">
 					<level>0</level>
 					<default>2</default>
 					<constraints>
@@ -1238,6 +1414,14 @@
 					<control type="list" format="string">
 						<heading>40025</heading>
 					</control>
+				</setting>
+				<setting id="showHelpPlayNext" type="action" label="32137" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=playnext)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action"/>
 				</setting>
 			</group>
 			<group id="3" label="35056">
@@ -1524,6 +1708,20 @@
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
+				</setting>
+			</group>
+			<group id="3" label="40339">
+				<setting id="markwatched.percent" type="integer" label="40340" help="" parent="">
+					<level>0</level>
+					<default>85</default>
+					<constraints>
+						<minimum>5</minimum>
+						<step>5</step>
+						<maximum>100</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
 				</setting>
 			</group>
 		</category>
@@ -2114,9 +2312,21 @@
 						<options>
 							<option label="32336">0</option>
 							<option label="32337">1</option>
+							<option label="40335">2</option>
+							<option label="40336">3</option>
 						</options>
 					</constraints>
 					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="sources.dialog.fanartBG" type="boolean" label="40338" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="progress.dialog">2</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
 				</setting>
 				<setting id="scrapers.timeout" type="integer" label="32312" help="">
 					<level>0</level>
@@ -2131,26 +2341,45 @@
 				</setting>
 				<setting id="scraper.dialog.color" type="integer" label="32164" help="">
 					<level>0</level>
-					<default>5</default>
+					<default>0</default>
 					<constraints>
 						<options>
-							<option label="32589">0</option>
-							<option label="32590">1</option>
-							<option label="32591">2</option>
-							<option label="32592">3</option>
-							<option label="32593">4</option>
-							<option label="32594">5</option>
+							<option label="40082">0</option>
+							<option label="32670">1</option>
+							<option label="40283">2</option>
+							<option label="40284">3</option>
+							<option label="40285">4</option>
+							<option label="40286">5</option>
 							<option label="32595">6</option>
-							<option label="32596">7</option>
-							<option label="32597">8</option>
-							<option label="32666">9</option>
-							<option label="32667">10</option>
-							<option label="32668">11</option>
-							<option label="32669">12</option>
-							<option label="32670">13</option>
-							<option label="32671">14</option>
-							<option label="32598">15</option>
-							<option label="40082">16</option>
+							<option label="32591">7</option>
+							<option label="40287">8</option>
+							<option label="40288">9</option>
+							<option label="40289">10</option>
+							<option label="32592">11</option>
+							<option label="40290">12</option>
+							<option label="40291">13</option>
+							<option label="40292">14</option>
+							<option label="40293">15</option>
+							<option label="40294">16</option>
+							<option label="40295">17</option>
+							<option label="40296">18</option>
+							<option label="40297">19</option>
+							<option label="40298">20</option>
+							<option label="40299">21</option>
+							<option label="40300">22</option>
+							<option label="40301">23</option>
+							<option label="32669">24</option>
+							<option label="40302">25</option>
+							<option label="40303">26</option>
+							<option label="40304">27</option>
+							<option label="40305">28</option>
+							<option label="40306">29</option>
+							<option label="40307">30</option>
+							<option label="40308">31</option>
+							<option label="40309">32</option>
+							<option label="40310">33</option>
+							<option label="40311">34</option>
+							<option label="40312">35</option>
 						</options>
 					</constraints>
 					<control type="list" format="string">
@@ -2242,33 +2471,390 @@
 				</setting>
 			</group>
 			<group id="3" label="32387">
-				<setting id="sources.highlight.color" type="integer" label="32132" help="">
+				<setting id="sources.select.fanartBG" type="boolean" label="40338" help="">
 					<level>0</level>
-					<default>5</default>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="sources.highlightmethod" type="integer" label="40272" help="">
+					<level>0</level>
+					<default>0</default>
 					<constraints>
 						<options>
-							<option label="32589">0</option>
-							<option label="32590">1</option>
-							<option label="32591">2</option>
-							<option label="32592">3</option>
-							<option label="32593">4</option>
-							<option label="32594">5</option>
+							<option label="Single Color">0</option>
+							<option label="By Provider">1</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="sources.highlight.color" type="integer" label="40348" help="">
+					<level>0</level>
+					<default>28</default>
+					<constraints>
+						<options>
+							<option label="40082">0</option>
+							<option label="32670">1</option>
+							<option label="40283">2</option>
+							<option label="40284">3</option>
+							<option label="40285">4</option>
+							<option label="40286">5</option>
 							<option label="32595">6</option>
-							<option label="32596">7</option>
-							<option label="32597">8</option>
-							<option label="32666">9</option>
-							<option label="32667">10</option>
-							<option label="32668">11</option>
-							<option label="32669">12</option>
-							<option label="32670">13</option>
-							<option label="32671">14</option>
-							<option label="32598">15</option>
-							<option label="40082">16</option>
+							<option label="32591">7</option>
+							<option label="40287">8</option>
+							<option label="40288">9</option>
+							<option label="40289">10</option>
+							<option label="32592">11</option>
+							<option label="40290">12</option>
+							<option label="40291">13</option>
+							<option label="40292">14</option>
+							<option label="40293">15</option>
+							<option label="40294">16</option>
+							<option label="40295">17</option>
+							<option label="40296">18</option>
+							<option label="40297">19</option>
+							<option label="40298">20</option>
+							<option label="40299">21</option>
+							<option label="40300">22</option>
+							<option label="40301">23</option>
+							<option label="32669">24</option>
+							<option label="40302">25</option>
+							<option label="40303">26</option>
+							<option label="40304">27</option>
+							<option label="40305">28</option>
+							<option label="40306">29</option>
+							<option label="40307">30</option>
+							<option label="40308">31</option>
+							<option label="40309">32</option>
+							<option label="40310">33</option>
+							<option label="40311">34</option>
+							<option label="40312">35</option>
 						</options>
 					</constraints>
 					<control type="list" format="string">
 						<heading>32132</heading>
 					</control>
+				</setting>
+				<setting id="sources.real-debrid.color" type="integer" label="40270" help="">
+					<level>0</level>
+					<default>17</default>
+					<constraints>
+						<options>
+							<option label="40082">0</option>
+							<option label="32670">1</option>
+							<option label="40283">2</option>
+							<option label="40284">3</option>
+							<option label="40285">4</option>
+							<option label="40286">5</option>
+							<option label="32595">6</option>
+							<option label="32591">7</option>
+							<option label="40287">8</option>
+							<option label="40288">9</option>
+							<option label="40289">10</option>
+							<option label="32592">11</option>
+							<option label="40290">12</option>
+							<option label="40291">13</option>
+							<option label="40292">14</option>
+							<option label="40293">15</option>
+							<option label="40294">16</option>
+							<option label="40295">17</option>
+							<option label="40296">18</option>
+							<option label="40297">19</option>
+							<option label="40298">20</option>
+							<option label="40299">21</option>
+							<option label="40300">22</option>
+							<option label="40301">23</option>
+							<option label="32669">24</option>
+							<option label="40302">25</option>
+							<option label="40303">26</option>
+							<option label="40304">27</option>
+							<option label="40305">28</option>
+							<option label="40306">29</option>
+							<option label="40307">30</option>
+							<option label="40308">31</option>
+							<option label="40309">32</option>
+							<option label="40310">33</option>
+							<option label="40311">34</option>
+							<option label="40312">35</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="sources.highlightmethod">1</condition>
+						</dependency>
+					</dependencies>
+					<control type="list" format="string">
+						<heading>40270</heading>
+					</control>
+				</setting>
+				<setting id="sources.alldebrid.color" type="integer" label="40271" help="">
+					<level>0</level>
+					<default>6</default>
+					<constraints>
+						<options>
+							<option label="40082">0</option>
+							<option label="32670">1</option>
+							<option label="40283">2</option>
+							<option label="40284">3</option>
+							<option label="40285">4</option>
+							<option label="40286">5</option>
+							<option label="32595">6</option>
+							<option label="32591">7</option>
+							<option label="40287">8</option>
+							<option label="40288">9</option>
+							<option label="40289">10</option>
+							<option label="32592">11</option>
+							<option label="40290">12</option>
+							<option label="40291">13</option>
+							<option label="40292">14</option>
+							<option label="40293">15</option>
+							<option label="40294">16</option>
+							<option label="40295">17</option>
+							<option label="40296">18</option>
+							<option label="40297">19</option>
+							<option label="40298">20</option>
+							<option label="40299">21</option>
+							<option label="40300">22</option>
+							<option label="40301">23</option>
+							<option label="32669">24</option>
+							<option label="40302">25</option>
+							<option label="40303">26</option>
+							<option label="40304">27</option>
+							<option label="40305">28</option>
+							<option label="40306">29</option>
+							<option label="40307">30</option>
+							<option label="40308">31</option>
+							<option label="40309">32</option>
+							<option label="40310">33</option>
+							<option label="40311">34</option>
+							<option label="40312">35</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="sources.highlightmethod">1</condition>
+						</dependency>
+					</dependencies>
+					<control type="list" format="string">
+						<heading>40271</heading>
+					</control>
+				</setting>
+				<setting id="sources.premiumize.me.color" type="integer" label="40273" help="">
+					<level>0</level>
+					<default>26</default>
+					<constraints>
+						<options>
+							<option label="40082">0</option>
+							<option label="32670">1</option>
+							<option label="40283">2</option>
+							<option label="40284">3</option>
+							<option label="40285">4</option>
+							<option label="40286">5</option>
+							<option label="32595">6</option>
+							<option label="32591">7</option>
+							<option label="40287">8</option>
+							<option label="40288">9</option>
+							<option label="40289">10</option>
+							<option label="32592">11</option>
+							<option label="40290">12</option>
+							<option label="40291">13</option>
+							<option label="40292">14</option>
+							<option label="40293">15</option>
+							<option label="40294">16</option>
+							<option label="40295">17</option>
+							<option label="40296">18</option>
+							<option label="40297">19</option>
+							<option label="40298">20</option>
+							<option label="40299">21</option>
+							<option label="40300">22</option>
+							<option label="40301">23</option>
+							<option label="32669">24</option>
+							<option label="40302">25</option>
+							<option label="40303">26</option>
+							<option label="40304">27</option>
+							<option label="40305">28</option>
+							<option label="40306">29</option>
+							<option label="40307">30</option>
+							<option label="40308">31</option>
+							<option label="40309">32</option>
+							<option label="40310">33</option>
+							<option label="40311">34</option>
+							<option label="40312">35</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="sources.highlightmethod">1</condition>
+						</dependency>
+					</dependencies>
+					<control type="list" format="string">
+						<heading>40273</heading>
+					</control>
+				</setting>
+				<setting id="sources.easynews.color" type="integer" label="40274" help="">
+					<level>0</level>
+					<default>19</default>
+					<constraints>
+						<options>
+							<option label="40082">0</option>
+							<option label="32670">1</option>
+							<option label="40283">2</option>
+							<option label="40284">3</option>
+							<option label="40285">4</option>
+							<option label="40286">5</option>
+							<option label="32595">6</option>
+							<option label="32591">7</option>
+							<option label="40287">8</option>
+							<option label="40288">9</option>
+							<option label="40289">10</option>
+							<option label="32592">11</option>
+							<option label="40290">12</option>
+							<option label="40291">13</option>
+							<option label="40292">14</option>
+							<option label="40293">15</option>
+							<option label="40294">16</option>
+							<option label="40295">17</option>
+							<option label="40296">18</option>
+							<option label="40297">19</option>
+							<option label="40298">20</option>
+							<option label="40299">21</option>
+							<option label="40300">22</option>
+							<option label="40301">23</option>
+							<option label="32669">24</option>
+							<option label="40302">25</option>
+							<option label="40303">26</option>
+							<option label="40304">27</option>
+							<option label="40305">28</option>
+							<option label="40306">29</option>
+							<option label="40307">30</option>
+							<option label="40308">31</option>
+							<option label="40309">32</option>
+							<option label="40310">33</option>
+							<option label="40311">34</option>
+							<option label="40312">35</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="sources.highlightmethod">1</condition>
+						</dependency>
+					</dependencies>
+					<control type="list" format="string">
+						<heading>40274</heading>
+					</control>
+				</setting>
+				<setting id="sources.plexshare.color" type="integer" label="40276" help="">
+					<level>0</level>
+					<default>14</default>
+					<constraints>
+						<options>
+							<option label="40082">0</option>
+							<option label="32670">1</option>
+							<option label="40283">2</option>
+							<option label="40284">3</option>
+							<option label="40285">4</option>
+							<option label="40286">5</option>
+							<option label="32595">6</option>
+							<option label="32591">7</option>
+							<option label="40287">8</option>
+							<option label="40288">9</option>
+							<option label="40289">10</option>
+							<option label="32592">11</option>
+							<option label="40290">12</option>
+							<option label="40291">13</option>
+							<option label="40292">14</option>
+							<option label="40293">15</option>
+							<option label="40294">16</option>
+							<option label="40295">17</option>
+							<option label="40296">18</option>
+							<option label="40297">19</option>
+							<option label="40298">20</option>
+							<option label="40299">21</option>
+							<option label="40300">22</option>
+							<option label="40301">23</option>
+							<option label="32669">24</option>
+							<option label="40302">25</option>
+							<option label="40303">26</option>
+							<option label="40304">27</option>
+							<option label="40305">28</option>
+							<option label="40306">29</option>
+							<option label="40307">30</option>
+							<option label="40308">31</option>
+							<option label="40309">32</option>
+							<option label="40310">33</option>
+							<option label="40311">34</option>
+							<option label="40312">35</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="sources.highlightmethod">1</condition>
+						</dependency>
+					</dependencies>
+					<control type="list" format="string">
+						<heading>40276</heading>
+					</control>
+				</setting>
+				<setting id="sources.gdrive.color" type="integer" label="40277" help="">
+					<level>0</level>
+					<default>14</default>
+					<constraints>
+						<options>
+							<option label="40082">0</option>
+							<option label="32670">1</option>
+							<option label="40283">2</option>
+							<option label="40284">3</option>
+							<option label="40285">4</option>
+							<option label="40286">5</option>
+							<option label="32595">6</option>
+							<option label="32591">7</option>
+							<option label="40287">8</option>
+							<option label="40288">9</option>
+							<option label="40289">10</option>
+							<option label="32592">11</option>
+							<option label="40290">12</option>
+							<option label="40291">13</option>
+							<option label="40292">14</option>
+							<option label="40293">15</option>
+							<option label="40294">16</option>
+							<option label="40295">17</option>
+							<option label="40296">18</option>
+							<option label="40297">19</option>
+							<option label="40298">20</option>
+							<option label="40299">21</option>
+							<option label="40300">22</option>
+							<option label="40301">23</option>
+							<option label="32669">24</option>
+							<option label="40302">25</option>
+							<option label="40303">26</option>
+							<option label="40304">27</option>
+							<option label="40305">28</option>
+							<option label="40306">29</option>
+							<option label="40307">30</option>
+							<option label="40308">31</option>
+							<option label="40309">32</option>
+							<option label="40310">33</option>
+							<option label="40311">34</option>
+							<option label="40312">35</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="sources.highlightmethod">1</condition>
+						</dependency>
+					</dependencies>
+					<control type="list" format="string">
+						<heading>40277</heading>
+					</control>
+				</setting>
+				<setting id="sources.usecoloricons" type="boolean" label="40278" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="sources.highlightmethod">1</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
 				</setting>
 				<setting id="sources.group.sort" type="integer" label="32133" help="">
 					<level>0</level>
@@ -2309,6 +2895,11 @@
 					<control type="toggle"/>
 				</setting>
 				<setting id="autoplay.sd" type="boolean" label="32656" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="sources.useonlyone" type="boolean" label="40341" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
@@ -2746,6 +3337,74 @@
 					</dependencies>
 					<control type="edit" format="string">
 						<heading>32648</heading>
+					</control>
+				</setting>
+			</group>
+		</category>
+		<category id="simkl" label="40343" help="40344">
+			<group id="1" label="40343">
+				<setting id="authorizeSIMKLbutton" type="action" label="40121" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=simkl_Authorize)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="simkltoken"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="revokeSIMKLbutton" type="action" label="40110" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=simkl_Revoke)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="simkltoken"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="simkltoken" type="string" label="40345" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40345</heading>
+					</control>
+				</setting>
+				<setting id="simklusername" type="string" label="40006" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+						<dependency type="visible">
+								<!--<condition operator="!is" setting="simkltoken"/> -->
+								<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40006</heading>
 					</control>
 				</setting>
 			</group>
@@ -3526,6 +4185,16 @@
 				</setting>
 			</group>
 			<group id="5" label="32327">
+				<setting id="easynews.enable" type="boolean" label="32081" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="easynews.user"/>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
 				<setting id="easynews.user" type="string" label="40006" help="">
 					<level>0</level>
 					<default/>
@@ -4643,6 +5312,16 @@
 						</dependency>
 					</dependencies>
 					<control type="button" format="action"/>
+				</setting>
+				<setting id="use.playeronly" type="boolean" label="40275" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="dev.mode.enable">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
 				</setting>
 				<setting id="dev.disable.single" type="boolean" label="32141" help="">
 					<level>0</level>

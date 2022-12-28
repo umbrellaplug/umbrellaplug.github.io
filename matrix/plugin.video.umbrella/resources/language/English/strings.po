@@ -1952,43 +1952,43 @@ msgid "Debrid(Hoster) Source Color"
 msgstr ""
 
 msgctxt "#32589"
-msgid "[COLOR blue]Blue[/COLOR]"
+msgid "[COLOR blue]█ [B]Blue[/B][/COLOR]"
 msgstr ""
 
 msgctxt "#32590"
-msgid "[COLOR red]Red[/COLOR]"
+msgid "[COLOR red]█ [B]Red[/B][/COLOR]"
 msgstr ""
 
 msgctxt "#32591"
-msgid "[COLOR yellow]Yellow[/COLOR]"
+msgid "[COLOR yellow]█ [B]Yellow[/B][/COLOR]"
 msgstr ""
 
 msgctxt "#32592"
-msgid "[COLOR deeppink]Deep Pink[/COLOR]"
+msgid "[COLOR deeppink]█ [B]Deep Pink[/B][/COLOR]"
 msgstr ""
 
 msgctxt "#32593"
-msgid "[COLOR cyan]Cyan[/COLOR]"
+msgid "[COLOR cyan]█ [B]Cyan[/B][/COLOR]"
 msgstr ""
 
 msgctxt "#32594"
-msgid "[COLOR lawngreen]Lawn Green[/COLOR]"
+msgid "[COLOR lawngreen]█ [B]Lawn Green[/B][/COLOR]"
 msgstr ""
 
 msgctxt "#32595"
-msgid "[COLOR gold]Gold[/COLOR]"
+msgid "[COLOR gold]█ [B]Gold[/B][/COLOR]"
 msgstr ""
 
 msgctxt "#32596"
-msgid "[COLOR magenta]Magenta[/COLOR]"
+msgid "[COLOR magenta]█ [B]Magenta[B][/COLOR]"
 msgstr ""
 
 msgctxt "#32597"
-msgid "[COLOR yellowgreen]Yellow Green[/COLOR]"
+msgid "[COLOR yellowgreen]█ [B]Yellow Green[/B][/COLOR]"
 msgstr ""
 
 msgctxt "#32598"
-msgid "[COLOR nocolor]No Color[/COLOR]"
+msgid "[COLOR nocolor]█ [B]No Color[/B][/COLOR]"
 msgstr ""
 
 msgctxt "#32599"
@@ -2192,27 +2192,27 @@ msgid "Check Host for Valid URL"
 msgstr ""
 
 msgctxt "#32666"
-msgid "[COLOR skyblue]Sky Blue[/COLOR]"
+msgid "[COLOR skyblue]█ [B]Sky Blue[/B][/COLOR]"
 msgstr ""
 
 msgctxt "#32667"
-msgid "[COLOR lime]Lime[/COLOR]"
+msgid "[COLOR lime]█ [B]Lime[/B][/COLOR]"
 msgstr ""
 
 msgctxt "#32668"
-msgid "[COLOR limegreen]Lime Green[/COLOR]"
+msgid "[COLOR limegreen]█ [B]Lime Green[/B][/COLOR]"
 msgstr ""
 
 msgctxt "#32669"
-msgid "[COLOR deepskyblue]Deep Sky Blue[/COLOR]"
+msgid "[COLOR deepskyblue]█ [B]Deep Sky Blue[/B][/COLOR]"
 msgstr ""
 
 msgctxt "#32670"
-msgid "[COLOR white]White[/COLOR]"
+msgid "[COLOR white]█ [B]White[/B][/COLOR]"
 msgstr ""
 
 msgctxt "#32671"
-msgid "[COLOR whitesmoke]White Smoke[/COLOR]"
+msgid "[COLOR whitesmoke]█ [B]White Smoke[/B][/COLOR]"
 msgstr ""
 
 msgctxt "#32672"
@@ -3204,7 +3204,7 @@ msgid "Prioritize Dolby-Vision above HDR"
 msgstr ""
 
 msgctxt "#40082"
-msgid "[COLOR black]Black[/COLOR]"
+msgid "[COLOR black]█[/COLOR]  [COLOR white][B]Black[/B][/COLOR]"
 msgstr ""
 
 msgctxt "#40083"
@@ -3955,6 +3955,230 @@ msgctxt "#40269"
 msgid "Recently Released"
 msgstr ""
 
+msgctxt "#40270"
+msgid "Real-Debrid Highlight Color"
+msgstr ""
+
+msgctxt "#40271"
+msgid "All-Debrid Highlight Color"
+msgstr ""
+
+msgctxt "#40272"
+msgid "Highlight Method"
+msgstr ""
+
+msgctxt "#40273"
+msgid "Premiumize Highlight Color"
+msgstr ""
+
+msgctxt "#40274"
+msgid "EasyNews Highlight Color"
+msgstr ""
+
+msgctxt "#40275"
+msgid "Use Player instead of Resolver"
+msgstr ""
+
+msgctxt "#40276"
+msgid "Plex Highlight Color"
+msgstr ""
+
+msgctxt "#40277"
+msgid "GDrive Highlight Color"
+msgstr ""
+
+msgctxt "#40278"
+msgid "Match quality icons to provider color"
+msgstr ""
+
+msgctxt "#40283"
+msgid "[COLOR lightgray]█ [B]Light Gray[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40284"
+msgid "[COLOR gray]█ [B]Gray[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40285"
+msgid "[COLOR beige]█ [B]Beige[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40286"
+msgid "[COLOR darkgoldenrod]█ [B]Dark Goldenrod[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40287"
+msgid "[COLOR peru]█ [B]Peru[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40288"
+msgid "[COLOR orangered]█ [B]Orange[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40289"
+msgid "[COLOR pink]█ [B]Pink[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40290"
+msgid "[COLOR fuchsia]█ [B]Fuchsia[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40291"
+msgid "[COLOR lightcoral]█ [B]Light Coral[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40292"
+msgid "[COLOR darkred]█ [B]Dark Red[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40293"
+msgid "[COLOR maroon]█ [B]Maroon[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40294"
+msgid "[COLOR blueviolet]█ [B]Blue Violet[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40295"
+msgid "[COLOR darkorchid]█ [B]Dark Orchid[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40296"
+msgid "[COLOR purple]█ [B]Purple[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40297"
+msgid "[COLOR indigo]█ [B]Indigo[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40298"
+msgid "[COLOR darkslateblue]█ [B]Dark Slate Blue[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40299"
+msgid "[COLOR slateblue]█ [B]Slate Blue[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40300"
+msgid "[COLOR navy]█ [B]Navy[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40301"
+msgid "[COLOR blue]█ [B]Blue[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40302"
+msgid "[COLOR dodgerblue]█ [B]Dodger Blue[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40303"
+msgid "[COLOR skyblue]█ [B]Sky Blue[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40304"
+msgid "[COLOR powderblue]█ [B]Powder Blue[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40305"
+msgid "[COLOR turquoise]█ [B]Turquoise[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40306"
+msgid "[COLOR cyan]█ [B]Cyan[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40307"
+msgid "[COLOR aqua]█ [B]Aqua[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40308"
+msgid "[COLOR aquamarine]█ [B]Aqua Marine[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40309"
+msgid "[COLOR greenyellow]█ [B]Green Yellow[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40310"
+msgid "[COLOR mediumspringgreen]█ [B]Medium Spring Green[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40311"
+msgid "[COLOR green]█ [B]Green[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40312"
+msgid "[COLOR lime]█ [B]Lime[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40313"
+msgid "[COLOR forestgreen]█ [B]Forest Green[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40314"
+msgid "[COLOR lawngreen]█ [B]Lawn Green[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40315"
+msgid "[COLOR darkgreen]█ [B]Dark Green[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40316"
+msgid "Default Theme"
+msgstr ""
+
+msgctxt "#40317"
+msgid "AH2 Style"
+msgstr ""
+
+msgctxt "#40318"
+msgid "Netflix Style"
+msgstr ""
+
+msgctxt "#40319"
+msgid "Playnext Popup Theme"
+msgstr ""
+
+msgctxt "#40320"
+msgid "Seconds Remaining"
+msgstr ""
+
+msgctxt "#40321"
+msgid "Percentage Watched"
+msgstr ""
+
+msgctxt "#40322"
+msgid "Subtitle End"
+msgstr ""
+
+msgctxt "#40323"
+msgid "Playnext Popup Trigger"
+msgstr ""
+
+msgctxt "#40324"
+msgid "Backup Percentage Watched"
+msgstr ""
+
+msgctxt "#40325"
+msgid "Backup # of Seconds Remaining"
+msgstr ""
+
+msgctxt "#40326"
+msgid "Playnext will attempt to use the time from the last subtitle to trigger popup. If no subtitles found, backup time or percentage is used."
+msgstr ""
+
+msgctxt "#40327"
+msgid "Backup Trigger if Subtitles Fail"
+msgstr ""
+
+msgctxt "#40328"
+msgid "Backup Percentage"
+msgstr ""
+
+msgctxt "#40329"
+msgid "# of Seconds Remaining"
+msgstr ""
+
 msgctxt "#40330"
 msgid "Trending Today (TMDB)"
 msgstr ""
@@ -3973,4 +4197,60 @@ msgstr ""
 
 msgctxt "#40334"
 msgid "Fix Blank Settings: [B]UMBRELLA[/B]"
+msgstr ""
+
+msgctxt "#40335"
+msgid "Full-Screen"
+msgstr ""
+
+msgctxt "#40336"
+msgid "Icon Only"
+msgstr ""
+
+msgctxt "#40337"
+msgid "Press back to cancel"
+msgstr ""
+
+msgctxt "#40338"
+msgid "Use artwork for background"
+msgstr ""
+
+msgctxt "#40339"
+msgid "Mark watched"
+msgstr ""
+
+msgctxt "#40340"
+msgid "Percentage to use to mark items watched"
+msgstr ""
+
+msgctxt "#40341"
+msgid "Only try one source."
+msgstr ""
+
+msgctxt "#40342"
+msgid "Simkl"
+msgstr ""
+
+msgctxt "#40343"
+msgid "Simkl"
+msgstr ""
+
+msgctxt "#40344"
+msgid "Simkl settings category for Simkl authorization and settings exclusive to Simkl. Currently only setup for authentication for adding as a search provider. More features will be added later."
+msgstr ""
+
+msgctxt "#40345"
+msgid "simkl token"
+msgstr ""
+
+msgctxt "#40346"
+msgid "Simkl Auth"
+msgstr ""
+
+msgctxt "#40347"
+msgid "Authentication with Simkl has failed, please try again"
+msgstr ""
+
+msgctxt "#40348"
+msgid "Sources Highlight Color"
 msgstr ""

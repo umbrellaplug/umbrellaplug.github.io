@@ -11,6 +11,7 @@ import xbmcgui
 import xbmcplugin
 import xbmcvfs
 import xml.etree.ElementTree as ET
+from threading import Thread
 
 addon = xbmcaddon.Addon
 AddonID = xbmcaddon.Addon().getAddonInfo('id')
@@ -221,6 +222,9 @@ def addonNext():
 	if not (art is None and theme in ('-', '')): return joinPath(art, 'next.png')
 	return 'DefaultVideo.png'
 
+def skin_location():
+	return transPath('special://home/addons/plugin.video.umbrella')
+
 ####################################################
 # --- Dialogs
 ####################################################
@@ -353,25 +357,39 @@ def autoTraktSubscription(tvshowtitle, year, imdb, tvdb): #---start adding TMDb 
 	from resources.lib.modules import library
 	library.libtvshows().add(tvshowtitle, year, imdb, tvdb)
 
-def getColor(n):
-	colorChart = ('blue', 'red', 'yellow', 'deeppink', 'cyan', 'lawngreen', 'gold', 'magenta', 'yellowgreen',
-						'skyblue', 'lime', 'limegreen', 'deepskyblue', 'white', 'whitesmoke', 'nocolor', 'black')
-	if not n: n = '8'
-	color = colorChart[int(n)]
-	return color
+# def getColor(n):
+# 	colorChart = ('blue', 'red', 'yellow', 'deeppink', 'cyan', 'lawngreen', 'gold', 'magenta', 'yellowgreen',
+# 						'skyblue', 'lime', 'limegreen', 'deepskyblue', 'white', 'whitesmoke', 'nocolor', 'black')
+# 	if not n: n = '8'
+# 	color = colorChart[int(n)]
+# 	return color
 
 def getBackgroundColor(n):
-	colorChart = ('FF12A0C7', 'blue', 'red', 'yellow', 'deeppink', 'cyan', 'lawngreen', 'gold', 'magenta', 'yellowgreen',
-						'skyblue', 'lime', 'limegreen', 'deepskyblue', 'white', 'whitesmoke', 'FF000000')
+	colorChart = ('black','white', 'lightgray', 'gray', 'beige', 'darkgoldenrod', 'gold', 'yellow', 'peru', 'orangered',
+						'pink','deeppink','fuchsia','lightcoral', 'darkred', 'maroon', 'blueviolet', 'darkorchid', 'purple', 'indigo', 'darkslateblue', 'slateblue','navy', 'blue', 'deepskyblue', 'dodgerblue','skyblue', 'powderblue', 'turquoise', 'cyan', 'aqua','aquamarine','greenyellow','mediumspringgreen','green', 'lime')
 	if not n: n = '0'
 	color = colorChart[int(n)]
 	return color 
+
+def getColor(n):
+	colorChart = ('black','white', 'lightgray', 'gray', 'beige', 'darkgoldenrod', 'gold', 'yellow', 'peru', 'orangered',
+						'pink','deeppink','fuchsia','lightcoral', 'darkred', 'maroon', 'blueviolet', 'darkorchid', 'purple', 'indigo', 'darkslateblue', 'slateblue','navy', 'blue', 'deepskyblue', 'dodgerblue','skyblue', 'powderblue', 'turquoise', 'cyan', 'aqua','aquamarine','greenyellow','mediumspringgreen','green', 'lime')
+	if not n: n = '0'
+	color = colorChart[int(n)]
+	return color
 
 def getHighlightColor():
 	return getColor(setting('highlight.color'))
 
 def getSourceHighlightColor():
 	return getColor(setting('sources.highlight.color'))
+
+def getProviderHighlightColor(sourcename):
+    #Real-Debrid
+    #Premiumize.me
+	sourcename = str(sourcename).lower()
+	source = 'sources.'+sourcename+'.color'
+	return getColor(setting(source))
 
 def getPlayNextBackgroundColor():
 	return getBackgroundColor(setting('playnext.background.color'))

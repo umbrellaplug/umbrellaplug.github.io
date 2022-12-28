@@ -2,15 +2,106 @@
 <window>
 	<!-- <defaultcontrol>2000</defaultcontrol> -->
 	<controls>
-		<control type="image">
-			<description>background</description>
-			<left>0</left>
-			<top>0</top>
-			<width>1920</width>
-			<height>1080</height>
-			<texture>common/black.png</texture>
-		</control>
+		<control type="group">
+            <control type="image">
+                <left>0</left>
+                <top>0</top>
+                <width>1920</width>
+                <height>1080</height>
+                <texture>common/black.png</texture>
+            </control>
+            <control type="image">
+                <left>0</left>
+                <top>0</top>
+                <width>1920</width>
+                <height>1080</height>
+                <texture background="true">$INFO[Window.Property(umbrella.poster1)]</texture>
+                <animation effect="fade" start="0" end="20" time="0" tween="sine">WindowOpen</animation>
+				<visible>String.IsEqual(Window().Property(umbrella.fanartBG),1)</visible>
+            </control>
+			<control type="image">
+                <left>0</left>
+                <top>0</top>
+                <width>1920</width>
+                <height>1080</height>
+                <texture background="true">$INFO[Window.Property(umbrella.fanartdefault)]</texture>
+                <visible>String.IsEqual(Window().Property(umbrella.fanartBG),0)</visible>
+                <animation effect="fade" start="100" end="20" time="0" tween="sine" easing="in">WindowOpen</animation>
+            </control>
+        </control>
+<!-- Side Info -->
+        <control type="group">
+            <top>120</top>
+            <left>1450</left>
+            <control type="label">
+                <top>-900</top>
+                <width>400</width>
+                <font>font12</font>
+                <textcolor>AAFFFFFF</textcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <visible>!String.IsEmpty(Window().Property(umbrella.season))</visible>
+                <label>Season: [COLOR $INFO[Window().Property(umbrella.dialog.color)]]$INFO[Window().Property(umbrella.season)][/COLOR] Episode: [COLOR $INFO[Window().Property(umbrella.dialog.color)]]$INFO[Window().Property(umbrella.episode)][/COLOR]</label>
+            </control>
+            <control type="image">
+                <width>400</width>
+                <height>600</height>
+                <top>50</top>
+                <texture background="true">$INFO[Window().Property(umbrella.poster)]</texture>
+            </control>
 
+            <control type="group">
+                <top>420</top>
+                <control type="label">
+                    <top>20</top>
+                    <width>400</width>
+                    <font>font14</font>
+                    <textcolor>AAFFFFFF</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>$INFO[Window().Property(umbrella.title)]</label>
+					<scroll>true</scroll>
+                </control>
+                <control type="label">
+                    <top>150</top>
+                    <width>400</width>
+                    <font>font12</font>
+                    <textcolor>AAFFFFFF</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <visible>!String.IsEmpty(Window().Property(umbrella.season))</visible>
+                    <label>[COLOR $INFO[Window().Property(umbrella.dialog.color)]]$INFO[Window().Property(umbrella.mpaa)][/COLOR] | Year: [COLOR $INFO[Window().Property(umbrella.dialog.color)]]$INFO[Window().Property(umbrella.year)] [/COLOR] | [COLOR $INFO[Window().Property(umbrella.dialog.color)]]$INFO[Window().Property(umbrella.duration)]min[/COLOR]
+                    <scroll>true</scroll>
+					</label>
+                </control>
+                <control type="label">
+                    <top>120</top>
+                    <width>400</width>
+                    <font>font12</font>
+                    <textcolor>AAFFFFFF</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <visible>String.IsEmpty(Window().Property(umbrella.season))</visible>
+                    <label>[COLOR $INFO[Window().Property(umbrella.dialog.color)]]$INFO[Window().Property(umbrella.mpaa)] [/COLOR]| [COLOR $INFO[Window().Property(umbrella.dialog.color)]]$INFO[Window().Property(umbrella.premiered)] [/COLOR] | [COLOR $INFO[Window().Property(umbrella.dialog.color)]]$INFO[Window().Property(umbrella.duration)]min[/COLOR]</label>
+					<scroll>true</scroll>
+				</control>
+                <control type="textbox">
+                    <wrapmultiline>true</wrapmultiline>
+                    <top>360</top>
+                    <left>0</left>
+                    <height min="20" max="150">auto</height>
+                    <width>400</width>
+                    <font>font12</font>
+                    <textcolor>AAFFFFFF</textcolor>
+                    <align>center</align>
+                    <label>$INFO[Window().Property(umbrella.plot)]</label>
+					<autoscroll delay="3000" time="1000" repeat="10000">!Control.HasFocus(13)</autoscroll>
+                </control>
+            </control>
+
+        </control>
+
+<!-- Top Logo/picture  -->
 		<control type="group" id="1">
 			<description>List Header</description>
 			<left>25</left>
@@ -28,13 +119,13 @@
 				<align>left</align>
 				<aligny>bottom</aligny>
 				<autoscroll>false</autoscroll>
-				<label>[COLOR $INFO[Window().Property(umbrella.highlight.color)]]$INFO[Window().Property(umbrella.total_results)] Total Sources[/COLOR]</label>
+				<label>$INFO[Window().Property(umbrella.total_results)] Total Sources</label>
 			</control>
 			<control type="image">
 				<description>clearlogo</description>
 				<aspectratio align="center" aligny="center">keep</aspectratio>
 				<left>400</left>
-				<top>0</top>
+				<top>-15</top>
 				<width>600</width>
 				<height>175%</height>
 				<texture background="true">$INFO[Window().Property(umbrella.clearlogo)]</texture>
@@ -54,57 +145,7 @@
 				<!-- <visible>String.IsEmpty(Window().Property(umbrella.clearlogo))</visible> -->
 			<!-- </control> -->
 
-			<control type="textbox">
-				<description>Episode details</description>
-				<left>1345</left>
-				<top>110</top>
-				<width>486</width>
-				<height>40</height>
-				<font>font14</font>
-				<textcolor>white</textcolor>
-				<align>center</align>
-				<aligny>bottom</aligny>
-				<autoscroll>false</autoscroll>
-				<label>$INFO[Window().Property(umbrella.seas_ep)]  [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]  $INFO[Window().Property(umbrella.mpaa)]  [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]  $INFO[Window().Property(umbrella.premiered)]  [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]  $INFO[Window().Property(umbrella.duration)]m</label>
-				<visible>!String.IsEmpty(Window().Property(umbrella.season))</visible>
-			</control>
-			<control type="textbox">
-				<description>Movie details</description>
-				<left>1345</left>
-				<top>110</top>
-				<width>486</width>
-				<height>40</height>
-				<font>font14</font>
-				<textcolor>white</textcolor>
-				<align>center</align>
-				<aligny>bottom</aligny>
-				<autoscroll>false</autoscroll>
-				<label>$INFO[Window().Property(umbrella.mpaa)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[Window().Property(umbrella.year)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[Window().Property(umbrella.duration)]m</label>
-				<visible>String.IsEmpty(Window().Property(umbrella.season))</visible>
-			</control>
-			<control type="image">
-				<description>Item Poster</description>
-				<left>1350</left>
-				<top>150</top>
-				<width>486</width>
-				<height>729</height>
-				<aspectratio aligny="top">keep</aspectratio>
-				<texture background="true">$INFO[Window().Property(umbrella.poster)]</texture>
-			</control>
-			<control type="textbox">
-				<description>Item plot</description>
-				<left>1350</left>
-				<top>879</top>
-				<width>486</width>
-				<height>185</height>
-				<font>font12</font>
-				<align>justify</align>
-				<aligny>top</aligny>
-				<wrapmultiline>true</wrapmultiline>
-				<label>$INFO[Window().Property(umbrella.plot)]</label>
-				<textcolor>white</textcolor>
-				<autoscroll time="2000" delay="5500" repeat="5000"></autoscroll>
-			</control>
+<!-- Sources List -->
 			<control type="list" id="2000">
 				<description>Source Select List</description>
 				<viewtype>list</viewtype>
@@ -129,6 +170,67 @@
 						<aligny>center</aligny>
 						<aspectratio>keep</aspectratio>
 						<texture>$INFO[ListItem.Property(umbrella.quality_icon)]</texture>
+						<visible>!String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon RD</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.realdebridcolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),Real-Debrid)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.IsEqual(Window().Property(umbrella.useprovidercolors),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon AD</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.alldebridcolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),AllDebrid)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon PM</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.premiumizecolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),Premiumize)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon Plex</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.plexcolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),PLEXSHARE)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon EasyNews</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.easynewscolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),EASYNEWS)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon GDrive</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.gdrivecolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),GDRIVE)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
 					</control>
 					<control type="label">
 						<description>Line1 link name</description>
@@ -140,7 +242,7 @@
 						<textcolor>white</textcolor>
 						<align>left</align>
 						<aligny>bottom</aligny>
-						<label>[COLOR $INFO[Window().Property(umbrella.highlight.color)]][B]$INFO[ListItem.Property(umbrella.count)]  $INFO[ListItem.Property(umbrella.name)][/B][/COLOR]</label>
+						<label>[COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]][B]$INFO[ListItem.Property(umbrella.count)]  $INFO[ListItem.Property(umbrella.name)][/B][/COLOR]</label>
 						<visible>!String.Contains(ListItem.Property(umbrella.source),UNCACHED)</visible>
 					</control>
 					<control type="label">
@@ -166,7 +268,7 @@
 						<textcolor>white</textcolor>
 						<align>left</align>
 						<aligny>top</aligny>
-						<label>$INFO[ListItem.Property(umbrella.size_label)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.debrid)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.source)]</label>
+						<label>$INFO[ListItem.Property(umbrella.size_label)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.debrid)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.source)]</label>
 						<visible>String.IsEqual(ListItem.Property(umbrella.source),CLOUD)</visible>
 					</control>
 					<control type="label">
@@ -179,7 +281,7 @@
 						<textcolor>white</textcolor>
 						<align>left</align>
 						<aligny>top</aligny>
-						<label>$INFO[ListItem.Property(umbrella.size_label)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.debrid)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.provider)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.source)]</label>
+						<label>$INFO[ListItem.Property(umbrella.size_label)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.debrid)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.provider)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.source)]</label>
 						<visible>!String.Contains(ListItem.Property(umbrella.source),DIRECT) + !String.Contains(ListItem.Property(umbrella.source),LOCAL) + !String.Contains(ListItem.Property(umbrella.source),UNCACHED) + !String.Contains(ListItem.Property(umbrella.source),CLOUD)</visible>
 					</control>
 					<control type="label">
@@ -192,7 +294,7 @@
 						<textcolor>white</textcolor>
 						<align>left</align>
 						<aligny>top</aligny>
-						<label>$INFO[ListItem.Property(umbrella.size_label)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.debrid)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.provider)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.source)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   SEEDERS: $INFO[ListItem.Property(umbrella.seeders)]</label>
+						<label>$INFO[ListItem.Property(umbrella.size_label)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.debrid)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.provider)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.source)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   SEEDERS: $INFO[ListItem.Property(umbrella.seeders)]</label>
 						<visible>String.Contains(ListItem.Property(umbrella.source),UNCACHED)</visible>
 					</control>
 					<control type="label">
@@ -205,7 +307,7 @@
 						<textcolor>white</textcolor>
 						<align>left</align>
 						<aligny>top</aligny>
-						<label>$INFO[ListItem.Property(umbrella.size_label)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.source)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.provider)]</label>
+						<label>$INFO[ListItem.Property(umbrella.size_label)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.source)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.provider)]</label>
 						<visible>!String.Contains(ListItem.Property(umbrella.provider),PLEXSHARE) + [String.Contains(ListItem.Property(umbrella.source),DIRECT) | String.Contains(ListItem.Property(umbrella.source),LOCAL)]</visible>
 					</control>
 					<control type="label">
@@ -218,7 +320,7 @@
 						<textcolor>white</textcolor>
 						<align>left</align>
 						<aligny>top</aligny>
-						<label>$INFO[ListItem.Property(umbrella.size_label)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.source)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.provider)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.plexsource)]</label>
+						<label>$INFO[ListItem.Property(umbrella.size_label)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.source)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.provider)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.plexsource)]</label>
 						<visible>String.Contains(ListItem.Property(umbrella.provider),PLEXSHARE) + [String.Contains(ListItem.Property(umbrella.source),DIRECT) | String.Contains(ListItem.Property(umbrella.source),LOCAL)]</visible>
 					</control>
 					<control type="label">
@@ -231,7 +333,7 @@
 						<textcolor>white</textcolor>
 						<align>left</align>
 						<aligny>top</aligny>
-						<label>$INFO[ListItem.Property(umbrella.size_label)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.debrid)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.provider)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.source)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   HOSTER</label>
+						<label>$INFO[ListItem.Property(umbrella.size_label)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.debrid)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.provider)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.source)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   HOSTER</label>
 						<visible>!String.Contains(ListItem.Property(umbrella.source),DIRECT) + !String.Contains(ListItem.Property(umbrella.source),LOCAL) + !String.Contains(ListItem.Property(umbrella.source),TORRENT) + !String.IsEqual(ListItem.Property(umbrella.source),CLOUD)</visible>
 					</control>
 				</itemlayout>
@@ -241,7 +343,7 @@
 						<top>0</top>
 						<width>1350</width>
 						<height>100</height>
-						<texture colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/white.png</texture>
+						<texture colordiffuse="$INFO[ListItem.Property(umbrella.providerhighlight)]">common/white.png</texture>
 					</control>
 					<control type="image">
 						<left>0</left>
@@ -258,9 +360,68 @@
 						<width>100</width>
 						<height>100</height>
 						<align>left</align>
-						<aligny>center</aligny>
-						<aspectratio>keep</aspectratio>
 						<texture>$INFO[ListItem.Property(umbrella.quality_icon)]</texture>
+						<visible>!String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon RD</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),Real-Debrid)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon AD</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),AllDebrid)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon PM</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),Premiumize)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon Plex</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),PLEXSHARE)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon EasyNews</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),EASYNEWS)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon GDrive</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),GDRIVE)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
 					</control>
 					<control type="label">
 						<description>Line1 link name</description>
@@ -356,24 +517,25 @@
 				</focusedlayout>
 			</control>
 			<control type="group">
-				<left>1432</left>
+				<left>1462</left>
 				<top>10</top>
 					<control type="button" id="2001">
 						<description>View Uncached Torrents button</description>
 						<onright>2000</onright>
 						<onleft>2000</onleft>
-						<width>305</width>
+						<width>350</width>
 						<height>100</height>
 						<textoffsetx>0</textoffsetx>
 						<texturefocus colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/button5.png</texturefocus>
 						<!-- <texturenofocus colordiffuse="gainsboro">common/button2.png</texturenofocus> -->
-						<texturenofocus>common/button5.png</texturenofocus>
+						<texturenofocus colordiffuse="gainsboro">common/button5.png</texturenofocus>
 						<label>$ADDON[plugin.video.umbrella 32639]</label>
 						<font>font12</font>
 						<align>center</align>
 						<textcolor>white</textcolor>
 						<focusedcolor>white</focusedcolor>
 						<visible>true</visible>
+						<animation effect="fade" start="100" end="80" time="0" tween="sine" easing="in">WindowOpen</animation>
 					</control>
 			</control>
 			<control type="grouplist" id="2002">

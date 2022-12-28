@@ -262,8 +262,8 @@ class Navigator:
 		#-- Sorting and Filtering - 4
 		self.addDirectoryItem(40162, 'tools_openSettings&query=4.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#-- Accounts - 7
-		self.addDirectoryItem(32044, 'tools_openSettings&query=7.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
-		self.addDirectoryItem(40124, 'tools_openSettings&query=8.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(32044, 'tools_openSettings&query=8.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(40124, 'tools_openSettings&query=9.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(40123, 'tools_openSettings&query=6.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		if self.traktCredentials: self.addDirectoryItem(35057, 'tools_traktToolsNavigator', 'tools.png', 'DefaultAddonService.png', isFolder=True)
 		#-- Navigation - 1
@@ -271,9 +271,9 @@ class Navigator:
 		#-- Playback - 3
 		self.addDirectoryItem(32045, 'tools_openSettings&query=3.1', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#-- Downloads - 10
-		self.addDirectoryItem(32048, 'tools_openSettings&query=10.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(32048, 'tools_openSettings&query=11.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#-- Subtitles - 11
-		self.addDirectoryItem(32046, 'tools_openSettings&query=11.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(32046, 'tools_openSettings&query=12.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(32556, 'library_Navigator', 'tools.png', 'DefaultAddonService.png', isFolder=True)
 		self.addDirectoryItem(32049, 'tools_viewsNavigator', 'settings.png', 'DefaultAddonService.png', isFolder=True)
 		self.addDirectoryItem(32361, 'tools_resetViewTypes', 'settings.png', 'DefaultAddonService.png', isFolder=False)
@@ -315,7 +315,7 @@ class Navigator:
 		self.endDirectory()
 
 	def library(self): # -- Library - 9
-		self.addDirectoryItem(32557, 'tools_openSettings&query=9.0', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
+		self.addDirectoryItem(32557, 'tools_openSettings&query=10.0', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
 		self.addDirectoryItem(32558, 'library_update', 'library_update.png', 'DefaultAddonLibrary.png', isFolder=False)
 		self.addDirectoryItem(32676, 'library_clean', 'library_update.png', 'DefaultAddonLibrary.png', isFolder=False)
 		self.addDirectoryItem(32559, getSetting('library.movie'), 'movies.png', 'DefaultMovies.png', isAction=False)
@@ -361,7 +361,7 @@ class Navigator:
 			self.addDirectoryItem('All-Debrid: Transfers', 'ad_Transfers', 'alldebrid.png', 'DefaultAddonService.png')
 			self.addDirectoryItem('All-Debrid: Account Info', 'ad_AccountInfo', 'alldebrid.png', 'DefaultAddonService.png', isFolder=False)
 		else:
-			self.addDirectoryItem('[I]Please setup in Accounts[/I]', 'tools_openSettings&query=7.0', 'alldebrid.png', 'DefaultAddonService.png', isFolder=False)
+			self.addDirectoryItem('[I]Please setup in Accounts[/I]', 'tools_openSettings&query=8.0', 'alldebrid.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 
 	def easynews_service(self):
@@ -387,7 +387,7 @@ class Navigator:
 			self.addDirectoryItem('Premiumize: Transfers', 'pm_Transfers', 'premiumize.png', 'DefaultAddonService.png')
 			self.addDirectoryItem('Premiumize: Account Info', 'pm_AccountInfo', 'premiumize.png', 'DefaultAddonService.png', isFolder=False)
 		else:
-			self.addDirectoryItem('[I]Please setup in Accounts[/I]', 'tools_openSettings&query=7.1', 'premiumize.png', 'DefaultAddonService.png', isFolder=False)
+			self.addDirectoryItem('[I]Please setup in Accounts[/I]', 'tools_openSettings&query=8.1', 'premiumize.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 
 	def realdebrid_service(self):
@@ -396,7 +396,7 @@ class Navigator:
 			self.addDirectoryItem('Real-Debrid: My Downloads', 'rd_MyDownloads&query=1', 'realdebrid.png', 'DefaultAddonService.png')
 			self.addDirectoryItem('Real-Debrid: Account Info', 'rd_AccountInfo', 'realdebrid.png', 'DefaultAddonService.png', isFolder=False )
 		else:
-			self.addDirectoryItem('[I]Please setup in Accounts[/I]', 'tools_openSettings&query=7.2', 'realdebrid.png', 'DefaultAddonService.png', isFolder=False)
+			self.addDirectoryItem('[I]Please setup in Accounts[/I]', 'tools_openSettings&query=8.2', 'realdebrid.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 
 	def search(self):

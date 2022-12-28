@@ -105,7 +105,7 @@ class Premiumize:
 		progressDialog.close()
 		if success:
 			if fromSettings == 1:
-				control.openSettings('7.1', 'plugin.video.umbrella')
+				control.openSettings('8.1', 'plugin.video.umbrella')
 			control.notification(message=40052, icon=pm_icon)
 			log_utils.log('Premiumize.me Successfully Authorized', level=log_utils.LOGDEBUG)
 
@@ -116,7 +116,7 @@ class Premiumize:
 			if token['error'] == "access_denied":
 				control.okDialog(title='default', message=getLS(40020))
 				if fromSettings == 1:
-					control.openSettings('7.1', 'plugin.video.umbrella')
+					control.openSettings('8.1', 'plugin.video.umbrella')
 				return False, False
 			return True, False
 		self.token = token['access_token']
@@ -542,6 +542,6 @@ class Premiumize:
 			control.setSetting('premiumizeusername', '')
 			control.dialog.ok(control.lang(40057), control.lang(40109))
 			if fromSettings == 1:
-				control.openSettings('7.1', 'plugin.video.umbrella')
+				control.openSettings('8.1', 'plugin.video.umbrella')
 		except:
 			log_utils.error()

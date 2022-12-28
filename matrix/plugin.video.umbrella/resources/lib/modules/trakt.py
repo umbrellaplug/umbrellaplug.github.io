@@ -1260,6 +1260,7 @@ def scrobbleMovie(imdb, tmdb, watched_percent):
 			if getSetting('trakt.scrobble.notify') == 'true': control.notification(message=32088)
 			control.sleep(1000)
 			sync_playbackProgress(forced=True)
+			control.trigger_widget_refresh()
 		else: control.notification(message=32130)
 	except: log_utils.error()
 
@@ -1271,6 +1272,7 @@ def scrobbleEpisode(imdb, tmdb, tvdb, season, episode, watched_percent):
 			if getSetting('trakt.scrobble.notify') == 'true': control.notification(message=32088)
 			control.sleep(1000)
 			sync_playbackProgress(forced=True)
+			control.trigger_widget_refresh()
 		else: control.notification(message=32130)
 	except: log_utils.error()
 
@@ -1300,7 +1302,7 @@ def scrobbleReset(imdb, tmdb=None, tvdb=None, season=None, episode=None, refresh
 			if getSetting('trakt.scrobble.notify') == 'true': control.notification(title=32315, message='Successfuly Removed playback progress:  [COLOR %s]%s[/COLOR]' % (highlight_color, label_string))
 			log_utils.log('Successfuly Removed Trakt Playback Progress:  %s  with resume_id=%s' % (label_string, str(resume_info[1])), __name__, level=log_utils.LOGDEBUG)
 		else:
-			if getSetting('trakt.scrobble.notify') == 'true': control.notification(title=32315, message='Failed to Remove playback progress:  [COLOR %s]%s[/COLOR]' % (highlight_color, label_string))
+			#if getSetting('trakt.scrobble.notify') == 'true': control.notification(title=32315, message='Failed to Remove playback progress:  [COLOR %s]%s[/COLOR]' % (highlight_color, label_string))
 			log_utils.log('Failed to Remove Trakt Playback Progress:  %s  with resume_id=%s' % (label_string, str(resume_info[1])), __name__, level=log_utils.LOGDEBUG)
 	except: log_utils.error()
 
@@ -1416,13 +1418,10 @@ def sync_playbackProgress(activities=None, forced=False):
 		if forced:
 			items = getTraktAsJson(link, silent=True)
 			if items: traktsync.insert_bookmarks(items)
-			log_utils.log('Forced - Trakt Playback Progress Sync Complete', __name__, log_utils.LOGDEBUG)
 		else:
 			db_last_paused = traktsync.last_sync('last_paused_at')
 			activity = getPausedActivity(activities)
 			if activity - db_last_paused >= 120: # do not sync unless 2 min difference or more
-				log_utils.log('Trakt Playback Progress Sync Update...(local db latest "paused_at" = %s, trakt api latest "paused_at" = %s)' % \
-									(str(db_last_paused), str(activity)), __name__, log_utils.LOGDEBUG)
 				items = getTraktAsJson(link, silent=True)
 				if items: traktsync.insert_bookmarks(items)
 	except: log_utils.error()

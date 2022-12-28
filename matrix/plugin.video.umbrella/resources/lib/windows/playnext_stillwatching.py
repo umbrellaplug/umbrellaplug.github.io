@@ -122,8 +122,7 @@ class StillWatchingXML(BaseDialog):
 			if getSetting('playnext.hidebutton') == 'false':
 				self.setProperty('umbrella.hidebutton','true')
 			skin = control.skin
-			if skin in ('skin.arctic.horizon.2'):
-				self.setProperty('using.arctic2', 'true')
+			if getSetting('playnext.theme') == '1' or getSetting('playnext.theme') == '2':
 				gradientColor = xbmc.getInfoLabel('Skin.String(gradientcolor.name)') or 'ff00bfa5'
 				selectColor = xbmc.getInfoLabel('Skin.String(focuscolor.name)') or 'ff0091ea'
 				self.setProperty('skin.gradientColor', gradientColor)

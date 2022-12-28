@@ -7,7 +7,6 @@ from hashlib import md5
 from json import dumps as jsdumps, loads as jsloads
 from sys import argv, exit as sysexit
 from sqlite3 import dbapi2 as database
-from unicodedata import name
 from urllib.parse import quote_plus
 import xbmc
 from resources.lib.database.cache import clear_local_bookmarks
@@ -17,7 +16,6 @@ from resources.lib.modules import control
 from resources.lib.modules import log_utils
 from resources.lib.modules import playcount
 from resources.lib.modules import trakt
-from resources.lib.modules import playlist
 
 LOGINFO = 1
 getLS = control.lang
@@ -43,11 +41,26 @@ class Player(xbmc.Player):
 		self.meta = {}
 		self.enable_playnext = getSetting('enable.playnext') == 'true'
 		self.playnext_time = int(getSetting('playnext.time')) or 60
+		self.playnext_percentage = int(getSetting('playnext.percent')) or 80
+		self.markwatched_percentage = int(getSetting('markwatched.percent')) or 85
 		self.traktCredentials = trakt.getTraktCredentialsInfo()
 		self.onPlayBackEnded_ran = False
 		self.prefer_tmdbArt = getSetting('prefer.tmdbArt') == 'true'
+		self.playeronly = getSetting('use.playeronly') == 'true'
+		self.subtitletime = None
+		
 
 	def play_source(self, title, year, season, episode, imdb, tmdb, tvdb, url, meta, debridPackCall=False):
+		#try:
+			#log_utils.log('From player.play_source() Title: %s' % str(title), level=log_utils.LOGDEBUG)
+			#log_utils.log('From player.play_source() Year: %s' % str(year), level=log_utils.LOGDEBUG)
+			#log_utils.log('From player.play_source() Season: %s' % str(season), level=log_utils.LOGDEBUG)
+			#log_utils.log('From player.play_source() Episode: %s' % str(episode), level=log_utils.LOGDEBUG)
+			#log_utils.log('From player.play_source() IMDB: %s TMDB: %s TVDB: %s' % (str(imdb), str(tmdb), str(tvdb)), level=log_utils.LOGDEBUG)
+			#log_utils.log('From player.play_source() URL: %s' % str(url), level=log_utils.LOGDEBUG)
+			#log_utils.log('From player.play_source() Meta: %s' % str(meta), level=log_utils.LOGDEBUG)
+		#except:
+			#log_utils.error()
 		try:
 			from sys import argv # some functions like ActivateWindow() throw invalid handle less this is imported here.
 			if not url: raise Exception
@@ -106,14 +119,32 @@ class Player(xbmc.Player):
 						control.playlist.add(url, item)
 						playerWindow.setProperty('umbrella.playlistStart_position', str(0))
 						control.player.play(control.playlist)
+						log_utils.log('[ plugin.video.umbrella ] Played file as playlist', level=log_utils.LOGDEBUG)
 					else:
-						if debridPackCall: control.player.play(url, item) # seems this is only way browseDebrid pack files will play and have meta marked as watched
+						if debridPackCall and not self.playeronly: 
+							control.player.play(url, item) # seems this is only way browseDebrid pack files will play and have meta marked as watched
+							log_utils.log('Played file as player.play', level=log_utils.LOGDEBUG)
+						elif self.playeronly:
+							control.player.play(url) # using for crashing bug testing.
+							log_utils.log('Played file as player.play with only the url', level=log_utils.LOGDEBUG)
 						else: control.resolve(int(argv[1]), True, item)
 				except:
-					if debridPackCall: control.player.play(url, item) # seems this is only way browseDebrid pack files will play and have meta marked as watched
+					if debridPackCall and not self.playeronly: 
+						control.player.play(url, item) # seems this is only way browseDebrid pack files will play and have meta marked as watched
+						log_utils.log('Played file as player.play', level=log_utils.LOGDEBUG)
+					elif self.playeronly:
+						control.player.play(url) # using for crashing bug testing.
+						log_utils.log('Played file as player.play with only the url', level=log_utils.LOGDEBUG)
 					else: control.resolve(int(argv[1]), True, item)
-			elif debridPackCall: control.player.play(url, item) # seems this is only way browseDebrid pack files will play and have meta marked as watched
-			else: control.resolve(int(argv[1]), True, item)
+			elif debridPackCall and not self.playeronly: 
+				control.player.play(url, item) # seems this is only way browseDebrid pack files will play and have meta marked as watched
+				log_utils.log('Played file as player.play', level=log_utils.LOGDEBUG)
+			elif self.playeronly:
+				control.player.play(url) # using for crashing bug testing.
+				log_utils.log('Played file as player.play with only the url', level=log_utils.LOGDEBUG)
+			else: 
+				control.resolve(int(argv[1]), True, item)
+				log_utils.log('Played file as resolve.', level=log_utils.LOGDEBUG)
 			homeWindow.setProperty('script.trakt.ids', jsdumps(self.ids))
 			self.keepAlive()
 			homeWindow.clearProperty('script.trakt.ids')
@@ -210,6 +241,7 @@ class Player(xbmc.Player):
 			return (poster, thumb, season_poster, fanart, banner, clearart, clearlogo, discart, meta)
 
 	def getWatchedPercent(self):
+		#log_utils.log(' [ plugin.video.umbrella ] GetWatchedPercent is checking.', level=log_utils.LOGDEBUG)
 		if self.isPlayback():
 			try:
 				position = self.getTime()
@@ -237,6 +269,7 @@ class Player(xbmc.Player):
 		return remaining_time
 
 	def keepAlive(self):
+		#log_utils.log('KeepAlive Started', level=log_utils.LOGDEBUG)
 		pname = '%s.player.overlay' % control.addonInfo('id')
 		homeWindow.clearProperty(pname)
 		for i in range(0, 500):
@@ -250,7 +283,7 @@ class Player(xbmc.Player):
 		self.onPlayBackEnded_ran = False
 		try: running_path = self.getPlayingFile() # original video that playlist playback started with
 		except: running_path = ''
-
+		#log_utils.log('KeepAlive Running Path: %s' % running_path, level=log_utils.LOGDEBUG)
 		if playerWindow.getProperty('umbrella.playlistStart_position'): pass
 		else:
 			if control.playlist.size() > 1: playerWindow.setProperty('umbrella.playlistStart_position', str(control.playlist.getposition()))
@@ -265,12 +298,13 @@ class Player(xbmc.Player):
 					self.current_time = self.getTime()
 					self.media_length = self.getTotalTime()
 				except: pass
-				watcher = (self.getWatchedPercent() >= 85)
+				watcher = (self.getWatchedPercent() >= int(self.markwatched_percentage))
 				property = homeWindow.getProperty(pname)
 
 				if self.media_type == 'movie':
 					try:
 						if watcher and property != '5':
+							#log_utils.log('KeepAlive is going to mark during playback.', level=log_utils.LOGDEBUG)
 							homeWindow.setProperty(pname, '5')
 							playcount.markMovieDuringPlayback(self.imdb, '5')
 					except: pass
@@ -286,9 +320,40 @@ class Player(xbmc.Player):
 									xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_preScrapeNext)')
 									self.preScrape_triggered = True
 								remaining_time = self.getRemainingTime()
-								if remaining_time < (self.playnext_time + 1) and remaining_time != 0:
-									xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_nextWindowXML)')
-									self.play_next_triggered = True
+								if getSetting('playnext.method')== '0':
+									if remaining_time < (self.playnext_time + 1) and remaining_time != 0:
+										xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_nextWindowXML)')
+										self.play_next_triggered = True
+								elif getSetting('playnext.method')== '1':	
+									if self.getWatchedPercent() >= int(self.playnext_percentage) and remaining_time != 0:
+										xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_nextWindowXML)')
+										self.play_next_triggered = True
+								elif getSetting('playnext.method')== '2':
+									if self.subtitletime is None:
+										self.subtitletime = Subtitles().downloadForPlayNext(self.name, self.imdb, self.season, self.episode, self.media_length)
+									log_utils.log('KeepAlive playnext subtitletime: %s' % str(self.subtitletime), level=log_utils.LOGDEBUG)
+									if str(self.subtitletime) == 'default':
+										if getSetting('playnext.sub.backupmethod')== '0': #subtitle failed use seconds as backup
+											subtitletimeumb = int(getSetting('playnext.sub.seconds'))
+											if remaining_time < (subtitletimeumb + 1) and remaining_time != 0:
+												log_utils.log('KeepAlive subtitle playnext failed using backup seconds: %s' % str(subtitletimeumb), level=log_utils.LOGDEBUG)
+												xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_nextWindowXML)')
+												self.play_next_triggered = True
+										elif getSetting('playnext.sub.backupmethod') == '1': #subtitle failed use percentage as backup
+											subtitletimeumb = int(getSetting('playnext.sub.percent'))
+											if self.getWatchedPercent() >= int(subtitletimeumb) and remaining_time != 0:
+												log_utils.log('KeepAlive subtitle playnext failed using backup percent: %s' % str(subtitletimeumb), level=log_utils.LOGDEBUG)
+												xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_nextWindowXML)')
+												self.play_next_triggered = True
+									elif self.subtitletime != None and str(self.subtitletime) != 'default':
+										if remaining_time < (int(self.subtitletime) + 1) and remaining_time != 0:
+											log_utils.log('KeepAlive subtitle playnext success using time: %s' % str(self.subtitletime), level=log_utils.LOGDEBUG)
+											xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_nextWindowXML)')
+											self.play_next_triggered = True
+									else:
+										log_utils.error()
+								else:
+									log_utils.log('No match found for playnext method.', level=log_utils.LOGDEBUG)
 							if int(control.playlist.size()) == 1 and self.playlist_built == False:
 								self.buildPlaylist()
 								self.playlist_built = True
@@ -299,12 +364,13 @@ class Player(xbmc.Player):
 				log_utils.error()
 				xbmc.sleep(1000)
 		homeWindow.clearProperty(pname)
+		#log_utils.log('KeepAlive playlist_skip: %s' % playlist_skip, level=log_utils.LOGDEBUG)
 		if playlist_skip: pass
 		else:
-			if (int(self.current_time) > 180 and (self.getWatchedPercent() < 85)): # kodi is unreliable issuing callback "onPlayBackStopped" and "onPlayBackEnded"
+			if (int(self.current_time) > 180 and (self.getWatchedPercent() < int(self.markwatched_percentage))): # kodi is unreliable issuing callback "onPlayBackStopped" and "onPlayBackEnded"
 				self.playbackStopped_triggered = True
 				self.onPlayBackStopped()
-			elif self.getWatchedPercent() >= 85: self._end_playback()
+			elif self.getWatchedPercent() >= int(self.markwatched_percentage): self._end_playback()
 
 	def buildPlaylist(self):
 		seasonPlaynext = False
@@ -406,16 +472,16 @@ class Player(xbmc.Player):
 		if getSetting('subtitles') == 'true': Subtitles().get(self.name, self.imdb, self.season, self.episode)
 		if self.traktCredentials:
 			trakt.scrobbleReset(imdb=self.imdb, tmdb=self.tmdb, tvdb=self.tvdb, season=self.season, episode=self.episode, refresh=False) # refresh issues container.refresh()
-		xbmc.log('[ plugin.video.umbrella ] onAVStarted callback', LOGINFO)
+		log_utils.log('onAVStarted callback', level=log_utils.LOGDEBUG)
 
 	def onPlayBackSeek(self, time, seekOffset):
 		seekOffset /= 1000
 
 	def onPlayBackSeekChapter(self, chapter):
-		log_utils.log('[ plugin.video.umbrella ] onPlayBackSeekChapter callback', level=log_utils.LOGDEBUG)
+		log_utils.log('onPlayBackSeekChapter callback', level=log_utils.LOGDEBUG)
 
 	def onQueueNextItem(self):
-		log_utils.log('[ plugin.video.umbrella ] onQueueNextItem callback', level=log_utils.LOGDEBUG)
+		log_utils.log('onQueueNextItem callback', level=log_utils.LOGDEBUG)
 
 	def onPlayBackStopped(self):
 		try:
@@ -429,15 +495,15 @@ class Player(xbmc.Player):
 				if self.traktCredentials and (getSetting('trakt.scrobble') == 'true'):
 					Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode)
 				watcher = self.getWatchedPercent()
-				seekable = (int(self.current_time) > 180 and (watcher < 85))
-				if watcher >= 85: self.libForPlayback() # only write playcount to local lib
+				seekable = (int(self.current_time) > 180 and (watcher < int(self.markwatched_percentage)))
+				if watcher >= int(self.markwatched_percentage): self.libForPlayback() # only write playcount to local lib
 				if getSetting('crefresh') == 'true' and seekable:
-					log_utils.log('[ plugin.video.umbrella ] container.refresh issued', level=log_utils.LOGDEBUG)
+					log_utils.log('container.refresh issued', level=log_utils.LOGDEBUG)
 					control.refresh() #not all skins refresh after playback stopped
 				control.playlist.clear()
 				#control.trigger_widget_refresh() # skinshortcuts handles widget refresh
 				#control.checkforSkin(action='off')
-				xbmc.log('[ plugin.video.umbrella ] onPlayBackStopped callback', LOGINFO)
+				log_utils.log('onPlayBackStopped callback', level=log_utils.LOGDEBUG)
 		except: log_utils.error()
 
 	def onPlayBackEnded(self):
@@ -446,7 +512,7 @@ class Player(xbmc.Player):
 		self.libForPlayback()
 		if control.playlist.getposition() == control.playlist.size() or control.playlist.size() == 1:
 			control.playlist.clear()
-		xbmc.log('[ plugin.video.umbrella ] onPlayBackEnded callback', LOGINFO)
+		log_utils.log('onPlayBackEnded callback', level=log_utils.LOGDEBUG)
 		#control.checkforSkin(action='off')
 
 	def onPlayBackError(self):
@@ -455,7 +521,7 @@ class Player(xbmc.Player):
 
 		Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
 		log_utils.error()
-		xbmc.log('[ plugin.video.umbrella ] onPlayBackError callback', LOGINFO)
+		log_utils.log('onPlayBackError callback', level=log_utils.LOGDEBUG)
 		#control.checkforSkin(action='off')
 		sysexit(1)
 ##############################
@@ -466,6 +532,7 @@ class PlayNext(xbmc.Player):
 		self.enable_playnext = getSetting('enable.playnext') == 'true'
 		self.stillwatching_count = int(getSetting('stillwatching.count'))
 		self.playing_file = None
+		
 
 	def display_xml(self):
 		try:
@@ -519,7 +586,7 @@ class PlayNext(xbmc.Player):
 			elif 'plugin.video.umbrella' in next_url:
 				next_meta = jsloads(params.get('meta')) if params.get('meta') else ''
 			elif 'videob://' in next_url and not control.addonInstalled('service.upnext'):
-				log_utils.log('Library not supported currently.')
+				log_utils.log('Library not supported currently.', level=log_utils.LOGDEBUG)
 		except:
 			log_utils.error()
 		return next_meta
@@ -529,12 +596,15 @@ class PlayNext(xbmc.Player):
 			next_meta = self.getNext_meta()
 			if not next_meta: raise Exception()
 			#some changes here for playnext and themes.
-			skin = control.skin
 			from resources.lib.windows.playnext import PlayNextXML
-			if skin in ('skin.arctic.horizon.2') and control.setting('enable.playnext.theme')=='true':
-				window = PlayNextXML('ahplaynext.xml', control.addonPath(control.addonId()), meta=next_meta)
-			elif skin in ('skin.auramod') and control.setting('enable.playnext.theme')=='true':
+			if getSetting('playnext.theme') == '2'and control.skin in ('skin.auramod'):
 				window = PlayNextXML('auraplaynext.xml', control.addonPath(control.addonId()), meta=next_meta)
+			if getSetting('playnext.theme') == '2'and control.skin not in ('skin.auramod'):
+				window = PlayNextXML('auraplaynext2.xml', control.addonPath(control.addonId()), meta=next_meta)
+			elif getSetting('playnext.theme') == '1' and control.skin in ('skin.arctic.horizon.2'):
+				window = PlayNextXML('ahplaynext.xml', control.addonPath(control.addonId()), meta=next_meta)
+			elif getSetting('playnext.theme') == '1' and control.skin not in ('skin.arctic.horizon.2'):
+				window = PlayNextXML('ahplaynext2.xml', control.addonPath(control.addonId()), meta=next_meta)
 			else:
 				window = PlayNextXML('playnext.xml', control.addonPath(control.addonId()), meta=next_meta)
 			window.run()
@@ -548,12 +618,15 @@ class PlayNext(xbmc.Player):
 		try:
 			next_meta = self.getNext_meta()
 			if not next_meta: raise Exception()
-			skin = control.skin
 			from resources.lib.windows.playnext_stillwatching import StillWatchingXML
-			if skin in ('skin.arctic.horizon.2') and control.setting('enable.playnext.theme')=='true':
-				window = StillWatchingXML('ahplaynext_stillwatching.xml', control.addonPath(control.addonId()), meta=next_meta)
-			elif skin in ('skin.auramod') and control.setting('enable.playnext.theme')=='true':
+			if getSetting('playnext.theme') == '2'and control.skin not in ('skin.auramod'):
+				window = StillWatchingXML('auraplaynext_stillwatching2.xml', control.addonPath(control.addonId()), meta=next_meta)
+			if getSetting('playnext.theme') == '2'and control.skin in ('skin.auramod'):
 				window = StillWatchingXML('auraplaynext_stillwatching.xml', control.addonPath(control.addonId()), meta=next_meta)
+			elif getSetting('playnext.theme') == '1' and control.skin in ('skin.arctic.horizon.2'):
+				window = StillWatchingXML('ahplaynext_stillwatching.xml', control.addonPath(control.addonId()), meta=next_meta)
+			elif getSetting('playnext.theme') == '1' and control.skin not in ('skin.arctic.horizon.2'):
+				window = StillWatchingXML('ahplaynext_stillwatching2.xml', control.addonPath(control.addonId()), meta=next_meta)
 			else:
 				window = StillWatchingXML('playnext_stillwatching.xml', control.addonPath(control.addonId()), meta=next_meta)
 			window.run()
@@ -643,7 +716,8 @@ class Subtitles:
 			token = server.LogIn('', '', 'en', 'XBMC_Subtitles_Unofficial_v5.2.14') # service.subtitles.opensubtitles_by_opensubtitles
 			if 'token' not in token:
 				return log_utils.log('OpenSubtitles Login failed: token=%s' % token, level=log_utils.LOGWARNING)
-			else: token = token['token']
+			else: 
+				token = token['token']
 
 			sublanguageid = ','.join(langs)
 			imdbid = re.sub(r'[^0-9]', '', imdb)
@@ -685,7 +759,6 @@ class Subtitles:
 						content_encoded = codecs.decode(content, codepage)
 						content = codecs.encode(content_encoded, 'utf-8')
 					except: pass
-
 			file = control.openFile(subtitle, 'w')
 			file.write(content)
 			file.close()
@@ -695,11 +768,104 @@ class Subtitles:
 				if Player().isPlayback():
 					control.sleep(500)
 					control.notification(title=filename, message=getLS(32191) % lang.upper())
+			if getSetting('playnext.method')== '2' and getSetting('enable.playnext')== 'true' and Player().subtitletime == None: #added to check for playnext using subtitles if downloaded.
+				times = []
+				pattern = r'(\d{2}:\d{2}:\d{2},d{3}$)|(\d{2}:\d{2}:\d{2})'
+				with control.openFile(subtitle) as file:
+					text = file.read()
+					times = re.findall(pattern, text)
+					times = times[len(times)-4][-1]
+					file.close()
+				if len(times) > 0:
+					total_time = Player().media_length
+					h, m, s = str(times).split(':')
+					totalSeconds =  int(h) * 3600 + int(m) * 60 + int(s)
+					Player().subtitletime = int(total_time) - int(totalSeconds)
+					log_utils.log('downloaded subtitle has entries for time! holy shit! last time entry is: %s and will be %s seconds. Playnext will popup with %s seconds remaining.' % (str(times), str(totalSeconds), str(int(total_time) - int(totalSeconds))), level=log_utils.LOGDEBUG)
+				else:
+					Player().subtitletime = 'default'
 		except: log_utils.error()
+
+	def downloadForPlayNext(self, name, imdb, season, episode, media_length):
+		try:
+			import gzip
+			from io import BytesIO
+			import re, base64
+			import xmlrpc.client as xmlrpc_client
+		except: 
+			log_utils.error()
+			return 'default'
+		langDict = {'English': 'eng','Spanish': 'esp'}
+		quality = ['bluray', 'hdrip', 'brrip', 'bdrip', 'dvdrip', 'webrip', 'hdtv']
+		langs = langDict['English'].split(',')
+		try:
+			server = xmlrpc_client.Server('https://api.opensubtitles.org/xml-rpc', verbose=0)
+			token = server.LogIn('', '', 'en', 'XBMC_Subtitles_Unofficial_v5.2.14') # service.subtitles.opensubtitles_by_opensubtitles
+			if 'token' not in token:
+				log_utils.log('OpenSubtitles Login failed: token=%s' % token, level=log_utils.LOGWARNING)
+				return 'default'
+			else: 
+				token = token['token']
+			sublanguageid = ','.join(langs)
+			imdbid = re.sub(r'[^0-9]', '', imdb)
+			if not (season is None or episode is None):
+				result = server.SearchSubtitles(token, [{'sublanguageid': sublanguageid, 'imdbid': imdbid, 'season': season, 'episode': episode}])['data']
+				fmt = ['hdtv']
+			else:
+				result = server.SearchSubtitles(token, [{'sublanguageid': sublanguageid, 'imdbid': imdbid}])['data']
+				try: vidPath = xbmc.Player().getPlayingFile()
+				except: vidPath = ''
+				fmt = re.split(r'\.|\(|\)|\[|\]|\s|\-', vidPath)
+				fmt = [i.lower() for i in fmt]
+				fmt = [i for i in fmt if i in quality]
+			filter = []
+			result = [i for i in result if i['SubSumCD'] == '1']
+			for lang in langs:
+				filter += [i for i in result if i['SubLanguageID'] == lang and any(x in i['MovieReleaseName'].lower() for x in fmt)]
+				filter += [i for i in result if i['SubLanguageID'] == lang and any(x in i['MovieReleaseName'].lower() for x in quality)]
+				filter += [i for i in result if i['SubLanguageID'] == lang]
+			if not filter: 
+				log_utils.log('nothing found for playnext subtitle that matches use fallback', level=log_utils.LOGDEBUG)
+				return 'default'
+			try: lang = xbmc.convertLanguage(filter[0]['SubLanguageID'], xbmc.ISO_639_1)
+			except: lang = filter[0]['SubLanguageID']
+			filename = filter[0]['SubFileName']
+			log_utils.log('downloaded subtitle=%s' % filename, level=log_utils.LOGDEBUG)
+			content = [filter[0]['IDSubtitleFile'],]
+			content = server.DownloadSubtitles(token, content)
+			content = base64.b64decode(content['data'][0]['data'])
+			content = gzip.GzipFile(fileobj=BytesIO(content)).read()
+			subtitle = control.transPath('special://temp/')
+			subtitle = control.joinPath(subtitle, 'TemporarySubs.%s.srt' % lang)
+			file = control.openFile(subtitle, 'w')
+			file.write(content)
+			file.close()
+			xbmc.sleep(1000)
+			log_utils.log('subtitle file for playnext = %s' % subtitle, level=log_utils.LOGDEBUG)
+			times = []
+			pattern = r'(\d{2}:\d{2}:\d{2},d{3}$)|(\d{2}:\d{2}:\d{2})'
+			with control.openFile(subtitle) as file:
+				text = file.read()
+				times = re.findall(pattern, text)
+				times = times[len(times)-4][-1]
+				file.close()
+			if len(times) > 0:
+				total_time = media_length
+				h, m, s = str(times).split(':')
+				totalSeconds =  int(h) * 3600 + int(m) * 60 + int(s)
+				playnextTime = int(total_time) - int(totalSeconds)
+				log_utils.log('downloaded subtitle has entries for time! holy shit! last time entry is: %s and will be %s seconds. Playnext will popup with %s seconds remaining.' % (str(times), str(totalSeconds), str(playnextTime)), level=log_utils.LOGDEBUG)
+			else:
+				playnextTime = 'default'
+			return playnextTime
+		except:
+			log_utils.error()
+			return 'default'
 
 
 class Bookmarks:
 	def get(self, name, imdb=None, tmdb=None, tvdb=None, season=None, episode=None, year='0', runtime=None, ck=False):
+		markwatched_percentage = int(getSetting('markwatched.percent')) or 85
 		offset = '0'
 		scrobbble = 'Local Bookmark'
 		if getSetting('bookmarks') != 'true': return offset
@@ -709,7 +875,7 @@ class Bookmarks:
 				if not runtime or runtime == 'None': return offset # TMDB sometimes return None as string. duration pulled from kodi library if missing from meta
 				progress = float(fetch_bookmarks(imdb, tmdb, tvdb, season, episode))
 				offset = (progress / 100) * runtime # runtime vs. media_length can differ resulting in 10-30sec difference using Trakt scrobble, meta providers report runtime in full minutes
-				seekable = (2 <= progress <= 85)
+				seekable = (2 <= progress <= int(markwatched_percentage))
 				if not seekable: return '0'
 			except:
 				log_utils.error()
@@ -744,10 +910,11 @@ class Bookmarks:
 
 	def reset(self, current_time, media_length, name, year='0'):
 		try:
+			markwatched_percentage = int(getSetting('markwatched.percent')) or 85
 			clear_local_bookmarks() # clear all umbrella bookmarks from kodi database
 			if getSetting('bookmarks') != 'true' or media_length == 0 or current_time == 0: return
 			timeInSeconds = str(current_time)
-			seekable = (int(current_time) > 180 and (current_time / media_length) < .85)
+			seekable = (int(current_time) > 180 and (current_time / media_length) < (abs(float(markwatched_percentage) / 100)))
 			idFile = md5()
 			try: [idFile.update(str(i)) for i in name]
 			except: [idFile.update(str(i).encode('utf-8')) for i in name]
@@ -775,10 +942,11 @@ class Bookmarks:
 
 	def set_scrobble(self, current_time, media_length, media_type, imdb='', tmdb='', tvdb='', season='', episode=''):
 		try:
+			markwatched_percentage = int(getSetting('markwatched.percent')) or 85
 			if media_length == 0: return
 			percent = float((current_time / media_length)) * 100
-			seekable = (int(current_time) > 180 and (percent < 85))
+			seekable = (int(current_time) > 180 and (percent < int(markwatched_percentage)))
 			if seekable: trakt.scrobbleMovie(imdb, tmdb, percent) if media_type == 'movie' else trakt.scrobbleEpisode(imdb, tmdb, tvdb, season, episode, percent)
-			if percent >= 85: trakt.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False)
+			if percent >= int(markwatched_percentage): trakt.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False)
 		except:
 			log_utils.error()

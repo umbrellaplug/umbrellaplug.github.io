@@ -148,7 +148,7 @@
 [COLOR yellow]--[/COLOR][I] Changed to new settings format.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.5.98">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.0">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.7" />
@@ -171,7 +171,7 @@
 		<license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
 		<forum />
 		<website>https://umbrellaplug.github.io</website>
-		<source>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/plugin.video.umbrella</source>
+		<source>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/</source>
 		<disclaimer lang="en">The author of this addon does not host any of the content which is found and have no affiliation with any of the content providers. This addon simply searches websites for content. Use at your own risk!</disclaimer>
 		<assets>
 			<icon>icon.png</icon>
@@ -181,9 +181,38 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.5.98 - Dec 21st, 2022[/COLOR][/B]
---[FIX][I] Typo found and corrected for TV Show Collection import.[I]
---[CREDIT][I] Thanks to reddit user bevigilant for the bug report/logs.[I]
+[B][COLOR black]Update - v6.6.0 - Dec 28th, 2022[/COLOR][/B]
+--[SPECIAL THANKS][I] Special Thanks to TikiPeter(Fen) and u/Mammoth-Bullfrog-274. Both have contributed and helped a ton and without their help, Umbrella would not exist. It is appreciated.[I]
+--[INFORMATION][I] There are a lot of changes on this update. Testing has been done, but bugs always happen. Please report any issues.[I]
+--[ENHANCEMENT][I] 17 to 35 color selections! "Buddy the Elf, What's your favorite color?"[I]
+--[ENHANCEMENT][I] Playnext changed to allow for percentage or time or last subtitle time(even if subtitles are not used). [I]
+--[ENHANCEMENT][I] Playnext changed to allow themes to be used without skins.[I]
+--[ENHANCEMENT][I] Added color options for providers in source selection.[I]
+--[ENHANCEMENT][I] Adjusted Quality Icons[I]
+--[ENHANCEMENT][I] Added plain icons to go with colors for quality on sources, can be turned off in settings.[I]
+--[ENHANCEMENT][I] Changed source selection to use artwork for background.[I]
+--[ENHANCEMENT][I] Added trending from tmdb for day and week for both movies and tv.[I]
+--[ENHANCEMENT][I] Full-Screen Scrape and Resolve[I]
+--[ENHANCEMENT][I] Icon-Only Scrape and Resolve[I]
+--[ENHANCEMENT][I] Changed progress to Umbrella Icon.[I]
+--[ENHANCEMENT][I] Adjusted Uncached Sources view and AH2 Playnext[I]
+--[ENHANCEMENT][I] Added Watched Percentage Marking Option in setting Playback.[I]
+--[ENHANCEMENT][I] Added ability to hide or show fanart as background on source select and scraping screens.[I]
+--[ENHANCEMENT][I] Added ability to only try 1 link on source selection.[I]
+--[ENHANCEMENT][I] Simkl Authentication added. More Coming. Really no point authenticating, but more will be added in the next update.[I]
+--[ENHANCEMENT][I] Adjusted transparency on background art not being correct. Thanks Peter![I]
+--[FIX][I] IMDB Watchlists corrected.[/I]
+--[FIX][I] Removed test version detection to stop accidentally deleting trakt and settings.[I]
+--[FIX][I] Adding missing still watching file in for ah2 style playnext.[/I]
+--[FIX][I] Changed playnext subtitle check to check if already downloaded.[/I]
+--[FIX][I] Added enable/ disable for EasyNews.[I]
+--[FIX][I] Changed logging when set to kodi log to use higher level so debug logs show without enabling Kodi debug.[I]
+--[FIX][I] Info logging changed to debug.[I]
+--[FIX][I] Fixed error (blank settings) caused when checking settings for changes.[/I]
+--[FIX][I] Added setting for providers Trakt and TMDB for searches.[/I]
+--[FIX][I] Added widget refreshes to Trakt Scrobbles.[/I]
+--[FIX][I] Fixed a typo in TV Show Collection import from Trakt.[/I]
+--[FIX][I] Adjusted for issue with full-screen scrape and using library files.[/I]
 		</news>
 	</extension>
 </addon><addon id="plugin.video.youtube" name="YouTube" version="6.8.18+matrix.1" provider-name="anxdpanic, bromix">

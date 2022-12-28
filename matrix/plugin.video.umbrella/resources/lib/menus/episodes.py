@@ -395,6 +395,9 @@ class Episodes:
 				values['imdb'] = str(ids.get('imdb', '')) if ids.get('imdb') else ''
 				values['tmdb'] = str(ids.get('tmdb', '')) if ids.get('tmdb') else ''
 				values['tvdb'] = str(ids.get('tvdb', '')) if ids.get('tvdb') else ''
+				try:duration = int(item.get('show').get('runtime')) * 60
+				except: duration = ''
+				values['duration'] = duration
 				try: values['trailer'] = control.trailer % item['show']['trailer'].split('v=')[1]
 				except: values['trailer'] = ''
 				try:
@@ -519,7 +522,6 @@ class Episodes:
 			q = (urlencode(q)).replace('%2C', ',')
 			next = url.replace('?' + urlparse(url).query, '') + '?' + q
 		except: next = ''
-
 		for item in items:
 			try:
 				if 'show' not in item or 'episode' not in item: continue

@@ -156,6 +156,17 @@ class Sources:
 			if url == 'close://' or url is None:
 				self.url = url
 				return self.errorForSources()
+			#try:
+			#	log_utils.log('[ plugin.video.umbrella ] From sources.play() Title: %s' % str(title), level=log_utils.LOGDEBUG)
+			#	log_utils.log('[ plugin.video.umbrella ] From sources.play() Year: %s' % str(year), level=log_utils.LOGDEBUG)
+			#	log_utils.log('[ plugin.video.umbrella ] From sources.play() Season: %s' % str(season), level=log_utils.LOGDEBUG)
+			#	log_utils.log('[ plugin.video.umbrella ] From sources.play() Episode: %s' % str(episode), level=log_utils.LOGDEBUG)
+			#	log_utils.log('[ plugin.video.umbrella ] From sources.play() IMDB: %s TMDB: %s TVDB: %s' % (str(imdb), str(tmdb), str(tvdb)), level=log_utils.LOGDEBUG)
+			#	log_utils.log('[ plugin.video.umbrella ] From sources.play() URL: %s' % str(url), level=log_utils.LOGDEBUG)
+			#	log_utils.log('[ plugin.video.umbrella ] From sources.play() Meta: %s' % str(self.meta), level=log_utils.LOGDEBUG)
+			#except:
+			#	log_utils.error()
+			log_utils.log(' [ plugin.video.umbrella ] From sources.play() Sending to player.Player().play_source()', level=log_utils.LOGDEBUG)
 			from resources.lib.modules import player
 			player.Player().play_source(title, year, season, episode, imdb, tmdb, tvdb, url, self.meta)
 		except:
@@ -290,21 +301,40 @@ class Sources:
 				next_end = min(source_len, source_index+41)
 				sources_next = items[source_index+1:next_end]
 				sources_prev = [] if next_end < source_len else items[0:41-(source_len-source_index)]
-				resolve_items = [i for i in chosen_source + sources_next + sources_prev]
+				if getSetting('sources.useonlyone')== 'true':
+					resolve_items = [i for i in chosen_source + sources_next + sources_prev]
+				else:
+					resolve_items = chosen_source
 			except: log_utils.error()
 			header = homeWindow.getProperty(self.labelProperty) + ': Resolving...'
-			progressDialog = control.progressDialog if getSetting('progress.dialog') == '0' else control.progressDialogBG
-			progressDialog.create(header, '')
+			if getSetting('progress.dialog') == '0':
+				progressDialog = control.progressDialog
+				progressDialog.create(header, '')
+			if getSetting('progress.dialog') == '1':
+				progressDialog = control.progressDialogBG
+				progressDialog.create(header, '')
+			if getSetting('progress.dialog') == '2':
+				progressDialog = self.getProcessResolver(title, self.year, self.imdb, self.tvdb, self.season, self.episode, self.tvshowtitle, self.meta)
+			if getSetting('progress.dialog') == '3':
+				progressDialog = self.getIconProgress()
 			for i in range(len(resolve_items)):
 				try:
 					resolve_index = items.index(resolve_items[i])+1
 					src_provider = resolve_items[i]['debrid'] if resolve_items[i].get('debrid') else ('%s - %s' % (resolve_items[i]['source'], resolve_items[i]['provider']))
-					label = '[COLOR %s]%s[CR]%02d.)%s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), resolve_index, resolve_items[i]['name'], str(round(resolve_items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
+					if progressDialog != control.progressDialog and progressDialog != control.progressDialogBG:
+						sdc = control.getColor(getSetting('scraper.dialog.color'))
+						label = '[B][COLOR %s]%s[CR]%02d.)%s[CR]%s[/COLOR][/B]' % (sdc, src_provider.upper(), resolve_index, resolve_items[i]['name'], str(round(resolve_items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
+					else:
+						label = '[COLOR %s]%s[CR]%02d.)%s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), resolve_index, resolve_items[i]['name'], str(round(resolve_items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
 					control.sleep(100)
 					try:
 						if progressDialog.iscanceled(): break
 						progressDialog.update(int((100 / float(len(resolve_items))) * i), label)
-					except: progressDialog.update(int((100 / float(len(resolve_items))) * i), '[COLOR %s]Resolving...[/COLOR]%s' % (self.highlight_color, resolve_items[i]['name']))
+					except: 
+						if progressDialog != control.progressDialog and progressDialog != control.progressDialogBG:
+							progressDialog.update(int((100 / float(len(resolve_items))) * i), '[COLOR %s]Resolving...[/COLOR]%s' % (sdc, resolve_items[i]['name']))
+						else:
+							progressDialog.update(int((100 / float(len(resolve_items))) * i), '[COLOR %s]Resolving...[/COLOR]%s' % (self.highlight_color, resolve_items[i]['name']))
 					w = Thread(target=self.sourcesResolve, args=(resolve_items[i],))
 					w.start()
 					for x in range(40):
@@ -437,9 +467,18 @@ class Sources:
 					homeWindow.setProperty(self.titleProperty, title)
 					log_utils.log('Custom query scrape ran using: %s' % p_label, level=log_utils.LOGDEBUG)
 				except: log_utils.error()
-			progressDialog = control.progressDialog if getSetting('progress.dialog') == '0' else control.progressDialogBG
+			#progressDialog = control.progressDialog if getSetting('progress.dialog') == '0' else control.progressDialogBG
 			header = homeWindow.getProperty(self.labelProperty) + ': Scraping...'
-			progressDialog.create(header, '')
+			if getSetting('progress.dialog') == '0':
+				progressDialog = control.progressDialog
+				progressDialog.create(header, '')
+			if getSetting('progress.dialog') == '1':
+				progressDialog = control.progressDialogBG
+				progressDialog.create(header, '')
+			if getSetting('progress.dialog') == '2':
+				progressDialog = self.getProgressScraper(title, year, imdb, tvdb, season, episode, tvshowtitle, premiered, self.meta)
+			if getSetting('progress.dialog') == '3':
+				progressDialog = self.getIconProgress()
 			self.prepareSources()
 			sourceDict = self.sourceDict
 			progressDialog.update(0, getLS(32600)) # preparing sources
@@ -486,6 +525,10 @@ class Sources:
 			string1 = getLS(32404) % (self.highlight_color, sdc, '%s') # msgid "[COLOR %s]Time elapsed:[/COLOR]  [COLOR %s]%s seconds[/COLOR]"
 			string3 = getLS(32406) % (self.highlight_color, sdc, '%s') # msgid "[COLOR %s]Remaining providers:[/COLOR] [COLOR %s]%s[/COLOR]"
 			string4 = getLS(32407) % (self.highlight_color, sdc, '%s') # msgid "[COLOR %s]Unfiltered Total: [/COLOR]  [COLOR %s]%s[/COLOR]"
+			string1f = getLS(32404) % (sdc, sdc, '%s') # msgid "[COLOR %s]Time elapsed:[/COLOR]  [COLOR %s]%s seconds[/COLOR]"
+			string3f = getLS(32406) % (sdc, sdc, '%s') # msgid "[COLOR %s]Remaining providers:[/COLOR] [COLOR %s]%s[/COLOR]"
+			string4f = getLS(32407) % (sdc, sdc, '%s') # msgid "[COLOR %s]Unfiltered Total: [/COLOR]  [COLOR %s]%s[/COLOR]"
+
 
 			try: timeout = int(getSetting('scrapers.timeout'))
 			except: pass
@@ -506,6 +549,8 @@ class Sources:
 			total_format = '[COLOR %s][B]%s[/B][/COLOR]'
 			pdiag_format = '[COLOR %s]4K:[/COLOR]  %s  |  [COLOR %s]1080p:[/COLOR]  %s  |  [COLOR %s]720p:[/COLOR]  %s  |  [COLOR %s]SD:[/COLOR]  %s' % (
 				self.highlight_color, '%s', self.highlight_color, '%s', self.highlight_color, '%s', self.highlight_color, '%s')
+			pdiagfull_format = '[COLOR %s]4K:[/COLOR]  %s  |  [COLOR %s]1080p:[/COLOR]  %s  |  [COLOR %s]720p:[/COLOR]  %s  |  [COLOR %s]SD:[/COLOR]  %s' % (
+				sdc, '%s', sdc, '%s', sdc, '%s', sdc, '%s')
 			control.hide()
 		except:
 			log_utils.error()
@@ -563,10 +608,17 @@ class Sources:
 					if len(info) > 6: line3 = string3 % str(len(info))
 					elif len(info) > 0: line3 = string3 % (', '.join(info))
 					else: break
+					if len(info) > 6: line3f = string3f % str(len(info))
+					elif len(info) > 0: line3f = string3f % (', '.join(info))
+					else: break
+					line1f = pdiagfull_format % (source_4k_label, source_1080_label, source_720_label, source_sd_label)
+					line2f = string4f % source_total_label + '     ' + string1f % round(time() - start_time, 1)
 					current_time = time()
 					current_progress = current_time - start_time
 					percent = int((current_progress / float(timeout)) * 100)
-					if progressDialog != control.progressDialogBG: progressDialog.update(max(1, percent), line1 + '[CR]' + line2 + '[CR]' + line3)
+					if progressDialog != control.progressDialog and progressDialog != control.progressDialogBG:
+						progressDialog.update(max(1, percent), line1f + '[CR]' + line2f + '[CR]' + line3f)
+					elif progressDialog != control.progressDialogBG: progressDialog.update(max(1, percent), line1 + '[CR]' + line2 + '[CR]' + line3)
 					else: progressDialog.update(max(1, percent), line1 + '  ' + string3 % str(len(info)))
 					if end_time < current_time: break
 				except:
@@ -857,6 +909,10 @@ class Sources:
 		local = [i for i in self.sources if 'local' in i and i['local'] is True] # for library and videoscraper (skips cache check)
 		self.sources = [i for i in self.sources if not i in local]
 		direct = [i for i in self.sources if i['direct'] == True] # acct scrapers (skips cache check)
+		if getSetting('easynews.enable') == 'true':
+			direct = direct
+		else:
+			direct = [i for i in direct if i['provider'] != 'easynews']
 		self.sources = [i for i in self.sources if not i in direct]
 		from copy import deepcopy
 		deepcopy_sources = deepcopy(self.sources)
@@ -891,8 +947,8 @@ class Sources:
 		if threads:
 			[i.start() for i in threads]
 			[i.join() for i in threads]
-
 		self.filter += direct # add direct links in to be considered in priority sorting
+		
 		try:
 			if len(self.prem_providers) > 1: # resort for debrid/direct priorty, when more than 1 account, because of order cache check threads finish
 				self.prem_providers.sort(key=lambda k: k[1])
@@ -995,18 +1051,36 @@ class Sources:
 		if getSetting('autoplay.sd') == 'true': items = [i for i in items if not i['quality'] in ('4K', '1080p', '720p')]
 		header = homeWindow.getProperty(self.labelProperty) + ': Resolving...'
 		try:
-			progressDialog = control.progressDialog if getSetting('progress.dialog') == '0' else control.progressDialogBG
-			progressDialog.create(header, '')
+			if getSetting('progress.dialog') == '0':
+				progressDialog = control.progressDialog
+				progressDialog.create(header, '')
+			if getSetting('progress.dialog') == '1':
+				progressDialog = control.progressDialogBG
+				progressDialog.create(header, '')
+			if getSetting('progress.dialog') == '2':
+				progressDialog = self.getProcessResolver(self.title, self.year, self.imdb, self.tvdb, self.season, self.episode, self.tvshowtitle, self.meta)
+			if getSetting('progress.dialog') == '3':
+				progressDialog = self.getIconProgress()
 		except: pass
 		for i in range(len(items)):
 			try:
 				src_provider = items[i]['debrid'] if items[i].get('debrid') else ('%s - %s' % (items[i]['source'], items[i]['provider']))
-				label = '[COLOR %s]%s[CR]%02d.)%s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), i+1, items[i]['name'], str(round(items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
+				if progressDialog != control.progressDialog and progressDialog != control.progressDialogBG:
+					sdc = control.getColor(getSetting('scraper.dialog.color'))
+					label = '[B][COLOR %s]%s[CR]%02d.)%s[CR]%s[/COLOR][/B]' % (sdc, src_provider.upper(), i+1, items[i]['name'], str(round(items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
+				else:
+					label = '[COLOR %s]%s[CR]%02d.)%s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), i+1, items[i]['name'], str(round(items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
+					
+				
 				control.sleep(100)
 				try:
 					if progressDialog.iscanceled(): break
 					progressDialog.update(int((100 / float(len(items))) * i), label)
-				except: progressDialog.update(int((100 / float(len(items))) * i), '[COLOR %s]Resolving...[/COLOR]%02d.)%s' % (self.highlight_color, i+1, items[i]['name']))
+				except: 
+					if progressDialog != control.progressDialog and progressDialog != control.progressDialogBG:
+						progressDialog.update(int((100 / float(len(items))) * i), '[COLOR %s]Resolving...[/COLOR]%02d.)%s' % (sdc, i+1, items[i]['name']))
+					else:
+						progressDialog.update(int((100 / float(len(items))) * i), '[COLOR %s]Resolving...[/COLOR]%02d.)%s' % (self.highlight_color, i+1, items[i]['name']))
 				try:
 					if control.monitor.abortRequested(): return sysexit()
 					url = self.sourcesResolve(items[i])
@@ -1476,3 +1550,21 @@ class Sources:
 		filter += [i for i in source_list if i['quality'] == 'SD']
 		filter += [i for i in source_list if i['quality'] == 'CAM']
 		return filter
+
+	def getProgressScraper(self, title, year, imdb, tvdb, season, episode, tvshowtitle, premiered, meta):
+		from resources.lib.windows.progress_scrape import ProgressScrape
+		window = ProgressScrape('progress_scrape.xml', control.addonPath(control.addonId()), title=title, year=year, imdb=imdb, tvdb=tvdb, season=season, episode=episode, tvshowtitle=tvshowtitle, premiered=premiered, meta=meta)
+		Thread(target=window.run).start()
+		return window
+
+	def getProcessResolver(self, title, year, imdb, tvdb, season, episode, tvshowtitle, meta):
+		from resources.lib.windows.progress_resolve import ProgressResolve
+		window = ProgressResolve('progress_resolve.xml', control.addonPath(control.addonId()), title=title, year=year, imdb=imdb, tvdb=tvdb, season=season, episode=episode, tvshowtitle=tvshowtitle, meta=meta)
+		Thread(target=window.run).start()
+		return window
+
+	def getIconProgress(self):
+		from resources.lib.windows.icon_scrape import IconScrape
+		window = IconScrape('icon_scrape.xml', control.addonPath(control.addonId()))
+		Thread(target=window.run).start()
+		return window

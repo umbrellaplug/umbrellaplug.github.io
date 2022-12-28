@@ -137,7 +137,7 @@ class RealDebrid:
 				log_utils.error()
 				control.okDialog(title='default', message=40019)
 				if fromSettings == 1:
-					control.openSettings('7.2', 'plugin.video.umbrella')
+					control.openSettings('8.2', 'plugin.video.umbrella')
 			return
 
 	def auth(self, fromSettings=0):
@@ -303,6 +303,7 @@ class RealDebrid:
 				label = '%02d | %.2f GB | %s  | [I]%s [/I]' % (count, size, datetime_object, name)
 				url_link = item['download']
 				url = '%s?action=play_URL&url=%s' % (sysaddon, url_link)
+				log_utils.log('Real-Debrid item added with URL: %s' % str(url), level=log_utils.LOGDEBUG)
 				cm.append((downloadMenu, 'RunPlugin(%s?action=download&name=%s&image=%s&url=%s&caller=realdebrid)' %
 								(sysaddon, quote_plus(name), quote_plus(rd_icon), url_link)))
 				cm.append((deleteMenu % 'File', 'RunPlugin(%s?action=rd_DeleteDownload&id=%s&name=%s)' %
@@ -772,7 +773,7 @@ class RealDebrid:
 				if self.server_notifications: control.notification(message='Real-Debrid Temporarily Down For Maintenance', icon=rd_icon)
 				log_utils.log('Real-Debrid Temporarily Down For Maintenance', level=log_utils.LOGWARNING)
 				if fromSettings == 1:
-					control.openSettings('7.2', 'plugin.video.umbrella')
+					control.openSettings('8.2', 'plugin.video.umbrella')
 				return False, response.text
 			else: response = response.json()
 
@@ -781,7 +782,7 @@ class RealDebrid:
 				if self.server_notifications: control.notification(message=message, icon=rd_icon)
 				log_utils.log('Real-Debrid Error:  %s' % message, level=log_utils.LOGWARNING)
 				if fromSettings == 1:
-					control.openSettings('7.2', 'plugin.video.umbrella')
+					control.openSettings('8.2', 'plugin.video.umbrella')
 				return False, response
 
 			self.token = response['access_token']
@@ -795,13 +796,13 @@ class RealDebrid:
 			#control.addon('script.module.myaccounts').setSetting('realdebridtoken', self.token)
 			control.setSetting('realdebridrefresh', response['refresh_token'])
 			if fromSettings == 1:
-				control.openSettings('7.2', 'plugin.video.umbrella')
+				control.openSettings('8.2', 'plugin.video.umbrella')
 				control.notification(message="Real Debrid Authorized", icon=rd_icon)
 			return True, None
 		except:
 			log_utils.error('Real Debrid Authorization Failed : ')
 			if fromSettings == 1:
-				control.openSettings('7.2', 'plugin.video.umbrella')
+				control.openSettings('8.2', 'plugin.video.umbrella')
 			return False, None
 
 	def reset_authorization(self, fromSettings=0):
@@ -812,7 +813,7 @@ class RealDebrid:
 			control.setSetting('realdebridrefresh', '')
 			control.setSetting('realdebridusername', '')
 			if fromSettings == 1:
-				control.openSettings('7.2', 'plugin.video.umbrella')
+				control.openSettings('8.2', 'plugin.video.umbrella')
 			control.dialog.ok(getLS(40058), getLS(32320))
 
 		except: log_utils.error()
