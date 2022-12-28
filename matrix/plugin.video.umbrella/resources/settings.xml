@@ -134,6 +134,7 @@
 							<option label="40310">33</option>
 							<option label="40311">34</option>
 							<option label="40312">35</option>
+							<option label="32590">36</option>
 						</options>
 					</constraints>
 					<control type="list" format="string">
