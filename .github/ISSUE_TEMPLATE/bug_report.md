@@ -1,5 +1,5 @@
 name: Bug report
-description: Create a report to help us improve
+description: Create a report to help improve the addon.
 title: "[BUG] Short Description"
 labels: bug
 body:
