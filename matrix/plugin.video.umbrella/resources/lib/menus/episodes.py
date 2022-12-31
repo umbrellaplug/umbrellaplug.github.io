@@ -367,6 +367,7 @@ class Episodes:
 		return list
 
 	def trakt_progress_list(self, url, user, lang, direct=False, upcoming=False):
+		#https://api.trakt.tv/users/me/watched/shows?extended=full
 		try:
 			url += '?extended=full'
 			result = trakt.getTrakt(url).json()
@@ -395,8 +396,10 @@ class Episodes:
 				values['imdb'] = str(ids.get('imdb', '')) if ids.get('imdb') else ''
 				values['tmdb'] = str(ids.get('tmdb', '')) if ids.get('tmdb') else ''
 				values['tvdb'] = str(ids.get('tvdb', '')) if ids.get('tvdb') else ''
-				try:duration = int(item.get('show').get('runtime')) * 60
-				except: duration = ''
+				try: duration = (int(item['episode']['runtime']) * 60)
+				except:
+					try:duration = (int(item['show']['runtime']) * 60)
+					except: duration = ''
 				values['duration'] = duration
 				try: values['trailer'] = control.trailer % item['show']['trailer'].split('v=')[1]
 				except: values['trailer'] = ''
@@ -407,6 +410,7 @@ class Episodes:
 					values['airzone'] = airs.get('timezone', '')
 				except: pass
 				items.append(values)
+				
 			except: pass
 		try:
 			hidden = traktsync.fetch_hidden_progress()
@@ -490,6 +494,9 @@ class Episodes:
 				if not direct: values['action'] = 'episodes' # for direct progress scraping
 				values['traktProgress'] = True # for direct progress scraping and multi episode watch counts indicators
 				values['extended'] = True # used to bypass calling "super_info()", super_info() no longer used as of 4-12-21 so this could be removed.
+				duration = values['duration']
+				if duration:
+					values.update({'duration': int(duration)*60})
 				if self.enable_fanarttv:
 					extended_art = fanarttv_cache.get(FanartTv().get_tvshow_art, 336, tvdb)
 					if extended_art: values.update(extended_art)
@@ -947,7 +954,6 @@ class Episodes:
 				item.setProperty('tvshow.tmdb_id', tmdb)
 				if is_widget: item.setProperty('isUmbrella_widget', 'true')
 				blabel = tvshowtitle + ' S%02dE%02d' % (int(season), int(episode))
-
 				if not i.get('unaired') == 'true':
 					if not runtime: runtime = 2700
 					resumetime = Bookmarks().get(name=blabel, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, year=str(year), runtime=runtime, ck=True)
@@ -964,9 +970,6 @@ class Episodes:
 
 
 				if upcoming_prependDate and traktUpcomingProgress is True:
-
-
-
 					try:
 						if premiered and meta.get('airtime'): combined='%sT%s' % (premiered, meta.get('airtime', ''))
 						else: raise Exception()

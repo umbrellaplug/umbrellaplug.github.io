@@ -763,6 +763,7 @@ class libmovies:
 			try: transtitle = title.translate(None, '\/:*?"<>|')
 			except: transtitle = title.translate(title.maketrans('', '', '\/:*?"<>|'))
 			transtitle = string_tools.normalize(transtitle)
+			transtitle.lstrip('.')
 			if control.setting('library.strm.use_tmdbhelper') == 'true':
 				content = 'plugin://plugin.video.themoviedb.helper/?info=play&tmdb_type=movie&islocal=True&tmdb_id=%s' % tmdb
 			else:

@@ -115,10 +115,14 @@ class PlayNextXML(BaseDialog):
 			self.setProperty('umbrella.landscape', self.meta.get('landscape', ''))
 			self.setProperty('umbrella.fanart', self.meta.get('fanart', ''))
 			self.setProperty('umbrella.thumb', self.meta.get('thumb', ''))
-			next_duration = int(self.meta.get('duration')) if self.meta.get('duration') else ''
-			self.setProperty('umbrella.duration', str(int(next_duration)))
-			endtime = (datetime.now() + timedelta(seconds=next_duration)).strftime('%I:%M %p').lstrip('0') if next_duration else ''
-			self.setProperty('umbrella.endtime', endtime)
+			try:
+				next_duration = int(self.meta.get('duration')) if self.meta.get('duration') else ''
+				self.setProperty('umbrella.duration', str(int(next_duration)))
+				endtime = (datetime.now() + timedelta(seconds=next_duration)).strftime('%I:%M %p').lstrip('0') if next_duration else ''
+				self.setProperty('umbrella.endtime', endtime)
+			except:
+				self.setProperty('umbrella.duration', '')
+				self.setProperty('umbrella.endtime', '')
 			self.setProperty('umbrella.playnext.background.color', getPlayNextBackgroundColor())
 			if getSetting('playnext.hidebutton') == 'false':
 				self.setProperty('umbrella.hidebutton','true')

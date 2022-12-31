@@ -30,7 +30,7 @@ class IconScrape(BaseDialog):
 		self.closed = True
 		self.close()
 		del self
-  
+
 	def iscanceled(self):
 		return self.closed
 

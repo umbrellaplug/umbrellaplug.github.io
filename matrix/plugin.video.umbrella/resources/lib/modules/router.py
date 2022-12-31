@@ -723,9 +723,11 @@ def router(argv2):
 			if caller == 'realdebrid':
 				from resources.lib.debrid import realdebrid
 				if params.get('type') == 'unrestrict':
+					from resources.lib.modules import log_utils
 					log_utils.log('Real-Debrid play_URL type: unrestrict with URL: %s' % str(url.replace(' ', '%20')), level=log_utils.LOGDEBUG)
 					control.player.play(realdebrid.RealDebrid().unrestrict_link(url.replace(' ', '%20')))
-				else: 
+				else:
+					from resources.lib.modules import log_utils
 					log_utils.log('Real-Debrid play_URL with URL: %s' % str(url.replace(' ', '%20')), level=log_utils.LOGDEBUG)
 					control.player.play(url.replace(' ', '%20'))
 			elif caller == 'alldebrid':

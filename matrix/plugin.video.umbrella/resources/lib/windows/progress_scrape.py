@@ -5,7 +5,7 @@
 
 from json import dumps as jsdumps, loads as jsloads
 from urllib.parse import unquote
-from resources.lib.modules.control import dialog, getSourceHighlightColor, addonFanart, joinPath, jsonrpc, setting as getSetting, getColor
+from resources.lib.modules.control import dialog, getSourceHighlightColor, getHighlightColor, addonFanart, joinPath, jsonrpc, setting as getSetting, getColor
 from resources.lib.windows.base import BaseDialog
 from resources.lib.modules import log_utils
 
@@ -19,12 +19,10 @@ class ProgressScrape(BaseDialog):
 		except:
 			self.meta = None
 		self.imdb = kwargs.get('imdb')
-		self.tmdb = kwargs.get('tmdb')
 		self.tvdb = kwargs.get('tvdb')
 		self.year = kwargs.get('year')
 		self.season = kwargs.get('season')
 		self.episode = kwargs.get('episode')
-		self.defaultBg = addonFanart()
 		self.set_controls()
 
 	def run(self):
@@ -56,14 +54,15 @@ class ProgressScrape(BaseDialog):
 			if self.meta.get('plot'): self.setProperty('umbrella.plot', self.meta.get('plot', ''))
 		else:
 			self.setProperty('umbrella.fanart', addonFanart())
-		self.setProperty('umbrella.highlight.color', getSourceHighlightColor())
+		self.setProperty('umbrella.highlight.color', getHighlightColor())
 		self.setProperty('umbrella.dialog.color', str(getColor(getSetting('scraper.dialog.color'))))
+		self.setProperty('umbrella.sourceshighlight.color', getSourceHighlightColor())
 		self.setProperty('percent', str(0))
 		if getSetting('sources.dialog.fanartBG') == 'true':
 			self.setProperty('umbrella.fanartBG', '1')
 		else:
 			self.setProperty('umbrella.fanartBG', '0')
-			self.setProperty('umbrella.fanartdefault', str(self.defaultBg))
+			self.setProperty('umbrella.fanartdefault', addonFanart())
 
 	def update(self, percent=0, content='', icon=None):
 		try:
@@ -91,7 +90,7 @@ class ProgressScrape(BaseDialog):
 				if 'mediatype' not in meta: meta.update({'mediatype': 'movie'})
 				fanart = cleanLibArt(meta.get('art').get('fanart', '')) or self.fanart
 				clearlogo = cleanLibArt(meta.get('art').get('clearlogo', ''))
-				meta.update({'imdb': self.imdb, 'tmdb': self.tmdb, 'tvdb': self.tvdb, 'fanart': fanart, 'clearlogo': clearlogo})
+				meta.update({'imdb': self.imdb, 'tvdb': self.tvdb, 'fanart': fanart, 'clearlogo': clearlogo})
 				return meta
 			else:
 				if self.media_type != 'episode': raise Exception()
@@ -112,7 +111,7 @@ class ProgressScrape(BaseDialog):
 				if 'year' not in meta: meta.update({'year': show_meta.get('year')}) # shows year not year episode aired
 				fanart = cleanLibArt(meta.get('art').get('tvshow.fanart', '')) or self.poster
 				clearlogo = cleanLibArt(meta.get('art').get('tvshow.clearlogo', ''))
-				meta.update({'imdb': self.imdb, 'tmdb': self.tmdb, 'tvdb': self.tvdb, 'fanart': fanart,'clearlogo': clearlogo})
+				meta.update({'imdb': self.imdb, 'tvdb': self.tvdb, 'fanart': fanart,'clearlogo': clearlogo})
 				return meta
 		except:
 			log_utils.log('[ plugin.video.umbrella ] Checking Local Meta Exception', log_utils.LOGDEBUG)

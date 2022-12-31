@@ -2536,6 +2536,11 @@
 							<option label="32590">36</option>
 						</options>
 					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="sources.highlightmethod">0</condition>
+						</dependency>
+					</dependencies>
 					<control type="list" format="string">
 						<heading>32132</heading>
 					</control>
