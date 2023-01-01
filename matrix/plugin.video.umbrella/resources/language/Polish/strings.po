@@ -5559,3 +5559,31 @@ msgstr ""
 msgctxt "#40348"
 msgid "Sources Highlight Color"
 msgstr ""
+
+msgctxt "#40349"
+msgid "Error Connecting to Simkl"
+msgstr ""
+
+msgctxt "#40350"
+msgid "Simkl (Trending this Week)"
+msgstr ""
+
+msgctxt "#40351"
+msgid "(Trending this Month)"
+msgstr ""
+
+msgctxt "#40352"
+msgid "Simkl (Trending this Month)"
+msgstr ""
+
+msgctxt "#40353"
+msgid "(Trending this Month)"
+msgstr ""
+
+msgctxt "#40354"
+msgid "Trending (Simkl)"
+msgstr ""
+
+msgctxt "#40355"
+msgid "Trending"
+msgstr ""

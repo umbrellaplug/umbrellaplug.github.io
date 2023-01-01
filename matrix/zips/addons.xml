@@ -148,7 +148,7 @@
 [COLOR yellow]--[/COLOR][I] Changed to new settings format.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.02">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.03">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.7" />
@@ -181,13 +181,14 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.6.02 - Dec 31st, 2022[/COLOR][/B]
---[FIX][I] Fixed durations to show correctly in progress for ah2. If it is not showing it is because no runtime was returned.[/I]
---[FIX][I] Full-Screen Resolve changes made for blank tvshowtitle or none[/I]
---[FIX][I] Scrape and Resolve changes made for blank meta.[/I]
---[FIX][I] Scrape and Resolve changes made for cached giving no results.[/I]
---[FIX][I] Real Debrid cloud scrape log fix.[/I]
---[ENHANCEMENT][I] Made new windows use highlight color and scraper dialog colors like previous windows.[/I]
+[B][COLOR black]Update - v6.6.03 - Dec 31st, 2022[/COLOR][/B]
+--[FIX][I] Fixed setting that was backwards for try only 1 source on source select.[/I]
+--[FIX][I] Corrected library items importing with a "." as first character making them hidden files.[/I]
+--[FIX][I] Adjusted all debrid to return on 503[/I]
+--[FIX][I] Added try and catch to startup settings check for Apple TV.[/I]
+--[ENHANCEMENT][I] Added new Simkl Trending List for TV Shows.[/I]
+--[ENHANCEMENT][I] Added new Simkl Trending List for Movies.[/I]
+--[ENHANCEMENT][I] Simkl Must be authenticated for new trending lists to show. More Simkl features and lists coming soon.[/I]
 		</news>
 	</extension>
 </addon><addon id="plugin.video.youtube" name="YouTube" version="6.8.18+matrix.1" provider-name="anxdpanic, bromix">

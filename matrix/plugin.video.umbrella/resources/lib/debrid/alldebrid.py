@@ -42,7 +42,7 @@ class AllDebrid:
 		response = None
 		try:
 			if self.token == '':
-				log_utils.log('No Real-Debrid Token Found')
+				log_utils.log('No All-Debrid Token Found')
 				return None
 			url = base_url + url + '?agent=%s&apikey=%s' % (user_agent, self.token) + url_append
 			response = session.get(url, timeout=self.timeout)
@@ -63,8 +63,10 @@ class AllDebrid:
 		except requests.exceptions.ConnectionError:
 			if self.server_notifications: control.notification(message='Failed to connect to AllDebrid', icon=ad_icon)
 			log_utils.log('Failed to connect to AllDebrid', __name__, log_utils.LOGWARNING)
+			return None
 		except BaseException:
 			log_utils.error()
+			return None
 		return response
 
 	def _post(self, url, data={}):

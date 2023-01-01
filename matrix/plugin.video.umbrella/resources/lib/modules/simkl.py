@@ -103,3 +103,61 @@ class SIMKL:
 			control.dialog.ok(getLS(40343), getLS(32320))
 
 		except: log_utils.error()
+
+	def get_request(self, url):
+		try:
+			try: response = session.get(url, timeout=20)
+			except requests.exceptions.SSLError:
+				response = session.get(url, verify=False)
+		except requests.exceptions.ConnectionError:
+			control.notification(message=40349)
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			return None
+		try:
+			if response.status_code in (200, 201): return response.json()
+			elif response.status_code == 404:
+				if getSetting('debug.level') == '1':
+					from resources.lib.modules import log_utils
+					log_utils.log('Simkl get_request() failed: (404:NOT FOUND) - URL: %s' % url, level=log_utils.LOGDEBUG)
+				return '404:NOT FOUND'
+			elif 'Retry-After' in response.headers: # API REQUESTS ARE BEING THROTTLED, INTRODUCE WAIT TIME (TMDb removed rate-limit on 12-6-20)
+				throttleTime = response.headers['Retry-After']
+				control.notification(message='SIMKL Throttling Applied, Sleeping for %s seconds' % throttleTime)
+				control.sleep((int(throttleTime) + 1) * 1000)
+				return self.get_request(url)
+			else:
+				if getSetting('debug.level') == '1':
+					from resources.lib.modules import log_utils
+					log_utils.log('SIMKL get_request() failed: URL: %s\n                       msg : SIMKL Response: %s' % (url, response.text), __name__, log_utils.LOGDEBUG)
+				return None
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			return None
+
+	def simkl_list(self, url):
+		if not url: return
+		url = url % simklclientid
+		try:
+			#result = cache.get(self.get_request, 96, url % self.API_key)
+			result = self.get_request(url)
+			if result is None: return
+			items = result
+		except: return
+		self.list = [] ; sortList = []
+		next = ''
+		for item in items:
+			try:
+				values = {}
+				values['next'] = next 
+				values['tmdb'] = str(item.get('ids').get('tmdb')) if item.get('ids').get('tmdb') else ''
+				sortList.append(values['tmdb'])
+				values['imdb'] = ''
+				values['tvdb'] = ''
+				values['metacache'] = False 
+				self.list.append(values)
+			except:
+				from resources.lib.modules import log_utils
+				log_utils.error()
+		return self.list

@@ -11,6 +11,7 @@ from urllib.parse import quote_plus, urlencode, parse_qsl, urlparse, urlsplit
 from resources.lib.database import cache, metacache, fanarttv_cache, traktsync
 from resources.lib.indexers.tmdb import Movies as tmdb_indexer
 from resources.lib.indexers.fanarttv import FanartTv
+from resources.lib.modules.simkl import SIMKL as simkl
 from resources.lib.modules import cleangenre
 from resources.lib.modules import client
 from resources.lib.modules import control
@@ -120,6 +121,9 @@ class Movies:
 		self.trakt_trendingLists_link = 'https://api.trakt.tv/lists/trending?limit=%s&page=1' % self.page_limit
 		self.trakt_similiar = 'https://api.trakt.tv/movies/%s/related?limit=%s&page=1' % ('%s', self.page_limit)
 		self.mbdlist_list_items = 'https://mdblist.com/api/lists/%s/items?apikey=%s&limit=%s&page=1' % ('%s', mdblist.mdblist_api, self.page_limit)
+		self.simkltrendingtoday_link = 'https://api.simkl.com/movies/trending/today?client_id=%s&langs=EN&extended=tmdb' % '%s'
+		self.simkltrendingweek_link = 'https://api.simkl.com/movies/trending/week?client_id=%s&langs=EN&extended=tmdb' % '%s'
+		self.simkltrendingmonth_link = 'https://api.simkl.com/movies/trending/month?client_id=%s&langs=EN&extended=tmdb'% '%s'
 
 	def get(self, url, idx=True, create_directory=True):
 		self.list = []
@@ -138,6 +142,8 @@ class Movies:
 				return self.tmdb_trending_recentweek()
 			elif u in self.search_tmdb_link and url != 'tmdbrecentday' and url != 'tmdbrecentweek':
 				return self.getTMDb(url)
+			elif u in self.simkltrendingweek_link or u in self.simkltrendingmonth_link or u in self.simkltrendingtoday_link:
+				return self.getSimkl(url)
 			elif u in self.trakt_link and '/users/' in url:
 				try:
 					isTraktHistory = (url.split('&page=')[0] in self.trakthistory_link)
@@ -472,6 +478,28 @@ class Movies:
 			from resources.lib.modules import log_utils
 			log_utils.error()
 			return
+
+	def getSimkl(self, url, create_directory=True):
+		self.list = []
+		try:
+			try: url = getattr(self, url + '_link')
+			except: pass
+			try: u = urlparse(url).netloc.lower()
+			except: pass
+			if u in self.simkltrendingweek_link or u in self.simkltrendingmonth_link or u in self.simkltrendingtoday_link:
+				self.list = cache.get(simkl().simkl_list, 24, url)
+			if self.list is None: self.list = []
+			next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if create_directory: self.movieDirectory(self.list)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications: control.notification(title=32001, message=33049)
 
 	def unfinished(self, url, idx=True, create_directory=True):
 		self.list = []

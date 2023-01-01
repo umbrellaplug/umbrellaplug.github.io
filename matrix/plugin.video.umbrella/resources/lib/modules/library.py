@@ -76,6 +76,7 @@ class lib_tools:
 			filename = re.sub(re.compile(r'(CON|PRN|AUX|NUL|COM\d|LPT\d)\.', re.I), '\\1_', filename)
 			# control.legalFilename(filename) # without a var assingment this does jack shit but all exo forks doing it..lol...logs the same but breaks using below an adds trailing "/"
 			# filename = control.legalFilename(filename)
+			filename = filename.lstrip('.')
 			return filename
 		except:
 			log_utils.error()
@@ -763,7 +764,6 @@ class libmovies:
 			try: transtitle = title.translate(None, '\/:*?"<>|')
 			except: transtitle = title.translate(title.maketrans('', '', '\/:*?"<>|'))
 			transtitle = string_tools.normalize(transtitle)
-			transtitle.lstrip('.')
 			if control.setting('library.strm.use_tmdbhelper') == 'true':
 				content = 'plugin://plugin.video.themoviedb.helper/?info=play&tmdb_type=movie&islocal=True&tmdb_id=%s' % tmdb
 			else:

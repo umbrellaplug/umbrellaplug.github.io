@@ -56,6 +56,9 @@ def router(argv2):
 	elif action == 'movies':
 		from resources.lib.menus import movies
 		movies.Movies().get(url)
+	elif action == 'simklMovies':
+		from resources.lib.menus import movies
+		movies.Movies().getSimkl(url)
 	elif action == 'mixed' and 'movies' in url:
 		from resources.lib.menus import movies
 		movies.Movies().get(url)
@@ -204,6 +207,9 @@ def router(argv2):
 	elif action == 'tmdbTvshows':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().getTMDb(url)
+	elif action == 'simklTvshows':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().getSimkl(url)
 	elif action == 'tmdbTvshowPage':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().getTMDb(url)

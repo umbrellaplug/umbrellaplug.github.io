@@ -774,6 +774,11 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="navi.movie.simkl.trending" type="boolean" label="40354" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
 				<setting id="navi.movie.tmdb.trendingday" type="boolean" label="40330" help="">
 					<level>0</level>
 					<default>true</default>
@@ -927,6 +932,11 @@
 					<control type="toggle"/>
 				</setting>
 				<setting id="navi.tv.trakt.trending" type="boolean" label="32443" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="navi.tv.simkl.trending" type="boolean" label="40354" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>

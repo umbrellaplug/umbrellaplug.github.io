@@ -21,6 +21,7 @@ class Navigator:
 		self.traktCredentials = getTraktCredentialsInfo()
 		self.traktIndicators = getTraktIndicatorsInfo()
 		self.imdbCredentials = getSetting('imdbuser') != ''
+		self.simkltoken = getSetting('simkltoken') != ''
 		self.tmdbSessionID = getSetting('tmdb.sessionid') != ''
 		self.highlight_color = control.getHighlightColor()
 
@@ -74,6 +75,9 @@ class Navigator:
 			self.addDirectoryItem(32441 if self.indexLabels else 32440, 'tmdbmovies&url=tmdb_toprated', 'tmdb.png' if self.iconLogos else 'most-voted.png', 'DefaultMovies.png')
 		if getMenuEnabled('navi.movie.trakt.trending'):
 			self.addDirectoryItem(32443 if self.indexLabels else 32442, 'movies&url=trakttrending', 'trakt.png' if self.iconLogos else 'trending.png', 'trending.png')
+		if self.simkltoken:
+			if getMenuEnabled('navi.movie.simkl.trending'):
+				self.addDirectoryItem(40354 if self.indexLabels else 40355, 'simklMovies&url=simkltrendingtoday', 'simkl.png' if self.iconLogos else 'trending.png', 'trending.png')
 		if getMenuEnabled('navi.movie.tmdb.trendingday'):
 			self.addDirectoryItem(40330 if self.indexLabels else 32442, 'movies&url=tmdbrecentday', 'tmdb.png' if self.iconLogos else 'trending.png', 'DefaultTVShows.png')
 		if getMenuEnabled('navi.movie.tmdb.trendingweek'):
@@ -156,6 +160,10 @@ class Navigator:
 			self.addDirectoryItem(32441 if self.indexLabels else 32440, 'tmdbTvshows&url=tmdb_toprated', 'tmdb.png' if self.iconLogos else 'most-voted.png', 'DefaultTVShows.png')
 		if getMenuEnabled('navi.tv.trakt.trending'):
 			self.addDirectoryItem(32443 if self.indexLabels else 32442, 'tvshows&url=trakttrending', 'trakt.png' if self.iconLogos else 'trending.png', 'DefaultTVShows.png')
+		if self.simkltoken:
+			if getMenuEnabled('navi.tv.simkl.trending'):
+				self.addDirectoryItem(40354 if self.indexLabels else 40355, 'simklTvshows&url=simkltrendingtoday', 'simkl.png' if self.iconLogos else 'trending.png', 'DefaultTVShows.png')
+		#self.addDirectoryItem(40352 if self.indexLabels else 40353, 'simklTvshows&url=simkltrendingmonth', 'simkl.png' if self.iconLogos else 'trending.png', 'DefaultTVShows.png')
 		if getMenuEnabled('navi.tv.tmdb.trendingday'):
 			self.addDirectoryItem(40330 if self.indexLabels else 32442, 'tvshows&url=tmdbrecentday', 'tmdb.png' if self.iconLogos else 'trending.png', 'DefaultTVShows.png')
 		if getMenuEnabled('navi.tv.tmdb.trendingweek'):

@@ -302,9 +302,9 @@ class Sources:
 				sources_next = items[source_index+1:next_end]
 				sources_prev = [] if next_end < source_len else items[0:41-(source_len-source_index)]
 				if getSetting('sources.useonlyone')== 'true':
-					resolve_items = [i for i in chosen_source + sources_next + sources_prev]
-				else:
 					resolve_items = chosen_source
+				else:
+					resolve_items = [i for i in chosen_source + sources_next + sources_prev]
 			except: log_utils.error()
 			header = homeWindow.getProperty(self.labelProperty) + ': Resolving...'
 			if getSetting('progress.dialog') == '0':

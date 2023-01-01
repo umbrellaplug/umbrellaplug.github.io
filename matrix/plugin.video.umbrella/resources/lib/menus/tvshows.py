@@ -10,6 +10,7 @@ from threading import Thread
 from urllib.parse import quote_plus, urlencode, parse_qsl, urlparse, urlsplit
 from resources.lib.database import cache, metacache, fanarttv_cache, traktsync
 from resources.lib.indexers.tmdb import TVshows as tmdb_indexer
+from resources.lib.modules.simkl import SIMKL as simkl
 from resources.lib.indexers.fanarttv import FanartTv
 from resources.lib.modules import cleangenre, log_utils
 from resources.lib.modules import client
@@ -100,7 +101,9 @@ class TVshows:
 		self.tmdb_year_link = 'https://api.themoviedb.org/3/discover/tv?api_key=%s&language=en-US&include_null_first_air_dates=false&first_air_date_year=%s&sort_by=%s&page=1' % ('%s', '%s', self.tmdb_DiscoverSort())
 		self.tmdb_recommendations = 'https://api.themoviedb.org/3/tv/%s/recommendations?api_key=%s&language=en-US&region=US&page=1'
 		self.mbdlist_list_items = 'https://mdblist.com/api/lists/%s/items?apikey=%s&limit=%s&page=1' % ('%s', mdblist.mdblist_api, self.page_limit)
-
+		self.simkltrendingtoday_link = 'https://api.simkl.com/tv/trending/today?client_id=%s&langs=EN&extended=tmdb' % '%s'
+		self.simkltrendingweek_link = 'https://api.simkl.com/tv/trending/week?client_id=%s&langs=EN&extended=tmdb' % '%s'
+		self.simkltrendingmonth_link = 'https://api.simkl.com/tv/trending/month?client_id=%s&langs=EN&extended=tmdb'% '%s'
 		# Ticket is in to add this feature but currently not available
 		# self.tmdb_certification_link = 'https://api.themoviedb.org/3/discover/tv?api_key=%s&language=en-US&certification_country=US&certification=%s&sort_by=%s&page=1' % ('%s', '%s', self.tmdb_DiscoverSort())
 
@@ -121,6 +124,8 @@ class TVshows:
 				return self.tmdb_trending_recentweek()
 			elif u in self.search_tmdb_link and url != 'tmdbrecentday' and url != 'tmdbrecentweek':
 				return self.getTMDb(url)
+			elif u in self.simkltrendingweek_link or u in self.simkltrendingmonth_link or u in self.simkltrendingtoday_link:
+				return self.getSimkl(url)
 			if u in self.trakt_link and '/users/' in url:
 				try:
 					if '/users/me/' not in url: raise Exception()
@@ -181,6 +186,28 @@ class TVshows:
 			elif u in self.tmdb_link and not '/list/' in url:
 				self.list = tmdb_indexer().tmdb_list(url) # caching handled in list indexer
 			if self.list is None: self.list = []
+			if create_directory: self.tvshowDirectory(self.list)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications: control.notification(title=32002, message=33049)
+    
+	def getSimkl(self, url, create_directory=True):
+		self.list = []
+		try:
+			try: url = getattr(self, url + '_link')
+			except: pass
+			try: u = urlparse(url).netloc.lower()
+			except: pass
+			if u in self.simkltrendingweek_link or u in self.simkltrendingmonth_link or u in self.simkltrendingtoday_link:
+				self.list = cache.get(simkl().simkl_list, 24, url)
+			if self.list is None: self.list = []
+			next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
 			if create_directory: self.tvshowDirectory(self.list)
 			return self.list
 		except:

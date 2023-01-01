@@ -35,7 +35,11 @@ def clean_settings():
 			setting_id = item.get('id')
 			if setting_id:
 				active_settings.append(setting_id)
-		settings_xml = control.joinPath(profile_dir, 'settings.xml')
+		try:
+			settings_xml = control.joinPath(profile_dir, 'settings.xml')
+		except:
+			log_utils.log('[ plugin.video.umbrella ] - Error Accessing Settings.xml at Startup. Caught error and moving on.')
+			return control.notification(title=addon_name, message=32115)
 		root = ET.parse(settings_xml).getroot()
 		for item in root:
 			dict_item = {}
