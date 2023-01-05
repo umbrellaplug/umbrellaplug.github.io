@@ -257,8 +257,8 @@
 					<default>0</default>
 					<constraints>
 						<options>
-							<option label="32366">0</option>
-							<option label="32368">1</option>
+							<option label="40166">0</option>
+							<option label="32315">1</option>
 						</options>
 					</constraints>
 					<dependencies>
@@ -273,8 +273,8 @@
 					<default>0</default>
 					<constraints>
 						<options>
-							<option label="32366">0</option>
-							<option label="32368">1</option>
+							<option label="40166">0</option>
+							<option label="32315">1</option>
 						</options>
 					</constraints>
 					<dependencies>
@@ -604,6 +604,56 @@
 					<control type="spinner" format="string"/>
 				</setting>
 			</group>
+			<group id="3" label="40357" help="">
+				<setting id="reuse.languageinvoker" type="boolean" label="32139" help="">
+					<level>0</level>
+					<default>true</default>
+					<enable>false</enable>
+					<control type="toggle"/>
+				</setting>
+				<setting id="reuselanguageInvoker.Off" type="action" label="40179" help="40182">
+					<level>0</level>
+					<default/>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="reuse.languageinvoker">true</condition>
+						</dependency>
+					</dependencies>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<heading>40179</heading>
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_LanguageInvoker&amp;name=True)</data>
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="reuselanguageInvoker.On" type="action" label="40180" help="40181">
+					<level>0</level>
+					<default/>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="reuse.languageinvoker">false</condition>
+						</dependency>
+					</dependencies>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<heading>40180</heading>
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_LanguageInvoker&amp;name=True)</data>
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="showHelpLangInvoker" type="action" label="32140" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=langinvoker)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action"/>
+				</setting>
+			</group>
 		</category>
 		<category id="navigation" label="32621" help="40184">
 			<group id="1" label="32005">
@@ -774,9 +824,19 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="navi.movie.simkl.trending" type="boolean" label="40354" help="">
+				<setting id="navi.movie.simkl.trendingtoday" type="boolean" label="40350" help="">
 					<level>0</level>
 					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="navi.movie.simkl.trendingweek" type="boolean" label="40352" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="navi.movie.simkl.trendingmonth" type="boolean" label="40354" help="">
+					<level>0</level>
+					<default>false</default>
 					<control type="toggle"/>
 				</setting>
 				<setting id="navi.movie.tmdb.trendingday" type="boolean" label="40330" help="">
@@ -936,9 +996,19 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="navi.tv.simkl.trending" type="boolean" label="40354" help="">
+				<setting id="navi.tv.simkl.trendingtoday" type="boolean" label="40350" help="">
 					<level>0</level>
 					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="navi.tv.simkl.trendingweek" type="boolean" label="40352" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="navi.tv.simkl.trendingmonth" type="boolean" label="40354" help="">
+					<level>0</level>
+					<default>false</default>
 					<control type="toggle"/>
 				</setting>
 				<setting id="navi.tv.tmdb.trendingday" type="boolean" label="40330" help="">
@@ -2105,6 +2175,11 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="remove.audio.aac" type="boolean" label="40356" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
 				<setting id="remove.audio.mp3" type="boolean" label="40154" help="">
 					<level>0</level>
 					<default>false</default>
@@ -2557,7 +2632,7 @@
 				</setting>
 				<setting id="sources.real-debrid.color" type="integer" label="40270" help="">
 					<level>0</level>
-					<default>17</default>
+					<default>36</default>
 					<constraints>
 						<options>
 							<option label="40082">0</option>
@@ -2601,7 +2676,10 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="sources.highlightmethod">1</condition>
+							<and>
+								<condition operator="is" setting="sources.highlightmethod">1</condition>
+								<condition operator="!is" setting="realdebridtoken"/>
+							</and>
 						</dependency>
 					</dependencies>
 					<control type="list" format="string">
@@ -2610,7 +2688,7 @@
 				</setting>
 				<setting id="sources.alldebrid.color" type="integer" label="40271" help="">
 					<level>0</level>
-					<default>6</default>
+					<default>8</default>
 					<constraints>
 						<options>
 							<option label="40082">0</option>
@@ -2654,7 +2732,10 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="sources.highlightmethod">1</condition>
+							<and>
+								<condition operator="is" setting="sources.highlightmethod">1</condition>
+								<condition operator="!is" setting="alldebridtoken"/>
+							</and>
 						</dependency>
 					</dependencies>
 					<control type="list" format="string">
@@ -2663,7 +2744,7 @@
 				</setting>
 				<setting id="sources.premiumize.me.color" type="integer" label="40273" help="">
 					<level>0</level>
-					<default>26</default>
+					<default>30</default>
 					<constraints>
 						<options>
 							<option label="40082">0</option>
@@ -2707,7 +2788,10 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="sources.highlightmethod">1</condition>
+							<and>
+								<condition operator="is" setting="sources.highlightmethod">1</condition>
+								<condition operator="!is" setting="premiumizetoken"/>
+							</and>
 						</dependency>
 					</dependencies>
 					<control type="list" format="string">
@@ -2716,7 +2800,7 @@
 				</setting>
 				<setting id="sources.easynews.color" type="integer" label="40274" help="">
 					<level>0</level>
-					<default>19</default>
+					<default>32</default>
 					<constraints>
 						<options>
 							<option label="40082">0</option>
@@ -2760,7 +2844,10 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="sources.highlightmethod">1</condition>
+							<and>
+								<condition operator="is" setting="sources.highlightmethod">1</condition>
+								<condition operator="!is" setting="easynews.password"/>
+							</and>
 						</dependency>
 					</dependencies>
 					<control type="list" format="string">
@@ -2769,7 +2856,7 @@
 				</setting>
 				<setting id="sources.plexshare.color" type="integer" label="40276" help="">
 					<level>0</level>
-					<default>14</default>
+					<default>24</default>
 					<constraints>
 						<options>
 							<option label="40082">0</option>
@@ -2813,7 +2900,10 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="sources.highlightmethod">1</condition>
+							<and>
+								<condition operator="is" setting="sources.highlightmethod">1</condition>
+								<condition operator="!is" setting="plex.token"/>
+							</and>
 						</dependency>
 					</dependencies>
 					<control type="list" format="string">
@@ -2822,7 +2912,7 @@
 				</setting>
 				<setting id="sources.gdrive.color" type="integer" label="40277" help="">
 					<level>0</level>
-					<default>14</default>
+					<default>20</default>
 					<constraints>
 						<options>
 							<option label="40082">0</option>
@@ -2866,11 +2956,126 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="sources.highlightmethod">1</condition>
+							<and>
+								<condition operator="is" setting="sources.highlightmethod">1</condition>
+								<condition operator="!is" setting="gdrive.cloudflare_url"/>
+							</and>
 						</dependency>
 					</dependencies>
 					<control type="list" format="string">
 						<heading>40277</heading>
+					</control>
+				</setting>
+				<setting id="sources.furk.color" type="integer" label="40358" help="">
+					<level>0</level>
+					<default>25</default>
+					<constraints>
+						<options>
+							<option label="40082">0</option>
+							<option label="32670">1</option>
+							<option label="40283">2</option>
+							<option label="40284">3</option>
+							<option label="40285">4</option>
+							<option label="40286">5</option>
+							<option label="32595">6</option>
+							<option label="32591">7</option>
+							<option label="40287">8</option>
+							<option label="40288">9</option>
+							<option label="40289">10</option>
+							<option label="32592">11</option>
+							<option label="40290">12</option>
+							<option label="40291">13</option>
+							<option label="40292">14</option>
+							<option label="40293">15</option>
+							<option label="40294">16</option>
+							<option label="40295">17</option>
+							<option label="40296">18</option>
+							<option label="40297">19</option>
+							<option label="40298">20</option>
+							<option label="40299">21</option>
+							<option label="40300">22</option>
+							<option label="40301">23</option>
+							<option label="32669">24</option>
+							<option label="40302">25</option>
+							<option label="40303">26</option>
+							<option label="40304">27</option>
+							<option label="40305">28</option>
+							<option label="40306">29</option>
+							<option label="40307">30</option>
+							<option label="40308">31</option>
+							<option label="40309">32</option>
+							<option label="40310">33</option>
+							<option label="40311">34</option>
+							<option label="40312">35</option>
+							<option label="32590">36</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="sources.highlightmethod">1</condition>
+								<condition operator="!is" setting="furk.user_name"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="list" format="string">
+						<heading>40358</heading>
+					</control>
+				</setting>
+				<setting id="sources.filepursuit.color" type="integer" label="40359" help="">
+					<level>0</level>
+					<default>16</default>
+					<constraints>
+						<options>
+							<option label="40082">0</option>
+							<option label="32670">1</option>
+							<option label="40283">2</option>
+							<option label="40284">3</option>
+							<option label="40285">4</option>
+							<option label="40286">5</option>
+							<option label="32595">6</option>
+							<option label="32591">7</option>
+							<option label="40287">8</option>
+							<option label="40288">9</option>
+							<option label="40289">10</option>
+							<option label="32592">11</option>
+							<option label="40290">12</option>
+							<option label="40291">13</option>
+							<option label="40292">14</option>
+							<option label="40293">15</option>
+							<option label="40294">16</option>
+							<option label="40295">17</option>
+							<option label="40296">18</option>
+							<option label="40297">19</option>
+							<option label="40298">20</option>
+							<option label="40299">21</option>
+							<option label="40300">22</option>
+							<option label="40301">23</option>
+							<option label="32669">24</option>
+							<option label="40302">25</option>
+							<option label="40303">26</option>
+							<option label="40304">27</option>
+							<option label="40305">28</option>
+							<option label="40306">29</option>
+							<option label="40307">30</option>
+							<option label="40308">31</option>
+							<option label="40309">32</option>
+							<option label="40310">33</option>
+							<option label="40311">34</option>
+							<option label="40312">35</option>
+							<option label="32590">36</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="sources.highlightmethod">1</condition>
+								<condition operator="!is" setting="filepursuit.api"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="list" format="string">
+						<heading>40359</heading>
 					</control>
 				</setting>
 				<setting id="sources.usecoloricons" type="boolean" label="40278" help="">
@@ -4246,6 +4451,7 @@
 					<dependencies>
 						<dependency type="enable">
 							<condition on="property" name="InfoBool">false</condition>
+							<condition operator="!is" setting="easynews.password"/>
 						</dependency>
 					</dependencies>
 					<control type="edit" format="string">
@@ -4412,6 +4618,40 @@
 					</dependencies>
 					<control type="slider" format="integer">
 						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="furkgetApi" type="action" label="40360" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=furk_getApi)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">true</condition>
+							<condition operator="!is" setting="furk.user_name"/>
+							<condition operator="is" setting="furk.api"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="furkclearApi" type="action" label="40361" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=furk_clearApi)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">true</condition>
+							<condition operator="!is" setting="furk.user_name"/>
+							<condition operator="!is" setting="furk.api"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
 					</control>
 				</setting>
 				<setting id="cocoScraperSettingsFurk" type="action" label="40134" help="">
@@ -5278,66 +5518,6 @@
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
-					<control type="button" format="action"/>
-				</setting>
-				<setting id="reuse.languageinvoker" type="boolean" label="32139" help="">
-					<level>0</level>
-					<default>true</default>
-					<enable>false</enable>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="dev.mode.enable">true</condition>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="reuselanguageInvoker.Off" type="action" label="40179" help="40182">
-					<level>0</level>
-					<default/>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="reuse.languageinvoker">true</condition>
-							<condition operator="is" setting="dev.mode.enable">true</condition>
-						</dependency>
-					</dependencies>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<control type="button" format="action">
-						<heading>40179</heading>
-						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_LanguageInvoker)</data>
-						<close>true</close>
-					</control>
-				</setting>
-				<setting id="reuselanguageInvoker.On" type="action" label="40180" help="40181">
-					<level>0</level>
-					<default/>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="reuse.languageinvoker">false</condition>
-							<condition operator="is" setting="dev.mode.enable">true</condition>
-						</dependency>
-					</dependencies>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<control type="button" format="action">
-						<heading>40180</heading>
-						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_LanguageInvoker)</data>
-						<close>true</close>
-					</control>
-				</setting>
-				<setting id="showHelpLangInvoker" type="action" label="32140" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=langinvoker)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="dev.mode.enable">true</condition>
-						</dependency>
-					</dependencies>
 					<control type="button" format="action"/>
 				</setting>
 				<setting id="use.playeronly" type="boolean" label="40275" help="">

@@ -247,7 +247,7 @@ class Furk:
 	def account_info_to_dialog(self):
 		from datetime import datetime
 		try:
-			username = control.setting('furk.user.name')
+			username = control.setting('furk.user_name')
 			api_key = control.setting('furk.api')
 			items = []
 			items += ['Username: ' % username]
@@ -261,7 +261,7 @@ class Furk:
 		from resources.lib.windows.textviewer import TextViewerXML
 		try:
 			control.busy()
-			username = control.setting('furk.user.name')
+			username = control.setting('furk.user_name')
 			api_key = control.setting('furk.api')
 			body = []
 			append = body.append
@@ -278,8 +278,8 @@ class Furk:
 
 	def get_api(self):
 		try:
-			username = control.setting('furk.user.name')
-			userpass = control.setting('furk.pass.word')
+			username = control.setting('furk.user_name')
+			userpass = control.setting('furk.user_pass')
 			api_key = control.setting('furk.api')
 			if api_key == '':
 				if username == '' or userpass == '': return

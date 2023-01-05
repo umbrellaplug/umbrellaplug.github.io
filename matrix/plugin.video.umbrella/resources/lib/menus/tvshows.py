@@ -101,9 +101,9 @@ class TVshows:
 		self.tmdb_year_link = 'https://api.themoviedb.org/3/discover/tv?api_key=%s&language=en-US&include_null_first_air_dates=false&first_air_date_year=%s&sort_by=%s&page=1' % ('%s', '%s', self.tmdb_DiscoverSort())
 		self.tmdb_recommendations = 'https://api.themoviedb.org/3/tv/%s/recommendations?api_key=%s&language=en-US&region=US&page=1'
 		self.mbdlist_list_items = 'https://mdblist.com/api/lists/%s/items?apikey=%s&limit=%s&page=1' % ('%s', mdblist.mdblist_api, self.page_limit)
-		self.simkltrendingtoday_link = 'https://api.simkl.com/tv/trending/today?client_id=%s&langs=EN&extended=tmdb' % '%s'
-		self.simkltrendingweek_link = 'https://api.simkl.com/tv/trending/week?client_id=%s&langs=EN&extended=tmdb' % '%s'
-		self.simkltrendingmonth_link = 'https://api.simkl.com/tv/trending/month?client_id=%s&langs=EN&extended=tmdb'% '%s'
+		self.simkltrendingtoday_link = 'https://api.simkl.com/tv/trending/today?client_id=%s&extended=tmdb' % '%s'
+		self.simkltrendingweek_link = 'https://api.simkl.com/tv/trending/week?client_id=%s&extended=tmdb' % '%s'
+		self.simkltrendingmonth_link = 'https://api.simkl.com/tv/trending/month?client_id=%s&extended=tmdb'% '%s'
 		# Ticket is in to add this feature but currently not available
 		# self.tmdb_certification_link = 'https://api.themoviedb.org/3/discover/tv?api_key=%s&language=en-US&certification_country=US&certification=%s&sort_by=%s&page=1' % ('%s', '%s', self.tmdb_DiscoverSort())
 
@@ -166,8 +166,8 @@ class TVshows:
 	def getMBDTopLists(self, create_directory=True):
 		self.list = []
 		try:
-			#self.list = cache.get(self.mbd_top_lists, 0)
-			self.list = self.mbd_top_lists()
+			self.list = cache.get(self.mbd_top_lists, 6)
+			#self.list = self.mbd_top_lists()
 			if self.list is None: self.list = []
 			if create_directory: self.addDirectory(self.list)
 			return self.list
@@ -203,7 +203,7 @@ class TVshows:
 			try: u = urlparse(url).netloc.lower()
 			except: pass
 			if u in self.simkltrendingweek_link or u in self.simkltrendingmonth_link or u in self.simkltrendingtoday_link:
-				self.list = cache.get(simkl().simkl_list, 24, url)
+				self.list = cache.get(simkl().simkl_list, 6, url)
 			if self.list is None: self.list = []
 			next = ''
 			for i in range(len(self.list)): self.list[i]['next'] = next
@@ -264,7 +264,9 @@ class TVshows:
 			url = self.tmdb_recommendations % (item.get('tmdb'), '%s')
 			self.list = tmdb_indexer().tmdb_list(url)
 			if self.useContainerTitles:
-				try: control.setContainerName(getLS(40257)+' '+item.get('title'))
+				try: 
+					control.setContainerName(getLS(40257)+' '+item.get('title'))
+					control.setHomeWindowProperty('umbrella.tvrecent', str(getLS(40257)+' '+item.get('title')))
 				except: pass
 			next = ''
 			for i in range(len(self.list)): self.list[i]['next'] = next
@@ -288,7 +290,9 @@ class TVshows:
 			url = self.tmdb_similar % (item.get('tmdb'), '%s')
 			self.list = tmdb_indexer().tmdb_list(url)
 			if self.useContainerTitles:
-				try: control.setContainerName(getLS(40259)+' '+item.get('title'))
+				try: 
+					control.setContainerName(getLS(40259)+' '+item.get('title'))
+					control.setHomeWindowProperty('umbrella.tvsimilar', str(getLS(40257)+' '+item.get('title')))
 				except: pass
 			next = ''
 			for i in range(len(self.list)): self.list[i]['next'] = next
@@ -999,7 +1003,8 @@ class TVshows:
 		self.list = []
 		try:
 			#self.list = cache.get(self.mbd_top_lists, 0)
-			self.list = self.mbd_user_lists()
+			self.list = cache.get(self.mbd_user_lists, 6)
+			#self.list = self.mbd_user_lists()
 			if self.list is None: self.list = []
 			if create_directory: self.addDirectory(self.list)
 			return self.list

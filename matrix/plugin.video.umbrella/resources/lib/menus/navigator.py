@@ -23,6 +23,7 @@ class Navigator:
 		self.imdbCredentials = getSetting('imdbuser') != ''
 		self.simkltoken = getSetting('simkltoken') != ''
 		self.tmdbSessionID = getSetting('tmdb.sessionid') != ''
+		self.reuselanguageinv = getSetting('reuse.languageinvoker') == 'true'
 		self.highlight_color = control.getHighlightColor()
 
 	def root(self):
@@ -76,8 +77,12 @@ class Navigator:
 		if getMenuEnabled('navi.movie.trakt.trending'):
 			self.addDirectoryItem(32443 if self.indexLabels else 32442, 'movies&url=trakttrending', 'trakt.png' if self.iconLogos else 'trending.png', 'trending.png')
 		if self.simkltoken:
-			if getMenuEnabled('navi.movie.simkl.trending'):
-				self.addDirectoryItem(40354 if self.indexLabels else 40355, 'simklMovies&url=simkltrendingtoday', 'simkl.png' if self.iconLogos else 'trending.png', 'trending.png')
+			if getMenuEnabled('navi.movie.simkl.trendingtoday'):
+				self.addDirectoryItem(40350 if self.indexLabels else 40351, 'simklMovies&url=simkltrendingtoday', 'simkl.png' if self.iconLogos else 'trending.png', 'trending.png')
+			if getMenuEnabled('navi.movie.simkl.trendingweek'):
+				self.addDirectoryItem(40352 if self.indexLabels else 40353, 'simklMovies&url=simkltrendingweek', 'simkl.png' if self.iconLogos else 'trending.png', 'trending.png')
+			if getMenuEnabled('navi.movie.simkl.trendingmonth'):
+				self.addDirectoryItem(40354 if self.indexLabels else 40355, 'simklMovies&url=simkltrendingmonth', 'simkl.png' if self.iconLogos else 'trending.png', 'trending.png')
 		if getMenuEnabled('navi.movie.tmdb.trendingday'):
 			self.addDirectoryItem(40330 if self.indexLabels else 32442, 'movies&url=tmdbrecentday', 'tmdb.png' if self.iconLogos else 'trending.png', 'DefaultTVShows.png')
 		if getMenuEnabled('navi.movie.tmdb.trendingweek'):
@@ -161,9 +166,12 @@ class Navigator:
 		if getMenuEnabled('navi.tv.trakt.trending'):
 			self.addDirectoryItem(32443 if self.indexLabels else 32442, 'tvshows&url=trakttrending', 'trakt.png' if self.iconLogos else 'trending.png', 'DefaultTVShows.png')
 		if self.simkltoken:
-			if getMenuEnabled('navi.tv.simkl.trending'):
-				self.addDirectoryItem(40354 if self.indexLabels else 40355, 'simklTvshows&url=simkltrendingtoday', 'simkl.png' if self.iconLogos else 'trending.png', 'DefaultTVShows.png')
-		#self.addDirectoryItem(40352 if self.indexLabels else 40353, 'simklTvshows&url=simkltrendingmonth', 'simkl.png' if self.iconLogos else 'trending.png', 'DefaultTVShows.png')
+			if getMenuEnabled('navi.tv.simkl.trendingtoday'):
+				self.addDirectoryItem(40350 if self.indexLabels else 40351, 'simklTvshows&url=simkltrendingtoday', 'simkl.png' if self.iconLogos else 'trending.png', 'DefaultTVShows.png')
+			if getMenuEnabled('navi.tv.simkl.trendingweek'):
+				self.addDirectoryItem(40352 if self.indexLabels else 40353, 'simklTvshows&url=simkltrendingweek', 'simkl.png' if self.iconLogos else 'trending.png', 'DefaultTVShows.png')
+			if getMenuEnabled('navi.tv.simkl.trendingweek'):	
+				self.addDirectoryItem(40354 if self.indexLabels else 40355, 'simklTvshows&url=simkltrendingmonth', 'simkl.png' if self.iconLogos else 'trending.png', 'DefaultTVShows.png')
 		if getMenuEnabled('navi.tv.tmdb.trendingday'):
 			self.addDirectoryItem(40330 if self.indexLabels else 32442, 'tvshows&url=tmdbrecentday', 'tmdb.png' if self.iconLogos else 'trending.png', 'DefaultTVShows.png')
 		if getMenuEnabled('navi.tv.tmdb.trendingweek'):
@@ -285,6 +293,11 @@ class Navigator:
 		self.addDirectoryItem(32556, 'library_Navigator', 'tools.png', 'DefaultAddonService.png', isFolder=True)
 		self.addDirectoryItem(32049, 'tools_viewsNavigator', 'settings.png', 'DefaultAddonService.png', isFolder=True)
 		self.addDirectoryItem(32361, 'tools_resetViewTypes', 'settings.png', 'DefaultAddonService.png', isFolder=False)
+		#reuselanguage
+		if self.reuselanguageinv: 
+			self.addDirectoryItem(40179, 'tools_LanguageInvoker&name=False', 'settings.png', 'DefaultAddonProgram.png', isFolder=False)
+		else:
+			self.addDirectoryItem(40180, 'tools_LanguageInvoker&name=False', 'settings.png', 'DefaultAddonProgram.png', isFolder=False)
 		self.addDirectoryItem(32083, 'tools_cleanSettings', 'settings.png', 'DefaultAddonProgram.png', isFolder=False)
 		self.addDirectoryItem(40334, 'tools_deleteSettings', 'settings.png', 'DefaultAddonProgram.png', isFolder=False)
 		self.addDirectoryItem(32523, 'tools_loggingNavigator', 'tools.png', 'DefaultAddonService.png')
@@ -381,7 +394,7 @@ class Navigator:
 		self.endDirectory()
 
 	def furk_service(self):
-		if getSetting('furk.api'):
+		if getSetting('furk.user_name'):
 			self.addDirectoryItem('Furk: Search', 'furk_Search', 'search.png', 'DefaultAddonsSearch.png')
 			self.addDirectoryItem('Furk: User Files', 'furk_UserFiles', 'furk.png', 'DefaultAddonService.png')
 			self.addDirectoryItem('Furk: Account Info', 'furk_AccountInfo', 'furk.png', 'DefaultAddonService.png', isFolder=False)

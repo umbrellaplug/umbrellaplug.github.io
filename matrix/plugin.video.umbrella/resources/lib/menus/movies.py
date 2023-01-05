@@ -121,9 +121,9 @@ class Movies:
 		self.trakt_trendingLists_link = 'https://api.trakt.tv/lists/trending?limit=%s&page=1' % self.page_limit
 		self.trakt_similiar = 'https://api.trakt.tv/movies/%s/related?limit=%s&page=1' % ('%s', self.page_limit)
 		self.mbdlist_list_items = 'https://mdblist.com/api/lists/%s/items?apikey=%s&limit=%s&page=1' % ('%s', mdblist.mdblist_api, self.page_limit)
-		self.simkltrendingtoday_link = 'https://api.simkl.com/movies/trending/today?client_id=%s&langs=EN&extended=tmdb' % '%s'
-		self.simkltrendingweek_link = 'https://api.simkl.com/movies/trending/week?client_id=%s&langs=EN&extended=tmdb' % '%s'
-		self.simkltrendingmonth_link = 'https://api.simkl.com/movies/trending/month?client_id=%s&langs=EN&extended=tmdb'% '%s'
+		self.simkltrendingtoday_link = 'https://api.simkl.com/movies/trending/today?client_id=%s&extended=tmdb' % '%s'
+		self.simkltrendingweek_link = 'https://api.simkl.com/movies/trending/week?client_id=%s&extended=tmdb' % '%s'
+		self.simkltrendingmonth_link = 'https://api.simkl.com/movies/trending/month?client_id=%s&extended=tmdb'% '%s'
 
 	def get(self, url, idx=True, create_directory=True):
 		self.list = []
@@ -229,8 +229,8 @@ class Movies:
 	def getMBDTopLists(self, create_directory=True): 
 		self.list = []
 		try:
-			#self.list = cache.get(self.mbd_top_lists, 0)
-			self.list = self.mbd_top_lists()
+			self.list = cache.get(self.mbd_top_lists, 6)
+			#self.list = self.mbd_top_lists()
 			if self.list is None: self.list = []
 			if create_directory: self.addDirectory(self.list)
 			return self.list
@@ -261,8 +261,8 @@ class Movies:
 	def getMDBUserList(self, create_directory=True): 
 		self.list = []
 		try:
-			#self.list = cache.get(self.mbd_top_lists, 0)
-			self.list = self.mbd_user_lists()
+			self.list = cache.get(self.mbd_user_lists, 6)
+			#self.list = self.mbd_user_lists()
 			if self.list is None: self.list = []
 			if create_directory: self.addDirectory(self.list)
 			return self.list
@@ -393,7 +393,9 @@ class Movies:
 			url = self.tmdb_recommendations % (item.get('tmdb'), '%s')
 			self.list = tmdb_indexer().tmdb_list(url)
 			if self.useContainerTitles:
-				try: control.setContainerName(getLS(40257)+' '+item.get('title'))
+				try: 
+					control.setContainerName(getLS(40257)+' '+item.get('title'))
+					control.setHomeWindowProperty('umbrella.movierecent', str(getLS(40257)+' '+item.get('title')))
 				except: pass
 			next = ''
 			for i in range(len(self.list)): self.list[i]['next'] = next
@@ -417,7 +419,9 @@ class Movies:
 			url = self.tmdb_similar % (item.get('tmdb'), '%s')
 			self.list = tmdb_indexer().tmdb_list(url)
 			if self.useContainerTitles:
-				try: control.setContainerName(getLS(40259)+' '+item.get('title'))
+				try: 
+					control.setContainerName(getLS(40259)+' '+item.get('title'))
+					control.setHomeWindowProperty('umbrella.moviesimilar', str(getLS(40257)+' '+item.get('title')))
 				except: pass
 			next = ''
 			for i in range(len(self.list)): self.list[i]['next'] = next
@@ -487,7 +491,7 @@ class Movies:
 			try: u = urlparse(url).netloc.lower()
 			except: pass
 			if u in self.simkltrendingweek_link or u in self.simkltrendingmonth_link or u in self.simkltrendingtoday_link:
-				self.list = cache.get(simkl().simkl_list, 24, url)
+				self.list = cache.get(simkl().simkl_list, 6, url)
 			if self.list is None: self.list = []
 			next = ''
 			for i in range(len(self.list)): self.list[i]['next'] = next

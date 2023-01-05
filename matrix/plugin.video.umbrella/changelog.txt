@@ -1,3 +1,20 @@
+
+[B][COLOR black]Update - v6.6.04 - Jan 4th, 2023[/COLOR][/B]
+--[FIX][I] Cloud Scrapers Fixed.[/I]
+--[FIX][I] Change source selection screen to build all colors properties before constructing the window.[/I]
+--[FIX][I] Adding cache in for MDBList and Simkl Lists. All cache for 6 hours.[/I]
+--[FIX][I] Fixed issue with error on source select colors.[/I]
+--[FIX][I] Removed some logging.[/I]
+--[FIX][I] When creating source library folders they are created with the content set correctly now.[/I]
+--[FIX][I] Furk api pull from settings added.[/I]
+--[NEXUS][I] Removed all instances of Element Tree from code to help with crashes.[/I]
+--[ENHANCEMENT][I] Add new audio filter for aac.[/I]
+--[ENHANCEMENT][I] Moved reuselanguageInvoker setting to Settings: General.[/I]
+--[ENHANCEMENT][I] Added option to turn languageinvoker on and off directly from tools list.[/I]
+--[ENHANCEMENT][I] Added trending weekly and monthly in for Simkl, hidden by default.[/I]
+--[ENHANCEMENT][I] Added color support for Furk and FilePursuit[/I]s
+--[ENHANCEMENT][I] Changed provider colors to only show for added providers in sources.[/I]
+
 [B][COLOR black]Update - v6.6.03 - Dec 31st, 2022[/COLOR][/B]
 --[FIX][I] Fixed setting that was backwards for try only 1 source on source select.[/I]
 --[FIX][I] Corrected library items importing with a "." as first character making them hidden files.[/I]

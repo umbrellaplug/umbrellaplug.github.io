@@ -9,7 +9,7 @@ from resources.lib.cloud_scrapers import cloud_utils
 from resources.lib.debrid.premiumize import Premiumize
 from resources.lib.modules.control import setting as getSetting
 from resources.lib.modules.source_utils import supported_video_extensions
-from umbrellascrapers.modules import source_utils as fs_utils
+from cocoscrapers.modules import source_utils as fs_utils
 
 
 class source:

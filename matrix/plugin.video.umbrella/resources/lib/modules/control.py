@@ -10,8 +10,9 @@ import xbmcaddon
 import xbmcgui
 import xbmcplugin
 import xbmcvfs
-import xml.etree.ElementTree as ET
+#import xml.etree.ElementTree as ET
 from threading import Thread
+from xml.dom.minidom import parse as mdParse
 
 addon = xbmcaddon.Addon
 AddonID = xbmcaddon.Addon().getAddonInfo('id')
@@ -92,6 +93,10 @@ def setContainerName(value):
 	import sys
 	xbmcplugin.setPluginCategory(int(sys.argv[1]), value)
 
+def setHomeWindowProperty(propertyname, property):
+	win = xbmcgui.Window(10000)
+	win.setProperty(str(propertyname), property)
+
 def setting(id, fallback=None):
 	try: settings_dict = jsloads(homeWindow.getProperty('umbrella_settings'))
 	except: settings_dict = make_settings_dict()
@@ -109,12 +114,18 @@ def setSetting(id, value):
 
 def make_settings_dict(): # service runs upon a setting change
 	try:
-		root = ET.parse(settingsFile).getroot()
+		#root = ET.parse(settingsFile).getroot()
+		root = mdParse(settingsFile) #minidom instead of element tree
+		curSettings = root.getElementsByTagName("setting") #minidom instead of element tree
 		settings_dict = {}
-		for item in root:
+		for item in curSettings:
 			dict_item = {}
-			setting_id = item.get('id')
-			setting_value = item.text
+			#setting_id = item.get('id')
+			setting_id = item.getAttribute('id') #minidom instead of element tree
+			try:
+				setting_value = item.firstChild.data #minidom instead of element tree
+			except:
+				setting_value = None
 			if setting_value is None: setting_value = ''
 			dict_item = {setting_id: setting_value}
 			settings_dict.update(dict_item)
@@ -365,15 +376,15 @@ def autoTraktSubscription(tvshowtitle, year, imdb, tvdb): #---start adding TMDb 
 # 	return color
 
 def getBackgroundColor(n):
-	colorChart = ('black','white', 'lightgray', 'gray', 'beige', 'darkgoldenrod', 'gold', 'yellow', 'peru', 'orangered',
-						'pink','deeppink','fuchsia','lightcoral', 'darkred', 'maroon', 'blueviolet', 'darkorchid', 'purple', 'indigo', 'darkslateblue', 'slateblue','navy', 'blue', 'deepskyblue', 'dodgerblue','skyblue', 'powderblue', 'turquoise', 'cyan', 'aqua','aquamarine','greenyellow','mediumspringgreen','green', 'lime','red')
+	colorChart = ('black','white', 'lightgray', 'gray', 'FFFFF0DB', 'darkgoldenrod', 'gold', 'yellow', 'peru', 'orangered',
+						'pink','deeppink','fuchsia','lightcoral', 'FFD10000', 'FF750000', 'blueviolet', 'darkorchid', 'purple', 'indigo', 'darkslateblue', 'slateblue','navy', 'blue', 'deepskyblue', 'dodgerblue','skyblue', 'powderblue', 'turquoise', 'cyan', 'aqua','aquamarine','greenyellow','mediumspringgreen','green', 'lime','red')
 	if not n: n = '0'
 	color = colorChart[int(n)]
 	return color 
 
 def getColor(n):
-	colorChart = ('black','white', 'lightgray', 'gray', 'beige', 'darkgoldenrod', 'gold', 'yellow', 'peru', 'orangered',
-						'pink','deeppink','fuchsia','lightcoral', 'darkred', 'maroon', 'blueviolet', 'darkorchid', 'purple', 'indigo', 'darkslateblue', 'slateblue','navy', 'blue', 'deepskyblue', 'dodgerblue','skyblue', 'powderblue', 'turquoise', 'cyan', 'aqua','aquamarine','greenyellow','mediumspringgreen','green', 'lime', 'red')
+	colorChart = ('black','white', 'lightgray', 'gray', 'FFFFF0DB', 'darkgoldenrod', 'gold', 'yellow', 'peru', 'orangered',
+						'pink','deeppink','fuchsia','lightcoral', 'FFD10000', 'FF750000', 'blueviolet', 'darkorchid', 'purple', 'indigo', 'darkslateblue', 'slateblue','navy', 'blue', 'deepskyblue', 'dodgerblue','skyblue', 'powderblue', 'turquoise', 'cyan', 'aqua','aquamarine','greenyellow','mediumspringgreen','green', 'lime', 'red')
 	if not n: n = '0'
 	color = colorChart[int(n)]
 	return color
@@ -458,18 +469,22 @@ def jsondate_to_datetime(jsondate_object, resformat, remove_time=False):
 	return datetime_object
 
 def syncAccounts():
-	setSetting('easynews.user', addon('script.module.cocoscrapers').getSetting('easynews.user'))
-	setSetting('easynews.password', addon('script.module.cocoscrapers').getSetting('easynews.password'))
-	setSetting('furk.user_name', addon('script.module.cocoscrapers').getSetting('furk.user_name'))
-	setSetting('furk.user_pass', addon('script.module.cocoscrapers').getSetting('furk.user_pass'))
-	setSetting('filepursuit.api', addon('script.module.cocoscrapers').getSetting('filepursuit.api'))
-	setSetting('plex.token', addon('script.module.cocoscrapers').getSetting('plex.token'))
-	setSetting('plex.client_id', addon('script.module.cocoscrapers').getSetting('plex.client_id'))
-	setSetting('plex.device_id', addon('script.module.cocoscrapers').getSetting('plex.device_id'))
-	setSetting('plexshare.sourceTitle', addon('script.module.cocoscrapers').getSetting('plexshare.sourceTitle'))
-	setSetting('plexshare.accessToken', addon('script.module.cocoscrapers').getSetting('plexshare.accessToken'))
-	setSetting('plexshare.url', addon('script.module.cocoscrapers').getSetting('plexshare.url'))
-	setSetting('gdrive.cloudflare_url', addon('script.module.cocoscrapers').getSetting('gdrive.cloudflare_url'))
+	try:
+		setSetting('easynews.user', addon('script.module.cocoscrapers').getSetting('easynews.user'))
+		setSetting('easynews.password', addon('script.module.cocoscrapers').getSetting('easynews.password'))
+		setSetting('furk.user_name', addon('script.module.cocoscrapers').getSetting('furk.user_name'))
+		setSetting('furk.user_pass', addon('script.module.cocoscrapers').getSetting('furk.user_pass'))
+		setSetting('filepursuit.api', addon('script.module.cocoscrapers').getSetting('filepursuit.api'))
+		setSetting('plex.token', addon('script.module.cocoscrapers').getSetting('plex.token'))
+		setSetting('plex.client_id', addon('script.module.cocoscrapers').getSetting('plex.client_id'))
+		setSetting('plex.device_id', addon('script.module.cocoscrapers').getSetting('plex.device_id'))
+		setSetting('plexshare.sourceTitle', addon('script.module.cocoscrapers').getSetting('plexshare.sourceTitle'))
+		setSetting('plexshare.accessToken', addon('script.module.cocoscrapers').getSetting('plexshare.accessToken'))
+		setSetting('plexshare.url', addon('script.module.cocoscrapers').getSetting('plexshare.url'))
+		setSetting('gdrive.cloudflare_url', addon('script.module.cocoscrapers').getSetting('gdrive.cloudflare_url'))
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
 
 
 def checkPlayNextEpisodes():

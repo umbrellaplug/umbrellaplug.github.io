@@ -96,7 +96,7 @@
                     <textcolor>AAFFFFFF</textcolor>
                     <align>center</align>
                     <label>$INFO[Window().Property(umbrella.plot)]</label>
-		    <scroll>true</scroll>
+					<scroll>true</scroll>
                 </control>
             </control>
 
@@ -233,6 +233,26 @@
 						<texture colordiffuse="$INFO[Window().Property(umbrella.gdrivecolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
 						<visible>String.Contains(ListItem.Property(umbrella.provider),GDRIVE)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
 					</control>
+					<control type="image">
+						<description>Quality Icon Furk</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.furkcolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),FURK)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon File Pursuit</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.filepursuitcolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),FILEPURSUIT)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
+					</control>
 					<control type="label">
 						<description>Line1 link name</description>
 						<left>110</left>
@@ -338,6 +358,26 @@
 						<align>left</align>
 						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
 						<visible>String.Contains(ListItem.Property(umbrella.provider),GDRIVE)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon Furk</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),FURK)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon FilePursuit</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),FILEPURSUIT)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
 					</control>
 					<control type="label">
 						<description>Line1 link name</description>

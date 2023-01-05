@@ -395,6 +395,12 @@ def router(argv2):
 		elif action == "furk_UserFiles":
 			from resources.lib.debrid import furk
 			furk.Furk().user_files()
+		elif action == "furk_getApi":
+			from resources.lib.debrid import furk
+			furk.Furk().get_api()
+		elif action == "furk_clearApi":
+			from resources.lib.debrid import furk
+			furk.Furk().clear_api()
 
 	elif action and action.startswith('pm_'):
 		if action == 'pm_ServiceNavigator':
@@ -590,7 +596,7 @@ def router(argv2):
 			help.get(name)
 		elif action == 'tools_LanguageInvoker':
 			from resources.lib.modules import language_invoker
-			language_invoker.set_reuselanguageinvoker()
+			language_invoker.set_reuselanguageinvoker(fromSettings=name)
 		elif action == 'tools_toolNavigator':
 			from resources.lib.menus import navigator
 			navigator.Navigator().tools()

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-	Umbrella Add-on
+	Umbrella Add-on Modified by Umbrella 1/2/23 to use minidom instead of element tree. we adapt.
 """
 
-import xml.etree.ElementTree as ET
+#import xml.etree.ElementTree as ET
 from resources.lib.modules import control
-
+from xml.dom.minidom import parse as mdParse
 
 def clean_settings():
 	def _make_content(dict_object):
@@ -30,9 +30,13 @@ def clean_settings():
 		addon_dir = control.transPath(addon.getAddonInfo('path'))
 		profile_dir = control.transPath(addon.getAddonInfo('profile'))
 		active_settings_xml = control.joinPath(addon_dir, 'resources', 'settings.xml')
-		root = ET.parse(active_settings_xml).getroot()
-		for item in root.findall('./section/category/group/setting'):
-			setting_id = item.get('id')
+		root = mdParse(active_settings_xml) #minidom instead of element tree
+		curSettings = root.getElementsByTagName("setting") #minidom instead of element tree
+		#root = ET.parse(active_settings_xml).getroot()
+		#for item in root.findall('./section/category/group/setting'):
+		for item in curSettings: #minidom instead of element tree
+			#setting_id = item.get('id')
+			setting_id = item.getAttribute('id') #minidom instead of element tree
 			if setting_id:
 				active_settings.append(setting_id)
 		try:
@@ -40,12 +44,20 @@ def clean_settings():
 		except:
 			log_utils.log('[ plugin.video.umbrella ] - Error Accessing Settings.xml at Startup. Caught error and moving on.')
 			return control.notification(title=addon_name, message=32115)
-		root = ET.parse(settings_xml).getroot()
+		#root = ET.parse(settings_xml).getroot()
+		root = mdParse(settings_xml) #minidom instead of element tree
+		root = root.getElementsByTagName("setting") #minidom instead of element tree
 		for item in root:
 			dict_item = {}
-			setting_id = item.get('id')
-			setting_default = item.get('default')
-			setting_value = item.text
+			#setting_id = item.get('id')
+			#setting_default = item.get('default')
+			#setting_value = item.text
+			setting_id = item.getAttribute('id') #minidom instead of element tree
+			setting_default = item.getAttribute('default') #minidom instead of element tree
+			try:
+				setting_value = item.firstChild.data #minidom instead of element tree
+			except:
+				setting_value = None
 			dict_item['id'] = setting_id
 			if setting_value:
 				dict_item['value'] = setting_value
