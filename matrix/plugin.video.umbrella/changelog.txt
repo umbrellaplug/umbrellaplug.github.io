@@ -1,5 +1,6 @@
 
-[B][COLOR black]Update - v6.6.04 - Jan 4th, 2023[/COLOR][/B]
+[B][COLOR black]Update - v6.6.05 - Jan 5th, 2023[/COLOR][/B]
+--[FIX][I] Changed reuselanguageInvoker back to True by default due to complaints. Can be turned off in Tools or Settings: General[/I]
 --[FIX][I] Cloud Scrapers Fixed.[/I]
 --[FIX][I] Change source selection screen to build all colors properties before constructing the window.[/I]
 --[FIX][I] Adding cache in for MDBList and Simkl Lists. All cache for 6 hours.[/I]
@@ -12,7 +13,7 @@
 --[ENHANCEMENT][I] Moved reuselanguageInvoker setting to Settings: General.[/I]
 --[ENHANCEMENT][I] Added option to turn languageinvoker on and off directly from tools list.[/I]
 --[ENHANCEMENT][I] Added trending weekly and monthly in for Simkl, hidden by default.[/I]
---[ENHANCEMENT][I] Added color support for Furk and FilePursuit[/I]s
+--[ENHANCEMENT][I] Added color support for Furk and FilePursuit[/I]
 --[ENHANCEMENT][I] Changed provider colors to only show for added providers in sources.[/I]
 
 [B][COLOR black]Update - v6.6.03 - Dec 31st, 2022[/COLOR][/B]

@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.04">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.05">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
 		<import addon="context.umbrella" version="1.2.7"/>
@@ -14,7 +14,7 @@
 	<extension point="xbmc.service" library="service.py" start="startup"/>
 	<extension point="xbmc.python.module" library="resources/lib/"/>
 	<extension point="xbmc.addon.metadata">
-		<reuselanguageinvoker>false</reuselanguageinvoker>
+		<reuselanguageinvoker>true</reuselanguageinvoker>
 		<summary lang="en">[B]Umbrella[/B] - We do not host any of the contents streamed</summary>
 		<description lang="en">[B]Umbrella[/B][CR] This addon does not form part of the Kodi Media Centre. Please do not seek assistance with this addon from any of the Official Kodi Support Channels.[CR]The author does not host any of the content in this addon and takes no responsibility for content found. We do not know anything about a lab under Raccoon City.</description>
 		<platform>all</platform>
@@ -31,7 +31,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.6.04 - Jan 4th, 2023[/COLOR][/B]
+[B][COLOR black]Update - v6.6.05 - Jan 5th, 2023[/COLOR][/B]
+--[FIX][I] Changed reuselanguageInvoker back to True by default due to complaints. Can be turned off in Tools or Settings: General[/I]
 --[FIX][I] Cloud Scrapers Fixed.[/I]
 --[FIX][I] Change source selection screen to build all colors properties before constructing the window.[/I]
 --[FIX][I] Adding cache in for MDBList and Simkl Lists. All cache for 6 hours.[/I]
