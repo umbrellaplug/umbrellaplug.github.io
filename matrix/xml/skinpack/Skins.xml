@@ -3,26 +3,26 @@
     <skin id="1">
         <name>Umbrella</name>
         <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/umbrella.zip</url>
-        <image>https://imgur.com/a/UJ7ApFW</image>
+        <image>https://i.imgur.com/YMBlkY2.png</image>
     </skin>
     <skin id="2">
         <name>Umbrella-Maroon</name>
         <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/umbrella-maroon.zip</url>
-        <image>https://imgur.com/a/UJ7ApFW</image>
+        <image>https://i.imgur.com/k3Q4ypG.png</image>
     </skin>
     <skin id="3">
         <name>Exuary</name>
         <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/exuary.zip</url>
-        <image>https://imgur.com/a/UJ7ApFW</image>
+        <image>https://i.imgur.com/C1Kz83X.png</image>
     </skin>
     <skin id="3">
         <name>Exuary-Red</name>
         <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/exuary-red.zip</url>
-        <image>https://imgur.com/a/UJ7ApFW</image>
+        <image>https://i.imgur.com/yo3JwXx.png</image>
     </skin>
     <skin id="4">
         <name>Exodus</name>
         <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/exodus.zip</url>
-        <image>https://imgur.com/a/UJ7ApFW</image>
+        <image>https://i.imgur.com/uKKtIOM.png</image>
     </skin>
 </skins>
