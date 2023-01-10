@@ -25,39 +25,4 @@
         <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/exodus.zip</url>
         <image>https://i.imgur.com/uKKtIOM.png</image>
     </skin>
-    <skin id="6">
-        <name>UmbrellaV2</name>
-        <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/umbrellav2.zip</url>
-        <image>https://i.imgur.com/OFjU38K.png</image>
-    </skin>
-    <skin id="7">
-        <name>UmbrellaV2-Blue</name>
-        <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/umbrellav2-blue.zip</url>
-        <image>https://i.imgur.com/AVFAgOq.png</image>
-    </skin>
-    <skin id="8">
-        <name>UmbrellaV2-Green</name>
-        <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/umbrellav2-green.zip</url>
-        <image>https://i.imgur.com/3zjKhtP.png</image>
-    </skin>
-    <skin id="9">
-        <name>UmbrellaV2-Red</name>
-        <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/umbrellav2-red.zip</url>
-        <image>https://i.imgur.com/OFjU38K.png</image>
-    </skin>
-    <skin id="10">
-        <name>UmbrellaV2-Maroon</name>
-        <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/umbrellav2-maroon.zip</url>
-        <image>https://i.imgur.com/uvQACSR.png</image>
-    </skin>
-    <skin id="11">
-        <name>UmbrellaV2-Grey</name>
-        <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/umbrellav2-grey.zip</url>
-        <image>https://i.imgur.com/yPPjPWX.png</image>
-    </skin>
-    <skin id="12">
-        <name>UmbrellaV2-Exodus</name>
-        <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/umbrellav2-exodus.zip</url>
-        <image>https://i.imgur.com/9MIoNZ9.png</image>
-    </skin>
 </skins>
