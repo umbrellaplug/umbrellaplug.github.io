@@ -15,14 +15,49 @@
         <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/exuary.zip</url>
         <image>https://i.imgur.com/C1Kz83X.png</image>
     </skin>
-    <skin id="3">
+    <skin id="4">
         <name>Exuary-Red</name>
         <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/exuary-red.zip</url>
         <image>https://i.imgur.com/yo3JwXx.png</image>
     </skin>
-    <skin id="4">
+    <skin id="5">
         <name>Exodus</name>
         <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/exodus.zip</url>
         <image>https://i.imgur.com/uKKtIOM.png</image>
+    </skin>
+    <skin id="6">
+        <name>UmbrellaV2</name>
+        <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/umbrellav2.zip</url>
+        <image>https://i.imgur.com/OFjU38K.png</image>
+    </skin>
+    <skin id="7">
+        <name>UmbrellaV2-Blue</name>
+        <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/umbrellav2-blue.zip</url>
+        <image>https://i.imgur.com/OFjU38K.png</image>
+    </skin>
+    <skin id="8">
+        <name>UmbrellaV2-Green</name>
+        <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/umbrellav2-green.zip</url>
+        <image>https://i.imgur.com/OFjU38K.png</image>
+    </skin>
+    <skin id="9">
+        <name>UmbrellaV2-Red</name>
+        <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/umbrellav2-red.zip</url>
+        <image>https://i.imgur.com/OFjU38K.png</image>
+    </skin>
+    <skin id="10">
+        <name>UmbrellaV2-Maroon</name>
+        <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/umbrellav2-maroon.zip</url>
+        <image>https://i.imgur.com/OFjU38K.png</image>
+    </skin>
+    <skin id="11">
+        <name>UmbrellaV2-Grey</name>
+        <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/umbrellav2-grey.zip</url>
+        <image>https://i.imgur.com/OFjU38K.png</image>
+    </skin>
+    <skin id="12">
+        <name>UmbrellaV2-Exodus</name>
+        <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/umbrellav2-exodus.zip</url>
+        <image>https://i.imgur.com/OFjU38K.png</image>
     </skin>
 </skins>
