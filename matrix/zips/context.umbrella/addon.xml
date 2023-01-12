@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="context.umbrella" name="Umbrella - Global Context Menu Items" provider-name="Umbrella" version="1.2.7">
+<addon id="context.umbrella" name="Umbrella - Global Context Menu Items" provider-name="Umbrella" version="1.2.8">
 	<requires>
 		<import addon="script.module.requests" version="2.19.1" />
 	</requires>
 	<extension point="kodi.context.item">
 		<menu id="kodi.core.main">
 			<item library="contextSettings.py">
-				<label>[B][COLOR blue]Umbrella[/COLOR][/B] - CM Settings</label>
+				<label>[B][COLOR $INFO[Window(home).Property(context.umbrella.highlightcolor)]]Umbrella[/COLOR][/B] - CM Settings</label>
 				<visible>
 					!String.IsEmpty(Window(home).Property(context.umbrella.settings)) +
 					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
@@ -14,7 +14,7 @@
 				</visible>
 			</item>
 			<item library="addtoLibrary.py">
-				<label>[B][COLOR blue]Umbrella[/COLOR][/B] - Add to Library</label>
+				<label>[B][COLOR $INFO[Window(home).Property(context.umbrella.highlightcolor)]]Umbrella[/COLOR][/B] - Add to Library</label>
 				<visible>
 					!String.IsEmpty(Window(home).Property(context.umbrella.addtoLibrary)) +
 					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
@@ -23,7 +23,7 @@
 				</visible>
 			</item>
 			<item library="traktManager.py">
-				<label>[B][COLOR blue]Umbrella[/COLOR][/B] - Trakt Manager</label>
+				<label>[B][COLOR $INFO[Window(home).Property(context.umbrella.highlightcolor)]]Umbrella[/COLOR][/B] - Trakt Manager</label>
 				<visible>
 					!String.IsEmpty(Window(home).Property(context.umbrella.traktManager)) +
 					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
@@ -32,7 +32,7 @@
 				</visible>
 			</item>
 			<item library="clearProviders.py">
-				<label>[B][COLOR blue]Umbrella[/COLOR][/B] - Clear Providers</label>
+				<label>[B][COLOR $INFO[Window(home).Property(context.umbrella.highlightcolor)]]Umbrella[/COLOR][/B] - Clear Providers</label>
 				<visible>
 					[!String.IsEmpty(Window(home).Property(context.umbrella.clearProviders)) +
 					String.StartsWith(ListItem.FolderPath,plugin://plugin.video.umbrella/?action=play) +
@@ -44,7 +44,7 @@
 				</visible>
 			</item>
 			<item library="clearBookmark.py">
-				<label>[B][COLOR blue]Umbrella[/COLOR][/B] - Clear Item Bookmark</label>
+				<label>[B][COLOR $INFO[Window(home).Property(context.umbrella.highlightcolor)]]Umbrella[/COLOR][/B] - Clear Item Bookmark</label>
 				<visible>
 					!String.IsEmpty(Window(home).Property(context.umbrella.clearBookmark)) +
 					String.StartsWith(ListItem.FolderPath,plugin://plugin.video.umbrella/?action=play) +
@@ -54,7 +54,7 @@
 				</visible>
 			</item>
 			<item library="rescrape.py">
-				<label>[B][COLOR blue]Umbrella[/COLOR][/B] - Rescrape Item</label>
+				<label>[B][COLOR $INFO[Window(home).Property(context.umbrella.highlightcolor)]]Umbrella[/COLOR][/B] - Rescrape Item</label>
 				<visible>
 					[!String.IsEmpty(Window(home).Property(context.umbrella.rescrape)) +
 					String.StartsWith(ListItem.FolderPath,plugin://plugin.video.umbrella/?action=play) +
@@ -63,7 +63,7 @@
 				</visible>
 			</item>
 			<item library="libRescrape.py">
-				<label>[B][COLOR blue]Umbrella[/COLOR][/B] - Rescrape Lib Item</label>
+				<label>[B][COLOR $INFO[Window(home).Property(context.umbrella.highlightcolor)]]Umbrella[/COLOR][/B] - Rescrape Lib Item</label>
 				<visible>
 					String.Contains(Container.FolderPath,videodb://) +
 					[String.Contains(Container.ListItem.Path,Window(home).Property(umbrella.movieLib.path)) | String.Contains(Container.ListItem.Path,Window(home).Property(umbrella.tvLib.path))] +
@@ -71,7 +71,7 @@
 				</visible>
 			</item>
 			<item library="playFromHere.py">
-				<label>[B][COLOR blue]Umbrella[/COLOR][/B] - Play from here</label>
+				<label>[B][COLOR $INFO[Window(home).Property(context.umbrella.highlightcolor)]]Umbrella[/COLOR][/B] - Play from here</label>
 				<visible>
 					!String.IsEmpty(Window(home).Property(context.umbrella.playFromHere)) +
 					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
@@ -80,7 +80,7 @@
 				</visible>
 			</item>
 			<item library="autoPlay.py">
-				<label>[B][COLOR blue]Umbrella[/COLOR][/B] - Auto Play</label>
+				<label>[B][COLOR $INFO[Window(home).Property(context.umbrella.highlightcolor)]]Umbrella[/COLOR][/B] - Auto Play</label>
 				<visible>
 					String.IsEmpty(Window(home).Property(umbrella.autoPlay.enabled)) +
 					!String.IsEmpty(Window(home).Property(context.umbrella.autoPlay)) +
@@ -90,7 +90,7 @@
 				</visible>
 			</item>
 			<item library="sourceSelect.py">
-				<label>[B][COLOR blue]Umbrella[/COLOR][/B] - Source Select</label>
+				<label>[B][COLOR $INFO[Window(home).Property(context.umbrella.highlightcolor)]]Umbrella[/COLOR][/B] - Source Select</label>
 				<visible>
 					!String.IsEmpty(Window(home).Property(umbrella.autoPlay.enabled)) +
 					!String.IsEmpty(Window(home).Property(context.umbrella.sourceSelect)) +
@@ -100,7 +100,7 @@
 				</visible>
 			</item>
 			<item library="findSimilar.py">
-				<label>[B][COLOR blue]Umbrella[/COLOR][/B] - Find Similar</label>
+				<label>[B][COLOR $INFO[Window(home).Property(context.umbrella.highlightcolor)]]Umbrella[/COLOR][/B] - Find Similar</label>
 				<visible>
 					!String.IsEmpty(Window(home).Property(context.umbrella.findSimilar)) +
 					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
@@ -109,7 +109,7 @@
 				</visible>
 			</item>
 			<item library="browseSeries.py">
-				<label>[B][COLOR blue]Umbrella[/COLOR][/B] - Browse Series</label>
+				<label>[B][COLOR $INFO[Window(home).Property(context.umbrella.highlightcolor)]]Umbrella[/COLOR][/B] - Browse Series</label>
 				<visible>
 					!String.IsEmpty(Window(home).Property(context.umbrella.browseSeries)) +
 					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
@@ -118,7 +118,7 @@
 				</visible>
 			</item>
 			<item library="browseEpisodes.py">
-				<label>[B][COLOR blue]Umbrella[/COLOR][/B] - Browse Episodes</label>
+				<label>[B][COLOR $INFO[Window(home).Property(context.umbrella.highlightcolor)]]Umbrella[/COLOR][/B] - Browse Episodes</label>
 				<visible>
 					!String.IsEmpty(Window(home).Property(context.umbrella.browseEpisodes)) +
 					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
@@ -144,8 +144,8 @@
 			<screenshot></screenshot>
 		</assets>
 		<news>
-[B][COLOR red]Update - v1.2.7 - Sept 1st, 2022[/COLOR][/B]
-[COLOR yellow]--[/COLOR][I] Changed to new settings format.[/I]
+[B][COLOR red]Update - v1.2.8 - Jan 9th, 2022[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I] Changed to allow highlight color to be used for context.[/I]
 		</news>
 	</extension>
 </addon>

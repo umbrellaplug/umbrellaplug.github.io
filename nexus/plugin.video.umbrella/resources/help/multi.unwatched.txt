@@ -1,0 +1,6 @@
+
+This option allows showing the unwatched count for multi episode lists.  However to do so means
+tricking kodi into thinking the list items are TVShow items. Skins display this a bit differently from
+one to another, and some labels may not display.  The skin may also show different content
+depending on the view type chosen for that skin.  It's best to test this option with your skin and
+view type chosen.

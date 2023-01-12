@@ -17,11 +17,38 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition on="property" name="InfoBool">true</condition>
+							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 					</dependencies>
 					<control type="list" format="string">
 						<heading>32311</heading>
+					</control>
+				</setting>
+				<setting id="skinpackicons" type="string" label="32311" help="">
+					<level>0</level>
+					<default>Umbrella</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_iconPack)</data>
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="skin.pack" type="string" label="32311" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_iconPack)</data>
+						<close>true</close>
 					</control>
 				</setting>
 				<setting id="icon.logos" type="string" label="40033" help="">
@@ -73,7 +100,7 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="!is" setting="trakt.isauthed"/>
+							<condition operator="is" setting="trakt.isauthed"/>
 						</dependency>
 					</dependencies>
 					<control type="spinner" format="string"/>
@@ -88,7 +115,7 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="trakt.isauthed"/>
+							<condition operator="!is" setting="trakt.isauthed"/>
 						</dependency>
 					</dependencies>
 					<control type="spinner" format="string"/>
@@ -748,7 +775,9 @@
 					<control type="toggle"/>
 				</setting>
 			</group>
-			<group id="2" label="32001">
+		</category>
+		<category id="navigation(movies)" label="40364" help="40366">
+			<group id="1" label="32001">
 				<setting id="navi.movie.imdb.intheater" type="boolean" label="32421" help="">
 					<level>0</level>
 					<default>true</default>
@@ -820,6 +849,11 @@
 					<control type="toggle"/>
 				</setting>
 				<setting id="navi.movie.trakt.trending" type="boolean" label="32443" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="navi.movie.trakt.trendingrecent" type="boolean" label="32443" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
@@ -960,7 +994,9 @@
 					<control type="toggle"/>
 				</setting>
 			</group>
-			<group id="3" label="32002">
+		</category>
+		<category id="navigation(tvshows)" label="40365" help="40367">
+			<group id="1" label="32002">
 				<setting id="navi.originals" type="boolean" label="40069" help="">
 					<level>0</level>
 					<default>false</default>
@@ -992,6 +1028,11 @@
 					<control type="toggle"/>
 				</setting>
 				<setting id="navi.tv.trakt.trending" type="boolean" label="32443" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="navi.tv.trakt.trendingrecent" type="boolean" label="40388" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
@@ -1369,7 +1410,7 @@
 					<constraints>
 						<minimum>30</minimum>
 						<maximum>100</maximum>
-						<step>5</step>
+						<step>1</step>
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
@@ -1422,7 +1463,7 @@
 					<constraints>
 						<minimum>30</minimum>
 						<maximum>100</maximum>
-						<step>5</step>
+						<step>1</step>
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
@@ -3136,6 +3177,12 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="sources.backbutton" type="boolean" label="40387" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				
 			</group>
 		</category>
 		<category id="trakt" label="32315" help="40189">
@@ -4269,7 +4316,19 @@
 					<control type="button" format="action"/>
 				</setting>
 			</group>
-			<group id="4" label="40196">
+		</category>
+		<category id="Accounts(Other)" label="40362" help="40191">
+			<group id="1" label="40196">
+				<setting id="plex.enable" type="boolean" label="32081" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="plex.token"/>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
 				<setting id="plex.token" type="string" label="40197" help="">
 					<level>0</level>
 					<default/>
@@ -4278,6 +4337,9 @@
 					</constraints>
 					<dependencies>
 						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+						<dependency type="visible">
 							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 					</dependencies>
@@ -4297,7 +4359,7 @@
 							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 						<dependency type="visible">
-							<condition operator="!is" setting="plex.token"/>
+							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 					</dependencies>
 					<control type="edit" format="string">
@@ -4316,67 +4378,11 @@
 							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 						<dependency type="visible">
-							<condition operator="!is" setting="plex.token"/>
+							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 					</dependencies>
 					<control type="edit" format="string">
 						<heading>40199</heading>
-						<hidden>true</hidden>
-					</control>
-				</setting>
-				<setting id="plexshare.sourceTitle" type="string" label="40200" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="enable">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-						<dependency type="visible">
-							<condition operator="!is" setting="plex.token"/>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>40200</heading>
-					</control>
-				</setting>
-				<setting id="plexshare.accessToken" type="string" label="40201" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="enable">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-						<dependency type="visible">
-							<condition operator="!is" setting="plex.token"/>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>40201</heading>
-						<hidden>true</hidden>
-					</control>
-				</setting>
-				<setting id="plexshare.url" type="string" label="40202" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="enable">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-						<dependency type="visible">
-							<condition operator="!is" setting="plex.token"/>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>40202</heading>
 						<hidden>true</hidden>
 					</control>
 				</setting>
@@ -4393,7 +4399,10 @@
 							<condition on="property" name="InfoBool">true</condition>
 						</dependency>
 						<dependency type="visible">
-							<condition operator="!is" setting="plexshare.accessToken"/>
+							<and>
+								<condition operator="!is" setting="plex.token"/>
+								<condition operator="is" setting="plex.enable">true</condition>
+							</and>
 						</dependency>
 					</dependencies>
 					<control type="slider" format="integer">
@@ -4416,7 +4425,7 @@
 					</control>
 				</setting>
 			</group>
-			<group id="5" label="32327">
+			<group id="2" label="32327">
 				<setting id="easynews.enable" type="boolean" label="32081" help="">
 					<level>0</level>
 					<default>true</default>
@@ -4437,6 +4446,12 @@
 						<dependency type="enable">
 							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="easynews.user"/>
+								<condition operator="is" setting="easynews.enable">true</condition>
+							</and>
+						</dependency>
 					</dependencies>
 					<control type="edit" format="string">
 						<heading>40006</heading>
@@ -4451,7 +4466,12 @@
 					<dependencies>
 						<dependency type="enable">
 							<condition on="property" name="InfoBool">false</condition>
-							<condition operator="!is" setting="easynews.password"/>
+						</dependency>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="easynews.user"/>
+								<condition operator="is" setting="easynews.enable">true</condition>
+							</and>
 						</dependency>
 					</dependencies>
 					<control type="edit" format="string">
@@ -4472,7 +4492,10 @@
 							<condition on="property" name="InfoBool">true</condition>
 						</dependency>
 						<dependency type="visible">
-							<condition operator="!is" setting="easynews.password"/>
+							<and>
+								<condition operator="!is" setting="easynews.user"/>
+								<condition operator="is" setting="easynews.enable">true</condition>
+							</and>
 						</dependency>
 					</dependencies>
 					<control type="slider" format="integer">
@@ -4495,7 +4518,17 @@
 					</control>
 				</setting>
 			</group>
-			<group id="6" label="40203">
+			<group id="3" label="40203">
+				<setting id="filepursuit.enable" type="boolean" label="32081" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="filepursuit.api"/>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
 				<setting id="filepursuit.api" type="string" label="32309" help="">
 					<level>0</level>
 					<default/>
@@ -4505,6 +4538,9 @@
 					<dependencies>
 						<dependency type="enable">
 							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+						<dependency type="visible">
+							<condition operator="is" setting="filepursuit.enable">true</condition>
 						</dependency>
 					</dependencies>
 					<control type="edit" format="string">
@@ -4524,7 +4560,10 @@
 							<condition on="property" name="InfoBool">true</condition>
 						</dependency>
 						<dependency type="visible">
-							<condition operator="!is" setting="filepursuit.api"/>
+							<and>
+								<condition operator="!is" setting="filepursuit.api"/>
+								<condition operator="is" setting="filepursuit.enable">true</condition>
+							</and>
 						</dependency>
 					</dependencies>
 					<control type="slider" format="integer">
@@ -4547,7 +4586,12 @@
 					</control>
 				</setting>
 			</group>
-			<group id="7" label="40204">
+			<group id="4" label="40204">
+				<setting id="furk.enable" type="boolean" label="32081" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
 				<setting id="furk.user_name" type="string" label="32126" help="">
 					<level>0</level>
 					<default/>
@@ -4557,6 +4601,12 @@
 					<dependencies>
 						<dependency type="enable">
 							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="furk.user_name"/>
+								<condition operator="is" setting="furk.enable">true</condition>
+							</and>
 						</dependency>
 					</dependencies>
 					<control type="edit" format="string">
@@ -4574,12 +4624,11 @@
 							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 						<dependency type="visible">
-							<condition on="property" name="InfoBool"/>
+							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 					</dependencies>
 					<control type="edit" format="string">
 						<heading>32127</heading>
-						<hidden>true</hidden>
 					</control>
 				</setting>
 				<setting id="furk.api" type="string" label="32128" help="">
@@ -4593,7 +4642,7 @@
 							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 						<dependency type="visible">
-							<condition operator="!is" setting="furk.user_name"/>
+							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 					</dependencies>
 					<control type="edit" format="string">
@@ -4610,53 +4659,22 @@
 					</constraints>
 					<dependencies>
 						<dependency type="enable">
-							<condition on="property" name="InfoBool">true</condition>
+							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 						<dependency type="visible">
-							<condition operator="!is" setting="furk.user_name"/>
+							<and>
+								<condition operator="!is" setting="furk.user_name"/>
+								<condition operator="is" setting="furk.enable">true</condition>
+							</and>
 						</dependency>
 					</dependencies>
 					<control type="slider" format="integer">
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="furkgetApi" type="action" label="40360" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=furk_getApi)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">true</condition>
-							<condition operator="!is" setting="furk.user_name"/>
-							<condition operator="is" setting="furk.api"/>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action">
-						<close>true</close>
-					</control>
-				</setting>
-				<setting id="furkclearApi" type="action" label="40361" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=furk_clearApi)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">true</condition>
-							<condition operator="!is" setting="furk.user_name"/>
-							<condition operator="!is" setting="furk.api"/>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action">
-						<close>true</close>
-					</control>
-				</setting>
 				<setting id="cocoScraperSettingsFurk" type="action" label="40134" help="">
 					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_cocoScrapersSettings&amp;query=Furk)</data>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_cocoScrapersSettings)</data>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
@@ -4670,7 +4688,17 @@
 					</control>
 				</setting>
 			</group>
-			<group id="8" label="40205">
+			<group id="5" label="40205">
+				<setting id="gdrive.enable" type="boolean" label="32081" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="gdrive.cloudflare_url"/>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
 				<setting id="gdrive.cloudflare_url" type="string" label="40206" help="">
 					<level>0</level>
 					<default/>
@@ -4680,6 +4708,9 @@
 					<dependencies>
 						<dependency type="enable">
 							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+						<dependency type="visible">
+							<condition operator="is" setting="gdrive.enable">true</condition>
 						</dependency>
 					</dependencies>
 					<control type="edit" format="string">
@@ -4699,7 +4730,10 @@
 							<condition on="property" name="InfoBool">true</condition>
 						</dependency>
 						<dependency type="visible">
-							<condition operator="!is" setting="gdrive.cloudflare_url"/>
+							<and>
+								<condition operator="!is" setting="gdrive.cloudflare_url"/>
+								<condition operator="is" setting="gdrive.enable">true</condition>
+							</and>
 						</dependency>
 					</dependencies>
 					<control type="slider" format="integer">
@@ -4714,7 +4748,7 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="gdrive.priority"/>
+							<condition on="property" name="InfoBool">true</condition>
 						</dependency>
 					</dependencies>
 					<control type="button" format="action">
@@ -5381,35 +5415,178 @@
 				</setting>
 			</group>
 		</category>
-		<category id="providers" label="32345" help="40195">
-			<group id="1">
-				<setting id="cocoScraperSettingsProvider" type="action" label="32651" help="">
+		<category id="cache" label="40363" help="40368">
+			<group id="1" label="32034">
+				<setting id="cache.imdblist" type="integer" label="40369" help="">
 					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_cocoScrapersSettings&amp;opensettings=true&amp;query=1.0)</data>
+					<default>168</default>
 					<constraints>
-						<allowempty>true</allowempty>
+						<minimum>0</minimum>
+						<maximum>720</maximum>
 					</constraints>
-					<control type="button" format="action">
-						<close>true</close>
+					<control type="slider" format="integer">
+						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="showHelpProviders" type="action" label="32137" help="">
+			</group>
+			<group id="2" label="40166">
+				<setting id="cache.tmdblist" type="integer" label="40370" help="">
 					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=Providers)</data>
+					<default>96</default>
 					<constraints>
-						<allowempty>true</allowempty>
+						<minimum>0</minimum>
+						<maximum>720</maximum>
 					</constraints>
-					<control type="button" format="action"/>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="cache.tmdbcollection" type="integer" label="40371" help="">
+					<level>0</level>
+					<default>96</default>
+					<constraints>
+						<minimum>0</minimum>
+						<maximum>720</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="cache.tmdbrecentday" type="integer" label="40372" help="">
+					<level>0</level>
+					<default>12</default>
+					<constraints>
+						<minimum>0</minimum>
+						<maximum>720</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="cache.tmdbrecentweek" type="integer" label="40373" help="">
+					<level>0</level>
+					<default>24</default>
+					<constraints>
+						<minimum>0</minimum>
+						<maximum>720</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
 				</setting>
 			</group>
-			<group id="2" label="40067">
-				<setting id="cacheClearSourcesButton" type="action" label="32611" help="">
+			<group id="3" label="32315">
+				<setting id="cache.traktunfinished" type="integer" label="40375" help="">
 					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=cache_clearSources)</data>
+					<default>720</default>
 					<constraints>
-						<allowempty>true</allowempty>
+						<minimum>0</minimum>
+						<maximum>720</maximum>
 					</constraints>
-					<control type="button" format="action"/>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="cache.traktprogress" type="integer" label="40376" help="">
+					<level>0</level>
+					<default>12</default>
+					<constraints>
+						<minimum>0</minimum>
+						<maximum>720</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="cache.trakthistory" type="integer" label="40377" help="">
+					<level>0</level>
+					<default>24</default>
+					<constraints>
+						<minimum>0</minimum>
+						<maximum>720</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="cache.traktpopular" type="integer" label="40378" help="">
+					<level>0</level>
+					<default>168</default>
+					<constraints>
+						<minimum>0</minimum>
+						<maximum>720</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="cache.trakttrending" type="integer" label="40379" help="">
+					<level>0</level>
+					<default>48</default>
+					<constraints>
+						<minimum>0</minimum>
+						<maximum>720</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="cache.traktother" type="integer" label="40380" help="">
+					<level>0</level>
+					<default>24</default>
+					<constraints>
+						<minimum>0</minimum>
+						<maximum>720</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="cache.traktuserlist" type="integer" label="40381" help="">
+					<level>0</level>
+					<default>48</default>
+					<constraints>
+						<minimum>0</minimum>
+						<maximum>720</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+			</group>
+			<group id="4" label="40385">
+				<setting id="cache.mdblist" type="integer" label="40382" help="">
+					<level>0</level>
+					<default>24</default>
+					<constraints>
+						<minimum>0</minimum>
+						<maximum>720</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="cache.simkl" type="integer" label="40383" help="">
+					<level>0</level>
+					<default>24</default>
+					<constraints>
+						<minimum>0</minimum>
+						<maximum>720</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="cache.providers" type="integer" label="40384" help="">
+					<level>0</level>
+					<default>48</default>
+					<constraints>
+						<minimum>0</minimum>
+						<maximum>720</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
 				</setting>
 			</group>
 		</category>

@@ -1,0 +1,6 @@
+
+[B].m2ts[/B] files can be very large in size between the number of folders and video files.  This setting allows
+you to ignore them in your cloud storage.  This should result in a speed increase should they exist and
+you chose to ignore them.  Note: if you do not keep .m2ts files in your cloud this setting will have no
+effect.  If you choose to keep and view them the performance hit per debrid provider varies.  AD and
+PM is very slight while RD seems to take the biggest hit at 1-2second increase in scrape time.

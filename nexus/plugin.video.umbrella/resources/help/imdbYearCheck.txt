@@ -1,0 +1,9 @@
+
+This will use [B]IMDb[/B] for a simple year check of the Movie title being scraped.  At times the year is off
+by 1 when comparing meta from [B]"IMDb, TMDb, or Trakt"[/B].  Scene releases tend to favor the meta
+from [B]IMDb[/B].  One such case is the movie [B]"Oculus"[/B].  [B]IMDb[/B] lists the year as 2013 while [B]TMDb[/B] has it
+as 2014, and [B]Trakt[/B] generally indexes meta from [B]TMDb[/B].  Accurate links are returned when scraping
+the year based on [B]IMDb[/B] meta.  There are rare acceptations to this for a title like [B]"Dreamland"[/B].
+[B]IMDb[/B] lists the year as 2019 but [B]TMDb[/B] lists the year as 2020.  A different movie with that same title
+was also released in 2019 so this further complicates things.  In this case using the [B]IMDb[/B] year check
+produced incorrect results and torrents seemed to favor the 2020 year.
