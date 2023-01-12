@@ -28,10 +28,7 @@ class Collections:
 		self.page_limit = getSetting('page.item.limit')
 		self.enable_fanarttv = getSetting('enable.fanarttv') == 'true'
 		self.prefer_tmdbArt = getSetting('prefer.tmdbArt') == 'true'
-		if control.getKodiVersion() == 20:
-			self.unairedcolor = getSetting('movie.unaired.identify')
-		else:
-			self.unairedcolor = control.getColor(getSetting('movie.unaired.identify'))
+		self.unairedcolor = control.getColor(getSetting('movie.unaired.identify'))
 		self.highlight_color = control.getHighlightColor()
 		self.date_time = datetime.now()
 		self.today_date = (self.date_time).strftime('%Y-%m-%d')

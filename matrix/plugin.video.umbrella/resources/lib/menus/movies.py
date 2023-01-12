@@ -48,10 +48,7 @@ class Movies:
 		self.user = str(self.tmdb_key)
 		self.enable_fanarttv = getSetting('enable.fanarttv') == 'true'
 		self.prefer_tmdbArt = getSetting('prefer.tmdbArt') == 'true'
-		if control.getKodiVersion() == 20:
-			self.unairedcolor = getSetting('movie.unaired.identify')
-		else:
-			self.unairedcolor = control.getColor(getSetting('movie.unaired.identify'))
+		self.unairedcolor = control.getColor(getSetting('movie.unaired.identify'))
 		self.useContainerTitles = getSetting('enable.containerTitles') == 'true'
 		self.highlight_color = control.getHighlightColor()
 		self.tmdb_link = 'https://api.themoviedb.org'

@@ -20,7 +20,6 @@ class SourceResultsXML(BaseDialog):
 		self.uncached = kwargs.get('uncached')
 		self.total_results = str(len(self.results))
 		self.meta = kwargs.get('meta')
-		self.kodiV = getKodiVersion()
 		self.defaultbg = addonFanart()
 		self.dnlds_enabled = True if getSetting('downloads') == 'true' and (getSetting('movie.download.path') != '' or getSetting('tv.download.path') != '') else False
 		self.useProviderColors = True if kwargs.get('colors')['useproviders'] == True else False
@@ -289,10 +288,7 @@ class SourceResultsXML(BaseDialog):
 			else: self.setProperty('umbrella.duration', 'NA ')
 			self.setProperty('umbrella.total_results', self.total_results)
 			self.setProperty('umbrella.highlight.color', getHighlightColor())
-			if self.kodiV == 20:
-				self.setProperty('umbrella.dialog.color', getSetting('scraper.dialog.color'))
-			else:
-				self.setProperty('umbrella.dialog.color', str(getColor(getSetting('scraper.dialog.color'))))
+			self.setProperty('umbrella.dialog.color', str(getColor(getSetting('scraper.dialog.color'))))
 			self.setProperty('umbrella.fanartdefault', addonFanart())
 			if getSetting('sources.select.fanartBG') == 'true':
 				self.setProperty('umbrella.fanartBG', '1')

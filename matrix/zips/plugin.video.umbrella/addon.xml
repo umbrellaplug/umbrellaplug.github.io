@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.06">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.07">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
 		<import addon="context.umbrella" version="1.2.8"/>
@@ -31,7 +31,9 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.6.06 - Jan 9th, 2023[/COLOR][/B]
+[B][COLOR black]Update - v6.6.07 - Jan 12th, 2023[/COLOR][/B]
+--[PATCH][I] Pushed update to force Nexus users back to Matrix version.[/I]
+--[PATCH][I] Colors were forced back to Kodi 19 version due to most skins not being compatible with colorbutton setting in Nexus.[/I]
 --[FIX][I] Enable Disable Toggle Added for Plex, Furk, FilePursuit, and GDrive[/I]
 --[ENHANCEMENT][I] Settings changes due to exceeding max amount of settings allowed in a category.[/I]
 --[ENHANCEMENT][I] Addon has too many settings. A change in settings is overdue.[/I]

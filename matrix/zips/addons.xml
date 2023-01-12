@@ -148,7 +148,7 @@
 [COLOR yellow]--[/COLOR][I] Changed to allow highlight color to be used for context.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.06">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.07">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.8" />
@@ -181,7 +181,9 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.6.06 - Jan 9th, 2023[/COLOR][/B]
+[B][COLOR black]Update - v6.6.07 - Jan 12th, 2023[/COLOR][/B]
+--[PATCH][I] Pushed update to force Nexus users back to Matrix version.[/I]
+--[PATCH][I] Colors were forced back to Kodi 19 version due to most skins not being compatible with colorbutton setting in Nexus.[/I]
 --[FIX][I] Enable Disable Toggle Added for Plex, Furk, FilePursuit, and GDrive[/I]
 --[ENHANCEMENT][I] Settings changes due to exceeding max amount of settings allowed in a category.[/I]
 --[ENHANCEMENT][I] Addon has too many settings. A change in settings is overdue.[/I]
@@ -274,17 +276,12 @@
     <disclaimer lang="vi_VN">Plugin này không được xác nhận bởi Google</disclaimer>
     <disclaimer lang="zh_TW">此附加元件未由Google支持</disclaimer>
   </extension>
-</addon><addon id="repository.umbrella" name="Umbrella Repository" version="2.1.45" provider-name="Umbrella">
+</addon><addon id="repository.umbrella" name="Umbrella Repository" version="2.1.46" provider-name="Umbrella">
     <extension point="xbmc.addon.repository" name="Umbrella Repository">
-        <dir minversion="18.9.701" maxversion="19.9.9">
+        <dir minversion="18.9.701">
             <info compressed="false">https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/zips/addons.xml</info>
             <checksum>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/zips/addons.xml.md5</checksum>
             <datadir zip="true">https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/zips/</datadir>
-        </dir>
-		<dir minversion="20.0.0">
-            <info compressed="false">https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/nexus/zips/addons.xml</info>
-            <checksum>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/nexus/zips/addons.xml.md5</checksum>
-            <datadir zip="true">https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/nexus/zips/</datadir>
         </dir>
         <dir>
             <info compressed="false">https://raw.githubusercontent.com/CocoJoe2411/repository.cocoscrapers/master/zips/addons.xml</info>

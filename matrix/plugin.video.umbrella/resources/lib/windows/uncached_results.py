@@ -19,7 +19,6 @@ class UncachedResultsXML(BaseDialog):
 		self.total_results = str(len(self.uncached))
 		self.meta = kwargs.get('meta')
 		self.defaultbg = addonFanart()
-		self.kodiV = getKodiVersion()
 		self.useProviderColors = True if kwargs.get('colors')['useproviders'] == "True" else False
 		self.colors = kwargs.get('colors')
 		self.sourceHighlightColor = self.colors['defaultcolor']
@@ -235,10 +234,7 @@ class UncachedResultsXML(BaseDialog):
 			else: self.setProperty('umbrella.duration', 'NA ')
 			self.setProperty('umbrella.total_results', self.total_results)
 			self.setProperty('umbrella.highlight.color', getSourceHighlightColor())
-			if self.kodiV == 20:
-				self.setProperty('umbrella.dialog.color', getSetting('scraper.dialog.color'))
-			else:
-				self.setProperty('umbrella.dialog.color', str(getColor(getSetting('scraper.dialog.color'))))
+			self.setProperty('umbrella.dialog.color', str(getColor(getSetting('scraper.dialog.color'))))
 			if getSetting('sources.select.fanartBG') == 'true':
 				self.setProperty('umbrella.fanartBG', '1')
 			else:
