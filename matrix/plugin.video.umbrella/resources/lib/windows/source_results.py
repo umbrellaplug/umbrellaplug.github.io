@@ -5,7 +5,7 @@
 
 from json import dumps as jsdumps
 from urllib.parse import quote_plus
-from resources.lib.modules.control import joinPath, transPath, dialog, getColor,getHighlightColor, getProviderHighlightColor, getSourceHighlightColor, notification, addonFanart, setting as getSetting, getKodiVersion
+from resources.lib.modules.control import joinPath, transPath, dialog, getColor,getHighlightColor, getProviderHighlightColor, getSourceHighlightColor, notification, addonFanart, setting as getSetting
 from resources.lib.modules.source_utils import getFileType
 from resources.lib.modules import tools
 from resources.lib.windows.base import BaseDialog

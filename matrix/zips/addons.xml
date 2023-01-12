@@ -148,7 +148,7 @@
 [COLOR yellow]--[/COLOR][I] Changed to allow highlight color to be used for context.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.07">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.08">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.8" />
@@ -164,7 +164,7 @@
 	<extension point="xbmc.service" library="service.py" start="startup" />
 	<extension point="xbmc.python.module" library="resources/lib/" />
 	<extension point="xbmc.addon.metadata">
-		<reuselanguageinvoker>true</reuselanguageinvoker>
+		<reuselanguageinvoker>false</reuselanguageinvoker>
 		<summary lang="en">[B]Umbrella[/B] - We do not host any of the contents streamed</summary>
 		<description lang="en">[B]Umbrella[/B][CR] This addon does not form part of the Kodi Media Centre. Please do not seek assistance with this addon from any of the Official Kodi Support Channels.[CR]The author does not host any of the content in this addon and takes no responsibility for content found. We do not know anything about a lab under Raccoon City.</description>
 		<platform>all</platform>
@@ -181,7 +181,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.6.07 - Jan 12th, 2023[/COLOR][/B]
+[B][COLOR black]Update - v6.6.08 - Jan 12th, 2023[/COLOR][/B]
+--[PATCH][I] One more fix for colors on Nexus. Sorry.[/I]
 --[PATCH][I] Pushed update to force Nexus users back to Matrix version.[/I]
 --[PATCH][I] Colors were forced back to Kodi 19 version due to most skins not being compatible with colorbutton setting in Nexus.[/I]
 --[FIX][I] Enable Disable Toggle Added for Plex, Furk, FilePursuit, and GDrive[/I]

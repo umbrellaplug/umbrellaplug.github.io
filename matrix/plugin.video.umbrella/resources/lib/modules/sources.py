@@ -1094,10 +1094,7 @@ class Sources:
 				
 				src_provider = items[i]['debrid'] if items[i].get('debrid') else ('%s - %s' % (items[i]['source'], items[i]['provider']))
 				if progressDialog != control.progressDialog and progressDialog != control.progressDialogBG:
-					if control.getKodiVersion() == 20:
-						sdc = getSetting('scraper.dialog.color')
-					else:
-						sdc = control.getColor(getSetting('scraper.dialog.color'))
+					sdc = control.getColor(getSetting('scraper.dialog.color'))
 					label = '[B][COLOR %s]%s[CR]%02d.)%s[CR]%s[/COLOR][/B]' % (sdc, src_provider.upper(), i+1, items[i]['name'], str(round(items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
 				else:
 					label = '[COLOR %s]%s[CR]%02d.)%s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), i+1, items[i]['name'], str(round(items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times

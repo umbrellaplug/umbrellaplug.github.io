@@ -1,4 +1,5 @@
-[B][COLOR black]Update - v6.6.07 - Jan 12th, 2023[/COLOR][/B]
+[B][COLOR black]Update - v6.6.08 - Jan 12th, 2023[/COLOR][/B]
+--[PATCH][I] One more fix for colors on Nexus. Sorry.[/I]
 --[PATCH][I] Pushed update to force Nexus users back to Matrix version.[/I]
 --[PATCH][I] Colors were forced back to Kodi 19 version due to most skins not being compatible with colorbutton setting in Nexus.[/I]
 --[FIX][I] Enable Disable Toggle Added for Plex, Furk, FilePursuit, and GDrive[/I]
