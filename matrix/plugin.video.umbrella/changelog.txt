@@ -1,3 +1,7 @@
+[B][COLOR black]Update - v6.6.09 - Jan 13th, 2023[/COLOR][/B]
+--[FIX][I] Added fix for searching shows with apostrophe in name with TMDb as provider.[/I]
+--[FIX][I] Quick patch for plexshares not being detected as a valid provider account[/I]
+
 [B][COLOR black]Update - v6.6.08 - Jan 12th, 2023[/COLOR][/B]
 --[PATCH][I] One more fix for colors on Nexus. Sorry.[/I]
 --[PATCH][I] Pushed update to force Nexus users back to Matrix version.[/I]

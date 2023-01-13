@@ -484,7 +484,15 @@ class TVshows(TMDb):
 	def tmdb_list(self, url):
 		if not url: return
 		try:
-			result = cache.get(self.get_request, self.tmdblist_hours, url % self.API_key)
+			if '%27' in url:
+				part1 = url.split('%s')[0]
+				part2 = self.API_key
+				part3 = url.split('%s')[1]
+				newurl = str(part1) + str(part2) + str(part3)
+			else:
+				newurl = url % self.API_key
+
+			result = cache.get(self.get_request, self.tmdblist_hours, newurl)
 			if result is None: return
 			if '404:NOT FOUND' in result: return result
 			items = result['results']
