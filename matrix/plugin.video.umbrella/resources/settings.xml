@@ -5381,6 +5381,22 @@
 						<heading>32357</heading>
 					</control>
 				</setting>
+				<setting id="subtitles.custompath" type="path" label="21366" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<writable>false</writable>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition operator="is" setting="subtitles">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="path">
+						<heading>21366</heading>
+					</control>
+				</setting>
 			</group>
 			<group id="3">
 				<setting id="subtitles.message1" type="string" label="32358" help="">
