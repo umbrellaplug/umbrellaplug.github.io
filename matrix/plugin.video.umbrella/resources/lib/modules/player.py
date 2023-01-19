@@ -749,8 +749,8 @@ class Subtitles:
 			content = base64.b64decode(content['data'][0]['data'])
 			content = gzip.GzipFile(fileobj=BytesIO(content)).read()
 			download_path = jsloads(control.jsonrpc('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"subtitles.custompath"}, "id":1}')).get('result').get('value')
-			download_path = 'special://subtitles/' if download_path is not '' else 'special://temp/'
-			subtitle = control.transPath('download_path')
+			download_path = 'special://subtitles/' if download_path != '' else 'special://temp/'
+			subtitle = control.transPath(download_path)
 			subtitle = control.joinPath(subtitle, 'TemporarySubs.%s.srt' % lang)
 			log_utils.log('subtitle file = %s' % subtitle, level=log_utils.LOGDEBUG)
 
