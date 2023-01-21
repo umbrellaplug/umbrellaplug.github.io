@@ -108,7 +108,6 @@ class MetaData:
         logger.log('Attempting to retrieve meta data for %s: %s %s %s %s' % (media_type, name, year, imdb_id, tmdb_id))
  
         meta = {}
-
         if imdb_id:
             imdb_id = utils.valid_imdb_id(imdb_id)
 
@@ -852,7 +851,6 @@ class MetaData:
             no movie meta info was found from tvdb because we should cache
             these "None found" entries otherwise we hit tvdb alot.
         '''      
-
         # Check to make sure we have api keys set before continuing
         if not self.tvdb_api_key:
             logger.log_error('*** Metahandlers does NOT come with API keys, developer must supply their own ***')
@@ -940,7 +938,7 @@ class MetaData:
                 meta['status'] = show.status
                 if show.actors:
                     for actor in show.actors:
-                        meta['cast'].append(actor)
+                        meta['meta_data']['cast'].append(actor)
                 meta['banner_url'] = show.banner_url
                 meta['cover_url'] = show.poster_url
                 meta['backdrop_url'] = show.fanart_url
@@ -1432,16 +1430,16 @@ class MetaData:
         Save episode data to local cache db.
         Args:
             meta (dict): episode data to be stored
-        '''      
+        '''
         if meta['imdb_id']:
-            sql_select = 'SELECT * FROM episode_meta WHERE imdb_id = "%s" AND season = %s AND episode = %s AND premiered = "%s" AND episode_id = "%s"'  % (meta['imdb_id'], meta['season'], meta['episode'], meta['premiered'], meta['episode_id'])
-            sql_delete = 'DELETE FROM episode_meta WHERE imdb_id = "%s" AND season = %s AND episode = %s AND premiered = "%s" AND episode_id = "%s"'  % (meta['imdb_id'], meta['season'], meta['episode'], meta['premiered'], meta['episode_id'])
+            sql_select = 'SELECT * FROM episode_meta WHERE imdb_id = "%s" AND season = %s AND episode = %s AND premiered = "%s" AND episode_id = "%s"'  % (meta['meta_data']['imdb_id'], meta['meta_data']['season'], meta['meta_data']['episode'], meta['meta_data']['premiered'], meta['meta_data']['episode_id'])
+            sql_delete = 'DELETE FROM episode_meta WHERE imdb_id = "%s" AND season = %s AND episode = %s AND premiered = "%s" AND episode_id = "%s"'  % (meta['meta_data']['imdb_id'], meta['meta_data']['season'], meta['meta_data']['episode'], meta['meta_data']['premiered'], meta['meta_data']['episode_id'])
         elif meta['tvdb_id']:
-            sql_select = 'SELECT * FROM episode_meta WHERE tvdb_id = "%s" AND season = %s AND episode = %s AND premiered = "%s" AND episode_id = "%s"'  % (meta['tvdb_id'], meta['season'], meta['episode'], meta['premiered'], meta['episode_id'])
-            sql_delete = 'DELETE FROM episode_meta WHERE tvdb_id = "%s" AND season = %s AND episode = %s AND premiered = "%s" AND episode_id = "%s"'  % (meta['tvdb_id'], meta['season'], meta['episode'], meta['premiered'], meta['episode_id'])
+            sql_select = 'SELECT * FROM episode_meta WHERE tvdb_id = "%s" AND season = %s AND episode = %s AND premiered = "%s" AND episode_id = "%s"'  % (meta['meta_data']['tvdb_id'], meta['meta_data']['season'], meta['meta_data']['episode'], meta['meta_data']['premiered'], meta['meta_data']['episode_id'])
+            sql_delete = 'DELETE FROM episode_meta WHERE tvdb_id = "%s" AND season = %s AND episode = %s AND premiered = "%s" AND episode_id = "%s"'  % (meta['meta_data']['tvdb_id'], meta['meta_data']['season'], meta['meta_data']['episode'], meta['meta_data']['premiered'], meta['meta_data']['episode_id'])
         else:         
-            sql_select = 'SELECT * FROM episode_meta WHERE title = "%s" AND season = %s AND episode = %s AND premiered = "%s" AND episode_id = "%s"'  % (utils.clean_string(meta['title'].lower()), meta['season'], meta['episode'], meta['premiered'], meta['episode_id'])
-            sql_delete = 'DELETE FROM episode_meta WHERE title = "%s" AND season = %s AND episode = %s AND premiered = "%s" AND episode_id = "%s"'  % (utils.clean_string(meta['title'].lower()), meta['season'], meta['episode'], meta['premiered'], meta['episode_id'])
+            sql_select = 'SELECT * FROM episode_meta WHERE title = "%s" AND season = %s AND episode = %s AND premiered = "%s" AND episode_id = "%s"'  % (utils.clean_string(meta['meta_data']['title'].lower()), meta['meta_data']['season'], meta['meta_data']['episode'], meta['meta_data']['premiered'], meta['meta_data']['episode_id'])
+            sql_delete = 'DELETE FROM episode_meta WHERE title = "%s" AND season = %s AND episode = %s AND premiered = "%s" AND episode_id = "%s"'  % (utils.clean_string(meta['meta_data']['title'].lower()), meta['meta_data']['season'], meta['meta_data']['episode'], meta['meta_data']['premiered'], meta['meta_data']['episode_id'])
         logger.log('Saving Episode Meta')
         logger.log('SQL Select: %s' % sql_select)
         
@@ -1453,9 +1451,9 @@ class MetaData:
         
         logger.log('Saving episode cache information: %s' % meta)
         sql_insert = self.__insert_from_dict('episode_meta', 13)
-        values = (meta['imdb_id'], meta['tvdb_id'], meta['episode_id'], meta['season'], 
-                            meta['episode'], meta['title'], meta['director'], meta['writer'], meta['plot'], 
-                            meta['rating'], meta['premiered'], meta['poster'], meta['overlay'])
+        values = (meta['meta_data']['imdb_id'], meta['meta_data']['tvdb_id'], meta['meta_data']['episode_id'], meta['meta_data']['season'], 
+                            meta['meta_data']['episode'], meta['meta_data']['title'], meta['meta_data']['director'], meta['meta_data']['writer'], meta['meta_data']['plot'], 
+                            meta['meta_data']['rating'], meta['meta_data']['premiered'], meta['meta_data']['poster'], meta['meta_data']['overlay'])
         logger.log('SQL INSERT: %s' % sql_insert)
         self.DB.insert(sql_insert, values)
 
