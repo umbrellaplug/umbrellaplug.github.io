@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<!-- <defaultcontrol>2050</defaultcontrol> -->
+	<controls>
+		<control type="image">
+			<description>background</description>
+			<left>0</left>
+			<top>0</top>
+			<width>1920</width>
+			<height>1080</height>
+			<texture>common/black.png</texture>
+		</control>
+
+		<control type="group" id="1">
+			<description>List Header</description>
+			<left>25</left>
+			<top>0</top>
+			<height>80</height>
+			<width min="0" max="1920">auto</width>
+			<control type="textbox">
+				<description>Remove column Label</description>
+				<left>5</left>
+				<top>110</top>
+				<width>110</width>
+				<height>40</height>
+				<font>font14</font>
+				<textcolor>white</textcolor>
+				<align>left</align>
+				<aligny>bottom</aligny>
+				<label>[COLOR $INFO[Window().Property(umbrella.highlight.color)]]Remove[/COLOR]</label>
+			</control>
+			<control type="textbox">
+				<description>Total Watch List Items Label</description>
+				<left>130</left>
+				<top>110</top>
+				<width>340</width>
+				<height>40</height>
+				<font>font14</font>
+				<textcolor>white</textcolor>
+				<align>left</align>
+				<aligny>bottom</aligny>
+				<label>[COLOR $INFO[Window().Property(umbrella.highlight.color)]]$INFO[Window().Property(umbrella.total_results)] Total Watch List Items[/COLOR]</label>
+			</control>
+
+			<control type="list" id="2050">
+				<description>Trakt WatchLIst</description>
+				<viewtype>list</viewtype>
+				<left>0</left>
+				<top>150</top>
+				<width>1350</width>
+				<height>800</height>
+				<onright>2051</onright>
+				<onleft>2052</onleft>
+				<onup>2050</onup>
+				<ondown>2050</ondown>
+				<scrolltime tween="sine">400</scrolltime>
+				<orientation>Vertical</orientation>
+				<itemlayout height="100" width="1325">
+					<control type="image">
+						<left>10</left>
+						<top>0</top>
+						<width>75</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>common/box2.png</texture>
+					</control>
+					<control type="image">
+						<left>25</left>
+						<top>0</top>
+						<width>50</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>common/selected2.png</texture>
+						<visible>!String.isEmpty(ListItem.Property(umbrella.isSelected))</visible>
+					</control>
+					<control type="label">
+						<description>Line1 tvshowtitle</description>
+						<left>110</left>
+						<top>15</top>
+						<width>1240</width>
+						<height>25</height>
+						<font>font13</font>
+						<textcolor>white</textcolor>
+						<align>left</align>
+						<aligny>bottom</aligny>
+						<label>[COLOR $INFO[Window().Property(umbrella.highlight.color)]][B]$INFO[ListItem.Property(umbrella.count)]  $INFO[ListItem.Property(umbrella.title)][/B][/COLOR]</label>
+					</control>
+					<control type="label">
+						<description>Line2 year-genre-mpaa</description>
+						<left>180</left>
+						<top>50</top>
+						<width>1170</width>
+						<height>25</height>
+						<font>font12</font>
+						<textcolor>white</textcolor>
+						<align>left</align>
+						<aligny>top</aligny>
+						<label>$INFO[ListItem.Property(umbrella.year)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.genre)]   [COLOR $INFO[Window().Property(umbrella.highlight.color)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.mpaa)]</label>
+					</control>
+				</itemlayout>
+
+				<focusedlayout height="100" width="1325">
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>1350</width>
+						<height>100</height>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/white.png</texture>
+					</control>
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>1350</width>
+						<height>100</height>
+						<texture colordiffuse="gainsboro">common/white.png</texture>
+						<visible>!Control.HasFocus(2050)</visible>
+					</control>
+					<control type="image">
+						<left>10</left>
+						<top>0</top>
+						<width>75</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>common/box2.png</texture>
+					</control>
+					<control type="image">
+						<left>25</left>
+						<top>0</top>
+						<width>50</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>common/selected2.png</texture>
+						<visible>!String.isEmpty(ListItem.Property(umbrella.isSelected))</visible>
+					</control>
+					<control type="label">
+						<description>Line1 tvshowtitle</description>
+						<left>110</left>
+						<top>15</top>
+						<width>1240</width>
+						<height>25</height>
+						<font>font13</font>
+						<textcolor>black</textcolor>
+						<align>left</align>
+						<aligny>bottom</aligny>
+						<label>[B]$INFO[ListItem.Property(umbrella.count)]  $INFO[ListItem.Property(umbrella.title)][/B]</label>
+					</control>
+					<control type="label">
+						<description>Line2 year-genre-mpaa</description>
+						<left>180</left>
+						<top>50</top>
+						<width>1170</width>
+						<height>25</height>
+						<font>font12</font>
+						<textcolor>black</textcolor>
+						<align>left</align>
+						<aligny>top</aligny>
+						<label>[B]$INFO[ListItem.Property(umbrella.year)]   [COLOR black]|[/COLOR]   $INFO[ListItem.Property(umbrella.genre)]   [COLOR black]|[/COLOR]   $INFO[ListItem.Property(umbrella.mpaa)][/B]</label>
+					</control>
+				</focusedlayout>
+			</control>
+
+			<control type="group">
+				<left>1470</left>
+				<top>50</top>
+					<control type="button" id="2051">
+						<description>OK Button</description>
+						<onright>2052</onright>
+						<onleft>2050</onleft>
+						<width>120</width>
+						<height>70</height>
+						<textoffsetx>0</textoffsetx>
+						<texturefocus colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/button5.png</texturefocus>
+						<texturenofocus>common/button5.png</texturenofocus>
+						<label>$ADDON[plugin.video.umbrella 32179]</label>
+						<font>font12</font>
+						<align>center</align>
+						<textcolor>white</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<visible>true</visible>
+					</control>
+					<control type="button" id="2052">
+						<description>Cancel Button</description>
+						<left>140</left>
+						<onright>2050</onright>
+						<onleft>2051</onleft>
+						<width>120</width>
+						<height>70</height>
+						<textoffsetx>0</textoffsetx>
+						<texturefocus colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/button5.png</texturefocus>
+						<texturenofocus>common/button5.png</texturenofocus>
+						<label>$ADDON[plugin.video.umbrella 32180]</label>
+						<font>font12</font>
+						<align>center</align>
+						<textcolor>white</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<visible>true</visible>
+					</control>
+			</control>
+
+			<control type="group">
+					<control type="image">
+
+						<aspectratio align="center" aligny="center">keep</aspectratio>
+						<left>400</left>
+						<top>0</top>
+						<width>600</width>
+						<height>175%</height>
+						<texture background="true">$INFO[Container(2050).ListItem.Property(umbrella.clearlogo)]</texture>
+						<!-- <visible>!String.IsEmpty(Container(2050).ListItem.Property(umbrella.clearlogo))</visible> -->
+					</control>
+					<!-- <control type="textbox"> -->
+						<!-- <description>Title when no clearlogo</description> -->
+						<!-- <left>200</left> -->
+						<!-- <top>0</top> -->
+						<!-- <width>900</width> -->
+						<!-- <height>400</height> -->
+						<!-- <font>font100caps_title</font> -->
+						<!-- <textcolor>$INFO[Window().Property(umbrella.highlight.color)]</textcolor> -->
+						<!-- <align>center</align> -->
+						<!-- <aligny>bottom</aligny> -->
+						<!-- <label>$INFO[Window().Property(umbrella.title)]</label> -->
+						<!-- <visible>String.IsEmpty(Window().Property(umbrella.clearlogo))</visible> -->
+					<!-- </control> -->
+			</control>
+
+			<control type="grouplist" id="2053">
+				<description>ListItem Poster and Plot</description>
+				<left>1350</left>
+				<top>150</top>
+				<itemgap>0</itemgap>
+				<orientation>vertical</orientation>
+					<control type="image">
+						<width>486</width>
+						<height>729</height>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio aligny="top">keep</aspectratio>
+						<texture background="true">$INFO[Container(2050).ListItem.Property(umbrella.poster)]</texture>
+						<!-- <visible>!String.isEmpty(Container(2050).ListItem.Property(umbrella.poster))</visible> -->
+					</control>
+					<control type="textbox">
+						<description>Plot</description>
+						<width>486</width>
+						<height>185</height>
+						<font>font12</font>
+						<align>justify</align>
+						<aligny>top</aligny>
+						<wrapmultiline>true</wrapmultiline>
+						<label>$INFO[Container(2050).ListItem.Property(umbrella.plot)]</label>
+						<textcolor>white</textcolor>
+						<autoscroll time="2000" delay="1500" repeat="5000"></autoscroll>
+					</control>
+			</control>
+
+			<control type="grouplist" id="2054">
+				<description>Studio icons and ratings</description>
+				<left>180</left>
+				<top>965</top>
+				<width>1250</width>
+				<height>100</height>
+				<itemgap>25</itemgap>
+				<orientation>horizontal</orientation>
+					<control type="image">
+						<description>Colored Studio icons</description>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>$INFO[Container(2050).ListItem.Property(umbrella.studio),resource://resource.images.studios.coloured/,.png]</texture>
+						<visible>System.HasAddon(resource.images.studios.coloured) + System.AddonIsEnabled(resource.images.studios.coloured) + Skin.HasSetting(coloredflags) + !String.IsEmpty(Container(2050).ListItem.Property(umbrella.studio))</visible>
+					</control>
+					<control type="image">
+						<description>White Studio icons</description>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>$INFO[Container(2050).ListItem.Property(umbrella.studio),resource://resource.images.studios.white/,.png]</texture>
+						<visible>System.HasAddon(resource.images.studios.white) + System.AddonIsEnabled(resource.images.studios.white) + !Skin.HasSetting(coloredflags) + !String.IsEmpty(Container(2050).ListItem.Property(umbrella.studio))</visible>
+					</control>
+					<control type="image">
+						<description>rating icon</description>
+						<width>25</width>
+						<height>25</height>
+						<aspect>keep</aspect>
+						<texture colordiffuse="FFFF4081">common/star.png</texture>
+						<animation effect="slide" end="20,35" time="0" condition="true">Conditional</animation>
+						<visible>!String.IsEmpty(Container(2050).ListItem.Property(umbrella.rating))</visible>
+					</control>
+					<control type="label">
+						<width>auto</width>
+						<height>35</height>
+						<aligny>center</aligny>
+						<label>$INFO[Container(2050).ListItem.Property(umbrella.rating), ,   ]</label>
+						<animation effect="slide" end="0,30" time="0" condition="true">Conditional</animation>
+						<font>font12</font>
+						<textcolor>eeffffff</textcolor>
+						<shadowcolor>ff000000</shadowcolor>
+						<visible>!String.IsEmpty(Container(2050).ListItem.Property(umbrella.rating))</visible>
+					</control>
+			</control>
+
+		</control>
+	</controls>
+</window>
