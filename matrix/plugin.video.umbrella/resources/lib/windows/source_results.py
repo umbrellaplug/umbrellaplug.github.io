@@ -139,15 +139,15 @@ class SourceResultsXML(BaseDialog):
 					self.selected = (None, '')
 				elif cm_action == 'saveToCloud':
 					magnet = chosen_source.getProperty('umbrella.url')
-					if debrid == 'AD':
+					if debrid == 'AllDebrid':
 						from resources.lib.debrid import alldebrid
 						transfer_function = alldebrid.AllDebrid
 						debrid_icon = alldebrid.ad_icon
-					elif debrid == 'PM':
+					elif debrid == 'Premiumize':
 						from resources.lib.debrid import premiumize
 						transfer_function = premiumize.Premiumize
 						debrid_icon = premiumize.pm_icon
-					elif debrid == 'RD':
+					elif debrid == 'Real-Debrid':
 						from resources.lib.debrid import realdebrid
 						transfer_function = realdebrid.RealDebrid
 						debrid_icon = realdebrid.rd_icon

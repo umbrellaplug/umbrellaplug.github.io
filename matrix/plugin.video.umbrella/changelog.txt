@@ -1,4 +1,7 @@
 
+[B][COLOR black]Update - v6.6.11 - Jan 23rd, 2023[/COLOR][/B]
+--[FIX][I] Fixed add to cloud for debrid.[/I]
+
 [B][COLOR black]Update - v6.6.10 - Jan 21st, 2023[/COLOR][/B]
 --[HOTFIX][I] Potential fix for reuselanguageInvoker causing crashes. All credit to TikiPeter![/I]
 --[ENHANCEMENT][I] Set trakt recently released trending to use current year only after 6th month of year.[/I]

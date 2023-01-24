@@ -729,8 +729,7 @@ class Subtitles:
 			content = server.DownloadSubtitles(token, content)
 			content = base64.b64decode(content['data'][0]['data'])
 			content = gzip.GzipFile(fileobj=BytesIO(content)).read()
-			download_path = jsloads(control.jsonrpc('{"jsonrpc":"2.0", "method":"Settings.GetSettingValue", "params":{"setting":"subtitles.custompath"}, "id":1}')).get('result').get('value')
-			download_path = 'special://subtitles/' if download_path != '' else 'special://temp/'
+			download_path = 'special://temp/'
 			subtitle = control.transPath(download_path)
 			subtitle = control.joinPath(subtitle, 'TemporarySubs.%s.srt' % lang)
 

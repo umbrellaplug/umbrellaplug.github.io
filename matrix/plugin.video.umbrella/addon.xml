@@ -1,8 +1,8 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.10">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.11">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
 		<import addon="context.umbrella" version="1.2.8" optional="true"/>
-		<import addon="script.module.cocoscrapers" version="1.0.9"/>
+		<import addon="script.module.cocoscrapers" version="1.0.10"/>
 		<import addon="script.module.requests"/>
 		<import addon="script.module.beautifulsoup4"/>
 		<import addon="script.module.metahandler" version="5.0.1a" optional="true"/>
@@ -31,22 +31,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.6.10 - Jan 21st, 2023[/COLOR][/B]
---[HOTFIX][I] Potential fix for reuselanguageInvoker causing crashes. All credit to TikiPeter![/I]
---[ENHANCEMENT][I] Set trakt recently released trending to use current year only after 6th month of year.[/I]
---[ENHANCEMENT][I] Made codes from authorization auto-copy to clipboard.[/I]
---[ENHANCEMENT][I] Ability to use custom subtitle download path for downloads added by roieeedouek.[/I]
---[ENHANCEMENT][I] Will be used automatically if custom subtitle download folder enabled in Kodi.[/I]
---[NEXUS][I] Added new MyVideos121 into cache detection.[/I]
---[NEXUS][I] Nexus now has a repo.[/I]
---[FIX][I] Added busy spinner when gathering trakt lists for import management window.[/I]
---[FIX][I] Added NoneType condition for playnext issue.[/I]
---[FIX][I] Made Hide Movies in Cinema also hide unreleased movies in all lists.[/I]
---[FIX][I] Sort by date watched fixed for trakt lists.[/I]
---[FIX][I] DirectProgress Scraping combined with Playnext causing skip episode fixed.[/I]
---[FIX][I] Highlight Color instead of hard coded blue now used on codes in prompts for account authorizations.[/I]
---[FIX][I] Added metadatahandler 5.0.1a to repo with fixes for local indicators.[/I]
---[FIX][I] Using local for indicator for watched status now requires a newer version of metahandler due to fixing an issue with metadatahandler exception on cast.[/I]
+[B][COLOR black]Update - v6.6.11 - Jan 23rd, 2023[/COLOR][/B]
+--[FIX][I] Fixed add to cloud for debrid.[/I]
 		</news>
 	</extension>
 </addon>
