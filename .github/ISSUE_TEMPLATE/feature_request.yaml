@@ -2,6 +2,7 @@ name: Feature Request
 description: Create a request for a new feature.
 title: "[FEATURE] Short Description"
 labels: feature
+assignees: umbrelladev
 body:
 - type: textarea
   attributes:
