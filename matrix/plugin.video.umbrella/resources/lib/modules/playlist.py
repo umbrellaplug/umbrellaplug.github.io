@@ -85,7 +85,8 @@ def playlistAdd(name, url, meta, art):
 	item = control.item(label=name, offscreen=True)
 	item.setArt(art)
 	item.setProperty('IsPlayable', 'true')
-	item.setInfo(type='video', infoLabels=control.metadataClean(meta))
+	#item.setInfo(type='video', infoLabels=control.metadataClean(meta))
+	control.set_info(item, meta)
 	cm = []
 	item.addContextMenuItems(cm)
 	playlist().add(url=url, listitem=item)

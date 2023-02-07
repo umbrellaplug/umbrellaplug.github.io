@@ -5519,3 +5519,23 @@ msgstr ""
 msgctxt "#40391"
 msgid "Enable library (Marked Watched) sync"
 msgstr ""
+
+msgctxt "#40392"
+msgid "Similar to Recent Watched (Library)"
+msgstr ""
+
+msgctxt "#40393"
+msgid "Recommended (Library)"
+msgstr ""
+
+msgctxt "#40394"
+msgid "Show Watched in Lists (Library)"
+msgstr ""
+
+msgctxt "#40395"
+msgid "Hide Watched in Widgets"
+msgstr ""
+
+msgctxt "#40396"
+msgid "Hidden"
+msgstr ""

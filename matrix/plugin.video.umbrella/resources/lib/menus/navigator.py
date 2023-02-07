@@ -7,6 +7,7 @@ from sys import exit as sysexit
 from urllib.parse import quote_plus
 from resources.lib.modules import control
 from resources.lib.modules.trakt import getTraktCredentialsInfo, getTraktIndicatorsInfo
+from json import loads as jsloads
 
 getLS = control.lang
 getSetting = control.setting
@@ -25,6 +26,7 @@ class Navigator:
 		self.tmdbSessionID = getSetting('tmdb.sessionid') != ''
 		self.reuselanguageinv = getSetting('reuse.languageinvoker') == 'true'
 		self.highlight_color = control.getHighlightColor()
+		self.hasLibMovies = len(jsloads(control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": { "limits": { "start" : 0, "end": 1 }, "properties" : ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file"] }, "id": "1"}'))['result']['movies']) > 0
 
 	def root(self):
 		if getMenuEnabled('navi.searchMovies'):self.addDirectoryItem(33042, 'movieSearch', 'trakt.png' if self.iconLogos else 'searchmovies.png', 'DefaultAddonsSearch.png')
@@ -91,6 +93,11 @@ class Navigator:
 			self.addDirectoryItem(40331 if self.indexLabels else 32442, 'movies&url=tmdbrecentweek', 'tmdb.png' if self.iconLogos else 'trending.png', 'DefaultTVShows.png')
 		if getMenuEnabled('navi.movie.trakt.recommended'):
 			self.addDirectoryItem(32445 if self.indexLabels else 32444, 'movies&url=traktrecommendations', 'trakt.png' if self.iconLogos else 'highly-rated.png', 'DefaultMovies.png')
+		#will need some sort of check here
+		if self.hasLibMovies and getMenuEnabled('navi.movie.lib.similar'):
+			self.addDirectoryItem(40392 if self.indexLabels else 40392, 'moviesimilarFromLibrary', 'most-popular.png' if self.iconLogos else 'most-popular.png', 'DefaultMovies.png')
+		if self.hasLibMovies and getMenuEnabled('navi.movie.lib.recommended'):	
+			self.addDirectoryItem(40393 if self.indexLabels else 40393, 'movierecommendedFromLibrary', 'featured.png' if self.iconLogos else 'featured.png', 'DefaultMovies.png')
 		if getMenuEnabled('navi.movie.trakt.recentlywatched'):
 			self.addDirectoryItem(40255 if self.indexLabels else 40256, 'movies&url=traktbasedonrecent', 'trakt.png' if self.iconLogos else 'years.png', 'DefaultMovies.png')
 		if getMenuEnabled('navi.movie.trakt.traktsimilar'):
@@ -450,7 +457,9 @@ class Navigator:
 			url = 'plugin://plugin.video.umbrella/?action=tools_addView&content=%s' % content
 			poster, banner, fanart = control.addonPoster(), control.addonBanner(), control.addonFanart()
 			item = control.item(label=title, offscreen=True)
-			item.setInfo(type='video', infoLabels = {'title': title})
+			#item.setInfo(type='video', infoLabels = {'title': title})
+			meta = {'title': title}
+			control.set_info(item, meta)
 			item.setArt({'icon': poster, 'thumb': poster, 'poster': poster, 'fanart': fanart, 'banner': banner})
 			control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
 			control.content(syshandle, content)
@@ -614,7 +623,9 @@ class Navigator:
 			item.addContextMenuItems(cm)
 			if isPlayable: item.setProperty('IsPlayable', 'true')
 			item.setArt({'icon': icon, 'poster': poster, 'thumb': poster, 'fanart': control.addonFanart(), 'banner': poster})
-			item.setInfo(type='video', infoLabels={'plot': name})
+			#item.setInfo(type='video', infoLabels={'plot': name}) #k20setinfo
+			meta = dict({'plot': name})#k20setinfo
+			control.set_info(item, meta)#k20setinfo
 			control.addItem(handle=int(argv[1]), url=url, listitem=item, isFolder= isFolder)
 		except:
 			from resources.lib.modules import log_utils

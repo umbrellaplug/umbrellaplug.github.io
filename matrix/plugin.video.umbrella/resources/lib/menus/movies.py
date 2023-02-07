@@ -22,6 +22,9 @@ from resources.lib.modules import trakt
 from resources.lib.modules import views
 from resources.lib.modules import mdblist
 from sqlite3 import dbapi2 as database
+from json import loads as jsloads
+from operator import itemgetter
+import random
 
 getLS = control.lang
 getSetting = control.setting
@@ -138,6 +141,8 @@ class Movies:
 		self.tmdbrecentweek_hours = int(getSetting('cache.tmdbrecentweek'))
 		self.simkl_hours = int(getSetting('cache.simkl'))
 		self.mdblist_hours = int(getSetting('cache.mdblist'))
+		self.showwatchedlib = getSetting('showwatchedlib')
+		self.hide_watched_in_widget = getSetting('enable.umbrellahidewatched') == 'true'
 
 	def get(self, url, idx=True, create_directory=True):
 		self.list = []
@@ -402,7 +407,6 @@ class Movies:
 			historyurl = 'https://api.trakt.tv/users/me/history/movies?limit=20&page=1'
 			randomItems = self.trakt_list(historyurl, self.trakt_user)
 			if not randomItems: return
-			import random
 			item = randomItems[random.randint(0, len(randomItems) - 1)]
 			url = self.tmdb_recommendations % (item.get('tmdb'), '%s')
 			self.list = tmdb_indexer().tmdb_list(url)
@@ -428,14 +432,13 @@ class Movies:
 			historyurl = 'https://api.trakt.tv/users/me/history/movies?limit=20&page=1'
 			randomItems = self.trakt_list(historyurl, self.trakt_user)
 			if not randomItems: return
-			import random
 			item = randomItems[random.randint(0, len(randomItems) - 1)]
 			url = self.tmdb_similar % (item.get('tmdb'), '%s')
 			self.list = tmdb_indexer().tmdb_list(url)
 			if self.useContainerTitles:
 				try: 
 					control.setContainerName(getLS(40259)+' '+item.get('title'))
-					control.setHomeWindowProperty('umbrella.moviesimilar', str(getLS(40257)+' '+item.get('title')))
+					control.setHomeWindowProperty('umbrella.moviesimilar', str(getLS(40259)+' '+item.get('title')))
 				except: pass
 			next = ''
 			for i in range(len(self.list)): self.list[i]['next'] = next
@@ -1317,15 +1320,169 @@ class Movies:
 		return list
 
 	def reccomendedFromLibrary(self):
-		from resources.lib.modules import log_utils
-		log_utils.log('Rec List From Library', 1)
+		#from resources.lib.modules import log_utils
+		#log_utils.log('Rec List From Library', 1)
+		try:
+			self.list = []
+			#get recommended movies - library movies with score higher than 7
+			hasLibMovies = len(jsloads(control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": { "limits": { "start" : 0, "end": 1 }, "properties" : ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file"] }, "id": "1"}'))['result']['movies']) > 0
+			if not hasLibMovies:
+				control.notification('No Movies', 'No movies found in library to use.')
+				return self.list
+			else:
+				self.list = jsloads(control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"sort": {"method": "rating", "order": "descending"}, "filter": {"and":[{"operator": "greaterthan", "field": "rating", "value": "7"}, {"operator": "lessthan", "field": "playcount", "value": "1"}]}, "properties" : ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file"] }, "id": "1"}'))['result']['movies']
+				random.shuffle(self.list)
+				self.list[:50]
+				for x in self.list:
+					x['tmdb'] = x.get('uniqueid').get('tmdb')
+					x['imdb'] = x.get('uniqueid').get('imdb')
+					x['next'] = ''
+				self.worker()
+		except:
+			self.list  = []
+		self.movieDirectory(self.list)
+		return self.list
 
-	def similarFromLibrary(self):
-		from resources.lib.modules import log_utils
-		log_utils.log('Similiar List From Library', 1)
 
+	def similarFromLibrary(self, tmdb=None, create_directory=True):
+		#from resources.lib.modules import log_utils
+		#log_utils.log('Similiar List From Library', 1)
+		try:
+			historyurl = 'https://api.trakt.tv/users/me/history/movies?limit=50&page=1'
+			if tmdb == None:
+				randomItems = self.trakt_list(historyurl, self.trakt_user)
+			else:
+				randomItems = {"tmdb": tmdb}
+			if not randomItems:
+				#no random item found from trakt history check library history
+				randomMovies = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": { "filter": {"and": [{"or": [{"operator": "is", "field": "genre", "value": "%s"}]},{"operator": "lessthan", "field": "playcount", "value": "1"}]},  "properties": ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file", "director", "writer", "year", "mpaa"]}, "id": "libGenresUnwatched"}'% orFilterGenre)
+				randomMovies = jsloads(randomMovies)['result']['movies']
+				randomItems = [({"tmdb": x.get('uniqueid').get('tmdb')}) for x in randomMovies]
+			if not randomItems:
+				originalMovie = None
+				control.notification('No History', 'No watch history found to use.')
+			else:
+				item = randomItems[random.randint(0, len(randomItems) - 1)]
+				originalMovie = tmdb_indexer().get_movie_meta(item.get('tmdb'))
+			self.list = []
+			all_titles = list()
+			if originalMovie:
+				#log_utils.log('[plugin.video.umbrella] Original Movie properties %s.'% str(originalMovie),1)
+				# get all movies for the genres in the movie
+				neOriginal = originalMovie['genre'].split('/')
+				genres = [x.strip() for x in neOriginal]
+				similar_title = originalMovie["title"]
+				if len(genres) > 1:
+					#contruct a batch for jsonrpc instead of a bunch of calls.
+					orFilterGenre = ''
+					for genre in genres:
+						if genre == genres[-1]:
+							orFilterGenre += '{"operator": "is", "field": "genre", "value": "%s"}' % genre
+						else:
+							orFilterGenre += '{"operator": "is", "field": "genre", "value": "%s"},' % genre
+					
+					genreResults = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter": {"or": [%s]}, "properties" : ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file", "director", "writer", "year", "mpaa", "set", "studio", "cast"] }, "id": "1"}'% orFilterGenre)
+					#without watched
+					#genreResults = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": { "filter": {"and": [{"or": [%s]},{"operator": "lessthan", "field": "playcount", "value": "1"}]},  "properties": ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file", "director", "writer", "year", "mpaa"]}, "id": "libGenresUnwatched"}'% orFilterGenre)
+					sameGenreMovies = jsloads(genreResults)['result']['movies']
+				else:
+					#if self.showwatchedlib == 'false':
+						#genreResults = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter": {"and": [{"operator": "is", "field": "genre", "value": "%s"},{"operator": "lessthan", "field": "playcount", "value": "1"}]}, "properties" : ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file", "director", "writer", "year", "mpaa"] }, "id": "1"}'% genres[0])
+					#else:
+					genreResults = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter": {"operator": "is", "field": "genre", "value": "%s"}, "properties" : ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file", "director", "writer", "year", "mpaa", "set", "studio", "cast"] }, "id": "1"}'% genres[0])
+					sameGenreMovies = jsloads(genreResults)['result']['movies']
+				set_genres = set(genres)
+				set_directors = set([originalMovie["director"]])
+				set_writers = set([originalMovie["writer"]])
+				castList = [x["name"] for x in originalMovie["castandart"]]
+				set_cast = set(castList)
+				for item in sameGenreMovies:
+					# prevent duplicates so skip reference movie and titles already in the list
+					if not item["title"] in all_titles and not item["title"] == similar_title:
+						item['tmdb'] = item.get('uniqueid').get('tmdb')
+						item['imdb'] = item.get('uniqueid').get('imdb')
+						itemcastList = [x["name"] for x in item["cast"]]
+						genre_score = 0 if not set_genres else (float(len(set_genres.intersection(item["genre"])) / len(set_genres.union(item["genre"])))) * 1
+						director_score = 0 if not set_directors else float(len(set_directors.intersection(item["director"]))) / len(set_directors.union(item["director"]))
+						writer_score = 0 if not set_writers else float(len(set_writers.intersection(item["writer"]))) / len(set_writers.union(item["writer"]))
+						if originalMovie["rating"] and item["rating"] and abs(float(originalMovie["rating"])-item["rating"]) < 3:
+							rating_score = 1 - abs(float(originalMovie["rating"])-item["rating"])//3
+						else:
+							rating_score = 0
+						#studio
+						try:
+							studio_score = 1 if originalMovie["studio"] and originalMovie["studio"] == str(item.get("studio")[0]) else 0
+							#log_utils.log('[ plugin.video.umbrella ] item similar scores item:%s studio score: %s original studio: %s compare studio: %s'% (item["title"], studio_score,originalMovie["studio"], item.get("studio")[0]))
+						except:
+							studio_score = 0
+							#log_utils.log('[ plugin.video.umbrella ] EXCEPTION: item similar scores item:%s studio score: %s original studio: %s compare studio: %s'% (item["title"], studio_score,originalMovie["studio"], item.get("studio")))
+						
+						#cast score
+						try:
+							cast_score = 0 if not set_cast else (float(len(set_cast.intersection(set(itemcastList)))) / len(set_cast.union(set(itemcastList)))) *1
+						except:
+							cast_score = 0
+						#log_utils.log('[ plugin.video.umbrella ] item similar scores item:%s cast score: %s'% (item["title"], cast_score))
+						try:
+							set_score = 1 if originalMovie["belongs_to_collection"] and originalMovie["belongs_to_collection"]["name"] == item["set"] else 0
+						except:
+							set_score = 0
+						# year_score is "closeness" in release year, scaled to 1 (0 if not from same decade)
+						if int(originalMovie["year"]) and int(item["year"]) and abs(float(originalMovie["rating"])-item["year"]) < 10:
+							year_score = 1 - abs(originalMovie["year"]-item["year"])//10
+						else:
+							year_score = 0
+						# mpaa_score gets 1 if same mpaa rating, otherwise 0
+						mpaa_score = 1 if originalMovie["mpaa"] and ('Rated '+str(originalMovie["mpaa"])) == item["mpaa"] else 0
+						# calculate overall score using weighted average
+						similarscore = .75*set_score+.5*genre_score + .15*director_score + .1*writer_score +.1*cast_score+.025*studio_score+ .05*rating_score + .075*year_score + .025*mpaa_score
+						item["similarscore"] = similarscore
+						item["cast"] = None
+						self.list.append(item) 
+						all_titles.append(item["title"])
+			# return the list sorted by number of matching genres then rating
+			similar_score_dict = {}
+			self.list = sorted(self.list, key=itemgetter("similarscore"), reverse=True)
+			for item in self.list:
+				similar_score = item['similarscore']
+				if not similar_score in similar_score_dict:
+					matches = [i for i in self.list if i['similarscore'] == similar_score]
+					similar_score_dict[similar_score] = matches
+			similar_list = []
+			if len(similar_score_dict)>1:
+				#for x in similar_score_dict:
+				for count, x in enumerate(similar_score_dict):
+					if len(similar_list) > 200 and count > 0: break
+					for z in similar_score_dict[x]:
+						similar_list.append(z)
+				self.list = similar_list
+			else:
+				log_utils.log('[plugin.video.umbrella] Only one similar score found.',1)
+
+			random.shuffle(self.list)
+			self.list = self.list[:50]
+			self.list = sorted(self.list, key=itemgetter("similarscore"), reverse=True)
+			next = ''
+			for i in range(len(self.list)): 
+				self.list[i]['next'] = next
+				#log_utils.log('[ plugin.video.umbrella ] item similar scores item:%s score: %s'% (self.list[i]["title"], self.list[i]["similarscore"]))
+			#self.list = [x for x in self.list if x.get('playcount') == 0]
+			self.worker()
+			if self.useContainerTitles and originalMovie:
+				try: 
+					control.setContainerName(getLS(40257)+' '+originalMovie["title"])
+					control.setHomeWindowProperty('umbrella.moviesimilarlibrary', str(getLS(40257)+' '+originalMovie["title"]))
+				except: pass
+			if self.list is None: self.list = []
+			if create_directory: self.movieDirectory(self.list)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			return
 
 	def worker(self):
+		
 		try:
 			if not self.list: return
 			self.meta = []
@@ -1504,18 +1661,25 @@ class Movies:
 				if trailer: meta.update({'trailer': trailer}) # removed temp so it's not passed to CM items, only infoLabels for skin
 				else: meta.update({'trailer': '%s?action=play_Trailer&type=%s&name=%s&year=%s&imdb=%s' % (sysaddon, 'movie', sysname, year, imdb)})
 				item = control.item(label=labelProgress, offscreen=True)
-				if 'castandart' in i: item.setCast(i['castandart'])
+				#if 'castandart' in i: item.setCast(i['castandart'])#changed for kodi20 setinfo method
+				if 'castandart' in i: meta.update({'castandart':i['castandart']})
 				item.setArt(art)
-				item.setUniqueIDs({'imdb': imdb, 'tmdb': tmdb})
+				#item.setUniqueIDs({'imdb': imdb, 'tmdb': tmdb})#changed for kodi20 setinfo method
+				setUniqueIDs = {'imdb': imdb, 'tmdb': tmdb}
 				item.setProperty('IsPlayable', 'true')
-				if is_widget: item.setProperty('isUmbrella_widget', 'true')
+				if is_widget: 
+					item.setProperty('isUmbrella_widget', 'true')
+					if self.hide_watched_in_widget:
+						if str(meta.get('playcount', 0)) == '1':
+							continue
 				if self.unairedcolor not in labelProgress:
 					resumetime = Bookmarks().get(name=label, imdb=imdb, tmdb=tmdb, year=str(year), runtime=runtime, ck=True)
 					# item.setProperty('TotalTime', str(meta['duration'])) # Adding this property causes the Kodi bookmark CM items to be added
-					item.setProperty('ResumeTime', str(resumetime))
+					#item.setProperty('ResumeTime', str(resumetime))
 					try: item.setProperty('WatchedProgress', str(int(float(resumetime) / float(runtime) * 100)))
 					except: pass
-				item.setInfo(type='video', infoLabels=control.metadataClean(meta))
+				#item.setInfo(type='video', infoLabels=control.metadataClean(meta))
+				control.set_info(item, meta, setUniqueIDs=setUniqueIDs, resumetime=resumetime)
 				item.addContextMenuItems(cm)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
 			except:
@@ -1592,7 +1756,9 @@ class Movies:
 				cm.append(('[COLOR red]Umbrella Settings[/COLOR]', 'RunPlugin(%s?action=tools_openSettings)' % sysaddon))
 				item = control.item(label=name, offscreen=True)
 				item.setArt({'icon': icon, 'poster': poster, 'thumb': icon, 'fanart': control.addonFanart(), 'banner': poster})
-				item.setInfo(type='video', infoLabels={'plot': name})
+				#item.setInfo(type='video', infoLabels={'plot': name})#changed for kodi20 setinfo method
+				meta = dict({'plot': name})
+				control.set_info(item, meta)
 				item.addContextMenuItems(cm)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)
 			except:

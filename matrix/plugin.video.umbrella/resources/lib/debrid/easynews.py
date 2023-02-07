@@ -134,7 +134,9 @@ class EasyNews:
 				item = control.item(label=label, offscreen=True)
 				item.addContextMenuItems(cm)
 				item.setArt({'icon': en_icon, 'poster': en_icon, 'thumb': en_icon, 'fanart': addonFanart, 'banner': en_icon})
-				item.setInfo(type='video', infoLabels='')
+				#item.setInfo(type='video', infoLabels='')
+				meta = {}
+				control.set_info(item, meta)
 				item.setLabel(label)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
 			except:

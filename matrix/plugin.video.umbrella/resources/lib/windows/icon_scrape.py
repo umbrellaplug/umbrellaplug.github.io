@@ -42,5 +42,4 @@ class IconScrape(BaseDialog):
 		try:
 			self.getControl(5000).setPercent(percent)
 			self.setProperty('percent', str(percent))
-			if icon: self.getControl(200).setImage(icon)
 		except: pass

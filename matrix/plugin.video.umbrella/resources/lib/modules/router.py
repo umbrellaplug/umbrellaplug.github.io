@@ -138,6 +138,12 @@ def router(argv2):
 	elif action == 'mdbUserListMovies':
 		from resources.lib.menus import movies
 		movies.Movies().getMDBUserList()
+	elif action == 'moviesimilarFromLibrary':
+		from resources.lib.menus import movies
+		movies.Movies().similarFromLibrary(tmdb=tmdb)
+	elif action == 'movierecommendedFromLibrary':
+		from resources.lib.menus import movies
+		movies.Movies().reccomendedFromLibrary()
 	####################################################
 	#---Collections
 	####################################################
@@ -886,11 +892,11 @@ def router(argv2):
 	elif action == 'cacheTorrent':
 		caller = params.get('caller')
 		pack = True if params.get('type') == 'pack' else False
-		if caller == 'RD':
+		if caller == 'Real-Debrid':
 			from resources.lib.debrid.realdebrid import RealDebrid as debrid_function
-		elif caller == 'PM':
+		elif caller == 'Premiumize':
 			from resources.lib.debrid.premiumize import Premiumize as debrid_function
-		elif caller == 'AD':
+		elif caller == 'AllDebrid':
 			from resources.lib.debrid.alldebrid import AllDebrid as debrid_function
 		success = debrid_function().add_uncached_torrent(url, pack=pack)
 		if success:

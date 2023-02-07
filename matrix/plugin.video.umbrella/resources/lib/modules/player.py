@@ -93,13 +93,15 @@ class Player(xbmc.Player):
 				return control.cancelPlayback()
 
 			item = control.item(path=url)
-			item.setUniqueIDs(self.ids)
+			#item.setUniqueIDs(self.ids) #changed for kodi20 setinfo method
+			setUniqueIDs = self.ids #changed for kodi20 setinfo method
 			if self.media_type == 'episode':
 				item.setArt({'tvshow.clearart': clearart, 'tvshow.clearlogo': clearlogo, 'tvshow.discart': discart, 'thumb': thumb, 'tvshow.poster': season_poster, 'season.poster': season_poster, 'tvshow.fanart': fanart})
 			else:
 				item.setArt({'clearart': clearart, 'clearlogo': clearlogo, 'discart': discart, 'thumb': thumb, 'poster': poster, 'fanart': fanart})
-			if 'castandart' in meta: item.setCast(meta.get('castandart', ''))
-			item.setInfo(type='video', infoLabels=control.metadataClean(meta))
+			#if 'castandart' in meta: item.setCast(meta.get('castandart', '')) #changed for kodi20 setinfo method
+			#item.setInfo(type='video', infoLabels=control.metadataClean(meta))
+			control.set_info(item, meta, setUniqueIDs=setUniqueIDs) #changed for kodi20 setinfo method
 			item.setProperty('IsPlayable', 'true')
 			if int(control.playlist.size()) < 1 and self.media_type == 'episode' and self.enable_playnext: #this is the change made for play next from widget.
 				try:
@@ -392,8 +394,9 @@ class Player(xbmc.Player):
 					url = '%s?action=play_Item&title=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&tvshowtitle=%s&premiered=%s&meta=%s' % (
 											sysaddon, systitle, year, imdb, tmdb, tvdb, season, episode, systvshowtitle, syspremiered, sysmeta)
 					item = control.item(label=label, offscreen=True)
-					if 'castandart' in i: item.setCast(i['castandart'])
-					item.setUniqueIDs({'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb})
+					#if 'castandart' in i: item.setCast(i['castandart'])
+					#item.setUniqueIDs({'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb})
+					setUniqueIDs = {'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb}
 					info = {'episode': int(episode), 'sortepisode': int(episode), 'season': int(season), 'sortseason': int(season), 'year': str(year), 'premiered': i.get('premiered', ''), 'aired': meta.get('airtime', ''), 'imdbnumber': imdb, 'duration': runtime, 'dateadded': '', 'rating': i.get('rating'), 'votes': i.get('votes'), 'mediatype': self.media_type, 'title': i.get('title'), 'originaltitle': i.get('title'), 'sorttitle': i.get('title'), 'plot': i.get('plot'), 'plotoutline': i.get('plot'), 'tvshowtitle': tvshowtitle, 'director': [i.get('director')], 'writer': [i.get('writer')], 'genre': [i.get('genre')], 'studio': [i.get('studio')], 'playcount': 0}
 					if int(episode) > int(currentEpisode):
 						if not i.get('unaired')== 'true':
@@ -401,7 +404,8 @@ class Player(xbmc.Player):
 							item.addStreamInfo("video", {})
 							cm = []
 							item.addContextMenuItems(cm)
-							item.setInfo("video", info)
+							#item.setInfo("video", info)
+							control.set_info(item, info, setUniqueIDs=setUniqueIDs)
 							item.setArt(art)
 							item.setProperty('IsPlayable', 'true')
 							item.setProperty('tvshow.tmdb_id', tmdb)

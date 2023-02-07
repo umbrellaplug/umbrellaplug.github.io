@@ -199,7 +199,9 @@ class Furk:
 			item = control.item(label=name, offscreen=True)
 			if context: item.addContextMenuItems(context)
 			item.setArt({'icon': thumb, 'poster': thumb, 'thumb': thumb, 'fanart': addonFanart, 'banner': thumb})
-			item.setInfo(type='video', infoLabels={'plot': name})
+			#item.setInfo(type='video', infoLabels={'plot': name})
+			meta = {'plot': name}
+			control.set_info(item, meta)
 			control.addItem(handle=int(argv[1]), url=url, listitem=item, isFolder=False)
 		except:
 			from resources.lib.modules import log_utils

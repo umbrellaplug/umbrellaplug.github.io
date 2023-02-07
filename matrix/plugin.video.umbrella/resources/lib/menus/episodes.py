@@ -56,6 +56,7 @@ class Episodes:
 		self.trakt_unfinished_hours = int(getSetting('cache.traktunfinished'))
 		self.trakt_progress_hours = int(getSetting('cache.traktprogress'))
 		self.simkl_hours = int(getSetting('cache.simkl'))
+		self.hide_watched_in_widget = getSetting('enable.umbrellahidewatched') == 'true'
 
 	def get(self, tvshowtitle, year, imdb, tmdb, tvdb, meta, season=None, episode=None, create_directory=True):
 		self.list = []
@@ -937,7 +938,8 @@ class Episodes:
 				if trailer: meta.update({'trailer': trailer}) # removed temp so it's not passed to CM items, only infoLabels for skin
 				else: meta.update({'trailer': '%s?action=play_Trailer&type=%s&name=%s&year=%s&imdb=%s' % (sysaddon, 'show', syslabelProgress, year, imdb)})
 				item = control.item(label=labelProgress, offscreen=True)
-				if 'castandart' in i: item.setCast(i['castandart'])
+				#if 'castandart' in i: item.setCast(i['castandart'])
+				if 'castandart' in i: meta.update({"cast": ['castandart']}) #changed for kodi20 setinfo method
 				item.setArt(art)
 				if isMultiList and multi_unwatchedEnabled:
 					if 'ForceAirEnabled' not in i:
@@ -945,23 +947,36 @@ class Episodes:
 							try: count = getShowCount(getSeasonIndicators(imdb, tvdb)[1], imdb, tvdb) # if indicators and no matching imdb_id in watched items then it returns None and we use TMDb meta to avoid Trakt request
 							except: count = None
 							if count:
-								item.setProperties({'WatchedEpisodes': str(count['watched']), 'UnWatchedEpisodes': str(count['unwatched'])})
+								if control.getKodiVersion() >= 20:
+									if int(count['watched']) > 0:
+										item.setProperties({'WatchedEpisodes': str(count['watched']), 'UnWatchedEpisodes': str(count['unwatched'])})
+									else:
+										item.setProperties({'UnWatchedEpisodes': str(count['unwatched'])})
+								else:
+									item.setProperties({'WatchedEpisodes': str(count['watched']), 'UnWatchedEpisodes': str(count['unwatched'])})
 								item.setProperties({'TotalSeasons': str(meta.get('total_seasons', '')), 'TotalEpisodes': str(count['total'])})
 							else:
-								item.setProperties({'WatchedEpisodes': '0', 'UnWatchedEpisodes': str(meta.get('total_aired_episodes', ''))}) # for shows never watched
+								if control.getKodiVersion() >= 20:
+									item.setProperties({'UnWatchedEpisodes': str(meta.get('total_aired_episodes', ''))}) # for shows never watched
+								else:
+									item.setProperties({'WatchedEpisodes': '0', 'UnWatchedEpisodes': str(meta.get('total_aired_episodes', ''))}) # for shows never watched
 								item.setProperties({'TotalSeasons': str(meta.get('total_seasons', '')), 'TotalEpisodes': str(meta.get('total_aired_episodes', ''))})
 						except:
 							from resources.lib.modules import log_utils
 							log_utils.error()
 				item.setProperty('IsPlayable', 'true')
 				item.setProperty('tvshow.tmdb_id', tmdb)
-				if is_widget: item.setProperty('isUmbrella_widget', 'true')
+				if is_widget: 
+					item.setProperty('isUmbrella_widget', 'true')
+					if self.hide_watched_in_widget:
+						if str(meta.get('playcount', 0)) == '1':
+							continue
 				blabel = tvshowtitle + ' S%02dE%02d' % (int(season), int(episode))
 				if not i.get('unaired') == 'true':
 					if not runtime: runtime = 2700
 					resumetime = Bookmarks().get(name=blabel, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, year=str(year), runtime=runtime, ck=True)
 					# item.setProperty('TotalTime', str(runtime)) # Adding this property causes the Kodi bookmark CM items to be added
-					item.setProperty('ResumeTime', str(resumetime))
+					#item.setProperty('ResumeTime', str(resumetime))
 					try: item.setProperty('WatchedProgress', str(int(float(resumetime) / float(runtime) * 100))) # resumetime and runtime are both in minutes
 					except: pass
 
@@ -969,7 +984,7 @@ class Episodes:
 					season_year = re.findall(r'(\d{4})', i.get('premiered', ''))[0]
 					meta.update({'year': season_year})
 				except: pass
-				item.setUniqueIDs({'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb})
+				setUniqueIDs={'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb}
 
 
 				if upcoming_prependDate and traktUpcomingProgress is True:
@@ -980,7 +995,8 @@ class Episodes:
 						new_title = '[COLOR %s][%s]  [/COLOR]' % (self.highlight_color, air_datetime) + title
 						meta.update({'title': new_title})
 					except: pass
-				item.setInfo(type='video', infoLabels=control.metadataClean(meta))
+				#item.setInfo(type='video', infoLabels=control.metadataClean(meta))
+				control.set_info(item, meta, setUniqueIDs=setUniqueIDs, resumetime=resumetime)
 				item.addContextMenuItems(cm)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=isFolder)
 			except:
@@ -1040,7 +1056,9 @@ class Episodes:
 				cm.append(('[COLOR red]Umbrella Settings[/COLOR]', 'RunPlugin(plugin://plugin.video.umbrella/?action=tools_openSettings)'))
 				item = control.item(label=name, offscreen=True)
 				item.setArt({'icon': icon, 'poster': poster, 'thumb': poster, 'fanart': control.addonFanart(), 'banner': poster})
-				item.setInfo(type='video', infoLabels={'plot': name})
+				#item.setInfo(type='video', infoLabels={'plot': name})
+				meta = dict({'plot': name})
+				control.set_info(item, meta)
 				item.addContextMenuItems(cm)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)
 			except:

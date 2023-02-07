@@ -155,7 +155,7 @@
 				<description>clearlogo</description>
 				<aspectratio align="center" aligny="center">keep</aspectratio>
 				<left>400</left>
-				<top>-15</top>
+				<top>0</top>
 				<width>600</width>
 				<height>175%</height>
 				<texture background="true">$INFO[Window().Property(umbrella.clearlogo)]</texture>

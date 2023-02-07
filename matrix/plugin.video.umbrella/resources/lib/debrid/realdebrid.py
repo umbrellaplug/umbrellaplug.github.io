@@ -209,7 +209,9 @@ class RealDebrid:
 					item = control.item(label=label, offscreen=True)
 					item.addContextMenuItems(cm)
 					item.setArt({'icon': rd_icon, 'poster': rd_icon, 'thumb': rd_icon, 'fanart': addonFanart, 'banner': rd_icon})
-					item.setInfo(type='video', infoLabels='')
+					#item.setInfo(type='video', infoLabels='')
+					meta = {}
+					control.set_info(item, meta)
 					control.addItem(handle=syshandle, url=url, listitem=item, isFolder=isFolder)
 				except: log_utils.error()
 			control.content(syshandle, 'files')
@@ -254,7 +256,9 @@ class RealDebrid:
 				item = control.item(label=label, offscreen=True)
 				item.addContextMenuItems(cm)
 				item.setArt({'icon': rd_icon, 'poster': rd_icon, 'thumb': rd_icon, 'fanart': addonFanart, 'banner': rd_icon})
-				item.setInfo(type='video', infoLabels='')
+				#item.setInfo(type='video', infoLabels='')
+				meta = {}
+				control.set_info(item, meta)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
 			except: log_utils.error()
 		control.content(syshandle, 'files')
@@ -313,7 +317,9 @@ class RealDebrid:
 				item = control.item(label=label, offscreen=True)
 				item.addContextMenuItems(cm)
 				item.setArt({'icon': rd_icon, 'poster': rd_icon, 'thumb': rd_icon, 'fanart': addonFanart, 'banner': rd_icon})
-				item.setInfo(type='video', infoLabels='')
+				#item.setInfo(type='video', infoLabels='')
+				meta = {}
+				control.set_info(item, meta)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
 			except: log_utils.error()
 		if page < pages:

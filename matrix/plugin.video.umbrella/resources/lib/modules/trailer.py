@@ -33,7 +33,9 @@ class Trailer:
 			item = control.item(label=title, offscreen=True)
 			item.setProperty('IsPlayable', 'true')
 			item.setArt({'icon': icon, 'thumb': icon,})
-			item.setInfo(type='video', infoLabels={'title': title})
+			#item.setInfo(type='video', infoLabels={'title': title})
+			meta = {'title': title}
+			control.set_info(item, meta)
 			control.addItem(handle=int(argv[1]), url=url, listitem=item, isFolder=False)
 			control.refresh()
 			control.resolve(handle=int(argv[1]), succeeded=True, listitem=item)

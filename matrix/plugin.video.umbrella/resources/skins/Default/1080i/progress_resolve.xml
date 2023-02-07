@@ -44,10 +44,10 @@
             </control>
             <control type="image" id="203">
                 <animation effect="fade" start="0" end="100" time="200">WindowOpen</animation>
-                <width>800</width>
                 <height>310</height>
                 <top>0</top>
                 <centerleft>50%</centerleft>
+                <aspectratio>keep</aspectratio>
                 <texture>$INFO[Window.Property(umbrella.clearlogo)]</texture>
             </control>
             <control type="textbox" id="2001">

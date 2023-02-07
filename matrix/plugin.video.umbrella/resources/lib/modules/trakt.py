@@ -1443,6 +1443,7 @@ def trakt_service_sync():
 			if internets == False:
 				internets = control.condVisibility('System.HasNetwork')
 		except:
+			internets = None
 			log_utils.error()
 		if internets and getTraktCredentialsInfo(): # run service in case user auth's trakt later
 			activities = getTraktAsJson('/sync/last_activities', silent=True)

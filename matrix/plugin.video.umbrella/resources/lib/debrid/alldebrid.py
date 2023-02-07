@@ -297,7 +297,9 @@ class AllDebrid:
 				item = control.item(label=label, offscreen=True)
 				item.addContextMenuItems(cm)
 				item.setArt({'icon': ad_icon, 'poster': ad_icon, 'thumb': ad_icon, 'fanart': addonFanart, 'banner': ad_icon})
-				item.setInfo(type='video', infoLabels='')
+				#item.setInfo(type='video', infoLabels='')
+				meta = {}
+				control.set_info(item, meta)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=isFolder)
 			except: log_utils.error()
 		control.content(syshandle, 'files')
@@ -322,7 +324,9 @@ class AllDebrid:
 				item = control.item(label=label, offscreen=True)
 				item.addContextMenuItems(cm)
 				item.setArt({'icon': ad_icon, 'poster': ad_icon, 'thumb': ad_icon, 'fanart': addonFanart, 'banner': ad_icon})
-				item.setInfo(type='video', infoLabels='')
+				#item.setInfo(type='video', infoLabels='')
+				meta = {}
+				control.set_info(item, meta)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)
 			except: log_utils.error()
 		control.content(syshandle, 'files')
@@ -373,7 +377,9 @@ class AllDebrid:
 				item = control.item(label=label, offscreen=True)
 				item.addContextMenuItems(cm)
 				item.setArt({'icon': ad_icon, 'poster': ad_icon, 'thumb': ad_icon, 'fanart': addonFanart, 'banner': ad_icon})
-				item.setInfo(type='video', infoLabels='')
+				#item.setInfo(type='video', infoLabels='')
+				meta = {}
+				control.set_info(item, meta)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
 			except: log_utils.error()
 		control.content(syshandle, 'files')

@@ -152,7 +152,13 @@ class Movies(TMDb):
 				values['imdb'] = ''
 				values['tvdb'] = ''
 				values['metacache'] = False
-				self.list.append(values)
+				if 'recommendations' in url or 'similar' in url:
+					if int(item.get('vote_count')) < 50:
+						continue
+					else:
+						self.list.append(values)
+				else:
+					self.list.append(values)
 			except:
 				from resources.lib.modules import log_utils
 				log_utils.error()

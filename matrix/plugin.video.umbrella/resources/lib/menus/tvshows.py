@@ -120,6 +120,7 @@ class TVshows:
 		self.mdblist_hours = int(getSetting('cache.mdblist'))
 		# Ticket is in to add this feature but currently not available
 		# self.tmdb_certification_link = 'https://api.themoviedb.org/3/discover/tv?api_key=%s&language=en-US&certification_country=US&certification=%s&sort_by=%s&page=1' % ('%s', '%s', self.tmdb_DiscoverSort())
+		self.hide_watched_in_widget = getSetting('enable.umbrellahidewatched') == 'true'
 
 	def get(self, url, idx=True, create_directory=True):
 		self.list = []
@@ -1257,9 +1258,8 @@ class TVshows:
 		from sys import argv # some functions like ActivateWindow() throw invalid handle less this is imported here.
 		
 		if getSetting('trakt.directProgress.scrape') == 'true' and getSetting('enable.playnext') == 'true':
-			control.log('addtvdirectory playlist do not clear',1)
+			pass
 		else:
-			control.log('addtvdirectory playlist clear',1)
 			control.playlist.clear()
 		if not items: # with reuselanguageinvoker on an empty directory must be loaded, do not use sys.exit()
 			control.hide() ; control.notification(title=32002, message=33049)
@@ -1337,22 +1337,34 @@ class TVshows:
 				if trailer: meta.update({'trailer': trailer}) # removed temp so it's not passed to CM items, only skin
 				else: meta.update({'trailer': '%s?action=play_Trailer&type=%s&name=%s&year=%s&imdb=%s' % (sysaddon, 'show', systitle, year, imdb)})
 				item = control.item(label=label, offscreen=True)
-				if 'castandart' in i: item.setCast(i['castandart'])
+				#if 'castandart' in i: item.setCast(i['castandart'])
+				if 'castandart' in i: meta.update({"cast": ['castandart']}) #changed for kodi20 setinfo method
 				item.setArt(art)
 				try: 
 					count = getShowCount(indicators[1], imdb, tvdb) if indicators else None # if indicators and no matching imdb_id in watched items then it returns None and we use TMDb meta to avoid Trakt request
 					if count:
-						item.setProperties({'WatchedEpisodes': str(count['watched']), 'UnWatchedEpisodes': str(count['unwatched'])})
+						if int(count['watched']) > 0:
+							item.setProperties({'WatchedEpisodes': str(count['watched']), 'UnWatchedEpisodes': str(count['unwatched'])})
+						else:
+							item.setProperties({'UnWatchedEpisodes': str(count['unwatched'])})
 						item.setProperties({'TotalSeasons': str(meta.get('total_seasons', '')), 'TotalEpisodes': str(count['total'])})
 						item.setProperty('WatchedProgress', str(int(float(count['watched']) / float(count['total']) * 100)))
 					else:
-						item.setProperties({'WatchedEpisodes': '0', 'UnWatchedEpisodes': str(meta.get('total_aired_episodes', ''))}) # for shows never watched
+						if control.getKodiVersion() >= 20:
+							item.setProperties({'UnWatchedEpisodes': str(meta.get('total_aired_episodes', ''))}) # for shows never watched
+						else:
+							item.setProperties({'WatchedEpisodes': '0', 'UnWatchedEpisodes': str(meta.get('total_aired_episodes', ''))}) # for shows never watched
 						item.setProperties({'TotalSeasons': str(meta.get('total_seasons', '')), 'TotalEpisodes': str(meta.get('total_aired_episodes', ''))})
 				except: pass
 				item.setProperty('tmdb_id', str(tmdb))
-				if is_widget: item.setProperty('isUmbrella_widget', 'true')
-				item.setUniqueIDs({'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb})
-				item.setInfo(type='video', infoLabels=control.metadataClean(meta))
+				if is_widget: 
+					item.setProperty('isUmbrella_widget', 'true')
+					if self.hide_watched_in_widget:
+						if str(meta.get('playcount')) == '1':
+							continue
+				setUniqueIDs = {'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb} #k20setinfo
+				#item.setInfo(type='video', infoLabels=control.metadataClean(meta))
+				control.set_info(item, meta, setUniqueIDs)
 				item.addContextMenuItems(cm)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)
 			except:
@@ -1433,7 +1445,9 @@ class TVshows:
 				cm.append(('[COLOR red]Umbrella Settings[/COLOR]', 'RunPlugin(%s?action=tools_openSettings)' % sysaddon))
 				item = control.item(label=name, offscreen=True)
 				item.setArt({'icon': icon, 'poster': poster, 'thumb': icon, 'fanart': control.addonFanart(), 'banner': poster})
-				item.setInfo(type='video', infoLabels={'plot': name})
+				#item.setInfo(type='video', infoLabels={'plot': name}) #k20setinfo
+				meta = dict({'plot': name})
+				control.set_info(item, meta)
 				item.addContextMenuItems(cm)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)
 			except:

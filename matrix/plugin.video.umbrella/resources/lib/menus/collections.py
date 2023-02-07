@@ -44,6 +44,7 @@ class Collections:
 		self.imdb_link = 'https://www.imdb.com/search/title?title=%s&title_type=%s&num_votes=1000,&countries=us&languages=en&sort=%s' % ('%s', '%s', self.imdb_sort())
 		self.tmdbCollectionsSearch_link = 'https://api.themoviedb.org/3/search/collection?api_key=%s&language=en-US&query=%s&page=1' % (self.tmdb_key, '%s')
 		self.imdblist_hours = int(getSetting('cache.imdblist'))
+		self.hide_watched_in_widget = getSetting('enable.umbrellahidewatched') == 'true'
 
 	def collections_Navigator(self, lite=False):
 		self.addDirectoryItem('Movies', 'collections_Boxset', 'boxsets.png', 'DefaultVideoPlaylists.png')
@@ -695,19 +696,26 @@ class Collections:
 				if trailer: meta.update({'trailer': trailer}) # removed temp so it's not passed to CM items, only infoLabels for skin
 				else: meta.update({'trailer': '%s?action=play_Trailer&type=%s&name=%s&year=%s&imdb=%s' % (sysaddon, 'movie', sysname, year, imdb)})
 				item = control.item(label=label, offscreen=True)
-				if 'castandart' in i: item.setCast(i['castandart'])
+				#if 'castandart' in i: item.setCast(i['castandart'])
+				if 'castandart' in i: meta.update({'castandart':i['castandart']})
 				item.setArt(art)
-				item.setUniqueIDs({'imdb': imdb, 'tmdb': tmdb})
+				#item.setUniqueIDs({'imdb': imdb, 'tmdb': tmdb})
+				setUniqueIDs={'imdb': imdb, 'tmdb': tmdb}
 				item.setProperty('IsPlayable', 'true')
-				if is_widget: item.setProperty('isUmbrella_widget', 'true')
+				if is_widget: 
+					item.setProperty('isUmbrella_widget', 'true')
+					if self.hide_watched_in_widget:
+						if str(meta.get('playcount', 0)) == '1':
+							continue
 				resumetime = Bookmarks().get(name=label, imdb=imdb, tmdb=tmdb, year=str(year), runtime=runtime, ck=True)
 				# item.setProperty('TotalTime', str(meta['duration'])) # Adding this property causes the Kodi bookmark CM items to be added
-				item.setProperty('ResumeTime', str(resumetime))
+				#item.setProperty('ResumeTime', str(resumetime))
 				try:
 					watched_percent = round(float(resumetime) / float(runtime) * 100, 1) # resumetime and runtime are both in seconds
 					item.setProperty('percentplayed', str(watched_percent))
 				except: pass
-				item.setInfo(type='video', infoLabels=control.metadataClean(meta))
+				#item.setInfo(type='video', infoLabels=control.metadataClean(meta))
+				control.set_info(item, meta, setUniqueIDs=setUniqueIDs, resumetime=resumetime)
 				item.addContextMenuItems(cm)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
 			except:
@@ -755,7 +763,9 @@ class Collections:
 			cm.append(('[COLOR red]Umbrella Settings[/COLOR]', 'RunPlugin(plugin://plugin.video.umbrella/?action=tools_openSettings)'))
 			item = control.item(label=name, offscreen=True)
 			item.setArt({'icon': icon, 'poster': poster, 'thumb': poster, 'fanart': fanart, 'banner': poster})
-			item.setInfo(type='video', infoLabels={'plot': name})
+			#item.setInfo(type='video', infoLabels={'plot': name})
+			meta = {'plot': name}
+			control.set_info(item, meta)
 			item.addContextMenuItems(cm)
 			control.addItem(handle=int(argv[1]), url=url, listitem=item, isFolder=True)
 		except:

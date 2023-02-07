@@ -148,7 +148,7 @@
 [COLOR yellow]--[/COLOR][I] Changed to allow highlight color to be used for context.[/I]
 		</news>
 	</extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.11">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.13">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="context.umbrella" version="1.2.8" optional="true" />
@@ -181,8 +181,16 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.6.11 - Jan 23rd, 2023[/COLOR][/B]
---[FIX][I] Fixed add to cloud for debrid.[/I]
+[B][COLOR black]Update - v6.6.13 - Feb 7th, 2023[/COLOR][/B]
+--[FIX][I] Multiple bug fixes under the hood related to Nexus and Kodi 20.[/I]
+--[FIX][I] Corrected add to cloud errors.[/I]
+--[FIX][I] Adjusted to remove number of watched value from 0 to blank if nothing watched.[/I]
+--[ENHANCEMENT][I] Readded Test version detection.[/I]
+--[ENHANCEMENT][I] Added similar to and recommended from Library.[/I]
+--[ENHANCEMENT][I] Adjusted recommended lists from TMDB to remove some (adult) results.[/I]
+--[ENHANCEMENT][I] Hidden scrape added. Not recommended.[/I]
+--[ENHANCEMENT][I] Added Hide Watched in Widgets. Change in Settings - General[/I]
+--[NEXUS][I] Adjusted infotag assignment for Nexus.[/I]
 		</news>
 	</extension>
 </addon><addon id="plugin.video.youtube" name="YouTube" version="6.8.18+matrix.1" provider-name="anxdpanic, bromix">

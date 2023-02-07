@@ -428,7 +428,9 @@ class Premiumize:
 				item = control.item(label=label, offscreen=True)
 				item.addContextMenuItems(cm)
 				item.setArt({'icon': pm_icon, 'poster': pm_icon, 'thumb': pm_icon, 'fanart': addonFanart, 'banner': pm_icon})
-				item.setInfo(type='video', infoLabels='')
+				#item.setInfo(type='video', infoLabels='')
+				meta = {}
+				control.set_info(item, meta)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=isFolder)
 			except: log_utils.error()
 		control.content(syshandle, 'files')
@@ -492,7 +494,9 @@ class Premiumize:
 				item = control.item(label=label, offscreen=True)
 				item.addContextMenuItems(cm)
 				item.setArt({'icon': pm_icon, 'poster': pm_icon, 'thumb': pm_icon, 'fanart': addonFanart, 'banner': pm_icon})
-				item.setInfo(type='video', infoLabels='')
+				#item.setInfo(type='video', infoLabels='')
+				meta = {}
+				control.set_info(item, meta)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=isFolder)
 			except: log_utils.error()
 		control.content(syshandle, 'files')
