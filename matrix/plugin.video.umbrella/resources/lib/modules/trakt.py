@@ -192,8 +192,11 @@ def getTraktDeviceToken(traktDeviceCode):
 		expires_in = traktDeviceCode['expires_in']
 		verification_url = control.lang(32513) % (control.getHighlightColor(), str(traktDeviceCode['verification_url']))
 		user_code = control.lang(32514) % (control.getHighlightColor(), str(traktDeviceCode['user_code']))
-		from resources.lib.modules.source_utils import copy2clip
-		copy2clip(traktDeviceCode['user_code'])
+		try:
+			from resources.lib.modules.source_utils import copy2clip
+			copy2clip(traktDeviceCode['user_code'])
+		except:
+			log_utils.error()
 		control.progressDialog.create(control.lang(32073), control.progress_line % (verification_url, user_code, getLS(40390)))
 		try:
 			time_passed = 0

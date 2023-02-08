@@ -372,6 +372,7 @@ class Episodes:
 
 	def trakt_progress_list(self, url, user, lang, direct=False, upcoming=False):
 		#https://api.trakt.tv/users/me/watched/shows?extended=full
+
 		try:
 			url += '?extended=full'
 			result = trakt.getTrakt(url).json()
@@ -720,6 +721,7 @@ class Episodes:
 		return items
 
 	def episodeDirectory(self, items, unfinished=False, next=True):
+
 		from sys import argv # some functions like ActivateWindow() throw invalid handle less this is imported here.
 		if not items: # with reuselanguageinvoker on an empty directory must be loaded, do not use sys.exit()
 			control.hide() ; control.notification(title=32326, message=33049)
@@ -986,7 +988,6 @@ class Episodes:
 				except: pass
 				setUniqueIDs={'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb}
 
-
 				if upcoming_prependDate and traktUpcomingProgress is True:
 					try:
 						if premiered and meta.get('airtime'): combined='%sT%s' % (premiered, meta.get('airtime', ''))
@@ -996,6 +997,11 @@ class Episodes:
 						meta.update({'title': new_title})
 					except: pass
 				#item.setInfo(type='video', infoLabels=control.metadataClean(meta))
+				
+				try:
+					resumetime = resumetime
+				except:
+					resumetime = ''
 				control.set_info(item, meta, setUniqueIDs=setUniqueIDs, resumetime=resumetime)
 				item.addContextMenuItems(cm)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=isFolder)

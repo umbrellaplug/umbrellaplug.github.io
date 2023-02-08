@@ -155,8 +155,11 @@ def upload_LogFile(name):
 			if supported_platform: list += [('[COLOR %s]  -- Copy url To Clipboard[/COLOR]' % highlight_color, ' ')]
 			select = selectDialog([i[0] for i in list], lang(32196) if name.lower() == 'umbrella' else lang(32199))
 			if 'Copy url To Clipboard' in list[select][0]:
-				from resources.lib.modules.source_utils import copy2clip
-				copy2clip(list[select - 1][1])
+				try:
+					from resources.lib.modules.source_utils import copy2clip
+					copy2clip(list[select - 1][1])
+				except:
+					pass
 		elif 'message' in response.json():
 			notification(message='%s Log upload failed: %s' % (name, str(response.json()['message'])))
 			log('%s Log upload failed: %s' % (name, str(response.json()['message'])), level=LOGERROR)

@@ -68,8 +68,11 @@ class SIMKL:
 		progressDialog = control.progressDialog
 		progressDialog.create(getLS(40346))
 		progressDialog.update(-1, line % (getLS(32513) % (control.getHighlightColor(), 'https://simkl.com/pin/'), getLS(32514) % (control.getHighlightColor(),response['user_code']), getLS(40390)))
-		from resources.lib.modules.source_utils import copy2clip
-		copy2clip(response['user_code'])
+		try:
+			from resources.lib.modules.source_utils import copy2clip
+			copy2clip(response['user_code'])
+		except:
+			log_utils.error()
 		self.auth_timeout = int(response['expires_in'])
 		self.auth_step = int(response['interval'])
 		self.device_code = response['device_code']

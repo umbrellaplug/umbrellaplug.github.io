@@ -1,3 +1,9 @@
+[B][COLOR black]Update - v6.6.14 - Feb 8th, 2023[/COLOR][/B]
+--[FIX][I] Change to copy methods.[/I]
+--[FIX][I] Fix for some items not showing in unaired.[/I]
+--[FIX][I] Adjusted TMDB search for tv show error.[/I]
+--[CREDIT][I] Big thanks to user jigoop1 for their help getting infolist items updated.[/I]
+
 [B][COLOR black]Update - v6.6.13 - Feb 7th, 2023[/COLOR][/B]
 --[FIX][I] Multiple bug fixes under the hood related to Nexus and Kodi 20.[/I]
 --[FIX][I] Corrected add to cloud errors.[/I]

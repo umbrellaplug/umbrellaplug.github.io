@@ -126,8 +126,11 @@ class AllDebrid:
 		progressDialog = control.progressDialog
 		progressDialog.create(getLS(40056))
 		progressDialog.update(-1, line % (getLS(32513) % (control.getHighlightColor(),'https://alldebrid.com/pin/'), getLS(32514) % (control.getHighlightColor(),response['pin']),getLS(40390)))
-		from resources.lib.modules.source_utils import copy2clip
-		copy2clip(response['pin'])
+		try:
+			from resources.lib.modules.source_utils import copy2clip
+			copy2clip(response['pin'])
+		except:
+			log_utils.error()
 		self.check_url = response.get('check_url')
 		control.sleep(2000)
 		while not self.token:

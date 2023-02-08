@@ -69,7 +69,7 @@ class Movies:
 		self.tmdb_discovery_released_link = 'https://api.themoviedb.org/3/discover/movie?api_key=%s&language=en-US&region=US&release_date.gte=%s&release_date.lte=%s&with_release_type=4|5&page=1'% ('%s', (self.yesterday_date-timedelta(days=30)).strftime('%Y-%m-%d'), self.yesterday_date.strftime('%Y-%m-%d'))
 		self.tmdb_recentday = 'https://api.themoviedb.org/3/trending/movie/day?api_key=%s&language=en-US&region=US&page=1'
 		self.tmdb_recentweek = 'https://api.themoviedb.org/3/trending/movie/week?api_key=%s&language=en-US&region=US&page=1'
-		self.search_tmdb_link = 'https://api.themoviedb.org/3/search/movie/?api_key=%s&language=en-US&query=%s&region=US&page=1'% ('%s','%s')
+		self.search_tmdb_link = 'https://api.themoviedb.org/3/search/movie?api_key=%s&language=en-US&query=%s&region=US&page=1'% ('%s','%s')
 
 		self.imdb_link = 'https://www.imdb.com'
 		self.persons_link = 'https://www.imdb.com/search/name/?count=100&name='
@@ -1679,6 +1679,10 @@ class Movies:
 					try: item.setProperty('WatchedProgress', str(int(float(resumetime) / float(runtime) * 100)))
 					except: pass
 				#item.setInfo(type='video', infoLabels=control.metadataClean(meta))
+				try: 
+					resumetime = resumetime
+				except:
+					resumetime = ''
 				control.set_info(item, meta, setUniqueIDs=setUniqueIDs, resumetime=resumetime)
 				item.addContextMenuItems(cm)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)

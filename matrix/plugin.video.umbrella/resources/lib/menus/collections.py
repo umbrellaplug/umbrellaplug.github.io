@@ -715,6 +715,10 @@ class Collections:
 					item.setProperty('percentplayed', str(watched_percent))
 				except: pass
 				#item.setInfo(type='video', infoLabels=control.metadataClean(meta))
+				try: 
+					resumetime = resumetime
+				except:
+					resumetime = ''
 				control.set_info(item, meta, setUniqueIDs=setUniqueIDs, resumetime=resumetime)
 				item.addContextMenuItems(cm)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
