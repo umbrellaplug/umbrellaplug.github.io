@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.15">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.16">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.cocoscrapers" version="1.0.10" />
@@ -148,7 +148,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.6.15 - Feb 13th, 2023[/COLOR][/B]
+[B][COLOR black]Update - v6.6.15/16 - Feb 14th, 2023[/COLOR][/B]
+--[FIX][I] Verison bumped to 6.6.16 to remove excessive logging from context settigs.[/I]
 --[FIX][I] Context items removed on seasons, episodes, tvshows, and movies on Kodi 20.[/I]
 --[FIX][I] Added option for full context menu from widgets in Kodi 20.[/I]
 --[FIX][I] Moved context addon into Umbrella. Context addon is no longer needed. Requirement has been removed.[/I]

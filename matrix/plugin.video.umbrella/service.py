@@ -53,7 +53,7 @@ class PropertiesUpdater(xbmc.Monitor):
 		for id in properties:
 			if control.setting(id) == 'true':
 				xbmc.executebuiltin('SetProperty({0},true,home)'.format(id))
-				xbmc.log('[ plugin.video.umbrella.context ]  menu item enabled: {0}'.format(id), LOGINFO)
+				#xbmc.log('[ plugin.video.umbrella.context ]  menu item enabled: {0}'.format(id), LOGINFO)
 
 
 
@@ -66,7 +66,7 @@ class SettingsMonitor(control.monitor_class):
 		for id in properties:
 			if control.setting(id) == 'true':
 				xbmc.executebuiltin('SetProperty({0},true,home)'.format(id))
-				xbmc.log('[ plugin.video.umbrella.context ]  menu item enabled: {0}'.format(id), LOGINFO)
+				#xbmc.log('[ plugin.video.umbrella.context ]  menu item enabled: {0}'.format(id), LOGINFO)
 		control.log('[ plugin.video.umbrella ]  Settings Monitor Service Starting...', LOGINFO)
 
 	def onSettingsChanged(self):
@@ -81,13 +81,16 @@ class SettingsMonitor(control.monitor_class):
 		control.checkPlayNextEpisodes()
 		control.refresh_debugReversed()
 		control.setContextColors()
-		for id in properties:
-			if control.setting(id) == 'true':
-				xbmc.executebuiltin('SetProperty({0},true,home)'.format(id))
-				xbmc.log('[ plugin.video.umbrella.context ]  menu item enabled: {0}'.format(id), LOGINFO)
-			else:
-				xbmc.executebuiltin('ClearProperty({0},home)'.format(id))
-				xbmc.log('[ plugin.video.umbrella.context ]  menu item disabled: {0}'.format(id), LOGINFO)
+		try:
+			for id in properties:
+				if control.setting(id) == 'true':
+					xbmc.executebuiltin('SetProperty({0},true,home)'.format(id))
+					xbmc.log('[ plugin.video.umbrella.context ]  menu item enabled: {0}'.format(id), LOGINFO)
+				else:
+					xbmc.executebuiltin('ClearProperty({0},home)'.format(id))
+					xbmc.log('[ plugin.video.umbrella.context ]  menu item disabled: {0}'.format(id), LOGINFO)
+		except:
+			log_utils.error()
 
 class SyncMyAccounts:
 	def run(self):
