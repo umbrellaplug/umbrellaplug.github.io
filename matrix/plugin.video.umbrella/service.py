@@ -15,6 +15,20 @@ plugin = 'plugin://plugin.video.umbrella/'
 LOGINFO = log_utils.LOGINFO
 LOGDEBUG = log_utils.LOGDEBUG
 
+properties = [
+	'context.umbrella.settings',
+	'context.umbrella.addtoLibrary',
+	'context.umbrella.traktManager',
+	'context.umbrella.clearProviders',
+	'context.umbrella.clearBookmark',
+	'context.umbrella.rescrape',
+	'context.umbrella.playFromHere',
+	'context.umbrella.autoPlay',
+	'context.umbrella.sourceSelect',
+	'context.umbrella.findSimilar',
+	'context.umbrella.browseSeries',
+	'context.umbrella.browseEpisodes']
+
 class CheckSettingsFile:
 	def run(self):
 		try:
@@ -34,12 +48,25 @@ class CheckSettingsFile:
 		except:
 			log_utils.error()
 
+class PropertiesUpdater(xbmc.Monitor):
+	def __init__(self):
+		for id in properties:
+			if control.setting(id) == 'true':
+				xbmc.executebuiltin('SetProperty({0},true,home)'.format(id))
+				xbmc.log('[ plugin.video.umbrella.context ]  menu item enabled: {0}'.format(id), LOGINFO)
+
+
+
 class SettingsMonitor(control.monitor_class):
 	def __init__ (self):
 		control.monitor_class.__init__(self)
 		control.refresh_playAction()
 		control.refresh_libPath()
 		window.setProperty('umbrella.debug.reversed', control.setting('debug.reversed'))
+		for id in properties:
+			if control.setting(id) == 'true':
+				xbmc.executebuiltin('SetProperty({0},true,home)'.format(id))
+				xbmc.log('[ plugin.video.umbrella.context ]  menu item enabled: {0}'.format(id), LOGINFO)
 		control.log('[ plugin.video.umbrella ]  Settings Monitor Service Starting...', LOGINFO)
 
 	def onSettingsChanged(self):
@@ -54,6 +81,13 @@ class SettingsMonitor(control.monitor_class):
 		control.checkPlayNextEpisodes()
 		control.refresh_debugReversed()
 		control.setContextColors()
+		for id in properties:
+			if control.setting(id) == 'true':
+				xbmc.executebuiltin('SetProperty({0},true,home)'.format(id))
+				xbmc.log('[ plugin.video.umbrella.context ]  menu item enabled: {0}'.format(id), LOGINFO)
+			else:
+				xbmc.executebuiltin('ClearProperty({0},home)'.format(id))
+				xbmc.log('[ plugin.video.umbrella.context ]  menu item disabled: {0}'.format(id), LOGINFO)
 
 class SyncMyAccounts:
 	def run(self):
@@ -339,6 +373,7 @@ def main():
 		# 		schedTrakt.start()
 		break
 	SettingsMonitor().waitForAbort()
+	# start monitoring settings changes events
 	control.log('[ plugin.video.umbrella ]  Settings Monitor Service Stopping...', LOGINFO)
 	del syncTraktService # prob does not kill a running thread
 	control.log('[ plugin.video.umbrella ]  Trakt Sync Service Stopping...', LOGINFO)

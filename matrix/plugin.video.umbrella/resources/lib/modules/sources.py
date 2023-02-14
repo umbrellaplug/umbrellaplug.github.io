@@ -195,7 +195,7 @@ class Sources:
 ## - compare meta received to database and use largest(eventually switch to a request to fetch missing db meta for item)
 			self.imdb_user = getSetting('imdbuser').replace('ur', '')
 			self.tmdb_key = getSetting('tmdb.apikey')
-			if not self.tmdb_key: self.tmdb_key = 'bc96b19479c7db6c8ae805744d0bdfe2'
+			if not self.tmdb_key: self.tmdb_key = 'edde6b5e41246ab79a2697cd125e1781'
 			self.tvdb_key = getSetting('tvdb.apikey')
 			if self.mediatype == 'episode': self.user = str(self.imdb_user) + str(self.tvdb_key)
 			else: self.user = str(self.tmdb_key)

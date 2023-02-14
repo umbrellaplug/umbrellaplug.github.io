@@ -36,6 +36,7 @@ class Seasons:
 		self.showspecials = getSetting('tv.specials') == 'true'
 		self.tmdblist_hours = int(getSetting('cache.tmdblist'))
 		self.hide_watched_in_widget = getSetting('enable.umbrellahidewatched') == 'true'
+		self.useFullContext = getSetting('enable.umbrellawidgetcontext') == 'true'
 
 	def get(self, tvshowtitle, year, imdb, tmdb, tvdb, art, idx=True, create_directory=True): # may need to add a cache duration over-ride param to pass
 		self.list = []
@@ -250,7 +251,10 @@ class Seasons:
 				setUniqueIDs = {'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb}
 				control.set_info(item, meta, setUniqueIDs=setUniqueIDs)
 				#item.setInfo(type='video', infoLabels=control.metadataClean(meta))
-				item.addContextMenuItems(cm)
+				if is_widget and control.getKodiVersion() > 19.5 and self.useFullContext != True:
+					pass
+				else:
+					item.addContextMenuItems(cm)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)
 			except:
 				from resources.lib.modules import log_utils

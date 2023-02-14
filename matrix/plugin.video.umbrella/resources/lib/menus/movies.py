@@ -45,7 +45,7 @@ class Movies:
 		self.lang = control.apiLanguage()['trakt']
 		self.imdb_user = getSetting('imdbuser').replace('ur', '')
 		self.tmdb_key = getSetting('tmdb.apikey')
-		if not self.tmdb_key: self.tmdb_key = 'bc96b19479c7db6c8ae805744d0bdfe2'
+		if not self.tmdb_key: self.tmdb_key = 'edde6b5e41246ab79a2697cd125e1781'
 		self.tmdb_session_id = getSetting('tmdb.sessionid')
 		# self.user = str(self.imdb_user) + str(self.tmdb_key)
 		self.user = str(self.tmdb_key)
@@ -143,6 +143,7 @@ class Movies:
 		self.mdblist_hours = int(getSetting('cache.mdblist'))
 		self.showwatchedlib = getSetting('showwatchedlib')
 		self.hide_watched_in_widget = getSetting('enable.umbrellahidewatched') == 'true'
+		self.useFullContext = getSetting('enable.umbrellawidgetcontext') == 'true'
 
 	def get(self, url, idx=True, create_directory=True):
 		self.list = []
@@ -1684,7 +1685,10 @@ class Movies:
 				except:
 					resumetime = ''
 				control.set_info(item, meta, setUniqueIDs=setUniqueIDs, resumetime=resumetime)
-				item.addContextMenuItems(cm)
+				if is_widget and control.getKodiVersion() > 19.5 and self.useFullContext != True:
+					pass
+				else:
+					item.addContextMenuItems(cm)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
 			except:
 				from resources.lib.modules import log_utils
@@ -1763,7 +1767,11 @@ class Movies:
 				#item.setInfo(type='video', infoLabels={'plot': name})#changed for kodi20 setinfo method
 				meta = dict({'plot': name})
 				control.set_info(item, meta)
-				item.addContextMenuItems(cm)
+				is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
+				if is_widget and control.getKodiVersion() > 19.5 and self.useFullContext != True:
+					pass
+				else:
+					item.addContextMenuItems(cm)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)
 			except:
 				from resources.lib.modules import log_utils

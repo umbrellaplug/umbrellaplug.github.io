@@ -281,7 +281,7 @@ class Navigator:
 	def tools(self):
 		self.addDirectoryItem(32510, 'cache_Navigator', 'settings.png', 'DefaultAddonService.png', isFolder=True)
 		#self.addDirectoryItem(32609, 'tools_openMyAccount', 'MyAccounts.png', 'DefaultAddonService.png', isFolder=False)
-		self.addDirectoryItem(32506, 'tools_contextUmbrellaSettings', 'icon.png', 'DefaultAddonProgram.png', isFolder=False)
+		#self.addDirectoryItem(32506, 'tools_contextUmbrellaSettings', 'icon.png', 'DefaultAddonProgram.png', isFolder=False)
 		#-- Providers - 
 		self.addDirectoryItem(32651, 'tools_cocoScrapersSettings', 'cocoscrapers.png', 'DefaultAddonService.png', isFolder=False)
 		#-- General - 0

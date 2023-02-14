@@ -4446,3 +4446,95 @@ msgstr ""
 msgctxt "#40396"
 msgid "Hidden"
 msgstr ""
+
+msgctxt "#40397"
+msgid "Use Full Context Menu in Widgets (Kodi 20 Only)"
+msgstr ""
+
+msgctxt "#40398"
+msgid "Widget Context Menu"
+msgstr ""
+
+msgctxt "#30001"
+msgid "Return to home screen on back"
+msgstr ""
+
+msgctxt "#30002"
+msgid "Enable/Disable context menu items"
+msgstr ""
+
+msgctxt "#30004"
+msgid "Clear Providers"
+msgstr ""
+
+msgctxt "#30005"
+msgid "Rescrape"
+msgstr ""
+
+msgctxt "#30006"
+msgid "Play from Here"
+msgstr ""
+
+msgctxt "#30007"
+msgid "Auto Play"
+msgstr ""
+
+msgctxt "#30008"
+msgid "Source Select"
+msgstr ""
+
+msgctxt "#30009"
+msgid "Find Similar"
+msgstr ""
+
+msgctxt "#30010"
+msgid "Browse Series"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Browse Episodes"
+msgstr ""
+
+msgctxt "#30012"
+msgid "Context Menu Settings"
+msgstr ""
+
+msgctxt "#30013"
+msgid "Clear Bookmark"
+msgstr ""
+
+msgctxt "#30014"
+msgid "Options"
+msgstr ""
+
+msgctxt "#30015"
+msgid "Notify Me About Available Updates"
+msgstr ""
+
+msgctxt "#30016"
+msgid "Use default option vs Menu"
+msgstr ""
+
+msgctxt "#30017"
+msgid "selected default"
+msgstr ""
+
+msgctxt "#30018"
+msgid "Rescrape Item - AutoPlay"
+msgstr ""
+
+msgctxt "#30019"
+msgid "Rescrape Item - Source Select"
+msgstr ""
+
+msgctxt "#30020"
+msgid "Rescrape Item with All Providers - AutoPlay"
+msgstr ""
+
+msgctxt "#30021"
+msgid "Rescrape Item with All Providers - Source Select"
+msgstr ""
+
+msgctxt "#30021"
+msgid "Rescrape Item with All Providers - Source Select"
+msgstr ""

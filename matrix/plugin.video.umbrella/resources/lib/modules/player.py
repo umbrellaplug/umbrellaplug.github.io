@@ -65,7 +65,7 @@ class Player(xbmc.Player):
 ## - compare meta received to database and use largest(eventually switch to a request to fetch missing db meta for item)
 			self.imdb_user = getSetting('imdbuser').replace('ur', '')
 			self.tmdb_key = getSetting('tmdb.apikey')
-			if not self.tmdb_key: self.tmdb_key = 'bc96b19479c7db6c8ae805744d0bdfe2'
+			if not self.tmdb_key: self.tmdb_key = 'edde6b5e41246ab79a2697cd125e1781'
 			self.tvdb_key = getSetting('tvdb.apikey')
 			if self.media_type == 'episode': self.user = str(self.imdb_user) + str(self.tvdb_key)
 			else: self.user = str(self.tmdb_key)
@@ -604,14 +604,14 @@ class PlayNext(xbmc.Player):
 			next_meta = self.getNext_meta()
 			if not next_meta: raise Exception()
 			from resources.lib.windows.playnext_stillwatching import StillWatchingXML
-			if getSetting('playnext.theme') == '2'and control.skin not in ('skin.auramod'):
-				window = StillWatchingXML('auraplaynext_stillwatching2.xml', control.addonPath(control.addonId()), meta=next_meta)
 			if getSetting('playnext.theme') == '2'and control.skin in ('skin.auramod'):
 				window = StillWatchingXML('auraplaynext_stillwatching.xml', control.addonPath(control.addonId()), meta=next_meta)
+			if getSetting('playnext.theme') == '2'and control.skin not in ('skin.auramod'):
+				window = StillWatchingXML('auraplaynext_stillwatching2.xml', control.addonPath(control.addonId()), meta=next_meta)
 			elif getSetting('playnext.theme') == '1' and control.skin in ('skin.arctic.horizon.2'):
 				window = StillWatchingXML('ahplaynext_stillwatching.xml', control.addonPath(control.addonId()), meta=next_meta)
 			elif getSetting('playnext.theme') == '1' and control.skin not in ('skin.arctic.horizon.2'):
-				window = StillWatchingXML('ahplaynext_stillwatching2.xml', control.addonPath(control.addonId()), meta=next_meta)
+				window = StillWatchingXML('ahplaynext2_stillwatching.xml', control.addonPath(control.addonId()), meta=next_meta)
 			else:
 				window = StillWatchingXML('playnext_stillwatching.xml', control.addonPath(control.addonId()), meta=next_meta)
 			window.run()

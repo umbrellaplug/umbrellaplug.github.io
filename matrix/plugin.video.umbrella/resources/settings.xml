@@ -5606,6 +5606,100 @@
 				</setting>
 			</group>
 		</category>
+		<category id="menu items" label="40398" help="">
+			<group id="1" label="30002">
+				<setting id="context.umbrella.addtoLibrary" type="boolean" label="32551" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="context.umbrella.traktManager" type="boolean" label="32515" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="context.umbrella.clearProviders" type="boolean" label="30004" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="context.umbrella.clearBookmark" type="boolean" label="30013" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="context.umbrella.rescrape" type="boolean" label="30005" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="context.umbrella.rescrape2" type="boolean" label="30016" help="" parent="context.umbrella.rescrape">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="context.umbrella.rescrape">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="context.umbrella.rescrape3" type="integer" label="30017" help="" parent="context.umbrella.rescrape">
+					<level>0</level>
+					<default>3</default>
+					<constraints>
+						<options>
+							<option label="30018">0</option>
+							<option label="30019">1</option>
+							<option label="30020">2</option>
+							<option label="30021">3</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="context.umbrella.rescrape2">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="list" format="string">
+						<heading>30017</heading>
+					</control>
+				</setting>
+				<setting id="context.umbrella.playFromHere" type="boolean" label="30006" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="context.umbrella.autoPlay" type="boolean" label="30007" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="context.umbrella.sourceSelect" type="boolean" label="30008" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="context.umbrella.findSimilar" type="boolean" label="30009" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="context.umbrella.browseSeries" type="boolean" label="30010" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="context.umbrella.browseEpisodes" type="boolean" label="30011" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="enable.umbrellawidgetcontext" type="boolean" label="40397" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+			</group>
+		</category>
 		<category id="debugging" label="32616" help="40207">
 			<group id="1">
 				<setting id="debug.enabled" type="boolean" label="32374" help="">

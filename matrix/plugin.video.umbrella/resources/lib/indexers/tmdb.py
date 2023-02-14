@@ -23,7 +23,7 @@ session.mount('https://api.themoviedb.org', HTTPAdapter(max_retries=retries, poo
 class TMDb:
 	def __init__(self):
 		self.API_key = getSetting('tmdb.apikey')
-		if not self.API_key: self.API_key = 'bc96b19479c7db6c8ae805744d0bdfe2'
+		if not self.API_key: self.API_key = 'edde6b5e41246ab79a2697cd125e1781'
 		self.set_resolutions()
 		self.lang = apiLanguage()['tmdb']
 		self.mpa_country = mpaCountry()
@@ -1068,7 +1068,7 @@ class Auth:
 	def __init__(self):
 		self.auth_base_link = '%s%s' % (base_link, 'authentication')
 		self.API_key = getSetting('tmdb.apikey')
-		if not self.API_key: self.API_key = 'bc96b19479c7db6c8ae805744d0bdfe2'
+		if not self.API_key: self.API_key = 'edde6b5e41246ab79a2697cd125e1781'
 
 	def create_session_id(self, fromSettings=0):
 		try:

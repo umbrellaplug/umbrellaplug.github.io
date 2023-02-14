@@ -93,7 +93,7 @@ class TVshows:
 		self.tvmaze_link = 'https://www.tvmaze.com'
 		self.tmdb_key = getSetting('tmdb.apikey')
 		if self.tmdb_key == '' or self.tmdb_key is None:
-			self.tmdb_key = 'bc96b19479c7db6c8ae805744d0bdfe2'
+			self.tmdb_key = 'edde6b5e41246ab79a2697cd125e1781'
 		self.tmdb_session_id = getSetting('tmdb.sessionid')
 		self.tmdb_link = 'https://api.themoviedb.org'
 		self.tmdb_userlists_link = 'https://api.themoviedb.org/3/account/{account_id}/lists?api_key=%s&language=en-US&session_id=%s&page=1' % ('%s', self.tmdb_session_id) # used by library import only
@@ -121,6 +121,7 @@ class TVshows:
 		# Ticket is in to add this feature but currently not available
 		# self.tmdb_certification_link = 'https://api.themoviedb.org/3/discover/tv?api_key=%s&language=en-US&certification_country=US&certification=%s&sort_by=%s&page=1' % ('%s', '%s', self.tmdb_DiscoverSort())
 		self.hide_watched_in_widget = getSetting('enable.umbrellahidewatched') == 'true'
+		self.useFullContext = getSetting('enable.umbrellawidgetcontext') == 'true'
 
 	def get(self, url, idx=True, create_directory=True):
 		self.list = []
@@ -1365,7 +1366,10 @@ class TVshows:
 				setUniqueIDs = {'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb} #k20setinfo
 				#item.setInfo(type='video', infoLabels=control.metadataClean(meta))
 				control.set_info(item, meta, setUniqueIDs)
-				item.addContextMenuItems(cm)
+				if is_widget and control.getKodiVersion() > 19.5 and self.useFullContext != True:
+					pass
+				else:
+					item.addContextMenuItems(cm)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)
 			except:
 				from resources.lib.modules import log_utils
@@ -1448,7 +1452,11 @@ class TVshows:
 				#item.setInfo(type='video', infoLabels={'plot': name}) #k20setinfo
 				meta = dict({'plot': name})
 				control.set_info(item, meta)
-				item.addContextMenuItems(cm)
+				is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
+				if is_widget and control.getKodiVersion() > 19.5 and self.useFullContext != True:
+					pass
+				else:
+					item.addContextMenuItems(cm)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)
 			except:
 				from resources.lib.modules import log_utils

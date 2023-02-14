@@ -5,7 +5,7 @@
 
 from resources.lib.modules.control import setting as getSetting, refresh as containerRefresh, addonInfo, progressDialogBG, monitor, condVisibility, execute
 from resources.lib.modules import trakt
-tmdb_api_key = 'bc96b19479c7db6c8ae805744d0bdfe2'
+tmdb_api_key = 'edde6b5e41246ab79a2697cd125e1781'
 omdb_api_key = 'd4daa2b'
 tvdb_api_key = '06cff30690f9b9622957044f2159ffae'
 traktIndicators = trakt.getTraktIndicatorsInfo()
