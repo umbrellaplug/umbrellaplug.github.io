@@ -102,7 +102,7 @@
                                     <texture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/star.png</texture>
                                     <animation effect="slide" end="0,8" time="0" condition="true">Conditional</animation>
                                     <visible>!String.IsEmpty(Window().Property(umbrella.rating))</visible>
-						        </control>
+                                </control>
                             </control>
                         </control>
                     </control>

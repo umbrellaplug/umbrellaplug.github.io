@@ -347,7 +347,7 @@ class Movies(TMDb):
 			meta['duration'] = int(result.get('runtime') * 60) if result.get('runtime') else ''
 			meta['spoken_languages'] = result.get('spoken_languages')
 			meta['status'] = result['status']
-			# meta['tagline'] = result.get('tagline', '')
+			meta['tagline'] = result.get('tagline', '')
 			meta['title'] = result.get('title')
 			meta['rating'] = str(result.get('vote_average', ''))
 			meta['votes'] = result.get('vote_count', '')

@@ -13,9 +13,6 @@
             <include>Dimension_UpNext</include>
             <control type="group">
                 <width>upnext_image_w</width>
-                <include content="Object_PosterBack">
-                    <param name="pad" value="-20" />
-                </include>
                 <control type="image">
                     <texture diffuse="diffuse/landscape_w284_h160.png">$INFO[Window().Property(umbrella.thumb)]</texture>
                     <aspectratio scalediffuse="false">scale</aspectratio>

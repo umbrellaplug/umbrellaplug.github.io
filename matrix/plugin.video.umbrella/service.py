@@ -85,10 +85,10 @@ class SettingsMonitor(control.monitor_class):
 			for id in properties:
 				if control.setting(id) == 'true':
 					xbmc.executebuiltin('SetProperty({0},true,home)'.format(id))
-					xbmc.log('[ plugin.video.umbrella.context ]  menu item enabled: {0}'.format(id), LOGINFO)
+					#xbmc.log('[ plugin.video.umbrella.context ]  menu item enabled: {0}'.format(id), LOGINFO)
 				else:
 					xbmc.executebuiltin('ClearProperty({0},home)'.format(id))
-					xbmc.log('[ plugin.video.umbrella.context ]  menu item disabled: {0}'.format(id), LOGINFO)
+					#xbmc.log('[ plugin.video.umbrella.context ]  menu item disabled: {0}'.format(id), LOGINFO)
 		except:
 			log_utils.error()
 

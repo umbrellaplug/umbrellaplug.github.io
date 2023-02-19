@@ -401,7 +401,11 @@ class Player(xbmc.Player):
 					if int(episode) > int(currentEpisode):
 						if not i.get('unaired')== 'true':
 							item.setContentLookup(False)
-							item.addStreamInfo("video", {})
+							if control.getKodiVersion() < 20:
+								item.addStreamInfo("video", {})
+							else:
+								info_tag = item.getVideoInfoTag()
+								info_tag.addVideoStream()
 							cm = []
 							item.addContextMenuItems(cm)
 							#item.setInfo("video", info)

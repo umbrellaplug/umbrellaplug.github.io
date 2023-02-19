@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.16">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.17">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
 		<import addon="script.module.cocoscrapers" version="1.0.10"/>
@@ -147,12 +147,12 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.6.15/16 - Feb 14th, 2023[/COLOR][/B]
---[FIX][I] Verison bumped to 6.6.16 to remove excessive logging from context settings.[/I]
---[FIX][I] Context items removed on seasons, episodes, tvshows, and movies on Kodi 20.[/I]
---[FIX][I] Added option for full context menu from widgets in Kodi 20.[/I]
---[FIX][I] Moved context addon into Umbrella. Context addon is no longer needed. Requirement has been removed.[/I]
---[INFO][I] Issues, support, and other requests should be directed to Github. I will no longer be on reddit.[/I]
+[B][COLOR black]Update - v6.6.17 - Feb 19th, 2023[/COLOR][/B]
+--[FIX][I] Added conditions for Kodi 21 database file.[/I]
+--[FIX][I] Removed bad include from ah2 playnext skin file.[/I]
+--[FIX][I] Added catch for kodi 20+ to remove addStreamInfo error on playlist creation[/I]
+--[FIX][I] Added tagline back into movie meta.[/I]
+--[INFO][I] Work is in progress to remove requirements for other plugins. Metahandler or Trakt requirement will be removed soon.[/I]
 		</news>
 	</extension>
 
