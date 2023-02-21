@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.17">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.18">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.cocoscrapers" version="1.0.10" />
@@ -148,12 +148,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.6.17 - Feb 19th, 2023[/COLOR][/B]
---[FIX][I] Added conditions for Kodi 21 database file.[/I]
---[FIX][I] Removed bad include from ah2 playnext skin file.[/I]
---[FIX][I] Added catch for kodi 20+ to remove addStreamInfo error on playlist creation[/I]
---[FIX][I] Added tagline back into movie meta.[/I]
---[INFO][I] Work is in progress to remove requirements for other plugins. Metahandler or Trakt requirement will be removed soon.[/I]
+[B][COLOR black]Update - v6.6.18 - Feb 21th, 2023[/COLOR][/B]
+--[FIX][I] Fixed issue with playlist creation for playnext from widgets.[/I]
 		</news>
 	</extension>
 

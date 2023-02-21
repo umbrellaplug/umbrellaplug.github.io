@@ -1,3 +1,6 @@
+[B][COLOR black]Update - v6.6.18 - Feb 21th, 2023[/COLOR][/B]
+--[FIX][I] Fixed issue with playlist creation for playnext from widgets.[/I]
+
 [B][COLOR black]Update - v6.6.17 - Feb 19th, 2023[/COLOR][/B]
 --[FIX][I] Added conditions for Kodi 21 database file.[/I]
 --[FIX][I] Removed bad include from ah2 playnext skin file.[/I]
