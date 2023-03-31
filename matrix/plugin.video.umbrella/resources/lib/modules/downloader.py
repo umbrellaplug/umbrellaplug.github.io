@@ -29,15 +29,18 @@ def download(name, image, url, meta_name=None, pack=None): # needs re-write, pac
 	test = unquote(test).replace(" ","")
 	log_utils.log('test2: %s' % str(test), __name__)
 
-
 	if not url: return control.hide()
 	try:
 		file_format = control.setting('downloads.file.format')
 		try: headers = dict(parse_qsl(url.rsplit('|', 1)[1]))
 		except: headers = dict('')
 		url = url.split('|')[0]
-		try: transname = name.translate((None, '\/:*?"<>|')).strip('.')
-		except: transname = name.translate(name.maketrans('', '', '\/:*?"<>|')).strip('.')  # maketrans() is in string module for py2
+		try:
+			name = name.replace(':','')
+		except:
+			pass
+		try: transname = name.translate((None, '\/:*?"<>|')).strip('.').replace(':', '')
+		except: transname = name.translate(name.maketrans('', '', '\/:*?"<>|')).strip('.').replace(':', '')  # maketrans() is in string module for py2
 		# for i in video_extensions: transname = transname.rstrip(i)
 		# if pack == 'season':
 		if pack in ('season', 'show'):
@@ -52,8 +55,10 @@ def download(name, image, url, meta_name=None, pack=None): # needs re-write, pac
 					except: 
 						content = ()
 						if file_format == '0':
-							try: transname = meta_name.translate((None, '\/:*?"<>|')).strip('.')
-							except: transname = meta_name.translate(meta_name.maketrans('', '', '\/:*?"<>|')).strip('.')
+							try:
+								transname = meta_name.translate((None, '\/:*?"<>|')).strip('.').replace(':', '')
+							except:
+								transname = meta_name.translate(meta_name.maketrans('', '', '\/:*?"<>|')).strip('.').replace(':', '')
 			log_utils.log('content: %s' % str(content), __name__)
 			# transname = url.rsplit('/', 1)[1].split('|')[0]
 			transname = unquote(url.rsplit('/', 1)[1].split('|')[0])
@@ -63,14 +68,16 @@ def download(name, image, url, meta_name=None, pack=None): # needs re-write, pac
 			try: content = re.search(r'(.+?)\sS(\d*)E(\d*)$', meta_name, re.I).groups()
 			except: content = ()
 			if file_format == '0':
-				try: transname = meta_name.translate((None, '\/:*?"<>|')).strip('.')
-				except: transname = meta_name.translate(meta_name.maketrans('', '', '\/:*?"<>|')).strip('.')
+				try:
+					transname = meta_name.translate((None, '\/:*?"<>|')).strip('.').replace(':', '')
+				except: transname = meta_name.translate(meta_name.maketrans('', '', '\/:*?"<>|')).strip('.').replace(':', '')
 		else:
 			try: content = re.search(r'(.+?)(?:|\.| - |-|.-.|\s)(?:S|s|\s|\.)(\d{1,2})(?!\d)(?:|\.| - |-|.-.|x|\s)(?:E|e|\s|.)([0-2]{1}[0-9]{1})(?!\w)', name.replace('\'', ''), re.I).groups()
 			except: content = ()
 		log_utils.log('content: %s' % str(content), __name__)
 
 		for i in video_extensions: transname = transname.replace(i, "")
+		transname = transname.replace(':','')
 
 
 		if len(content) == 0:
@@ -81,8 +88,11 @@ def download(name, image, url, meta_name=None, pack=None): # needs re-write, pac
 				except: pass
 			control.makeFile(dest)
 			if meta_name:
-				try: dest = os.path.join(dest, meta_name.translate((None, '\/:*?"<>|')).strip('.'))
-				except: dest = os.path.join(dest, meta_name.translate(meta_name.maketrans('', '', '\/:*?"<>|')).strip('.'))
+				try:
+					meta_trans = meta_name.translate((None, '\/:*?"<>|')).strip('.').replace(':', '')
+					dest = os.path.join(dest, meta_trans)
+				except:
+					dest = os.path.join(dest, meta_name.translate(meta_name.maketrans('', '', '\/:*?"<>|')).strip('.').replace(':', ''))
 			else:
 				try: movie_info = re.search(r'(.+?)(?:\.{0,1}-{0,1}\.{0,1}|\s*)(?:|\(|\[|\.)((?:19|20)(?:[0-9]{2}))', name.replace('\'', '')).groups()
 				except: movie_info = ()
@@ -110,8 +120,8 @@ def download(name, image, url, meta_name=None, pack=None): # needs re-write, pac
 					log_utils.error()
 					pass
 			control.makeFile(dest)
-			try: transtvshowtitle = content[0].translate((None, '\/:*?"<>|')).strip('.').replace('.', ' ')
-			except: transtvshowtitle = content[0].translate(content[0].maketrans('', '', '\/:*?"<>|')).strip('.').replace('.', ' ')
+			try: transtvshowtitle = content[0].translate((None, '\/:*?"<>|')).strip('.').replace('.', ' ').replace(':', '')
+			except: transtvshowtitle = content[0].translate(content[0].maketrans('', '', '\/:*?"<>|')).strip('.').replace('.', ' ').replace(':', '')
 			if not meta_name:
 				transtvshowtitle = titlecase(re.sub(r'[^A-Za-z0-9\s-]+', ' ', transtvshowtitle))
 			dest = os.path.join(dest, transtvshowtitle)

@@ -79,6 +79,7 @@ providercacheFile = joinPath(dataPath, 'providers.db')
 metacacheFile = joinPath(dataPath, 'metadata.db')
 searchFile = joinPath(dataPath, 'search.db')
 libcacheFile = joinPath(dataPath, 'library.db')
+libCacheSimilar = joinPath(dataPath, 'librarymoviescache.db')
 cacheFile = joinPath(dataPath, 'cache.db')
 traktSyncFile = joinPath(dataPath, 'traktSync.db')
 subsFile = joinPath(dataPath, 'substitute.db')
@@ -461,7 +462,7 @@ def set_info(item, meta, setUniqueIDs=None, resumetime=''):
 				info_tag.setUniqueIDs(setUniqueIDs)
 			info_tag.setPath(meta_get('path'))
 			info_tag.setFilenameAndPath(meta_get('filenameandpath'))
-			if meta_get('title') == '':
+			if meta_get('title') == None:
 				info_title = item.getLabel()
 			else:
 				info_title = meta_get('title')

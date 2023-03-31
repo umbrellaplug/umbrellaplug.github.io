@@ -55,6 +55,7 @@ class Episodes:
 		self.calendar_link = 'https://api.tvmaze.com/schedule?date=%s'
 		self.trakt_unfinished_hours = int(getSetting('cache.traktunfinished'))
 		self.trakt_progress_hours = int(getSetting('cache.traktprogress'))
+		self.trakt_history_hours = int(getSetting('cache.trakthistory'))
 		self.simkl_hours = int(getSetting('cache.simkl'))
 		self.hide_watched_in_widget = getSetting('enable.umbrellahidewatched') == 'true'
 		self.useFullContext = getSetting('enable.umbrellawidgetcontext') == 'true'

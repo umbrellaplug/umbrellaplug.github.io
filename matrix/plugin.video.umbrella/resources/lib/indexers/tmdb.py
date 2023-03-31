@@ -1027,6 +1027,7 @@ class TVshows(TMDb):
 			('Oxygen', '132', 'https://i.imgur.com/uFCQvbR.png'),
 			('OWN', '827', 'https://i.postimg.cc/qqFZyk58/own.png'),
 			# ('Playboy TV', '225', 'https://i.postimg.cc/sxVWPpL3/playboy-tv.png'),
+			('Paramount+', '4330', 'https://i.postimg.cc/1zTXGsF6/paramountplus.png'),
 			('Paramount Network', '2076', 'https://i.postimg.cc/fL9YCz5R/paramount-network.png'),
 			('PBS', '14', 'https://i.imgur.com/r9qeDJY.png'),
 			('Peacock', '3353', 'https://i.postimg.cc/76m4v7VW/NBCUniversal-Peacock-Logo.png'),

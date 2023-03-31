@@ -233,6 +233,7 @@ class Player(xbmc.Player):
 			return (poster, thumb, season_poster, fanart, banner, clearart, clearlogo, discart, meta)
 
 	def getWatchedPercent(self):
+		control.log('Playback Getting Watched Percent.', 1)
 		if self.isPlayback():
 			try:
 				position = self.getTime()
@@ -540,8 +541,8 @@ class PlayNext(xbmc.Player):
 
 	def isStill_watching(self):
 		# still_watching = float(control.playlist.getposition() + 1) / self.stillwatching_count # this does not work if you start playback on a divisible position with "stillwatching_count"
-		playlistStart_position = int(playerWindow.getProperty('umbrella.playlistStart_position'))
-		if playlistStart_position: still_watching = float(control.playlist.getposition() - playlistStart_position + 1) / self.stillwatching_count
+		playlistStart_position = playerWindow.getProperty('umbrella.playlistStart_position')
+		if playlistStart_position: still_watching = float(control.playlist.getposition() - int(playlistStart_position) + 1) / self.stillwatching_count
 		else: still_watching = float(control.playlist.getposition() + 1) / self.stillwatching_count
 		if still_watching == 0: return False
 		return still_watching.is_integer()

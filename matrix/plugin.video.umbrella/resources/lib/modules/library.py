@@ -454,6 +454,74 @@ class lib_tools:
 		finally:
 			dbcur.close() ; dbcon.close()
 
+	def cacheLibraryforSimilar(self):
+		#used to cache movies for large library.
+		control.log('[ plugin.video.umbrella ] Cache Library for Similar.', 1)
+		recordsLib = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "id": "1"}')
+		recordsLib = jsloads(recordsLib)['result']['limits']['total']
+		control.log('[ plugin.video.umbrella ]  Library Movie Records: %s' % int(recordsLib), 1)
+		control.makeFile(control.dataPath)
+		dbcon = database.connect(control.libCacheSimilar)
+		dbcur = dbcon.cursor()
+		results = dbcur.execute('''SELECT * FROM movies;''').fetchall()
+		if not results:
+			results = 0
+		else:
+			results = len(results)
+		control.log('[ plugin.video.umbrella ]  Library Movie Cached Records: %s' % int(results), 1)
+		if int(results) != int(recordsLib):
+			try:
+				control.makeFile(control.dataPath)
+				dbcon = database.connect(control.libCacheSimilar)
+				dbcur = dbcon.cursor()
+				dbcur.execute('''DROP TABLE IF EXISTS movies;''')
+				dbcur.execute('''CREATE TABLE IF NOT EXISTS movies (title TEXT, genre TEXT, uniqueid TEXT, rating TEXT, thumbnail TEXT, playcount TEXT, file TEXT, director TEXT, writer TEXT, year TEXT, mpaa TEXT, "set" TEXT, studio TEXT, cast TEXT);''')
+				#"properties" : ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file", "director", "writer", "year", "mpaa", "set", "studio", "cast"]
+				movies = control.jsonrpc('{"jsonrpc":"2.0","method":"VideoLibrary.GetMovies","params":{"properties":["title","genre","uniqueid", "rating","thumbnail","playcount","file","director","writer","year","mpaa","set","studio","cast"]},"id":"42"}')
+				items = jsloads(movies)['result']['movies']
+				lengthItm = len(items)
+				for l in range(lengthItm):
+					myGenre =''
+					uniqueids =''
+					directors=''
+					writers = ''
+					casts = ''
+					studios = ''
+					for p in items[l]['genre']:
+						if p == items[l]['genre'][-1]:
+							myGenre += p
+						else:
+							myGenre += p +","
+					for q in items[l]['uniqueid']:
+						uniqueids = str({"imdb": items[l]['uniqueid'].get('imdb'), "tmdb": items[l]['uniqueid'].get('tmdb')})
+					for ut in items[l]['director']:
+						if ut == items[l]['director'][-1]:
+							directors += ut
+						else:
+							directors += ut +","
+					for uy in items[l]['writer']:
+						if uy == items[l]['writer'][-1]:
+							writers += uy
+						else:
+							writers += uy +","
+					for ud in items[l]['studio']:
+						if ud == items[l]['studio'][-1]:
+							studios += ud
+						else:
+							studios += ud +","
+					for uw in items[l]['cast']:
+						if uw == items[l]['cast'][-1]:
+							casts += uw['name']
+						else:
+							casts += uw['name'] +","
+					dbcur.execute('''INSERT INTO movies Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (items[l]['title'], myGenre, uniqueids, items[l]['rating'], items[l]['thumbnail'], items[l]['playcount'], items[l]['file'], directors, writers, items[l]['year'], items[l]['mpaa'], items[l]['set'], studios, casts))
+				dbcur.connection.commit()
+			except: log_utils.error()
+			finally:
+				dbcur.close() ; dbcon.close()
+
+
+
 
 
 class libmovies:
@@ -461,6 +529,7 @@ class libmovies:
 		self.library_folder = control.joinPath(control.transPath(control.setting('library.movie')), '')
 		self.library_update = control.setting('library.update') or 'true' 
 		self.dupe_chk = control.setting('library.check') or 'true'
+		self.movie_cache = control.setting('library.cachesimilar') or 'false'
 
 	def auto_movie_setup(self):
 		try:
@@ -548,6 +617,8 @@ class libmovies:
 				control.sleep(10000)
 				control.execute('UpdateLibrary(video)')
 			elif service_notification: control.notification(message=32103)
+		if self.movie_cache == 'true':
+			lib_tools.cacheLibraryforSimilar()
 
 	def checkListDB(self, items, url):
 		if not items: return
@@ -665,6 +736,8 @@ class libmovies:
 					control.sleep(10000)
 					control.execute('UpdateLibrary(video)')
 				elif general_notification: control.notification(title=name, message=32104)
+			if self.movie_cache == 'true':
+				lib_tools.cacheLibraryforSimilar()
 		except: pass
 
 	def silent(self, url):
@@ -689,6 +762,8 @@ class libmovies:
 				control.execute('UpdateLibrary(video)')
 			elif general_notification: control.notification(message=32103)
 		if service_notification: control.notification(message=32105)
+		if self.movie_cache == 'true':
+			lib_tools.cacheLibraryforSimilar()
 
 	def range(self, url, list_name, silent=None):
 		#control.hide()
@@ -761,6 +836,8 @@ class libmovies:
 				control.notification(message=32103)
 				control.notification(title='Import Complete', message='[B]%s[/B] items imported from [B]%s[/B] with some strm errors.' % (total_added, list_name))
 		#libuserlist().set_update_dateTime()
+		if self.movie_cache == 'true':
+			lib_tools.cacheLibraryforSimilar()
 
 	def strmFile(self, i):
 		try:

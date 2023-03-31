@@ -98,6 +98,16 @@ class SyncMyAccounts:
 		control.syncAccounts()
 		return control.log('[ plugin.video.umbrella ]  Finished Sync with Scraper', LOGINFO)
 
+class SyncMovieLibrary:
+	def run(self):
+		if control.setting('library.cachesimilar') == 'true':
+			control.log('[ plugin.video.umbrella ]  Sync Library Movies with Umbrella...', LOGINFO)
+			from resources.lib.modules import library
+			library.lib_tools().cacheLibraryforSimilar() 
+			return control.log('[ plugin.video.umbrella ]  Sync Library Movies with Umbrella Done', LOGINFO)
+		else:
+			return
+
 class checkAutoStart:
 	def run(self):
 		control.log('[ plugin.video.umbrella ]  Checking for AutoStart....', LOGINFO)
@@ -352,6 +362,7 @@ def main():
 		SyncMyAccounts().run()
 		PremAccntNotification().run()
 		ReuseLanguageInvokerCheck().run()
+		SyncMovieLibrary().run()
 		control.checkPlayNextEpisodes()
 		if control.setting('library.service.update') == 'true':
 			libraryService = Thread(target=LibraryService().run)

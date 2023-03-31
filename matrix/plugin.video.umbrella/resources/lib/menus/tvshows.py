@@ -6,6 +6,7 @@
 from datetime import datetime, timedelta
 from json import dumps as jsdumps
 import re
+import xbmc
 from threading import Thread
 from urllib.parse import quote_plus, urlencode, parse_qsl, urlparse, urlsplit
 from resources.lib.database import cache, metacache, fanarttv_cache, traktsync
@@ -19,6 +20,7 @@ from resources.lib.modules.playcount import getTVShowOverlay, getShowCount, getS
 from resources.lib.modules import trakt
 from resources.lib.modules import views
 from resources.lib.modules import mdblist
+from resources.lib.modules import tools
 
 getLS = control.lang
 getSetting = control.setting
@@ -42,6 +44,8 @@ class TVshows:
 		self.tvdb_key = getSetting('tvdb.apikey')
 		self.user = str(self.imdb_user) + str(self.tvdb_key)
 		self.useContainerTitles = getSetting('enable.containerTitles') == 'true'
+		self.trakt_directProgressScrape = getSetting('trakt.directProgress.scrape') == 'true'
+		self.trakt_progress_hours = int(getSetting('cache.traktprogress'))
 		if datetime.today().month > 6:
 			traktyears='years='+str(datetime.today().year)
 		else:
@@ -481,7 +485,7 @@ class TVshows:
 		elif sort == 2: tmdb_sort = 'vote_average'
 		elif sort == 3: tmdb_sort = 'vote_count'
 		elif sort in (4, 5, 6): tmdb_sort = 'primary_release_date'
-		tmdb_sort_order = '.asc' if (int(getSetting('sort.movies.order')) == 0) else '.desc'
+		tmdb_sort_order = '.asc' if (int(getSetting('sort.shows.order')) == 0) else '.desc'
 		sort_string = tmdb_sort + tmdb_sort_order
 		if sort == 2: sort_string = sort_string + '&vote_count.gte=500'
 		return sort_string
@@ -1168,6 +1172,180 @@ class TVshows:
 		list = sorted(list, key=lambda k: re.sub(r'(^the |^a |^an )', '', k['name'].lower()))
 		return list
 
+	def progress_shows(self, url):
+		self.list = []
+		try:
+			try: url = getattr(self, url + '_link')
+			except: pass
+			if trakt.getProgressActivity() > cache.timeout(self.trakt_progress_list, url, self.trakt_user, self.lang, self.trakt_directProgressScrape):
+				self.list = cache.get(self.trakt_progress_list, 0, url, self.trakt_user, self.lang, self.trakt_directProgressScrape)
+			else: self.list = cache.get(self.trakt_progress_list, self.trakt_progress_hours, url, self.trakt_user, self.lang, self.trakt_directProgressScrape)
+			self.sort(type='progress')
+			if self.list is None: self.list = []
+			# place new season ep1's at top of list for 1 week
+			prior_week = int(re.sub(r'[^0-9]', '', (self.date_time - timedelta(days=7)).strftime('%Y-%m-%d')))
+			sorted_list = []
+			top_items = [i for i in self.list if i['episode'] == 1 and i['premiered'] and (int(re.sub(r'[^0-9]', '', str(i['premiered']))) >= prior_week)]
+			sorted_list.extend(top_items)
+			sorted_list.extend([i for i in self.list if i not in top_items])
+			self.list = sorted_list
+			if self.list is None: self.list = []
+			self.tvshowDirectory(self.list, unfinished=False, next=False)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications: control.notification(title=32326, message=33049)
+
+	def trakt_progress_list(self, url, user, lang, direct=False, upcoming=False):
+		#https://api.trakt.tv/users/me/watched/shows?extended=full
+
+		try:
+			url += '?extended=full'
+			result = trakt.getTrakt(url).json()
+		except: return
+		items = []
+		# progress_showunaired = getSetting('trakt.progress.showunaired') == 'true'
+		for item in result:
+			try:
+				values = {} ; num_1 = 0
+				if not upcoming and item['show']['status'].lower() == 'ended': # only chk ended cases for all watched otherwise airing today cases get dropped.
+					for i in range(0, len(item['seasons'])):
+						if item['seasons'][i]['number'] > 0: num_1 += len(item['seasons'][i]['episodes'])
+					num_2 = int(item['show']['aired_episodes']) # trakt slow to update "aired_episodes" count on day item airs
+					if num_1 >= num_2: continue
+				season_sort = sorted(item['seasons'][:], key=lambda k: k['number'], reverse=False) # trakt sometimes places season0 at end and episodes out of order. So we sort it to be sure.
+				values['snum'] = season_sort[-1]['number']
+				episode = [x for x in season_sort[-1]['episodes'] if 'number' in x]
+				episode = sorted(episode, key=lambda x: x['number'])
+				values['enum'] = episode[-1]['number']
+				values['added'] = item.get('show').get('updated_at')
+				try: values['lastplayed'] = item.get('last_watched_at')
+				except: values['lastplayed'] = ''
+				values['tvshowtitle'] = item['show']['title']
+				if not values['tvshowtitle']: continue
+				ids = item.get('show', {}).get('ids', {})
+				values['imdb'] = str(ids.get('imdb', '')) if ids.get('imdb') else ''
+				values['tmdb'] = str(ids.get('tmdb', '')) if ids.get('tmdb') else ''
+				values['tvdb'] = str(ids.get('tvdb', '')) if ids.get('tvdb') else ''
+				try: duration = (int(item['episode']['runtime']) * 60)
+				except:
+					try:duration = (int(item['show']['runtime']) * 60)
+					except: duration = ''
+				values['duration'] = duration
+				try: values['trailer'] = control.trailer % item['show']['trailer'].split('v=')[1]
+				except: values['trailer'] = ''
+				try:
+					airs = item['show']['airs']
+					values['airday'] = airs.get('day', '')
+					values['airtime'] = airs.get('time', '')[:5] # Trakt rarely, but does, include seconds in it's airtime.
+					values['airzone'] = airs.get('timezone', '')
+				except: pass
+				items.append(values)
+				
+			except: pass
+		try:
+			hidden = traktsync.fetch_hidden_progress()
+			hidden = [str(i['tvdb']) for i in hidden]
+			items = [i for i in items if i['tvdb'] not in hidden] # removes hidden progress items
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+		def items_list(i):
+			values = i
+			imdb, tmdb, tvdb = i.get('imdb'), i.get('tmdb'), i.get('tvdb')
+			if not tmdb and (imdb or tvdb):
+				try:
+					result = cache.get(tmdb_indexer().IdLookup, 96, imdb, tvdb)
+					values['tmdb'] = str(result.get('id', '')) if result.get('id') else ''
+				except:
+					from resources.lib.modules import log_utils
+					return log_utils.log('tvshowtitle: (%s) missing tmdb_id: ids={imdb: %s, tmdb: %s, tvdb: %s}' % (i['tvshowtitle'], imdb, tmdb, tvdb), __name__, log_utils.LOGDEBUG) # log TMDb shows that they do not have
+			try:
+				showSeasons = cache.get(tmdb_indexer().get_showSeasons_meta, 96, tmdb)
+				if not showSeasons: return
+				key = i['snum'] - 1 if showSeasons['seasons'][0]['season_number'] != 0 else i['snum']
+				try: next_episode_num = i['enum'] + 1 if showSeasons['seasons'][key]['episode_count'] > i['enum'] else 1
+				except: return
+				next_season_num = i['snum'] if next_episode_num == i['enum'] + 1 else i['snum'] + 1
+				if next_season_num > showSeasons['total_seasons']: return
+				if not self.showspecials and next_season_num == 0: return
+				seasonEpisodes = cache.get(tmdb_indexer().get_seasonEpisodes_meta, 96, tmdb, next_season_num)
+				if not seasonEpisodes: return
+				seasonEpisodes = dict((k,v) for k, v in iter(seasonEpisodes.items()) if v is not None and v != '') # remove empty keys so .update() doesn't over-write good meta with empty values.
+				try: episode_meta = [x for x in seasonEpisodes.get('episodes') if x.get('episode') == next_episode_num][0] # to pull just the episode meta we need
+				except: return
+				if not episode_meta['plot']: episode_meta['plot'] = showSeasons['plot'] # some plots missing for eps so use season level plot
+				values.update(showSeasons)
+				values.update(seasonEpisodes)
+				values.update(episode_meta)
+				# if not self.trakt_progressFlatten or self.trakt_directProgressScrape:
+					# for k in ('seasons', 'episodes', 'snum', 'enum'): values.pop(k, None) # pop() keys from showSeasons and seasonEpisodes that are not needed anymore
+				for k in ('episodes', 'snum', 'enum'): values.pop(k, None) # pop() keys from showSeasons and seasonEpisodes that are not needed anymore
+
+				try:
+					if values.get('premiered') and i.get('airtime'): combined = '%sT%s' % (values['premiered'], values['airtime'])
+					else: raise Exception()
+					air_datetime_list = tools.convert_time(stringTime=combined, zoneFrom=i.get('airzone', ''), zoneTo='local', formatInput='%Y-%m-%dT%H:%M', formatOutput='%Y-%m-%dT%H:%M').split('T')
+					air_date, air_time = air_datetime_list[0], air_datetime_list[1]
+				except: air_date, air_time = values.get('premiered', '') if values.get('premiered') else '', i.get('airtime', '') if i.get('airtime') else ''
+				values['unaired'] = ''
+				if upcoming:
+					values['traktUpcomingProgress'] = True
+					try:
+						if values['status'].lower() == 'ended': return
+						elif not air_date: values['unaired'] = 'true'
+						elif int(re.sub(r'[^0-9]', '', air_date)) > int(re.sub(r'[^0-9]', '', str(self.today_date))): values['unaired'] = 'true'
+						elif int(re.sub(r'[^0-9]', '', air_date)) == int(re.sub(r'[^0-9]', '', str(self.today_date))):
+							if air_time:
+								time_now = (self.date_time).strftime('%X')
+								if int(re.sub(r'[^0-9]', '', air_time)) > int(re.sub(r'[^0-9]', '', str(time_now))[:4]): values['unaired'] = 'true'
+								else: return
+							else: pass
+						else: return
+					except:
+						from resources.lib.modules import log_utils
+						log_utils.error('tvshowtitle = %s' % i['tvshowtitle'])
+				else:
+					try:
+						if values['status'].lower() == 'ended': pass
+						elif not air_date:
+							values['unaired'] = 'true'
+						elif int(re.sub(r'[^0-9]', '', air_date)) > int(re.sub(r'[^0-9]', '', str(self.today_date))):
+							values['unaired'] = 'true'
+						elif int(re.sub(r'[^0-9]', '', air_date)) == int(re.sub(r'[^0-9]', '', str(self.today_date))):
+							if air_time:
+								time_now = (self.date_time).strftime('%X')
+								if int(re.sub(r'[^0-9]', '', air_time)) > int(re.sub(r'[^0-9]', '', str(time_now))[:4]):
+									values['unaired'] = 'true'
+							else: pass
+					except:
+						from resources.lib.modules import log_utils
+						log_utils.error('tvshowtitle = %s' % i['tvshowtitle'])
+				if not direct: values['action'] = 'episodes' # for direct progress scraping
+				values['traktProgress'] = True # for direct progress scraping and multi episode watch counts indicators
+				values['extended'] = True # used to bypass calling "super_info()", super_info() no longer used as of 4-12-21 so this could be removed.
+				duration = values['duration']
+				if duration:
+					values.update({'duration': int(duration)*60})
+				if self.enable_fanarttv:
+					extended_art = fanarttv_cache.get(FanartTv().get_tvshow_art, 336, tvdb)
+					if extended_art: values.update(extended_art)
+				self.list.append(values)
+			except:
+				from resources.lib.modules import log_utils
+				log_utils.error()
+		threads = []
+		append = threads.append
+		for i in items:
+			append(Thread(target=items_list, args=(i,)))
+		[i.start() for i in threads]
+		[i.join() for i in threads]
+		return self.list
+
 	def worker(self):
 		try:
 			if not self.list: return
@@ -1304,7 +1482,7 @@ class TVshows:
 					else: fanart = meta.get('fanart2') or meta.get('fanart3') or meta.get('fanart') or addonFanart
 				thumb = meta.get('thumb') or poster or landscape # set to show level poster
 				icon = meta.get('icon') or poster
-				banner = meta.get('banner3') or meta.get('banner2') or meta.get('banner') or addonBanner
+				banner = meta.get('banner3') or meta.get('banner2') or meta.get('banner') or None #changed due to some skins using banner.
 				art = {}
 				art.update({'poster': poster, 'tvshow.poster': poster, 'fanart': fanart, 'icon': icon, 'thumb': thumb, 'banner': banner, 'clearlogo': meta.get('clearlogo', ''),
 						'tvshow.clearlogo': meta.get('clearlogo', ''), 'clearart': meta.get('clearart', ''), 'tvshow.clearart': meta.get('clearart', ''), 'landscape': landscape})
@@ -1360,7 +1538,7 @@ class TVshows:
 				item.setProperty('tmdb_id', str(tmdb))
 				if is_widget: 
 					item.setProperty('isUmbrella_widget', 'true')
-					if self.hide_watched_in_widget:
+					if self.hide_watched_in_widget and str(xbmc.getInfoLabel("Window.Property(xmlfile)")) != 'Custom_1114_Search.xml':
 						if str(meta.get('playcount')) == '1':
 							continue
 				setUniqueIDs = {'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb} #k20setinfo

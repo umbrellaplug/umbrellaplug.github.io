@@ -5107,6 +5107,11 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="library.cachesimilar" type="boolean" label="40399" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
 			</group>
 		</category>
 		<category id="downloads" label="32347" help="40193">

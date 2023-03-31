@@ -4,8 +4,9 @@
 """
 
 from datetime import datetime, timedelta
-from json import dumps as jsdumps
+from json import dumps as jsdumps, loads as jsloads
 import re
+import xbmc
 from threading import Thread
 from urllib.parse import quote_plus, urlencode, parse_qsl, urlparse, urlsplit
 from resources.lib.database import cache, metacache, fanarttv_cache, traktsync
@@ -1351,12 +1352,15 @@ class Movies:
 		try:
 			historyurl = 'https://api.trakt.tv/users/me/history/movies?limit=50&page=1'
 			if tmdb == None:
-				randomItems = self.trakt_list(historyurl, self.trakt_user)
+				if self.traktCredentials:
+					randomItems = self.trakt_list(historyurl, self.trakt_user)
+				else:
+					randomItems = None
 			else:
 				randomItems = {"tmdb": tmdb}
 			if not randomItems:
 				#no random item found from trakt history check library history
-				randomMovies = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": { "filter": {"and": [{"or": [{"operator": "is", "field": "genre", "value": "%s"}]},{"operator": "lessthan", "field": "playcount", "value": "1"}]},  "properties": ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file", "director", "writer", "year", "mpaa"]}, "id": "libGenresUnwatched"}'% orFilterGenre)
+				randomMovies = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": { "filter": {"field": "playcount", "operator": "is", "value": "0"}, "properties" : ["art", "rating", "thumbnail", "playcount", "file", "uniqueid"], "sort": { "order": "ascending", "method": "label", "ignorearticle": true } }, "id": "libMovies"}')
 				randomMovies = jsloads(randomMovies)['result']['movies']
 				randomItems = [({"tmdb": x.get('uniqueid').get('tmdb')}) for x in randomMovies]
 			if not randomItems:
@@ -1373,25 +1377,139 @@ class Movies:
 				neOriginal = originalMovie['genre'].split('/')
 				genres = [x.strip() for x in neOriginal]
 				similar_title = originalMovie["title"]
+				
+				########################################## more than 1 genre
 				if len(genres) > 1:
 					#contruct a batch for jsonrpc instead of a bunch of calls.
 					orFilterGenre = ''
+					localCache = ''
 					for genre in genres:
-						if genre == genres[-1]:
+						if genre == genres[0]:
+							orFilterGenre += '{"operator": "is", "field": "genre", "value": "%s"},' % genre
+							localCache += 'genre like "%' + genre + '%"' #localCache += 'genre like "%' + genre + '%"'
+						elif genre == genres[-1]:
 							orFilterGenre += '{"operator": "is", "field": "genre", "value": "%s"}' % genre
+							#localCache += 'OR genre like %%s%' % genre
+							localCache += 'OR genre like "%' + genre + '%"'
 						else:
 							orFilterGenre += '{"operator": "is", "field": "genre", "value": "%s"},' % genre
-					
-					genreResults = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter": {"or": [%s]}, "properties" : ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file", "director", "writer", "year", "mpaa", "set", "studio", "cast"] }, "id": "1"}'% orFilterGenre)
+							#localCache += 'OR genre like %%s% ' % genre
+							localCache += 'OR genre like "%' + genre + '%"'
+					if control.setting('library.cachesimilar') == 'false':
+						genreResults = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter": {"or": [%s]}, "properties" : ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file", "director", "writer", "year", "mpaa", "set", "studio", "cast"] }, "id": "1"}'% orFilterGenre)
 					#without watched
 					#genreResults = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": { "filter": {"and": [{"or": [%s]},{"operator": "lessthan", "field": "playcount", "value": "1"}]},  "properties": ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file", "director", "writer", "year", "mpaa"]}, "id": "libGenresUnwatched"}'% orFilterGenre)
-					sameGenreMovies = jsloads(genreResults)['result']['movies']
+						sameGenreMovies = jsloads(genreResults)['result']['movies']
+					else:
+						try:
+							if not control.existsPath(control.dataPath): control.makeFile(control.dataPath)
+							dbcon = database.connect(control.libCacheSimilar)
+							dbcur = dbcon.cursor()
+							dbcur.execute('''CREATE TABLE IF NOT EXISTS movies (title TEXT, genre TEXT, uniqueid TEXT, rating TEXT, thumbnail TEXT, playcount TEXT, file TEXT, director TEXT, writer TEXT, year TEXT, mpaa TEXT, "set" TEXT, studio TEXT, cast TEXT);''')
+							dbcur.connection.commit()
+						except: log_utils.error()
+						try:
+							sameGenreMoviesSelect = dbcur.execute('''SELECT * FROM movies WHERE %s;'''% localCache).fetchall()
+							if not sameGenreMoviesSelect: 
+								return
+							sameGenreMoviesStr = ''
+							sameGenreMovies = []
+							for dick in sameGenreMoviesSelect:
+								sameGenreMoviesStr = ''
+								sameGenreMoviesStr += '{"title":"'+ dick[0] +'",'
+								batman = dick[1].split(",")
+								batman = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, batman)))
+								sameGenreMoviesStr += '"genre":['+ batman +'],'
+								robin = dick[2].replace("'",'"').replace("{","").replace("}","")
+								sameGenreMoviesStr += '"uniqueid":{'+ robin +'},'
+								sameGenreMoviesStr += '"rating":'+ dick[3] +','
+								alfred = dick[7].split(",")
+								alfred = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, alfred)))
+								sameGenreMoviesStr += '"director":['+ alfred +'],'
+								penguin = dick[8].split(",")
+								penguin = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, penguin)))
+								sameGenreMoviesStr += '"writer":['+ penguin +'],'
+								sameGenreMoviesStr += '"year":"'+ dick[9] +'",'
+								sameGenreMoviesStr += '"mpaa":"'+ dick[10] +'",'
+								sameGenreMoviesStr += '"set":"'+ dick[11] +'",'
+								joker = dick[12].split(",")
+								joker = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, joker)))
+								sameGenreMoviesStr += '"studio":['+ joker +'],'
+								castor = dick[13].split(",")
+								for count, dicks in enumerate(castor):
+									castor[count] = {"name": str(dicks).replace("'",'').replace('"','')}
+								castor = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, castor)))
+								castor = castor.replace("'",'"')
+								sameGenreMoviesStr += '"cast":['+ castor +']}'
+								try:
+									#trying to append value
+									sameGenreMovies.append(jsloads(sameGenreMoviesStr))
+								except:
+									control.log('sameGenreMoviesStr: %s' % sameGenreMoviesStr, 1)
+						except: 
+							from resources.lib.modules import log_utils
+							log_utils.error()
+						finally:
+							dbcur.close() ; dbcon.close()
+				########################################## 1 genre
 				else:
-					#if self.showwatchedlib == 'false':
-						#genreResults = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter": {"and": [{"operator": "is", "field": "genre", "value": "%s"},{"operator": "lessthan", "field": "playcount", "value": "1"}]}, "properties" : ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file", "director", "writer", "year", "mpaa"] }, "id": "1"}'% genres[0])
-					#else:
-					genreResults = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter": {"operator": "is", "field": "genre", "value": "%s"}, "properties" : ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file", "director", "writer", "year", "mpaa", "set", "studio", "cast"] }, "id": "1"}'% genres[0])
-					sameGenreMovies = jsloads(genreResults)['result']['movies']
+					if control.setting('library.cachesimilar') == 'false':
+						genreResults = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter": %s, "properties" : ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file", "director", "writer", "year", "mpaa", "set", "studio", "cast"] }, "id": "1"}'% genre)
+					#without watched
+					#genreResults = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": { "filter": {"and": [{"or": [%s]},{"operator": "lessthan", "field": "playcount", "value": "1"}]},  "properties": ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file", "director", "writer", "year", "mpaa"]}, "id": "libGenresUnwatched"}'% orFilterGenre)
+						sameGenreMovies = jsloads(genreResults)['result']['movies']
+					else:
+						try:
+							if not control.existsPath(control.dataPath): control.makeFile(control.dataPath)
+							dbcon = database.connect(control.libCacheSimilar)
+							dbcur = dbcon.cursor()
+							dbcur.execute('''CREATE TABLE IF NOT EXISTS movies (title TEXT, genre TEXT, uniqueid TEXT, rating TEXT, thumbnail TEXT, playcount TEXT, file TEXT, director TEXT, writer TEXT, year TEXT, mpaa TEXT, "set" TEXT, studio TEXT, cast TEXT);''')
+							dbcur.connection.commit()
+						except: log_utils.error()
+						try:
+							localGenre = 'genre like "%' + genres[0] + '%"'
+							sameGenreMoviesSelect = dbcur.execute('''SELECT * FROM movies WHERE %s;'''% localGenre).fetchall()
+							if not sameGenreMoviesSelect: 
+								return
+							sameGenreMoviesStr = ''
+							sameGenreMovies = []
+							for dick in sameGenreMoviesSelect:
+								sameGenreMoviesStr = ''
+								sameGenreMoviesStr += '{"title":"'+ dick[0] +'",'
+								batman = dick[1].split(",")
+								batman = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, batman)))
+								sameGenreMoviesStr += '"genre":['+ batman +'],'
+								robin = dick[2].replace("'",'"').replace("{","").replace("}","")
+								sameGenreMoviesStr += '"uniqueid":{'+ robin +'},'
+								sameGenreMoviesStr += '"rating":'+ dick[3] +','
+								alfred = dick[7].split(",")
+								alfred = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, alfred)))
+								sameGenreMoviesStr += '"director":['+ alfred +'],'
+								penguin = dick[8].split(",")
+								penguin = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, penguin)))
+								sameGenreMoviesStr += '"writer":['+ penguin +'],'
+								sameGenreMoviesStr += '"year":"'+ dick[9] +'",'
+								sameGenreMoviesStr += '"mpaa":"'+ dick[10] +'",'
+								sameGenreMoviesStr += '"set":"'+ dick[11] +'",'
+								joker = dick[12].split(",")
+								joker = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, joker)))
+								sameGenreMoviesStr += '"studio":['+ joker +'],'
+								castor = dick[13].split(",")
+								for count, dicks in enumerate(castor):
+									castor[count] = {"name": str(dicks).replace("'",'').replace('"','')}
+								castor = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, castor)))
+								castor = castor.replace("'",'"')
+								sameGenreMoviesStr += '"cast":['+ castor +']}'
+								try:
+									#trying to append value
+									sameGenreMovies.append(jsloads(sameGenreMoviesStr))
+								except:
+									control.log('sameGenreMoviesStr: %s' % sameGenreMoviesStr, 1)
+						except: 
+							from resources.lib.modules import log_utils
+							log_utils.error()
+						finally:
+							dbcur.close() ; dbcon.close()
 				set_genres = set(genres)
 				set_directors = set([originalMovie["director"]])
 				set_writers = set([originalMovie["writer"]])
@@ -1429,8 +1547,8 @@ class Movies:
 						except:
 							set_score = 0
 						# year_score is "closeness" in release year, scaled to 1 (0 if not from same decade)
-						if int(originalMovie["year"]) and int(item["year"]) and abs(float(originalMovie["rating"])-item["year"]) < 10:
-							year_score = 1 - abs(originalMovie["year"]-item["year"])//10
+						if int(originalMovie["year"]) and int(item["year"]) and abs(float(originalMovie["rating"])-int(item["year"])) < 10:
+							year_score = 1 - abs(originalMovie["year"]-int(item["year"]))//10
 						else:
 							year_score = 0
 						# mpaa_score gets 1 if same mpaa rating, otherwise 0
@@ -1670,7 +1788,7 @@ class Movies:
 				item.setProperty('IsPlayable', 'true')
 				if is_widget: 
 					item.setProperty('isUmbrella_widget', 'true')
-					if self.hide_watched_in_widget:
+					if self.hide_watched_in_widget and str(xbmc.getInfoLabel("Window.Property(xmlfile)")) != 'Custom_1114_Search.xml':
 						if str(meta.get('playcount', 0)) == '1':
 							continue
 				if self.unairedcolor not in labelProgress:
@@ -1685,6 +1803,7 @@ class Movies:
 				except:
 					resumetime = ''
 				control.set_info(item, meta, setUniqueIDs=setUniqueIDs, resumetime=resumetime)
+
 				if is_widget and control.getKodiVersion() > 19.5 and self.useFullContext != True:
 					pass
 				else:

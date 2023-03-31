@@ -5,7 +5,6 @@
 
 from datetime import datetime
 from json import dumps as jsdumps, loads as jsloads
-from logging import exception
 import re
 import requests
 from requests.adapters import HTTPAdapter
@@ -932,6 +931,7 @@ def watchedShowsTime(tvdb, season, episode):
 	except: log_utils.error()
 
 def cachesyncTV(imdb, tvdb): # sync full watched shows then sync imdb_id "season indicators" and "season counts"
+	control.log('Umbrella cache sync tv.', 1)
 	try:
 		threads = [Thread(target=cachesyncTVShows), Thread(target=cachesyncSeasons, args=(imdb, tvdb))]
 		[i.start() for i in threads]
@@ -940,10 +940,15 @@ def cachesyncTV(imdb, tvdb): # sync full watched shows then sync imdb_id "season
 	except: log_utils.error()
 
 def cachesyncTVShows(timeout=0):
-	indicators = traktsync.get(syncTVShows, timeout)
-	#if getSetting('sync.watched.library') == 'true':
-		#syncTVShowsLibrary(indicators)
-	return indicators
+	control.log('Umbrella cache sync tv shows.', 1)
+	try:
+		indicators = traktsync.get(syncTVShows, timeout)
+		#if getSetting('sync.watched.library') == 'true':
+			#syncTVShowsLibrary(indicators)
+		return indicators
+	except:
+		indicators = ''
+		return indicators
 
 def syncTVShows(): # sync all watched shows ex. [({'imdb': 'tt12571834', 'tvdb': '384435', 'tmdb': '105161', 'trakt': '163639'}, 16, [(1, 16)]), ({'imdb': 'tt11761194', 'tvdb': '377593', 'tmdb': '119845', 'trakt': '158621'}, 2, [(1, 1), (1, 2)])]
 	try:
@@ -1085,6 +1090,7 @@ def service_syncSeasons(): # season indicators and counts for watched shows ex. 
 	except: log_utils.error()
 
 def markMovieAsWatched(imdb):
+	control.log('Umbrella marking movie as watched',1)
 	try:
 		result = getTraktAsJson('/sync/history', {"movies": [{"ids": {"imdb": imdb}}]})
 		return result['added']['movies'] != 0
