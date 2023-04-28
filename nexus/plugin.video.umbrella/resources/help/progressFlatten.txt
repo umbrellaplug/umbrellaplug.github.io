@@ -1,0 +1,8 @@
+
+When [B]"Direct Progress scraping"[/B] is enabled the setting [B]"Browse Progress - load all remaining episodes of series"[/B] will control the context menu option [B]"Browse Progress"[/B] to load either all remaining episode progress items for the entire series or only the remaining episodes of the given season.
+
+When [B]"Direct Progress scraping"[/B] is disabled the setting [B]"Browse Progress - load all remaining episodes of series"[/B] will control what is loaded when user selects the progress item as either all remaining episode progress items for the entire series or only the remaining episodes of the given season.
+
+Note:
+ if you use continual playback with "PlayNext" feature this setting would allow you to continual play the entire remaining episodes of a series vs. the remaining episodes of a season.
+

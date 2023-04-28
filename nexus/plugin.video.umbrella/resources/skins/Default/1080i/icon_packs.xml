@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<!-- <defaultcontrol>2050</defaultcontrol> -->
+	<controls>
+		<control type="image">
+			<description>background</description>
+			<left>0</left>
+			<top>0</top>
+			<width>1920</width>
+			<height>1080</height>
+			<texture>common/black.png</texture>
+		</control>
+		<control type="image">
+			<left>0</left>
+			<top>0</top>
+			<width>1920</width>
+			<height>1080</height>
+			<texture background="true">$INFO[Window.Property(umbrella.fanart)]</texture>
+			<animation effect="fade" start="100" end="20" time="0" tween="sine" easing="in">WindowOpen</animation>
+		</control>
+		<control type="group" id="1">
+			<description>List Header</description>
+			<left>25</left>
+			<top>0</top>
+			<height>70</height>
+			<width min="0" max="1920">auto</width>
+			<control type="group">
+				<description>OK, Cancel, and Select All Buttons</description>
+				<visible>!Player.HasVideo</visible>
+				<left>1750</left>
+				<top>0</top>
+					<control type="button" id="2051">
+						<description>OK Button</description>
+						<ondown>2050</ondown>
+						<onright>2050</onright>
+						<onleft>2051</onleft>
+						<width>120</width>
+						<height>70</height>
+						<textoffsetx>0</textoffsetx>
+						<texturefocus colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/button5.png</texturefocus>
+						<texturenofocus>common/button5.png</texturenofocus>
+						<label>Back</label>
+						<font>font12</font>
+						<align>center</align>
+						<textcolor>white</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<visible>true</visible>
+					</control>
+			</control>
+			<control type="list" id="2050">
+				<description>Icon Packs</description>
+				<visible>!Player.HasVideo</visible>
+				<viewtype>list</viewtype>
+				<left>0</left>
+				<top>80</top>
+				<width>1920</width>
+				<height>1000</height>
+				<onright>2051</onright>
+				<onleft>2051</onleft>
+				<onup>2051</onup>
+				<ondown>2050</ondown>
+				<scrolltime tween="sine">400</scrolltime>
+				<orientation>Vertical</orientation>
+				<itemlayout height="100" width="1325">
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<aligny>center</aligny>
+						<texture background="true">$INFO[ListItem.Property(umbrella.poster)]</texture>
+					</control>
+					<control type="label">
+						<description>Line 1 Pack Name</description>
+						<left>140</left>
+						<top>15</top>
+						<width>1720</width>
+						<height>25</height>
+						<font>font13</font>
+						<textcolor>white</textcolor>
+						<align>left</align>
+						<aligny>bottom</aligny>
+						<label>[COLOR $INFO[Window().Property(umbrella.highlight.color)]][B]Icon Package Name: $INFO[ListItem.Property(umbrella.title)][/B][/COLOR]</label>
+					</control>
+					<control type="label">
+						<description>Line 2 Pack Name Downloaded</description>
+						<left>140</left>
+						<top>50</top>
+						<width>1720</width>
+						<height>25</height>
+						<font>font13</font>
+						<textcolor>white</textcolor>
+						<align>left</align>
+						<aligny>bottom</aligny>
+						<label>[COLOR $INFO[Window().Property(umbrella.highlight.color)]][B]Downloaded: Yes[/B][/COLOR]</label>
+						<visible>String.IsEqual(ListItem.Property(umbrella.active),0)+String.IsEqual(ListItem.Property(umbrella.downloaded),1)</visible>
+					</control>
+					<control type="label">
+						<description>Line 2 Pack Name Not Downloaded</description>
+						<left>140</left>
+						<top>50</top>
+						<width>1720</width>
+						<height>25</height>
+						<font>font13</font>
+						<textcolor>white</textcolor>
+						<align>left</align>
+						<aligny>bottom</aligny>
+						<label>[COLOR $INFO[Window().Property(umbrella.highlight.color)]][B]Downloaded: No[/B][/COLOR]</label>
+						<visible>String.IsEqual(ListItem.Property(umbrella.active),0)+String.IsEqual(ListItem.Property(umbrella.downloaded),0)</visible>
+					</control>
+					<control type="label">
+						<description>Line 2 Pack Name Downloaded and Active</description>
+						<left>140</left>
+						<top>50</top>
+						<width>1720</width>
+						<height>25</height>
+						<font>font13</font>
+						<textcolor>white</textcolor>
+						<align>left</align>
+						<aligny>bottom</aligny>
+						<label>[COLOR $INFO[Window().Property(umbrella.highlight.color)]][B]Downloaded: Yes | Currently Active Package[/B][/COLOR]</label>
+						<visible>String.IsEqual(ListItem.Property(umbrella.active),1)</visible>
+					</control>
+				</itemlayout>
+				<focusedlayout height="100" width="1325">
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>1920</width>
+						<height>100</height>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/white.png</texture>
+					</control>
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>1920</width>
+						<height>100</height>
+						<texture colordiffuse="gainsboro">common/white.png</texture>
+						<visible>!Control.HasFocus(2050)</visible>
+					</control>
+					<control type="image">
+						<left>00</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<aligny>center</aligny>
+						<texture background="true">$INFO[ListItem.Property(umbrella.poster)]</texture>
+					</control>
+					<control type="label">
+						<description>Line 1 Pack Name</description>
+						<left>140</left>
+						<top>15</top>
+						<width>1720</width>
+						<height>25</height>
+						<font>font13</font>
+						<textcolor>white</textcolor>
+						<align>left</align>
+						<aligny>bottom</aligny>
+						<label>[COLOR black][B]Icon Package Name: $INFO[ListItem.Property(umbrella.title)][/B][/COLOR]</label>
+					</control>
+					<control type="label">
+						<description>Line 2 Pack Name Downloaded</description>
+						<left>140</left>
+						<top>50</top>
+						<width>1720</width>
+						<height>25</height>
+						<font>font13</font>
+						<textcolor>white</textcolor>
+						<align>left</align>
+						<aligny>bottom</aligny>
+						<label>[COLOR black][B]Downloaded: Yes[/B][/COLOR]</label>
+						<visible>String.IsEqual(ListItem.Property(umbrella.active),0)+String.IsEqual(ListItem.Property(umbrella.downloaded),1)</visible>
+					</control>
+					<control type="label">
+						<description>Line 2 Pack Name Not Downloaded</description>
+						<left>140</left>
+						<top>50</top>
+						<width>1720</width>
+						<height>25</height>
+						<font>font13</font>
+						<textcolor>white</textcolor>
+						<align>left</align>
+						<aligny>bottom</aligny>
+						<label>[COLOR black][B]Downloaded: No[/B][/COLOR]</label>
+						<visible>String.IsEqual(ListItem.Property(umbrella.active),0)+String.IsEqual(ListItem.Property(umbrella.downloaded),0)</visible>
+					</control>
+					<control type="label">
+						<description>Line 2 Pack Name Downloaded and Active</description>
+						<left>140</left>
+						<top>50</top>
+						<width>1720</width>
+						<height>25</height>
+						<font>font13</font>
+						<textcolor>white</textcolor>
+						<align>left</align>
+						<aligny>bottom</aligny>
+						<label>[COLOR black][B]Downloaded: Yes | Currently Active Package[/B][/COLOR]</label>
+						<visible>String.IsEqual(ListItem.Property(umbrella.active),1)</visible>
+					</control>
+				</focusedlayout>
+			</control>
+		</control>
+	</controls>
+</window>

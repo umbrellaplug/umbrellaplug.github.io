@@ -1,0 +1,5 @@
+
+The [B]<reuselanguageinvoker>[/B] element is a feature introduced with Kodi 18.0 that changes the way
+the python invoker works in Kodi trying to reuse the invoker instances as much as possible. As a
+result, the addon performance is greatly improved. Please note that instability issues may occur
+due to reported bugs in this new implementation.  Test on your own!!!

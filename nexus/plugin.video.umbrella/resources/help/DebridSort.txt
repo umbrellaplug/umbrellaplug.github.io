@@ -1,0 +1,1 @@
+This setting will sort by scraper provider.  If you use torrent file size sorting that setting will take priority and render this setting virtually in-effective.
