@@ -463,6 +463,7 @@ class lib_tools:
 		control.makeFile(control.dataPath)
 		dbcon = database.connect(control.libCacheSimilar)
 		dbcur = dbcon.cursor()
+		dbcur.execute('''CREATE TABLE IF NOT EXISTS movies (title TEXT, genre TEXT, uniqueid TEXT UNIQUE, rating TEXT, thumbnail TEXT, playcount TEXT, file TEXT, director TEXT, writer TEXT, year TEXT, mpaa TEXT, "set" TEXT, studio TEXT, cast TEXT);''')
 		results = dbcur.execute('''SELECT * FROM movies;''').fetchall()
 		if not results:
 			results = 0
@@ -474,8 +475,8 @@ class lib_tools:
 				control.makeFile(control.dataPath)
 				dbcon = database.connect(control.libCacheSimilar)
 				dbcur = dbcon.cursor()
-				dbcur.execute('''DROP TABLE IF EXISTS movies;''')
-				dbcur.execute('''CREATE TABLE IF NOT EXISTS movies (title TEXT, genre TEXT, uniqueid TEXT, rating TEXT, thumbnail TEXT, playcount TEXT, file TEXT, director TEXT, writer TEXT, year TEXT, mpaa TEXT, "set" TEXT, studio TEXT, cast TEXT);''')
+				dbcur.execute('''DROP TABLE IF EXISTS movies_temp;''')
+				dbcur.execute('''CREATE TABLE IF NOT EXISTS movies_temp (title TEXT, genre TEXT, uniqueid TEXT UNIQUE, rating TEXT, thumbnail TEXT, playcount TEXT, file TEXT, director TEXT, writer TEXT, year TEXT, mpaa TEXT, "set" TEXT, studio TEXT, cast TEXT);''')
 				#"properties" : ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file", "director", "writer", "year", "mpaa", "set", "studio", "cast"]
 				movies = control.jsonrpc('{"jsonrpc":"2.0","method":"VideoLibrary.GetMovies","params":{"properties":["title","genre","uniqueid", "rating","thumbnail","playcount","file","director","writer","year","mpaa","set","studio","cast"]},"id":"42"}')
 				items = jsloads(movies)['result']['movies']
@@ -514,12 +515,37 @@ class lib_tools:
 							casts += uw['name']
 						else:
 							casts += uw['name'] +","
-					dbcur.execute('''INSERT INTO movies Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (items[l]['title'], myGenre, uniqueids, items[l]['rating'], items[l]['thumbnail'], items[l]['playcount'], items[l]['file'], directors, writers, items[l]['year'], items[l]['mpaa'], items[l]['set'], studios, casts))
+					try:
+						dbcur.execute('''INSERT INTO movies_temp Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (items[l]['title'], myGenre, uniqueids, items[l]['rating'], items[l]['thumbnail'], items[l]['playcount'], items[l]['file'], directors, writers, items[l]['year'], items[l]['mpaa'], items[l]['set'], studios, casts))
+					except:
+						control.log('[ plugin.video.umbrella ]  Cannot add title to movies_temp. Title: %s UniqueID: %s' % (items[l]['title'], uniqueids ), 1)
+				control.log('[ plugin.video.umbrella ]  Adding new movies into cache list.', 1)
+				#dbcur.execute('''DROP TABLE IF EXISTS movies;''') #we are not going to drop the table anymore.
+				#dbcur.execute('''CREATE TABLE IF NOT EXISTS movies (title TEXT, genre TEXT, uniqueid TEXT, rating TEXT, thumbnail TEXT, playcount TEXT, file TEXT, director TEXT, writer TEXT, year TEXT, mpaa TEXT, "set" TEXT, studio TEXT, cast TEXT);''')
+				dbcur.execute('''INSERT OR REPLACE INTO movies SELECT * FROM movies_temp;''')
 				dbcur.connection.commit()
+				control.refresh()
 			except: log_utils.error()
 			finally:
 				dbcur.close() ; dbcon.close()
+				self.syncDeletedfromCache()
 
+
+
+	def syncDeletedfromCache(self):
+		try:
+			control.makeFile(control.dataPath)
+			dbcon = database.connect(control.libCacheSimilar)
+			dbcur = dbcon.cursor()
+			#remove duplicates.....
+			#dbcur.execute('''DELETE FROM movies WHERE rowid > (SELECT MIN(rowid) FROM movies p2 WHERE movies.title = p2.title AND movies.genre = p2.genre);''')
+			#delete everything not in movies_temp
+			dbcur.execute('''DELETE FROM movies WHERE title NOT IN (SELECT title from movies_temp);''')
+			control.log('[ plugin.video.umbrella ]  Deleting items that are no longer in library from cache.', 1)
+			dbcur.connection.commit()
+		except: log_utils.error()
+		finally:
+			dbcur.close() ; dbcon.close()
 
 
 
@@ -618,7 +644,7 @@ class libmovies:
 				control.execute('UpdateLibrary(video)')
 			elif service_notification: control.notification(message=32103)
 		if self.movie_cache == 'true':
-			lib_tools.cacheLibraryforSimilar()
+			lib_tools().cacheLibraryforSimilar()
 
 	def checkListDB(self, items, url):
 		if not items: return
@@ -737,7 +763,7 @@ class libmovies:
 					control.execute('UpdateLibrary(video)')
 				elif general_notification: control.notification(title=name, message=32104)
 			if self.movie_cache == 'true':
-				lib_tools.cacheLibraryforSimilar()
+				lib_tools().cacheLibraryforSimilar()
 		except: pass
 
 	def silent(self, url):
@@ -763,7 +789,7 @@ class libmovies:
 			elif general_notification: control.notification(message=32103)
 		if service_notification: control.notification(message=32105)
 		if self.movie_cache == 'true':
-			lib_tools.cacheLibraryforSimilar()
+			lib_tools().cacheLibraryforSimilar()
 
 	def range(self, url, list_name, silent=None):
 		#control.hide()
@@ -837,7 +863,7 @@ class libmovies:
 				control.notification(title='Import Complete', message='[B]%s[/B] items imported from [B]%s[/B] with some strm errors.' % (total_added, list_name))
 		#libuserlist().set_update_dateTime()
 		if self.movie_cache == 'true':
-			lib_tools.cacheLibraryforSimilar()
+			lib_tools().cacheLibraryforSimilar()
 
 	def strmFile(self, i):
 		try:

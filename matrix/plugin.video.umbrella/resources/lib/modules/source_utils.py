@@ -21,7 +21,8 @@ CODEC_H264 = ('avc', 'h264', 'h.264', 'x264', 'x.264')
 CODEC_H265 = ('h265', 'h.265', 'hevc', 'x265', 'x.265')
 CODEC_XVID = ('xvid', '.x.vid')
 CODEC_DIVX = ('divx', 'div2', 'div3', 'div4')
-CODEC_MPEG = ('.mpg', '.mp2', '.mpeg', '.mpe', '.mpv', '.mp4', '.m4p', '.m4v', 'msmpeg', 'mpegurl')
+CODEC_MPEG = ('.mpg', '.mp2', '.mpeg', '.mpe', '.mpv', '.m4p', '.m4v', 'msmpeg', 'mpegurl')
+CODEC_MP4 = ('.mp4','.mp4.')
 CODEC_MKV = ('.mkv', 'matroska')
 REMUX = ('remux', 'bdremux')
 
@@ -55,6 +56,8 @@ ABV_LANG = ('.ara.', '.ces.', '.chi.', '.chs.', '.cze.', '.dan.', '.de.', '.deu.
 				'.pt.', '.por.', '.ru.', '.rus.', '.som.', '.spa.', '.sv.', '.sve.', '.swe.', '.tha.', '.tr.', '.tur.', '.uae.', '.uk.', '.ukr.', '.vi.', '.vie.', '.zh.', '.zho.')
 SUBS = ('subita', 'subfrench', 'subspanish', 'subtitula', 'swesub', 'nl.subs')
 ADS = ('1xbet', 'betwin')
+
+APPLE_TV = ('atvp',)
 
 def seas_ep_filter(season, episode, release_title, split=False):
 	try:
@@ -122,6 +125,7 @@ def getFileType(name_info=None, url=None):
 		if any(value in fmt for value in VIDEO_3D):  file_type += ' 3D /'
 
 		if '.sdr' in fmt: file_type += ' SDR /'
+		elif any(value in fmt for value in APPLE_TV): file_type += ' APPLE-TV-PLUS /' #new apple tv plus format keep seeing
 		elif any(value in fmt for value in DOLBY_VISION): file_type += ' DOLBY-VISION /'
 		elif any(value in fmt for value in HDR): file_type += ' HDR /'
 		elif all(i in fmt for i in ('2160p', 'remux')): file_type += ' HDR /'
@@ -137,7 +141,7 @@ def getFileType(name_info=None, url=None):
 
 		if '.wmv' in fmt: file_type += ' WMV /'
 		elif any(value in fmt for value in CODEC_MPEG): file_type += ' MPEG /'
-		elif '.mp4' in fmt: file_type += ' MP4 /'
+		elif any(value in fmt for value in CODEC_MP4): file_type += ' MP4 /'
 		elif '.avi' in fmt: file_type += ' AVI /'
 		elif any(value in fmt for value in CODEC_MKV): file_type += ' MKV /'
 

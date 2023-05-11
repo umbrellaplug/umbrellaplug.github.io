@@ -245,6 +245,7 @@ class Navigator:
 			if self.traktIndicators:
 				self.addDirectoryItem(35308, 'episodesUnfinished&url=traktunfinished', 'trakt.png', 'trakt.png', queue=True)
 				self.addDirectoryItem(32037, 'calendar&url=progress', 'trakt.png', 'trakt.png', queue=True)
+				#self.addDirectoryItem(40401, 'shows_progress&url=progresstv', 'trakt.png', 'trakt.png', queue=True)
 				self.addDirectoryItem(32019, 'upcomingProgress&url=progress', 'trakt.png', 'trakt.png', queue=True)
 				self.addDirectoryItem(32202, 'calendar&url=mycalendarRecent', 'trakt.png', 'trakt.png', queue=True)
 				self.addDirectoryItem(32203, 'calendar&url=mycalendarUpcoming', 'trakt.png', 'trakt.png', queue=True)
@@ -341,6 +342,7 @@ class Navigator:
 		self.addDirectoryItem(32611, 'cache_clearSources', 'settings.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(32612, 'cache_clearMeta', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(32613, 'cache_clearCache', 'settings.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(40402, 'cache_clearMovieCache', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(32614, 'cache_clearSearch', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(32615, 'cache_clearBookmarks', 'settings.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(40078, 'cache_clearThumbnails', 'tools.png', 'DefaultAddonService.png', isFolder=False)
@@ -505,6 +507,17 @@ class Navigator:
 		try:
 			from resources.lib.database import providerscache
 			if providerscache.cache_clear_providers(): control.notification(message=32090)
+			else: control.notification(message=33586)
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def clearMovieCache(self):
+		control.hide()
+		if not control.yesnoDialog(getLS(32056), '', ''): return
+		try:
+			from resources.lib.database import cache
+			if cache.clearMovieCache(): control.notification(message=32092)
 			else: control.notification(message=33586)
 		except:
 			from resources.lib.modules import log_utils

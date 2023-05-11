@@ -24,10 +24,10 @@ def download(name, image, url, meta_name=None, pack=None): # needs re-write, pac
 	log_utils.log('pack: %s' % pack, __name__)
 
 
-	test = url.rsplit('/', 1)[1].split('|')[0]
-	log_utils.log('test: %s' % str(test), __name__)
-	test = unquote(test).replace(" ","")
-	log_utils.log('test2: %s' % str(test), __name__)
+	#test = url.rsplit('/', 1)[1].split('|')[0]
+	#log_utils.log('test: %s' % str(test), __name__)
+	#test = unquote(test).replace(" ","")
+	#log_utils.log('test2: %s' % str(test), __name__)
 
 	if not url: return control.hide()
 	try:

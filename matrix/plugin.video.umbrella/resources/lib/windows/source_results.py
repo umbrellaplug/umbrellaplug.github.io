@@ -161,6 +161,8 @@ class SourceResultsXML(BaseDialog):
 			log_utils.error()
 
 	def get_quality_iconPath(self, quality):
+		if str(quality) == '4K':
+			quality = '4k'
 		try:
 			return joinPath(transPath('special://home/addons/plugin.video.umbrella/resources/skins/Default/media/resolution'), '%s.png' % quality)
 		except:
@@ -168,6 +170,8 @@ class SourceResultsXML(BaseDialog):
 			log_utils.error()
 
 	def get_provider1_iconPath(self, provider):
+		if str(quality) == '4K':
+			quality = '4k'
 		try:
 			if provider == 'premiumize.me': provider = 'premiumize'
 			return joinPath(transPath('special://home/addons/plugin.video.umbrella/resources/skins/Default/media/resolution1'), '%s.png' % provider)

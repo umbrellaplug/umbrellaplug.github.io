@@ -15,6 +15,7 @@ import xbmcvfs
 import os
 
 
+
 def get(function, duration, *args):
 	"""
 	:param function: Function to be executed
@@ -160,6 +161,21 @@ def cache_clear(flush_only=False):
 		cleared = False
 	finally:
 		dbcur.close() ; dbcon.close()
+	return cleared
+
+def clearMovieCache():
+	cleared = False
+	try:
+		if not control.existsPath(control.dataPath): control.makeFile(control.dataPath)
+		dbcon = db.connect(control.libCacheSimilar)
+		dbcur = dbcon.cursor()
+		dbcur.execute('''DROP TABLE IF EXISTS movies''')
+		dbcur.connection.commit()
+		cleared = True
+	except: 
+		from resources.lib.modules import log_utils
+		log_utils.error()
+		cleared = False
 	return cleared
 
 def get_connection():
