@@ -158,7 +158,7 @@
 --[FIX][I] Added AppleTV+ quality filter.[/I]
 --[FIX][I] Added catch for movies_temp insert.[/I]
 --[DEBUG][I] Logging added to help identify when items fail meta check.[/I]
---[ENHANCEMENT][I] Added new settimg to allow for search with all providers if no sources found.[/I]
+--[ENHANCEMENT][I] Added new setting to allow for search with all providers if no sources found.[/I]
 		</news>
 	</extension>
 
