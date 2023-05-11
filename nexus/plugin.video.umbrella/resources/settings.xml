@@ -1892,6 +1892,11 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="source.prioritize.direct" type="boolean" label="40400" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
 			</group>
 			<group id="2" label="40144">
 				<setting id="hosts.quality" type="integer" label="32339" help="">
@@ -2077,6 +2082,11 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="sources.retryall" type="boolean" label="40405" help="" parent="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
 				<setting id="showHelpremoveUncached" type="action" label="32137" help="">
 					<level>0</level>
 					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=removeUncached)</data>
@@ -2115,7 +2125,12 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="remove.av1" type="boolean" label="40132" help="">
+				<setting id="remove.av1" type="boolean" label="40403" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="remove.atvp" type="boolean" label="40132" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
@@ -5914,6 +5929,14 @@
 				<setting id="clearSourcesButton" type="action" label="32611" help="">
 					<level>0</level>
 					<data>RunPlugin(plugin://plugin.video.umbrella/?action=cache_clearSources)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action"/>
+				</setting>
+				<setting id="clearMoviesCacheButton" type="action" label="40402" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=cache_clearMovieCache)</data>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>

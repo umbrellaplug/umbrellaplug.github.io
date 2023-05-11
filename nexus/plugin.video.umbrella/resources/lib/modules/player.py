@@ -86,7 +86,11 @@ class Player(xbmc.Player):
 			self.fanart = meta.get('fanart') if meta else ''
 			self.meta = meta
 			poster, thumb, season_poster, fanart, banner, clearart, clearlogo, discart, meta = self.getMeta(meta)
-			self.offset = Bookmarks().get(name=self.name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, year=self.year, runtime=meta.get('duration') if meta else 0)
+			try:
+				self.offset = Bookmarks().get(name=self.name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, year=self.year, runtime=meta.get('duration') if meta else 0)
+			except:
+				control.log('[ plugin.video.umbrella ] Get offset failed in player play_source name:%s imdb: %s tmdb: %s tvdb: %s' % (str(self.name), imdb, tmdb, tvdb),1)
+				self.offset = '0'
 			if self.offset == '-1':
 				log_utils.log('User requested playback cancel', level=log_utils.LOGDEBUG)
 				control.notification(message=32328)
@@ -177,7 +181,11 @@ class Player(xbmc.Player):
 			# do not add IMDBNUMBER as tmdb scraper puts their id in the key value
 			meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties" : ["title", "originaltitle", "uniqueid", "year", "premiered", "genre", "studio", "country", "runtime", "rating", "votes", "mpaa", "director", "writer", "cast", "plot", "plotoutline", "tagline", "thumbnail", "art", "file"]}, "id": 1}' % (self.year, str(int(self.year) + 1), str(int(self.year) - 1)))
 			meta = jsloads(meta)['result']['movies']
-			meta = [i for i in meta if (i.get('uniqueid', []).get('imdb', '') == self.imdb) or (i.get('uniqueid', []).get('unknown', '') == self.imdb)] # scraper now using "unknown"
+			try:
+				meta = [i for i in meta if (i.get('uniqueid', []).get('imdb', '') == self.imdb) or (i.get('uniqueid', []).get('unknown', '') == self.imdb)] # scraper now using "unknown"
+			except:
+				control.log('[ plugin.video.umbrella ] Get Meta Failed in getMeta: %s' % str(meta),1)
+				meta = None
 			if meta: meta = meta[0]
 			else: raise Exception()
 			if 'mediatype' not in meta: meta.update({'mediatype': 'movie'})

@@ -10,7 +10,7 @@ import _strptime # import _strptime to workaround python 2 bug with threads
 from sys import exit as sysexit
 from threading import Thread
 from time import time
-from urllib.parse import unquote, urlencode
+from urllib.parse import unquote, urlencode, quote_plus
 from sqlite3 import dbapi2 as database
 from resources.lib.database import metacache, providerscache
 from resources.lib.modules import cleandate
@@ -21,6 +21,7 @@ from resources.lib.modules import string_tools
 from resources.lib.modules.source_utils import supported_video_extensions, getFileType, aliases_check
 from resources.lib.cloud_scrapers import cloudSources
 from cocoscrapers import sources as fs_sources
+import xbmc
 
 homeWindow = control.homeWindow
 playerWindow = control.playerWindow
@@ -34,7 +35,7 @@ video_extensions = supported_video_extensions()
 
 
 class Sources:
-	def __init__(self, all_providers=False, custom_query=False, filterless_scrape=False):
+	def __init__(self, all_providers=False, custom_query=False, filterless_scrape=False, rescrapeAll=False):
 		self.sources = []
 		self.scraper_sources = []
 		self.uncached_chosen = False
@@ -42,6 +43,7 @@ class Sources:
 		self.all_providers = all_providers
 		self.custom_query = custom_query
 		self.filterless_scrape = filterless_scrape
+		self.rescrapeAll = rescrapeAll
 		self.time = datetime.now()
 		self.getConstants()
 		self.enable_playnext = getSetting('enable.playnext') == 'true'
@@ -68,8 +70,11 @@ class Sources:
 		self.useProviders = True if getSetting('sources.highlightmethod') == '1' else False
 		self.providerColors = {"useproviders": self.useProviders, "defaultcolor": self.sourceHighlightColor, "realdebrid": self.realdebridHighlightColor, "alldebrid": self.alldebridHighlightColor, "premiumize": self.premiumizeHighlightColor, "easynews": self.easynewsHighlightColor, "plexshare": self.plexHighlightColor, "gdrive": self.gdriveHighlightColor, "furk": self.furkHighlightColor,"filepursuit": self.filePursuitHighlightColor}
 		self.providercache_hours = int(getSetting('cache.providers'))
+		
+		self.retryallsources = getSetting('sources.retryall') == 'true'
 
 	def play(self, title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, meta, select, rescrape=None):
+		self.premiered = premiered
 		if not self.prem_providers:
 			control.sleep(200) ; control.hide()
 			return control.notification(message=33034)
@@ -133,7 +138,7 @@ class Sources:
 			items = providerscache.get(self.getSources, self.providercache_hours, title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered)
 			if not items:
 				self.url = url
-				return self.errorForSources()
+				return self.errorForSources(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered)
 			filter = [] ; uncached_items = []
 			if getSetting('torrent.remove.uncached') == 'true':
 				uncached_items += [i for i in items if re.match(r'^uncached.*torrent', i['source'])]
@@ -149,7 +154,7 @@ class Sources:
 				items = filter
 				if not items:
 					self.url = url
-					return self.errorForSources()
+					return self.errorForSources(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered)
 			else: uncached_items += [i for i in items if re.match(r'^uncached.*torrent', i['source'])]
 			if select is None:
 				if episode is not None and self.enable_playnext: select = '1'
@@ -228,7 +233,11 @@ class Sources:
 				# do not add IMDBNUMBER as tmdb scraper puts their id in the key value
 				meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties" : ["title", "originaltitle", "uniqueid", "year", "premiered", "genre", "studio", "country", "runtime", "rating", "votes", "mpaa", "director", "writer", "cast", "plot", "plotoutline", "tagline", "thumbnail", "art", "file"]}, "id": 1}' % (self.year, str(int(self.year) + 1), str(int(self.year) - 1)))
 				meta = jsloads(meta)['result']['movies']
-				meta = [i for i in meta if i.get('uniqueid', []).get('imdb', '') == self.imdb]
+				try:
+					meta = [i for i in meta if i.get('uniqueid', []).get('imdb', '') == self.imdb]
+				except:
+					control.log('[ plugin.video.umbrella ] Get Meta Failed in checkLibMeta: %s' % str(meta),1)
+					meta = None
 				if meta: meta = meta[0]
 				else: raise Exception()
 				if 'mediatype' not in meta: meta.update({'mediatype': 'movie'})
@@ -865,6 +874,8 @@ class Sources:
 			self.sources = [i for i in self.sources if 'HEVC' not in i.get('info', '')]
 		if getSetting('remove.av1') == 'true':
 			self.sources = [i for i in self.sources if ' AV1 ' not in i.get('info', '')]
+		if getSetting('remove.atvp') == 'true':
+			self.sources = [i for i in self.sources if ' APPLE-TV-PLUS ' not in i.get('info', '')]
 		if getSetting('remove.avc') == 'true':
 			self.sources = [i for i in self.sources if ' AVC ' not in i.get('info', '')]
 		if getSetting('remove.divx') == 'true':
@@ -1035,6 +1046,12 @@ class Sources:
 		filter += [i for i in self.sources if i['source'] == 'cloud']
 		filter += [i for i in self.sources if i not in filter]
 		self.sources = filter
+
+		if getSetting('source.prioritize.direct') == 'true': # filter to place plex sources first
+			filter = [] # filter to place cloud files first
+			filter += [i for i in self.sources if i['source'] == 'direct']
+			filter += [i for i in self.sources if i not in filter]
+			self.sources = filter
 
 		self.sources = self.sources[:4000]
 		control.hide()
@@ -1263,13 +1280,42 @@ class Sources:
 			control.execute('PlayMedia(%s)' % url)
 		except: log_utils.error()
 
-	def errorForSources(self):
+	def errorForSources(self,title=None, year=None, imdb=None, tmdb=None, tvdb=None, season=None, episode=None, tvshowtitle=None, premiered=None):
 		try:
 			control.sleep(200)
 			control.hide()
-			if self.url == 'close://': control.notification(message=32400)
-			else: control.notification(message=32401)
-			control.cancelPlayback()
+			if self.url == 'close://': 
+				control.notification(message=32400)
+				control.cancelPlayback()
+			else: 
+				if self.retryallsources:
+					if self.rescrapeAll != 'true':
+						control.notification(message=40404)
+						if self.mediatype == 'movie':
+							select = getSetting('play.mode.movie')
+						else: 
+							select = getSetting('play.mode.tv')
+						self.all_providers = 'true'
+						self.rescrapeAll = 'true'
+						plugin = 'plugin://plugin.video.umbrella/'
+						systitle = quote_plus(title)
+						if tvshowtitle:
+							systvshowtitle = quote_plus(tvshowtitle)
+						else:
+							systvshowtitle = ''
+						meta = self.meta
+						sysmeta = quote_plus(jsdumps(meta))
+						control.cancelPlayback()
+						path = 'PlayMedia(%s?action=rescrapeAuto&title=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&tvshowtitle=%s&premiered=%s&meta=%s&select=%s)' % (
+									plugin, systitle, year, imdb, tmdb, tvdb, season, episode, systvshowtitle, premiered, sysmeta, select)
+						xbmc.executebuiltin(path)
+						#Sources(all_providers='true', rescrapeAll='true').play(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, self.meta, select=select, rescrape='true')
+					else:
+						control.cancelPlayback()
+						control.notification(message=32401)
+				else:
+					control.notification(message=32401)
+					control.cancelPlayback()
 		except: log_utils.error()
 
 	def getAliasTitles(self, imdb, content):

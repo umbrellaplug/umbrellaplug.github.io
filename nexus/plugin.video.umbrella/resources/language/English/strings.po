@@ -171,7 +171,7 @@ msgid "History"
 msgstr ""
 
 msgctxt "#32037"
-msgid "Progress"
+msgid "Progress Episodes"
 msgstr ""
 
 msgctxt "#32038"
@@ -4541,4 +4541,28 @@ msgstr ""
 
 msgctxt "#40399"
 msgid "Cache movies for similar list"
+msgstr ""
+
+msgctxt "#40400"
+msgid "Prioritize Direct to top"
+msgstr ""
+
+msgctxt "#40401"
+msgid "Progress Shows"
+msgstr ""
+
+msgctxt "#40402"
+msgid "Clear [COLOR yellow]Library Movies [/COLOR]Cache..."
+msgstr ""
+
+msgctxt "#40403"
+msgid "Remove AppleTV+"
+msgstr ""
+
+msgctxt "#40404"
+msgid "No Sources found, retrying with all providers."
+msgstr ""
+
+msgctxt "#40405"
+msgid "Auto-Retry using all providers if no sources are found."
 msgstr ""

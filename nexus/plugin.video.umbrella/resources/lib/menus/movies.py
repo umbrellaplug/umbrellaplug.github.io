@@ -1405,10 +1405,13 @@ class Movies:
 							if not control.existsPath(control.dataPath): control.makeFile(control.dataPath)
 							dbcon = database.connect(control.libCacheSimilar)
 							dbcur = dbcon.cursor()
-							dbcur.execute('''CREATE TABLE IF NOT EXISTS movies (title TEXT, genre TEXT, uniqueid TEXT, rating TEXT, thumbnail TEXT, playcount TEXT, file TEXT, director TEXT, writer TEXT, year TEXT, mpaa TEXT, "set" TEXT, studio TEXT, cast TEXT);''')
+							dbcur.execute('''CREATE TABLE IF NOT EXISTS movies (title TEXT, genre TEXT, uniqueid TEXT UNIQUE, rating TEXT, thumbnail TEXT, playcount TEXT, file TEXT, director TEXT, writer TEXT, year TEXT, mpaa TEXT, "set" TEXT, studio TEXT, cast TEXT);''')
 							dbcur.connection.commit()
-						except: log_utils.error()
+						except: 
+							from resources.lib.modules import log_utils
+							log_utils.error()
 						try:
+							control.log('[ plugin.video.umbrella ] Getting Movies from cached database list.', 1)
 							sameGenreMoviesSelect = dbcur.execute('''SELECT * FROM movies WHERE %s;'''% localCache).fetchall()
 							if not sameGenreMoviesSelect: 
 								return
@@ -1463,9 +1466,11 @@ class Movies:
 							if not control.existsPath(control.dataPath): control.makeFile(control.dataPath)
 							dbcon = database.connect(control.libCacheSimilar)
 							dbcur = dbcon.cursor()
-							dbcur.execute('''CREATE TABLE IF NOT EXISTS movies (title TEXT, genre TEXT, uniqueid TEXT, rating TEXT, thumbnail TEXT, playcount TEXT, file TEXT, director TEXT, writer TEXT, year TEXT, mpaa TEXT, "set" TEXT, studio TEXT, cast TEXT);''')
+							dbcur.execute('''CREATE TABLE IF NOT EXISTS movies (title TEXT, genre TEXT, uniqueid TEXT UNIQUE, rating TEXT, thumbnail TEXT, playcount TEXT, file TEXT, director TEXT, writer TEXT, year TEXT, mpaa TEXT, "set" TEXT, studio TEXT, cast TEXT);''')
 							dbcur.connection.commit()
-						except: log_utils.error()
+						except: 
+							from resources.lib.modules import log_utils
+							log_utils.error()
 						try:
 							localGenre = 'genre like "%' + genres[0] + '%"'
 							sameGenreMoviesSelect = dbcur.execute('''SELECT * FROM movies WHERE %s;'''% localGenre).fetchall()
@@ -1576,6 +1581,7 @@ class Movies:
 						similar_list.append(z)
 				self.list = similar_list
 			else:
+				from resources.lib.modules import log_utils
 				log_utils.log('[plugin.video.umbrella] Only one similar score found.',1)
 
 			random.shuffle(self.list)
@@ -1593,7 +1599,10 @@ class Movies:
 					control.setHomeWindowProperty('umbrella.moviesimilarlibrary', str(getLS(40257)+' '+originalMovie["title"]))
 				except: pass
 			if self.list is None: self.list = []
+			is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
 			if create_directory: self.movieDirectory(self.list)
+			if is_widget:
+				control.refresh()
 			return self.list
 		except:
 			from resources.lib.modules import log_utils

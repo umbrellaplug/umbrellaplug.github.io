@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.19">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.20">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
 		<import addon="script.module.cocoscrapers" version="1.0.10"/>
@@ -147,16 +147,18 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.6.19 - Mar 31st, 2023[/COLOR][/B]
---[FIX][I] Fixed issue with playlist creation for playnext from widgets.[/I]
---[FIX][I] Adjustment made where hidden items in widgets still show in search.[/I]
---[FIX][I] TV Show History fixed for incorrect value used for cache slider.[/I]
---[FIX][I] Fixed downloads with &quot;:&quot; in Title.[/I]
---[FIX][I] Fixed Show Titles not being assigned correctly in Kodi 20 on widgets.[/I]
---[FIX][I] Fixed code for playnext still watching window causing errors.[/I]
---[FIX][I] Compare cached movie amount to library movie amount on boot.[/I]
---[ENHANCEMENT][I] Added Paramount+ to list of networks.[/I]
---[ENHANCEMENT][I] Similar from library modified to use local cache if set.[/I]
+[B][COLOR black]Update - v6.6.20 - May 11th, 2023[/COLOR][/B]
+--[FIX][I] Added option for prioritize direct to top of results.[/I]
+--[FIX][I] Fixed MP4 filtering.[/I]
+--[FIX][I] Adjusted icon to match format name for case sensitive systems.[/I]
+--[FIX][I] Changed library sync to use temp table and added container refresh.[/I]
+--[FIX][I] Changed similar from library to use a temp database.[/I]
+--[FIX][I] Changed deleted method for database when syncing cached movies.[/I]
+--[FIX][I] Added ability to clear cached movies database table.[/I]
+--[FIX][I] Added AppleTV+ quality filter.[/I]
+--[FIX][I] Added catch for movies_temp insert.[/I]
+--[DEBUG][I] Logging added to help identify when items fail meta check.[/I]
+--[ENHANCEMENT][I] Added new setting to allow for search with all providers if no sources found.[/I]
 		</news>
 	</extension>
 
