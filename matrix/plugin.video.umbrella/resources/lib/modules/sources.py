@@ -1290,6 +1290,7 @@ class Sources:
 			else: 
 				if self.retryallsources:
 					if self.rescrapeAll != 'true':
+						control.sleep(200)
 						control.notification(message=40404)
 						if self.mediatype == 'movie':
 							select = getSetting('play.mode.movie')

@@ -1,3 +1,8 @@
+[B][COLOR black]Update - v6.6.21 - May 13th, 2023[/COLOR][/B]
+--[FIX][I] Small adjustment for new rescrape with all providers auto feature.[/I]
+--[FIX][I] Added new entries and context menu entries for languages. Currently not translated.[/I]
+--[FIX][I] Added setting.[/I]
+
 [B][COLOR black]Update - v6.6.20 - May 11th, 2023[/COLOR][/B]
 --[FIX][I] Added option for prioritize direct to top of results.[/I]
 --[FIX][I] Fixed MP4 filtering.[/I]

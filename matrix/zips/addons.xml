@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.20">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.21">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.cocoscrapers" version="1.0.10" />
@@ -148,18 +148,10 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.6.20 - May 11th, 2023[/COLOR][/B]
---[FIX][I] Added option for prioritize direct to top of results.[/I]
---[FIX][I] Fixed MP4 filtering.[/I]
---[FIX][I] Adjusted icon to match format name for case sensitive systems.[/I]
---[FIX][I] Changed library sync to use temp table and added container refresh.[/I]
---[FIX][I] Changed similar from library to use a temp database.[/I]
---[FIX][I] Changed deleted method for database when syncing cached movies.[/I]
---[FIX][I] Added ability to clear cached movies database table.[/I]
---[FIX][I] Added AppleTV+ quality filter.[/I]
---[FIX][I] Added catch for movies_temp insert.[/I]
---[DEBUG][I] Logging added to help identify when items fail meta check.[/I]
---[ENHANCEMENT][I] Added new setting to allow for search with all providers if no sources found.[/I]
+[B][COLOR black]Update - v6.6.21 - May 13th, 2023[/COLOR][/B]
+--[FIX][I] Small adjustment for new rescrape with all providers auto feature.[/I]
+--[FIX][I] Added new entries and context menu entries for languages. Currently not translated.[/I]
+--[FIX][I] Added setting.[/I]
 		</news>
 	</extension>
 

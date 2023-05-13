@@ -724,6 +724,9 @@ def router(argv2):
 				isFromSettings=True
 			from resources.lib.modules import library
 			library.lib_tools().importListsNow(isFromSettings)
+		elif action == 'tools_umbrellaProper':
+			from resources.lib.modules import tools
+			tools.nonsense()
 
 	####################################################
 	#---Play

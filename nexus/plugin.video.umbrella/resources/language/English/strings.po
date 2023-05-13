@@ -4566,3 +4566,7 @@ msgstr ""
 msgctxt "#40405"
 msgid "Auto-Retry using all providers if no sources are found."
 msgstr ""
+
+msgctxt "#40406"
+msgid "Make umbrella work properly"
+msgstr ""

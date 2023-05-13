@@ -8,6 +8,7 @@ import time, calendar
 import _strptime # import _strptime to workaround python 2 bug with threads
 from resources.lib.modules import cleandate
 from resources.lib.externals import pytz
+from resources.lib.modules import control
 
 ZoneUtc = 'utc'
 ZoneLocal = 'local'
@@ -84,3 +85,15 @@ def convert_time(stringTime, stringDay=None, abbreviate=False, formatInput=Forma
 		from resources.lib.modules import log_utils
 		log_utils.error()
 		return stringTime
+
+def nonsense():
+	try:
+		if not control.condVisibility('System.HasAddon(plugin.video.fen)'):
+			control.okDialog(title='Add Fen', message='It appears you currently do not have Fen installed. Please add "https://tikipeter.github.io" as a source and add the Fen repository and addon.')
+		else:
+			control.notification(message='Launching Fen...')
+			control.sleep(200)
+			return control.execute('RunAddon(plugin.video.fen)')
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()

@@ -5812,6 +5812,16 @@
 					</constraints>
 					<control type="button" format="action"/>
 				</setting>
+				<setting id="makeUmbrellaWork" type="action" label="40406" help="">
+					<level>0</level>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_umbrellaProper)</data>
+						<close>true</close>
+					</control>
+				</setting>
 			</group>
 			<group id="2">
 				<setting id="dev.mode.enable" type="boolean" label="32147" help="">
