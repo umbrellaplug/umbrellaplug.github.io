@@ -1411,7 +1411,9 @@ class Movies:
 							from resources.lib.modules import log_utils
 							log_utils.error()
 						try:
-							control.log('[ plugin.video.umbrella ] Getting Movies from cached database list.', 1)
+							if control.setting('debug.level') == '1':
+								from resources.lib.modules import log_utils
+								log_utils.log('Getting Movies from cached database list.', level=log_utils.LOGDEBUG)
 							sameGenreMoviesSelect = dbcur.execute('''SELECT * FROM movies WHERE %s;'''% localCache).fetchall()
 							if not sameGenreMoviesSelect: 
 								return
@@ -1448,7 +1450,10 @@ class Movies:
 									#trying to append value
 									sameGenreMovies.append(jsloads(sameGenreMoviesStr))
 								except:
-									control.log('sameGenreMoviesStr: %s' % sameGenreMoviesStr, 1)
+									from resources.lib.modules import log_utils
+									if control.setting('debug.level') == '1':
+										log_utils.log('sameGenreMoviesStr: %s' % sameGenreMoviesStr, level=log_utils.LOGDEBUG)
+									log_utils.error()
 						except: 
 							from resources.lib.modules import log_utils
 							log_utils.error()
@@ -1509,7 +1514,10 @@ class Movies:
 									#trying to append value
 									sameGenreMovies.append(jsloads(sameGenreMoviesStr))
 								except:
-									control.log('sameGenreMoviesStr: %s' % sameGenreMoviesStr, 1)
+									from resources.lib.modules import log_utils
+									if control.setting('debug.level') == '1':
+										log_utils.log('sameGenreMoviesStr: %s' % sameGenreMoviesStr, level=log_utils.LOGDEBUG)
+									log_utils.error()
 						except: 
 							from resources.lib.modules import log_utils
 							log_utils.error()
@@ -1536,17 +1544,17 @@ class Movies:
 						#studio
 						try:
 							studio_score = 1 if originalMovie["studio"] and originalMovie["studio"] == str(item.get("studio")[0]) else 0
-							#log_utils.log('[ plugin.video.umbrella ] item similar scores item:%s studio score: %s original studio: %s compare studio: %s'% (item["title"], studio_score,originalMovie["studio"], item.get("studio")[0]))
+							#log_utils.log('item similar scores item:%s studio score: %s original studio: %s compare studio: %s'% (item["title"], studio_score,originalMovie["studio"], item.get("studio")[0]))
 						except:
 							studio_score = 0
-							#log_utils.log('[ plugin.video.umbrella ] EXCEPTION: item similar scores item:%s studio score: %s original studio: %s compare studio: %s'% (item["title"], studio_score,originalMovie["studio"], item.get("studio")))
+							#log_utils.log('EXCEPTION: item similar scores item:%s studio score: %s original studio: %s compare studio: %s'% (item["title"], studio_score,originalMovie["studio"], item.get("studio")))
 						
 						#cast score
 						try:
 							cast_score = 0 if not set_cast else (float(len(set_cast.intersection(set(itemcastList)))) / len(set_cast.union(set(itemcastList)))) *1
 						except:
 							cast_score = 0
-						#log_utils.log('[ plugin.video.umbrella ] item similar scores item:%s cast score: %s'% (item["title"], cast_score))
+						#log_utils.log('item similar scores item:%s cast score: %s'% (item["title"], cast_score))
 						try:
 							set_score = 1 if originalMovie["belongs_to_collection"] and originalMovie["belongs_to_collection"]["name"] == item["set"] else 0
 						except:
@@ -1581,8 +1589,9 @@ class Movies:
 						similar_list.append(z)
 				self.list = similar_list
 			else:
-				from resources.lib.modules import log_utils
-				log_utils.log('[plugin.video.umbrella] Only one similar score found.',1)
+				if control.setting('debug.level') == '1':
+					from resources.lib.modules import log_utils
+					log_utils.log('Only one similar score found.',level=log_utils.LOGDEBUG)
 
 			random.shuffle(self.list)
 			self.list = self.list[:50]
@@ -1590,7 +1599,7 @@ class Movies:
 			next = ''
 			for i in range(len(self.list)): 
 				self.list[i]['next'] = next
-				#log_utils.log('[ plugin.video.umbrella ] item similar scores item:%s score: %s'% (self.list[i]["title"], self.list[i]["similarscore"]))
+				#log_utils.log('item similar scores item:%s score: %s'% (self.list[i]["title"], self.list[i]["similarscore"]))
 			#self.list = [x for x in self.list if x.get('playcount') == 0]
 			self.worker()
 			if self.useContainerTitles and originalMovie:

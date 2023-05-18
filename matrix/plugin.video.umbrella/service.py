@@ -293,7 +293,7 @@ class PremAccntNotification:
 		from resources.lib.debrid import alldebrid
 		from resources.lib.debrid import premiumize
 		from resources.lib.debrid import realdebrid
-		xbmc.log('[ plugin.video.umbrella ]  Debrid Account Expiry Notification Service Starting...', LOGINFO)
+		control.log('[ plugin.video.umbrella ] Debrid Account Expiry Notification Service Starting...', LOGINFO)
 		self.duration = [(15, 10), (11, 7), (8, 4), (5, 2), (3, 0)]
 		if control.setting('alldebridusername') != '' and control.setting('alldebridexpirynotice') == 'true':
 			account_info = alldebrid.AllDebrid().account_info()['user']

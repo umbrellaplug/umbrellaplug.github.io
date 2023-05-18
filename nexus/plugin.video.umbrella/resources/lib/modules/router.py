@@ -525,9 +525,10 @@ def router(argv2):
 		elif action == 'download':
 			caller = params.get('caller')
 			image = params.get('image')
-			from resources.lib.modules import log_utils
-			log_utils.log('caller: %s' % caller, __name__)
-			log_utils.log('title: %s' % title, __name__)
+			if control.setting('debug.level') == '1':
+				from resources.lib.modules import log_utils
+				log_utils.log('caller: %s' % caller, __name__)
+				log_utils.log('title: %s' % title, __name__)
 
 
 			if caller == 'sources': # future, move to downloader module for pack support
@@ -538,12 +539,14 @@ def router(argv2):
 					from resources.lib.modules import downloader
 
 
-					from resources.lib.modules import log_utils
-					log_utils.log('source: %s' % str(source), __name__)
+					if control.setting('debug.level') == '1':
+						from resources.lib.modules import log_utils
+						log_utils.log('source: %s' % str(source), __name__)
 
 					info = jsloads(source)[0]
 					pack = info.get('package')
-					log_utils.log('pack: %s' % pack, __name__)
+					if control.setting('debug.level') == '1':
+						log_utils.log('pack: %s' % pack, __name__)
 
 
 					# downloader.download(name, image, sources.Sources().sourcesResolve(jsloads(source)[0]), title)

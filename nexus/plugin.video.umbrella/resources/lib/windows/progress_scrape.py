@@ -113,5 +113,6 @@ class ProgressScrape(BaseDialog):
 				meta.update({'imdb': self.imdb, 'tvdb': self.tvdb, 'fanart': fanart,'clearlogo': clearlogo})
 				return meta
 		except:
-			log_utils.log('[ plugin.video.umbrella ] Checking Local Meta Exception', log_utils.LOGDEBUG)
+			from resources.lib.modules import log_utils
+			log_utils.log('Checking Local Meta Exception', log_utils.LOGDEBUG)
 			return None

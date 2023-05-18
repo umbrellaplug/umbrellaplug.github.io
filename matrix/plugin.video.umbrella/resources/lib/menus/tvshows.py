@@ -845,7 +845,6 @@ class TVshows:
 		def userList_totalItems(url):
 			items = trakt.getTraktAsJson(url)
 			if not items: return
-			control.log('[ plugin.video.umbrella ] trakt list items: %s' % str(items))
 			watchedItems = trakt.watchedShows()
 			for item in items:
 				try:
@@ -1183,9 +1182,7 @@ class TVshows:
 	def tvshow_progress(self, url):
 		self.list = []
 		try:
-			try: url = getattr(self, url + '_link')
-			except: pass
-			cache.get(self.trakt_progress_list, 0, url, self.trakt_user, self.lang, self.trakt_directProgressScrape)
+			cache.get(self.trakt_tvshow_progress, 0)
 			self.sort(type='progress')
 			if self.list is None: self.list = []
 			hasNext = False
@@ -1197,6 +1194,22 @@ class TVshows:
 			if not self.list:
 				control.hide()
 				if self.notifications: control.notification(title=32326, message=33049)
+
+	def trakt_tvshow_progress(self, create_directory=True):
+		self.list = []
+		try:
+			historyurl = 'https://api.trakt.tv/users/me/watched/shows'
+			self.list = self.trakt_list(historyurl, self.trakt_user)
+			next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.tvshowDirectory(self.list)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			return self.list
 
 	def worker(self):
 		try:
@@ -1223,7 +1236,7 @@ class TVshows:
 			if self.list[i]['metacache']: return
 			imdb, tmdb, tvdb = self.list[i].get('imdb', ''), self.list[i].get('tmdb', ''), self.list[i].get('tvdb', '')
 			#from resources.lib.modules import log_utils
-			#log_utils.log('[ plugin.video.umbrella ] TV Show Super Function: ids={imdb: %s, tmdb: %s, tvdb: %s} ' % (self.list[i].get('imdb', ''), self.list[i].get('tmdb', ''), self.list[i].get('tvdb', '')), __name__, log_utils.LOGDEBUG) # newlognov
+			#log_utils.log('TV Show Super Function: ids={imdb: %s, tmdb: %s, tvdb: %s} ' % (self.list[i].get('imdb', ''), self.list[i].get('tmdb', ''), self.list[i].get('tvdb', '')), __name__, log_utils.LOGDEBUG) # newlognov
 #### -- Missing id's lookup -- ####
 			trakt_ids = None
 			if (not tmdb or not tvdb) and imdb: trakt_ids = trakt.IdLookup('imdb', imdb, 'show')
@@ -1250,7 +1263,8 @@ class TVshows:
 			if not tmdb:
 				if getSetting('debug.level') != '1': return
 				from resources.lib.modules import log_utils
-				return log_utils.log('tvshowtitle: (%s) missing tmdb_id: ids={imdb: %s, tmdb: %s, tvdb: %s}' % (self.list[i]['title'], imdb, tmdb, tvdb), __name__, log_utils.LOGDEBUG) # log TMDb shows that they do not have
+				#return log_utils.log('tvshowtitle: (%s) missing tmdb_id: ids={imdb: %s, tmdb: %s, tvdb: %s}' % (self.list[i]['title'], imdb, tmdb, tvdb), __name__, log_utils.LOGDEBUG) # log TMDb shows that they do not have
+				return None
 			showSeasons = tmdb_indexer().get_showSeasons_meta(tmdb)
 			if not showSeasons or '404:NOT FOUND' in showSeasons: return # trakt search turns up alot of junk with wrong tmdb_id's
 			values = {}

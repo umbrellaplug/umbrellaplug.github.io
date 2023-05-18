@@ -456,10 +456,12 @@ class lib_tools:
 
 	def cacheLibraryforSimilar(self):
 		#used to cache movies for large library.
-		control.log('[ plugin.video.umbrella ] Cache Library for Similar.', 1)
+		if control.setting('debug.level') == '1':
+			log_utils.log('Cache Library for Similar.', level=log_utils.LOGDEBUG)
 		recordsLib = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "id": "1"}')
 		recordsLib = jsloads(recordsLib)['result']['limits']['total']
-		control.log('[ plugin.video.umbrella ]  Library Movie Records: %s' % int(recordsLib), 1)
+		if control.setting('debug.level') == '1':
+			log_utils.log('Library Movie Records: %s' % int(recordsLib), level=log_utils.LOGDEBUG)
 		control.makeFile(control.dataPath)
 		dbcon = database.connect(control.libCacheSimilar)
 		dbcur = dbcon.cursor()
@@ -469,7 +471,8 @@ class lib_tools:
 			results = 0
 		else:
 			results = len(results)
-		control.log('[ plugin.video.umbrella ]  Library Movie Cached Records: %s' % int(results), 1)
+		if control.setting('debug.level') == '1':
+			log_utils.log('Library Movie Cached Records: %s' % int(results), level=log_utils.LOGDEBUG)
 		if int(results) != int(recordsLib):
 			try:
 				control.makeFile(control.dataPath)
@@ -518,8 +521,9 @@ class lib_tools:
 					try:
 						dbcur.execute('''INSERT INTO movies_temp Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (items[l]['title'], myGenre, uniqueids, items[l]['rating'], items[l]['thumbnail'], items[l]['playcount'], items[l]['file'], directors, writers, items[l]['year'], items[l]['mpaa'], items[l]['set'], studios, casts))
 					except:
-						control.log('[ plugin.video.umbrella ]  Cannot add title to movies_temp. Title: %s UniqueID: %s' % (items[l]['title'], uniqueids ), 1)
-				control.log('[ plugin.video.umbrella ]  Adding new movies into cache list.', 1)
+						log_utils.log('Cannot add title to movies_temp. Title: %s UniqueID: %s' % (items[l]['title'], uniqueids ), level=log_utils.LOGDEBUG)
+				if control.setting('debug.level') == '1':
+					log_utils.log('Adding new movies into cache list.', level=log_utils.LOGDEBUG)
 				#dbcur.execute('''DROP TABLE IF EXISTS movies;''') #we are not going to drop the table anymore.
 				#dbcur.execute('''CREATE TABLE IF NOT EXISTS movies (title TEXT, genre TEXT, uniqueid TEXT, rating TEXT, thumbnail TEXT, playcount TEXT, file TEXT, director TEXT, writer TEXT, year TEXT, mpaa TEXT, "set" TEXT, studio TEXT, cast TEXT);''')
 				dbcur.execute('''INSERT OR REPLACE INTO movies SELECT * FROM movies_temp;''')
@@ -541,7 +545,8 @@ class lib_tools:
 			#dbcur.execute('''DELETE FROM movies WHERE rowid > (SELECT MIN(rowid) FROM movies p2 WHERE movies.title = p2.title AND movies.genre = p2.genre);''')
 			#delete everything not in movies_temp
 			dbcur.execute('''DELETE FROM movies WHERE title NOT IN (SELECT title from movies_temp);''')
-			control.log('[ plugin.video.umbrella ]  Deleting items that are no longer in library from cache.', 1)
+			if control.setting('debug.level') == '1':
+				log_utils.log('Deleting items that are no longer in library from cache.', level=log_utils.LOGDEBUG)
 			dbcur.connection.commit()
 		except: log_utils.error()
 		finally:

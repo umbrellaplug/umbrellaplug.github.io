@@ -450,11 +450,9 @@ def metadataClean(metadata):
 	return {k: v for k, v in iter(metadata.items()) if k in allowed}
 
 def set_info(item, meta, setUniqueIDs=None, resumetime=''):
-	if resumetime: resumetime = float(resumetime)
+	
 	if getKodiVersion() >= 20:
 		try:
-			#from resources.lib.modules import log_utils
-			#log_utils.log(str(type(meta)),1)
 			meta_get = meta.get
 			info_tag = item.getVideoInfoTag()
 			info_tag.setMediaType(meta_get('mediatype'))
@@ -495,7 +493,7 @@ def set_info(item, meta, setUniqueIDs=None, resumetime=''):
 			info_tag.setWriters(to_list(meta_get('writer', [])))
 			info_tag.setDirectors(to_list(meta_get('director', [])))
 			info_tag.setIMDBNumber(meta_get('imdb_id'))
-			if resumetime: info_tag.setResumePoint(resumetime)
+			if resumetime: info_tag.setResumePoint(float(resumetime))
 			if meta_get('mediatype') in ['tvshow', 'season']:
 				info_tag.setTvShowTitle(meta_get('tvshowtitle'))
 				info_tag.setTvShowStatus(meta_get('status'))
@@ -516,8 +514,6 @@ def set_info(item, meta, setUniqueIDs=None, resumetime=''):
 		try: meta.pop('cast')
 		except: pass
 		item.setInfo('video', meta)
-		from resources.lib.modules import log_utils
-		log_utils.log('umbrella set item info not kodi 20.', 1)
 		if resumetime:
 			item.setProperties({'ResumeTime': resumetime, 'TotalTime': str(meta.get('duration', 2700))})
 	return item

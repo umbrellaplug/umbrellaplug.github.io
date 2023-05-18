@@ -1,3 +1,9 @@
+[B][COLOR black]Update - v6.6.22 - May 18th, 2023[/COLOR][/B]
+--[Fix][I] Attempted fix for no meta sent from widgets created from library causing crashes on some systems.[/I]
+--[Fix][I] Adjusted filters to better identify HDR.[/I]
+--[Fix][I] Changed log utils and logging to all use same logic.[/I]
+--[Enhancement][I] TV Shows Progress added to match Trakt.tv site progress.[/I]
+
 [B][COLOR black]Update - v6.6.21 - May 13th, 2023[/COLOR][/B]
 --[FIX][I] Small adjustment for new rescrape with all providers auto feature.[/I]
 --[FIX][I] Added new entries and context menu entries for languages. Currently not translated.[/I]

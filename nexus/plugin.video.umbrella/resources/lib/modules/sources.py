@@ -70,7 +70,7 @@ class Sources:
 		self.useProviders = True if getSetting('sources.highlightmethod') == '1' else False
 		self.providerColors = {"useproviders": self.useProviders, "defaultcolor": self.sourceHighlightColor, "realdebrid": self.realdebridHighlightColor, "alldebrid": self.alldebridHighlightColor, "premiumize": self.premiumizeHighlightColor, "easynews": self.easynewsHighlightColor, "plexshare": self.plexHighlightColor, "gdrive": self.gdriveHighlightColor, "furk": self.furkHighlightColor,"filepursuit": self.filePursuitHighlightColor}
 		self.providercache_hours = int(getSetting('cache.providers'))
-		
+		self.debuglog = control.setting('debug.level') == '1'
 		self.retryallsources = getSetting('sources.retryall') == 'true'
 
 	def play(self, title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, meta, select, rescrape=None):
@@ -87,7 +87,8 @@ class Sources:
 				playerWindow.clearProperty('umbrella.preResolved_nextUrl')
 				try: meta = jsloads(unquote(meta.replace('%22', '\\"')))
 				except: pass
-				log_utils.log('Playing preResolved_nextUrl = %s' % preResolved_nextUrl, level=log_utils.LOGDEBUG)
+				if self.debuglog:
+					log_utils.log('Playing preResolved_nextUrl = %s' % preResolved_nextUrl, level=log_utils.LOGDEBUG)
 				from resources.lib.modules import player
 				return player.Player().play_source(title, year, season, episode, imdb, tmdb, tvdb, preResolved_nextUrl, meta)
 			if title: title = self.getTitle(title)
@@ -115,6 +116,84 @@ class Sources:
 			try: meta = jsloads(unquote(meta.replace('%22', '\\"')))
 			except: pass
 			self.meta = meta
+			if meta == None:
+				if self.debuglog:
+					log_utils.log('No meta was passed in. Trying to find meta now.',level=log_utils.LOGDEBUG)
+				self.imdb_user = getSetting('imdbuser').replace('ur', '')
+				self.tmdb_key = getSetting('tmdb.apikey')
+				if not self.tmdb_key: self.tmdb_key = 'edde6b5e41246ab79a2697cd125e1781'
+				self.tvdb_key = getSetting('tvdb.apikey')
+				if self.mediatype == 'episode': self.user = str(self.imdb_user) + str(self.tvdb_key)
+				else: self.user = str(self.tmdb_key)
+				self.lang = control.apiLanguage()['tvdb']
+				self.ids = {'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb}
+				meta = metacache.fetch([{'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb}], self.lang, self.user)[0]
+				if meta != self.ids: meta = dict((k, v) for k, v in iter(meta.items()) if v is not None and v != '')
+			def checkLibMeta(): # check Kodi db for meta for library playback.
+				def cleanLibArt(art):
+					if not art: return ''
+					art = unquote(art.replace('image://', ''))
+					if art.endswith('/'): art = art[:-1]
+					return art
+				try:
+					if self.mediatype != 'movie': raise Exception()
+					# do not add IMDBNUMBER as tmdb scraper puts their id in the key value
+					meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties" : ["title", "originaltitle", "uniqueid", "year", "premiered", "genre", "studio", "country", "runtime", "rating", "votes", "mpaa", "director", "writer", "cast", "plot", "plotoutline", "tagline", "thumbnail", "art", "file"]}, "id": 1}' % (year, str(int(year) + 1), str(int(year) - 1)))
+					meta = jsloads(meta)['result']['movies']
+					try:
+						meta = [i for i in meta if i.get('uniqueid', []).get('imdb', '') == imdb]
+					except:
+						if self.debuglog:
+							log_utils.log('Get Meta Failed in checkLibMeta: %s' % str(meta), level=log_utils.LOGDEBUG)
+						meta = None
+					if meta: meta = meta[0]
+					else: raise Exception()
+					if 'mediatype' not in meta: meta.update({'mediatype': 'movie'})
+					if 'duration' not in meta: meta.update({'duration': meta.get('runtime')}) # Trakt scrobble resume needs this for lib playback
+					if 'castandrole' not in meta: meta.update({'castandrole': [(i['name'], i['role']) for i in meta.get('cast')]})
+					poster = cleanLibArt(meta.get('art').get('poster', '')) or self.poster
+					fanart = cleanLibArt(meta.get('art').get('fanart', '')) or self.fanart
+					clearart = cleanLibArt(meta.get('art').get('clearart', ''))
+					clearlogo = cleanLibArt(meta.get('art').get('clearlogo', ''))
+					discart = cleanLibArt(meta.get('art').get('discart'))
+					meta.update({'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb, 'poster': poster, 'fanart': fanart, 'clearart': clearart, 'clearlogo': clearlogo, 'discart': discart})
+					return meta
+				except:
+					log_utils.error()
+					meta = {}
+				try:
+					if self.mediatype != 'episode': raise Exception()
+					# do not add IMDBNUMBER as tmdb scraper puts their id in the key value
+					show_meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties" : ["title", "originaltitle", "uniqueid", "mpaa", "year", "genre", "runtime", "thumbnail", "file"]}, "id": 1}' % (self.year, str(int(self.year)+1), str(int(self.year)-1)))
+					show_meta = jsloads(show_meta)['result']['tvshows']
+					show_meta = [i for i in show_meta if i.get('uniqueid', []).get('imdb', '') == imdb]
+					if show_meta: show_meta = show_meta[0]
+					else: raise Exception()
+					tvshowid = show_meta['tvshowid']
+					meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params":{"tvshowid": %d, "filter":{"and": [{"field": "season", "operator": "is", "value": "%s"}, {"field": "episode", "operator": "is", "value": "%s"}]}, "properties": ["title", "season", "episode", "showtitle", "firstaired", "runtime", "rating", "director", "writer", "cast", "plot", "thumbnail", "art", "file"]}, "id": 1}' % (tvshowid, self.season, self.episode))
+					meta = jsloads(meta)['result']['episodes']
+					if meta: meta = meta[0]
+					else: raise Exception()
+					if 'mediatype' not in meta: meta.update({'mediatype': 'episode'})
+					if 'tvshowtitle' not in meta: meta.update({'tvshowtitle': meta.get('showtitle')})
+					if 'castandrole' not in meta: meta.update({'castandrole': [(i['name'], i['role']) for i in meta.get('cast')]})
+					if 'genre' not in meta: meta.update({'genre': show_meta.get('genre')})
+					if 'duration' not in meta: meta.update({'duration': meta.get('runtime')}) # Trakt scrobble resume needs this for lib playback but Kodi lib returns "0" for shows or episodes
+					if 'mpaa' not in meta: meta.update({'mpaa': show_meta.get('mpaa')})
+					if 'premiered' not in meta: meta.update({'premiered': meta.get('firstaired')})
+					if 'year' not in meta: meta.update({'year': show_meta.get('year')}) # shows year not year episode aired
+					poster = cleanLibArt(meta.get('art').get('season.poster', '')) or self.poster
+					fanart = cleanLibArt(meta.get('art').get('tvshow.fanart', '')) or self.poster
+					clearart = cleanLibArt(meta.get('art').get('tvshow.clearart', ''))
+					clearlogo = cleanLibArt(meta.get('art').get('tvshow.clearlogo', ''))
+					discart = cleanLibArt(meta.get('art').get('discart'))
+					meta.update({'imdb': self.imdb, 'tmdb': self.tmdb, 'tvdb': self.tvdb, 'poster': poster, 'fanart': fanart, 'clearart': clearart, 'clearlogo': clearlogo, 'discart': discart})
+					return meta
+				except:
+					log_utils.error()
+					meta = {}
+			if self.meta is None or 'videodb' in control.infoLabel('ListItem.FolderPath'):
+				self.meta = checkLibMeta()
 			if self.mediatype == 'movie':
 				if getSetting('imdb.Moviemeta.check') == 'true': # check IMDB. TMDB and Trakt differ on a ratio of 1 in 20 and year is off by 1, some meta titles mismatch
 					title, year = self.imdb_meta_chk(imdb, title, year)
@@ -174,16 +253,16 @@ class Sources:
 				self.url = url
 				return self.errorForSources()
 			#try:
-			#	log_utils.log('[ plugin.video.umbrella ] From sources.play() Title: %s' % str(title), level=log_utils.LOGDEBUG)
-			#	log_utils.log('[ plugin.video.umbrella ] From sources.play() Year: %s' % str(year), level=log_utils.LOGDEBUG)
-			#	log_utils.log('[ plugin.video.umbrella ] From sources.play() Season: %s' % str(season), level=log_utils.LOGDEBUG)
-			#	log_utils.log('[ plugin.video.umbrella ] From sources.play() Episode: %s' % str(episode), level=log_utils.LOGDEBUG)
-			#	log_utils.log('[ plugin.video.umbrella ] From sources.play() IMDB: %s TMDB: %s TVDB: %s' % (str(imdb), str(tmdb), str(tvdb)), level=log_utils.LOGDEBUG)
-			#	log_utils.log('[ plugin.video.umbrella ] From sources.play() URL: %s' % str(url), level=log_utils.LOGDEBUG)
-			#	log_utils.log('[ plugin.video.umbrella ] From sources.play() Meta: %s' % str(self.meta), level=log_utils.LOGDEBUG)
+			#	log_utils.log('From sources.play() Title: %s' % str(title), level=log_utils.LOGDEBUG)
+			#	log_utils.log('From sources.play() Year: %s' % str(year), level=log_utils.LOGDEBUG)
+			#	log_utils.log('From sources.play() Season: %s' % str(season), level=log_utils.LOGDEBUG)
+			#	log_utils.log('From sources.play() Episode: %s' % str(episode), level=log_utils.LOGDEBUG)
+			#	log_utils.log('From sources.play() IMDB: %s TMDB: %s TVDB: %s' % (str(imdb), str(tmdb), str(tvdb)), level=log_utils.LOGDEBUG)
+			#	log_utils.log('From sources.play() URL: %s' % str(url), level=log_utils.LOGDEBUG)
+			#	log_utils.log('From sources.play() Meta: %s' % str(self.meta), level=log_utils.LOGDEBUG)
 			#except:
 			#	log_utils.error()
-			log_utils.log(' [ plugin.video.umbrella ] From sources.play() Sending to player.Player().play_source()', level=log_utils.LOGDEBUG)
+			#log_utils.log('Playing from play which indicates pre-scrape or autoplay source url is: %s' % url, level=log_utils.LOGDEBUG)
 			from resources.lib.modules import player
 			player.Player().play_source(title, year, season, episode, imdb, tmdb, tvdb, url, self.meta)
 		except:
@@ -236,7 +315,8 @@ class Sources:
 				try:
 					meta = [i for i in meta if i.get('uniqueid', []).get('imdb', '') == self.imdb]
 				except:
-					control.log('[ plugin.video.umbrella ] Get Meta Failed in checkLibMeta: %s' % str(meta),1)
+					if self.debuglog:
+						log_utils.log('Get Meta Failed in checkLibMeta: %s' % str(meta), level=log_utils.LOGDEBUG)
 					meta = None
 				if meta: meta = meta[0]
 				else: raise Exception()
@@ -368,7 +448,6 @@ class Sources:
 					if not any(x in self.url.lower() for x in video_extensions) and 'plex.direct:' not in self.url:
 						log_utils.log('Playback not supported for (playItem()): %s' % self.url, level=log_utils.LOGWARNING)
 						continue
-					log_utils.log('Playing url from playItem(): %s' % self.url, level=log_utils.LOGDEBUG)
 					try: progressDialog.close()
 					except: pass
 					del progressDialog
@@ -674,20 +753,24 @@ class Sources:
 					if control.monitor.abortRequested(): return sysexit()
 					url = self.sourcesResolve(next_sources[i])
 					if not url:
-						log_utils.log('preResolve failed for : next_sources[i]=%s' % str(next_sources[i]), level=log_utils.LOGWARNING)
+						if self.debuglog:
+							log_utils.log('preResolve failed for : next_sources[i]=%s' % str(next_sources[i]), level=log_utils.LOGWARNING)
 						continue
 					# if not any(x in url.lower() for x in video_extensions):
 					if not any(x in url.lower() for x in video_extensions) and 'plex.direct:' not in url:
-						log_utils.log('preResolve Playback not supported for (sourcesAutoPlay()): %s' % url, level=log_utils.LOGWARNING)
+						if self.debuglog:
+							log_utils.log('preResolve Playback not supported for (sourcesAutoPlay()): %s' % url, level=log_utils.LOGWARNING)
 						continue
 					if url:
 						control.sleep(500)
 						player_hasVideo = control.condVisibility('Player.HasVideo')
 						if player_hasVideo: # do not setPropery if user stops playback quickly because "onPlayBackStopped" is already called and won't be able to clear it.
 							playerWindow.setProperty('umbrella.preResolved_nextUrl', url)
-							log_utils.log('preResolved_nextUrl : %s' % url, level=log_utils.LOGDEBUG)
+							if self.debuglog:
+								log_utils.log('preResolved_nextUrl : %s' % url, level=log_utils.LOGDEBUG)
 						else:
-							log_utils.log('player_hasVideo = %s : skipping setting preResolved_nextUrl' % player_hasVideo, level=log_utils.LOGWARNING)
+							if self.debuglog:
+								log_utils.log('player_hasVideo = %s : skipping setting preResolved_nextUrl' % player_hasVideo, level=log_utils.LOGWARNING)
 						break
 				except: pass
 			except: log_utils.error()
@@ -1087,7 +1170,8 @@ class Sources:
 		if (self.mediatype == 'movie' or (self.mediatype == 'episode' and not self.enable_playnext)):
 			if getSetting('remove.duplicates.popup') != 'true':
 				control.notification(title=item_title, message='Removed %s duplicate sources from list' % (len(self.sources) - len(filter)))
-		log_utils.log('Removed %s duplicate sources for (%s) from list' % (len(self.sources) - len(filter), item_title), level=log_utils.LOGDEBUG)
+		if self.debuglog:
+			log_utils.log('Removed %s duplicate sources for (%s) from list' % (len(self.sources) - len(filter), item_title), level=log_utils.LOGDEBUG)
 		return filter
 
 	def sourcesAutoPlay(self, items):
@@ -1133,7 +1217,6 @@ class Sources:
 						log_utils.log('Playback not supported for (sourcesAutoPlay()): %s' % url, level=log_utils.LOGWARNING)
 						continue
 					if url:
-						log_utils.log('Playing url from (sourcesAutoPlay()): %s' % url, level=log_utils.LOGDEBUG)
 						break
 				except: pass
 			except: log_utils.error()

@@ -16,7 +16,9 @@ def set_reuselanguageinvoker(fromSettings=False):
 			tree = mdParse(addon_xml)
 			reuse = tree.getElementsByTagName("reuselanguageinvoker")[0]
 			current_value = reuse.firstChild.data
-		except: return control.log('[ plugin.video.umbrella ]  unable to set language invoker. cannot find current value.', 1)
+		except:
+			from resources.lib.modules import log_utils
+			return log_utils.log('Unable to set language invoker. cannot find current value.', level=log_utils.LOGDEBUG)
 		if current_value:
 			new_value = 'true' if current_value == 'false' else 'false'
 			if not control.yesnoDialog(control.lang(33018) % (current_value, new_value), '', ''):

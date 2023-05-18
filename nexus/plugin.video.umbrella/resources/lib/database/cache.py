@@ -370,7 +370,8 @@ def clrCache_version_update(clr_providers=False, clr_metacache=False, clr_cache=
 		if clr_search: cache_clear_search()
 		if clr_bookmarks: cache_clear_bookmarks()
 		control.notification(message='Forced cache clear for version update complete.')
-		log_utils.log('[ plugin.video.umbrella ]  Forced cache clear for version update complete.', level=log_utils.LOGDEBUG)
+		from resources.lib.modules import log_utils
+		log_utils.log('Forced cache clear for version update complete.', level=log_utils.LOGDEBUG)
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()

@@ -880,15 +880,15 @@ def syncMoviesLibrary(indicators):
 			if str(movie.get('uniqueid').get('imdb')) not in indicators:
 				if movie.get('playcount')== 1:
 					removeBatch.append(jsloads('{"jsonrpc":"2.0","method":"VideoLibrary.SetMovieDetails","params":{"movieid":%s, "playcount":0}, "id":3}' % movie.get('movieid')))
-					control.log('Movie Marked for Playcount Removal. Movie: %s' % movie.get('label'),1)
+					log_utils.log('Movie Marked for Playcount Removal. Movie: %s' % movie.get('label'), level=log_utils.LOGDEBUG)
 			for indicator in indicators:
 				if str(movie.get('uniqueid').get('imdb')) == str(indicator): #compare imdb ids in library with imdb ids in indicators
 
 						if str(movie.get('playcount')) == '1':
-							control.log('Movie Already Marked. Movie: %s' % movie.get('label'),1)
+							log_utils.log('Movie Already Marked. Movie: %s' % movie.get('label'),level=log_utils.LOGDEBUG)
 						else:
 							moviebatch.append(jsloads('{"jsonrpc":"2.0","method":"VideoLibrary.SetMovieDetails","params":{"movieid":%s, "playcount":1}, "id":2}' % movie.get('movieid')))
-							control.log('Marked Movie: %s' % movie.get('label'),1)
+							log_utils.log('Marked Movie: %s' % movie.get('label'),level=log_utils.LOGDEBUG)
 		if len(moviebatch) > 0 or len(removeBatch) > 0:
 			moviebatch.extend(removeBatch)
 			control.jsonrpc(jsdumps(moviebatch))
@@ -931,7 +931,6 @@ def watchedShowsTime(tvdb, season, episode):
 	except: log_utils.error()
 
 def cachesyncTV(imdb, tvdb): # sync full watched shows then sync imdb_id "season indicators" and "season counts"
-	control.log('Umbrella cache sync tv.', 1)
 	try:
 		threads = [Thread(target=cachesyncTVShows), Thread(target=cachesyncSeasons, args=(imdb, tvdb))]
 		[i.start() for i in threads]
@@ -940,7 +939,7 @@ def cachesyncTV(imdb, tvdb): # sync full watched shows then sync imdb_id "season
 	except: log_utils.error()
 
 def cachesyncTVShows(timeout=0):
-	control.log('Umbrella cache sync tv shows.', 1)
+
 	try:
 		indicators = traktsync.get(syncTVShows, timeout)
 		#if getSetting('sync.watched.library') == 'true':
@@ -979,7 +978,7 @@ def syncTVShowsLibrary(indicators):
 				
 					if episodes.get('playcount') == 1:
 						removeBatch2.append(jsloads(('{"jsonrpc":"2.0","method":"VideoLibrary.SetEpisodeDetails","params":{"episodeid":%s, "playcount":0}, "id":3}' % episodes.get('episodeid'))))
-						control.log('Show Marked for Playcount Removal. Show: %s' % show.get('label'),1)
+						log_utils.log('Show Marked for Playcount Removal. Show: %s' % show.get('label'),level=log_utils.LOGDEBUG)
 			for indicator in indicators:
 				if str(show.get('uniqueid').get('imdb')) == str(indicator[0]['imdb']): #compare imdb ids in library with imdb ids in indicators
 					epsWatched = indicator[2]
@@ -989,12 +988,12 @@ def syncTVShowsLibrary(indicators):
 						if (epis.get('season'), epis.get('episode')) not in epsWatched:
 							if epis.get('playcount') == 1:
 								removeBatch2.append(jsloads(('{"jsonrpc":"2.0","method":"VideoLibrary.SetEpisodeDetails","params":{"episodeid":%s, "playcount":0}, "id":3}' % epis.get('episodeid'))))
-								control.log('Marked for playcount removal show: %s season: %s episode: %s' % (show.get('label'), epis.get('season'),epis.get('episode')),1)
+								log_utils.log('Marked for playcount removal show: %s season: %s episode: %s' % (show.get('label'), epis.get('season'),epis.get('episode')),level=log_utils.LOGDEBUG)
 						for ep in epsWatched:
 							if ep[0] == epis.get('season') and ep[1] == epis.get('episode'):
 								if epis.get('playcount') == 0:
 									episodesMarked.append(jsloads(('{"jsonrpc":"2.0","method":"VideoLibrary.SetEpisodeDetails","params":{"episodeid":%s, "playcount":1}, "id":2}' % epis.get('episodeid'))))
-									control.log('Marked show: %s season: %s episode: %s' % (show.get('label'), epis.get('season'),epis.get('episode')),1)
+									log_utils.log('Marked show: %s season: %s episode: %s' % (show.get('label'), epis.get('season'),epis.get('episode')),level=log_utils.LOGDEBUG)
 		if len(episodesMarked) > 0 or len(removeBatch2) > 0:
 			episodesMarked.extend(removeBatch2)
 			control.jsonrpc(jsdumps(episodesMarked))
@@ -1090,7 +1089,7 @@ def service_syncSeasons(): # season indicators and counts for watched shows ex. 
 	except: log_utils.error()
 
 def markMovieAsWatched(imdb):
-	control.log('Umbrella marking movie as watched',1)
+	log_utils.log('Umbrella marking movie as watched',level=log_utils.LOGDEBUG)
 	try:
 		result = getTraktAsJson('/sync/history', {"movies": [{"ids": {"imdb": imdb}}]})
 		return result['added']['movies'] != 0
@@ -1332,6 +1331,7 @@ def IdLookup(id_type, id, type): # ("id_type" can be trakt, imdb, tmdb, tvdb) (t
 		return None
 
 def scrobbleMovie(imdb, tmdb, watched_percent):
+	log_utils.log('Trakt Scrobble Movie Called. Received: imdb: %s tmdb: %s watched_percent: %s' % (imdb, tmdb, watched_percent), level=log_utils.LOGDEBUG)
 	try:
 		if not imdb.startswith('tt'): imdb = 'tt' + imdb
 		success = getTrakt('/scrobble/pause', {"movie": {"ids": {"imdb": imdb}}, "progress": watched_percent})
@@ -1344,6 +1344,7 @@ def scrobbleMovie(imdb, tmdb, watched_percent):
 	except: log_utils.error()
 
 def scrobbleEpisode(imdb, tmdb, tvdb, season, episode, watched_percent):
+	log_utils.log('Trakt Scrobble Episode Called. Received: imdb: %s tmdb: %s season: %s episode: %s watched_percent: %s' % (imdb, tmdb, season, episode, watched_percent), level=log_utils.LOGDEBUG)
 	try:
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
 		success = getTrakt('/scrobble/pause', {"show": {"ids": {"tvdb": tvdb}}, "episode": {"season": season, "number": episode}, "progress": watched_percent})

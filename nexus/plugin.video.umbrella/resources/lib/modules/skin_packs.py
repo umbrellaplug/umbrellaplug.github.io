@@ -30,8 +30,9 @@ class iconPackHandler:
 			selected_items = window.run()
 			del window
 			if selected_items:
-				from resources.lib.modules import log_utils
-				log_utils.log('selected items: %s' % str(selected_items), 1)
+				if control.setting('debug.level') == '1':
+					from resources.lib.modules import log_utils
+					log_utils.log('selected items: %s' % str(selected_items), 1)
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()
@@ -46,7 +47,8 @@ class iconPackHandler:
 			import requests
 			repo_xml = requests.get('https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/Skins.xml')
 			if not repo_xml.status_code == 200:
-				return control.log('[ plugin.video.umbrella ]  Could not connect to remote repo XML: status code = %s' % repo_xml.status_code, LOGINFO)
+				from resources.lib.modules import log_utils
+				return log_utils.log('Could not connect to remote repo XML: status code = %s' % repo_xml.status_code, level=log_utils.LOGINFO)
 			root = mdStringParse(repo_xml.text)
 			webskins = root.getElementsByTagName("skin")
 			for count, item in enumerate(webskins, 1):

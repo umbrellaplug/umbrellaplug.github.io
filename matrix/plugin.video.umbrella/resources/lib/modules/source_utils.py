@@ -28,9 +28,9 @@ REMUX = ('remux', 'bdremux')
 
 BLURAY = ('bluray', 'blu.ray', 'bdrip', 'bd.rip', '.brrip.', 'br.rip')
 DVD = ('dvdrip', 'dvd.rip')
-WEB = ('.web.', 'webdl', 'web.dl', 'webrip', 'web.rip')
+WEB = ('.web.', 'webdl', 'web.dl', 'web-dl', 'webrip', 'web.rip')
 HDRIP = ('.hdrip', '.hd.rip')
-SCR = ('scr.', 'screener')
+SCR = ('scr.', 'screener','dvdscr', 'dvd.scr', '.r5', '.r6')
 HC = ('.hc', 'korsub', 'kor.sub')
 
 DOLBY_TRUEHD = ('true.hd', 'truehd')
@@ -48,7 +48,10 @@ AUDIO_7CH = ('ch7.', '7ch.', '6.1ch', '6.1.')
 AUDIO_6CH = ('ch6.', '6ch.', '5.1ch', '5.1.')
 AUDIO_2CH = ('ch2', '2ch', '2.0ch', '2.0.', 'audio.2.0.', 'stereo')
 
-MULTI_LANG = ('dual.audio', 'dual.yg', 'multi')
+MULTI_LANG = ('hindi.eng', 'ara.eng', 'ces.eng', 'chi.eng', 'cze.eng', 'dan.eng', 'dut.eng', 'ell.eng', 'esl.eng', 'esp.eng', 'fin.eng', 'fra.eng', 'fre.eng',
+				'frn.eng', 'gai.eng', 'ger.eng', 'gle.eng', 'gre.eng', 'gtm.eng', 'heb.eng', 'hin.eng', 'hun.eng', 'ind.eng', 'iri.eng', 'ita.eng', 'jap.eng', 'jpn.eng',
+				'kor.eng', 'lat.eng', 'lebb.eng', 'lit.eng', 'nor.eng', 'pol.eng', 'por.eng', 'rus.eng', 'som.eng', 'spa.eng', 'sve.eng', 'swe.eng', 'tha.eng', 'tur.eng',
+				'uae.eng', 'ukr.eng', 'vie.eng', 'zho.eng', 'dual.audio', 'dual.yg', 'multi')
 LANG = ('arabic', 'bgaudio', 'castellano', 'chinese', 'dutch', 'finnish', 'french', 'german', 'greek', 'hebrew', 'italian', 'latino', 'polish',
 				'portuguese', 'russian', 'spanish', 'tamil', 'telugu', 'truefrench', 'truespanish', 'turkish')
 ABV_LANG = ('.ara.', '.ces.', '.chi.', '.chs.', '.cze.', '.dan.', '.de.', '.deu.', '.dut.', '.ell.', '.es.', '.esl.', '.esp.', '.fi.', '.fin.', '.fr.', '.fra.', '.fre.', '.frn.', '.gai.', '.ger.', '.gle.', '.gre.',
@@ -121,11 +124,9 @@ def getFileType(name_info=None, url=None):
 		if name_info: fmt = name_info
 		elif url: fmt = url_strip(url)
 		if not fmt: return file_type
-
+		if any(value in fmt for value in APPLE_TV): file_type += ' APPLE-TV-PLUS /' #new apple tv plus format keep seeing
 		if any(value in fmt for value in VIDEO_3D):  file_type += ' 3D /'
-
 		if '.sdr' in fmt: file_type += ' SDR /'
-		elif any(value in fmt for value in APPLE_TV): file_type += ' APPLE-TV-PLUS /' #new apple tv plus format keep seeing
 		elif any(value in fmt for value in DOLBY_VISION): file_type += ' DOLBY-VISION /'
 		elif any(value in fmt for value in HDR): file_type += ' HDR /'
 		elif all(i in fmt for i in ('2160p', 'remux')): file_type += ' HDR /'
@@ -133,8 +134,8 @@ def getFileType(name_info=None, url=None):
 			# if any(value in fmt for value in HDR_true) or 'hybrid' in fmt: file_type += ' HDR /' # for hybrid DV and HDR sources
 			if any(value in fmt for value in HDR_true) or any(value in fmt for value in ('hybrid', 'remux.sl.dv.')): file_type += ' HDR /' # for hybrid DV and HDR sources. "remux.sl.dv" is used by plexshares as hybrid sources
 		if any(value in fmt for value in CODEC_H264): file_type += ' AVC /'
-		elif '.av1.' in fmt: file_type += ' AV1 /'
-		elif any(value in fmt for value in CODEC_H265): file_type += ' HEVC /'
+		if '.av1.' in fmt: file_type += ' AV1 /'
+		if any(value in fmt for value in CODEC_H265): file_type += ' HEVC /'
 		elif any(i in file_type for i in (' HDR ', ' DOLBY-VISION ')): file_type += ' HEVC /'
 		elif any(value in fmt for value in CODEC_XVID): file_type += ' XVID /'
 		elif any(value in fmt for value in CODEC_DIVX): file_type += ' DIVX /'

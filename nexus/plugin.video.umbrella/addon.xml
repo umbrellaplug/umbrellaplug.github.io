@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.21">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.22">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
 		<import addon="script.module.cocoscrapers" version="1.0.10"/>
@@ -130,7 +130,7 @@
 	<extension point="xbmc.service" library="service.py" start="startup"/>
 	<extension point="xbmc.python.module" library="resources/lib/"/>
 	<extension point="xbmc.addon.metadata">
-		<reuselanguageinvoker>True</reuselanguageinvoker>
+		<reuselanguageinvoker>true</reuselanguageinvoker>
 		<summary lang="en">[B]Umbrella[/B] - We do not host any of the contents streamed</summary>
 		<description lang="en">[B]Umbrella[/B][CR] This addon does not form part of the Kodi Media Centre. Please do not seek assistance with this addon from any of the Official Kodi Support Channels.[CR]The author does not host any of the content in this addon and takes no responsibility for content found. We do not know anything about a lab under Raccoon City.</description>
 		<platform>all</platform>
@@ -147,10 +147,11 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B][COLOR black]Update - v6.6.21 - May 13th, 2023[/COLOR][/B]
---[FIX][I] Small adjustment for new rescrape with all providers auto feature.[/I]
---[FIX][I] Added new entries and context menu entries for languages. Currently not translated.[/I]
---[FIX][I] Added setting.[/I]
+[B][COLOR black]Update - v6.6.22 - May 18th, 2023[/COLOR][/B]
+--[Fix][I] Attempted fix for no meta sent from widgets created from library causing crashes on some systems.[/I]
+--[Fix][I] Adjusted filters to better identify HDR.[/I]
+--[Fix][I] Changed log utils and logging to all use same logic.[/I]
+--[Enhancement][I] TV Shows Progress added to match Trakt.tv site progress.[/I]
 		</news>
 	</extension>
 

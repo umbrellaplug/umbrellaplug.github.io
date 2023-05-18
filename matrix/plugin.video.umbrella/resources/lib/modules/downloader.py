@@ -17,11 +17,12 @@ video_extensions = ('.3gp', '.avi', '.divx', '.flv', '.m4v', '.mp4', '.mpeg', '.
 
 
 def download(name, image, url, meta_name=None, pack=None): # needs re-write, pack file support
-	log_utils.log('name: %s' % name, __name__)
-	log_utils.log('image: %s' % image, __name__)
-	log_utils.log('url: %s' % url, __name__)
-	log_utils.log('meta_name: %s' % meta_name, __name__)
-	log_utils.log('pack: %s' % pack, __name__)
+	if control.setting('debug.level') == '1':
+		log_utils.log('name: %s' % name, __name__)
+		log_utils.log('image: %s' % image, __name__)
+		log_utils.log('url: %s' % url, __name__)
+		log_utils.log('meta_name: %s' % meta_name, __name__)
+		log_utils.log('pack: %s' % pack, __name__)
 
 
 	#test = url.rsplit('/', 1)[1].split('|')[0]
@@ -46,7 +47,8 @@ def download(name, image, url, meta_name=None, pack=None): # needs re-write, pac
 		if pack in ('season', 'show'):
 			# content = url.rsplit('/', 1)[1].split('|')[0]
 			content = unquote(url.rsplit('/', 1)[1].split('|')[0])
-			log_utils.log('content: %s' % str(content), __name__)
+			if control.setting('debug.level') == '1':
+				log_utils.log('content: %s' % str(content), __name__)
 			try: content = re.search(r'(.+?)(?:|\.| - |-|.-.|\s)(?:S|s|\s|\.)(\d{1,2})(?!\d)(?:|\.| - |-|.-.|x|\s)(?:E|e|\s|.)([0-2]{1}[0-9]{1})(?!\w)', content, re.I).groups()
 			except:
 				content = ()
@@ -59,7 +61,8 @@ def download(name, image, url, meta_name=None, pack=None): # needs re-write, pac
 								transname = meta_name.translate((None, '\/:*?"<>|')).strip('.').replace(':', '')
 							except:
 								transname = meta_name.translate(meta_name.maketrans('', '', '\/:*?"<>|')).strip('.').replace(':', '')
-			log_utils.log('content: %s' % str(content), __name__)
+			if control.setting('debug.level') == '1':
+				log_utils.log('content: %s' % str(content), __name__)
 			# transname = url.rsplit('/', 1)[1].split('|')[0]
 			transname = unquote(url.rsplit('/', 1)[1].split('|')[0])
 
@@ -74,7 +77,8 @@ def download(name, image, url, meta_name=None, pack=None): # needs re-write, pac
 		else:
 			try: content = re.search(r'(.+?)(?:|\.| - |-|.-.|\s)(?:S|s|\s|\.)(\d{1,2})(?!\d)(?:|\.| - |-|.-.|x|\s)(?:E|e|\s|.)([0-2]{1}[0-9]{1})(?!\w)', name.replace('\'', ''), re.I).groups()
 			except: content = ()
-		log_utils.log('content: %s' % str(content), __name__)
+		if control.setting('debug.level') == '1':
+			log_utils.log('content: %s' % str(content), __name__)
 
 		for i in video_extensions: transname = transname.replace(i, "")
 		transname = transname.replace(':','')
@@ -126,7 +130,8 @@ def download(name, image, url, meta_name=None, pack=None): # needs re-write, pac
 				transtvshowtitle = titlecase(re.sub(r'[^A-Za-z0-9\s-]+', ' ', transtvshowtitle))
 			dest = os.path.join(dest, transtvshowtitle)
 
-			log_utils.log('dest: %s' % dest, __name__)
+			if control.setting('debug.level') == '1':
+				log_utils.log('dest: %s' % dest, __name__)
 
 			control.makeFile(dest)
 			dest = os.path.join(dest, 'Season %01d' % int(content[1]))
@@ -142,7 +147,8 @@ def download(name, image, url, meta_name=None, pack=None): # needs re-write, pac
 			# 		return control.notification(title=control.lang(33586), message=control.lang(40250), icon=image, time=3000)
 		ext = os.path.splitext(urlparse(url).path)[1][1:]
 
-		log_utils.log('ext: %s' % ext, __name__)
+		if control.setting('debug.level') == '1':
+			log_utils.log('ext: %s' % ext, __name__)
 
 		if not ext in ('3gp', 'divx', 'xvid', 'm4v', 'mp4', 'mpeg', 'mpg', 'm2ts', 'mov', 'mkv', 'flv', 'avi', 'wmv', 'webm'): ext = 'mp4'
 		dest = os.path.join(dest, transname + '.' + ext)
@@ -181,11 +187,12 @@ def done(title, dest, downloaded):
 
 def doDownload(url, dest, title, image, headers):
 
-	log_utils.log('url: %s' % url, __name__)
-	log_utils.log('dest: %s' % dest, __name__)
-	log_utils.log('title: %s' % title, __name__)
-	log_utils.log('image: %s' % image, __name__)
-	log_utils.log('headers: %s' % headers, __name__)
+	if control.setting('debug.level') == '1':
+		log_utils.log('url: %s' % url, __name__)
+		log_utils.log('dest: %s' % dest, __name__)
+		log_utils.log('title: %s' % title, __name__)
+		log_utils.log('image: %s' % image, __name__)
+		log_utils.log('headers: %s' % headers, __name__)
 
 
 	file = dest.rsplit(os.sep, 1)[-1]
@@ -236,7 +243,8 @@ def doDownload(url, dest, title, image, headers):
 						f.write(c)
 						del c
 					f.close()
-					log_utils.log('Download Complete: %s' % dest, level=log_utils.LOGDEBUG)
+					if control.setting('debug.level') == '1':
+						log_utils.log('Download Complete: %s' % dest, level=log_utils.LOGDEBUG)
 					return done(title, dest, True)
 		except Exception as e:
 			log_utils.error('title: %s - DOWNNLOADER EXCEPTION (A RETRY WILL BE ATTEMPTED): '% title)
@@ -267,7 +275,8 @@ def doDownload(url, dest, title, image, headers):
 			control.sleep(sleep*1000)
 		if (resumable and errors > 0) or errors >= 10:
 			if (not resumable and resume >= 25) or resume >= 50: # Give up!
-				log_utils.log('Download Canceled: %s too many errors whilst downloading' % dest, level=log_utils.LOGWARNING)
+				if control.setting('debug.level') == '1':
+					log_utils.log('Download Canceled: %s too many errors whilst downloading' % dest, level=log_utils.LOGWARNING)
 				return done(title, dest, False)
 			resume += 1
 			errors = 0
@@ -276,7 +285,8 @@ def doDownload(url, dest, title, image, headers):
 				resp = getResponse(url, headers, total) # create new response
 				if not resp:
 					control.hide()
-					log_utils.log('Download failed: %s No response from server' % dest, level=log_utils.LOGWARNING)
+					if control.setting('debug.level') == '1':
+						log_utils.log('Download failed: %s No response from server' % dest, level=log_utils.LOGWARNING)
 					return control.okDialog(title, dest + '[CR]Download failed: No response from server')
 			else: pass
 
@@ -360,7 +370,8 @@ def doStrm(url, dest, transname):
 		f = control.openFile(dest, 'w')
 		f.write(content)
 		f.close()
-		log_utils.log('Strm Download Complete: %s' % (dest), level=log_utils.LOGDEBUG)
+		if control.setting('debug.level') == '1':
+			log_utils.log('Strm Download Complete: %s' % (dest), level=log_utils.LOGDEBUG)
 		control.hide()
 		return control.okDialog(transname, '[COLOR forestgreen]Strm File Downloaded Successfully[/COLOR] '+dest)
 	except: 
