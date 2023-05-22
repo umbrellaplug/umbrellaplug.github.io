@@ -39,6 +39,7 @@ Currently Supported Debrid Providers:
 **The plugin will not work without at least 1 debrid account**
 
 ## Issues
+**issues are closed**
 Feel free to open issues, they are being looked at.
 If opening an issue please verify there is not already an open issue for the same thing.
 **Please** post a log with your issue. The more information the better.
@@ -62,21 +63,6 @@ Testing is done using a second repo. Test versions are unstable and move quickly
 **Q:** Why do you use the same scraper package as other addons?
 
 **A:** Scrapers are a project on their own. I do not wish to develop scrapers. I have partnered with another developer to use scrapers provided by an outside source.
-
-
-**Q:** Why should I use this instead of Venom?
-
-**A:** Venom has been retired. Respect the developer and let it go. 123Venom was an amazing developer, I chose this addon to clone because I used it and it worked well. If you don't want to use this plugin, don't. Please don't waste my time or yours with comparisons to Venom, I won't waste my time justifying why you should use an addon I maintain for free.
-
-
-**Q:** Do you take feature requests?
-
-**A:** Of course, open an issue. Use the feature request template.
-
-
-**Q:** How do I contact you?
-
-**A:** If you are reading this on GitHub you have found the best way to contact me already. Please open issues or feature requests here. Chat requests, direct messages, discord, reddit posts are not a great way to contact me and I do not always see these things. I will always see a GitHub issue.
 
 
 **Other Kodi Addons**
