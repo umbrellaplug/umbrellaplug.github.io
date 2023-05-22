@@ -39,11 +39,7 @@ Currently Supported Debrid Providers:
 **The plugin will not work without at least 1 debrid account**
 
 ## Issues
-**issues are closed**
-Feel free to open issues, they are being looked at.
-If opening an issue please verify there is not already an open issue for the same thing.
-**Please** post a log with your issue. The more information the better.
-Please do not respond "well this plugin/addon does this". That is insulting. I will immediately close your issue. You can use you that plugin.
+**issues are closed, I'm tired of the nonsense.**
 
 ## Logs
 If you are reporting an issue, logs are going to be requested. Save yourself and me some time.
