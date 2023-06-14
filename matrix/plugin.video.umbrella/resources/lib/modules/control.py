@@ -13,7 +13,12 @@ import xbmcvfs
 #import xml.etree.ElementTree as ET
 from threading import Thread
 from xml.dom.minidom import parse as mdParse
+import json
+import requests
+import time
 
+# Kodi JSON-RPC API endpoint
+api_url = 'http://localhost:8080/jsonrpc'
 addon = xbmcaddon.Addon
 AddonID = xbmcaddon.Addon().getAddonInfo('id')
 addonInfo = xbmcaddon.Addon().getAddonInfo
@@ -29,6 +34,7 @@ getCurrentDialogId = xbmcgui.getCurrentWindowDialogId()
 getCurrentWindowId = xbmcgui.getCurrentWindowId()
 homeWindow = xbmcgui.Window(10000)
 playerWindow = xbmcgui.Window(12005)
+infoWindow = xbmcgui.Window(12003)
 item = xbmcgui.ListItem
 progressDialog = xbmcgui.DialogProgress()
 progressDialogBG = xbmcgui.DialogProgressBG()
@@ -98,6 +104,16 @@ def setContainerName(value):
 def setHomeWindowProperty(propertyname, property):
 	win = xbmcgui.Window(10000)
 	win.setProperty(str(propertyname), property)
+####################################################
+# --- Custom Dialogs
+####################################################
+def getProgressWindow(heading='', icon=None, qr=0):
+	if icon == None:
+		icon = addonIcon()
+	from resources.lib.windows.umbrella_dialogs import ProgressUmbrella
+	window = ProgressUmbrella('progress_umbrella.xml', addonPath(addonId()), heading=heading, icon=icon, qr=qr)
+	Thread(target=window.run).start()
+	return window
 
 def setting(id, fallback=None):
 	try: settings_dict = jsloads(homeWindow.getProperty('umbrella_settings'))
@@ -258,9 +274,24 @@ def notification(title=None, message=None, icon=None, time=3000, sound=(setting(
 	elif icon == 'ERROR': icon = xbmcgui.NOTIFICATION_ERROR
 	return dialog.notification(heading, body, icon, time, sound)
 
-def yesnoDialog(line1, line2, line3, heading=addonInfo('name'), nolabel='', yeslabel=''):
+def yesnoDialog(line1, line2, line3, heading=addonInfo('name'), nolabel='', yeslabel='', icon=None):
 	message = '%s[CR]%s[CR]%s' % (line1, line2, line3)
-	return dialog.yesno(heading, message, nolabel, yeslabel)
+	if setting('dialogs.useumbrelladialog') == 'true':
+		from resources.lib.windows.umbrella_dialogs import Confirm
+		if yeslabel == '':
+			myyes = lang(32179)
+		else:
+			myyes = yeslabel
+		if nolabel == '':
+			myno = lang(32180)
+		else:
+			myno = nolabel
+		window = Confirm('confirm.xml', addonPath(addonId()), heading=heading, text=message, ok_label=myyes, cancel_label=myno, default_control=11, icon=icon)
+		confirmWin = window.run()
+		del window
+		return confirmWin
+	else:
+		return dialog.yesno(heading, message, nolabel, yeslabel)
 
 def yesnocustomDialog(line1, line2, line3, heading=addonInfo('name'), customlabel='', nolabel='', yeslabel=''):
 	message = '%s[CR]%s[CR]%s' % (line1, line2, line3)
@@ -269,13 +300,22 @@ def yesnocustomDialog(line1, line2, line3, heading=addonInfo('name'), customlabe
 def selectDialog(list, heading=addonInfo('name')):
 	return dialog.select(heading, list)
 
-def okDialog(title=None, message=None):
+def okDialog(title=None, message=None, icon=None):
 	if title == 'default' or title is None: title = addonName()
 	if isinstance(title, int): heading = lang(title)
 	else: heading = str(title)
 	if isinstance(message, int): body = lang(message)
 	else: body = str(message)
-	return dialog.ok(heading, body)
+	if setting('dialogs.useumbrelladialog') == 'true':
+		if icon == None:
+			icon = addonIcon()
+		from resources.lib.windows.umbrella_dialogs import OK
+		window = OK('ok.xml', addonPath(addonId()), heading=heading, text=body, ok_label=lang(32179), icon=icon)
+		okayWin = window.run()
+		del window
+		return okayWin
+	else:
+		return dialog.ok(heading, body)
 
 def context(items=None, labels=None):
 	if items:
@@ -390,8 +430,8 @@ def getBackgroundColor(n):
 	return color 
 
 def getColor(n):
-	colorChart = ('black','white', 'lightgray', 'gray', 'FFFFF0DB', 'darkgoldenrod', 'gold', 'yellow', 'peru', 'orangered',
-						'pink','deeppink','fuchsia','lightcoral', 'FFD10000', 'FF750000', 'blueviolet', 'darkorchid', 'purple', 'indigo', 'darkslateblue', 'slateblue','navy', 'blue', 'deepskyblue', 'dodgerblue','skyblue', 'powderblue', 'turquoise', 'cyan', 'aqua','aquamarine','greenyellow','mediumspringgreen','green', 'lime', 'red')
+	colorChart = ('ff000000','ffffffff', 'ffd3d3d3', 'ff808080', 'FFFFF0DB', 'ffb8860b', 'ffffd700', 'ffffff00', 'ffcd853f', 'ffff4500',
+						'ffffc0cb','ffff1493','ffff00ff','fff08080', 'FFD10000', 'FF750000', 'ff8a2be2', 'ff9932cc', 'ff800080', 'ff4b0082', 'ff483d8b', 'ff6a5acd','ff000080', 'ff0000ff', 'ff00bfff', 'ff1e90ff','ff87ceeb', 'ffb0e0e6', 'ff40e0d0', 'ff00ffff', 'ff00ffff','ff7fffd4','ffadff2f','ff00fa9a','ff008000', 'ff00ff00', 'ffff0000')
 	if not n: n = '0'
 	color = colorChart[int(n)]
 	return color
@@ -530,6 +570,21 @@ def to_list(item_str):
 		item_str = [item_str]
 	return item_str
 
+def darkColor(color):
+	try:
+		compareColor = color[2:]
+		import math
+		rgbColor = tuple(int(compareColor[i:i+2], 16)  for i in (0, 2, 4))
+		[r,g,b]=rgbColor
+		hsp = math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b))
+		if (hsp>127.5):
+			return 'light'
+		else:
+			return 'dark'
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+
 def reload_addon():
     disable_enable_addon()
     update_local_addon()
@@ -595,7 +650,7 @@ def checkPlayNextEpisodes():
 def removeCorruptSettings():
     #added 12-18 to attempt to correct corrupted settings.xml files.
 	try:
-		if yesnoDialog('Delete settings file to try to fix blank settings?', 'You will need to re-authenticate services.','' , '[B]Confirm Clear[/B]', 'Ok', 'Cancel') == 1: return
+		if not yesnoDialog('Delete settings file to try to fix blank settings?', 'You will need to re-authenticate services.','' , '[B]Confirm Clear[/B]', 'Cancel', 'Yes') == 1: return
 		deleteFile(settingsFile)
 		current_profile = infoLabel('system.profilename')
 		execute('LoadProfile(%s)' % current_profile)
@@ -610,3 +665,30 @@ def setContextColors():
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()
+
+# Monitor the information dialog and detect when it's closed
+def monitor_info_dialog():
+	# dialog_open = True
+	# time.sleep(100)
+	# while dialog_open:
+    #     # Check if the GUI window stack contains the information dialog
+    #     #import web_pdb; web_pdb.set_trace()
+	# 	response = send_rpc_request('GUI.GetProperties', {'properties': ['currentwindow']})
+	# 	window_stack = response['result']['currentwindow'].get('id')
+	# 	info_dialog_open = True if window_stack == 12003 else False
+	# 	xbmc.log("Information open.",1)
+	# 	if not info_dialog_open:
+	# 		# Information dialog has been closed
+	# 		homeWindow.clearProperty('umbrella.info_loaded')
+	# 		xbmc.log("Information dialog closed. Clearing Property",1)
+	# 		dialog_open = False
+
+	# 	# Wait for a short duration before checking again
+	# 	time.sleep(1)
+	xbmc.executebuiltin('Action(Info)')
+	sleep(200)
+	while xbmc.getCondVisibility('Window.IsTopMost(movieinformation)'):
+		xbmc.log("Information Window is on top.",1)
+		sleep(100)
+	homeWindow.clearProperty('umbrella.info_loaded')
+	xbmc.log("Information dialog closed. Clearing Property",1)

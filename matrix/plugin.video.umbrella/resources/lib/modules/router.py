@@ -727,6 +727,12 @@ def router(argv2):
 				isFromSettings=True
 			from resources.lib.modules import library
 			library.lib_tools().importListsNow(isFromSettings)
+		elif action == 'tools_traktImportListsNowNoSelect':
+			isFromSettings=False
+			if query == 'settings':
+				isFromSettings=True
+			from resources.lib.modules import library
+			library.lib_tools().importListsNowNoSelect(isFromSettings)
 		elif action == 'tools_umbrellaProper':
 			from resources.lib.modules import tools
 			tools.nonsense()
@@ -739,6 +745,15 @@ def router(argv2):
 		if action == 'play_Item':
 			from resources.lib.modules import sources
 			sources.Sources(params.get('all_providers')).play(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, params.get('premiered'), params.get('meta'), params.get('select'), params.get('rescrape'))
+		elif action == 'play_info':
+			from resources.lib.modules import sources
+			sources.Sources(params.get('all_providers')).play(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, params.get('premiered'), params.get('meta'), params.get('select'), params.get('rescrape'))
+			# import xbmc
+			# if str(xbmc.getInfoLabel("Window.Property(xmlfile)")) == 'DialogVideoInfo.xml':
+			# 	from resources.lib.modules import sources
+			# 	sources.Sources(params.get('all_providers')).play(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, params.get('premiered'), params.get('meta'), params.get('select'), params.get('rescrape'))
+			# else: 
+			# 	control.execute('Action(Info)')
 		elif action == "play_preScrapeNext":
 			from resources.lib.modules.player import PlayNext
 			PlayNext().prescrapeNext()
@@ -998,6 +1013,12 @@ def router(argv2):
 		# 	from resources.lib.modules import library
 		# 	library.libuserlist().userlist()
 
+	elif action == 'testCustomOK':
+		control.openSettings('0.2', 'plugin.video.umbrella')
+		control.okDialog(title=control.lang(40427), message=control.lang(40428))
+	elif action == 'testCustomConfirm':
+		control.openSettings('0.2', 'plugin.video.umbrella')
+		control.yesnoDialog(control.lang(40428),'','',"Test Confirm Dialog", 'Cancel','OK', None)
 	####################################################
 	#---Cache
 	####################################################

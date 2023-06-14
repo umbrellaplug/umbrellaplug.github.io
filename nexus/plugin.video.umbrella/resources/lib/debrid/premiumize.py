@@ -35,6 +35,7 @@ account_info_url = '%s/account/info' % BaseUrl
 cache_check_url = '%s/cache/check' % BaseUrl
 list_services_path_url = '%s/services/list' % BaseUrl
 pm_icon = control.joinPath(control.artPath(), 'premiumize.png')
+pm_qr = control.joinPath(control.artPath(), 'premiumizeqr.png')
 addonFanart = control.addonFanart()
 invalid_extensions = ('.bmp', '.exe', '.gif', '.jpg', '.nfo', '.part', '.png', '.rar', '.sample.', '.srt', '.txt', '.zip', '.clpi', '.mpls', '.bdmv', '.xml', '.crt', 'crl', 'sig')
 
@@ -93,21 +94,27 @@ class Premiumize:
 		poll_again = True
 		success = False
 		line = '%s\n%s%s'
-		progressDialog = control.progressDialog
-		progressDialog.create(getLS(40054))
-		progressDialog.update(-1, line % (getLS(32513) % (control.getHighlightColor(),token['verification_uri']), getLS(32514) % (control.getHighlightColor(), token['user_code']), getLS(40390)))
+		#progressDialog = control.progressDialog
+		#progressDialog.create(getLS(40054))
+		if control.setting('dialogs.useumbrelladialog') == 'true':
+			self.progressDialog = control.getProgressWindow(getLS(40054), pm_qr, 1)
+			self.progressDialog.set_controls()
+		else:
+			self.progressDialog = control.progressDialog
+			self.progressDialog.create(getLS(40054))
+		self.progressDialog.update(-1, line % (getLS(32513) % (control.getHighlightColor(),token['verification_uri']), getLS(32514) % (control.getHighlightColor(), token['user_code']), getLS(40390)))
 		try:
 			from resources.lib.modules.source_utils import copy2clip
 			copy2clip(token['user_code'])
 		except:
 			log_utils.error()
-		while poll_again and not token_ttl <= 0 and not progressDialog.iscanceled():
+		while poll_again and not token_ttl <= 0 and not self.progressDialog.iscanceled():
 			poll_again, success = self.poll_token(token['device_code'], fromSettings=fromSettings)
 			progress_percent = 100 - int((float((expiry - token_ttl) / expiry) * 100))
-			progressDialog.update(progress_percent)
+			self.progressDialog.update(progress_percent, line % (getLS(32513) % (control.getHighlightColor(),token['verification_uri']), getLS(32514) % (control.getHighlightColor(), token['user_code']), getLS(40390)))
 			control.sleep(token['interval'] * 1000)
 			token_ttl -= int(token['interval'])
-		progressDialog.close()
+		self.progressDialog.close()
 		if success:
 			if fromSettings == 1:
 				control.openSettings('10.1', 'plugin.video.umbrella')
@@ -257,7 +264,7 @@ class Premiumize:
 					if item['id'] == transfer_id: return item
 			return {}
 		def _return_failed(message=getLS(33586)):
-			try: control.progressDialog.close()
+			try: self.progressDialog.close()
 			except: pass
 			self.delete_transfer(transfer_id)
 			control.hide()
@@ -281,19 +288,26 @@ class Premiumize:
 		line1 = '%s...' % (getLS(40017) % getLS(40057))
 		line2 = transfer_info['name']
 		line3 = transfer_info['message']
-		control.progressDialog.create(getLS(40018), line % (line1, line2, line3))
+		#####################################
+		if control.setting('dialogs.useumbrelladialog') == 'true':
+			self.progressDialog = control.getProgressWindow(getLS(40018), None, 0)
+			self.progressDialog.set_controls()
+			self.progressDialog.update(0, line % (line1, line2, line3))
+		else:
+			self.progressDialog = control.progressDialog
+			self.progressDialog.create(getLS(40018), line % (line1, line2, line3))
 		while not transfer_info['status'] == 'seeding':
 			control.sleep(1000 * interval)
 			transfer_info = _transfer_info(transfer_id)
 			line3 = transfer_info['message']
-			control.progressDialog.update(int(float(transfer_info['progress']) * 100), line % (line1, line2, line3))
+			self.progressDialog.update(int(float(transfer_info['progress']) * 100), line % (line1, line2, line3))
 			if control.monitor.abortRequested(): return sysexit()
 			try:
-				if control.progressDialog.iscanceled():
+				if self.progressDialog.iscanceled():
 					if control.yesnoDialog('Delete PM download also?', 'No will continue the download', 'but close dialog'):
 						return _return_failed(getLS(40014))
 					else:
-						control.progressDialog.close()
+						self.progressDialog.close()
 						control.hide()
 						return False
 			except: pass
@@ -301,7 +315,7 @@ class Premiumize:
 				return _return_failed()
 		control.sleep(1000 * interval)
 		try:
-			control.progressDialog.close()
+			self.progressDialog.close()
 		except: log_utils.error()
 		control.hide()
 		return True
@@ -549,7 +563,7 @@ class Premiumize:
 		try:
 			control.setSetting('premiumizetoken', '')
 			control.setSetting('premiumizeusername', '')
-			control.dialog.ok(control.lang(40057), control.lang(40109))
+			control.dialog.ok(control.lang(40057), control.lang(40009))
 			if fromSettings == 1:
 				control.openSettings('10.1', 'plugin.video.umbrella')
 		except:

@@ -29,6 +29,7 @@ highlight_color = control.getHighlightColor()
 server_notification = getSetting('trakt.server.notifications') == 'true'
 service_syncInterval = int(getSetting('trakt.service.syncInterval')) if getSetting('trakt.service.syncInterval') else 15
 trakt_icon = control.joinPath(control.artPath(), 'trakt.png')
+trakt_qr = control.joinPath(control.artPath(), 'traktqr.png')
 
 def getTrakt(url, post=None, extended=False, silent=False):
 	try:
@@ -191,15 +192,22 @@ def getTraktDeviceToken(traktDeviceCode):
 		expires_in = traktDeviceCode['expires_in']
 		verification_url = control.lang(32513) % (control.getHighlightColor(), str(traktDeviceCode['verification_url']))
 		user_code = control.lang(32514) % (control.getHighlightColor(), str(traktDeviceCode['user_code']))
+		line = '%s\n%s\n%s'
 		try:
 			from resources.lib.modules.source_utils import copy2clip
 			copy2clip(traktDeviceCode['user_code'])
 		except:
 			log_utils.error()
-		control.progressDialog.create(control.lang(32073), control.progress_line % (verification_url, user_code, getLS(40390)))
+		if control.setting('dialogs.useumbrelladialog') == 'true':
+			progressDialog = control.getProgressWindow(getLS(32073), trakt_qr, 1)
+			progressDialog.set_controls()
+			progressDialog.update(0, control.progress_line % (verification_url, user_code, getLS(40390)))
+		else:
+			progressDialog = control.progressDialog
+			progressDialog.create(control.lang(32073), control.progress_line % (verification_url, user_code, getLS(40390)))
 		try:
 			time_passed = 0
-			while not control.progressDialog.iscanceled() and time_passed < expires_in:
+			while not progressDialog.iscanceled() and time_passed < expires_in:
 				try:
 					#response = getTrakt('oauth/device/token', post=data, silent=True)
 					url = urljoin(BASE_URL, 'oauth/device/token')
@@ -207,19 +215,19 @@ def getTraktDeviceToken(traktDeviceCode):
 					if response.status_code == 400:
 						time_passed = time.time() - start
 						progress = int(100)-int(100 * time_passed / expires_in)
-						control.progressDialog.update(progress)
+						progressDialog.update(progress, control.progress_line % (verification_url, user_code, getLS(40390)))
 						control.sleep(max(traktDeviceCode['interval'], 1)*1000)
 				except requests.HTTPError as e:
 					log_utils.log('Request Error: %s' % str(e), __name__, log_utils.LOGDEBUG)
 					if e.response.status_code != 400: raise e
 					progress = int(100)-int(100 * time_passed / expires_in)
-					control.progressDialog.update(progress)
+					progressDialog.update(progress)
 					control.sleep(max(traktDeviceCode['interval'], 1)*1000)
 				else:
 					if not response: continue
 					else: return response
 		finally:
-			control.progressDialog.close()
+			progressDialog.close()
 		return None
 	except:
 		log_utils.error()

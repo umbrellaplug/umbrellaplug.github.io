@@ -34,6 +34,7 @@ hosts_domains_url = 'hosts/domains'
 # hosts_status_url = 'hosts/status'
 hosts_regex_url = 'hosts/regex'
 rd_icon = control.joinPath(control.artPath(), 'realdebrid.png')
+rd_qr = control.joinPath(control.artPath(), 'realdebridqr.png')
 addonFanart = control.addonFanart()
 
 session = requests.Session()
@@ -130,7 +131,7 @@ class RealDebrid:
 		else:
 			try:
 				response = response.json()
-				control.progressDialog.close()
+				self.progressDialog.close()
 				self.client_ID = response['client_id']
 				self.secret = response['client_secret']
 			except:
@@ -147,9 +148,13 @@ class RealDebrid:
 		url = oauth_base_url + device_code_url % url
 		response = session.get(url).json()
 		line = '%s\n%s\n%s'
-		progressDialog = control.progressDialog
-		progressDialog.create(getLS(40055))
-		progressDialog.update(-1, line % (getLS(32513) % (control.getHighlightColor(),'https://real-debrid.com/device'), getLS(32514) % (control.getHighlightColor(), response['user_code']), getLS(40390)))
+		if control.setting('dialogs.useumbrelladialog') == 'true':
+			self.progressDialog = control.getProgressWindow(getLS(40055), rd_qr, 1)
+			self.progressDialog.set_controls()
+		else:
+			self.progressDialog = control.progressDialog
+			self.progressDialog.create(getLS(40055))
+		self.progressDialog.update(-1, line % (getLS(32513) % (control.getHighlightColor(),'https://real-debrid.com/device'), getLS(32514) % (control.getHighlightColor(), response['user_code']), getLS(40390)))
 		try:
 			from resources.lib.modules.source_utils import copy2clip
 			copy2clip(response['user_code'])
@@ -159,8 +164,8 @@ class RealDebrid:
 		self.auth_step = int(response['interval'])
 		self.device_code = response['device_code']
 		while self.secret == '':
-			if progressDialog.iscanceled():
-				progressDialog.close()
+			if self.progressDialog.iscanceled():
+				self.progressDialog.close()
 				break
 			self.auth_loop(fromSettings=fromSettings)
 		if self.secret: self.get_token(fromSettings=fromSettings)
@@ -511,7 +516,7 @@ class RealDebrid:
 
 	def add_uncached_torrent(self, magnet_url, pack=False):
 		def _return_failed(message=getLS(33586)):
-			try: control.progressDialog.close()
+			try: self.progressDialog.close()
 			except: pass
 			self.delete_torrent(torrent_id)
 			control.hide()
@@ -537,12 +542,19 @@ class RealDebrid:
 			line2 = torrent_info['filename']
 			line3 = getLS(40012) % str(torrent_info['seeders'])
 			timeout = 100
-			control.progressDialog.create(getLS(40018), line % (line1, line2, line3))
+			###################
+			if control.setting('dialogs.useumbrelladialog') == 'true':
+				self.progressDialog = control.getProgressWindow(getLS(40018), None, 0)
+				self.progressDialog.set_controls()
+				self.progressDialog.update(0, line % (line1, line2, line3))
+			else:
+				self.progressDialog = control.progressDialog
+				self.progressDialog.create(getLS(40018), line % (line1, line2, line3))
 			while status == 'magnet_conversion' and timeout > 0:
-				control.progressDialog.update(timeout, line % (line1, line2, line3))
+				self.progressDialog.update(timeout, line % (line1, line2, line3))
 				if control.monitor.abortRequested(): return sysexit()
 				try:
-					if control.progressDialog.iscanceled(): return _return_failed(getLS(40014))
+					if self.progressDialog.iscanceled(): return _return_failed(getLS(40014))
 				except: pass
 				timeout -= interval
 				control.sleep(1000 * interval)
@@ -550,7 +562,7 @@ class RealDebrid:
 				status = torrent_info['status']
 				if any(x in status for x in stalled): return _return_failed()
 				line3 = getLS(40012) % str(torrent_info['seeders'])
-			try: control.progressDialog.close()
+			try: self.progressDialog.close()
 			except: pass
 		if status == 'downloaded':
 			control.busy()
@@ -592,7 +604,13 @@ class RealDebrid:
 			line1 = '%s...' % (getLS(40017) % getLS(40058))
 			line2 = torrent_info['filename']
 			line3 = status
-			control.progressDialog.create(getLS(40018), line % (line1, line2, line3))
+			if control.setting('dialogs.useumbrelladialog') == 'true':
+				self.progressDialog = control.getProgressWindow(getLS(40018), None, 0)
+				self.progressDialog.set_controls()
+				self.progressDialog.update(0, line % (line1, line2, line3))
+			else:
+				self.progressDialog = control.progressDialog
+				self.progressDialog.create(getLS(40018), line % (line1, line2, line3))
 			while not status == 'downloaded':
 				control.sleep(1000 * interval)
 				torrent_info = self.torrent_info(torrent_id)
@@ -601,19 +619,19 @@ class RealDebrid:
 					line3 = getLS(40011) % (file_size, round(float(torrent_info['speed']) / (1000**2), 2), torrent_info['seeders'], torrent_info['progress'])
 				else:
 					line3 = status
-				control.progressDialog.update(int(float(torrent_info['progress'])), line % (line1, line2, line3))
+				self.progressDialog.update(int(float(torrent_info['progress'])), line % (line1, line2, line3))
 				if control.monitor.abortRequested(): return sysexit()
 				try:
-					if control.progressDialog.iscanceled():
+					if self.progressDialog.iscanceled():
 						if control.yesnoDialog('Delete RD download also?', 'No will continue the download', 'but close dialog'):
 							return _return_failed(getLS(40014))
 						else:
-							control.progressDialog.close()
+							self.progressDialog.close()
 							control.hide()
 							return False
 				except: pass
 				if any(x in status for x in stalled): return _return_failed()
-			try: control.progressDialog.close()
+			try: self.progressDialog.close()
 			except: pass
 			control.hide()
 			return True

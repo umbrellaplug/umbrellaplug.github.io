@@ -567,8 +567,8 @@ msgid "Open My Accounts Addon"
 msgstr "Open Mijn Accounts addon"
 
 msgctxt "#32136"
-msgid "sync(re) with My Accounts"
-msgstr "synchroniseren(opnieuw) met Mijn Accounts"
+msgid "Sync lists now"
+msgstr "synchroniseren(opnieuw) nu lijsten"
 
 msgctxt "#32137"
 msgid "[COLOR FFA0C12C] -- Help --[/COLOR]"
@@ -4764,4 +4764,96 @@ msgstr ""
 
 msgctxt "#40406"
 msgid "Make umbrella work properly"
+msgstr ""
+
+msgctxt "#40407"
+msgid "Show information for TV Show on select"
+msgstr ""
+
+msgctxt "#40408"
+msgid "Show information for Movie on select"
+msgstr ""
+
+msgctxt "#40409"
+msgid "Information Screens"
+msgstr ""
+
+msgctxt "#40410"
+msgid "Released this Month (TMDb)"
+msgstr ""
+
+msgctxt "#40411"
+msgid "Released this Month"
+msgstr ""
+
+msgctxt "#40412"
+msgid "Released this Month (Digital and DVD) (TMDb)"
+msgstr ""
+
+msgctxt "#40413"
+msgid "Released this Month (Digital and DVD)"
+msgstr ""
+
+msgctxt "#40414"
+msgid "Umbrella"
+msgstr ""
+
+msgctxt "#40415"
+msgid "No Results"
+msgstr ""
+
+msgctxt "#40416"
+msgid "Dialogs"
+msgstr ""
+
+msgctxt "#40417"
+msgid "Color Options for Dialogs"
+msgstr ""
+
+msgctxt "#40418"
+msgid "Color titlebar of dialogs"
+msgstr ""
+
+msgctxt "#40419"
+msgid "Titlebar Color"
+msgstr ""
+
+msgctxt "#40420"
+msgid "Light or Dark Mode"
+msgstr ""
+
+msgctxt "#40421"
+msgid "Button color"
+msgstr ""
+
+msgctxt "#40422"
+msgid "Dark Mode"
+msgstr ""
+
+msgctxt "#40423"
+msgid "Light Mode"
+msgstr ""
+
+msgctxt "#40424"
+msgid "Custom Color"
+msgstr ""
+
+msgctxt "#40425"
+msgid "Use Custom Umbrella Dialogs"
+msgstr ""
+
+msgctxt "#40426"
+msgid "Test Ok Dialog"
+msgstr ""
+
+msgctxt "#40427"
+msgid "Test Confirm Dialog"
+msgstr ""
+
+msgctxt "#40428"
+msgid "Message from testing dialog."
+msgstr ""
+
+msgctxt "#40429"
+msgid "Import list(s) now"
 msgstr ""

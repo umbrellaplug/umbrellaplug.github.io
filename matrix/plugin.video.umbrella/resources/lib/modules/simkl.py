@@ -19,6 +19,7 @@ simklclientid = 'cecec23773dff71d940876860a316a4b74666c4c31ad719fe0af8bb3064a34a
 session = requests.Session()
 retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
 session.mount('https://api.simkl.com', HTTPAdapter(max_retries=retries, pool_maxsize=100))
+sim_qr = control.joinPath(control.artPath(), 'simklqr.png')
 
 
 class SIMKL:
@@ -44,7 +45,7 @@ class SIMKL:
 				return #
 			else:
 				try:
-					control.progressDialog.close()
+					self.progressDialog.close()
 					self.secret = responseJson['access_token']
 				except:
 					log_utils.error()
@@ -65,9 +66,13 @@ class SIMKL:
 		url = oauth_base_url + url
 		response = session.get(url).json()
 		line = '%s\n%s\n%s'
-		progressDialog = control.progressDialog
-		progressDialog.create(getLS(40346))
-		progressDialog.update(-1, line % (getLS(32513) % (control.getHighlightColor(), 'https://simkl.com/pin/'), getLS(32514) % (control.getHighlightColor(),response['user_code']), getLS(40390)))
+		if control.setting('dialogs.useumbrelladialog') == 'true':
+			self.progressDialog = control.getProgressWindow(getLS(40346), sim_qr, 1)
+			self.progressDialog.set_controls()
+		else:
+			self.progressDialog = control.progressDialog
+			self.progressDialog.create(getLS(40346))
+		self.progressDialog.update(-1, line % (getLS(32513) % (control.getHighlightColor(), 'https://simkl.com/pin/'), getLS(32514) % (control.getHighlightColor(),response['user_code']), getLS(40390)))
 		try:
 			from resources.lib.modules.source_utils import copy2clip
 			copy2clip(response['user_code'])
@@ -78,8 +83,8 @@ class SIMKL:
 		self.device_code = response['device_code']
 		self.user_code = response['user_code']        
 		while self.secret == '':
-			if progressDialog.iscanceled():
-				progressDialog.close()
+			if self.progressDialog.iscanceled():
+				self.progressDialog.close()
 				break
 			self.auth_loop(fromSettings=fromSettings)
 		if self.secret: self.save_token(fromSettings=fromSettings)

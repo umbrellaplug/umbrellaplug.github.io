@@ -219,7 +219,7 @@ class lib_tools:
 			except:
 				log_utils.error()
     
-	def importNow(self, selected_items):
+	def importNow(self, selected_items, select=True):
 		if control.setting('library.autoimportlists_last') == getLS(40224):
 			from resources.lib.modules.control import lang
 			if not yesnoDialog(getLS(40227), '', ''): return
@@ -228,7 +228,7 @@ class lib_tools:
 			control.notification(message=40210)
 		try:
 			allTraktItems = lib_tools().getAllTraktLists()
-			lib_tools().updateLists(selected_items, allTraktItems)
+			if select: lib_tools().updateLists(selected_items, allTraktItems)
 			libepisodes().update()
 			libmovies().list_update()
 			libtvshows().list_update()
@@ -311,6 +311,22 @@ class lib_tools:
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()
+
+	def importListsNowNoSelect(self, fromSettings=False):
+		try:
+			libepisodes().update()
+			libmovies().list_update()
+			libtvshows().list_update()
+			last_service_setting = datetime.now().strftime('%Y-%m-%d %H:%M')
+			control.setSetting('library.autoimportlists_last', str(last_service_setting))
+			lib_tools().updateSettings()
+			if fromSettings == True:
+				control.openSettings('13.2', 'plugin.video.umbrella')
+				
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
 
 	def getDBItems(self):
 		try:
@@ -450,7 +466,9 @@ class lib_tools:
 			for l in range(lengthItm):
 				dbcur.execute('''INSERT OR REPLACE INTO lists Values (?, ?, ?)''', (items[l]['type'], items[l]['list_name'], items[l]['url']))
 			dbcur.connection.commit()
-		except: log_utils.error()
+		except: 
+			from resources.lib.modules import log_utils
+			log_utils.error()
 		finally:
 			dbcur.close() ; dbcon.close()
 

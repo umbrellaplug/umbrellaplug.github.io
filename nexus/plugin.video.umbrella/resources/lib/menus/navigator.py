@@ -60,6 +60,10 @@ class Navigator:
 			self.addDirectoryItem(32427 if self.indexLabels else 32426, 'tmdbmovies&url=tmdb_upcoming', 'tmdb.png' if self.iconLogos else 'in-theaters.png', 'DefaultMovies.png')
 		if getMenuEnabled('navi.movie.tmdb.discoverreleased'):
 			self.addDirectoryItem(40268 if self.indexLabels else 40269, 'tmdbmovies&url=tmdb_discovery_released', 'tmdb.png' if self.iconLogos else 'trending.png', 'DefaultMovies.png')
+		if getMenuEnabled('navi.movie.tmdb.discoverthismonth'):
+			self.addDirectoryItem(40410 if self.indexLabels else 40411, 'tmdbmovies&url=tmdb_discovery_this_month', 'tmdb.png' if self.iconLogos else 'trending.png', 'DefaultMovies.png')
+		if getMenuEnabled('navi.movie.tmdb.discoverthismonthreleased'):
+			self.addDirectoryItem(40412 if self.indexLabels else 40413, 'tmdbmovies&url=tmdb_discovery_this_month_released', 'tmdb.png' if self.iconLogos else 'trending.png', 'DefaultMovies.png')
 		if getMenuEnabled('navi.movie.imdb.popular'):
 			self.addDirectoryItem(32429 if self.indexLabels else 32428, 'movies&url=mostpopular', 'imdb.png' if self.iconLogos else 'most-popular.png', 'DefaultMovies.png')
 		if getMenuEnabled('navi.movie.tmdb.popular'):

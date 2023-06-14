@@ -4,6 +4,7 @@
 """
 
 from datetime import datetime, timedelta
+import calendar
 from json import dumps as jsdumps, loads as jsloads
 import re
 import xbmc
@@ -38,6 +39,11 @@ class Movies:
 		self.search_page_limit = getSetting('search.page.limit')
 		self.notifications = notifications
 		self.date_time = datetime.now()
+		res = calendar.monthrange(datetime.now().year, datetime.now().month)
+		self.first_day_of_month = datetime.now().replace(day=1)
+		control.log('self.firstday type: %s value: %s'%(type(self.first_day_of_month), self.first_day_of_month), 1)
+		self.last_day_of_month = res[1]
+		control.log('self.lastday type: %s value: %s'%(type(self.last_day_of_month), self.last_day_of_month), 1)
 		self.today_date = (self.date_time).strftime('%Y-%m-%d')
 		self.yesterday_date = datetime.now() - timedelta(days=1)
 		self.hidecinema = getSetting('hidecinema') == 'true'
@@ -67,7 +73,9 @@ class Movies:
 		self.tmdb_certification_link = 'https://api.themoviedb.org/3/discover/movie?api_key=%s&language=en-US&region=US&primary_release_date.lte=%s&certification_country=US&certification=%s&sort_by=%s&page=1' % ('%s', self.today_date, '%s', self.tmdb_DiscoverSort())
 		self.tmdb_recommendations = 'https://api.themoviedb.org/3/movie/%s/recommendations?api_key=%s&language=en-US&region=US&page=1'
 		self.tmdb_similar = 'https://api.themoviedb.org/3/movie/%s/similar?api_key=%s&language=en-US&region=US&page=1'
-		self.tmdb_discovery_released_link = 'https://api.themoviedb.org/3/discover/movie?api_key=%s&language=en-US&region=US&release_date.gte=%s&release_date.lte=%s&with_release_type=4|5&page=1'% ('%s', (self.yesterday_date-timedelta(days=30)).strftime('%Y-%m-%d'), self.yesterday_date.strftime('%Y-%m-%d'))
+		self.tmdb_discovery_this_month_link = 'https://api.themoviedb.org/3/discover/movie?api_key=%s&language=en-US&region=US&release_date.gte=%s&release_date.lte=%s&with_release_type=2|3&page=1'% ('%s', self.first_day_of_month.strftime('%Y-%m-%d'), datetime.now().replace(day=self.last_day_of_month).strftime('%Y-%m-%d'))
+		self.tmdb_discovery_this_month_released_link = 'https://api.themoviedb.org/3/discover/movie?api_key=%s&language=en-US&region=US&release_date.gte=%s&release_date.lte=%s&with_release_type=4|5&page=1'% ('%s', self.first_day_of_month.strftime('%Y-%m-%d'), datetime.now().replace(day=self.last_day_of_month).strftime('%Y-%m-%d'))
+		self.tmdb_discovery_released_link = 'https://api.themoviedb.org/3/discover/movie?api_key=%s&language=en-US&region=US&release_date.gte=%s&release_date.lte=%s&with_release_type=2|3&page=1'% ('%s', (self.yesterday_date-timedelta(days=30)).strftime('%Y-%m-%d'), self.yesterday_date.strftime('%Y-%m-%d'))
 		self.tmdb_recentday = 'https://api.themoviedb.org/3/trending/movie/day?api_key=%s&language=en-US&region=US&page=1'
 		self.tmdb_recentweek = 'https://api.themoviedb.org/3/trending/movie/week?api_key=%s&language=en-US&region=US&page=1'
 		self.search_tmdb_link = 'https://api.themoviedb.org/3/search/movie?api_key=%s&language=en-US&query=%s&region=US&page=1'% ('%s','%s')
@@ -1758,6 +1766,7 @@ class Movies:
 				meta.update({'poster': poster, 'fanart': fanart, 'banner': banner})
 				sysmeta, sysart = quote_plus(jsdumps(meta)), quote_plus(jsdumps(art))
 				url = '%s?action=play_Item&title=%s&year=%s&imdb=%s&tmdb=%s&meta=%s' % (sysaddon, systitle, year, imdb, tmdb, sysmeta)
+				#url = '%s?action=play_info&title=%s&year=%s&imdb=%s&tmdb=%s&meta=%s' % (sysaddon, systitle, year, imdb, tmdb, sysmeta)
 				sysurl = quote_plus(url)
 ####-Context Menu and Overlays-####
 				cm = []
@@ -1801,8 +1810,9 @@ class Movies:
 				#if 'castandart' in i: item.setCast(i['castandart'])#changed for kodi20 setinfo method
 				if 'castandart' in i: meta.update({'castandart':i['castandart']})
 				item.setArt(art)
-				#item.setUniqueIDs({'imdb': imdb, 'tmdb': tmdb})#changed for kodi20 setinfo method
+				#item.setUniqueIDs({'imdb': imdb, 'tmdb': tmdb}) #changed for kodi20 setinfo method
 				setUniqueIDs = {'imdb': imdb, 'tmdb': tmdb}
+###########################################################
 				item.setProperty('IsPlayable', 'true')
 				if is_widget: 
 					item.setProperty('isUmbrella_widget', 'true')

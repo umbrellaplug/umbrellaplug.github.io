@@ -48,15 +48,6 @@ class CheckSettingsFile:
 		except:
 			log_utils.error()
 
-class PropertiesUpdater(xbmc.Monitor):
-	def __init__(self):
-		for id in properties:
-			if control.setting(id) == 'true':
-				xbmc.executebuiltin('SetProperty({0},true,home)'.format(id))
-				#xbmc.log('[ plugin.video.umbrella.context ]  menu item enabled: {0}'.format(id), LOGINFO)
-
-
-
 class SettingsMonitor(control.monitor_class):
 	def __init__ (self):
 		control.monitor_class.__init__(self)

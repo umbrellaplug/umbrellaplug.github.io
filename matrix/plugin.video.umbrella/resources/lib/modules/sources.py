@@ -22,6 +22,7 @@ from resources.lib.modules.source_utils import supported_video_extensions, getFi
 from resources.lib.cloud_scrapers import cloudSources
 from cocoscrapers import sources as fs_sources
 import xbmc
+import xbmcgui
 
 homeWindow = control.homeWindow
 playerWindow = control.playerWindow
@@ -72,8 +73,30 @@ class Sources:
 		self.providercache_hours = int(getSetting('cache.providers'))
 		self.debuglog = control.setting('debug.level') == '1'
 		self.retryallsources = getSetting('sources.retryall') == 'true'
+		self.info_tv = getSetting('playback.info_tv') == 'true'
+		self.info_movies = getSetting('playback.info_movies') == 'true'
 
 	def play(self, title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, meta, select, rescrape=None):
+		# control.log('info_tv: %s tvshowtitle: %s' % (self.info_tv, tvshowtitle),1)
+		# control.log('info_movies: %s tvshowtitle: %s' % (self.info_movies, tvshowtitle),1)
+		# if (self.info_tv and tvshowtitle) or (self.info_movies and tvshowtitle == None):
+		# 	control.log('window property umbrella.info_loaded: %s' % (homeWindow.getProperty('umbrella.info_loaded')),1)
+		# 	if not homeWindow.getProperty('umbrella.info_loaded') == 'true':
+		# 		from sys import argv
+		# 		homeWindow.setProperty('umbrella.info_loaded', 'true')
+		# 		control.playlist.clear()
+		# 		item = control.item(label='', offscreen=True)
+		# 		control.resolve(int(argv[1]), False, item)
+		# 		#Monitor the information dialog
+		# 		#control.monitor_info_dialog()
+		# 		return control.monitor_info_dialog()
+		# 	else:
+		# 		homeWindow.clearProperty('umbrella.info_loaded')
+		# else:
+		# 	homeWindow.clearProperty('umbrella.info_loaded')
+		# if str(xbmc.getInfoLabel("Window.Property(xmlfile)")) != 'DialogVideoInfo.xml':
+		# 	return xbmc.executebuiltin('Action(Info)')
+		# else:
 		self.premiered = premiered
 		if not self.prem_providers:
 			control.sleep(200) ; control.hide()
@@ -409,8 +432,12 @@ class Sources:
 			except: log_utils.error()
 			header = homeWindow.getProperty(self.labelProperty) + ': Resolving...'
 			if getSetting('progress.dialog') == '0':
-				progressDialog = control.progressDialog
-				progressDialog.create(header, '')
+				if getSetting('dialogs.useumbrelladialog') == 'true':
+					progressDialog = control.getProgressWindow(header, None, 0)
+					progressDialog.set_controls()
+				else:
+					progressDialog = control.progressDialog
+					progressDialog.create(header,'')
 			if getSetting('progress.dialog') == '1':
 				progressDialog = control.progressDialogBG
 				progressDialog.create(header, '')
@@ -563,8 +590,12 @@ class Sources:
 			#progressDialog = control.progressDialog if getSetting('progress.dialog') == '0' else control.progressDialogBG
 			header = homeWindow.getProperty(self.labelProperty) + ': Scraping...'
 			if getSetting('progress.dialog') == '0':
-				progressDialog = control.progressDialog
-				progressDialog.create(header, '')
+				if getSetting('dialogs.useumbrelladialog') == 'true':
+					progressDialog = control.getProgressWindow(header, None, 0)
+					progressDialog.set_controls()
+				else:
+					progressDialog = control.progressDialog
+					progressDialog.create(header,'')
 			if getSetting('progress.dialog') == '1':
 				progressDialog = control.progressDialogBG
 				progressDialog.create(header, '')
@@ -1179,8 +1210,12 @@ class Sources:
 		header = homeWindow.getProperty(self.labelProperty) + ': Resolving...'
 		try:
 			if getSetting('progress.dialog') == '0':
-				progressDialog = control.progressDialog
-				progressDialog.create(header, '')
+				if getSetting('dialogs.useumbrelladialog') == 'true':
+					progressDialog = control.getProgressWindow(header, None, 0)
+					progressDialog.set_controls()
+				else:
+					progressDialog = control.progressDialog
+					progressDialog.create(header,'')
 			if getSetting('progress.dialog') == '1':
 				progressDialog = control.progressDialogBG
 				progressDialog.create(header, '')
@@ -1734,3 +1769,13 @@ class Sources:
 		window = IconScrape(blindmode, control.addonPath(control.addonId()))
 		Thread(target=window.run).start()
 		return window
+
+	def getInfo(self):
+		#import web_pdb; web_pdb.set_trace()
+		import xbmcgui
+		# li = xbmcgui.Window(xbmcgui.getCurrentWindowId()).getSelectedItem()
+		# dialog = xbmcgui.Dialog(li)
+		# return dialog.info(li)
+		control.execute('Action(Info)')
+
+		#li = xbmcgui.Window().getControl(xbmcgui.getCurrentWindowId()).getSelectedItem()

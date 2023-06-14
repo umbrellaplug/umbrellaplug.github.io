@@ -21,6 +21,7 @@ getSetting = control.setting
 base_url = 'https://api.alldebrid.com/v4/'
 user_agent = 'Umbrella'
 ad_icon = control.joinPath(control.artPath(), 'alldebrid.png')
+ad_qr = control.joinPath(control.artPath(), 'alldebridqr.png')
 addonFanart = control.addonFanart()
 invalid_extensions = ('.bmp', '.exe', '.gif', '.jpg', '.nfo', '.part', '.png', '.rar', '.sample.', '.srt', '.txt', '.zip', '.clpi', '.mpls', '.bdmv', '.xml', '.crt', 'crl', 'sig')
 
@@ -107,7 +108,7 @@ class AllDebrid:
 			return
 		if response['activated']:
 			try:
-				control.progressDialog.close()
+				self.progressDialog.close()
 				self.token = str(response['apikey'])
 				control.setSetting('alldebridtoken', self.token)
 			except:
@@ -123,9 +124,13 @@ class AllDebrid:
 		response = session.get(url, timeout=self.timeout).json()
 		response = response['data']
 		line = '%s\n%s\n%s'
-		progressDialog = control.progressDialog
-		progressDialog.create(getLS(40056))
-		progressDialog.update(-1, line % (getLS(32513) % (control.getHighlightColor(),'https://alldebrid.com/pin/'), getLS(32514) % (control.getHighlightColor(),response['pin']),getLS(40390)))
+		if control.setting('dialogs.useumbrelladialog') == 'true':
+			self.progressDialog = control.getProgressWindow(getLS(40056), ad_qr, 1)
+			self.progressDialog.set_controls()
+		else:
+			self.progressDialog = control.progressDialog
+			self.progressDialog.create(getLS(40056))
+		self.progressDialog.update(-1, line % (getLS(32513) % (control.getHighlightColor(),'https://alldebrid.com/pin/'), getLS(32514) % (control.getHighlightColor(),response['pin']),getLS(40390)))
 		try:
 			from resources.lib.modules.source_utils import copy2clip
 			copy2clip(response['pin'])
@@ -134,8 +139,8 @@ class AllDebrid:
 		self.check_url = response.get('check_url')
 		control.sleep(2000)
 		while not self.token:
-			if progressDialog.iscanceled():
-				progressDialog.close()
+			if self.progressDialog.iscanceled():
+				self.progressDialog.close()
 				break
 			self.auth_loop()
 		if self.token in (None, '', 'failed'):
@@ -154,9 +159,9 @@ class AllDebrid:
 		try:
 			control.setSetting('alldebridtoken', '')
 			control.setSetting('alldebridusername', '')
-			control.okDialog(title=40059, message=40009)
 			if fromSettings == 1:
 				control.openSettings('10.0', 'plugin.video.umbrella')
+			control.okDialog(title=40059, message=40009)
 		except: log_utils.error()
 
 	def account_info(self):
@@ -473,7 +478,7 @@ class AllDebrid:
 
 	def add_uncached_torrent(self, magnet_url, pack=False):
 		def _return_failed(message=getLS(33586)):
-			try: control.progressDialog.close()
+			try: self.progressDialog.close()
 			except: pass
 			self.delete_transfer(transfer_id)
 			control.hide()
@@ -494,7 +499,13 @@ class AllDebrid:
 		line1 = '%s...' % (getLS(40017) % getLS(40059))
 		line2 = transfer_info['filename']
 		line3 = transfer_info['status']
-		control.progressDialog.create(getLS(40018), line % (line1, line2, line3))
+		if control.setting('dialogs.useumbrelladialog') == 'true':
+			self.progressDialog = control.getProgressWindow(getLS(40018), None, 0)
+			self.progressDialog.set_controls()
+			self.progressDialog.update(0, line % (line1, line2, line3))
+		else:
+			self.progressDialog = control.progressDialog
+			self.progressDialog.create(getLS(40018), line % (line1, line2, line3))
 		while not transfer_info['statusCode'] == 4:
 			control.sleep(1000 * interval)
 			transfer_info = self.list_transfer(transfer_id)
@@ -511,20 +522,20 @@ class AllDebrid:
 			else:
 				line3 = transfer_info['status']
 				progress = 0
-			control.progressDialog.update(progress, line % (line1, line2, line3))
+			self.progressDialog.update(progress, line % (line1, line2, line3))
 			if control.monitor.abortRequested(): return sysexit()
 			try:
-				if control.progressDialog.iscanceled():
+				if self.progressDialog.iscanceled():
 					if control.yesnoDialog('Delete AD download also?', 'No will continue the download', 'but close dialog'):
 						return _return_failed(getLS(40014))
 					else:
-						control.progressDialog.close()
+						self.progressDialog.close()
 						control.hide()
 						return False
 			except: pass
 			if 5 <= transfer_info['statusCode'] <= 10: return _return_failed()
 		control.sleep(1000 * interval)
-		try: control.progressDialog.close()
+		try: self.progressDialog.close()
 		except: pass
 		control.hide()
 		return True
