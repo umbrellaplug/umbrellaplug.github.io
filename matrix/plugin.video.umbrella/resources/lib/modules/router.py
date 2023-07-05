@@ -383,34 +383,34 @@ def router(argv2):
 			from resources.lib.debrid import easynews
 			easynews.EasyNews().account_info_to_dialog()
 
-	elif action and action.startswith('furk_'):
-		if action == "furk_ServiceNavigator":
-			from resources.lib.menus import navigator
-			navigator.Navigator().furk_service()
-		elif action == "furk_Search":
-			from resources.lib.debrid import furk
-			furk.Furk().search()
-		elif action == "furk_SearchNew":
-			from resources.lib.debrid import furk
-			furk.Furk().search_new()
-		elif action == "furk_searchResults":
-			from resources.lib.debrid import furk
-			furk.Furk().query_results_to_dialog(query)
-		elif action == 'furk_resolve_forPlayback':
-			from resources.lib.debrid import furk
-			furk.Furk().resolve_forPlayback(url)
-		elif action == 'furk_AccountInfo':
-			from resources.lib.debrid import furk
-			furk.Furk().account_info_to_dialog()
-		elif action == "furk_UserFiles":
-			from resources.lib.debrid import furk
-			furk.Furk().user_files()
-		elif action == "furk_getApi":
-			from resources.lib.debrid import furk
-			furk.Furk().get_api()
-		elif action == "furk_clearApi":
-			from resources.lib.debrid import furk
-			furk.Furk().clear_api()
+	# elif action and action.startswith('furk_'):
+	# 	if action == "furk_ServiceNavigator":
+	# 		from resources.lib.menus import navigator
+	# 		navigator.Navigator().furk_service()
+	# 	elif action == "furk_Search":
+	# 		from resources.lib.debrid import furk
+	# 		furk.Furk().search()
+	# 	elif action == "furk_SearchNew":
+	# 		from resources.lib.debrid import furk
+	# 		furk.Furk().search_new()
+	# 	elif action == "furk_searchResults":
+	# 		from resources.lib.debrid import furk
+	# 		furk.Furk().query_results_to_dialog(query)
+	# 	elif action == 'furk_resolve_forPlayback':
+	# 		from resources.lib.debrid import furk
+	# 		furk.Furk().resolve_forPlayback(url)
+	# 	elif action == 'furk_AccountInfo':
+	# 		from resources.lib.debrid import furk
+	# 		furk.Furk().account_info_to_dialog()
+	# 	elif action == "furk_UserFiles":
+	# 		from resources.lib.debrid import furk
+	# 		furk.Furk().user_files()
+	# 	elif action == "furk_getApi":
+	# 		from resources.lib.debrid import furk
+	# 		furk.Furk().get_api()
+	# 	elif action == "furk_clearApi":
+	# 		from resources.lib.debrid import furk
+	# 		furk.Furk().clear_api()
 
 	elif action and action.startswith('pm_'):
 		if action == 'pm_ServiceNavigator':
@@ -657,15 +657,6 @@ def router(argv2):
 				control.syncAccounts()
 				control.sleep(100)
 				control.openSettings('11.3', 'plugin.video.umbrella')
-			elif query == 'Furk':
-				control.openSettings('1.2', 'script.module.cocoscrapers')
-				control.sleep(500)
-				while control.condVisibility('Window.IsVisible(addonsettings)') or control.homeWindow.getProperty('cocoscrapers.active') == 'true':
-					control.sleep(500)
-				control.sleep(100)
-				control.syncAccounts()
-				control.sleep(100)
-				control.openSettings('11.5', 'plugin.video.umbrella')
 			elif query == 'FilePursuit':
 				control.openSettings('1.3', 'script.module.cocoscrapers')
 				control.sleep(500)
@@ -882,12 +873,12 @@ def router(argv2):
 	elif action == 'tmdb_Revoke':
 		from resources.lib.indexers.tmdb import Auth as tmdb_auth
 		tmdb_auth().revoke_session_id(fromSettings=1)
-	elif action == 'fk_getApiKey':
-		from resources.lib.debrid import furk
-		furk.Furk().get_api()
-	elif action == 'fk_revokeApiKey':
-		from resources.lib.debrid import furk
-		furk.Furk().clear_api()
+	# elif action == 'fk_getApiKey':
+	# 	from resources.lib.debrid import furk
+	# 	furk.Furk().get_api()
+	# elif action == 'fk_revokeApiKey':
+	# 	from resources.lib.debrid import furk
+	# 	furk.Furk().clear_api()
 	####################################################
 	#---Playcount
 	####################################################

@@ -960,16 +960,6 @@
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
-				<setting id="navi.furk" type="boolean" label="32129" help="" parent="navi.prem.services">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="navi.prem.services">true</condition>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
 				<setting id="navi.premiumize" type="boolean" label="32225" help="" parent="navi.prem.services">
 					<level>0</level>
 					<default>true</default>
@@ -3281,62 +3271,6 @@
 						<heading>40277</heading>
 					</control>
 				</setting>
-				<setting id="sources.furk.color" type="integer" label="40358" help="">
-					<level>0</level>
-					<default>25</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<and>
-								<condition operator="is" setting="sources.highlightmethod">1</condition>
-								<condition operator="!is" setting="furk.user_name"/>
-							</and>
-						</dependency>
-					</dependencies>
-					<control type="list" format="string">
-						<heading>40358</heading>
-					</control>
-				</setting>
 				<setting id="sources.filepursuit.color" type="integer" label="40359" help="">
 					<level>0</level>
 					<default>16</default>
@@ -4860,109 +4794,7 @@
 					</control>
 				</setting>
 			</group>
-			<group id="4" label="40204">
-				<setting id="furk.enable" type="boolean" label="32081" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="furk.user_name" type="string" label="32126" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="enable">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-						<dependency type="visible">
-							<and>
-								<condition operator="!is" setting="furk.user_name"/>
-								<condition operator="is" setting="furk.enable">true</condition>
-							</and>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>32126</heading>
-					</control>
-				</setting>
-				<setting id="furk.user_pass" type="string" label="32127" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="enable">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>32127</heading>
-					</control>
-				</setting>
-				<setting id="furk.api" type="string" label="32128" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="enable">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>32128</heading>
-					</control>
-				</setting>
-				<setting id="furk.priority" type="integer" label="40005" help="">
-					<level>0</level>
-					<default>10</default>
-					<constraints>
-						<minimum>1</minimum>
-						<step>1</step>
-						<maximum>10</maximum>
-					</constraints>
-					<dependencies>
-						<dependency type="enable">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-						<dependency type="visible">
-							<and>
-								<condition operator="!is" setting="furk.user_name"/>
-								<condition operator="is" setting="furk.enable">true</condition>
-							</and>
-						</dependency>
-					</dependencies>
-					<control type="slider" format="integer">
-						<popup>false</popup>
-					</control>
-				</setting>
-				<setting id="cocoScraperSettingsFurk" type="action" label="40134" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_cocoScrapersSettings)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">true</condition>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action">
-						<close>true</close>
-					</control>
-				</setting>
-			</group>
-			<group id="5" label="40205">
+			<group id="4" label="40205">
 				<setting id="gdrive.enable" type="boolean" label="32081" help="">
 					<level>0</level>
 					<default>true</default>
@@ -5975,6 +5807,11 @@
 				<setting id="enable.umbrellawidgetcontext" type="boolean" label="40397" help="">
 					<level>0</level>
 					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="context.useUmbrellaContext" type="boolean" label="40430" help="">
+					<level>0</level>
+					<default>true</default>
 					<control type="toggle"/>
 				</setting>
 			</group>

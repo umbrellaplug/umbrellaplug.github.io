@@ -33,6 +33,7 @@ class iconPackHandler:
 				if control.setting('debug.level') == '1':
 					from resources.lib.modules import log_utils
 					log_utils.log('selected items: %s' % str(selected_items), 1)
+			control.hide()
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()

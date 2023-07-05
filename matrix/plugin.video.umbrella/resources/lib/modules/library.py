@@ -389,7 +389,8 @@ class lib_tools:
 	def getAllTraktLists(self):
 		full_list = []
 		try:
-			control.busy()
+			from resources.lib.modules import player
+			if not control.player.isPlaying(): control.busy()
 			from resources.lib.menus import tvshows
 			wltv_items = tvshows.TVshows().traktWatchlist('https://api.trakt.tv/users/me/watchlist/shows', create_directory=None)
 			wltv_items_count = len(wltv_items)

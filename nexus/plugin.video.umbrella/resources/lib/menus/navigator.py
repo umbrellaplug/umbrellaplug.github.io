@@ -388,7 +388,7 @@ class Navigator:
 	def premium_services(self):
 		if getMenuEnabled('navi.alldebrid'): self.addDirectoryItem(40059, 'ad_ServiceNavigator', 'alldebrid.png', 'alldebrid.png')
 		if getMenuEnabled('navi.easynews'): self.addDirectoryItem(32327, 'en_ServiceNavigator', 'easynews.png', 'easynews.png')
-		if getMenuEnabled('navi.furk'): self.addDirectoryItem('Furk.net', 'furk_ServiceNavigator', 'furk.png', 'furk.png')
+		#if getMenuEnabled('navi.furk'): self.addDirectoryItem('Furk.net', 'furk_ServiceNavigator', 'furk.png', 'furk.png')
 		if getMenuEnabled('navi.premiumize'): self.addDirectoryItem(40057, 'pm_ServiceNavigator', 'premiumize.png', 'premiumize.png')
 		if getMenuEnabled('navi.realdebrid'): self.addDirectoryItem(40058, 'rd_ServiceNavigator', 'realdebrid.png', 'realdebrid.png')
 		self.endDirectory()
@@ -408,15 +408,6 @@ class Navigator:
 			self.addDirectoryItem('Easy News: Account Info', 'en_AccountInfo', 'easynews.png', 'DefaultAddonService.png', isFolder=False)
 		else:
 			self.addDirectoryItem('[I]Please setup in CocoScrapers[/I]', 'tools_cocoScrapersSettings&query=EasyNews', 'easynews.png', 'DefaultAddonService.png', isFolder=False)
-		self.endDirectory()
-
-	def furk_service(self):
-		if getSetting('furk.user_name'):
-			self.addDirectoryItem('Furk: Search', 'furk_Search', 'search.png', 'DefaultAddonsSearch.png')
-			self.addDirectoryItem('Furk: User Files', 'furk_UserFiles', 'furk.png', 'DefaultAddonService.png')
-			self.addDirectoryItem('Furk: Account Info', 'furk_AccountInfo', 'furk.png', 'DefaultAddonService.png', isFolder=False)
-		else:
-			self.addDirectoryItem('[I]Please setup in CocoScrapers[/I]', 'tools_cocoScrapersSettings&query=Furk', 'furk.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 
 	def premiumize_service(self):
@@ -444,8 +435,6 @@ class Navigator:
 		self.addDirectoryItem(33045, 'tvPerson', 'imdb.png' if self.iconLogos else 'people-search.png', 'DefaultAddonsSearch.png', isFolder=False)
 		if getSetting('easynews.user'):
 			self.addDirectoryItem('Easy News: Search', 'en_Search', 'search.png', 'DefaultAddonsSearch.png')
-		if getSetting('furk.api'):
-			self.addDirectoryItem('Furk: Search', 'furk_Search', 'search.png', 'DefaultAddonsSearch.png')
 		#if getSetting('mdblist.api') != '':
 			#self.addDirectoryItem(40088, 'mdbListSearch', 'mdblist.png' if self.iconLogos else 'search.png', 'DefaultAddonsSearch.png')
 		self.endDirectory()

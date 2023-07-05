@@ -4662,3 +4662,7 @@ msgstr ""
 msgctxt "#40429"
 msgid "Import list(s) now"
 msgstr ""
+
+msgctxt "#40430"
+msgid "Show Umbrella next to Umbrella context items."
+msgstr ""

@@ -52,11 +52,22 @@ class Player(xbmc.Player):
 		
 
 	def play_source(self, title, year, season, episode, imdb, tmdb, tvdb, url, meta, debridPackCall=False):
+		# if self.debuglog:
+		# 	try:
+		# 		log_utils.log('play_source Title: %s Type: %s' % (str(title), type(title)), level=log_utils.LOGDEBUG)
+		# 		log_utils.log('play_source Year: %s Type: %s' % (str(year), type(year)), level=log_utils.LOGDEBUG)
+		# 		log_utils.log('play_source Season: %s Type: %s' % (str(season), type(season)), level=log_utils.LOGDEBUG)
+		# 		log_utils.log('play_source Episode: %s Type: %s' % (str(episode), type(episode)), level=log_utils.LOGDEBUG)
+		# 		log_utils.log('play_source IMDB: %s Type: %s TMDB: %s Type: %s TVDB: %s Type: %s' % (str(imdb), type(imdb), str(tmdb), type(tmdb), str(tvdb), type(tvdb)), level=log_utils.LOGDEBUG)
+		# 		log_utils.log('play_source URL: %s Type: %s' % (str(url), type(url)), level=log_utils.LOGDEBUG)
+		# 		log_utils.log('play_source Meta: %s Type: %s' % (str(self.meta), type(self.meta)), level=log_utils.LOGDEBUG)
+		# 	except:
+		# 		log_utils.error()
 		try:
 			from sys import argv # some functions like ActivateWindow() throw invalid handle less this is imported here.
 			if not url: raise Exception
-			if self.debuglog:
-				log_utils.log('Play Source Received title: %s year: %s metatype: %s' % (title, year, type(meta)), level=log_utils.LOGDEBUG)
+			# if self.debuglog:
+			# 	log_utils.log('Play Source Received title: %s year: %s metatype: %s' % (title, year, type(meta)), level=log_utils.LOGDEBUG)
 			self.media_type = 'movie' if season is None or episode is None else 'episode'
 			self.title, self.year = title, str(year)
 			if self.media_type == 'movie':
@@ -288,6 +299,8 @@ class Player(xbmc.Player):
 		return remaining_time
 
 	def keepAlive(self):
+		control.hide()
+		control.sleep(200)
 		pname = '%s.player.overlay' % control.addonInfo('id')
 		homeWindow.clearProperty(pname)
 		for i in range(0, 500):
@@ -454,7 +467,20 @@ class Player(xbmc.Player):
 
 	def isPlayback(self):
 		# Kodi often starts playback where isPlaying() is true and isPlayingVideo() is false, since the video loading is still in progress, whereas the play is already started.
-		return self.isPlaying() and self.isPlayingVideo() and self.getTime() >= 0
+		try:
+			playing = self.isPlaying()
+		except:
+			playing = False
+		try:
+			playingvideo = self.isPlayingVideo()
+		except:
+			playingvideo = False
+		try:
+			playTime = self.getTime() >= 0
+		except:
+			playTime = False
+		#log_utils.log('isPlayBack Call isPlaying: %s isPlayingVideo: %s self.getTime: %s' % (playing, playingvideo, playTime))
+		return playing and playingvideo and playTime
 
 	def libForPlayback(self):
 		if self.DBID is None: return
@@ -472,6 +498,7 @@ class Player(xbmc.Player):
 
 ### Kodi player callback methods ###
 	def onAVStarted(self): # Kodi docs suggests "Use onAVStarted() instead of onPlayBackStarted() as of v18"
+		control.sleep(200)
 		for i in range(0, 500):
 			if self.isPlayback():
 				control.closeAll()
@@ -485,7 +512,10 @@ class Player(xbmc.Player):
 					progress = float(fetch_bookmarks(self.imdb, self.tmdb, self.tvdb, self.season, self.episode))
 					self.offset = (progress / 100) * total_time
 				except: pass
-			self.seekTime(self.offset)
+			try:
+				self.seekTime(self.offset)
+			except:
+				log_utils.log('Exception trying to seekTime() offset: %s'% self.offset, level=log_utils.LOGDEBUG)
 			self.playback_resumed = True
 		if getSetting('subtitles') == 'true': Subtitles().get(self.name, self.imdb, self.season, self.episode)
 		if self.traktCredentials:

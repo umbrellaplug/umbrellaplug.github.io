@@ -28,7 +28,7 @@ class UncachedResultsXML(BaseDialog):
 		self.easynewsHighlightColor = self.colors['easynews']
 		self.plexHighlightColor = self.colors['plexshare']
 		self.gdriveHighlightColor = self.colors['gdrive']
-		self.furkHighlightColor = self.colors['furk']
+		#self.furkHighlightColor = self.colors['furk']
 		self.filePursuitHighlightColor = self.colors['filepursuit']
 		self.make_items()
 		self.set_properties()
@@ -171,8 +171,6 @@ class UncachedResultsXML(BaseDialog):
 								providerHighlight = self.plexHighlightColor
 							elif str(item.get('provider')).lower() == 'gdrive':
 								providerHighlight = self.gdriveHighlightColor
-							elif str(item.get('provider')).lower() == 'furk':
-								providerHighlight = self.furkHighlightColor
 							elif str(item.get('provider')).lower() == 'filepursuit':
 								providerHighlight = self.filePursuitHighlightColor
 							else:
@@ -248,7 +246,7 @@ class UncachedResultsXML(BaseDialog):
 				self.setProperty('umbrella.plexcolor', self.plexHighlightColor)
 				self.setProperty('umbrella.easynewscolor', self.easynewsHighlightColor)
 				self.setProperty('umbrella.gdrivecolor', self.gdriveHighlightColor)
-				self.setProperty('umbrella.furkcolor', self.furkHighlightColor)
+				#self.setProperty('umbrella.furkcolor', self.furkHighlightColor)
 				self.setProperty('umbrella.filepursuitcolor', self.filePursuitHighlightColor)
 				
 				if getSetting('sources.usecoloricons') == 'true':

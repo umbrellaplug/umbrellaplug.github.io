@@ -820,7 +820,7 @@ class TVshows:
 				values['paused_at'] = item.get('paused_at', '') # for unfinished
 				try: values['progress'] = item['progress']
 				except: values['progress'] = ''
-				try: values['lastplayed'] = item['watched_at'] # for history
+				try: values['lastplayed'] = item['last_watched_at'] # for history
 				except: values['lastplayed'] = ''
 				show = item.get('show') or item
 				values['title'] = show.get('title')
@@ -1204,12 +1204,24 @@ class TVshows:
 			for i in range(len(self.list)): self.list[i]['next'] = next
 			self.worker()
 			if self.list is None: self.list = []
-			if create_directory: self.tvshowDirectory(self.list)
-			return self.list
+			try:
+				hidden = traktsync.fetch_hidden_progress()
+				hidden = [str(i['tvdb']) for i in hidden]
+				self.list = [i for i in self.list if i['tvdb'] not in hidden] # removes hidden progress items
+				prior_week = int(re.sub(r'[^0-9]', '', (self.date_time - timedelta(days=7)).strftime('%Y-%m-%d')))
+				sorted_list = []
+				top_items = [i for i in self.list if i['episode'] == 1 and i['premiered'] and (int(re.sub(r'[^0-9]', '', str(i['premiered']))) >= prior_week)]
+				sorted_list.extend(top_items)
+				sorted_list.extend([i for i in self.list if i not in top_items])
+				self.list = sorted_list
+			except:
+				from resources.lib.modules import log_utils
+				log_utils.error()
+			#if create_directory: self.tvshowDirectory(self.list)
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()
-			return self.list
+		return self.list
 
 	def worker(self):
 		try:

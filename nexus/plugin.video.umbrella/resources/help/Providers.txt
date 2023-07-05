@@ -6,4 +6,4 @@ suggest getting a Filepursuit api key, since it's free.  My household is mostly 
 and scrape to play time for us is 5 seconds on average.  Do not get carried away turning on a slew
 of scrapers, you're only wasting time doing so.
 
-Easy News, FilePursuit, and Furk are now all managed within the scrapers.
+Easy News, and FilePursuit are now all managed within the scrapers.

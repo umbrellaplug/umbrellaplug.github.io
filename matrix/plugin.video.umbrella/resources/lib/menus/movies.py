@@ -40,10 +40,8 @@ class Movies:
 		self.notifications = notifications
 		self.date_time = datetime.now()
 		res = calendar.monthrange(datetime.now().year, datetime.now().month)
-		self.first_day_of_month = datetime.now().replace(day=1)
-		control.log('self.firstday type: %s value: %s'%(type(self.first_day_of_month), self.first_day_of_month), 1)
+		self.first_day_of_month = datetime.now().replace(day=1)	
 		self.last_day_of_month = res[1]
-		control.log('self.lastday type: %s value: %s'%(type(self.last_day_of_month), self.last_day_of_month), 1)
 		self.today_date = (self.date_time).strftime('%Y-%m-%d')
 		self.yesterday_date = datetime.now() - timedelta(days=1)
 		self.hidecinema = getSetting('hidecinema') == 'true'

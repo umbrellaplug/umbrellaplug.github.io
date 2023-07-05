@@ -724,7 +724,6 @@ class Episodes:
 		return items
 
 	def episodeDirectory(self, items, unfinished=False, next=True):
-
 		from sys import argv # some functions like ActivateWindow() throw invalid handle less this is imported here.
 		if not items: # with reuselanguageinvoker on an empty directory must be loaded, do not use sys.exit()
 			control.hide() ; control.notification(title=32326, message=33049)
