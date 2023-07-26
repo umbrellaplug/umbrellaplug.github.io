@@ -26,6 +26,7 @@ def get(function, duration, *args):
 		key = _hash_function(function, args)
 		cache_result = cache_get(key)
 		if cache_result:
+			from resources.lib.modules import log_utils
 			try: result = literal_eval(cache_result['value'])
 			except: result = None
 			if _is_cache_valid(cache_result['date'], duration):

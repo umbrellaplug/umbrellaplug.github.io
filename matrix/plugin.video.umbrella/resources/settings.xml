@@ -1518,6 +1518,11 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="tvshows.progress.watched" type="boolean" label="40432" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
 			</group>
 			<group id="2" label="40027">
 				<setting id="enable.playnext" type="boolean" label="40028" help="40174">
@@ -1915,6 +1920,40 @@
 					</control>
 				</setting>
 				<setting id="sort.progress.order" type="integer" label="33679" help="" parent="sort.progress.type">
+					<level>0</level>
+					<default>1</default>
+					<constraints>
+						<options>
+							<option label="33649">0</option>
+							<option label="33650">1</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition operator="!is" setting="sort.progress.type">0</condition>
+						</dependency>
+					</dependencies>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="sort.watched.type" type="integer" label="40434" help="">
+					<level>0</level>
+					<default>6</default>
+					<constraints>
+						<options>
+							<option label="33564">0</option>
+							<option label="33039">1</option>
+							<option label="35187">2</option>
+							<option label="35188">3</option>
+							<option label="35391">4</option>
+							<option label="35392">5</option>
+							<option label="35393">6</option>
+						</options>
+					</constraints>
+					<control type="list" format="string">
+						<heading>40434</heading>
+					</control>
+				</setting>
+				<setting id="sort.watched.order" type="integer" label="33679" help="" parent="sort.watched.type">
 					<level>0</level>
 					<default>1</default>
 					<constraints>
@@ -5720,6 +5759,11 @@
 		<category id="menu items" label="40398" help="">
 			<group id="1" label="30002">
 				<setting id="context.umbrella.addtoLibrary" type="boolean" label="32551" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="context.umbrella.playTrailer" type="boolean" label="40431" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>

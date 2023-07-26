@@ -18,6 +18,7 @@ LOGDEBUG = log_utils.LOGDEBUG
 properties = [
 	'context.umbrella.settings',
 	'context.umbrella.addtoLibrary',
+	'context.umbrella.playTrailer',
 	'context.umbrella.traktManager',
 	'context.umbrella.clearProviders',
 	'context.umbrella.clearBookmark',
@@ -67,11 +68,17 @@ class SettingsMonitor(control.monitor_class):
 			control.log('[ plugin.video.umbrella ]  Exception clearing settings property...', LOGDEBUG)
 		control.sleep(50)
 		refreshed = control.make_settings_dict()
+		control.log('[ plugin.video.umbrella ]  onSettings Change Refreshed', LOGINFO)
 		control.refresh_playAction()
+		control.log('[ plugin.video.umbrella ]  onSettings Change PlayAction', LOGINFO)
 		control.refresh_libPath()
+		control.log('[ plugin.video.umbrella ]  onSettings Change libPath', LOGINFO)
 		control.checkPlayNextEpisodes()
+		control.log('[ plugin.video.umbrella ]  onSettings checkPlaynext', LOGINFO)
 		control.refresh_debugReversed()
+		control.log('[ plugin.video.umbrella ]  onSettings refresh_debugReversed', LOGINFO)
 		control.setContextColors()
+		control.log('[ plugin.video.umbrella ]  onSettings Change setContextColors', LOGINFO)
 		try:
 			for id in properties:
 				if control.setting(id) == 'true':

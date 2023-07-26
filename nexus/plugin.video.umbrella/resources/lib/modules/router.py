@@ -286,6 +286,9 @@ def router(argv2):
 	elif action == 'shows_progress':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().tvshow_progress(url)
+	elif action == 'shows_watched':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().tvshow_watched(url)
 
 	####################################################
 	#---SEASONS
@@ -802,6 +805,11 @@ def router(argv2):
 			windowedtrailer = params.get('windowedtrailer')
 			windowedtrailer = int(windowedtrailer) if windowedtrailer in ("0","1") else 0
 			trailer.Trailer().play(params.get('type'), name, year, url, imdb, windowedtrailer)
+		elif action == 'play_Trailer_Context':
+			from resources.lib.modules import trailer
+			windowedtrailer = params.get('windowedtrailer')
+			windowedtrailer = int(windowedtrailer) if windowedtrailer in ("0","1") else 0
+			trailer.Trailer().playContext(params.get('type'), name, year, url, imdb, windowedtrailer)
 		elif action == 'play_Random':
 			rtype = params.get('rtype')
 			if rtype == 'movie':

@@ -430,17 +430,26 @@ def getBackgroundColor(n):
 	return color 
 
 def getColor(n):
-	colorChart = ('ff000000','ffffffff', 'ffd3d3d3', 'ff808080', 'FFFFF0DB', 'ffb8860b', 'ffffd700', 'ffffff00', 'ffcd853f', 'ffff4500',
-						'ffffc0cb','ffff1493','ffff00ff','fff08080', 'FFD10000', 'FF750000', 'ff8a2be2', 'ff9932cc', 'ff800080', 'ff4b0082', 'ff483d8b', 'ff6a5acd','ff000080', 'ff0000ff', 'ff00bfff', 'ff1e90ff','ff87ceeb', 'ffb0e0e6', 'ff40e0d0', 'ff00ffff', 'ff00ffff','ff7fffd4','ffadff2f','ff00fa9a','ff008000', 'ff00ff00', 'ffff0000')
-	if not n: n = '0'
-	color = colorChart[int(n)]
-	return color
+	if getKodiVersion()>=20:
+		return n
+	else:
+		colorChart = ('ff000000','ffffffff', 'ffd3d3d3', 'ff808080', 'FFFFF0DB', 'ffb8860b', 'ffffd700', 'ffffff00', 'ffcd853f', 'ffff4500',
+							'ffffc0cb','ffff1493','ffff00ff','fff08080', 'FFD10000', 'FF750000', 'ff8a2be2', 'ff9932cc', 'ff800080', 'ff4b0082', 'ff483d8b', 'ff6a5acd','ff000080', 'ff0000ff', 'ff00bfff', 'ff1e90ff','ff87ceeb', 'ffb0e0e6', 'ff40e0d0', 'ff00ffff', 'ff00ffff','ff7fffd4','ffadff2f','ff00fa9a','ff008000', 'ff00ff00', 'ffff0000')
+		if not n: n = '0'
+		color = colorChart[int(n)]
+		return color
 
 def getHighlightColor():
-	return getColor(setting('highlight.color'))
+	if getKodiVersion() >= 20:
+		return (setting('highlight.color'))
+	else:
+		return getColor(setting('highlight.color'))
 
 def getSourceHighlightColor():
-	return getColor(setting('sources.highlight.color'))
+	if getKodiVersion() >= 20:
+		return (setting('sources.highlight.color'))
+	else:
+		return getColor(setting('sources.highlight.color'))
 
 def getProviderHighlightColor(sourcename):
     #Real-Debrid
@@ -450,7 +459,10 @@ def getProviderHighlightColor(sourcename):
 	return getColor(setting(source))
 
 def getPlayNextBackgroundColor():
-	return getBackgroundColor(setting('playnext.background.color'))
+	if getKodiVersion() >= 20:
+		return (setting('playnext.background.color'))
+	else:
+		return getBackgroundColor(setting('playnext.background.color'))
 
 def getMenuEnabled(menu_title):
 	is_enabled = setting(menu_title).strip()
@@ -466,6 +478,7 @@ def trigger_widget_refresh():
 	execute('UpdateLibrary(video,/fake/path/to/force/refresh/on/home)') # make sure this is ok coupled with above
 
 def refresh_playAction(): # for umbrella global CM play actions
+	xbmc.log('refresh playAction', 1)
 	autoPlayTV = 'true' if setting('play.mode.tv') == '1' else ''
 	homeWindow.setProperty('umbrella.autoPlaytv.enabled', autoPlayTV)
 	autoPlayMovie = 'true' if setting('play.mode.movie') == '1' else ''
@@ -625,6 +638,26 @@ def syncAccounts():
 			homeWindow.setProperty('context.umbrella.showUmbrella', '[B][COLOR '+getHighlightColor()+']Umbrella[/COLOR][/B] - ')
 		else:
 			homeWindow.setProperty('context.umbrella.showUmbrella', '')
+		if getKodiVersion() >= 20:
+			if setting('umbrella.colorbuttonset') == 'false':
+				setSetting('highlight.color', 'FFFEFE22')
+				setSetting('movie.unaired.identify', 'FF76FF7A')
+				setSetting('dialogs.customcolor', 'FF1CA9C9')
+				setSetting('dialogs.titlebar.color', 'FF1CA9C9')
+				setSetting('dialogs.button.color', 'FF1CA9C9')
+				setSetting('unaired.identify', 'FF76FF7A')
+				setSetting('playnext.background.color', 'FF000000')
+				setSetting('scraper.dialog.color', 'FFCEFF1D')
+				setSetting('sources.highlight.color', 'FF1FCECB')
+				setSetting('sources.real-debrid.color', 'FFEE204D')
+				setSetting('sources.alldebrid.color', 'FFFFCF48')
+				setSetting('sources.premiumize.me.color', 'FF6699CC')
+				setSetting('sources.easynews.color', 'FFFFAE42')
+				setSetting('sources.plexshare.color', 'FF7442C8')
+				setSetting('sources.gdrive.color', 'FFFF48D0')
+				setSetting('sources.filepursuit.color', 'FF3BB08F')
+				setSetting('sources.gdrive.color', 'FFFF48D0')
+				setSetting('umbrella.colorbuttonset', 'true')
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()

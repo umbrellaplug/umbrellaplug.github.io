@@ -238,6 +238,15 @@ class Episodes:
 				if self.list:
 					for i in range(len(self.list)): self.list[i]['traktHistory'] = True
 					self.list = sorted(self.list, key=lambda k: k['lastplayed'], reverse=True)
+					result = []
+					for i in self.list:
+						notAdded = True
+						for j in result:
+							if i.get('episodeIDS') == j.get('episodeIDS'):
+								notAdded = False
+						if notAdded == True:
+							result.append(i)
+					self.list = result
 			elif self.tvmaze_link in url and url == self.added_link:
 				urls = [i['url'] for i in self.calendars(idx=False)][:5]
 				self.list = []
@@ -618,6 +627,9 @@ class Episodes:
 				values.update(seasonEpisodes)
 				values.update(episode_meta)
 				values['year'] = itemyear.get('year')
+				duration = values['duration']
+				if duration:
+					values.update({'duration': int(duration)*60})
 				for k in ('episodes',): values.pop(k, None) # pop() keys from seasonEpisodes that are not needed anymore
 				try: # used for fanart fetch since not available in seasonEpisodes request
 					art = cache.get(tmdb_indexer().get_art, 96, tmdb)
@@ -779,6 +791,7 @@ class Episodes:
 		traktManagerMenu, playlistManagerMenu, queueMenu = getLS(32070), getLS(35522), getLS(32065)
 		tvshowBrowserMenu, addToLibrary = getLS(32071), getLS(32551)
 		clearSourcesMenu, rescrapeMenu, progressRefreshMenu = getLS(32611), getLS(32185), getLS(32194)
+		trailerMenu = getLS(40431)
 
 		for i in items:
 			try:
@@ -789,7 +802,6 @@ class Episodes:
 					if not self.progress_showunaired and i.get('unaired', '') == 'true': continue
 				else:
 					if not self.showunaired and i.get('unaired', '') == 'true': continue
-
 
 
 				tvshowtitle, title, imdb, tmdb, tvdb = i.get('tvshowtitle'), i.get('title'), i.get('imdb', ''), i.get('tmdb', ''), i.get('tvdb', '')
@@ -999,11 +1011,11 @@ class Episodes:
 						meta.update({'title': new_title})
 					except: pass
 				#item.setInfo(type='video', infoLabels=control.metadataClean(meta))
-				
 				try:
 					resumetime = resumetime
 				except:
 					resumetime = ''
+				
 				control.set_info(item, meta, setUniqueIDs=setUniqueIDs, resumetime=resumetime)
 				if is_widget and control.getKodiVersion() > 19.5 and self.useFullContext != True:
 					pass

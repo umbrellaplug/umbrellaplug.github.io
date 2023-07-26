@@ -1,4 +1,14 @@
-[B]Update - v6.6.249 - June 29th, 2023[/B]
+[B]Update - v6.6.26 - July 26th, 2023[/B]
+--[Enhancement] Color button setting is back for Kodi 20+.
+--[Enhancement] Wrote code to write default color button colors on load.
+--[FIX] Changes made for duration for episodes pulled from trakt.
+--[FIX] Removed duplicates from history in movies and episodes.
+--[Enhancement] Added option to show or hide watched in TV Shows Progress.
+--[Enhancement] Added Watched section to TV Shows.
+--[Enhancement] Added Play trailer into Kodi 20 widget all context menu.
+--[Enhancement] Added option for Play Trailer from context menu for movies and tv shows.
+
+[B]Update - v6.6.24 - June 29th, 2023[/B]
 --[ENHANCEMENT] Added Poster artwork on resolving popup.
 --[ENHANCEMENT] Modified limit of hidden trakt items to sync from 1000 to 2000.
 --[ENHANCEMENT] Applied trakt hidden items filter to Progress Shows - More later once decided among users..

@@ -4857,3 +4857,27 @@ msgstr ""
 msgctxt "#40429"
 msgid "Import list(s) now"
 msgstr ""
+
+msgctxt "#40430"
+msgid "Show Umbrella next to Umbrella context items."
+msgstr ""
+
+msgctxt "#40431"
+msgid "Play Trailer"
+msgstr ""
+
+msgctxt "#40432"
+msgid "Show watched in TV Show Progress"
+msgstr ""
+
+msgctxt "#40433"
+msgid "Watched Shows"
+msgstr ""
+
+msgctxt "#40434"
+msgid "Watched Sorting"
+msgstr ""
+
+msgctxt "#40435"
+msgid "History Sorting"
+msgstr ""

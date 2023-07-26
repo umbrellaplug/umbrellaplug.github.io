@@ -120,53 +120,10 @@
 					</dependencies>
 					<control type="spinner" format="string"/>
 				</setting>
-				<setting id="highlight.color" type="integer" label="40039" help="">
+				<setting id="highlight.color" type="string" label="40039" help="">
 					<level>0</level>
-					<default>7</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
-					<control type="list" format="string">
-						<heading>40039</heading>
-					</control>
+					<default>FFFEFE22</default> <!-- Yellow -->
+					<control type="colorbutton" />
 				</setting>
 				<setting id="api.language" type="string" label="32316" help="">
 					<level>0</level>
@@ -413,53 +370,10 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="movie.unaired.identify" type="integer" label="35526" help="40252">
+				<setting id="movie.unaired.identify" type="string" label="35526" help="40252">
 					<level>0</level>
-					<default>34</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
-					<control type="list" format="string">
-						<heading>35526</heading>
-					</control>
+					<default>FF76FF7A</default> <!-- Screamin Green -->
+					<control type="colorbutton" />
 				</setting>
 				<setting id="enable.umbrellahidewatched" type="boolean" label="40395" help="">
 					<level>0</level>
@@ -661,50 +575,9 @@
 						<heading>40420</heading>
 					</control>
 				</setting>
-				<setting id="dialogs.customcolor" type="integer" label="40424" help="" parent="dialogs.lightordarkmode">
+				<setting id="dialogs.customcolor" type="string" label="40424" help=""  parent="dialogs.lightordarkmode">
 					<level>0</level>
-					<default>25</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FF1CA9C9</default> <!-- Pacific Blue -->
 					<dependencies>
 						<dependency type="visible">
 							<and>
@@ -713,9 +586,7 @@
 							</and>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40424</heading>
-					</control>
+					<control type="colorbutton" />
 				</setting>
 				<setting id="dialogs.usecolortitle" type="boolean" label="40418" help="">
 					<level>0</level>
@@ -727,50 +598,9 @@
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
-				<setting id="dialogs.titlebar.color" type="integer" label="40419" help="" parent="dialogs.usecolortitle">
+				<setting id="dialogs.titlebar.color" type="string" label="40419" help=""  parent="dialogs.usecolortitle">
 					<level>0</level>
-					<default>25</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FF1CA9C9</default> <!-- Pacific Blue -->
 					<dependencies>
 						<dependency type="visible">
 							<and>
@@ -779,62 +609,17 @@
 							</and>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40419</heading>
-					</control>
+					<control type="colorbutton" />
 				</setting>
-				<setting id="dialogs.button.color" type="integer" label="40421" help="">
+				<setting id="dialogs.button.color" type="string" label="40419" help=""  parent="dialogs.usecolortitle">
 					<level>0</level>
-					<default>25</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FF1CA9C9</default> <!-- Pacific Blue -->
 					<dependencies>
 						<dependency type="visible">
 							<condition operator="is" setting="dialogs.useumbrelladialog">true</condition>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40421</heading>
-					</control>
+					<control type="colorbutton" />
 				</setting>
 				<setting id="testCustomOk" type="action" label="40426" help="">
 					<level>0</level>
@@ -1442,58 +1227,15 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="unaired.identify" type="integer" label="32608" help="40253">
+				<setting id="unaired.identify" type="string" label="32608" help="40253">
 					<level>0</level>
-					<default>22</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FF76FF7A</default> <!-- Screamin Green -->
 					<dependencies>
 						<dependency type="enable">
 							<condition operator="is" setting="showunaired">true</condition>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>32608</heading>
-					</control>
+					<control type="colorbutton" />
 				</setting>
 				<setting id="multi.unwatched.enabled" type="boolean" label="32163" help="">
 					<level>0</level>
@@ -1514,6 +1256,11 @@
 					<control type="button" format="action"/>
 				</setting>
 				<setting id="tvshows.calendar.extended" type="boolean" label="32023" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="tvshows.progress.watched" type="boolean" label="40432" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
@@ -1542,59 +1289,16 @@
 					</dependencies>
 					<control type="spinner" format="string"/>
 				</setting>
-				<setting id="playnext.background.color" type="integer" label="40091" help="" parent="enable.playnext">
+				<setting id="playnext.background.color" type="string" label="40091" help="" parent="enable.playnext">
 					<level>0</level>
-					<default>0</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FF000000</default> <!-- Black -->
 					<dependencies>
 						<dependency type="visible">
 							<condition operator="is" setting="enable.playnext">true</condition>
 							<condition operator="is" setting="playnext.theme">0</condition>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40091</heading>
-					</control>
+					<control type="colorbutton" />
 				</setting>
 				<setting id="enable.playnext.theme" type="boolean" label="40102" help="" parent="enable.playnext">
 					<level>0</level>
@@ -1915,6 +1619,40 @@
 					</control>
 				</setting>
 				<setting id="sort.progress.order" type="integer" label="33679" help="" parent="sort.progress.type">
+					<level>0</level>
+					<default>1</default>
+					<constraints>
+						<options>
+							<option label="33649">0</option>
+							<option label="33650">1</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition operator="!is" setting="sort.progress.type">0</condition>
+						</dependency>
+					</dependencies>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="sort.watched.type" type="integer" label="40434" help="">
+					<level>0</level>
+					<default>6</default>
+					<constraints>
+						<options>
+							<option label="33564">0</option>
+							<option label="33039">1</option>
+							<option label="35187">2</option>
+							<option label="35188">3</option>
+							<option label="35391">4</option>
+							<option label="35392">5</option>
+							<option label="35393">6</option>
+						</options>
+					</constraints>
+					<control type="list" format="string">
+						<heading>40434</heading>
+					</control>
+				</setting>
+				<setting id="sort.watched.order" type="integer" label="33679" help="" parent="sort.watched.type">
 					<level>0</level>
 					<default>1</default>
 					<constraints>
@@ -2733,53 +2471,10 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="scraper.dialog.color" type="integer" label="32164" help="">
+				<setting id="scraper.dialog.color" type="string" label="32164" help="">
 					<level>0</level>
-					<default>32</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
-					<control type="list" format="string">
-						<heading>32164</heading>
-					</control>
+					<default>FFCEFF1D</default> <!-- Electric Green -->
+					<control type="colorbutton" />
 				</setting>
 				<setting id="terminate.onCloud.sources" type="boolean" label="32007" help="">
 					<level>0</level>
@@ -2882,103 +2577,19 @@
 					</constraints>
 					<control type="spinner" format="string"/>
 				</setting>
-				<setting id="sources.highlight.color" type="integer" label="40348" help="">
+				<setting id="sources.highlight.color" type="string" label="40348" help="">
 					<level>0</level>
-					<default>28</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FF1FCECB</default> <!--Blue Green -->
 					<dependencies>
 						<dependency type="visible">
 							<condition operator="is" setting="sources.highlightmethod">0</condition>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>32132</heading>
-					</control>
+					<control type="colorbutton" />
 				</setting>
-				<setting id="sources.real-debrid.color" type="integer" label="40270" help="">
+				<setting id="sources.real-debrid.color" type="string" label="40270" help="">
 					<level>0</level>
-					<default>36</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FFEE204D</default> <!-- Red -->
 					<dependencies>
 						<dependency type="visible">
 							<and>
@@ -2987,54 +2598,11 @@
 							</and>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40270</heading>
-					</control>
+					<control type="colorbutton" />
 				</setting>
-				<setting id="sources.alldebrid.color" type="integer" label="40271" help="">
+				<setting id="sources.alldebrid.color" type="string" label="40271" help="">
 					<level>0</level>
-					<default>8</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FFFFCF48</default> <!-- Sunglow -->
 					<dependencies>
 						<dependency type="visible">
 							<and>
@@ -3043,54 +2611,11 @@
 							</and>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40271</heading>
-					</control>
+					<control type="colorbutton" />
 				</setting>
-				<setting id="sources.premiumize.me.color" type="integer" label="40273" help="">
+				<setting id="sources.premiumize.me.color" type="string" label="40273" help="">
 					<level>0</level>
-					<default>30</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FF6699CC</default> <!-- Sunglow -->
 					<dependencies>
 						<dependency type="visible">
 							<and>
@@ -3099,54 +2624,11 @@
 							</and>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40273</heading>
-					</control>
+					<control type="colorbutton" />
 				</setting>
-				<setting id="sources.easynews.color" type="integer" label="40274" help="">
+				<setting id="sources.easynews.color" type="string" label="40274" help="">
 					<level>0</level>
-					<default>32</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FFFFAE42</default> <!-- Sunglow -->
 					<dependencies>
 						<dependency type="visible">
 							<and>
@@ -3155,54 +2637,11 @@
 							</and>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40274</heading>
-					</control>
+					<control type="colorbutton" />
 				</setting>
-				<setting id="sources.plexshare.color" type="integer" label="40276" help="">
+				<setting id="sources.plexshare.color" type="string" label="40276" help="">
 					<level>0</level>
-					<default>24</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FF7442C8</default> <!-- Sunglow -->
 					<dependencies>
 						<dependency type="visible">
 							<and>
@@ -3211,54 +2650,11 @@
 							</and>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40276</heading>
-					</control>
+					<control type="colorbutton" />
 				</setting>
-				<setting id="sources.gdrive.color" type="integer" label="40277" help="">
+				<setting id="sources.gdrive.color" type="string" label="40277" help="">
 					<level>0</level>
-					<default>20</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FFFF48D0</default> <!-- Pink -->
 					<dependencies>
 						<dependency type="visible">
 							<and>
@@ -3267,54 +2663,11 @@
 							</and>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40277</heading>
-					</control>
+					<control type="colorbutton" />
 				</setting>
-				<setting id="sources.filepursuit.color" type="integer" label="40359" help="">
+				<setting id="sources.filepursuit.color" type="string" label="40359" help="">
 					<level>0</level>
-					<default>16</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FF3BB08F</default> <!-- Jungle Green -->
 					<dependencies>
 						<dependency type="visible">
 							<and>
@@ -3323,9 +2676,7 @@
 							</and>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40359</heading>
-					</control>
+					<control type="colorbutton" />
 				</setting>
 				<setting id="sources.usecoloricons" type="boolean" label="40278" help="">
 					<level>0</level>
@@ -5724,6 +5075,11 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="context.umbrella.playTrailer" type="boolean" label="40431" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
 				<setting id="context.umbrella.traktManager" type="boolean" label="32515" help="">
 					<level>0</level>
 					<default>true</default>
@@ -6131,6 +5487,16 @@
 						</dependency>
 					</dependencies>
 					<control type="edit" format="string"></control>
+				</setting>
+				<setting id="umbrella.colorbuttonset" type="boolean" label="CB" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
 				</setting>
 			</group>
 		</category>

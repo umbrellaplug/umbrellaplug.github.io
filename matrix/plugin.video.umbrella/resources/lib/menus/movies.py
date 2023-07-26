@@ -189,6 +189,9 @@ class Movies:
 			elif u in self.trakt_link and self.search_link in url:
 				self.list = cache.get(self.trakt_list, 6, url, self.trakt_user)
 				if idx: self.worker()
+			elif u in self.trakt_link and 'trending' in url:
+				self.list = cache.get(self.trakt_list,self.trakttrending_hours, url, self.trakt_user) #trakt trending
+				if idx: self.worker()
 			elif u in self.trakt_link:
 				self.list = cache.get(self.trakt_list,self.trakt_hours, url, self.trakt_user) #trakt other
 				if idx: self.worker()
@@ -1718,7 +1721,7 @@ class Movies:
 		else: playbackMenu = getLS(32064)
 		if trakt.getTraktIndicatorsInfo(): watchedMenu, unwatchedMenu = getLS(32068), getLS(32069)
 		else: watchedMenu, unwatchedMenu = getLS(32066), getLS(32067)
-		playlistManagerMenu, queueMenu = getLS(35522), getLS(32065)
+		playlistManagerMenu, queueMenu, trailerMenu = getLS(35522), getLS(32065), getLS(40431)
 		traktManagerMenu, addToLibrary = getLS(32070), getLS(32551)
 		nextMenu, clearSourcesMenu = getLS(32053), getLS(32611)
 		rescrapeMenu, findSimilarMenu = getLS(32185), getLS(32184)
@@ -1768,6 +1771,8 @@ class Movies:
 				sysurl = quote_plus(url)
 ####-Context Menu and Overlays-####
 				cm = []
+				if trailer:
+					cm.append((trailerMenu, 'RunPlugin(%s?action=play_Trailer_Context&type=%s&name=%s&year=%s&imdb=%s&url=%s)' % (sysaddon, 'movie', sysname, year, imdb, trailer)))
 				try:
 					watched = getMovieOverlay(indicators, imdb) == '5'
 					if self.traktCredentials:

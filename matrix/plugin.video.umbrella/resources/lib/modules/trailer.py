@@ -114,3 +114,16 @@ class Trailer:
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()
+
+	def playContext(self, type='', name='', year='', url='', imdb='', windowedtrailer=0):
+		try:
+			id = url.split('v=')[-1].split('/')[-1].split('?')[0].split('&')[0]
+			url = 'plugin://plugin.video.youtube/play/?%s' % id
+			control.execute("Dialog.Close(%s, true)" % control.getCurrentDialogId)
+			if windowedtrailer == 1:
+				control.execute("RunPlugin(%s)" % (url))
+			else:
+				control.execute("RunPlugin(%s,1)" % (url))
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
