@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.26">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.27">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
 		<import addon="script.module.cocoscrapers" version="1.0.12"/>
@@ -156,15 +156,10 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.6.26 - July 26th, 2023[/B]
---[Enhancement] Color button setting is back for Kodi 20+.
---[Enhancement] Wrote code to write default color button colors on load.
---[FIX] Changes made for duration for episodes pulled from trakt.
---[FIX] Removed duplicates from history in movies and episodes.
---[Enhancement] Added option to show or hide watched in TV Shows Progress.
---[Enhancement] Added Watched section to TV Shows.
---[Enhancement] Added Play trailer into Kodi 20 widget all context menu.
---[Enhancement] Added option for Play Trailer from context menu for movies and tv shows.
+[B]Update - v6.6.27 - August 1st, 2023[/B]
+--[Fix] Dark color compare fix for blank values.
+--[Info] I am aware some skins are not showing colors and options for colors. Setting skin to default should allow you to set your colors. Once set, you can then use skin again.
+--[Info] Changes are being made to allow for a custom view for color options to avoid any further issues.
 		</news>
 	</extension>
 

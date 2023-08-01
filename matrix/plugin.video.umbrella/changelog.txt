@@ -1,3 +1,8 @@
+[B]Update - v6.6.27 - August 1st, 2023[/B]
+--[Fix] Dark color compare fix for blank values.
+--[Info] I am aware some skins are not showing colors and options for colors. Setting skin to default should allow you to set your colors. Once set, you can then use skin again.
+--[Info] Changes are being made to allow for a custom view for color options to avoid any further issues.
+
 [B]Update - v6.6.26 - July 26th, 2023[/B]
 --[Enhancement] Color button setting is back for Kodi 20+.
 --[Enhancement] Wrote code to write default color button colors on load.

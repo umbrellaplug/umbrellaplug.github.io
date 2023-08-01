@@ -597,6 +597,7 @@ def darkColor(color):
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()
+		return 'dark'
 
 def reload_addon():
     disable_enable_addon()
@@ -633,11 +634,6 @@ def syncAccounts():
 		setSetting('plex.client_id', addon('script.module.cocoscrapers').getSetting('plex.client_id'))
 		setSetting('plex.device_id', addon('script.module.cocoscrapers').getSetting('plex.device_id'))
 		setSetting('gdrive.cloudflare_url', addon('script.module.cocoscrapers').getSetting('gdrive.cloudflare_url'))
-		homeWindow.setProperty('context.umbrella.highlightcolor', getHighlightColor())
-		if setting('context.useUmbrellaContext') == 'true':
-			homeWindow.setProperty('context.umbrella.showUmbrella', '[B][COLOR '+getHighlightColor()+']Umbrella[/COLOR][/B] - ')
-		else:
-			homeWindow.setProperty('context.umbrella.showUmbrella', '')
 		if getKodiVersion() >= 20:
 			if setting('umbrella.colorbuttonset') == 'false':
 				setSetting('highlight.color', 'FFFEFE22')
@@ -656,8 +652,12 @@ def syncAccounts():
 				setSetting('sources.plexshare.color', 'FF7442C8')
 				setSetting('sources.gdrive.color', 'FFFF48D0')
 				setSetting('sources.filepursuit.color', 'FF3BB08F')
-				setSetting('sources.gdrive.color', 'FFFF48D0')
 				setSetting('umbrella.colorbuttonset', 'true')
+		if setting('context.useUmbrellaContext') == 'true':
+			homeWindow.setProperty('context.umbrella.showUmbrella', '[B][COLOR '+getHighlightColor()+']Umbrella[/COLOR][/B] - ')
+		else:
+			homeWindow.setProperty('context.umbrella.showUmbrella', '')
+		homeWindow.setProperty('context.umbrella.highlightcolor', getHighlightColor())
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()
