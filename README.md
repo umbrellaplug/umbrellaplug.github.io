@@ -2,8 +2,7 @@
 
 Welcome to the umbrellaplug.github.io wiki!
 
-Please let me know if you have any questions or issues. 
-Currently for Kodi 19 and working for Nexus Alphas (with lots of warnings).
+Compatible with Kodi 19 and 20.
 
 ~~Clone~~ Fork of Venom
 
