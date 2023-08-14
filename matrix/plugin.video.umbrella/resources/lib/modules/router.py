@@ -28,6 +28,7 @@ def router(argv2):
 	query = params.get('query')
 	source = params.get('source')
 	select = params.get('select')
+	current_setting = params.get('setting')
 	if action is None:
 		from resources.lib.menus import navigator
 		isUpdate = control.homeWindow.getProperty('umbrella.updated')
@@ -596,6 +597,11 @@ def router(argv2):
 				except:
 					import traceback
 					traceback.print_exc()
+	####################################################
+	#---Color Picker
+	####################################################
+	elif action == 'colorpicker':
+		control.showColorPicker(current_setting)
 
 	####################################################
 	#---Tools
@@ -936,7 +942,7 @@ def router(argv2):
 		from resources.lib.modules import sources
 		premiered = params.get('premiered')
 		meta = params.get('meta')
-		highlight_color = control.getHighlightColor()
+		highlight_color = control.setting('highlight.color')
 		items = [
 			control.lang(32207),
 			control.lang(32208),

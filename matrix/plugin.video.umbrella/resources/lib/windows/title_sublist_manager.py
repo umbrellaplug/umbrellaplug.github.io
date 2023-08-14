@@ -4,7 +4,7 @@
 """
 
 from resources.lib.modules import sources
-from resources.lib.modules.control import getHighlightColor, joinPath, artPath
+from resources.lib.modules.control import joinPath, artPath, setting as getSetting
 from resources.lib.windows.base import BaseDialog
 
 
@@ -15,6 +15,7 @@ class TitleSublistManagerXML(BaseDialog):
 		self.results = kwargs.get('results')
 		self.total_results = str(len(self.results))
 		self.selected_items = []
+		self.highlight_color = getSetting('highlight.color')
 		self.make_items()
 		self.set_properties()
 
@@ -90,7 +91,7 @@ class TitleSublistManagerXML(BaseDialog):
 	def set_properties(self):
 		try:
 			self.setProperty('umbrella.total_results', self.total_results)
-			self.setProperty('umbrella.highlight.color', getHighlightColor())
+			self.setProperty('umbrella.highlight.color', self.highlight_color)
 			self.setProperty('umbrella.umbrella_icon', joinPath(artPath(), 'icon.png'))
 		except:
 			from resources.lib.modules import log_utils

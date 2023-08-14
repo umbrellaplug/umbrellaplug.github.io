@@ -1,3 +1,18 @@
+[B]Update - v6.6.28 - August 13th, 2023[/B]
+--[Fix] Added additional check for authorization id to avoid blank trakt auth ids causing mark playback fail.
+--[Fix] Added fallback for playnext subtitles for a minimum in seconds setting. default is 20.
+--[Fix] Re-Worked playlist construction with playnext.
+--[Fix] Custom color view created to allow for color selection across different versions of kodi and skins.
+--[Fix] Playnext AH2 skin Still Waitin fixed.
+--[Fix] Playnext AH2 skin with Arctic Fuse skin issue fixed.
+--[Fix] Fixed colors not working for providers on source selection.
+--[Fix] Fixed seasonal playnext adding seasons again on next episode.
+--[Enhancement] All color settings re-worked to make loading faster.
+--[Enhancement] Removed all calls to getColor, getHighlightColor, and getSourceHighlightColor and made settings accessed directly.
+--[Enhancement] Removed all places settings were accessed more than once in code and moved to global setting to increase speed.
+--[Enhancement] Playnext Arctic Fuse skin added.
+--[Enhancement] Multiple seasons added for playnext.
+
 [B]Update - v6.6.27 - August 1st, 2023[/B]
 --[Fix] Dark color compare fix for blank values.
 --[Info] I am aware some skins are not showing colors and options for colors. Setting skin to default should allow you to set your colors. Once set, you can then use skin again.

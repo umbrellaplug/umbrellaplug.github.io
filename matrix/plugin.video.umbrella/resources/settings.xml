@@ -120,53 +120,22 @@
 					</dependencies>
 					<control type="spinner" format="string"/>
 				</setting>
-				<setting id="highlight.color" type="integer" label="40039" help="">
+				<setting id="highlight.color.display" type="string" label="40039" help="">
 					<level>0</level>
-					<default>7</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
-					<control type="list" format="string">
-						<heading>40039</heading>
+					<default>[COLOR=FF33ADFF]FF33ADFF[/COLOR]</default> <!-- Blue -->
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=highlight.color)</data>
 					</control>
+				</setting>
+				<setting id="highlight.color" type="string" label="40039" help="">
+					<level>0</level>
+					<default>FF33ADFF</default> <!-- Blue -->
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
 				</setting>
 				<setting id="api.language" type="string" label="32316" help="">
 					<level>0</level>
@@ -413,53 +382,22 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="movie.unaired.identify" type="integer" label="35526" help="40252">
+				<setting id="movie.unaired.identify.display" type="string" label="35526" help="40252">
 					<level>0</level>
-					<default>34</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
-					<control type="list" format="string">
-						<heading>35526</heading>
+					<default>[COLOR=FF5CFF34]FF5CFF34[/COLOR]</default> <!-- Neon Green -->
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=movie.unaired.identify)</data>
 					</control>
+				</setting>
+				<setting id="movie.unaired.identify" type="string" label="35526" help="">
+					<level>0</level>
+					<default>FF5CFF34</default> <!-- Blue -->
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
 				</setting>
 				<setting id="enable.umbrellahidewatched" type="boolean" label="40395" help="">
 					<level>0</level>
@@ -661,50 +599,9 @@
 						<heading>40420</heading>
 					</control>
 				</setting>
-				<setting id="dialogs.customcolor" type="integer" label="40424" help="" parent="dialogs.lightordarkmode">
+				<setting id="dialogs.customcolor.display" type="string" label="40424" help="" parent="dialogs.lightordarkmode">
 					<level>0</level>
-					<default>25</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>[COLOR=FF00B8E6]FF00B8E6[/COLOR]</default> <!-- Blue -->
 					<dependencies>
 						<dependency type="visible">
 							<and>
@@ -713,9 +610,19 @@
 							</and>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40424</heading>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=dialogs.customcolor)</data>
 					</control>
+				</setting>
+				<setting id="dialogs.customcolor" type="string" label="35526" help="">
+					<level>0</level>
+					<default>FF00B8E6</default> <!-- Blue -->
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
 				</setting>
 				<setting id="dialogs.usecolortitle" type="boolean" label="40418" help="">
 					<level>0</level>
@@ -727,50 +634,9 @@
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
-				<setting id="dialogs.titlebar.color" type="integer" label="40419" help="" parent="dialogs.usecolortitle">
+				<setting id="dialogs.titlebar.color.display" type="string" label="40419" help="" parent="dialogs.usecolortitle">
 					<level>0</level>
-					<default>25</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>[COLOR=FF00B8E6]FF00B8E6[/COLOR]</default> <!-- Blue -->
 					<dependencies>
 						<dependency type="visible">
 							<and>
@@ -779,62 +645,44 @@
 							</and>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40419</heading>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=dialogs.titlebar.color)</data>
 					</control>
 				</setting>
-				<setting id="dialogs.button.color" type="integer" label="40421" help="">
+				<setting id="dialogs.titlebar.color" type="string" label="40419" help="">
 					<level>0</level>
-					<default>25</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FF00B8E6</default> <!-- Blue -->
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="dialogs.useumbrelladialog">true</condition>
+							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40421</heading>
+					<control type="edit" format="string"></control>
+				</setting>
+				<setting id="dialogs.button.color.display" type="string" label="40421" help="" parent="dialogs.usecolortitle">
+					<level>0</level>
+					<default>[COLOR=FF00B8E6]FF00B8E6[/COLOR]</default> <!-- Blue -->
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="dialogs.usecolortitle">true</condition>
+								<condition operator="is" setting="dialogs.useumbrelladialog">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=dialogs.button.color)</data>
 					</control>
+				</setting>
+				<setting id="dialogs.button.color" type="string" label="40421" help="">
+					<level>0</level>
+					<default>FF00B8E6</default> <!-- Blue -->
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
 				</setting>
 				<setting id="testCustomOk" type="action" label="40426" help="">
 					<level>0</level>
@@ -1442,58 +1290,27 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="unaired.identify" type="integer" label="32608" help="40253">
+				<setting id="unaired.identify.display" type="string" label="32608" help="40253">
 					<level>0</level>
-					<default>22</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>[COLOR=FF34FF33]FF34FF33[/COLOR]</default> <!-- Screamin Green -->
 					<dependencies>
 						<dependency type="enable">
 							<condition operator="is" setting="showunaired">true</condition>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>32608</heading>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=unaired.identify)</data>
 					</control>
+				</setting>
+				<setting id="unaired.identify" type="string" label="32608" help="">
+					<level>0</level>
+					<default>FF34FF33</default> <!-- Blue -->
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
 				</setting>
 				<setting id="multi.unwatched.enabled" type="boolean" label="32163" help="">
 					<level>0</level>
@@ -1530,6 +1347,16 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="umbrella.multiSeason" type="boolean" label="40439" help="40440" parent="enable.playnext">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="enable.playnext">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
 				<setting id="playnext.theme" type="integer" label="40319" help="" parent="enable.playnext">
 					<level>0</level>
 					<default>0</default>
@@ -1538,6 +1365,7 @@
 							<option label="40316">0</option>
 							<option label="40317">1</option>
 							<option label="40318">2</option>
+							<option label="40436">3</option>
 						</options>
 					</constraints>
 					<dependencies>
@@ -1547,59 +1375,28 @@
 					</dependencies>
 					<control type="spinner" format="string"/>
 				</setting>
-				<setting id="playnext.background.color" type="integer" label="40091" help="" parent="enable.playnext">
+				<setting id="playnext.background.color.display" type="string" label="40091" help="" parent="enable.playnext">
 					<level>0</level>
-					<default>0</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>[COLOR=FF000000]FF000000[/COLOR]</default> <!-- Black -->
 					<dependencies>
 						<dependency type="visible">
 							<condition operator="is" setting="enable.playnext">true</condition>
 							<condition operator="is" setting="playnext.theme">0</condition>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40091</heading>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=playnext.background.color)</data>
 					</control>
+				</setting>
+				<setting id="playnext.background.color" type="string" label="40091" help="">
+					<level>0</level>
+					<default>FF000000</default> <!-- Blue -->
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
 				</setting>
 				<setting id="enable.playnext.theme" type="boolean" label="40102" help="" parent="enable.playnext">
 					<level>0</level>
@@ -1645,7 +1442,7 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="playnext.percent" type="integer" label="40321" help="" parent="playnext.method">>
+				<setting id="playnext.percent" type="integer" label="40321" help="" parent="playnext.method">
 					<level>0</level>
 					<default>80</default>
 					<constraints>
@@ -1657,6 +1454,23 @@
 						<dependency type="visible">
 							<condition operator="is" setting="enable.playnext">true</condition>
 							<condition operator="is" setting="playnext.method">1</condition>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="playnext.min.seconds" type="integer" label="40441" help="40442" parent="playnext.method">
+					<level>0</level>
+					<default>20</default>
+					<constraints>
+						<minimum>5</minimum>
+						<maximum>300</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="enable.playnext">true</condition>
+							<condition operator="is" setting="playnext.method">2</condition>
 						</dependency>
 					</dependencies>
 					<control type="slider" format="integer">
@@ -2122,18 +1936,6 @@
 					<control type="slider" format="integer">
 						<popup>false</popup>
 					</control>
-				</setting>
-			</group>
-			<group id="4" label="40409">
-				<setting id="playback.info_tv" type="boolean" label="40407" help="">
-					<level>0</level>
-					<default>false</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="playback.info_movies" type="boolean" label="40408" help="">
-					<level>0</level>
-					<default>false</default>
-					<control type="toggle"/>
 				</setting>
 			</group>
 		</category>
@@ -2772,53 +2574,22 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="scraper.dialog.color" type="integer" label="32164" help="">
+				<setting id="scraper.dialog.color.display" type="string" label="32164" help="">
 					<level>0</level>
-					<default>32</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
-					<control type="list" format="string">
-						<heading>32164</heading>
+					<default>[COLOR=FFFFFF33]FFFFFF33[/COLOR]</default> <!-- Yellow -->
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=scraper.dialog.color)</data>
 					</control>
+				</setting>
+				<setting id="scraper.dialog.color" type="string" label="32164" help="">
+					<level>0</level>
+					<default>FFFFFF33</default> <!-- Blue -->
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
 				</setting>
 				<setting id="terminate.onCloud.sources" type="boolean" label="32007" help="">
 					<level>0</level>
@@ -2921,103 +2692,31 @@
 					</constraints>
 					<control type="spinner" format="string"/>
 				</setting>
-				<setting id="sources.highlight.color" type="integer" label="40348" help="">
+				<setting id="sources.highlight.color.display" type="string" label="40348" help="">
 					<level>0</level>
-					<default>28</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>[COLOR=FF4DFFFF]FF4DFFFF[/COLOR]</default> <!-- blue green -->
 					<dependencies>
 						<dependency type="visible">
 							<condition operator="is" setting="sources.highlightmethod">0</condition>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>32132</heading>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=sources.highlight.color)</data>
 					</control>
 				</setting>
-				<setting id="sources.real-debrid.color" type="integer" label="40270" help="">
+				<setting id="sources.highlight.color" type="string" label="40348" help="">
 					<level>0</level>
-					<default>36</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FF4DFFFF</default> <!-- Blue -->
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
+				</setting>
+				<setting id="sources.real-debrid.color.display" type="string" label="40270" help="">
+					<level>0</level>
+					<default>[COLOR=FFFF3334]FFFF3334[/COLOR]</default> <!-- red -->
 					<dependencies>
 						<dependency type="visible">
 							<and>
@@ -3026,54 +2725,23 @@
 							</and>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40270</heading>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=sources.real-debrid.color)</data>
 					</control>
 				</setting>
-				<setting id="sources.alldebrid.color" type="integer" label="40271" help="">
+				<setting id="sources.real-debrid.color" type="string" label="40270" help="">
 					<level>0</level>
-					<default>8</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FFFF3334</default> <!-- Red -->
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
+				</setting>
+				<setting id="sources.alldebrid.color.display" type="string" label="40271" help="">
+					<level>0</level>
+					<default>[COLOR=FFFFB84E]FFFFB84E[/COLOR]</default> <!-- gold -->
 					<dependencies>
 						<dependency type="visible">
 							<and>
@@ -3082,54 +2750,23 @@
 							</and>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40271</heading>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=sources.alldebrid.color)</data>
 					</control>
 				</setting>
-				<setting id="sources.premiumize.me.color" type="integer" label="40273" help="">
+				<setting id="sources.alldebrid.color" type="string" label="40271" help="">
 					<level>0</level>
-					<default>30</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FFFFB84E</default> <!-- gold -->
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
+				</setting>
+				<setting id="sources.premiumize.me.color.display" type="string" label="40273" help="">
+					<level>0</level>
+					<default>[COLOR=FF4700B4]FF4700B4[/COLOR]</default> <!-- purple blue -->
 					<dependencies>
 						<dependency type="visible">
 							<and>
@@ -3138,54 +2775,23 @@
 							</and>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40273</heading>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=sources.premiumize.me.color)</data>
 					</control>
 				</setting>
-				<setting id="sources.easynews.color" type="integer" label="40274" help="">
+				<setting id="sources.premiumize.me.color" type="string" label="40273" help="">
 					<level>0</level>
-					<default>32</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FF4700B4</default> <!-- purple blue -->
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
+				</setting>
+				<setting id="sources.easynews.color.display" type="string" label="40274" help="">
+					<level>0</level>
+					<default>[COLOR=FF24B301]FF24B301[/COLOR]</default> <!-- green -->
 					<dependencies>
 						<dependency type="visible">
 							<and>
@@ -3194,54 +2800,23 @@
 							</and>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40274</heading>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=sources.easynews.color)</data>
 					</control>
 				</setting>
-				<setting id="sources.plexshare.color" type="integer" label="40276" help="">
+				<setting id="sources.easynews.color" type="string" label="40274" help="">
 					<level>0</level>
-					<default>24</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FF24B301</default> <!-- green -->
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
+				</setting>
+				<setting id="sources.plexshare.color.display" type="string" label="40276" help="">
+					<level>0</level>
+					<default>[COLOR=FFAD34FF]FFAD34FF[/COLOR]</default> <!-- purple -->
 					<dependencies>
 						<dependency type="visible">
 							<and>
@@ -3250,54 +2825,23 @@
 							</and>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40276</heading>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=sources.plexshare.color)</data>
 					</control>
 				</setting>
-				<setting id="sources.gdrive.color" type="integer" label="40277" help="">
+				<setting id="sources.plexshare.color" type="string" label="40276" help="">
 					<level>0</level>
-					<default>20</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FFAD34FF</default> <!-- purple -->
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
+				</setting>
+				<setting id="sources.gdrive.color.display" type="string" label="40277" help="">
+					<level>0</level>
+					<default>[COLOR=FFFF4DFF]FFFF4DFF[/COLOR]</default> <!-- pink -->
 					<dependencies>
 						<dependency type="visible">
 							<and>
@@ -3306,54 +2850,23 @@
 							</and>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40277</heading>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=sources.gdrive.color)</data>
 					</control>
 				</setting>
-				<setting id="sources.filepursuit.color" type="integer" label="40359" help="">
+				<setting id="sources.gdrive.color" type="string" label="40277" help="">
 					<level>0</level>
-					<default>16</default>
-					<constraints>
-						<options>
-							<option label="40082">0</option>
-							<option label="32670">1</option>
-							<option label="40283">2</option>
-							<option label="40284">3</option>
-							<option label="40285">4</option>
-							<option label="40286">5</option>
-							<option label="32595">6</option>
-							<option label="32591">7</option>
-							<option label="40287">8</option>
-							<option label="40288">9</option>
-							<option label="40289">10</option>
-							<option label="32592">11</option>
-							<option label="40290">12</option>
-							<option label="40291">13</option>
-							<option label="40292">14</option>
-							<option label="40293">15</option>
-							<option label="40294">16</option>
-							<option label="40295">17</option>
-							<option label="40296">18</option>
-							<option label="40297">19</option>
-							<option label="40298">20</option>
-							<option label="40299">21</option>
-							<option label="40300">22</option>
-							<option label="40301">23</option>
-							<option label="32669">24</option>
-							<option label="40302">25</option>
-							<option label="40303">26</option>
-							<option label="40304">27</option>
-							<option label="40305">28</option>
-							<option label="40306">29</option>
-							<option label="40307">30</option>
-							<option label="40308">31</option>
-							<option label="40309">32</option>
-							<option label="40310">33</option>
-							<option label="40311">34</option>
-							<option label="40312">35</option>
-							<option label="32590">36</option>
-						</options>
-					</constraints>
+					<default>FFFF4DFF</default> <!-- pink -->
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
+				</setting>
+				<setting id="sources.filepursuit.color.display" type="string" label="40359" help="">
+					<level>0</level>
+					<default>[COLOR=FF00CC29]FF00CC29[/COLOR]</default> <!-- pink -->
 					<dependencies>
 						<dependency type="visible">
 							<and>
@@ -3362,9 +2875,19 @@
 							</and>
 						</dependency>
 					</dependencies>
-					<control type="list" format="string">
-						<heading>40359</heading>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=sources.filepursuit.color)</data>
 					</control>
+				</setting>
+				<setting id="sources.filepursuit.color" type="string" label="40359" help="">
+					<level>0</level>
+					<default>FF00CC29</default> <!-- pink -->
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
 				</setting>
 				<setting id="sources.usecoloricons" type="boolean" label="40278" help="">
 					<level>0</level>
@@ -3429,7 +2952,6 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				
 			</group>
 		</category>
 		<category id="trakt" label="32315" help="40189">
@@ -6175,6 +5697,36 @@
 						</dependency>
 					</dependencies>
 					<control type="edit" format="string"></control>
+				</setting>
+				<setting id="umbrella.colorbuttonset" type="boolean" label="CB" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="umbrella.colorSet" type="boolean" label="CS" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="umbrella.colorSecond" type="boolean" label="CS" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
 				</setting>
 			</group>
 		</category>

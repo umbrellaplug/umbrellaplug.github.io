@@ -4686,3 +4686,31 @@ msgstr ""
 msgctxt "#40435"
 msgid "History Sorting"
 msgstr ""
+
+msgctxt "#40436"
+msgid "Arctic Fuse"
+msgstr ""
+
+msgctxt "#40437"
+msgid "Choose Color"
+msgstr ""
+
+msgctxt "#40438"
+msgid "Enable multiple seasons."
+msgstr ""
+
+msgctxt "#40439"
+msgid "Continue to next season (if available)"
+msgstr ""
+
+msgctxt "#40440"
+msgid "This allows for playnext to play episodes from the next season if available when you reach the end of a season."
+msgstr ""
+
+msgctxt "#40441"
+msgid "Minimum Seconds for Popup"
+msgstr ""
+
+msgctxt "#40442"
+msgid "For situations where the subtitles go till the very end but you want a backup time in seconds for playnext popup. Default is 20."
+msgstr ""

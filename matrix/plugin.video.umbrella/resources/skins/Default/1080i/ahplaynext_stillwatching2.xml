@@ -37,7 +37,7 @@
                     <left>40</left>
                     <aligny>center</aligny>
                     <height>40</height>
-                    <label>Still Watching? [COLOR $INFO[Window().Property(skin.selectColor)]][B]$INFO[Player.TimeRemaining(ss)][/B][/COLOR] seconds...</label>
+                    <label>[B]Still Watching? [COLOR $INFO[Window().Property(skin.selectColor)]][B]$INFO[Player.TimeRemaining(ss)][/B][/COLOR] seconds...</label>
                     <textcolor>ffededed</textcolor>
                     <!-- <font>font_mainlabel</font> -->
 					<visible>Integer.IsLess(Player.TimeRemaining,60)</visible>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from resources.lib.windows.base import BaseDialog
-from resources.lib.modules.control import darkColor, setting as getSetting, getColor
+from resources.lib.modules.control import darkColor, setting as getSetting
 
 
 class TextViewerXML(BaseDialog):
@@ -11,11 +11,11 @@ class TextViewerXML(BaseDialog):
 		self.heading = kwargs.get('heading','Umbrella')
 		self.text = kwargs.get('text')
 		self.lightordark = getSetting('dialogs.lightordarkmode')
-		self.buttonColor = getColor(getSetting('dialogs.button.color'))
-		self.customBackgroundColor = getColor(getSetting('dialogs.customcolor'))
+		self.buttonColor = getSetting('dialogs.button.color')
+		self.customBackgroundColor = getSetting('dialogs.customcolor')
 		self.dark_text_background = darkColor(self.customBackgroundColor)
 		self.useCustomTitleColor = getSetting('dialogs.usecolortitle') == 'true'
-		self.customTitleColor = getColor(getSetting('dialogs.titlebar.color'))
+		self.customTitleColor = getSetting('dialogs.titlebar.color')
 
 	def onInit(self):
 		self.set_properties()

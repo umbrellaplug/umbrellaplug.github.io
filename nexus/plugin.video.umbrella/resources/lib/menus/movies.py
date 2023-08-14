@@ -56,9 +56,9 @@ class Movies:
 		self.user = str(self.tmdb_key)
 		self.enable_fanarttv = getSetting('enable.fanarttv') == 'true'
 		self.prefer_tmdbArt = getSetting('prefer.tmdbArt') == 'true'
-		self.unairedcolor = control.getColor(getSetting('movie.unaired.identify'))
+		self.unairedcolor = getSetting('movie.unaired.identify')
 		self.useContainerTitles = getSetting('enable.containerTitles') == 'true'
-		self.highlight_color = control.getHighlightColor()
+		self.highlight_color = getSetting('highlight.color')
 		self.tmdb_link = 'https://api.themoviedb.org'
 		self.tmdb_popular_link = 'https://api.themoviedb.org/3/movie/popular?api_key=%s&language=en-US&region=US&page=1'
 		self.tmdb_toprated_link = 'https://api.themoviedb.org/3/movie/top_rated?api_key=%s&page=1'

@@ -5,7 +5,7 @@
 
 from json import dumps as jsdumps
 from urllib.parse import quote_plus
-from resources.lib.modules.control import joinPath, transPath, dialog, getColor,getHighlightColor, getProviderHighlightColor, getSourceHighlightColor, notification, addonFanart, setting as getSetting
+from resources.lib.modules.control import joinPath, transPath, dialog, getProviderHighlightColor, notification, addonFanart, setting as getSetting
 from resources.lib.modules.source_utils import getFileType
 from resources.lib.modules import tools
 from resources.lib.windows.base import BaseDialog
@@ -33,6 +33,8 @@ class SourceResultsXML(BaseDialog):
 		self.gdriveHighlightColor = self.colors['gdrive']
 		#self.furkHighlightColor = self.colors['furk']
 		self.filePursuitHighlightColor = self.colors['filepursuit']
+		self.dialogColor = getSetting('scraper.dialog.color')
+		self.highlight_color = getSetting('highlight.color')
 		self.make_items()
 		self.set_properties()
 
@@ -289,8 +291,8 @@ class SourceResultsXML(BaseDialog):
 				self.setProperty('umbrella.duration', str(int(duration)))
 			else: self.setProperty('umbrella.duration', 'NA ')
 			self.setProperty('umbrella.total_results', self.total_results)
-			self.setProperty('umbrella.highlight.color', getHighlightColor())
-			self.setProperty('umbrella.dialog.color', str(getColor(getSetting('scraper.dialog.color'))))
+			self.setProperty('umbrella.highlight.color', self.highlight_color)
+			self.setProperty('umbrella.dialog.color', self.dialogColor)
 			self.setProperty('umbrella.fanartdefault', addonFanart())
 			if getSetting('sources.select.fanartBG') == 'true':
 				self.setProperty('umbrella.fanartBG', '1')

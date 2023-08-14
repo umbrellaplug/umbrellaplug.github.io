@@ -35,9 +35,9 @@ class TVshows:
 		self.notifications = notifications
 		self.enable_fanarttv = getSetting('enable.fanarttv') == 'true'
 		self.prefer_tmdbArt = getSetting('prefer.tmdbArt') == 'true'
-		self.unairedcolor = control.getColor(getSetting('unaired.identify'))
+		self.unairedcolor = getSetting('unaired.identify')
 		self.showunaired = getSetting('showunaired') == 'true'
-		self.highlight_color = control.getHighlightColor()
+		self.highlight_color = control.setting('highlight.color')
 		self.date_time = datetime.now()
 		self.today_date = (self.date_time).strftime('%Y-%m-%d')
 		self.imdb_user = getSetting('imdbuser').replace('ur', '')
@@ -473,9 +473,13 @@ class TVshows:
 					self.list = sorted(self.list, key=lambda k: k['added'], reverse=reverse)
 				elif attribute == 6:
 					for i in range(len(self.list)):
-						if 'lastplayed' not in self.list[i]: self.list[i]['lastplayed'] = ''
+						if 'lastplayed' not in self.list[i]: 
+							self.list[i]['lastplayed'] = ''
+							from resources.lib.modules import log_utils
+							log_utils.log('TVShow Last Played Blank Title: %' % self.list[i]['title'], 1)
 					#self.list = sorted(self.list, key=lambda k: k['lastplayed'], reverse=reverse)
-					self.list = sorted(self.list, key=lambda k: datetime.strptime(k['lastplayed'], "%Y-%m-%dT%H:%M:%S.%fZ"), reverse=reverse)
+					if self.list:
+						self.list = sorted(self.list, key=lambda k: datetime.strptime(k['lastplayed'], "%Y-%m-%dT%H:%M:%S.%fZ"), reverse=reverse)
 			elif reverse:
 				self.list = list(reversed(self.list))
 		except:
@@ -1218,7 +1222,7 @@ class TVshows:
 				self.list = [i for i in self.list if i['tvdb'] not in hidden] # removes hidden progress items
 				prior_week = int(re.sub(r'[^0-9]', '', (self.date_time - timedelta(days=7)).strftime('%Y-%m-%d')))
 				sorted_list = []
-				top_items = [i for i in self.list if i['episode'] == 1 and i['premiered'] and (int(re.sub(r'[^0-9]', '', str(i['premiered']))) >= prior_week)]
+				top_items = [i for i in self.list if i['premiered'] and (int(re.sub(r'[^0-9]', '', str(i['premiered']))) >= prior_week)]
 				sorted_list.extend(top_items)
 				sorted_list.extend([i for i in self.list if i not in top_items])
 				self.list = sorted_list

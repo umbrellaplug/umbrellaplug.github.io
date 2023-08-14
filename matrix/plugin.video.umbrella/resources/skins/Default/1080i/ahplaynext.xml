@@ -20,8 +20,6 @@
                 <control type="progress" id="3014">
                     <bottom>0</bottom>
                     <height>8</height>
-                    <texturebg colordiffuse="FF00000">common/progresswhitesmall.png</texturebg>
-                    <midtexture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/progresswhitesmall.png</midtexture>
                 </control>
             </control>
             <control type="group">

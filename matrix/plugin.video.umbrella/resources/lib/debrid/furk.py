@@ -36,7 +36,7 @@ class Furk:
 	def __init__(self):
 		self.files = []
 		self.api_key = control.setting('furk.api')
-		self.highlight_color = control.getHighlightColor()
+		self.highlight_color = control.setting('highlight.color')
 		self.login_link = "login/login?login=%s&pwd=%s"
 
 	def user_files(self):

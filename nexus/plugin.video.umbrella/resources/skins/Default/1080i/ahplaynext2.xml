@@ -29,6 +29,7 @@
                     <height>8</height>
                     <texturebg colordiffuse="FF00000">common/progresswhitesmall.png</texturebg>
                     <midtexture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/progresswhitesmall.png</midtexture>
+                    <visible>false</visible>
                 </control>
             </control>
             <control type="group">
@@ -37,7 +38,7 @@
                     <left>40</left>
                     <aligny>center</aligny>
                     <height>40</height>
-                    <label>Next Episode in [COLOR $INFO[Window().Property(skin.selectColor)]][B]$INFO[Player.TimeRemaining(ss)][/B][/COLOR] seconds...</label>
+                    <label>[B]Next Episode in [COLOR $INFO[Window().Property(skin.selectColor)]][B]$INFO[Player.TimeRemaining(ss)][/B][/COLOR] seconds...</label>
                     <textcolor>ffededed</textcolor>
                     <!-- <font>font_mainlabel</font> -->
 					<visible>Integer.IsLess(Player.TimeRemaining,60)</visible>

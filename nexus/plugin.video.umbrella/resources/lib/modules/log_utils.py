@@ -140,7 +140,7 @@ def upload_LogFile(name):
 		return notification(message='Log File not found, likely logging is not enabled.')
 	try:
 		import requests
-		from resources.lib.modules.control import addonVersion, selectDialog, getHighlightColor
+		from resources.lib.modules.control import addonVersion, selectDialog
 		f = open(log_file, 'r', encoding='utf-8', errors='ignore')
 		text = f.read()
 		f.close()
@@ -151,7 +151,7 @@ def upload_LogFile(name):
 			log('%s log file uploaded to: %s' % (name, result))
 			from sys import platform as sys_platform
 			supported_platform = any(value in sys_platform for value in ('win32', 'linux2'))
-			highlight_color = getHighlightColor()
+			highlight_color = getSetting('highlight.color')
 			list = [('[COLOR %s]url:[/COLOR]  %s' % (highlight_color, str(result)), str(result))]
 			if supported_platform: list += [('[COLOR %s]  -- Copy url To Clipboard[/COLOR]' % highlight_color, ' ')]
 			select = selectDialog([i[0] for i in list], lang(32196) if name.lower() == 'umbrella' else lang(32199))

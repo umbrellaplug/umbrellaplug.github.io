@@ -5,7 +5,7 @@
 
 from json import dumps as jsdumps, loads as jsloads
 from urllib.parse import unquote
-from resources.lib.modules.control import dialog, getSourceHighlightColor, getHighlightColor, addonFanart, joinPath, jsonrpc, setting as getSetting, getColor
+from resources.lib.modules.control import dialog, addonFanart, joinPath, jsonrpc, setting as getSetting
 from resources.lib.windows.base import BaseDialog
 from resources.lib.modules import log_utils
 
@@ -23,6 +23,9 @@ class ProgressScrape(BaseDialog):
 		self.year = kwargs.get('year')
 		self.season = kwargs.get('season')
 		self.episode = kwargs.get('episode')
+		self.dialogColor = getSetting('scraper.dialog.color')
+		self.highlight_color = getSetting('highlight.color')
+		self.source_color = getSetting('sources.highlight.color')
 		self.set_controls()
 
 	def run(self):
@@ -54,9 +57,9 @@ class ProgressScrape(BaseDialog):
 			if self.meta.get('plot'): self.setProperty('umbrella.plot', self.meta.get('plot', ''))
 		else:
 			self.setProperty('umbrella.fanart', addonFanart())
-		self.setProperty('umbrella.highlight.color', getHighlightColor())
-		self.setProperty('umbrella.dialog.color', str(getColor(getSetting('scraper.dialog.color'))))
-		self.setProperty('umbrella.sourceshighlight.color', getSourceHighlightColor())
+		self.setProperty('umbrella.highlight.color', self.highlight_color)
+		self.setProperty('umbrella.dialog.color', self.dialogColor)
+		self.setProperty('umbrella.sourceshighlight.color', self.source_color)
 		self.setProperty('percent', str(0))
 		if getSetting('sources.dialog.fanartBG') == 'true':
 			self.setProperty('umbrella.fanartBG', '1')

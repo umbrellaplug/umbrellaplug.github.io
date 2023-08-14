@@ -58,8 +58,8 @@ class Sources:
 		self.dev_disable_show_packs = getSetting('dev.disable.show.packs') == 'true'
 		self.dev_disable_show_filter = getSetting('dev.disable.show.filter') == 'true'
 		self.uncached_nopopup = getSetting('sources.nocachepopup') == 'true'
-		self.highlight_color = control.getHighlightColor()
-		self.sourceHighlightColor = control.getSourceHighlightColor()
+		self.highlight_color = getSetting('highlight.color')
+		self.sourceHighlightColor = getSetting('sources.highlight.color')
 		self.realdebridHighlightColor = control.getProviderHighlightColor('real-debrid')
 		self.alldebridHighlightColor = control.getProviderHighlightColor('alldebrid')
 		self.premiumizeHighlightColor = control.getProviderHighlightColor('premiumize.me')
@@ -72,8 +72,6 @@ class Sources:
 		self.providercache_hours = int(getSetting('cache.providers'))
 		self.debuglog = control.setting('debug.level') == '1'
 		self.retryallsources = getSetting('sources.retryall') == 'true'
-		self.info_tv = getSetting('playback.info_tv') == 'true'
-		self.info_movies = getSetting('playback.info_movies') == 'true'
 
 	def play(self, title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, meta, select, rescrape=None):
 		# control.log('info_tv: %s tvshowtitle: %s' % (self.info_tv, tvshowtitle),1)
@@ -102,7 +100,8 @@ class Sources:
 			return control.notification(message=33034)
 		try:
 			control.sleep(200)
-			if control.playlist.getposition() == 0 or control.playlist.size() == 1: playerWindow.clearProperty('umbrella.preResolved_nextUrl')
+			if control.playlist.getposition() == 0 or control.playlist.size() <= 1: 
+				playerWindow.clearProperty('umbrella.preResolved_nextUrl')
 			preResolved_nextUrl = playerWindow.getProperty('umbrella.preResolved_nextUrl')
 			if preResolved_nextUrl != '':
 				control.sleep(500)
@@ -652,7 +651,7 @@ class Sources:
 					elif pack == 'show': name = '%s (show pack)' % name
 					threads_append(Thread(target=self.getEpisodeSource, args=(imdb, season, episode, data, i[0], i[1], pack), name=name))
 			[i.start() for i in threads]
-			sdc = control.getColor(getSetting('scraper.dialog.color'))
+			sdc = getSetting('scraper.dialog.color')
 			string1 = getLS(32404) % (self.highlight_color, sdc, '%s') # msgid "[COLOR %s]Time elapsed:[/COLOR]  [COLOR %s]%s seconds[/COLOR]"
 			string3 = getLS(32406) % (self.highlight_color, sdc, '%s') # msgid "[COLOR %s]Remaining providers:[/COLOR] [COLOR %s]%s[/COLOR]"
 			string4 = getLS(32407) % (self.highlight_color, sdc, '%s') # msgid "[COLOR %s]Unfiltered Total: [/COLOR]  [COLOR %s]%s[/COLOR]"
@@ -1236,7 +1235,7 @@ class Sources:
 				
 				src_provider = items[i]['debrid'] if items[i].get('debrid') else ('%s - %s' % (items[i]['source'], items[i]['provider']))
 				if progressDialog != control.progressDialog and progressDialog != control.progressDialogBG:
-					sdc = control.getColor(getSetting('scraper.dialog.color'))
+					sdc = getSetting('scraper.dialog.color')
 					label = '[B][COLOR %s]%s[CR]%02d.)%s[CR]%s[/COLOR][/B]' % (sdc, src_provider.upper(), i+1, items[i]['name'], str(round(items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
 				else:
 					label = '[COLOR %s]%s[CR]%02d.)%s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), i+1, items[i]['name'], str(round(items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times

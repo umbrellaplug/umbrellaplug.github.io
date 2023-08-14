@@ -6,7 +6,7 @@
 from json import dumps as jsdumps
 from urllib.parse import quote_plus
 import xbmc
-from resources.lib.modules.control import dialog, getHighlightColor, yesnoDialog, sleep, condVisibility
+from resources.lib.modules.control import dialog, yesnoDialog, sleep, condVisibility, setting as getSetting
 from resources.lib.modules import tools
 from resources.lib.windows.base import BaseDialog
 
@@ -20,6 +20,7 @@ class TraktEpisodeProgressManagerXML(BaseDialog):
 		self.results = kwargs.get('results')
 		self.total_results = str(len(self.results))
 		self.selected_items = []
+		self.highlight_color = getSetting('highlight.color')
 		self.make_items()
 		self.set_properties()
 		self.hasVideo = False
@@ -197,7 +198,7 @@ class TraktEpisodeProgressManagerXML(BaseDialog):
 	def set_properties(self):
 		try:
 			self.setProperty('umbrella.total_results', self.total_results)
-			self.setProperty('umbrella.highlight.color', getHighlightColor())
+			self.setProperty('umbrella.highlight.color', self.highlight_color)
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()

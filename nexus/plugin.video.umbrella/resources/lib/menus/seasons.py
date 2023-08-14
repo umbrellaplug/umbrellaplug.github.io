@@ -32,7 +32,7 @@ class Seasons:
 		self.trakt_user = getSetting('trakt.user.name').strip()
 		self.traktCredentials = trakt.getTraktCredentialsInfo()
 		self.showunaired = getSetting('showunaired') == 'true'
-		self.unairedcolor = control.getColor(getSetting('unaired.identify'))
+		self.unairedcolor = getSetting('unaired.identify')
 		self.showspecials = getSetting('tv.specials') == 'true'
 		self.tmdblist_hours = int(getSetting('cache.tmdblist'))
 		self.hide_watched_in_widget = getSetting('enable.umbrellahidewatched') == 'true'

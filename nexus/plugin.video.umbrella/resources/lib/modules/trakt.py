@@ -25,7 +25,7 @@ REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
 session = requests.Session()
 retries = Retry(total=4, backoff_factor=0.3, status_forcelist=[429, 500, 502, 503, 504, 520, 521, 522, 524, 530])
 session.mount('https://api.trakt.tv', HTTPAdapter(max_retries=retries, pool_maxsize=100))
-highlight_color = control.getHighlightColor()
+highlight_color = getSetting('highlight.color')
 server_notification = getSetting('trakt.server.notifications') == 'true'
 service_syncInterval = int(getSetting('trakt.service.syncInterval')) if getSetting('trakt.service.syncInterval') else 15
 trakt_icon = control.joinPath(control.artPath(), 'trakt.png')
@@ -190,8 +190,8 @@ def getTraktDeviceToken(traktDeviceCode):
 				"client_secret": traktClientSecret()}
 		start = time.time()
 		expires_in = traktDeviceCode['expires_in']
-		verification_url = control.lang(32513) % (control.getHighlightColor(), str(traktDeviceCode['verification_url']))
-		user_code = control.lang(32514) % (control.getHighlightColor(), str(traktDeviceCode['user_code']))
+		verification_url = control.lang(32513) % (highlight_color, str(traktDeviceCode['verification_url']))
+		user_code = control.lang(32514) % (highlight_color, str(traktDeviceCode['user_code']))
 		line = '%s\n%s\n%s'
 		try:
 			from resources.lib.modules.source_utils import copy2clip
@@ -1097,10 +1097,13 @@ def service_syncSeasons(): # season indicators and counts for watched shows ex. 
 	except: log_utils.error()
 
 def markMovieAsWatched(imdb):
-	log_utils.log('Umbrella marking movie as watched',level=log_utils.LOGDEBUG)
 	try:
 		result = getTraktAsJson('/sync/history', {"movies": [{"ids": {"imdb": imdb}}]})
-		return result['added']['movies'] != 0
+		result = result['added']['movies'] != 0
+		if getSetting('debug.level') == '1':
+			from resources.lib.modules import log_utils
+			log_utils.log('Trakt markMovieAsWatched IMDB: %s Result: %s' % (imdb, result), level=log_utils.LOGDEBUG)
+		return result
 	except: log_utils.error()
 
 def markMovieAsNotWatched(imdb):
@@ -1159,12 +1162,18 @@ def markEpisodeAsWatched(imdb, tvdb, season, episode):
 	try:
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode)) #same
 		result = getTraktAsJson('/sync/history', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": imdb, "tvdb": tvdb}}]})
-		if not result: return False
+		if not result: result = False
 		if result['added']['episodes'] == 0 and tvdb:
 			control.sleep(1000)
 			result = getTraktAsJson('/sync/history', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": tvdb}}]})
-			if not result: return False
-		return result['added']['episodes'] !=0
+			if not result: result = False
+			result = result['added']['episodes'] !=0
+		else:
+			result = result['added']['episodes'] !=0
+		if getSetting('debug.level') == '1':
+			from resources.lib.modules import log_utils
+			log_utils.log('Trakt markEpisodeAsWatched IMDB: %s TVDB: %s Season: %s Episode: %s Result: %s' % (imdb, tvdb, season, episode, result), level=log_utils.LOGDEBUG)
+		return result
 	except: log_utils.error()
 
 def markEpisodeAsNotWatched(imdb, tvdb, season, episode):
@@ -1344,6 +1353,7 @@ def scrobbleMovie(imdb, tmdb, watched_percent):
 		if not imdb.startswith('tt'): imdb = 'tt' + imdb
 		success = getTrakt('/scrobble/pause', {"movie": {"ids": {"imdb": imdb}}, "progress": watched_percent})
 		if success:
+			log_utils.log('Trakt Scrobble Movie Success: imdb: %s s' % (imdb), level=log_utils.LOGDEBUG)
 			if getSetting('trakt.scrobble.notify') == 'true': control.notification(message=32088)
 			control.sleep(1000)
 			sync_playbackProgress(forced=True)
@@ -1357,6 +1367,7 @@ def scrobbleEpisode(imdb, tmdb, tvdb, season, episode, watched_percent):
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
 		success = getTrakt('/scrobble/pause', {"show": {"ids": {"tvdb": tvdb}}, "episode": {"season": season, "number": episode}, "progress": watched_percent})
 		if success:
+			log_utils.log('Trakt Scrobble Episode Success: imdb: %s s' % (imdb), level=log_utils.LOGDEBUG)
 			if getSetting('trakt.scrobble.notify') == 'true': control.notification(message=32088)
 			control.sleep(1000)
 			sync_playbackProgress(forced=True)
@@ -1371,9 +1382,9 @@ def scrobbleReset(imdb, tmdb=None, tvdb=None, season=None, episode=None, refresh
 	try:
 		content_type = 'movie' if not episode else 'episode'
 		resume_info = traktsync.fetch_bookmarks(imdb, tmdb, tvdb, season, episode, ret_type='resume_info')
-		#log_utils.log('Trakt ScrobbleReset imdb: %s imdb type: %s tmdb: %s tmdb type: %s tvdb: %s tvdb type: %s season: %s season type: %s episode: %s episode type: %s resume info: %s' % (imdb, type(imdb), tmdb, type(tmdb), tvdb, type(tvdb), season, type(season), episode, type(episode), str(resume_info)), level=log_utils.LOGDEBUG)
 		if resume_info == '0': return control.hide() # returns string "0" if no data in db 
 		headers['Authorization'] = 'Bearer %s' % getSetting('trakt.user.token')
+		if headers['trakt-api-key'] == '': headers['trakt-api-key']=traktClientID()
 		success = session.delete('https://api.trakt.tv/sync/playback/%s' % resume_info[1], headers=headers).status_code == 204
 		if content_type == 'movie':
 			items = [{'type': 'movie', 'movie': {'ids': {'imdb': imdb}}}]
@@ -1503,6 +1514,7 @@ def force_traktSync():
 	control.notification(message='Forced Trakt Sync Complete')
 
 def sync_playbackProgress(activities=None, forced=False):
+	log_utils.log('Trakt Sync Playback Called Forced: %s' % (str(forced)), level=log_utils.LOGDEBUG)
 	try:
 		link = '/sync/playback/?extended=full'
 		if forced:
@@ -1511,6 +1523,7 @@ def sync_playbackProgress(activities=None, forced=False):
 		else:
 			db_last_paused = traktsync.last_sync('last_paused_at')
 			activity = getPausedActivity(activities)
+			log_utils.log('Trakt Sync Playback db_last_paused: %s  activity: %s difference: %s' % (db_last_paused, activity,(activity - db_last_paused)),log_utils.LOGDEBUG)
 			if activity - db_last_paused >= 120: # do not sync unless 2 min difference or more
 				items = getTraktAsJson(link, silent=True)
 				if items: traktsync.insert_bookmarks(items)

@@ -3,7 +3,7 @@
 	Umbrella Add-on
 """
 
-from resources.lib.modules.control import getHighlightColor, joinPath, artPath, dialog
+from resources.lib.modules.control import  joinPath, artPath, dialog, setting as getSetting
 from resources.lib.modules.library import lib_tools
 from resources.lib.windows.base import BaseDialog
 from resources.lib.modules import control
@@ -15,6 +15,7 @@ class TraktImportListManagerXML(BaseDialog):
 		self.window_id = 2050
 		self.results = kwargs.get('results')
 		self.total_results = str(len(self.results))
+		self.highlight_color = getSetting('highlight.color')
 		self.selected_items = []
 		self.make_items()
 		self.set_properties()
@@ -124,7 +125,7 @@ class TraktImportListManagerXML(BaseDialog):
 	def set_properties(self):
 		try:
 			self.setProperty('umbrella.total_results', self.total_results)
-			self.setProperty('umbrella.highlight.color', getHighlightColor())
+			self.setProperty('umbrella.highlight.color', self.highlight_color)
 			self.setProperty('umbrella.trakt_icon', joinPath(artPath(), 'trakt.png'))
 		except:
 			from resources.lib.modules import log_utils

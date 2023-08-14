@@ -33,6 +33,7 @@ class SIMKL:
 		self.user_code = ''
 		self.auth_timeout = 0
 		self.auth_step = 0
+		self.highlightColor = control.setting('highlight.color')
 
 	def auth_loop(self, fromSettings=0):
 		control.sleep(self.auth_step*1000)
@@ -72,7 +73,7 @@ class SIMKL:
 		else:
 			self.progressDialog = control.progressDialog
 			self.progressDialog.create(getLS(40346))
-		self.progressDialog.update(-1, line % (getLS(32513) % (control.getHighlightColor(), 'https://simkl.com/pin/'), getLS(32514) % (control.getHighlightColor(),response['user_code']), getLS(40390)))
+		self.progressDialog.update(-1, line % (getLS(32513) % (self.highlightColor, 'https://simkl.com/pin/'), getLS(32514) % (self.highlightColor,response['user_code']), getLS(40390)))
 		try:
 			from resources.lib.modules.source_utils import copy2clip
 			copy2clip(response['user_code'])

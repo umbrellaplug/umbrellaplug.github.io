@@ -11,7 +11,7 @@ from time import time
 from datetime import datetime
 from sqlite3 import dbapi2 as db
 from resources.lib.modules import cleandate
-from resources.lib.modules.control import existsPath, dataPath, makeFile, traktSyncFile
+from resources.lib.modules.control import existsPath, dataPath, makeFile, traktSyncFile, setting as getSetting
 
 
 def fetch_bookmarks(imdb, tmdb='', tvdb='', season=None, episode=None, ret_all=None, ret_type='movies'):
@@ -48,12 +48,16 @@ def fetch_bookmarks(imdb, tmdb='', tvdb='', season=None, episode=None, ret_all=N
 			else:
 				try: # Lookup both IMDb and TVDb first for more accurate episode match.
 					match = dbcur.execute('''SELECT * FROM bookmarks WHERE (imdb=? AND tvdb=? AND season=? AND episode=? AND NOT imdb='' AND NOT tvdb='')''', (imdb, tvdb, season, episode)).fetchone()
-					if ret_type == 'resume_info': progress = (match[0], match[2])
+					if ret_type == 'resume_info': 
+						progress = (match[0], match[2])
+						log_utils.log('Getting resume from database imdb. Match: %s' % (str(match)),1)
 					else: progress = match[12]
 				except:
 					try:
 						match = dbcur.execute('''SELECT * FROM bookmarks WHERE (tvdb=? AND season=? AND episode=? AND NOT tvdb='')''', (tvdb, season, episode)).fetchone()
-						if ret_type == 'resume_info': progress = (match[0], match[2])
+						if ret_type == 'resume_info': 
+							progress = (match[0], match[2])
+							log_utils.log('Getting resume from database tvdb. Match: %s' % (str(match)),1)
 						else: progress = match[12]
 					except: pass
 	except:
@@ -826,3 +830,9 @@ def insert_nextEpisode(imdb, tvdb, tmdb, trakt, next_episode):
 		log_utils.error()
 	finally:
 		dbcur.close() ; dbcon.close()
+
+def traktClientID():
+	traktId = '87e3f055fc4d8fcfd96e61a47463327ca877c51e8597b448e132611c5a677b13'
+	if (getSetting('trakt.clientid') != '' and getSetting('trakt.clientid') is not None) and getSetting('traktuserkey.customenabled') == 'true':
+		traktId = getSetting('trakt.clientid')
+	return traktId

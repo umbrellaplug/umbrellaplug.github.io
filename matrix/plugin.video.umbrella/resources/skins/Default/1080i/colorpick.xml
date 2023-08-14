@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <!-- Background -->
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">common/white.png</texture>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" start="0" end="80" time="120" />
+            </animation>
+        </control>
+        <!-- Colors Panel -->
+        <control type="group">
+            <left>130</left>
+            <top>70</top>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" end="100" time="200" />
+            </animation>
+            <control type="group">
+                <control type="image">
+                    <width>1660</width>
+                    <height>940</height>
+                    <texture border="16" colordiffuse="$INFO[Window.Property(umbrella.backgroundColor)]">common/dialog.png</texture>
+                </control>
+                <control type="image">
+                    <height>50</height>
+                    <width>1660</width>
+                    <texture border="16" colordiffuse="$INFO[Window.Property(umbrella.titleBarColor)]">common/dialogtop.png</texture>
+                </control>
+                <control type="image">
+                    <left>4</left>
+                    <top>4</top>
+                    <width>45</width>
+                    <height>45</height>
+                    <align>left</align>
+                    <aligny>top</aligny>
+                    <aspectratio aligny="top">keep</aspectratio>
+                    <texture colordiffuse="FFCCCCCC">common/icon.png</texture>
+                </control>
+                <control type="label">
+                    <top>10</top>
+                    <left>5</left>
+                    <width max="1650">auto</width>
+                    <height>20</height>
+                    <font>font14</font>
+                    <textcolor>$INFO[Window.Property(umbrella.titleTextColor)]</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>[B]$ADDON[plugin.video.umbrella 40437][/B]</label>
+                </control>
+            </control>
+            <!-- Color picker panel -->
+            <control type="panel" id="2000">
+                <animation effect="slide" end="0,40" time="0" reversible="true" condition="String.IsEqual(Window.Property(current_palette),rainbow)">Conditional</animation>
+                <left>30</left>
+                <top>75</top>
+                <width>1365</width>
+                <height>840</height>
+                <orientation>vertical</orientation>
+                <itemlayout height="44" width="44">
+                    <control type="image">
+                        <left>0</left>
+                        <top>0</top>
+                        <width>40</width>
+                        <height>40</height>
+                        <texture>$INFO[ListItem.Property(image)]</texture>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="44" width="44">
+                    <control type="group">
+                        <animation effect="zoom" time="100" tween="sine" easing="inout" start="100" end="140" center="auto">Focus</animation>
+                        <control type="image">
+                            <left>0</left>
+                            <top>0</top>
+                            <width>44</width>
+                            <height>44</height>
+                            <texture colordiffuse="$INFO[Window.Property(umbrella.backgroundColor)]">common/white.png</texture>
+                        </control>
+                        <control type="image">
+                            <left>2</left>
+                            <top>2</top>
+                            <width>40</width>
+                            <height>40</height>
+                            <texture>$INFO[ListItem.Property(image)]</texture>
+                        </control>
+                    </control>
+                </focusedlayout>
+            </control>
+            <!-- Buttons -->
+            <control type="group">
+                <left>1405</left>
+                <top>197</top>
+                <control type="button" id="10">
+                    <description>OK</description>
+                    <width>240</width>
+                    <height>60</height>
+                    <onup>13</onup>
+                    <ondown>11</ondown>
+                    <onleft>2000</onleft>
+                    <onright>2000</onright>
+                    <label>OK</label>
+                    <font>font12</font>
+                    <textcolor>$INFO[Window.Property(umbrella.buttonTextColorNS)]</textcolor>
+                    <focusedcolor>$INFO[Window.Property(umbrella.buttonTextColor)]</focusedcolor>
+                    <texturefocus colordiffuse="$INFO[Window.Property(umbrella.buttonColor)]" border="30">common/circle.png</texturefocus>
+                    <texturenofocus colordiffuse="$INFO[Window.Property(umbrella.buttonnofocus)]" border="30">common/circle.png</texturenofocus>
+                    <align>center</align>
+                </control>
+                <control type="button" id="11">
+                    <description>Cancel</description>
+                    <top>80</top>
+                    <width>240</width>
+                    <height>60</height>
+                    <onup>10</onup>
+                    <ondown>12</ondown>
+                    <onleft>2000</onleft>
+                    <onright>2000</onright>
+                    <label>Cancel</label>
+                    <font>font12</font>
+                    <textcolor>$INFO[Window.Property(umbrella.buttonTextColorNS)]</textcolor>
+                    <focusedcolor>$INFO[Window.Property(umbrella.buttonTextColor)]</focusedcolor>
+                    <texturefocus colordiffuse="$INFO[Window.Property(umbrella.buttonColor)]" border="30">common/circle.png</texturefocus>
+                    <texturenofocus colordiffuse="$INFO[Window.Property(umbrella.buttonnofocus)]" border="30">common/circle.png</texturenofocus>
+                    <align>center</align>
+                </control>
+                <control type="label">
+                    <top>200</top>
+                    <width>240</width>
+                    <height>30</height>
+                    <align>center</align>
+                    <aligny>bottom</aligny>
+                    <textcolor>$INFO[Window.Property(umbrella.textColor)]</textcolor>
+                    <shadowcolor>black</shadowcolor>
+                    <font>font12</font>
+                    <label>Enter Value</label>
+                </control>
+                <control type="button" id="12">
+                    <description>Input Value Choice</description>
+                    <top>240</top>
+                    <width>240</width>
+                    <height>60</height>
+                    <onup>11</onup>
+                    <ondown>13</ondown>
+                    <onleft>2000</onleft>
+                    <onright>2000</onright>
+                    <label>[COLOR=$INFO[Container(2000).ListItem.Property(label)]]$INFO[Container(2000).ListItem.Property(label)][/COLOR]</label>
+                    <font>font12</font> 
+                    <textcolor>$INFO[Window.Property(umbrella.buttonTextColorNS)]</textcolor>
+                    <focusedcolor>$INFO[Window.Property(umbrella.buttonTextColor)]</focusedcolor>
+                    <texturefocus colordiffuse="$INFO[Window.Property(umbrella.buttonColor)]" border="30">common/circle.png</texturefocus>
+                    <texturenofocus colordiffuse="$INFO[Window.Property(umbrella.buttonnofocus)]" border="30">common/circle.png</texturenofocus>
+                    <align>center</align>
+                </control>
+                <control type="image">
+                    <left>5</left>
+                    <top>320</top>
+                    <width>240</width>
+                    <height>100</height>
+                    <aspectratio>stretch</aspectratio>
+                    <texture diffuse="common/landscape_w284_h160.png">$INFO[Container(2000).ListItem.Property(image)]</texture>
+                </control>
+            </control>
+        </control>
+    </controls>
+</window>

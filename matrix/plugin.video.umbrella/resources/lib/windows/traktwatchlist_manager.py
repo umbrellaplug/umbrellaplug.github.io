@@ -4,7 +4,7 @@
 """
 
 from json import dumps as jsdumps
-from resources.lib.modules.control import dialog, getHighlightColor
+from resources.lib.modules.control import dialog, setting as getSetting
 from resources.lib.windows.base import BaseDialog
 
 
@@ -14,6 +14,7 @@ class TraktWatchlistManagerXML(BaseDialog):
 		self.window_id = 2050
 		self.results = kwargs.get('results')
 		self.total_results = str(len(self.results))
+		self.highlight_color = getSetting('highlight.color')
 		self.selected_items = []
 		self.make_items()
 		self.set_properties()
@@ -106,7 +107,7 @@ class TraktWatchlistManagerXML(BaseDialog):
 	def set_properties(self):
 		try:
 			self.setProperty('umbrella.total_results', self.total_results)
-			self.setProperty('umbrella.highlight.color', getHighlightColor())
+			self.setProperty('umbrella.highlight.color', self.highlight_color)
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()

@@ -25,7 +25,7 @@ class Navigator:
 		self.simkltoken = getSetting('simkltoken') != ''
 		self.tmdbSessionID = getSetting('tmdb.sessionid') != ''
 		self.reuselanguageinv = getSetting('reuse.languageinvoker') == 'true'
-		self.highlight_color = control.getHighlightColor()
+		self.highlight_color = getSetting('highlight.color')
 		self.hasLibMovies = len(jsloads(control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": { "limits": { "start" : 0, "end": 1 }, "properties" : ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file"] }, "id": "1"}'))['result']['movies']) > 0
 
 	def root(self):

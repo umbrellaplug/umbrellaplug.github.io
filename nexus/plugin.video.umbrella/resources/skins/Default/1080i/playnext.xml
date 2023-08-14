@@ -85,8 +85,7 @@
 						<righttexture></righttexture>
 						<overlaytexture></overlaytexture>
 						<lefttexture></lefttexture>
-						<texturebg colordiffuse="00ffffff">common/white.png</texturebg>
-						<midtexture colordiffuse="FFFF4081">common/white.png</midtexture>
+						<texturebg colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/white.png</texturebg>
 					</control>
 				</control>
 
@@ -103,7 +102,7 @@
 						<font>font25_title</font>
 						<textcolor>eeffffff</textcolor>
 						<shadowcolor>ff000000</shadowcolor>
-						<label>$ADDON[plugin.video.umbrella 32174][COLOR FFFF4081][B]$INFO[Player.TimeRemaining(m:ss)][/B][/COLOR]</label>
+						<label>$ADDON[plugin.video.umbrella 32174][COLOR $INFO[Window().Property(skin.selectColor)]][B]$INFO[Player.TimeRemaining(m:ss)][/B][/COLOR]</label>
 						<visible>!Integer.IsGreater(Player.TimeRemaining,290)</visible>
 					</control>
 					<control type="label">
@@ -148,7 +147,7 @@
 							<width>19</width>
 							<height>19</height>
 							<aspect>keep</aspect>
-							<texture colordiffuse="FFFF4081">common/star.png</texture>
+							<texture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/star.png</texture>
 							<animation effect="slide" end="0,8" time="0" condition="true">Conditional</animation>
 							<visible>!String.IsEmpty(Window().Property(umbrella.rating))</visible>
 						</control>
@@ -185,10 +184,8 @@
 							<selectedcolor>ddffffff</selectedcolor>
 							<aligny>center</aligny>
 							<align>right</align>
-							<texturefocus border="10" colordiffuse="FF172A91">common/button3.png</texturefocus>
-							<texturenofocus border="10" colordiffuse="FF212121">common/button3.png</texturenofocus>
-							<alttexturefocus border="10" colordiffuse="FF172A91">common/button3.png</alttexturefocus>
-							<alttexturenofocus border="10" colordiffuse="FF212121">common/button3.png</alttexturenofocus>
+							<texturefocus border="10" colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/button3.png</texturefocus>
+							<texturenofocus border="10" colordiffuse="1fdedede">common/button3.png</texturenofocus>
 							<pulseonselect>no</pulseonselect>
 						</control>
 						<control type="button" id="3012">
@@ -204,10 +201,8 @@
 							<selectedcolor>ddffffff</selectedcolor>
 							<aligny>center</aligny>
 							<align>right</align>
-							<texturefocus border="10" colordiffuse="FF172A91">common/button3.png</texturefocus>
-							<texturenofocus border="10" colordiffuse="FF212121">common/button3.png</texturenofocus>
-							<alttexturefocus border="10" colordiffuse="FF172A91">common/button3.png</alttexturefocus>
-							<alttexturenofocus border="10" colordiffuse="FF212121">common/button3.png</alttexturenofocus>
+							<texturefocus border="10" colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/button3.png</texturefocus>
+							<texturenofocus border="10" colordiffuse="1fdedede">common/button3.png</texturenofocus>
 							<pulseonselect>no</pulseonselect>
 						</control>
 						<control type="button" id="3013">
@@ -223,10 +218,8 @@
 							<selectedcolor>ddffffff</selectedcolor>
 							<aligny>center</aligny>
 							<align>right</align>
-							<texturefocus border="10" colordiffuse="FF172A91">common/button3.png</texturefocus>
-							<texturenofocus border="10" colordiffuse="FF212121">common/button3.png</texturenofocus>
-							<alttexturefocus border="10" colordiffuse="FF172A91">common/button3.png</alttexturefocus>
-							<alttexturenofocus border="10" colordiffuse="FF212121">common/button3.png</alttexturenofocus>
+							<texturefocus border="10" colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/button3.png</texturefocus>
+							<texturenofocus border="10" colordiffuse="1fdedede">common/button3.png</texturenofocus>
 							<pulseonselect>no</pulseonselect>
 							<visible>String.IsEmpty(Window().Property(umbrella.hidebutton))</visible>
 						</control>

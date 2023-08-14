@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.27">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.28">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
 		<import addon="script.module.cocoscrapers" version="1.0.12"/>
@@ -156,10 +156,19 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.6.27 - August 1st, 2023[/B]
---[Fix] Dark color compare fix for blank values.
---[Info] I am aware some skins are not showing colors and options for colors. Setting skin to default should allow you to set your colors. Once set, you can then use skin again.
---[Info] Changes are being made to allow for a custom view for color options to avoid any further issues.
+[B]Update - v6.6.28 - August 14th, 2023[/B]
+--[Fix] Added additional check for authorization id to avoid blank trakt auth ids causing mark playback fail.
+--[Fix] Added fallback for playnext subtitles for a minimum in seconds setting. default is 20.
+--[Fix] Re-Worked playlist construction with playnext.
+--[Fix] Custom color view created to allow for color selection across different versions of kodi and skins.
+--[Fix] Playnext AH2 skin Still Waiting fixed.
+--[Fix] Playnext AH2 skin with Arctic Fuse skin issue fixed.
+--[Fix] Fixed colors not working for providers on source selection.
+--[Enhancement] All color settings re-worked to make loading faster.
+--[Enhancement] Removed all calls to getColor, getHighlightColor, and getSourceHighlightColor and made settings accessed directly.
+--[Enhancement] Removed all places settings were accessed more than once in code and moved to global setting to increase speed.
+--[Enhancement] Playnext Arctic Fuse skin added.
+--[Enhancement] Multiple seasons added for playnext.
 		</news>
 	</extension>
 

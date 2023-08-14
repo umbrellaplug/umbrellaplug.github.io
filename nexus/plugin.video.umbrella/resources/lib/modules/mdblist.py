@@ -22,7 +22,7 @@ mdblist_user_list ='/lists/user/?apikey='
 session = requests.Session()
 retries = Retry(total=4, backoff_factor=0.3, status_forcelist=[429, 500, 502, 503, 504, 520, 521, 522, 524, 530])
 session.mount('https://mdblist.com/api', HTTPAdapter(max_retries=retries, pool_maxsize=100))
-highlight_color = control.getHighlightColor()
+highlight_color = control.setting('highlight.color')
 
 artPath = control.artPath()
 iconLogos = getSetting('icon.logos') != 'Traditional'

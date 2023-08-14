@@ -34,9 +34,9 @@ class Episodes:
 		self.prefer_tmdbArt = getSetting('prefer.tmdbArt') == 'true'
 		self.progress_showunaired = getSetting('trakt.progress.showunaired') == 'true'
 		self.showunaired = getSetting('showunaired') == 'true'
-		self.unairedcolor = control.getColor(getSetting('unaired.identify'))
+		self.unairedcolor = getSetting('unaired.identify')
 		self.showspecials = getSetting('tv.specials') == 'true'
-		self.highlight_color = control.getHighlightColor()
+		self.highlight_color = control.setting('highlight.color')
 		self.date_time = datetime.now()
 		self.today_date = (self.date_time).strftime('%Y-%m-%d')
 		self.trakt_user = getSetting('trakt.user.name').strip()

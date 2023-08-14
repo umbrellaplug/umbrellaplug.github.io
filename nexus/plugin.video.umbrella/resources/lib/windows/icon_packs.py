@@ -6,7 +6,7 @@
 from json import dumps as jsdumps
 from urllib.parse import quote_plus
 import xbmc
-from resources.lib.modules.control import dialog, getHighlightColor, setting as getSetting, addonFanart
+from resources.lib.modules.control import dialog, setting as getSetting, addonFanart
 from resources.lib.windows.base import BaseDialog
 
 
@@ -20,6 +20,7 @@ class IconPacksView(BaseDialog):
 		self.activePack = getSetting('skinpackicons').lower()
 		self.fanart = addonFanart()
 		self.make_items()
+		self.highlight_color = getSetting('highlight.color')
 		self.set_properties()
 
 	def onInit(self):
@@ -119,7 +120,7 @@ class IconPacksView(BaseDialog):
 
 	def set_properties(self):
 		try:
-			self.setProperty('umbrella.highlight.color', getHighlightColor())
+			self.setProperty('umbrella.highlight.color', self.highlight_color)
 			self.setProperty('umbrella.fanart', self.fanart)
 		except:
 			from resources.lib.modules import log_utils

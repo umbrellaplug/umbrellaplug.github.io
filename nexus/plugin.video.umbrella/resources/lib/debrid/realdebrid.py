@@ -58,6 +58,7 @@ class RealDebrid:
 		self.auth_step = 0
 		self.server_notifications = getSetting('realdebrid.server.notifications')
 		self.store_to_cloud = getSetting('realdebrid.saveToCloud') == 'true'
+		self.highlightColor = control.setting('highlight.color')
 
 	def _get(self, url, fail_check=False, token_ck=False):
 		response = None
@@ -154,7 +155,7 @@ class RealDebrid:
 		else:
 			self.progressDialog = control.progressDialog
 			self.progressDialog.create(getLS(40055))
-		self.progressDialog.update(-1, line % (getLS(32513) % (control.getHighlightColor(),'https://real-debrid.com/device'), getLS(32514) % (control.getHighlightColor(), response['user_code']), getLS(40390)))
+		self.progressDialog.update(-1, line % (getLS(32513) % (self.highlightColor,'https://real-debrid.com/device'), getLS(32514) % (self.highlightColor, response['user_code']), getLS(40390)))
 		try:
 			from resources.lib.modules.source_utils import copy2clip
 			copy2clip(response['user_code'])
@@ -208,7 +209,7 @@ class RealDebrid:
 				try:
 					cm = []
 					isFolder = True if item['status'] == 'downloaded' else False
-					status = '[COLOR %s]%s[/COLOR]' % (control.getHighlightColor(), item['status'].capitalize())
+					status = '[COLOR %s]%s[/COLOR]' % (self.highlightColor, item['status'].capitalize())
 					folder_name = string_tools.strip_non_ascii_and_unprintable(item['filename'])
 					label = '%02d | [B]%s[/B] - %s | [B]%s[/B] | [I]%s [/I]' % (count, status, str(item['progress']) + '%', folder_str, folder_name)
 					url = '%s?action=rd_BrowseUserTorrents&id=%s' % (sysaddon, item['id']) if isFolder else None

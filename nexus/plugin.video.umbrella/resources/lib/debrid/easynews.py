@@ -29,7 +29,7 @@ class EasyNews:
 		self.auth = self._get_auth()
 		self.account_link = 'https://account.easynews.com/editinfo.php'
 		self.usage_link = 'https://account.easynews.com/usageview.php'
-		self.highlight_color = control.getHighlightColor()
+		self.highlight_color = control.setting('highlight.color')
 
 	def _get(self, url, params={}):
 		try:
