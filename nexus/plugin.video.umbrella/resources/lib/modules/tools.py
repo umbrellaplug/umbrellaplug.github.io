@@ -9,6 +9,7 @@ import _strptime # import _strptime to workaround python 2 bug with threads
 from resources.lib.modules import cleandate
 from resources.lib.externals import pytz
 from resources.lib.modules import control
+from resources.lib.modules.control import lang as getLS
 
 ZoneUtc = 'utc'
 ZoneLocal = 'local'
@@ -94,6 +95,30 @@ def nonsense():
 			control.notification(message='Launching Fen...')
 			control.sleep(200)
 			return control.execute('RunAddon(plugin.video.fen)')
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+
+def external_providers():
+	try:
+		results = control.jsonrpc_get_addons()
+		chosen = control.selectDialog([i.get('name') for i in results], 'Select external provider module:')
+		if chosen == None: return
+		try:
+			from sys import path
+			path.append(control.transPath('special://home/addons/%s/lib' % results[chosen].get('addonid')))
+			from importlib import import_module
+			getattr(import_module(results[chosen].get('addonid').split('.')[-1]), 'sources')
+			success = True
+		except:
+			success = False
+		if success:
+			control.setSetting('external_provider.name' , results[chosen].get('addonid').split('.')[-1])
+			control.setSetting('external_provider.module', results[chosen].get('addonid'))
+			control.notification(title=results[chosen].get('addonid').split('.')[-1], message=getLS(40449))
+		else:
+			control.okDialog(title=33586, message=getLS(40446) % results[chosen].get('addonid').upper())
+			return external_providers()
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()

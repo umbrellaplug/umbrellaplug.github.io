@@ -2135,8 +2135,8 @@ msgid "Include Special Episodes (Season 0)"
 msgstr "Különleges epizódok (0. évad) mellékelése"
 
 msgctxt "#32651"
-msgid "[B]Coco Scrapers[/B] Settings"
-msgstr "[B]Coco Scrapers[/B] Beállítások"
+msgid ""
+msgstr ""
 
 msgctxt "#32652"
 msgid "Title Already Exists in Library"
@@ -3399,8 +3399,8 @@ msgid "Premiumize Authorization Revoked"
 msgstr "Premiumize engedély visszavonva"
 
 msgctxt "#40134"
-msgid "Manage in CocoScrapers"
-msgstr "Beállitás a CocoScrapers-ben"
+msgid ""
+msgstr ""
 
 msgctxt "#40135"
 msgid "Do not show removed duplicates popup"
@@ -3643,8 +3643,8 @@ msgid "Download settings category for subtitles. Automatic subtitle settings."
 msgstr "A feliratok letöltéséhez kapcsolódó beállítások kategóriája. Automatikus feliratbeállítások."
 
 msgctxt "#40195"
-msgid "Provider settings category for Providers. These settings need to be set and changed within CocoScrapers."
-msgstr "A szolgáltatói beállítások kategória a szolgáltatókhoz kapcsolódó beállitásokat tartalmazza. Ezeket a beállításokat a CocoScrapers-en belül kell beállítani és módosítani."
+msgid "Provider settings category for Providers."
+msgstr "A szolgáltatói beállítások kategória a szolgáltatókhoz kapcsolódó beállitásokat tartalmazza."
 
 msgctxt "#40196"
 msgid "Plexshare"

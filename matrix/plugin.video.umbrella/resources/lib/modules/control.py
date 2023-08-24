@@ -108,11 +108,11 @@ def setHomeWindowProperty(propertyname, property):
 ####################################################
 # --- Custom Dialogs
 ####################################################
-def getProgressWindow(heading='', icon=None, qr=0):
+def getProgressWindow(heading='', icon=None, qr=0, artwork=0):
 	if icon == None:
 		icon = addonIcon()
 	from resources.lib.windows.umbrella_dialogs import ProgressUmbrella
-	window = ProgressUmbrella('progress_umbrella.xml', addonPath(addonId()), heading=heading, icon=icon, qr=qr)
+	window = ProgressUmbrella('progress_umbrella.xml', addonPath(addonId()), heading=heading, icon=icon, qr=qr, artwork=artwork)
 	Thread(target=window.run).start()
 	return window
 
@@ -593,6 +593,14 @@ def disable_enable_addon():
 
 def update_local_addon():
     execute('UpdateLocalAddons')
+
+def jsonrpc_get_addons():
+	try:
+		results = jsonrpc('{"jsonrpc": "2.0", "id":1, "method": "Addons.GetAddons", "params": {"type": "xbmc.python.module", "properties": ["thumbnail", "name"] }}')
+		results = jsloads(results)['result']['addons']
+	except:
+		results = []
+	return results
     
 def jsondate_to_datetime(jsondate_object, resformat, remove_time=False):
 	import _strptime  # fix bug in python import
@@ -608,13 +616,18 @@ def jsondate_to_datetime(jsondate_object, resformat, remove_time=False):
 
 def syncAccounts():
 	try:
-		setSetting('easynews.user', addon('script.module.cocoscrapers').getSetting('easynews.user'))
-		setSetting('easynews.password', addon('script.module.cocoscrapers').getSetting('easynews.password'))
-		setSetting('filepursuit.api', addon('script.module.cocoscrapers').getSetting('filepursuit.api'))
-		setSetting('plex.token', addon('script.module.cocoscrapers').getSetting('plex.token'))
-		setSetting('plex.client_id', addon('script.module.cocoscrapers').getSetting('plex.client_id'))
-		setSetting('plex.device_id', addon('script.module.cocoscrapers').getSetting('plex.device_id'))
-		setSetting('gdrive.cloudflare_url', addon('script.module.cocoscrapers').getSetting('gdrive.cloudflare_url'))
+		if setting('external_provider.module','') == '':
+			pass
+		else:
+			modulename = setting('external_provider.module')
+			setSetting('easynews.user', addon(modulename).getSetting('easynews.user'))
+			setSetting('easynews.password', addon(modulename).getSetting('easynews.password'))
+			setSetting('filepursuit.api', addon(modulename).getSetting('filepursuit.api'))
+			setSetting('plex.token', addon(modulename).getSetting('plex.token'))
+			setSetting('plex.client_id', addon(modulename).getSetting('plex.client_id'))
+			setSetting('plex.device_id', addon(modulename).getSetting('plex.device_id'))
+			setSetting('gdrive.cloudflare_url', addon(modulename).getSetting('gdrive.cloudflare_url'))
+
 		if setting('umbrella.colorSecond') == 'false':
 			setSetting('highlight.color', 'FFFFFF33')
 			setSetting('highlight.color.display', '[COLOR=FFFFFF33]FFFFFF33[/COLOR]')
@@ -649,6 +662,10 @@ def syncAccounts():
 			setSetting('sources.filepursuit.color', 'FF00CC29')
 			setSetting('sources.filepursuit.color.display', '[COLOR=FF00CC29]FF00CC29[/COLOR]')
 			setSetting('umbrella.colorSecond', 'true')
+		if setting('umbrella.externalWarning') != 'true':
+			setSetting('umbrella.externalWarning', 'true')
+			from resources.help import help
+			help.get('externalProviders')
 		if setting('context.useUmbrellaContext') == 'true':
 			homeWindow.setProperty('context.umbrella.showUmbrella', '[B][COLOR '+setting('highlight.color')+']Umbrella[/COLOR][/B] - ')
 		else:
@@ -697,5 +714,9 @@ def setContextColors():
 		from resources.lib.modules import log_utils
 		log_utils.error()
 
+def checkModules():
+	if setting('provider.external.enabled') == 'false':
+		setSetting('external_provider.name', '')
+		setSetting('external_provider.module', '')
 
 

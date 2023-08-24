@@ -1447,8 +1447,10 @@ class Movies:
 								sameGenreMoviesStr += '"mpaa":"'+ dick[10] +'",'
 								sameGenreMoviesStr += '"set":"'+ dick[11] +'",'
 								joker = dick[12].split(",")
-								joker = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, joker)))
-								sameGenreMoviesStr += '"studio":['+ joker +'],'
+								mrfreeze = []
+								for x in joker: x = mrfreeze.append(x.replace('"',""))
+								mrfreeze = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, mrfreeze)))
+								sameGenreMoviesStr += '"studio":['+ mrfreeze +'],'
 								castor = dick[13].split(",")
 								for count, dicks in enumerate(castor):
 									castor[count] = {"name": str(dicks).replace("'",'').replace('"','')}
@@ -1511,8 +1513,10 @@ class Movies:
 								sameGenreMoviesStr += '"mpaa":"'+ dick[10] +'",'
 								sameGenreMoviesStr += '"set":"'+ dick[11] +'",'
 								joker = dick[12].split(",")
-								joker = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, joker)))
-								sameGenreMoviesStr += '"studio":['+ joker +'],'
+								mrfreeze = []
+								for x in joker: x = mrfreeze.append(x.replace('"',""))
+								mrfreeze = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, mrfreeze)))
+								sameGenreMoviesStr += '"studio":['+ mrfreeze +'],'
 								castor = dick[13].split(",")
 								for count, dicks in enumerate(castor):
 									castor[count] = {"name": str(dicks).replace("'",'').replace('"','')}

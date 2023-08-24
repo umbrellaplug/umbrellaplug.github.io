@@ -148,10 +148,20 @@ class Player(xbmc.Player):
 			else:
 				control.resolve(int(argv[1]), True, item)
 				if self.media_type == 'episode' and self.multi_season and self.playlist_built == False:
-					if int(control.playlist.size()) <= int(meta.get('seasons')[int(season)].get('episode_count')):
-						log_utils.log('Building Season Playlist on resolve playlist_built false.', 1)
-						self.buildSeasonPlaylist()
-						self.playlist_built = True
+					try:
+						episodeCount = int(meta.get('seasons')[int(season)].get('episode_count'))
+					except:
+						#failed to get episode counts for season. try another method
+						log_utils.log('Failed to find episode counts for playlist construction. trying backup check.', 1)
+						try:
+							episodeCount = int(meta.get('counts')[self.season])
+						except:
+							episodeCount = None
+					if episodeCount:
+						if int(control.playlist.size()) <= episodeCount:
+							log_utils.log('Building Season Playlist on resolve playlist_built false.', 1)
+							self.buildSeasonPlaylist()
+							self.playlist_built = True
 				if self.debuglog:
 					log_utils.log('Played file as resolve.', level=log_utils.LOGDEBUG)
 			homeWindow.setProperty('script.trakt.ids', jsdumps(self.ids))

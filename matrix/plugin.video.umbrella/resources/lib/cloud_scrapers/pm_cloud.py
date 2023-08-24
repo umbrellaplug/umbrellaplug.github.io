@@ -9,7 +9,7 @@ from resources.lib.cloud_scrapers import cloud_utils
 from resources.lib.debrid.premiumize import Premiumize
 from resources.lib.modules.control import setting as getSetting
 from resources.lib.modules.source_utils import supported_video_extensions
-from cocoscrapers.modules import source_utils as fs_utils
+from resources.lib.modules import scrape_utils as sc_utils
 
 
 class source:
@@ -80,10 +80,10 @@ class source:
 					url_id = item.get('id', '')
 					size =  item.get('size', '')
 
-				name_info = fs_utils.info_from_name(name, title, self.year, hdlr, episode_title)
-				quality, info = fs_utils.get_release_quality(name_info, name)
+				name_info = sc_utils.info_from_name(name, title, self.year, hdlr, episode_title)
+				quality, info = sc_utils.get_release_quality(name_info, name)
 				try:
-					dsize, isize = fs_utils.convert_size(size, to='GB')
+					dsize, isize = sc_utils.convert_size(size, to='GB')
 					info.insert(0, isize)
 				except: dsize = 0
 				if is_m2ts: info.append('M2TS')

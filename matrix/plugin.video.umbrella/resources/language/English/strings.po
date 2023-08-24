@@ -1795,11 +1795,11 @@ msgid "[B]My Accounts - Show Changelog[/B]"
 msgstr ""
 
 msgctxt "#32530"
-msgid "[B]umbrellascrapers - View Log File[/B]"
+msgid ""
 msgstr ""
 
 msgctxt "#32531"
-msgid "[B]umbrellascrapers - Show Changelog[/B]"
+msgid ""
 msgstr ""
 
 msgctxt "#32532"
@@ -2136,7 +2136,7 @@ msgid "Include Special Episodes (Season 0)"
 msgstr ""
 
 msgctxt "#32651"
-msgid "[B]Coco Scrapers[/B] Settings"
+msgid ""
 msgstr ""
 
 msgctxt "#32652"
@@ -3412,7 +3412,7 @@ msgid "Premiumize Authorization Revoked"
 msgstr ""
 
 msgctxt "#40134"
-msgid "Manage in CocoScrapers"
+msgid ""
 msgstr ""
 
 msgctxt "#40135"
@@ -3656,7 +3656,7 @@ msgid "Download settings category for subtitles. Automatic subtitle settings."
 msgstr ""
 
 msgctxt "#40195"
-msgid "Provider settings category for Providers. These settings need to be set and changed within CocoScrapers."
+msgid "Provider settings category for Providers."
 msgstr ""
 
 msgctxt "#40196"
@@ -4308,7 +4308,7 @@ msgid "Clear Furk API"
 msgstr ""
 
 msgctxt "#40362"
-msgid "Accounts(Non-Debrid)"
+msgid "Providers"
 msgstr ""
 
 msgctxt "#40363"
@@ -4713,4 +4713,44 @@ msgstr ""
 
 msgctxt "#40442"
 msgid "For situations where the subtitles go till the very end but you want a backup time in seconds for playnext popup. Default is 20."
+msgstr ""
+
+msgctxt "#40443"
+msgid "Hide episode counts on unwatched and fully watched"
+msgstr ""
+
+msgctxt "#40444"
+msgid "Enable External Providers"
+msgstr ""
+
+msgctxt "#40445"
+msgid "External Provider:"
+msgstr ""
+
+msgctxt "#40446"
+msgid "%s is not a valid external module selection. Please choose a different module."
+msgstr ""
+
+msgctxt "#40447"
+msgid "External Providers are enabled but no provider was found."
+msgstr ""
+
+msgctxt "#40448"
+msgid "Error setting external providers."
+msgstr ""
+
+msgctxt "#40449"
+msgid "External module set successfully."
+msgstr ""
+
+msgctxt "#40450"
+msgid "External Providers"
+msgstr ""
+
+msgctxt "#40451"
+msgid "[COLOR FFA0C12C] -- External Modules Help --[/COLOR]"
+msgstr ""
+
+msgctxt "#40452"
+msgid "[B]SETTINGS[/B] : Providers"
 msgstr ""

@@ -1,8 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.28">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.29">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
-		<import addon="script.module.cocoscrapers" version="1.0.12" />
 		<import addon="script.module.requests" />
 		<import addon="script.module.beautifulsoup4" />
 		<import addon="script.module.metahandler" version="5.0.1a" optional="true" />
@@ -157,19 +156,16 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.6.28 - August 14th, 2023[/B]
---[Fix] Added additional check for authorization id to avoid blank trakt auth ids causing mark playback fail.
---[Fix] Added fallback for playnext subtitles for a minimum in seconds setting. default is 20.
---[Fix] Re-Worked playlist construction with playnext.
---[Fix] Custom color view created to allow for color selection across different versions of kodi and skins.
---[Fix] Playnext AH2 skin Still Waiting fixed.
---[Fix] Playnext AH2 skin with Arctic Fuse skin issue fixed.
---[Fix] Fixed colors not working for providers on source selection.
---[Enhancement] All color settings re-worked to make loading faster.
---[Enhancement] Removed all calls to getColor, getHighlightColor, and getSourceHighlightColor and made settings accessed directly.
---[Enhancement] Removed all places settings were accessed more than once in code and moved to global setting to increase speed.
---[Enhancement] Playnext Arctic Fuse skin added.
---[Enhancement] Multiple seasons added for playnext.
+[B]Update - v6.6.29 - August 24th, 2023[/B]
+--[IMPORTANT] Please read the popup information about external providers.
+--[Enhancement] Added ability to use external providers and removed requirements for scraper packages.
+--[Enhancement] Added a setting to allow for hiding episode counts on unwatched and fully watched shows.
+--[Enhancement] Added support for Trakt reset watching.
+--[Enhancement] Changed RD Cloud Scrape to use both downloads and torrents for scraping.
+--[Cosmetic] Updated resolving windows to use different text and size artwork. Removed Umbrella icon from left corner due to title overlaps.
+--[Fix] Fixed bug where pre_resolve was not cleared on rescrape.
+--[Fix] Corrected error causing some items reset in trakt not to have correct counts on tv show and season level.
+--[Fix] Change to catch quotes in studio names for library cache.
 		</news>
 	</extension>
 
@@ -274,22 +270,17 @@
         <disclaimer lang="zh_CN">此插件未被谷歌认可</disclaimer>
         <disclaimer lang="zh_TW">此附加元件未由Google支持</disclaimer>
     </extension>
-</addon><addon id="repository.umbrella" name="Umbrella Repository" version="2.2.3" provider-name="Umbrella">
+</addon><addon id="repository.umbrella" name="Umbrella Repository" version="2.2.4" provider-name="Umbrella">
     <extension point="xbmc.addon.repository" name="Umbrella Repository">
         <dir minversion="18.9.701" maxversion="19.5">
             <info compressed="false">https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/zips/addons.xml</info>
             <checksum>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/zips/addons.xml.md5</checksum>
             <datadir zip="true">https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/zips/</datadir>
         </dir>
-	<dir minversion="19.8.0">
+	    <dir minversion="19.8.0">
             <info compressed="false">https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/nexus/zips/addons.xml</info>
             <checksum>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/nexus/zips/addons.xml.md5</checksum>
             <datadir zip="true">https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/nexus/zips/</datadir>
-        </dir>
-        <dir>
-            <info compressed="false">https://raw.githubusercontent.com/CocoJoe2411/repository.cocoscrapers/master/zips/addons.xml</info>
-            <checksum>https://raw.githubusercontent.com/CocoJoe2411/repository.cocoscrapers/master/zips/addons.xml.md5</checksum>
-            <datadir zip="true">https://raw.githubusercontent.com/CocoJoe2411/repository.cocoscrapers/master/zips/</datadir>
         </dir>
     </extension>
     <extension point="xbmc.addon.metadata">

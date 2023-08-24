@@ -17,6 +17,7 @@ import urllib.request as urllib2
 from urllib.parse import quote_plus, urlencode, parse_qs, urlparse, urljoin
 from urllib.response import addinfourl
 from urllib.error import HTTPError
+from resources.lib.modules.control import setting as getSetting
 
 
 def request(url, close=True, redirect=True, error=False, proxy=None, post=None, headers=None, mobile=False, XHR=False, limit=None,
@@ -123,7 +124,11 @@ def request(url, close=True, redirect=True, error=False, proxy=None, post=None, 
 						from resources.lib.modules import log_utils
 						log_utils.log('client module calling cfscrape: url=%s' % url, level=log_utils.LOGDEBUG)
 						try:
-							from cocoscrapers.modules import cfscrape
+							from resources.lib.modules import control
+							from sys import path
+							path.append(control.transPath('special://home/addons/%s/lib' % getSetting('external_provider.module', '')))
+							from importlib import import_module
+							cfscrape = import_module('%s.modules.cfscrape' % getSetting('external_provider.name'))
 							if isinstance(post, dict): data = post
 							else:
 								try: data = parse_qs(post)

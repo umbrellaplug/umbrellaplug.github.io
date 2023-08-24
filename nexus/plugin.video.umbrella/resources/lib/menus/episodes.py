@@ -348,7 +348,7 @@ class Episodes:
 				try: values['duration'] = (int(seasonEpisodes.get('episodes')[(int(item.get('episode'))-1)].get('duration'))*60) # showSeasons already converted to seconds
 				except: values['duration'] = ''
 				values['mpaa'] = showSeasons.get('mpaa')
-				values['status'] = showSeasons.get('status')
+				values['status'] = showSeasons.get('status','')
 				values['unaired'] = ''
 				try:
 					if values['status'].lower() == 'ended': pass

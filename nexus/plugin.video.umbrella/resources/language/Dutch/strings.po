@@ -1795,12 +1795,12 @@ msgid "[B]My Accounts - Show Changelog[/B]"
 msgstr "[B]Mijn accounts - Changelog weergeven[/B]"
 
 msgctxt "#32530"
-msgid "[B]umbrellascrapers - View Log File[/B]"
-msgstr "[B]CocoScrapers - Logbestand bekijken[/B]"
+msgid ""
+msgstr ""
 
 msgctxt "#32531"
-msgid "[B]umbrellascrapers - Show Changelog[/B]"
-msgstr "[B]CocoScrapers - Changelog weergeven[/B]"
+msgid ""
+msgstr ""
 
 msgctxt "#32532"
 msgid "[B]View Kodi Log File[/B]"
@@ -3403,8 +3403,8 @@ msgid "Premiumize Authorization Revoked"
 msgstr "Premiumize autorisatie ingetrokken"
 
 msgctxt "#40134"
-msgid "Manage in CocoScrapers"
-msgstr "Beheer in CocoScrapers"
+msgid ""
+msgstr ""
 
 msgctxt "#40135"
 msgid "Do not show removed duplicates popup"
@@ -3647,8 +3647,8 @@ msgid "Download settings category for subtitles. Automatic subtitle settings."
 msgstr "Download instellingen categorie voor ondertitels.  Automatische ondertitelinstellingen."
 
 msgctxt "#40195"
-msgid "Provider settings category for Providers. These settings need to be set and changed within CocoScrapers."
-msgstr "Categorie met providerinstellingen voor providers.  Deze instellingen moeten binnen CocoScrapers worden ingesteld en gewijzigd."
+msgid "Provider settings category for Providers."
+msgstr "Categorie met providerinstellingen voor providers."
 
 msgctxt "#40196"
 msgid "Plexshare"

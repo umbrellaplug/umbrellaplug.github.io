@@ -37,6 +37,7 @@
                 <aligny>top</aligny>
                 <aspectratio aligny="top">keep</aspectratio>
                 <texture colordiffuse="FFCCCCCC">common/icon.png</texture>
+                <visible>String.IsEqual(Window().Property(umbrella.qr),1)+String.IsEqual(Window().Property(umbrella.artwork),0)</visible>
             </control>
             <control type="group">
                 <left>5</left>
@@ -48,6 +49,14 @@
                     <height>250</height>
                     <aspectratio aligny="top">stretch</aspectratio>
                     <visible>String.IsEqual(Window().Property(umbrella.qr),1)</visible>
+                </control>
+                <control type="image" id="201">
+                    <left>640</left>
+                    <top>55</top>
+                    <width>250</width>
+                    <height>350</height>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>String.IsEqual(Window().Property(umbrella.artwork),1)</visible>
                 </control>
                 <control type="image" id="2020">
                     <left>640</left>

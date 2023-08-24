@@ -1260,6 +1260,7 @@
 		</category>
 		<category id="tv shows" label="32002" help="40185">
 			<group id="1">
+				
 				<setting id="flatten.tvshows" type="boolean" label="32317" help="">
 					<level>0</level>
 					<default>false</default>
@@ -1336,6 +1337,11 @@
 					<control type="toggle"/>
 				</setting>
 				<setting id="tvshows.progress.watched" type="boolean" label="40432" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="tvshows.episodecount" type="boolean" label="40443" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
@@ -4086,8 +4092,62 @@
 				</setting>
 			</group>
 		</category>
-		<category id="Accounts(Other)" label="40362" help="40191">
-			<group id="1" label="40196">
+		<category id="Providers" label="40362" help="40191">
+			<group id="1" label="40450">
+				<setting id="provider.external.enabled" type="boolean" label="40444" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="external_provider.name" type="string" label="40445" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+					</control>
+				</setting>
+				<setting id="external_provider.module" type="string" label="40445" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="provider.external.enabled">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_umbrellaExternalProvider)</data>
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="showHelpExternal" type="action" label="40451" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=externalProviders)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="realdebridtoken"/>
+								<condition operator="is" setting="realdebrid.enable">true</condition>
+								<condition operator="is" setting="rd_cloud.enabled">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action"/>
+				</setting>
+			</group>
+			<group id="2" label="40196">
 				<setting id="plex.enable" type="boolean" label="32081" help="">
 					<level>0</level>
 					<default>true</default>
@@ -4178,23 +4238,8 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="cocoScraperSettingsPlex" type="action" label="40134" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_cocoScrapersSettings&amp;query=Plex)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">true</condition>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action">
-						<close>true</close>
-					</control>
-				</setting>
 			</group>
-			<group id="2" label="32327">
+			<group id="3" label="32327">
 				<setting id="easynews.enable" type="boolean" label="32081" help="">
 					<level>0</level>
 					<default>true</default>
@@ -4271,23 +4316,8 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="cocoScraperSettingsEasyNews" type="action" label="40134" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_cocoScrapersSettings&amp;query=EasyNews)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">true</condition>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action">
-						<close>true</close>
-					</control>
-				</setting>
 			</group>
-			<group id="3" label="40203">
+			<group id="4" label="40203">
 				<setting id="filepursuit.enable" type="boolean" label="32081" help="">
 					<level>0</level>
 					<default>true</default>
@@ -4339,23 +4369,8 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="cocoScraperSettingsFilePursuit" type="action" label="40134" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_cocoScrapersSettings&amp;query=FilePursuit)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">true</condition>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action">
-						<close>true</close>
-					</control>
-				</setting>
 			</group>
-			<group id="4" label="40205">
+			<group id="5" label="40205">
 				<setting id="gdrive.enable" type="boolean" label="32081" help="">
 					<level>0</level>
 					<default>true</default>
@@ -4405,21 +4420,6 @@
 					</dependencies>
 					<control type="slider" format="integer">
 						<popup>false</popup>
-					</control>
-				</setting>
-				<setting id="cocoScraperSettingsGDrive" type="action" label="40134" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_cocoScrapersSettings)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">true</condition>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action">
-						<close>true</close>
 					</control>
 				</setting>
 			</group>
@@ -5719,6 +5719,16 @@
 					<control type="toggle"/>
 				</setting>
 				<setting id="umbrella.colorSecond" type="boolean" label="CS" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="umbrella.externalWarning" type="boolean" label="ew" help="">
 					<level>0</level>
 					<default>false</default>
 					<dependencies>

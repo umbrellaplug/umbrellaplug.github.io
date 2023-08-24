@@ -133,6 +133,7 @@ def getEpisodeOverlay(indicators, imdb, tvdb, season, episode):
 def getShowCount(indicators, imdb, tvdb): # ID's currently not used. totals from indicators
 	try:
 		if traktIndicators:
+			
 			if not indicators: return None
 			result = {'total': 0, 'watched': 0, 'unwatched': 0}
 			for key, value in iter(indicators.items()):

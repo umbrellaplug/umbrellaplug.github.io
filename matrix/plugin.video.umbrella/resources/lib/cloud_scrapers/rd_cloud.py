@@ -10,7 +10,7 @@ from resources.lib.database import cache
 from resources.lib.debrid.realdebrid import RealDebrid
 from resources.lib.modules.control import setting as getSetting
 from resources.lib.modules.source_utils import supported_video_extensions
-from cocoscrapers.modules import source_utils as fs_utils
+from resources.lib.modules import scrape_utils as sc_utils
 
 
 class source:
@@ -35,31 +35,37 @@ class source:
 			self.episode = str(data['episode']) if 'tvshowtitle' in data else None
 			query_list = self.episode_query_list() if 'tvshowtitle' in data else self.year_query_list()
 			# log_utils.log('query_list = %s' % query_list)
+			
 			cloud_folders = RealDebrid().user_torrents()
+			cloud_folders2 = RealDebrid().user_downloads()
 			if not cloud_folders: return sources
 			cloud_folders = [i for i in cloud_folders if i['status'] == 'downloaded']
+			for x in cloud_folders2: cloud_folders.append(x)
 			if not cloud_folders: return sources
 			ignoreM2ts = getSetting('rd_cloud.ignore.m2ts') == 'true'
 			extras_filter = cloud_utils.extras_filter()
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error('RD_CLOUD: ')
-			return sources
-
+			return sources		
 		for folder in cloud_folders:
 			is_m2ts = False
 			try:
 				folder_name = folder.get('filename', '')
 				if not cloud_utils.cloud_check_title(title, aliases, folder_name): continue
 				id = folder.get('id', '')
-				torrent_info = RealDebrid().torrent_info(id)
-				folder_files = torrent_info['files']
-				folder_files = [i for i in folder_files if i['selected'] == 1]
+				if folder.get('status', '') == '':
+					torrent_info = RealDebrid().download_info(id)
+					folder_files = [{'id': 1, 'path': '/'+folder.get('filename'), 'bytes': folder.get('filesize'), 'download':folder.get('download'), 'selected': 1}]
+				else:
+					torrent_info = RealDebrid().torrent_info(id)
+					folder_files = torrent_info['files']
+					folder_files = [i for i in folder_files if i['selected'] == 1]
+				
 			except:
 				from resources.lib.modules import log_utils
 				log_utils.error('RD_CLOUD: ')
 				return sources
-
 			for file in folder_files:
 				try:
 					name = file.get('path').lstrip('/')
@@ -76,8 +82,12 @@ class source:
 						largest = sorted(folder_files, key=lambda k: k['bytes'], reverse=True)[0]
 						index_pos = folder_files.index(largest)
 						size = largest['bytes']
-						try: link = torrent_info['links'][index_pos]
-						except: link = torrent_info['links'][0]
+						if folder.get('status', '') == '':
+							try: link = torrent_info['link']
+							except: link = torrent_info['download']
+						else:
+							try: link = torrent_info['links'][index_pos]
+							except: link = torrent_info['links'][0]
 					else:
 						if all(not bool(re.search(i, rt)) for i in query_list):
 							if 'tvshowtitle' in data:
@@ -94,25 +104,33 @@ class source:
 						name = name.split('/')
 						name = name[len(name)-1]
 						index_pos = folder_files.index(file)
-						link = torrent_info['links'][index_pos]
-						size = file.get('bytes', '')
+						if folder.get('status', '') == '':
+							link = file.get('download')
+							size = file.get('bytes', '')
+						else:
+							link = torrent_info['links'][index_pos]
+							size = file.get('bytes', '')
+						
 
-					name_info = fs_utils.info_from_name(name, title, self.year, hdlr, episode_title)
-					hash = folder.get('hash', '')
-					quality, info = fs_utils.get_release_quality(name_info, name)
+					name_info = sc_utils.info_from_name(name, title, self.year, hdlr, episode_title)
+					if folder.get('status', '') == '':
+						hash = 'No Hash'
+					else:
+						hash = folder.get('hash', '')
+					quality, info = sc_utils.get_release_quality(name_info, name)
 					try:
-						dsize, isize = fs_utils.convert_size(size, to='GB')
+						dsize, isize = sc_utils.convert_size(size, to='GB')
 						info.insert(0, isize)
 					except: dsize = 0
 					if is_m2ts: info.append('M2TS')
 					info = ' / '.join(info)
-
 					sources.append({'provider': 'rd_cloud', 'source': 'cloud', 'debrid': 'Real-Debrid', 'seeders': '', 'hash': hash, 'name': name, 'name_info': name_info,
 												'quality': quality, 'language': 'en', 'url': link, 'info': info, 'direct': True, 'debridonly': True, 'size': dsize})
 				except:
 					from resources.lib.modules import log_utils
 					log_utils.error('RD_CLOUD: ')
 					return sources
+		sources = [i for n, i in enumerate(sources) if i['name'] not in [y['name'] for y in sources[n + 1:]]]
 		return sources
 
 	def year_query_list(self):

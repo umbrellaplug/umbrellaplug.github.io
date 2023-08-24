@@ -3,8 +3,13 @@
 Welcome to the umbrellaplug.github.io wiki!
 
 Compatible with Kodi 19 and 20.
+Kodi 21 (Omega) is still in Alpha and not currently supported.
 
-~~Clone~~ Fork of Venom
+Video Addon for Kodi
+
+## Current Versions:
+Umbrella - 6.6.29
+Umbrella Repo - 2.2.4
 
 ## Installation Instructions:
 From Kodi:
@@ -38,7 +43,12 @@ Currently Supported Debrid Providers:
 **The plugin will not work without at least 1 debrid account**
 
 ## Issues
-Issues are closed currently. Ask for help on Reddit.
+Please be respectful.
+If opening an issue please verify there is not already an open issue for the same thing.
+**Please** post a log with your issue. The more information the better.
+**Do not open issues for external providers**
+Please do not respond "well this plugin/addon does this". That is insulting. I will immediately close your issue. You can use you that plugin
+
 
 ## Logs
 If you are reporting an issue, logs are going to be requested. Save yourself and me some time.
@@ -55,14 +65,9 @@ Testing is done using a second repo. Test versions are unstable and move quickly
 
 ## FAQ
 
-**Q:** Why do you use the same scraper package as other addons?
+**Q:** After setting up, I'm getting "No Sources Found"
 
-**A:** Scrapers are a project on their own. I do not wish to develop scrapers. I have partnered with another developer to use scrapers provided by an outside source.
-
-
-**Q:** Why should I use this instead of Venom?
-
-**A:** Venom has been retired. Respect the developer and let it go. 123Venom was an amazing developer, I chose this addon to clone because I used it and it worked well. If you don't want to use this plugin, don't. Please don't waste my time or yours with comparisons to Venom, I won't waste my time justifying why you should use an addon I maintain for free.
+**A:** Umbrella only searches your cloud from Providers you have entered. For additional sources, external providers can be installed. Umbrella does not offer support for any external providers.
 
 
 **Q:** Do you take feature requests?

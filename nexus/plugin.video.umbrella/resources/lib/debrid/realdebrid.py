@@ -26,6 +26,7 @@ credentials_url = 'device/credentials?%s'
 downloads_delete_url = 'downloads/delete'
 add_magnet_url = 'torrents/addMagnet'
 torrents_info_url = 'torrents/info'
+downloads_info_url = 'downloads/info'
 select_files_url = 'torrents/selectFiles'
 torrents_delete_url = 'torrents/delete'
 check_cache_url = 'torrents/instantAvailability'
@@ -197,6 +198,13 @@ class RealDebrid:
 			url = 'torrents'
 			return self._get(url)
 		except: log_utils.error()
+
+	def user_downloads(self):
+		try:
+			url = 'downloads'
+			return self._get(url)
+		except: log_utils.error()
+
 
 	def user_torrents_to_listItem(self):
 		try:
@@ -469,8 +477,11 @@ class RealDebrid:
 				file_url = self.unrestrict_link(rd_link)
 				if file_url.endswith('rar'):
 					file_url, failed_reason = None, 'RD returned unsupported .rar file --> %s' % file_url
-				if not any(file_url.lower().endswith(x) for x in extensions):
-					file_url, failed_reason = None, 'RD returned unsupported file extension --> %s' % file_url
+				try:
+					if not any(file_url.lower().endswith(x) for x in extensions):
+						file_url, failed_reason = None, 'RD returned unsupported file extension --> %s' % file_url
+				except:
+						file_url, failed_reason = None, 'RD returned unsupported file extension or error getting file extension.' 
 				if not self.store_to_cloud: self.delete_torrent(torrent_id)
 			if not file_url:
 				log_utils.log('Real-Debrid: FAILED TO RESOLVE MAGNET "%s" : (%s)' % (magnet_url, failed_reason), __name__, log_utils.LOGWARNING)
@@ -644,6 +655,12 @@ class RealDebrid:
 			url = torrents_info_url + "/%s" % torrent_id
 			return self._get(url)
 		except: log_utils.error('Real-Debrid Error: TORRENT INFO %s : ' % torrent_id)
+
+	def download_info(self, download_id):
+		try:
+			url = downloads_info_url + "/%s" % download_id
+			return self._get(url)
+		except: log_utils.error('Real-Debrid Error: Download INFO %s : ' % download_id)
 
 	def add_magnet(self, magnet):
 		try:

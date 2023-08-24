@@ -4505,7 +4505,7 @@ msgid "Premiumize Authorization Revoked"
 msgstr ""
 
 msgctxt "#40134"
-msgid "Manage in CocoScrapers"
+msgid ""
 msgstr ""
 
 msgctxt "#40135"
@@ -4749,7 +4749,7 @@ msgid "Download settings category for subtitles. Automatic subtitle settings."
 msgstr ""
 
 msgctxt "#40195"
-msgid "Provider settings category for Providers. These settings need to be set and changed within CocoScrapers."
+msgid "Provider settings category for Providers."
 msgstr ""
 
 msgctxt "#40196"

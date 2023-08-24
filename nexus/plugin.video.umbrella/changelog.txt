@@ -1,3 +1,14 @@
+[B]Update - v6.6.29 - August 24th, 2023[/B]
+--[IMPORTANT] Please read the popup information about external providers.
+--[Enhancement] Added ability to use external providers and removed requirements for scraper packages.
+--[Enhancement] Added a setting to allow for hiding episode counts on unwatched and fully watched shows.
+--[Enhancement] Added support for Trakt reset watching.
+--[Enhancement] Changed RD Cloud Scrape to use both downloads and torrents for scraping.
+--[Cosmetic] Updated resolving windows to use different text and size artwork. Removed Umbrella icon from left corner due to title overlaps.
+--[Fix] Fixed bug where pre_resolve was not cleared on rescrape.
+--[Fix] Corrected error causing some items reset in trakt not to have correct counts on tv show and season level.
+--[Fix] Change to catch quotes in studio names for library cache.
+
 [B]Update - v6.6.28 - August 13th, 2023[/B]
 --[Fix] Added additional check for authorization id to avoid blank trakt auth ids causing mark playback fail.
 --[Fix] Added fallback for playnext subtitles for a minimum in seconds setting. default is 20.

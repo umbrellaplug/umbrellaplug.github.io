@@ -947,7 +947,6 @@ def cachesyncTV(imdb, tvdb): # sync full watched shows then sync imdb_id "season
 	except: log_utils.error()
 
 def cachesyncTVShows(timeout=0):
-
 	try:
 		indicators = traktsync.get(syncTVShows, timeout)
 		#if getSetting('sync.watched.library') == 'true':
@@ -962,49 +961,52 @@ def syncTVShows(): # sync all watched shows ex. [({'imdb': 'tt12571834', 'tvdb':
 		if not getTraktCredentialsInfo(): return
 		indicators = getTraktAsJson('/users/me/watched/shows?extended=full')
 		if not indicators: return None
+		log_utils.log(str(indicators),1)
 # /shows/ID/progress/watched  endpoint only accepts imdb or trakt ID so write all ID's
 		indicators = [({'imdb': i['show']['ids']['imdb'], 'tvdb': str(i['show']['ids']['tvdb']), 'tmdb': str(i['show']['ids']['tmdb']), 'trakt': str(i['show']['ids']['trakt'])}, \
-							i['show']['aired_episodes'], sum([[(s['number'], e['number']) for e in s['episodes']] for s in i['seasons']], [])) for i in indicators]
+											i['show']['aired_episodes'], sum([[(s['number'], e['number']) for e in s['episodes'] if i['reset_at'] is None or e['last_watched_at'] > i['reset_at']] for s in i['seasons']], [])) for i in indicators]
+		# indicators = [({'imdb': i['show']['ids']['imdb'], 'tvdb': str(i['show']['ids']['tvdb']), 'tmdb': str(i['show']['ids']['tmdb']), 'trakt': str(i['show']['ids']['trakt'])}, \
+		# 									i['show']['aired_episodes'], sum([[(s['number'], e['number']) for e in s['episodes']] for s in i['seasons']], [])) for i in indicators]
 		indicators = [(i[0], int(i[1]), i[2]) for i in indicators]
 		return indicators
 	except: log_utils.error()
 
-def syncTVShowsLibrary(indicators):
-	if indicators:
-		try:
-			libShows = control.jsonrpc('{"jsonrpc": "2.0","method":"VideoLibrary.GetTVShows","params":{"properties": ["title", "year", "lastplayed", "playcount", "uniqueid"],"sort": {"order": "ascending", "method": "title"}},"id":1}')
-			libShows = jsloads(libShows).get('result').get('tvshows')
-		except:
-			libShows = []
-		episodesMarked = []
-		removeBatch2 = []
-		for show in libShows:
-			if str(show.get('uniqueid').get('imdb')) not in str(indicators):
-				eps = control.jsonrpc('{"jsonrpc":"2.0","id":1,"method":"VideoLibrary.GetEpisodes","params":{"tvshowid":%s, "properties": ["season", "episode", "playcount"]}}' % show.get('tvshowid'))
-				eps = jsloads(eps).get('result').get('episodes')
-				for episodes in eps:
+# def syncTVShowsLibrary(indicators):
+# 	if indicators:
+# 		try:
+# 			libShows = control.jsonrpc('{"jsonrpc": "2.0","method":"VideoLibrary.GetTVShows","params":{"properties": ["title", "year", "lastplayed", "playcount", "uniqueid"],"sort": {"order": "ascending", "method": "title"}},"id":1}')
+# 			libShows = jsloads(libShows).get('result').get('tvshows')
+# 		except:
+# 			libShows = []
+# 		episodesMarked = []
+# 		removeBatch2 = []
+# 		for show in libShows:
+# 			if str(show.get('uniqueid').get('imdb')) not in str(indicators):
+# 				eps = control.jsonrpc('{"jsonrpc":"2.0","id":1,"method":"VideoLibrary.GetEpisodes","params":{"tvshowid":%s, "properties": ["season", "episode", "playcount"]}}' % show.get('tvshowid'))
+# 				eps = jsloads(eps).get('result').get('episodes')
+# 				for episodes in eps:
 				
-					if episodes.get('playcount') == 1:
-						removeBatch2.append(jsloads(('{"jsonrpc":"2.0","method":"VideoLibrary.SetEpisodeDetails","params":{"episodeid":%s, "playcount":0}, "id":3}' % episodes.get('episodeid'))))
-						log_utils.log('Show Marked for Playcount Removal. Show: %s' % show.get('label'),level=log_utils.LOGDEBUG)
-			for indicator in indicators:
-				if str(show.get('uniqueid').get('imdb')) == str(indicator[0]['imdb']): #compare imdb ids in library with imdb ids in indicators
-					epsWatched = indicator[2]
-					eps = control.jsonrpc('{"jsonrpc":"2.0","id":1,"method":"VideoLibrary.GetEpisodes","params":{"tvshowid":%s, "properties": ["season", "episode", "playcount"]}}' % show.get('tvshowid'))
-					eps = jsloads(eps).get('result').get('episodes')
-					for epis in eps:
-						if (epis.get('season'), epis.get('episode')) not in epsWatched:
-							if epis.get('playcount') == 1:
-								removeBatch2.append(jsloads(('{"jsonrpc":"2.0","method":"VideoLibrary.SetEpisodeDetails","params":{"episodeid":%s, "playcount":0}, "id":3}' % epis.get('episodeid'))))
-								log_utils.log('Marked for playcount removal show: %s season: %s episode: %s' % (show.get('label'), epis.get('season'),epis.get('episode')),level=log_utils.LOGDEBUG)
-						for ep in epsWatched:
-							if ep[0] == epis.get('season') and ep[1] == epis.get('episode'):
-								if epis.get('playcount') == 0:
-									episodesMarked.append(jsloads(('{"jsonrpc":"2.0","method":"VideoLibrary.SetEpisodeDetails","params":{"episodeid":%s, "playcount":1}, "id":2}' % epis.get('episodeid'))))
-									log_utils.log('Marked show: %s season: %s episode: %s' % (show.get('label'), epis.get('season'),epis.get('episode')),level=log_utils.LOGDEBUG)
-		if len(episodesMarked) > 0 or len(removeBatch2) > 0:
-			episodesMarked.extend(removeBatch2)
-			control.jsonrpc(jsdumps(episodesMarked))
+# 					if episodes.get('playcount') == 1:
+# 						removeBatch2.append(jsloads(('{"jsonrpc":"2.0","method":"VideoLibrary.SetEpisodeDetails","params":{"episodeid":%s, "playcount":0}, "id":3}' % episodes.get('episodeid'))))
+# 						log_utils.log('Show Marked for Playcount Removal. Show: %s' % show.get('label'),level=log_utils.LOGDEBUG)
+# 			for indicator in indicators:
+# 				if str(show.get('uniqueid').get('imdb')) == str(indicator[0]['imdb']): #compare imdb ids in library with imdb ids in indicators
+# 					epsWatched = indicator[2]
+# 					eps = control.jsonrpc('{"jsonrpc":"2.0","id":1,"method":"VideoLibrary.GetEpisodes","params":{"tvshowid":%s, "properties": ["season", "episode", "playcount"]}}' % show.get('tvshowid'))
+# 					eps = jsloads(eps).get('result').get('episodes')
+# 					for epis in eps:
+# 						if (epis.get('season'), epis.get('episode')) not in epsWatched:
+# 							if epis.get('playcount') == 1:
+# 								removeBatch2.append(jsloads(('{"jsonrpc":"2.0","method":"VideoLibrary.SetEpisodeDetails","params":{"episodeid":%s, "playcount":0}, "id":3}' % epis.get('episodeid'))))
+# 								log_utils.log('Marked for playcount removal show: %s season: %s episode: %s' % (show.get('label'), epis.get('season'),epis.get('episode')),level=log_utils.LOGDEBUG)
+# 						for ep in epsWatched:
+# 							if ep[0] == epis.get('season') and ep[1] == epis.get('episode'):
+# 								if epis.get('playcount') == 0:
+# 									episodesMarked.append(jsloads(('{"jsonrpc":"2.0","method":"VideoLibrary.SetEpisodeDetails","params":{"episodeid":%s, "playcount":1}, "id":2}' % epis.get('episodeid'))))
+# 									log_utils.log('Marked show: %s season: %s episode: %s' % (show.get('label'), epis.get('season'),epis.get('episode')),level=log_utils.LOGDEBUG)
+# 		if len(episodesMarked) > 0 or len(removeBatch2) > 0:
+# 			episodesMarked.extend(removeBatch2)
+# 			control.jsonrpc(jsdumps(episodesMarked))
 
 def cachesyncSeasons(imdb, tvdb, trakt=None, timeout=0):
 	try:
@@ -1033,8 +1035,25 @@ def syncSeasons(imdb, tvdb, trakt=None): # season indicators and counts for watc
 		else:
 			results = getTraktAsJson('/shows/%s/progress/watched?specials=false&hidden=false' % id, silent=True)
 		if not results: return
-		seasons = results['seasons']
 
+		seasons = [{'reset_at': results['reset_at']}, results['seasons']]
+		reset_at = seasons[0].get('reset_at','')
+		if reset_at:           #added to cover trakt reset watching
+			for x in seasons[1]:
+				episodesComplete = 0
+				for y in x['episodes']:
+					last_watched = y.get('last_watched_at', '')
+					if last_watched:
+						if last_watched < reset_at:
+							y['completed'] = False
+						else:
+							episodesComplete = episodesComplete + 1
+					else:
+						if last_watched:
+							episodesComplete = episodesComplete + 1
+				x['completed'] = episodesComplete
+
+		seasons = seasons[1]
 ###--- future-need tmdb_id passed now ---###
 		# next_episode = results['next_episode']
 		# # log_utils.log('next_episode=%s' % next_episode)
@@ -1044,7 +1063,8 @@ def syncSeasons(imdb, tvdb, trakt=None): # season indicators and counts for watc
 		# trakt = str(ids[0].get('trakt', '')) if ids[0].get('trakt') else ''
 		# traktsync.insert_nextEpisode(imdb, tvdb, tmdb, trakt, next_episode)
 #######
-
+		#indicators = [({'imdb': i['show']['ids']['imdb'], 'tvdb': str(i['show']['ids']['tvdb']), 'tmdb': str(i['show']['ids']['tmdb']), 'trakt': str(i['show']['ids']['trakt'])}, \
+											#i['show']['aired_episodes'], sum([[(s['number'], e['number']) for e in s['episodes'] if i['reset_at'] is None or e['last_watched_at'] > i['reset_at']] for s in i['seasons']], [])) for i in indicators]
 		indicators = [(i['number'], [x['completed'] for x in i['episodes']]) for i in seasons]
 		indicators = ['%01d' % int(i[0]) for i in indicators if False not in i[1]]
 		indicators_and_counts.append(indicators)

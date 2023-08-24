@@ -178,6 +178,7 @@ class ProgressUmbrella(BaseDialog):
         self.icon = kwargs.get('icon', addonIcon())
         self.heading = kwargs.get('heading', getLS(40414))
         self.qr = kwargs.get('qr')
+        self.artwork = kwargs.get('artwork')
         self.lightordark = getSetting('dialogs.lightordarkmode')
         self.buttonColor = getSetting('dialogs.button.color')
         self.customBackgroundColor = getSetting('dialogs.customcolor', 'FF000000')
@@ -207,6 +208,12 @@ class ProgressUmbrella(BaseDialog):
             self.setProperty('umbrella.qr','1')
         else:
             self.setProperty('umbrella.qr','0')
+        if self.artwork == 1:
+            self.setProperty('umbrella.qr','0')
+            self.setProperty('umbrella.artwork', '1')
+            self.getControl(201).setImage(self.icon)
+        else:
+            self.setProperty('umbrella.artwork', '0')
         self.setProperty('umbrella.buttonColor', self.buttonColor)
         if self.useCustomTitleColor:
             #need to use a custom titlebar color
@@ -259,5 +266,9 @@ class ProgressUmbrella(BaseDialog):
             self.setProperty('percent', str(percent))
             self.getControl(2001).setText(content)
             self.getControl(5000).setPercent(percent)
-            if icon: self.getControl(200).setImage(icon)
+            if icon:
+                if self.artwork == '1':
+                    self.getControl(201).setImage(icon)
+                else:
+                    self.geControl(200).setImage(icon)
         except: pass

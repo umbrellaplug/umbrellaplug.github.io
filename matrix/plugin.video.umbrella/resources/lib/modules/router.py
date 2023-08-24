@@ -736,6 +736,10 @@ def router(argv2):
 		elif action == 'tools_umbrellaProper':
 			from resources.lib.modules import tools
 			tools.nonsense()
+		elif action == 'tools_umbrellaExternalProvider':
+			from resources.lib.modules import tools
+			tools.external_providers()
+
 
 	####################################################
 	#---Play
