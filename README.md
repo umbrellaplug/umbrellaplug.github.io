@@ -5,7 +5,6 @@ Welcome to the umbrellaplug.github.io wiki!
 Compatible with Kodi 19 and 20.
 Kodi 21 (Omega) is still in Alpha and not currently supported.
 
-Video Addon for Kodi
 
 ## Current Versions:
 Umbrella - 6.6.29
@@ -72,7 +71,7 @@ Testing is done using a second repo. Test versions are unstable and move quickly
 
 **Q:** Do you take feature requests?
 
-**A:** Of course, open an issue. Use the feature request template.
+**A:** Open an issue, but please use the feature request template.
 
 
 **Q:** How do I contact you?
