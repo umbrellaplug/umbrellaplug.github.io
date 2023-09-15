@@ -49,9 +49,6 @@ Enable Logs: Go to Umbrella settings and select Debugging on the left hand side.
 Set your settings like this:
 ![Screen Sho](https://user-images.githubusercontent.com/107957815/177895894-eb3f68cb-cd83-4d05-b033-6588579f2ce5.png)
 
-## Test Versions
-Testing is done using a second repo. Test versions are unstable and move quickly. If you would like to test, let me know. Please do not download test versions of the plugin without knowing what is included. Some test builds could include extensive logging that is hard on your system. I would not advise anyone to download a test version without talking to me first.
-
 ## FAQ
 
 **Q:** After setting up, I'm getting "No Sources Found"
