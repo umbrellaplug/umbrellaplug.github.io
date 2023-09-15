@@ -42,22 +42,12 @@ Currently Supported Debrid Providers:
 **The plugin will not work without at least 1 debrid account**
 
 ## Issues
-Please be respectful.
-If opening an issue please verify there is not already an open issue for the same thing.
-**Please** post a log with your issue. The more information the better.
-**Do not open issues for external providers**
-Please do not respond "well this plugin/addon does this". That is insulting. I will immediately close your issue. You can use you that plugin
-
+**Issues are closed**  
 
 ## Logs
-If you are reporting an issue, logs are going to be requested. Save yourself and me some time.
 Enable Logs: Go to Umbrella settings and select Debugging on the left hand side.
 Set your settings like this:
 ![Screen Sho](https://user-images.githubusercontent.com/107957815/177895894-eb3f68cb-cd83-4d05-b033-6588579f2ce5.png)
-
-Set your debug settings, reproduce the issue, then go to Tools > Logging Tools > Umbrella - Upload log file to pastebin
-Attach the URL to the issue you open.
-If your logs are requested and you do not post them your issue will be closed without being looked at. I'm unable to resolve issues without knowing the problem and I **need** the logs to identify the issue.
 
 ## Test Versions
 Testing is done using a second repo. Test versions are unstable and move quickly. If you would like to test, let me know. Please do not download test versions of the plugin without knowing what is included. Some test builds could include extensive logging that is hard on your system. I would not advise anyone to download a test version without talking to me first.
@@ -71,12 +61,13 @@ Testing is done using a second repo. Test versions are unstable and move quickly
 
 **Q:** Do you take feature requests?
 
-**A:** Open an issue, but please use the feature request template.
+**A:** Not anymore.
 
 
 **Q:** How do I contact you?
 
-**A:** If you are reading this on GitHub you have found the best way to contact me already. Please open issues or feature requests here. Chat requests, direct messages, discord, reddit posts are not a great way to contact me and I do not always see these things. I will always see a GitHub issue.
+**A:** You don't.
+
 
 
 **Other Kodi Addons**
@@ -84,8 +75,5 @@ Testing is done using a second repo. Test versions are unstable and move quickly
 [Fen](https://github.com/Tikipeter/repository.tikipeter)
 
 [Seren](https://github.com/nixgates/)
-
-[Fen Clone: Ezra](https://github.com/Ezra-Hubbard/)
-
 
 [Setup Instructions](https://github.com/umbrellaplug/umbrellaplug.github.io/wiki#setup-instructions)
