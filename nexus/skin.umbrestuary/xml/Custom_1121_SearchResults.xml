@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window type="SearchResults" id="1121">
+	<defaultcontrol>2000</defaultcontrol>
+	<backgroundcolor>background</backgroundcolor>
+	<controls>
+		<include>DefaultBackground</include>
+		<control type="multiimage">
+			<depth>DepthBackground</depth>
+			<include>FullScreenDimensions</include>
+			<aspectratio>scale</aspectratio>
+			<fadetime>600</fadetime>
+			<animation effect="zoom" center="auto" end="102,102" time="0" condition="Integer.IsGreater(System.StereoscopicMode,0)">conditional</animation>
+			<animation effect="fade" start="0" end="100" time="400">WindowOpen</animation>
+			<animation effect="fade" start="100" end="0" time="300">WindowClose</animation>
+			<animation effect="fade" time="400">VisibleChange</animation>
+			<imagepath background="true" colordiffuse="bg_overlay">$VAR[HomeFanartVar]</imagepath>
+			<visible>!Player.HasMedia</visible>
+		</control>
+		<control type="group">
+			<animation effect="fade" start="100" end="0" time="200" tween="sine" condition="$EXP[infodialog_active]">Conditional</animation>
+			<!-- WIDGETS GROUP -->
+			<control type="group" id="2000">
+				<left>462</left>
+				<include>OpenClose_Right</include>
+				<!-- SEARCH RESULTS -->
+				<control type="group" id="27000">
+					<include content="Visible_Right_Delayed">
+						<param name="id" value="movies"/>
+					</include>
+					<control type="grouplist" id="27001">
+					<visible allowhiddenfocus="true">!String.IsEmpty(Skin.String(SearchInput)) + String.IsEmpty(Skin.String(DatabaseStatus))</visible>
+						<include>WidgetGroupListCommon</include>
+						<pagecontrol>27099</pagecontrol>
+						<include content="WidgetListBigPoster" condition="!Skin.HasSetting(HideMovieResults)">
+							<param name="content_path" value="plugin://plugin.video.umbrella/?action=movieSearchterm&amp;name=$INFO[Skin.String(SearchInputEncoded)]"/>
+							<param name="widget_header" value="$LOCALIZE[342]"/>
+							<param name="widget_target" value="videos"/>
+							<param name="list_id" value="27011"/>
+						</include>
+						<include content="WidgetListBigPoster" condition="!Skin.HasSetting(HideTVShowResults)">
+							<param name="content_path" value="plugin://plugin.video.umbrella/?action=tvSearchterm&amp;name=$INFO[Skin.String(SearchInputEncoded)]"/>
+							<param name="widget_header" value="TV Shows"/>
+							<param name="widget_target" value="videos"/>
+							<param name="list_id" value="27012"/>
+						</include>
+						<include content="WidgetListBigPoster" condition="!Skin.HasSetting(HidePeopleResults)">
+							<param name="content_path" value="plugin://plugin.video.umbrella/?action=actorSearchMovies&amp;name=$INFO[Skin.String(SearchInputEncoded)]"/>
+							<param name="widget_header" value="Actors/Actresses Movies"/>
+							<param name="widget_target" value="videos"/>
+							<param name="list_id" value="27014"/>
+						</include>
+						<include content="WidgetListBigPoster" condition="!Skin.HasSetting(HidePeopleResults)">
+							<param name="content_path" value="plugin://plugin.video.umbrella/?action=actorSearchTV&amp;name=$INFO[Skin.String(SearchInputEncoded)]"/>
+							<param name="widget_header" value="Actors/Actresses TV"/>
+							<param name="widget_target" value="videos"/>
+							<param name="list_id" value="27015"/>
+						</include>
+						<include content="WidgetListCategoryStacked" condition="!Skin.HasSetting(HideTraktResults)">
+							<param name="content_path" value="plugin://plugin.video.umbrella/?action=trakt_search_lists&amp;media_type=movies&amp;name=$INFO[Skin.String(SearchInputTraktEncoded)]"/>
+							<param name="widget_header" value="TRAKT TV Lists"/>
+							<param name="widget_target" value="videos"/>
+							<param name="list_id" value="27017"/>
+						</include>
+						<include content="WidgetListBigPosterStacked" condition="!Skin.HasSetting(HideTraktResults)">
+							<param name="content_path" value="$INFO[Window(1121).Property(umbrestuary.27017.path)]"/>
+							<param name="widget_header" value="$INFO[Window(1121).Property(umbrestuary.27017.label)]"/>
+							<param name="widget_target" value="videos"/>
+							<param name="list_id" value="270171"/>
+						</include>
+						<include content="WidgetListCategoryStacked" condition="!Skin.HasSetting(HideTraktResults)">
+							<param name="content_path" value="plugin://plugin.video.umbrella/?action=trakt_search_lists&amp;media_type=movies&amp;name=$INFO[Skin.String(SearchInputTraktEncoded)]"/>
+							<param name="widget_header" value="TRAKT Movie Lists"/>
+							<param name="widget_target" value="videos"/>
+							<param name="list_id" value="27018"/>
+						</include>
+						<include content="WidgetListBigPosterStacked" condition="!Skin.HasSetting(HideTraktResults)">
+							<param name="content_path" value="$INFO[Window(1121).Property(umbrestuary.27018.path)]"/>
+							<param name="widget_header" value="$INFO[Window(1121).Property(umbrestuary.27018.label)]"/>
+							<param name="widget_target" value="videos"/>
+							<param name="list_id" value="270181"/>
+						</include>
+					</control>
+					<include content="WidgetScrollbar" condition="Skin.HasSetting(touchmode)">
+						<param name="scrollbar_id" value="27099"/>
+					</include>
+				</control>
+			</control>
+			<include content="TopBar">
+				<param name="breadcrumbs_label" value="" />
+			</include>
+			<include>BottomBar</include>
+			<control type="group">
+				<depth>DepthContentPanel</depth>
+				<include>OpenClose_Left</include>
+				<include content="ContentPanel">
+					<param name="width" value="522" />
+				</include>
+				<include content="ImageWidget" condition="!String.IsEmpty(Skin.String(DatabaseStatus))">
+					<param name="left">50</param>
+					<param name="text_label" value="Your search history is currently empty. Would you like to perform a new search or return to the home screen?" />
+					<param name="button_label" value="New search" />
+					<param name="button_onclick" value="RunScript(script.umbrestuary.helper,mode=re_search)"/>
+					<param name="button3_onclick" value="ActivateWindow(home)"/>
+					<param name="button_id" value="27400"/>
+				</include>
+				<control type="group">
+					<animation effect="slide" time="300" start="-492,0" end="0,0" tween="sine" easing="inout">VisibleChange</animation>
+					<visible allowhiddenfocus="true">![String.IsEqual(ListItem.DBtype,movie) | String.IsEqual(ListItem.DBtype,tvshow) | String.IsEqual(ListItem.DBtype,season) | String.IsEqual(ListItem.DBtype,episode)] + String.IsEmpty(Skin.String(DatabaseStatus))</visible>
+					<control type="fixedlist" id="9000">
+						<left>25</left>
+						<top>230</top>
+            <width>492</width>
+						<bottom>-10</bottom>
+						<movement>7</movement>
+						<focusposition>0</focusposition>
+						<onfocus>ClearProperty(listposition,home)</onfocus>
+						<onright>SetFocus(2000)</onright>
+						<onup>700</onup>
+						<ondown>700</ondown>
+						<scrolltime tween="cubic" easing="out">500</scrolltime>
+						<focusedlayout height="83">
+							<control type="group">
+								<animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+							</control>
+							<control type="label">
+								<include>FocusBounce</include>
+								<left>45</left>
+								<top>0</top>
+								<height>83</height>
+								<width>355</width>
+								<aligny>center</aligny>
+								<font>font32</font>
+								<label>$INFO[ListItem.Label]</label>
+								<textcolor>unfocused_text</textcolor>
+								<shadowcolor>text_shadow</shadowcolor>
+								<scroll>$PARAM[focused]</scroll>
+								<visible>ControlGroup(700).HasFocus</visible>
+							</control>
+							<control type="label">
+								<include>FocusBounce</include>
+								<left>45</left>
+								<top>0</top>
+								<height>83</height>
+								<width>355</width>
+								<aligny>center</aligny>
+								<font>font45_title</font>
+								<label>$INFO[ListItem.Label]</label>
+								<shadowcolor>text_shadow</shadowcolor>
+								<scroll>$PARAM[focused]</scroll>
+								<visible>!ControlGroup(700).HasFocus</visible>
+							</control>
+						</focusedlayout>
+						<itemlayout height="83">
+							<control type="label">
+								<left>45</left>
+								<top>0</top>
+								<height>83</height>
+								<width>355</width>
+								<aligny>center</aligny>
+								<font>font32</font>
+								<label>$INFO[ListItem.Label]</label>
+								<textcolor>darkgrey</textcolor>
+								<shadowcolor>text_shadow</shadowcolor>
+							</control>
+						</itemlayout>
+						<content>
+							<!-- SEARCH HISTORY -->
+							<include content="SearchHistory" />
+						</content>
+					</control>
+					<control type="grouplist" id="700">
+						<visible>String.IsEmpty(Skin.String(DatabaseStatus))</visible>
+						<orientation>horizontal</orientation>
+						<itemgap>0</itemgap>
+            <left>7</left>
+						<width>480</width>
+						<height>110</height>
+						<top>15</top>
+						<onup>SetFocus(9000,99,absolute)</onup>
+						<ondown>SetFocus(9000,0,absolute)</ondown>
+						<onright>SetFocus(2000)</onright>
+						<align>justify</align>
+						<include content="IconButton">
+							<param name="control_id" value="801" />
+							<param name="onclick" value="RunScript(script.umbrestuary.helper,mode=remove_all_spaths)" />
+							<param name="icon" value="icons/infodialogs/uninstall.png" />
+							<param name="label" value="Clear search history" />
+						</include>
+						<include content="IconButton">
+							<param name="control_id" value="802" />
+							<param name="onclick" value="ActivateWindow(10025,plugin://plugin.video.umbrella/?action=trakt_Navigator,return)" />
+							<param name="icon" value="icons/trakt-icon-white.png" />
+							<param name="label" value="TRAKT Lists" />
+						</include>
+						<include content="IconButton">
+							<param name="control_id" value="803" />
+							<param name="onclick" value="RunScript(script.umbrestuary.helper,mode=search_input)" />
+							<param name="icon" value="icons/search.png" />
+							<param name="label" value="$LOCALIZE[137]" />
+						</include>
+						<include content="IconButton">
+							<param name="control_id" value="804" />
+							<param name="onclick" value="Fullscreen" />
+							<param name="icon" value="icons/now-playing/fullscreen.png" />
+							<param name="label" value="$LOCALIZE[31000]" />
+							<param name="visible" value="Player.HasMedia" />
+						</include>
+					</control>
+				</control>
+				<control type="group">
+					<animation effect="slide" time="300" start="-492,0" end="0,0" tween="sine" easing="inout">VisibleChange</animation>
+					<width>550</width>
+					<visible allowhiddenfocus="true">[String.IsEqual(ListItem.DBtype,movie) | String.IsEqual(ListItem.DBtype,tvshow) | String.IsEqual(ListItem.DBtype,season) | String.IsEqual(ListItem.DBtype,episode)]</visible>
+					<control type="image">
+						<left>30</left>
+						<top>50</top>
+						<width>395</width>
+						<height>153</height>
+						<texture background="true">$VAR[ClearlogoVar]</texture>
+						<aspectratio align="center">keep</aspectratio>
+					</control>
+					<control type="textbox">
+						<top>75</top>
+						<left>30</left>
+						<width>430</width>
+						<aligny>center</aligny>
+						<height>98</height>
+						<font>font36_title</font>
+						<label>$INFO[ListItem.Label]</label>
+						<visible>String.IsEmpty(ListItem.Art(clearlogo))</visible>
+					</control>
+					<control type="textbox">
+						<left>30</left>
+						<top>239</top>
+						<width>410</width>
+						<bottom>60</bottom>
+						<label>$VAR[InfoPanel]</label>
+						<textcolor>unfocused_text</textcolor>
+						<autoscroll delay="10000" time="3000" repeat="10000">Skin.HasSetting(autoscroll)</autoscroll>
+						<visible>Skin.HasSetting(Disable.RatingsINF) | String.IsEmpty(Skin.String(omdb_api_key))</visible>
+					</control>
+					<include condition="![Skin.HasSetting(Disable.RatingsINF) | String.IsEmpty(Skin.String(omdb_api_key))]" content="RatingsInfoPanel">
+						<param name="left" value="30" />
+						<param name="width" value="410" />
+						<param name="top" value="239" />
+						<param name="ratings_spacing" value="10" />
+						<param name="height_noalt" value="460" />
+						<param name="height_alt_movie" value="330" />
+						<param name="height_alt_tvshow" value="290" />
+					</include>
+					<!-- <control type="textbox">
+						<left>30</left>
+						<top>467</top>
+						<width>530</width>
+						<height>413</height>
+						<align>center</align>
+						<aligny>center</aligny>
+						<font>font27</font>
+						<textcolor>80FFFFFF</textcolor>
+						<label>$LOCALIZE[19055]</label>
+						<visible>String.IsEmpty(Listitem.Plot) + String.IsEmpty(Listitem.Tagline) + !ListItem.IsCollection + !ListItem.IsParentFolder</visible>
+					</control> -->
+				</control>
+			</control>
+			<control type="group">
+				<depth>DepthBars</depth>
+				<bottom>0</bottom>
+				<height>70</height>
+				<animation effect="fade" start="0" end="100" time="300" delay="300">WindowOpen</animation>
+				<animation effect="fade" start="100" end="0" time="200">WindowClose</animation>
+				<include condition="!Skin.HasSetting(hide_mediaflags)" content="MediaFlags">
+					<param name="infolabel_prefix" value="Container." />
+					<param name="resolution_var" value="$VAR[ContainerResolutionFlagVar]" />
+				</include>
+				<control type="rss">
+					<animation effect="slide" end="0,90" time="300" tween="sine" easing="inout" condition="$EXP[infodialog_active]">conditional</animation>
+					<left>0</left>
+					<bottom>0</bottom>
+					<height>39</height>
+					<width>100%</width>
+					<font>font12</font>
+					<urlset>1</urlset>
+					<hitrect x="-100" y="0" w="1" h="1" />
+					<titlecolor>button_focus</titlecolor>
+					<textcolor>button_focus</textcolor>
+					<shadowcolor>text_shadow</shadowcolor>
+					<headlinecolor>FFC0C0C0</headlinecolor>
+					<visible>Skin.HasSetting(hide_mediaflags) | !ControlGroup(2000).HasFocus</visible>
+					<animation effect="fade" time="300">VisibleChange</animation>
+				</control>
+			</control>
+			<control type="group">
+        <animation effect="slide" time="300" start="-492,0" end="0,0" tween="sine" easing="inout">VisibleChange</animation>
+				<include>OpenClose_Left</include>
+        <visible allowhiddenfocus="true">![String.IsEqual(ListItem.DBtype,movie) | String.IsEqual(ListItem.DBtype,tvshow) | String.IsEqual(ListItem.DBtype,season) | String.IsEqual(ListItem.DBtype,episode)] + String.IsEmpty(Skin.String(DatabaseStatus))</visible>
+				<depth>DepthBars</depth>
+				<animation effect="slide" end="0,-90" time="300" tween="sine" easing="inout" condition="$EXP[infodialog_active]">conditional</animation>
+				<animation effect="fade" start="0" end="100" time="300">WindowOpen</animation>
+				<animation effect="fade" start="100" end="0" time="200">WindowClose</animation>
+				<top>30</top>
+				<left>90</left>
+				<control type="label">
+					<top>90</top>
+					<left>-25</left>
+					<width>1085</width>
+					<aligny>center</aligny>
+					<height>98</height>
+					<font>font36_title</font>
+					<label>Recent searches</label>
+				</control>
+			</control>
+			<control type="group">
+				<include>OpenClose_Right</include>
+				<animation effect="slide" time="300" start="-492,0" end="0,0" tween="sine" easing="inout">VisibleChange</animation>
+				<animation effect="slide" end="0,-90" time="300" tween="sine" easing="inout" condition="$EXP[infodialog_active]">conditional</animation>
+				<animation effect="fade" start="0" end="100" time="300">WindowOpen</animation>
+				<animation effect="fade" start="100" end="0" time="200">WindowClose</animation>
+				<control type="label">
+				<visible>!String.IsEmpty(Skin.String(SearchInput)) + String.IsEmpty(Skin.String(DatabaseStatus))</visible>
+					<top>-5</top>
+					<left>525</left>
+					<width>1085</width>
+					<aligny>center</aligny>
+					<height>98</height>
+					<font>font37</font>
+					<textcolor>unfocused_text</textcolor>
+					<label>Search results for: [B]$INFO[Skin.String(SearchInput)][/B]</label>
+				</control>
+				<control type="label">
+				<visible>String.IsEmpty(Skin.String(SearchInput)) + String.IsEmpty(Skin.String(DatabaseStatus))</visible>
+					<top>500</top>
+					<left>650</left>
+					<width>1085</width>
+					<aligny>center</aligny>
+					<align>center</align>
+					<height>98</height>
+					<font>font14</font>
+					<textcolor>unfocused_text</textcolor>
+					<wrapmultiline>true</wrapmultiline>
+					<label>Explore your past searches on the left, delve into TRAKT lists using the TRAKT button, or click the search icon to initiate a new search.</label>
+				</control>
+			</control>
+		</control>
+	</controls>
+</window>

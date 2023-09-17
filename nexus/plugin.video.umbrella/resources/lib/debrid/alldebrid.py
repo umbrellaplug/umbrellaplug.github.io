@@ -131,12 +131,7 @@ class AllDebrid:
 		else:
 			self.progressDialog = control.progressDialog
 			self.progressDialog.create(getLS(40056))
-		self.progressDialog.update(-1, line % (getLS(32513) % (self.highlight_color,'https://alldebrid.com/pin/'), getLS(32514) % (self.highlight_color,response['pin']),getLS(40390)))
-		try:
-			from resources.lib.modules.source_utils import copy2clip
-			copy2clip(response['pin'])
-		except:
-			log_utils.error()
+		self.progressDialog.update(-1, line % (getLS(32513) % (self.highlight_color,'https://alldebrid.com/pin/'), getLS(32514) % (self.highlight_color,response['pin'])))
 		self.check_url = response.get('check_url')
 		control.sleep(2000)
 		while not self.token:

@@ -5,11 +5,9 @@
 
 from json import dumps as jsdumps
 from urllib.parse import quote_plus
-from resources.lib.modules.control import joinPath, transPath, dialog, getProviderHighlightColor, notification, addonFanart, setting as getSetting
-from resources.lib.modules.source_utils import getFileType
+from resources.lib.modules.control import joinPath, transPath, dialog, notification, addonFanart, setting as getSetting
 from resources.lib.modules import tools
 from resources.lib.windows.base import BaseDialog
-import datetime
 
 
 class SourceResultsXML(BaseDialog):

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<window type="dialog" id="1118">
+	<defaultcontrol always="true">70</defaultcontrol>
+	<onunload>ClearProperty(TextViewerHeader,Home)</onunload>
+	<onunload>ClearProperty(TextViewerSubHeader,Home)</onunload>
+	<onunload>ClearProperty(TextViewerContent,Home)</onunload>
+	<onunload>ClearProperty(SetupGuide,skinsettings)</onunload>
+	<include>Animation_DialogPopupOpenClose</include>
+	<controls>
+		<control type="button" id="70">
+			<oninfo>Dialog.Close(1118)</oninfo>
+			<onclick>Dialog.Close(1118)</onclick>
+			<onleft>Dialog.Close(1118)</onleft>
+			<onright>Dialog.Close(1118)</onright>
+			<onup condition="String.IsEmpty(Window(skinsettings).Property(SetupGuide))">PageUp(68)</onup>
+			<ondown condition="String.IsEmpty(Window(skinsettings).Property(SetupGuide))">PageDown(68)</ondown>
+			<onup condition="!String.IsEmpty(Window(skinsettings).Property(SetupGuide))">PageUp(69)</onup>
+			<ondown condition="!String.IsEmpty(Window(skinsettings).Property(SetupGuide))">PageDown(69)</ondown>
+			<include>HiddenObject</include>
+		</control>
+		<control type="group" id="35">
+			<left>13%</left>
+			<centertop>45%</centertop>
+			<height>870</height>
+			<include content="DialogBackgroundCommons">
+				<param name="width" value="84%" />
+				<param name="height" value="975" />
+				<param name="header_label" value="$INFO[Window(home).Property(TextViewer_Header)]" />
+				<param name="header_id" value="1" />
+				<param name="diffusetexture" value="masks/dialog-bg-squareish.png" />
+			</include>
+			<control type="label">
+					<top>25</top>
+					<width>82%</width>
+					<height>70</height>
+					<shadowcolor>black</shadowcolor>
+					<font>font37</font>
+					<textcolor>unfocused_text</textcolor>
+					<align>center</align>
+				<label>$INFO[Window(Home).Property(TextViewerHeader)]</label>
+			</control>
+			<control type="label">
+				<left>1%</left>
+					<top>85</top>
+					<width>82%</width>
+					<height>70</height>
+					<shadowcolor>black</shadowcolor>
+					<font>font37</font>
+					<textcolor>unfocused_text</textcolor>
+				<label>$INFO[Window(Home).Property(TextViewerSubHeader)]</label>
+			</control>
+			<control type="textbox">
+				<left>1%</left>
+					<top>85</top>
+					<width>82%</width>
+					<height>70</height>
+					<shadowcolor>black</shadowcolor>
+					<pagecontrol>68</pagecontrol>
+					<font>font37</font>
+					<textcolor>unfocused_text</textcolor>
+				<label>$INFO[Window(Home).Property(TextViewerContent)]</label>
+				<visible>String.IsEmpty(Window(skinsettings).Property(SetupGuide))</visible>
+			</control>
+			<control type="textbox">
+				<left>3%</left>
+				<top>105</top>
+				<width>78%</width>
+				<height>820</height>
+				<shadowcolor>black</shadowcolor>
+				<pagecontrol>69</pagecontrol>
+				<font>font37</font>
+				<textcolor>unfocused_text</textcolor>
+				<include>SetupGuide</include>
+				<visible>!String.IsEmpty(Window(skinsettings).Property(SetupGuide))</visible>
+				<autoscroll delay="15000" time="4000" repeat="15000">Skin.HasSetting(autoscroll)</autoscroll>
+			</control>
+			<control type="scrollbar" id="68">
+				<left>1393</left>
+				<top>113</top>
+				<bottom>-20</bottom>
+				<width>10</width>
+				<ondown>68</ondown>
+				<onup>68</onup>
+				<texturesliderbackground />
+				<visible>String.IsEmpty(Window(skinsettings).Property(SetupGuide))</visible>
+			</control>
+			<control type="scrollbar" id="69">
+				<left>1393</left>
+				<top>113</top>
+				<bottom>-20</bottom>
+				<width>10</width>
+				<ondown>68</ondown>
+				<onup>68</onup>
+				<texturesliderbackground />
+				<visible>!String.IsEmpty(Window(skinsettings).Property(SetupGuide))</visible>
+			</control>
+		</control>
+	</controls>
+</window>

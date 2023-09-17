@@ -15,6 +15,7 @@ class yt_index:  # initializes as musicvids, functions can override based on act
 		self.submenu = '%s/%s.txt'
 		self.default_icon = '%s/icons/music_video_folder_icon.png'
 		self.default_fanart = '%s/icons/music_video_folder_fanart.jpg'
+		self.useContainerTitles = getSetting('enable.containerTitles') == 'true'
 
 	def init_vars(self, action):
 		try:
@@ -29,9 +30,11 @@ class yt_index:  # initializes as musicvids, functions can override based on act
 			from resources.lib.modules import log_utils
 			log_utils.error()
 
-	def root(self, action):
+	def root(self, action, folderName=''):
 		try:
 			self.init_vars(action)
+			from resources.lib.modules import control
+			if self.useContainerTitles: control.setContainerName(folderName)
 			menuItems = youtube_menu.youtube_menu().processMenuFile(self.mainmenu)
 			for name, section, searchid, subid, playlistid, channelid, videoid, iconimage, fanart, description in menuItems:
 				if subid != 'false': # Means this item points to a submenu

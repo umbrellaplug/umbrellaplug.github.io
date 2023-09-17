@@ -103,12 +103,12 @@ class Premiumize:
 		else:
 			self.progressDialog = control.progressDialog
 			self.progressDialog.create(getLS(40054))
-		self.progressDialog.update(-1, line % (getLS(32513) % (self.highlightColor,token['verification_uri']), getLS(32514) % (self.highlightColor, token['user_code']), getLS(40390)))
-		try:
-			from resources.lib.modules.source_utils import copy2clip
-			copy2clip(token['user_code'])
-		except:
-			log_utils.error()
+		self.progressDialog.update(-1, line % (getLS(32513) % (self.highlightColor,token['verification_uri']), getLS(32514) % (self.highlightColor, token['user_code'])))
+		# try:
+		# 	from resources.lib.modules.source_utils import copy2clip
+		# 	copy2clip(token['user_code'])
+		# except:
+		# 	log_utils.error()
 		while poll_again and not token_ttl <= 0 and not self.progressDialog.iscanceled():
 			poll_again, success = self.poll_token(token['device_code'], fromSettings=fromSettings)
 			progress_percent = 100 - int((float((expiry - token_ttl) / expiry) * 100))

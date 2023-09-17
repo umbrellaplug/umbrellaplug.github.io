@@ -49,7 +49,7 @@ def getTrakt(url, post=None, extended=False, silent=False):
 			else: return response
 		elif status_code == '401': # Re-Auth token
 			if response.headers.get('x-private-user') == 'true':
-				log_utils.log('URL:%s Has a Private User Header:Ignoring' % url, level=log_utils.LOGWARNING)
+				#log_utils.log('URL:%s Has a Private User Header:Ignoring' % url, level=log_utils.LOGWARNING)
 				return None
 			success = re_auth(headers)
 			if success: return getTrakt(url, extended=extended, silent=silent)
@@ -193,15 +193,10 @@ def getTraktDeviceToken(traktDeviceCode):
 		verification_url = control.lang(32513) % (highlight_color, str(traktDeviceCode['verification_url']))
 		user_code = control.lang(32514) % (highlight_color, str(traktDeviceCode['user_code']))
 		line = '%s\n%s\n%s'
-		try:
-			from resources.lib.modules.source_utils import copy2clip
-			copy2clip(traktDeviceCode['user_code'])
-		except:
-			log_utils.error()
 		if control.setting('dialogs.useumbrelladialog') == 'true':
 			progressDialog = control.getProgressWindow(getLS(32073), trakt_qr, 1)
 			progressDialog.set_controls()
-			progressDialog.update(0, control.progress_line % (verification_url, user_code, getLS(40390)))
+			progressDialog.update(0, control.progress_line % (verification_url, user_code))
 		else:
 			progressDialog = control.progressDialog
 			progressDialog.create(control.lang(32073), control.progress_line % (verification_url, user_code, getLS(40390)))
@@ -961,7 +956,6 @@ def syncTVShows(): # sync all watched shows ex. [({'imdb': 'tt12571834', 'tvdb':
 		if not getTraktCredentialsInfo(): return
 		indicators = getTraktAsJson('/users/me/watched/shows?extended=full')
 		if not indicators: return None
-		log_utils.log(str(indicators),1)
 # /shows/ID/progress/watched  endpoint only accepts imdb or trakt ID so write all ID's
 		indicators = [({'imdb': i['show']['ids']['imdb'], 'tvdb': str(i['show']['ids']['tvdb']), 'tmdb': str(i['show']['ids']['tmdb']), 'trakt': str(i['show']['ids']['trakt'])}, \
 											i['show']['aired_episodes'], sum([[(s['number'], e['number']) for e in s['episodes'] if i['reset_at'] is None or e['last_watched_at'] > i['reset_at']] for s in i['seasons']], [])) for i in indicators]
@@ -1382,7 +1376,7 @@ def scrobbleMovie(imdb, tmdb, watched_percent):
 	except: log_utils.error()
 
 def scrobbleEpisode(imdb, tmdb, tvdb, season, episode, watched_percent):
-	log_utils.log('Trakt Scrobble Episode Called. Received: imdb: %s tmdb: %s season: %s episode: %s watched_percent: %s' % (imdb, tmdb, season, episode, watched_percent), level=log_utils.LOGDEBUG)
+	#log_utils.log('Trakt Scrobble Episode Called. Received: imdb: %s tmdb: %s season: %s episode: %s watched_percent: %s' % (imdb, tmdb, season, episode, watched_percent), level=log_utils.LOGDEBUG)
 	try:
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
 		success = getTrakt('/scrobble/pause', {"show": {"ids": {"tvdb": tvdb}}, "episode": {"season": season, "number": episode}, "progress": watched_percent})
@@ -1534,7 +1528,7 @@ def force_traktSync():
 	control.notification(message='Forced Trakt Sync Complete')
 
 def sync_playbackProgress(activities=None, forced=False):
-	log_utils.log('Trakt Sync Playback Called Forced: %s' % (str(forced)), level=log_utils.LOGDEBUG)
+	#log_utils.log('Trakt Sync Playback Called Forced: %s' % (str(forced)), level=log_utils.LOGDEBUG)
 	try:
 		link = '/sync/playback/?extended=full'
 		if forced:
@@ -1543,7 +1537,7 @@ def sync_playbackProgress(activities=None, forced=False):
 		else:
 			db_last_paused = traktsync.last_sync('last_paused_at')
 			activity = getPausedActivity(activities)
-			log_utils.log('Trakt Sync Playback db_last_paused: %s  activity: %s difference: %s' % (db_last_paused, activity,(activity - db_last_paused)),log_utils.LOGDEBUG)
+			#log_utils.log('Trakt Sync Playback db_last_paused: %s  activity: %s difference: %s' % (db_last_paused, activity,(activity - db_last_paused)),log_utils.LOGDEBUG)
 			if activity - db_last_paused >= 120: # do not sync unless 2 min difference or more
 				items = getTraktAsJson(link, silent=True)
 				if items: traktsync.insert_bookmarks(items)
@@ -1561,7 +1555,8 @@ def sync_watchedProgress(activities=None, forced=False):
 		if forced or (progressActivity > local_listCache):
 			cache.get(episodes.Episodes().trakt_progress_list, 0, url, trakt_user, lang, direct)
 			if forced: log_utils.log('Forced - Trakt Progress List Sync Complete', __name__, log_utils.LOGDEBUG)
-			else: log_utils.log('Trakt Progress List Sync Update...(local db latest "list_cached_at" = %s, trakt api latest "progress_activity" = %s)' % \
+			else:
+				log_utils.log('Trakt Progress List Sync Update...(local db latest "list_cached_at" = %s, trakt api latest "progress_activity" = %s)' % \
 									(str(local_listCache), str(progressActivity)), __name__, log_utils.LOGDEBUG)
 	except: log_utils.error()
 
@@ -1569,11 +1564,11 @@ def sync_watched(activities=None, forced=False): # writes to traktsync.db as of 
 	try:
 		if forced:
 			cachesyncMovies()
-			log_utils.log('Forced - Trakt Watched Movie Sync Complete', __name__, log_utils.LOGDEBUG)
+			#log_utils.log('Forced - Trakt Watched Movie Sync Complete', __name__, log_utils.LOGDEBUG)
 			cachesyncTVShows()
 			control.sleep(5000)
 			service_syncSeasons() # syncs all watched shows season indicators and counts
-			log_utils.log('Forced - Trakt Watched Shows Sync Complete', __name__, log_utils.LOGDEBUG)
+			#log_utils.log('Forced - Trakt Watched Shows Sync Complete', __name__, log_utils.LOGDEBUG)
 			traktsync.insert_syncSeasons_at()
 		else:
 			moviesWatchedActivity = getMoviesWatchedActivity(activities)
@@ -1644,7 +1639,8 @@ def sync_liked_lists(activities=None, forced=False):
 		db_last_liked = traktsync.last_sync('last_liked_at')
 		listActivity = getListActivity(activities)
 		if (listActivity > db_last_liked) or forced:
-			if not forced: log_utils.log('Trakt Liked Lists Sync Update...(local db latest "liked_at" = %s, trakt api latest "liked_at" = %s)' % \
+			if not forced: 
+					log_utils.log('Trakt Liked Lists Sync Update...(local db latest "liked_at" = %s, trakt api latest "liked_at" = %s)' % \
 								(str(db_last_liked), str(listActivity)), __name__, log_utils.LOGDEBUG)
 			clr_traktSync = {'bookmarks': False, 'hiddenProgress': False, 'liked_lists': True, 'movies_collection': False, 'movies_watchlist': False,
 							'public_lists': False, 'shows_collection': False, 'shows_watchlist': False, 'user_lists': False, 'watched': False}
@@ -1656,7 +1652,7 @@ def sync_liked_lists(activities=None, forced=False):
 				list_item = i.get('list', {})
 				if any(list_item.get('privacy', '') == value for value in ('private', 'friends')): return
 				if list_item.get('user',{}).get('private') is True:
-					log_utils.log('(%s) has marked their list private in Trakt(Liked Lists) and is now causing you errors. Skipping this list' % list_item.get('user',{}).get('username'))
+					#log_utils.log('(%s) has marked their list private in Trakt(Liked Lists) and is now causing you errors. Skipping this list' % list_item.get('user',{}).get('username'))
 					return
 				i['list']['content_type'] = ''
 				list_owner_slug = list_item.get('user', {}).get('ids', {}).get('slug', '')
@@ -1702,7 +1698,7 @@ def sync_collection(activities=None, forced=False):
 			traktsync.insert_collection(items, 'movies_collection')
 			items = getTraktAsJson(link % 'shows', silent=True)
 			traktsync.insert_collection(items, 'shows_collection')
-			log_utils.log('Forced - Trakt Collection Sync Complete', __name__, log_utils.LOGDEBUG)
+			#log_utils.log('Forced - Trakt Collection Sync Complete', __name__, log_utils.LOGDEBUG)
 		else:
 			db_last_collected = traktsync.last_sync('last_collected_at')
 			collectedActivity = getCollectedActivity(activities)
@@ -1728,7 +1724,7 @@ def sync_watch_list(activities=None, forced=False):
 			traktsync.insert_watch_list(items, 'movies_watchlist')
 			items = getTraktAsJson(link % 'shows', silent=True)
 			traktsync.insert_watch_list(items, 'shows_watchlist')
-			log_utils.log('Forced - Trakt Watch List Sync Complete', __name__, log_utils.LOGDEBUG)
+			#log_utils.log('Forced - Trakt Watch List Sync Complete', __name__, log_utils.LOGDEBUG)
 		else:
 			db_last_watchList = traktsync.last_sync('last_watchlisted_at')
 			watchListActivity = getWatchListedActivity(activities)

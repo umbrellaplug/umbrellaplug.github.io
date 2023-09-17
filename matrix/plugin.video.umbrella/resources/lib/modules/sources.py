@@ -434,11 +434,11 @@ class Sources:
 					src_provider = resolve_items[i]['debrid'] if resolve_items[i].get('debrid') else ('%s - %s' % (resolve_items[i]['source'], resolve_items[i]['provider']))
 					if getSetting('progress.dialog') == '0':
 						if getSetting('dialogs.useumbrelladialog') == 'true':
-							label = '[B][COLOR %s]%s[CR]%s[CR]%s[/COLOR][/B]' % (self.highlight_color, src_provider.upper(), resolve_items[i]['provider'].upper(), resolve_items[i]['info'])
+							label = '[COLOR %s]%s[CR]%s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), resolve_items[i]['provider'].upper(), resolve_items[i]['info'])
 						else:
 							label = '[COLOR %s]%s[CR]%02d - %s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), resolve_index, resolve_items[i]['name'], str(round(resolve_items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
 					elif getSetting('progress.dialog') == '2':
-						label = '[B][COLOR %s]%s[CR]%s[CR]%s[/COLOR][/B]' % (self.highlight_color, src_provider.upper(), resolve_items[i]['provider'].upper(), resolve_items[i]['info'])
+						label = '[COLOR %s]%s[CR]%s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), resolve_items[i]['provider'].upper(), resolve_items[i]['info'])
 					else:
 						label = '[COLOR %s]%s[CR]%02d - %s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), resolve_index, resolve_items[i]['name'], str(round(resolve_items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
 					control.sleep(100)
@@ -1225,9 +1225,9 @@ class Sources:
 				if progressDialog != control.progressDialog and progressDialog != control.progressDialogBG:
 					sdc = getSetting('scraper.dialog.color')
 					#label = '[B][COLOR %s]%s[CR]%02d.)%s[CR]%s[/COLOR][/B]' % (sdc, src_provider.upper(), i+1, items[i]['name'], str(round(items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
-					label = '[B][COLOR %s]%s[CR]%s[CR]%s[/COLOR][/B]' % (self.highlight_color, src_provider.upper(), items[i]['provider'].upper() ,items[i]['info'])
+					label = '[COLOR %s]%s[CR]%s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), items[i]['provider'].upper() ,items[i]['info'])
 				else:
-					label = '[B][COLOR %s]%s[CR]%02d.)%s[CR]%s[/COLOR][/B]' % (self.highlight_color, src_provider.upper(), i+1, items[i]['name'], str(round(items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
+					label = '[COLOR %s]%s[CR]%02d.)%s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), i+1, items[i]['name'], str(round(items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
 					
 				
 				control.sleep(100)

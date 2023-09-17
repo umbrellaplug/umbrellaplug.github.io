@@ -74,6 +74,7 @@ class Seasons:
 		showSeasons = tmdb_indexer().get_showSeasons_meta(tmdb)
 		if not showSeasons: return
 		if not showSeasons.get('imdb'): showSeasons['imdb'] = imdb # use value passed from tvshows super_info() due to extensive ID lookups
+		if showSeasons.get('imdb','') != imdb: showSeasons['imdb'] = imdb
 		if not showSeasons.get('tvdb'): showSeasons['tvdb'] = tvdb
 		if art: art = jsloads(art) # prob better off leaving this as it's own dict so seasonDirectory list builder can just pull that out and pass to .setArt()
 		for item in showSeasons['seasons']: # seasons not parsed in tmdb module so ['seasons'] here is direct json response

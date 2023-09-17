@@ -5991,3 +5991,163 @@ msgstr ""
 msgctxt "#40435"
 msgid "History Sorting"
 msgstr ""
+
+msgctxt "#40436"
+msgid "Arctic Fuse"
+msgstr ""
+
+msgctxt "#40437"
+msgid "Choose Color"
+msgstr ""
+
+msgctxt "#40438"
+msgid "Enable multiple seasons."
+msgstr ""
+
+msgctxt "#40439"
+msgid "Continue to next season (if available)"
+msgstr ""
+
+msgctxt "#40440"
+msgid "This allows for playnext to play episodes from the next season if available when you reach the end of a season."
+msgstr ""
+
+msgctxt "#40441"
+msgid "Minimum Seconds for Popup"
+msgstr ""
+
+msgctxt "#40442"
+msgid "For situations where the subtitles go till the very end but you want a backup time in seconds for playnext popup. Default is 20."
+msgstr ""
+
+msgctxt "#40443"
+msgid "Hide episode counts on unwatched and fully watched"
+msgstr ""
+
+msgctxt "#40444"
+msgid "Enable External Providers"
+msgstr ""
+
+msgctxt "#40445"
+msgid "External Provider:"
+msgstr ""
+
+msgctxt "#40446"
+msgid "%s is not a valid external module selection. Please choose a different module."
+msgstr ""
+
+msgctxt "#40447"
+msgid "External Providers are enabled but no provider was found."
+msgstr ""
+
+msgctxt "#40448"
+msgid "Error setting external providers."
+msgstr ""
+
+msgctxt "#40449"
+msgid "External module set successfully."
+msgstr ""
+
+msgctxt "#40450"
+msgid "External Providers"
+msgstr ""
+
+msgctxt "#40451"
+msgid "[COLOR FFA0C12C] -- External Modules Help --[/COLOR]"
+msgstr ""
+
+msgctxt "#40452"
+msgid "[B]SETTINGS[/B] : Providers"
+msgstr ""
+
+msgctxt "#40453"
+msgid "User Lists"
+msgstr ""
+
+msgctxt "#40454"
+msgid "Liked Lists"
+msgstr ""
+
+msgctxt "#40455"
+msgid "MDBList TV Shows"
+msgstr ""
+
+msgctxt "#40456"
+msgid "TVMaze"
+msgstr ""
+
+msgctxt "#40457"
+msgid "Trakt List"
+msgstr ""
+
+msgctxt "#40458"
+msgid "IMDb List"
+msgstr ""
+
+msgctxt "#40459"
+msgid "Viewtypes"
+msgstr ""
+
+msgctxt "#40460"
+msgid "Logging Tools"
+msgstr ""
+
+msgctxt "#40461"
+msgid "Trakt Management Tools"
+msgstr ""
+
+msgctxt "#40462"
+msgid "Cache Functions"
+msgstr ""
+
+msgctxt "#40463"
+msgid "Add to Umbrella Favourites"
+msgstr ""
+
+msgctxt "#40464"
+msgid "Umbrella Favourites"
+msgstr ""
+
+msgctxt "#40465"
+msgid "Favourite Movies"
+msgstr ""
+
+msgctxt "#40466"
+msgid "Favourite TV Shows"
+msgstr ""
+
+msgctxt "#40467"
+msgid "Favourite Episodes"
+msgstr ""
+
+msgctxt "#40468"
+msgid "Remove from Umbrella Favourites"
+msgstr ""
+
+msgctxt "#40469"
+msgid "Refresh container on add / remove from favourites"
+msgstr ""
+
+msgctxt "#40470"
+msgid "Refresh widgets on add / remove from favourites"
+msgstr ""
+
+msgctxt "#40471"
+msgid "Add Library Item to Umbrella Favourites"
+msgstr ""
+
+msgctxt "#40472"
+msgid "Favourites Sorting"
+msgstr ""
+
+msgctxt "#40473"
+msgid "Show release year with movie title"
+msgstr ""
+
+msgctxt "#40474"
+msgid "Digital Releases (DVDReleaseDates)"
+msgstr ""
+
+msgctxt "#40475"
+msgid "Digital Releases"
+msgstr ""

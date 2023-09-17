@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.29">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.31">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -19,6 +19,15 @@
 					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
 					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
 					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,tvshow) | String.IsEqual(ListItem.dbtype,season) | String.IsEqual(ListItem.dbtype,movie)]
+				</visible>
+			</item>
+			<item library="resources\lib\context\addtoFavourite.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Add/Remove Favourite</label>
+				<visible>
+					!String.IsEmpty(Window(home).Property(context.umbrella.addtoFavourite)) +
+					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
+					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
+					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,tvshow) | String.IsEqual(ListItem.dbtype,movie)]
 				</visible>
 			</item>
 			<item library="resources\lib\context\playTrailer.py">
@@ -68,6 +77,14 @@
 					String.StartsWith(ListItem.FolderPath,plugin://plugin.video.umbrella/?action=play) +
 					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
 					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]]
+				</visible>
+			</item>
+			<item library="resources\lib\context\addLibtoFavourite.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Add/Remove Favourite</label>
+				<visible>
+					[String.Contains(Container.FolderPath,videodb://) | String.Contains(Container.ListItem.FolderPath,videodb://)] +
+					[String.Contains(Container.ListItem.Path,Window(home).Property(umbrella.movieLib.path)) | String.Contains(Container.ListItem.Path,Window(home).Property(umbrella.tvLib.path))] +
+					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]
 				</visible>
 			</item>
 			<item library="resources\lib\context\libRescrape.py">
@@ -156,16 +173,21 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.6.29 - August 24th, 2023[/B]
---[IMPORTANT] Please read the popup information about external providers.
---[Enhancement] Added ability to use external providers and removed requirements for scraper packages.
---[Enhancement] Added a setting to allow for hiding episode counts on unwatched and fully watched shows.
---[Enhancement] Added support for Trakt reset watching.
---[Enhancement] Changed RD Cloud Scrape to use both downloads and torrents for scraping.
---[Cosmetic] Updated resolving windows to use different text and size artwork. Removed Umbrella icon from left corner due to title overlaps.
---[Fix] Fixed bug where pre_resolve was not cleared on rescrape.
---[Fix] Corrected error causing some items reset in trakt not to have correct counts on tv show and season level.
---[Fix] Change to catch quotes in studio names for library cache.
+[B]Update - v6.6.31 - September 16th, 2023[/B]
+--[Enhancement] Added Umbrella Favourites Movies, TV Shows, and Episodes can now be added as favourites.
+--[Enhancement] Added ability to show titles on all sections. (Remake any widgets made from Umbrella)
+--[Enhancement] Added new list for Digital Releases.
+--[Enhancement] Added setting to show or hide release year with movies in general settings.
+--[Enhancement] Added Trakt section for skin.
+--[Enhancement] Added People search for skin.
+--[Enhancement] Added sorting for favourites.
+--[Enhancement] Changed text on resolving popups to no longer be bold.
+--[Enhancement] Added new search function for trakt lists from skin.
+--[Fix] Removed Copy to Clipboard from Authorization screens.
+--[Fix] Changed code for movie and show collection and watchlist import to improve speed.
+--[Fix] Made changes to tv show and seasonal level information to avoid imdb id being overwritten.
+--[Fix] Changed all occurences of container names to encode for url.
+--[Fix] Fixed sort TV Shows sort.
 		</news>
 	</extension>
 
@@ -322,5 +344,67 @@
 [B]Version 5.0.1a[/B]
 - Fixed incorrect meta causing exception on marking as watched. -umbrella
 		</news>
+	</extension>
+</addon><addon id="script.umbrestuary.helper" name="Umbrestuary Helper" version="0.6.16" provider-name="Tikipeter, Ivar Brandt">
+    <requires>
+        <import addon="xbmc.python" version="3.0.0" />
+        <import addon="script.module.requests" version="2.19.1" />
+    </requires>
+    <extension point="xbmc.python.library" library="resources/lib/default.py" />
+    <extension point="xbmc.service" library="resources/lib/service.py" start="startup" />
+    <extension point="xbmc.addon.metadata">
+        <news />
+        <platform>all</platform>
+        <license>GPL-2.0-only</license>
+        <forum />
+        <source />
+        <assets>
+            <icon>resources/media/icon.png</icon>
+            <fanart>resources/media/fanart.jpg</fanart>
+        </assets>
+        <description lang="en_GB">Umbrestuary Helper for the Umbrestuary Skin.</description>
+        <description lang="en_NZ">Umbrestuary Helper for the Umbrestuary Skin.</description>
+        <description lang="en_US">Umbrestuary Helper for the Umbrestuary Skin.</description>
+    </extension>
+</addon><addon id="skin.umbrestuary" version="1.0.19" name="Umbrestuary" provider-name="Ivar Brandt, Umbrella">
+	<requires>
+		<import addon="xbmc.gui" version="5.16.0" />
+		<import addon="script.umbrestuary.helper" />
+	</requires>
+	<extension point="xbmc.gui.skin" debugging="false">
+		<res width="1920" height="1440" aspect="4:3" default="false" folder="xml" />
+		<res width="1920" height="1280" aspect="3:2" default="false" folder="xml" />
+		<res width="1920" height="1200" aspect="16:10" default="false" folder="xml" />
+		<res width="2040" height="1080" aspect="17:9" default="false" folder="xml" />
+		<res width="1920" height="1080" aspect="16:9" default="true" folder="xml" />
+		<res width="2560" height="1080" aspect="21:9" default="false" folder="xml" />
+		<res width="2338" height="1080" aspect="19.5:9" default="false" folder="xml" />
+		<res width="2160" height="1080" aspect="18:9" default="false" folder="xml" />
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<platform>all</platform>
+		<license>CC BY-SA 4.0, GNU GENERAL PUBLIC LICENSE Version 2.0</license>
+		<forum>http://forum.kodi.tv/</forum>
+		<source>https://github.com/xbmc/skin.estuary/</source>
+		<assets>
+			<icon>resources/icon.png</icon>
+			<fanart>resources/fanart.jpg</fanart>
+			<screenshot>resources/images/customizable_widgets.jpg</screenshot>
+			<screenshot>resources/images/stacked_widgets.jpg</screenshot>
+			<screenshot>resources/images/infopanel.jpg</screenshot>
+			<screenshot>resources/images/search_window.jpg</screenshot>
+			<screenshot>resources/images/viewtypes1.jpg</screenshot>
+			<screenshot>resources/images/viewtypes4.jpg</screenshot>
+			<screenshot>resources/images/viewtypes.jpg</screenshot>
+			<screenshot>resources/images/color_theme3.jpg</screenshot>
+			<screenshot>resources/images/color_theme4.jpg</screenshot>
+			<screenshot>resources/images/color_theme5.jpg</screenshot>
+		</assets>
+		<summary lang="en_GB">Umbrestuary skin by Ivar Brandt (Estuary MOD)</summary>
+		<summary lang="en_NZ">Umbrestuary skin by Ivar Brandt (Estuary MOD)</summary>
+		<summary lang="en_US">Umbrestuary skin by Ivar Brandt (Estuary MOD)</summary>
+		<description lang="en_GB">Umbrestuary is a modified version of the default Estuary skin for Kodi Nexus. It is intended for use only with Umbrella.[CR][CR]See [B]CHANGELOG[/B] located in Skin settings » Extra info for latest changes.</description>
+		<description lang="en_NZ">Umbrestuary is a modified version of the default Estuary skin for Kodi Nexus. It is intended for use only with Umbrella.[CR][CR]See [B]CHANGELOG[/B] located in Skin settings » Extra info for latest changes.</description>
+		<description lang="en_US">Umbrestuary is a modified version of the default Estuary skin for Kodi Nexus. It is intended for use only with Umbrella.[CR][CR]See [B]CHANGELOG[/B] located in Skin settings » Extra info for latest changes.</description>
 	</extension>
 </addon></addons>

@@ -127,7 +127,7 @@ msgid "My Ratings"
 msgstr ""
 
 msgctxt "#32026"
-msgid "Favorites"
+msgid "Favourites"
 msgstr ""
 
 msgctxt "#32027"
@@ -491,11 +491,11 @@ msgid "This feature is only supported in kodi 18 and beyond"
 msgstr ""
 
 msgctxt "#32117"
-msgid "Added to Favorites"
+msgid "Added to Favourites"
 msgstr ""
 
 msgctxt "#32118"
-msgid "Removed From Favorites"
+msgid "Removed From Favourites"
 msgstr ""
 
 msgctxt "#32119"
@@ -2248,7 +2248,7 @@ msgid "Importing TMDb Watchlist..."
 msgstr ""
 
 msgctxt "#32680"
-msgid "Importing TMDb Favorites..."
+msgid "Importing TMDb Favourites..."
 msgstr ""
 
 msgctxt "#32681"
@@ -3908,7 +3908,7 @@ msgid "Because you watched"
 msgstr ""
 
 msgctxt "#40258"
-msgid "Show list titles if available"
+msgid "Show section titles if available"
 msgstr ""
 
 msgctxt "#40259"
@@ -4753,4 +4753,96 @@ msgstr ""
 
 msgctxt "#40452"
 msgid "[B]SETTINGS[/B] : Providers"
+msgstr ""
+
+msgctxt "#40453"
+msgid "User Lists"
+msgstr ""
+
+msgctxt "#40454"
+msgid "Liked Lists"
+msgstr ""
+
+msgctxt "#40455"
+msgid "MDBList TV Shows"
+msgstr ""
+
+msgctxt "#40456"
+msgid "TVMaze"
+msgstr ""
+
+msgctxt "#40457"
+msgid "Trakt List"
+msgstr ""
+
+msgctxt "#40458"
+msgid "IMDb List"
+msgstr ""
+
+msgctxt "#40459"
+msgid "Viewtypes"
+msgstr ""
+
+msgctxt "#40460"
+msgid "Logging Tools"
+msgstr ""
+
+msgctxt "#40461"
+msgid "Trakt Management Tools"
+msgstr ""
+
+msgctxt "#40462"
+msgid "Cache Functions"
+msgstr ""
+
+msgctxt "#40463"
+msgid "Add to Umbrella Favourites"
+msgstr ""
+
+msgctxt "#40464"
+msgid "Umbrella Favourites"
+msgstr ""
+
+msgctxt "#40465"
+msgid "Favourite Movies"
+msgstr ""
+
+msgctxt "#40466"
+msgid "Favourite TV Shows"
+msgstr ""
+
+msgctxt "#40467"
+msgid "Favourite Episodes"
+msgstr ""
+
+msgctxt "#40468"
+msgid "Remove from Umbrella Favourites"
+msgstr ""
+
+msgctxt "#40469"
+msgid "Refresh container on add / remove from favourites"
+msgstr ""
+
+msgctxt "#40470"
+msgid "Refresh widgets on add / remove from favourites"
+msgstr ""
+
+msgctxt "#40471"
+msgid "Add Library Item to Umbrella Favourites"
+msgstr ""
+
+msgctxt "#40472"
+msgid "Favourites Sorting"
+msgstr ""
+
+msgctxt "#40473"
+msgid "Show release year with movie title"
+msgstr ""
+
+msgctxt "#40474"
+msgid "Digital Releases (DVDReleaseDates)"
+msgstr ""
+
+msgctxt "#40475"
+msgid "Digital Releases"
 msgstr ""

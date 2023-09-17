@@ -13,10 +13,8 @@ import xbmcvfs
 #import xml.etree.ElementTree as ET
 from threading import Thread
 from xml.dom.minidom import parse as mdParse
-from urllib.parse import unquote
-import json
-import requests
-import time
+from urllib.parse import unquote, unquote_plus
+from re import sub as re_sub
 
 # Kodi JSON-RPC API endpoint
 api_url = 'http://localhost:8080/jsonrpc'
@@ -92,6 +90,7 @@ traktSyncFile = joinPath(dataPath, 'traktSync.db')
 subsFile = joinPath(dataPath, 'substitute.db')
 fanarttvCacheFile = joinPath(dataPath, 'fanarttv.db')
 metaInternalCacheFile = joinPath(dataPath, 'video_cache.db')
+favouritesFile = joinPath(dataPath, 'favourites.db')
 trailer = 'plugin://plugin.video.youtube/play/?video_id=%s'
 
 def getKodiVersion(full=False):
@@ -99,6 +98,7 @@ def getKodiVersion(full=False):
 	else: return int(xbmc.getInfoLabel("System.BuildVersion")[:2])
 
 def setContainerName(value):
+	value = unquote_plus(value)
 	import sys
 	xbmcplugin.setPluginCategory(int(sys.argv[1]), value)
 
@@ -454,9 +454,9 @@ def trigger_widget_refresh():
 	execute('UpdateLibrary(video,/fake/path/to/force/refresh/on/home)') # make sure this is ok coupled with above
 
 def refresh_playAction(): # for umbrella global CM play actions
-	autoPlayTV = 'true' if setting('play.mode.tv') == '1' else ''
+	autoPlayTV = 'true' if setting('play.mode.tv') == '1' else '0'
 	homeWindow.setProperty('umbrella.autoPlaytv.enabled', autoPlayTV)
-	autoPlayMovie = 'true' if setting('play.mode.movie') == '1' else ''
+	autoPlayMovie = 'true' if setting('play.mode.movie') == '1' else '0'
 	homeWindow.setProperty('umbrella.autoPlayMovie.enabled', autoPlayMovie)
 
 def refresh_libPath(): # for umbrella global CM library actions
@@ -662,6 +662,8 @@ def syncAccounts():
 			setSetting('sources.filepursuit.color', 'FF00CC29')
 			setSetting('sources.filepursuit.color.display', '[COLOR=FF00CC29]FF00CC29[/COLOR]')
 			setSetting('umbrella.colorSecond', 'true')
+			notification('Umbrella', 'Reloading addon due to new settings added.')
+			return reload_addon()
 		if setting('umbrella.externalWarning') != 'true':
 			setSetting('umbrella.externalWarning', 'true')
 			from resources.help import help
@@ -719,4 +721,19 @@ def checkModules():
 		setSetting('external_provider.name', '')
 		setSetting('external_provider.module', '')
 
+def timeFunction(function, *args):
+	from timeit import default_timer as timer
+	from datetime import timedelta
+	start = timer()
+	try:
+		exeFunction = function(*args)
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+	stop = timer()
+	from resources.lib.modules import log_utils
+	log_utils.log('Function Timer: %s Time: %s' %(_get_function_name(function), timedelta(seconds=stop-start)),1)
+	return exeFunction
 
+def _get_function_name(function_instance):
+	return re_sub(r'.+\smethod\s|.+function\s|\sat\s.+|\sof\s.+', '', repr(function_instance))
