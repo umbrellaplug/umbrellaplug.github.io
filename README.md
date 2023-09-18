@@ -44,6 +44,9 @@ Currently Supported Debrid Providers:
 ## Issues
 **Issues are closed**  
 
+## Discussions
+**Discussions are closed also because people decided to use them to substitute issues when issues were closed.**  
+
 ## Logs
 Enable Logs: Go to Umbrella settings and select Debugging on the left hand side.
 Set your settings like this:
