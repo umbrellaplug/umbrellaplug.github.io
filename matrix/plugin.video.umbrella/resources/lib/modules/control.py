@@ -98,9 +98,16 @@ def getKodiVersion(full=False):
 	else: return int(xbmc.getInfoLabel("System.BuildVersion")[:2])
 
 def setContainerName(value):
-	value = unquote_plus(value)
-	import sys
-	xbmcplugin.setPluginCategory(int(sys.argv[1]), value)
+	try:
+		if value:
+			value = unquote_plus(value)
+		else:
+			value = ''
+		import sys
+		xbmcplugin.setPluginCategory(int(sys.argv[1]), value)
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
 
 def setHomeWindowProperty(propertyname, property):
 	win = xbmcgui.Window(10000)
@@ -353,6 +360,9 @@ def closeOk():
 
 def refresh():
 	return execute('Container.Refresh')
+
+def folderPath():
+    return infoLabel('Container.FolderPath')
 
 def queueItem():
 	return execute('Action(Queue)') # seems broken in 19 for show and season level, works fine in 18
@@ -720,6 +730,15 @@ def checkModules():
 	if setting('provider.external.enabled') == 'false':
 		setSetting('external_provider.name', '')
 		setSetting('external_provider.module', '')
+
+def backToMain(folder):
+	if folder == 'movies':
+		url = 'plugin://plugin.video.umbrella/?action=movieNavigator&folderName=Discover%20Movies'
+	elif folder =='tvshows':
+		url = 'plugin://plugin.video.umbrella/?action=tvNavigator&folderName=Discover%20TV%20Shows'
+	else:
+		url = None
+	if url: execute('Container.Refresh(%s)'% url)
 
 def timeFunction(function, *args):
 	from timeit import default_timer as timer

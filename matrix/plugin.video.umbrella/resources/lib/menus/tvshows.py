@@ -26,6 +26,7 @@ from resources.lib.modules import tools
 getLS = control.lang
 getSetting = control.setting
 LOGINFO = log_utils.LOGINFO
+homeWindow = control.homeWindow
 
 class TVshows:
 	def __init__(self, notifications=True):
@@ -132,6 +133,7 @@ class TVshows:
 		self.useFullContext = getSetting('enable.umbrellawidgetcontext') == 'true'
 		self.showCounts = getSetting('tvshows.episodecount') == 'true'
 		self.useContainerTitles = getSetting('enable.containerTitles') == 'true'
+		self.is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
 
 	def get(self, url, idx=True, create_directory=True, folderName=''):
 		self.list = []
@@ -195,7 +197,7 @@ class TVshows:
 			log_utils.error()
 			if not self.list:
 				control.hide()
-				if self.notifications: control.notification(title=32002, message=33049)
+				if self.notifications and self.is_widget != True: control.notification(title=32002, message=33049)
 	def getMBDTopLists(self, create_directory=True, folderName=''):
 		self.list = []
 		try:
@@ -226,7 +228,7 @@ class TVshows:
 			log_utils.error()
 			if not self.list:
 				control.hide()
-				if self.notifications: control.notification(title=32002, message=33049)
+				if self.notifications and self.is_widget != True: control.notification(title=32002, message=33049)
     
 	def getSimkl(self, url, create_directory=True, folderName=''):
 		self.list = []
@@ -248,7 +250,7 @@ class TVshows:
 			log_utils.error()
 			if not self.list:
 				control.hide()
-				if self.notifications: control.notification(title=32002, message=33049)
+				if self.notifications and self.is_widget != True: control.notification(title=32002, message=33049)
 
 	def getTVmaze(self, url, idx=True, folderName=''):
 		from resources.lib.indexers import tvmaze
@@ -1254,7 +1256,7 @@ class TVshows:
 			log_utils.error()
 			if not self.list:
 				control.hide()
-				if self.notifications: control.notification(title=32326, message=33049)
+				if self.notifications and self.is_widget != True: control.notification(title=32326, message=33049)
 
 	def trakt_tvshow_progress(self, create_directory=True, folderName=''):
 		self.list = []
@@ -1298,7 +1300,7 @@ class TVshows:
 			log_utils.error()
 			if not self.list:
 				control.hide()
-				if self.notifications: control.notification(title=32326, message=33049)
+				if self.notifications and self.is_widget != True: control.notification(title=32326, message=33049)
 
 	def trakt_tvshow_watched(self, create_directory=True, folderName=''):
 		self.list = []
@@ -1407,12 +1409,16 @@ class TVshows:
 	def tvshowDirectory(self, items, next=True, isProgress=False, isWatched=False, folderName='Umbrella'):
 		from sys import argv # some functions like ActivateWindow() throw invalid handle less this is imported here.
 		if self.useContainerTitles: control.setContainerName(folderName)
+		returnHome = control.folderPath()
+		control.setHomeWindowProperty('umbrella.returnhome', returnHome)
 		if getSetting('trakt.directProgress.scrape') == 'true' and getSetting('enable.playnext') == 'true':
 			pass
 		else:
 			control.playlist.clear()
 		if not items: # with reuselanguageinvoker on an empty directory must be loaded, do not use sys.exit()
-			control.hide() ; control.notification(title=32002, message=33049)
+			control.hide()
+			if self.is_widget != True:
+				control.notification(title=32002, message=33049)
 		sysaddon, syshandle = 'plugin://plugin.video.umbrella/', int(argv[1])
 		is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
 		settingFanart = getSetting('fanart') == 'true'
@@ -1427,6 +1433,14 @@ class TVshows:
 		from resources.lib.modules import favourites
 		favoriteItems = favourites.getFavourites(content='tvshows')
 		favoriteItems = [x[1].get('tmdb') for x in favoriteItems]
+		try:
+			nexturl = items[0]['next']
+			url_params = dict(parse_qsl(urlsplit(nexturl).query))
+			if 'imdb.com' in nexturl and 'start' in url_params: page = int(((int(url_params.get('start')) - 1) / int(self.page_limit)) + 1)
+			elif 'www.imdb.com/movies-coming-soon/' in nexturl: page = int(re.search(r'(\d{4}-\d{2})', nexturl).group(1))
+			else: page = int(url_params.get('page'))
+		except:
+			page = 1
 		for i in items:
 			try:
 				imdb, tmdb, tvdb, year, trailer = i.get('imdb', ''), i.get('tmdb', ''), i.get('tvdb', ''), i.get('year', ''), i.get('trailer', '')
@@ -1497,6 +1511,8 @@ class TVshows:
 						cm.append((addToFavourites, 'RunPlugin(%s?action=add_favorite&meta=%s&content=%s)' % (sysaddon, sysmeta, 'tvshows')))
 				else:
 					cm.append((addToFavourites, 'RunPlugin(%s?action=add_favorite&meta=%s&content=%s)' % (sysaddon, sysmeta, 'tvshows')))
+				if not is_widget and page > 2:
+					cm.append((getLS(40477), 'RunPlugin(%s?action=return_home&folder=%s)' % (sysaddon, 'tvshows')))
 				cm.append(('[COLOR red]Umbrella Settings[/COLOR]', 'RunPlugin(%s?action=tools_openSettings)' % sysaddon))
 ####################################
 				if trailer: meta.update({'trailer': trailer}) # removed temp so it's not passed to CM items, only skin
@@ -1604,7 +1620,9 @@ class TVshows:
 		from sys import argv # some functions like ActivateWindow() throw invalid handle less this is imported here.
 		control.playlist.clear()
 		if not items: # with reuselanguageinvoker on an empty directory must be loaded, do not use sys.exit()
-			content = '' ; control.hide() ; control.notification(title=32002, message=33049)
+			content = ''
+			control.hide()
+			if self.is_widget != True: control.notification(title=32002, message=33049)
 		if self.useContainerTitles: control.setContainerName(folderName)
 		sysaddon, syshandle = 'plugin://plugin.video.umbrella/', int(argv[1])
 		addonThumb = control.addonThumb()

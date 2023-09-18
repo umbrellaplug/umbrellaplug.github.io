@@ -5041,3 +5041,11 @@ msgstr ""
 msgctxt "#40475"
 msgid "Digital Releases"
 msgstr ""
+
+msgctxt "#40476"
+msgid "Back to Movies"
+msgstr ""
+
+msgctxt "#40477"
+msgid "Back to TV Shows"
+msgstr ""

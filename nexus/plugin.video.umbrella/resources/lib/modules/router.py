@@ -28,6 +28,7 @@ def router(argv2):
 	query = params.get('query')
 	source = params.get('source')
 	select = params.get('select')
+	folder = params.get('folder')
 	current_setting = params.get('setting')
 	folderName = params.get('folderName')
 	if action is None:
@@ -331,9 +332,15 @@ def router(argv2):
 	elif action == 'seasons':
 		from resources.lib.menus import seasons
 		seasons.Seasons().get(tvshowtitle, year, imdb, tmdb, tvdb, params.get('art'))
+	####################################################
+	#---RETURN FROM LISTS
+	elif action == 'return_home':
+		control.backToMain(folder)
+	####################################################
 
 	####################################################
 	#---FAVOURITES
+	####################################################
 	elif action == 'add_favorite':
 		from resources.lib.modules import favourites
 		favourites.addFavourite(params.get('meta'), params.get('content'))

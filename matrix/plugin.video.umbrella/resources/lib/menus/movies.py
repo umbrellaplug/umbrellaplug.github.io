@@ -221,7 +221,9 @@ class Movies:
 			log_utils.error()
 			if not self.list:
 				control.hide()
-				if self.notifications: control.notification(title=32001, message=33049)
+				is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
+				if self.notifications and is_widget != True:
+					control.notification(title=32001, message=33049)
 
 	def getTMDb(self, url, create_directory=True, folderName=''):
 		self.list = []
@@ -243,7 +245,9 @@ class Movies:
 			log_utils.error()
 			if not self.list:
 				control.hide()
-				if self.notifications: control.notification(title=32001, message=33049)
+				is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
+				if self.notifications and is_widget != True: 
+					control.notification(title=32001, message=33049)
 	
 	def getMBDTopLists(self, create_directory=True, folderName=''): 
 		self.list = []
@@ -549,7 +553,8 @@ class Movies:
 			log_utils.error()
 			if not self.list:
 				control.hide()
-				if self.notifications: control.notification(title=32001, message=33049)
+				is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
+				if self.notifications and is_widget != True: control.notification(title=32001, message=33049)
 
 	def unfinished(self, url, idx=True, create_directory=True, folderName=''):
 		self.list = []
@@ -1698,8 +1703,6 @@ class Movies:
 			if self.list is None: self.list = []
 			is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
 			if create_directory: self.movieDirectory(self.list, folderName=folderName)
-			if is_widget:
-				control.refresh()
 			return self.list
 		except:
 			from resources.lib.modules import log_utils
@@ -1788,7 +1791,7 @@ class Movies:
 		is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
 		if not items: # with reuselanguageinvoker on an empty directory must be loaded, do not use sys.exit()
 			control.hide()
-			if not is_widget: control.notification(title=32001, message=33049)
+			if is_widget != True: control.notification(title=32001, message=33049)
 		if self.useContainerTitles: control.setContainerName(folderName)
 		from resources.lib.modules.player import Bookmarks
 		sysaddon, syshandle = 'plugin://plugin.video.umbrella/', int(argv[1])
@@ -1810,6 +1813,14 @@ class Movies:
 		from resources.lib.modules import favourites
 		favoriteItems = favourites.getFavourites(content='movies')
 		favoriteItems = [x[1].get('imdb') for x in favoriteItems]
+		try:
+			nexturl = items[0]['next']
+			url_params = dict(parse_qsl(urlsplit(nexturl).query))
+			if 'imdb.com' in nexturl and 'start' in url_params: page = int(((int(url_params.get('start')) - 1) / int(self.page_limit)) + 1)
+			elif 'www.imdb.com/movies-coming-soon/' in nexturl: page = int(re.search(r'(\d{4}-\d{2})', nexturl).group(1))
+			else: page = int(url_params.get('page'))
+		except:
+			page = 1
 		for i in items:
 			try:
 				imdb, tmdb, title, year = i.get('imdb', ''), i.get('tmdb', ''), i['title'], i.get('year', '')
@@ -1900,6 +1911,8 @@ class Movies:
 					if rescrape_method == '3':
 						cm.append((rescrapeMenu, 'PlayMedia(%s?action=play_Item&title=%s&year=%s&imdb=%s&tmdb=%s&meta=%s&rescrape=true&all_providers=true&select=0)' % (sysaddon, systitle, year, imdb, tmdb, sysmeta)))
 				cm.append((clearSourcesMenu, 'RunPlugin(%s?action=cache_clearSources)' % sysaddon))
+				if not is_widget and page > 2:
+					cm.append((getLS(40476), 'RunPlugin(%s?action=return_home&folder=%s)' % (sysaddon, 'movies')))
 				cm.append(('[COLOR red]Umbrella Settings[/COLOR]', 'RunPlugin(%s?action=tools_openSettings)' % sysaddon))
 ####################################
 				if trailer: meta.update({'trailer': trailer}) # removed temp so it's not passed to CM items, only infoLabels for skin
@@ -1968,8 +1981,14 @@ class Movies:
 
 	def addDirectory(self, items, queue=False, folderName=''):
 		from sys import argv # some functions like ActivateWindow() throw invalid handle less this is imported here.
+		is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
+		returnHome = control.folderPath()
+		homeWindow.setProperty('umbrella.returnhome', returnHome)
 		if not items: # with reuselanguageinvoker on an empty directory must be loaded, do not use sys.exit()
-			content = '' ; control.hide() ; control.notification(title=32001, message=33049)
+			content = ''
+			control.hide()
+			if is_widget != True:
+				control.notification(title=32001, message=33049)
 		if self.useContainerTitles: control.setContainerName(folderName)
 		sysaddon, syshandle = 'plugin://plugin.video.umbrella/', int(argv[1])
 		addonThumb = control.addonThumb()
