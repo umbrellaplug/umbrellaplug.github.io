@@ -68,7 +68,7 @@
 							<param name="list_id" value="270171"/>
 						</include>
 						<include content="WidgetListCategoryStacked" condition="!Skin.HasSetting(HideTraktResults)">
-							<param name="content_path" value="plugin://plugin.video.umbrella/?action=trakt_search_lists&amp;media_type=movies&amp;name=$INFO[Skin.String(SearchInputTraktEncoded)]"/>
+							<param name="content_path" value="plugin://plugin.video.umbrella/?action=trakt_search_lists&amp;media_type=shows&amp;name=$INFO[Skin.String(SearchInputTraktEncoded)]"/>
 							<param name="widget_header" value="TRAKT Movie Lists"/>
 							<param name="widget_target" value="videos"/>
 							<param name="list_id" value="27018"/>
