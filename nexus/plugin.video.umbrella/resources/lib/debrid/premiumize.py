@@ -103,7 +103,7 @@ class Premiumize:
 		else:
 			self.progressDialog = control.progressDialog
 			self.progressDialog.create(getLS(40054))
-		self.progressDialog.update(-1, line % (getLS(32513) % (self.highlightColor,token['verification_uri']), getLS(32514) % (self.highlightColor, token['user_code'])))
+			self.progressDialog.update(-1, line % (getLS(32513) % (self.highlightColor,token['verification_uri']), getLS(32514) % (self.highlightColor, token['user_code']), getLS(40390)))
 		# try:
 		# 	from resources.lib.modules.source_utils import copy2clip
 		# 	copy2clip(token['user_code'])

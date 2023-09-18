@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.31">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.32">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -173,7 +173,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.6.31 - September 18th, 2023[/B]
+[B]Update - v6.6.32 - September 18th, 2023[/B]
+--[Fix] Fixed broken authorization prompts. Sorry!
 --[Enhancement] Added Umbrella Favourites Movies, TV Shows, and Episodes can now be added as favourites.
 --[Enhancement] Added ability to show titles on all sections. (Remake any widgets made from Umbrella)
 --[Enhancement] Added new list for Digital Releases.

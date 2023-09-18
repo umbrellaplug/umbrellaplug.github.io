@@ -199,7 +199,7 @@ def getTraktDeviceToken(traktDeviceCode):
 			progressDialog.update(0, control.progress_line % (verification_url, user_code))
 		else:
 			progressDialog = control.progressDialog
-			progressDialog.create(control.lang(32073), control.progress_line % (verification_url, user_code, getLS(40390)))
+			progressDialog.create(control.lang(32073), control.progress_line % (verification_url, user_code))
 		try:
 			time_passed = 0
 			while not progressDialog.iscanceled() and time_passed < expires_in:
@@ -210,7 +210,7 @@ def getTraktDeviceToken(traktDeviceCode):
 					if response.status_code == 400:
 						time_passed = time.time() - start
 						progress = int(100)-int(100 * time_passed / expires_in)
-						progressDialog.update(progress, control.progress_line % (verification_url, user_code, getLS(40390)))
+						progressDialog.update(progress, control.progress_line % (verification_url, user_code))
 						control.sleep(max(traktDeviceCode['interval'], 1)*1000)
 				except requests.HTTPError as e:
 					log_utils.log('Request Error: %s' % str(e), __name__, log_utils.LOGDEBUG)

@@ -5513,7 +5513,7 @@ msgid "Trending Recently Released"
 msgstr ""
 
 msgctxt "#40390"
-msgid "[CR]Code has been copied to clipboard."
+msgid " "
 msgstr ""
 
 msgctxt "#40391"

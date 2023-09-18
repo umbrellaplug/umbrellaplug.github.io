@@ -37,7 +37,7 @@ infoWindow = xbmcgui.Window(12003)
 item = xbmcgui.ListItem
 progressDialog = xbmcgui.DialogProgress()
 progressDialogBG = xbmcgui.DialogProgressBG()
-progress_line = '%s[CR]%s[CR]%s'
+progress_line = '%s[CR]%s'
 
 addItem = xbmcplugin.addDirectoryItem
 content = xbmcplugin.setContent
@@ -673,7 +673,6 @@ def syncAccounts():
 			setSetting('sources.filepursuit.color.display', '[COLOR=FF00CC29]FF00CC29[/COLOR]')
 			setSetting('umbrella.colorSecond', 'true')
 			notification('Umbrella', 'Reloading addon due to new settings added.')
-			return reload_addon()
 		if setting('umbrella.externalWarning') != 'true':
 			setSetting('umbrella.externalWarning', 'true')
 			from resources.help import help

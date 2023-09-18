@@ -124,7 +124,7 @@ class AllDebrid:
 		url = base_url + 'pin/get?agent=%s' % user_agent
 		response = session.get(url, timeout=self.timeout).json()
 		response = response['data']
-		line = '%s\n%s\n%s'
+		line = '%s\n%s'
 		if control.setting('dialogs.useumbrelladialog') == 'true':
 			self.progressDialog = control.getProgressWindow(getLS(40056), ad_qr, 1)
 			self.progressDialog.set_controls()

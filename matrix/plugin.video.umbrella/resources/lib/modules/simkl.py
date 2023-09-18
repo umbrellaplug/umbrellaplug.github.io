@@ -73,7 +73,7 @@ class SIMKL:
 		else:
 			self.progressDialog = control.progressDialog
 			self.progressDialog.create(getLS(40346))
-		self.progressDialog.update(-1, line % (getLS(32513) % (self.highlightColor, 'https://simkl.com/pin/'), getLS(32514) % (self.highlightColor,response['user_code'])))
+		self.progressDialog.update(-1, line % (getLS(32513) % (self.highlightColor, 'https://simkl.com/pin/'), getLS(32514) % (self.highlightColor,response['user_code']), getLS(40390)))
 		self.auth_timeout = int(response['expires_in'])
 		self.auth_step = int(response['interval'])
 		self.device_code = response['device_code']
