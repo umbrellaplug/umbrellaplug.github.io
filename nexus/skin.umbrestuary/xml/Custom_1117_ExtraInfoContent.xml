@@ -2,7 +2,11 @@
 <includes>
   <include name="Changelog">
     <label>[B][COLOR accent_color]Version $INFO[System.AddonVersion(skin.umbrestuary)][/COLOR][/B]
-- Updated Fentastic to work for Umbrella.
+- Fixed crashing bug.
+- Added overlay for background media playback
+- Added more sources for choosing of custom background
+- Added network sources for choosing of custom background
+- Removed [B]Tip: Crashes[/B] window
     </label>
   </include>
 

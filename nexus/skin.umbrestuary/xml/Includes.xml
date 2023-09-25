@@ -35,7 +35,6 @@
 	<include file="Custom_1117_ExtraInfoContent.xml"/>
 	<include file="Custom_1118_SetupGuideViewer.xml"/>
 	<include file="Custom_1119_ChangelogViewer.xml" />
-	<include file="Custom_1120_Tip-CrashesViewer.xml" />
 	<include file="Custom_1121_SearchResults.xml" />
 	<include file="Variables.xml" />
 	<constant name="DepthDialog">0.50</constant>

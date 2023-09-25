@@ -451,7 +451,7 @@
 					<label>Choose default background</label>
 					<label2>$INFO[Skin.String(CustomBackground)]</label2>
 					<include>DefaultSettingButton</include>
-					<onclick>Skin.SetImage(CustomBackground)</onclick>
+					<onclick>RunScript(script.umbrestuary.helper, mode=set_image)</onclick>
 				</control>
 				<control type="button" id="605">
 					<label>   - Restore default background</label>
@@ -562,13 +562,6 @@
 					<onclick>SetProperty(SetupGuide,True)</onclick>
 					<onclick>SetProperty(TextViewerHeader,[B]Setup Guide[/B],Home)</onclick>
 					<onclick>ActivateWindow(1118)</onclick>
-				</control>
-				<control type="button" id="6232">
-					<include>DefaultSettingButton</include>
-					<label>[B]Tip:[/B] Crashes</label>
-					<onclick>SetProperty(Tip-Crashes,True)</onclick>
-					<onclick>SetProperty(TextViewerHeader,[B]Crashes[/B],Home)</onclick>
-					<onclick>ActivateWindow(1120)</onclick>
 				</control>
 			</control>
 			<control type="image">

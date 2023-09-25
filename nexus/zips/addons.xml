@@ -348,7 +348,7 @@
 - Fixed incorrect meta causing exception on marking as watched. -umbrella
 		</news>
 	</extension>
-</addon><addon id="script.umbrestuary.helper" name="Umbrestuary Helper" version="0.6.16" provider-name="Tikipeter, Ivar Brandt">
+</addon><addon id="script.umbrestuary.helper" name="Umbrestuary Helper" version="0.6.17" provider-name="Tikipeter, Ivar Brandt">
     <requires>
         <import addon="xbmc.python" version="3.0.0" />
         <import addon="script.module.requests" version="2.19.1" />
@@ -369,7 +369,7 @@
         <description lang="en_NZ">Umbrestuary Helper for the Umbrestuary Skin.</description>
         <description lang="en_US">Umbrestuary Helper for the Umbrestuary Skin.</description>
     </extension>
-</addon><addon id="skin.umbrestuary" version="1.0.19" name="Umbrestuary" provider-name="Ivar Brandt, Umbrella">
+</addon><addon id="skin.umbrestuary" version="1.0.20" name="Umbrestuary" provider-name="Ivar Brandt, Umbrella">
 	<requires>
 		<import addon="xbmc.gui" version="5.16.0" />
 		<import addon="script.umbrestuary.helper" />

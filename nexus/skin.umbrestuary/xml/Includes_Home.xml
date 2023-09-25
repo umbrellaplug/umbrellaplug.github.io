@@ -196,22 +196,6 @@
 					<width>1350</width>
 					<orientation>horizontal</orientation>
 					<itemgap>15</itemgap>
-					<control type="group" id="$PARAM[list_id]599">
-						<visible>Container($PARAM[list_id]).IsUpdating</visible>
-						<control type="image">
-							<width>50</width>
-							<height>50</height>
-							<aspectratio aligny="center">keep</aspectratio>
-							<texture colordiffuse="button_focus2">dialogs/extendedprogress/loading-back.png</texture>
-						</control>
-						<control type="image">
-							<width>50</width>
-							<height>50</height>
-							<aspectratio aligny="center">keep</aspectratio>
-							<texture colordiffuse="unfocused_text">dialogs/extendedprogress/loading.png</texture>
-							<animation effect="rotate" center="auto" start="360" end="0" time="750" loop="true" condition="true">Conditional</animation>
-						</control>
-					</control>
 					<control type="label" id="$PARAM[list_id]666">
 						<visible>!Container($PARAM[list_id]).IsUpdating</visible>
 						<width max="1350">auto</width>
@@ -476,6 +460,9 @@
         <param name="label">$PARAM[widget_header]</param>
         <param name="list_id" value="$PARAM[list_id]" />
       </include>
+			<include content="BusyListSpinnerWidget">
+				<param name="list_id" value="$PARAM[list_id]" />
+			</include>
       <control type="fixedlist" id="$PARAM[list_id]">
         <left>0</left>
         <top>115</top> 
@@ -519,6 +506,9 @@
         <param name="label">$PARAM[widget_header]</param>
         <param name="list_id" value="$PARAM[list_id]" />
       </include>
+			<include content="BusyListSpinnerWidget">
+				<param name="list_id" value="$PARAM[list_id]" />
+			</include>
       <control type="fixedlist" id="$PARAM[list_id]">
         <left>0</left>
         <top>115</top> 
@@ -663,6 +653,9 @@
 				<param name="label">$PARAM[widget_header]</param>
 				<param name="list_id" value="$PARAM[list_id]"/>
 			</include>
+			<include content="BusyListSpinnerWidget">
+				<param name="list_id" value="$PARAM[list_id]" />
+			</include>
 			<control type="fixedlist" id="$PARAM[list_id]">
 				<left>0</left>
 				<top>115</top>
@@ -707,6 +700,9 @@
 			<include content="CategoryLabelWidget">
 				<param name="label">$PARAM[widget_header]</param>
 				<param name="list_id" value="$PARAM[list_id]"/>
+			</include>
+			<include content="BusyListSpinnerWidget">
+				<param name="list_id" value="$PARAM[list_id]" />
 			</include>
 			<control type="fixedlist" id="$PARAM[list_id]">
 				<left>0</left>
@@ -894,6 +890,9 @@
 				<param name="label">$PARAM[widget_header]</param>
 				<param name="list_id" value="$PARAM[list_id]"/>
 			</include>
+			<include content="BusyListSpinnerWidget">
+				<param name="list_id" value="$PARAM[list_id]" />
+			</include>
 			<!-- Widget Height Spacing -->
 			<control type="fixedlist" id="$PARAM[list_id]">
 				<left>0</left>
@@ -954,6 +953,9 @@
 			<include content="CategoryLabelWidget">
 				<param name="label">$PARAM[widget_header]</param>
 				<param name="list_id" value="$PARAM[list_id]"/>
+			</include>
+			<include content="BusyListSpinnerWidget">
+				<param name="list_id" value="$PARAM[list_id]" />
 			</include>
 			<!-- Widget Height Spacing -->
 			<control type="fixedlist" id="$PARAM[list_id]">
@@ -1154,6 +1156,9 @@
 				<param name="label">$PARAM[widget_header]</param>
 				<param name="list_id" value="$PARAM[list_id]"/>
 				<param name="visible" value="$PARAM[visible]"/>
+			</include>
+			<include content="BusyListSpinnerWidget">
+				<param name="list_id" value="$PARAM[list_id]" />
 			</include>
 			<control type="fixedlist" id="$PARAM[list_id]">
 				<left>0</left>
@@ -1975,13 +1980,12 @@
 		<scrolltime tween="cubic" easing="out">500</scrolltime>
 		<orientation>horizontal</orientation>
 		<onleft>9000</onleft>
-		<onright>noop</onright>
+		<onright>$PARAM[list_id]</onright>
 		<onback>9000</onback>
-		<onunfocus>SetProperty(listposition,$INFO[Container($PARAM[list_id]).Position],home)</onunfocus>
-		<onfocus>Control.Move($PARAM[list_id],-$INFO[Container($PARAM[list_id]).Position])</onfocus>
-		<onfocus>RunScript(script.umbrestuary.helper,mode=test_api)</onfocus>
-		<!-- <onfocus>Control.Move($PARAM[list_id],$INFO[Window(home).Property(listposition)])</onfocus> -->
 		<onback>SetFocus($PARAM[list_id],0,absolute)</onback>
+		<onfocus>Control.Move($PARAM[list_id],-$INFO[Container($PARAM[list_id]).Position])</onfocus>
+		<onfocus>Control.Move($PARAM[list_id],$INFO[Window(home).Property(listposition)])</onfocus>
+		<onunfocus>SetProperty(listposition,$INFO[Container($PARAM[list_id]).Position],home)</onunfocus>
 		<!-- <preloaditems>2</preloaditems> -->
 	</include>
 
@@ -1989,10 +1993,10 @@
     <scrolltime tween="cubic" easing="out">500</scrolltime>
     <orientation>horizontal</orientation>
     <onleft>9000</onleft>
-		<onback>9000</onback>
     <onright>$PARAM[list_id]</onright>
-    <onfocus>RunScript(script.umbrestuary.helper,mode=widget_monitor&amp;list_id=$PARAM[list_id])</onfocus>
+		<onback>9000</onback>
     <onback>SetFocus($PARAM[list_id],0,absolute)</onback>
+    <onfocus>RunScript(script.umbrestuary.helper,mode=widget_monitor&amp;list_id=$PARAM[list_id])</onfocus>
     <!-- <preloaditems>2</preloaditems> -->
   </include>
 
@@ -2019,7 +2023,34 @@
 					<height>80</height>
 					<aspectratio aligny="center">keep</aspectratio>
 					<texture colordiffuse="unfocused_text">dialogs/extendedprogress/loading.png</texture>
-					<animation effect="rotate" center="auto" start="360" end="0" time="750" loop="true" condition="true">Conditional</animation>
+					<animation effect="rotate" center="auto" start="360" end="0" time="1500" loop="true" condition="true">Conditional</animation>
+				</control>
+			</control>
+		</definition>
+	</include>
+
+	<include name="BusyListSpinnerWidget">
+		<param name="posy">75</param>
+		<param name="visible">true</param>
+		<definition>
+			<control type="group" id="$PARAM[list_id]599">
+				<height>160</height>
+				<left>55</left>
+				<visible>Container($PARAM[list_id]).IsUpdating</visible>
+				<control type="image">
+					<top>$PARAM[posy]</top>
+					<width>50</width>
+					<height>50</height>
+					<aspectratio aligny="center">keep</aspectratio>
+					<texture colordiffuse="button_focus2">dialogs/extendedprogress/loading-back.png</texture>
+				</control>
+				<control type="image">
+					<top>$PARAM[posy]</top>
+					<width>50</width>
+					<height>50</height>
+					<aspectratio aligny="center">keep</aspectratio>
+					<texture colordiffuse="unfocused_text">dialogs/extendedprogress/loading.png</texture>
+					<animation effect="rotate" center="auto" start="360" end="0" time="1500" loop="true" condition="true">Conditional</animation>
 				</control>
 			</control>
 		</definition>

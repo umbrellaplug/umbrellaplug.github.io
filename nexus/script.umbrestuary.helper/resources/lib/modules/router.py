@@ -73,3 +73,8 @@ def routing():
         from modules.OMDb import set_api_key
 
         return set_api_key()
+
+    if mode == "set_image":
+        from modules.custom_actions import set_image
+
+        return set_image()

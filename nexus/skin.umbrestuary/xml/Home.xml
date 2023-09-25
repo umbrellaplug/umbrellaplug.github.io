@@ -30,6 +30,34 @@
 			<control type="group" id="2000">
 				<left>462</left>
 				<include>OpenClose_Right</include>
+				<control type="group" id="27000">
+					<visible>false</visible>
+					<include content="Visible_Right_Delayed">
+						<param name="id" value="addons"/>
+					</include>
+					<control type="grouplist" id="27001">
+						<include>WidgetGroupListCommon</include>
+						<pagecontrol>27010</pagecontrol>
+						<include content="WidgetListSquare">
+							<param name="content_path" value="addons://sources/video/"/>
+							<param name="widget_header" value="$LOCALIZE[1037]"/>
+							<param name="widget_target" value="videos"/>
+							<param name="sortby" value="lastused"/>
+							<param name="sortorder" value="descending"/>
+							<param name="list_id" value="27100"/>
+							<param name="fallback_icon" value="DefaultAddon.png"/>
+						</include>
+						<include content="WidgetListSquare">
+							<param name="content_path" value="addons://sources/executable/"/>
+							<param name="widget_header" value="$LOCALIZE[1043]"/>
+							<param name="widget_target" value="programs"/>
+							<param name="sortby" value="lastused"/>
+							<param name="sortorder" value="descending"/>
+							<param name="list_id" value="27300"/>
+							<param name="fallback_icon" value="DefaultAddon.png"/>
+						</include>
+					</control>
+				</control>
 				<!-- MOVIES -->
 				<control type="group" id="19000">
 					<visible>String.IsEqual(Container(9000).ListItem.Property(id),movies)</visible>
@@ -919,6 +947,14 @@
 								<property name="id">addons</property>
 								<visible>!Skin.HasSetting(HomeMenuNoProgramsButton)</visible>
 							</item>
+							<!-- <item>
+								<label>JerryRig</label>
+								<property name="menu_id">$NUMBER[27000]</property>
+								<onclick>ActivateWindow(1100)</onclick>
+								<thumb>icons/sidemenu/addons.png</thumb>
+								<property name="id">addons</property>
+								<visible>false</visible>
+							</item> -->
 							<item>
 								<label>$LOCALIZE[1]</label>
 								<onclick>ActivateWindow(Pictures)</onclick>
@@ -957,10 +993,10 @@
 					<control type="grouplist" id="700">
 						<orientation>horizontal</orientation>
 						<itemgap>0</itemgap>
-            <left>7</left>
-						<width>480</width>
+            <left>45</left>
+						<width>380</width>
 						<height>110</height>
-						<top>110</top>
+						<top>115</top>
 						<onup>SetFocus(9000,99,absolute)</onup>
 						<ondown>SetFocus(9000,0,absolute)</ondown>
 						<onright>2000</onright>
@@ -1117,8 +1153,8 @@
 				<animation effect="slide" end="0,-90" time="300" tween="sine" easing="inout" condition="$EXP[infodialog_active]">conditional</animation>
 				<animation effect="fade" start="0" end="100" time="300">WindowOpen</animation>
 				<animation effect="fade" start="100" end="0" time="200">WindowClose</animation>
-				<top>30</top>
-				<left>90</left>
+				<top>35</top>
+				<left>35</left>
         <control type="image">
           <left>19</left>
           <top>0</top>

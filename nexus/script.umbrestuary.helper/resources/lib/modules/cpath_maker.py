@@ -186,7 +186,9 @@ class CPaths:
         list_items = []
         if file != default_path:
             listitem = Listitem(
-                "Use [B]%s[/B] as path" % label, "Set as path", offscreen=True
+                "Use [COLOR dodgerblue]%s[/COLOR] as path" % label,
+                "Set as path",
+                offscreen=True,
             )
             listitem.setArt({"icon": thumbnail})
             listitem.setProperty(
@@ -195,7 +197,16 @@ class CPaths:
             )
             list_items.append(listitem)
         for i in results:
-            listitem = Listitem("%s »" % i["label"], "Browse path...", offscreen=True)
+            stripped_label = i["label"]
+            stripped_label = stripped_label.replace("[B]", "").replace("[/B]", "")
+            while "[COLOR" in stripped_label:
+                start = stripped_label.find("[COLOR")
+                end = stripped_label.find("]", start) + 1
+                stripped_label = stripped_label[:start] + stripped_label[end:]
+            stripped_label = stripped_label.replace("[/COLOR]", "")
+            listitem = Listitem(
+                "%s »" % stripped_label, "Browse path...", offscreen=True
+            )
             listitem.setArt({"icon": i["thumbnail"]})
             listitem.setProperty(
                 "item",

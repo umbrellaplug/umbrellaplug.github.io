@@ -107,9 +107,9 @@
 					<animation effect="slide" time="300" start="-492,0" end="0,0" tween="sine" easing="inout">VisibleChange</animation>
 					<visible allowhiddenfocus="true">![String.IsEqual(ListItem.DBtype,movie) | String.IsEqual(ListItem.DBtype,tvshow) | String.IsEqual(ListItem.DBtype,season) | String.IsEqual(ListItem.DBtype,episode)] + String.IsEmpty(Skin.String(DatabaseStatus))</visible>
 					<control type="fixedlist" id="9000">
-						<left>25</left>
+						<left>19</left>
 						<top>230</top>
-            <width>492</width>
+						<width>492</width>
 						<bottom>-10</bottom>
 						<movement>7</movement>
 						<focusposition>0</focusposition>
@@ -172,8 +172,8 @@
 						<visible>String.IsEmpty(Skin.String(DatabaseStatus))</visible>
 						<orientation>horizontal</orientation>
 						<itemgap>0</itemgap>
-            <left>7</left>
-						<width>480</width>
+            <left>17</left>
+						<width>380</width>
 						<height>110</height>
 						<top>15</top>
 						<onup>SetFocus(9000,99,absolute)</onup>
