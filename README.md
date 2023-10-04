@@ -42,10 +42,7 @@ Currently Supported Debrid Providers:
 **The plugin will not work without at least 1 debrid account**
 
 ## Issues
-**Issues are closed**  
-
-## Discussions
-**Discussions are closed also because people decided to use them to substitute issues when issues were closed.**  
+Please verify your issue is not a setting before opening an issue. Any issues opened without a log will not be looked at and will be closed. Please be respectful. 
 
 ## Logs
 Enable Logs: Go to Umbrella settings and select Debugging on the left hand side.
@@ -61,7 +58,7 @@ Set your settings like this:
 
 **Q:** Do you take feature requests?
 
-**A:** Not anymore.
+**A:** Some yes. Open an issue and use the feature request template.
 
 
 **Q:** How do I contact you?
