@@ -108,7 +108,7 @@ class Provider(kodion.AbstractProvider):
                  'youtube.succeeded': 30575,
                  'youtube.failed': 30576,
                  'youtube.settings': 30577,
-                 'youtube.dash.enable.confirm': 30579,
+                 'youtube.mpd.enable.confirm': 30579,
                  'youtube.reset.access.manager.confirm': 30581,
                  'youtube.my_subscriptions_filtered': 30584,
                  'youtube.add.my_subscriptions.filter': 30587,
@@ -437,7 +437,7 @@ class Provider(kodion.AbstractProvider):
 
     @kodion.RegisterProviderPath('^/playlist/(?P<playlist_id>[^/]+)/$')
     def _on_playlist(self, context, re_match):
-        self.set_content_type(context, kodion.constants.content_type.VIDEOS)
+        self.set_content_type(context, kodion.constants.content_type.EPISODES)
 
         result = []
 
@@ -461,7 +461,7 @@ class Provider(kodion.AbstractProvider):
 
     @kodion.RegisterProviderPath('^/channel/(?P<channel_id>[^/]+)/playlist/(?P<playlist_id>[^/]+)/$')
     def _on_channel_playlist(self, context, re_match):
-        self.set_content_type(context, kodion.constants.content_type.VIDEOS)
+        self.set_content_type(context, kodion.constants.content_type.EPISODES)
         client = self.get_client(context)
         result = []
 
@@ -484,7 +484,7 @@ class Provider(kodion.AbstractProvider):
 
     @kodion.RegisterProviderPath('^/channel/(?P<channel_id>[^/]+)/playlists/$')
     def _on_channel_playlists(self, context, re_match):
-        self.set_content_type(context, kodion.constants.content_type.FILES)
+        self.set_content_type(context, kodion.constants.content_type.VIDEOS)
         result = []
 
         channel_id = re_match.group('channel_id')
@@ -525,7 +525,7 @@ class Provider(kodion.AbstractProvider):
 
     @kodion.RegisterProviderPath('^/channel/(?P<channel_id>[^/]+)/live/$')
     def _on_channel_live(self, context, re_match):
-        self.set_content_type(context, kodion.constants.content_type.VIDEOS)
+        self.set_content_type(context, kodion.constants.content_type.EPISODES)
         result = []
 
         channel_id = re_match.group('channel_id')
@@ -560,7 +560,7 @@ class Provider(kodion.AbstractProvider):
         if method == 'channel' and not channel_id:
             return False
 
-        self.set_content_type(context, kodion.constants.content_type.VIDEOS)
+        self.set_content_type(context, kodion.constants.content_type.EPISODES)
 
         resource_manager = self.get_resource_manager(context)
 
@@ -648,7 +648,7 @@ class Provider(kodion.AbstractProvider):
     # noinspection PyUnusedLocal
     @kodion.RegisterProviderPath('^/location/mine/$')
     def _on_my_location(self, context, re_match):
-        self.set_content_type(context, kodion.constants.content_type.FILES)
+        self.set_content_type(context, kodion.constants.content_type.VIDEOS)
 
         settings = context.get_settings()
         result = list()
@@ -793,7 +793,7 @@ class Provider(kodion.AbstractProvider):
         subscriptions = yt_subscriptions.process(method, self, context)
 
         if method == 'list':
-            self.set_content_type(context, kodion.constants.content_type.FILES)
+            self.set_content_type(context, kodion.constants.content_type.VIDEOS)
             channel_ids = []
             for subscription in subscriptions:
                 channel_ids.append(subscription.get_channel_id())
@@ -1025,9 +1025,9 @@ class Provider(kodion.AbstractProvider):
         context.set_param('q', search_text)
 
         if search_type == 'video':
-            self.set_content_type(context, kodion.constants.content_type.VIDEOS)
+            self.set_content_type(context, kodion.constants.content_type.EPISODES)
         else:
-            self.set_content_type(context, kodion.constants.content_type.FILES)
+            self.set_content_type(context, kodion.constants.content_type.VIDEOS)
 
         if page == 1 and search_type == 'video' and not event_type and not hide_folders:
             if not channel_id and not location:
@@ -1077,8 +1077,7 @@ class Provider(kodion.AbstractProvider):
             context.addon().openSettings()
             context.get_ui().refresh_container()
         elif switch == 'mpd':
-            use_dash = context.use_inputstream_adaptive()
-            if use_dash:
+            if context.use_inputstream_adaptive():
                 xbmcaddon.Addon(id='inputstream.adaptive').openSettings()
             else:
                 settings.set_bool('kodion.video.quality.mpd', False)
@@ -1361,7 +1360,7 @@ class Provider(kodion.AbstractProvider):
         settings = context.get_settings()
         _ = self.get_client(context)  # required for self.is_logged_in()
 
-        self.set_content_type(context, kodion.constants.content_type.FILES)
+        self.set_content_type(context, kodion.constants.content_type.VIDEOS)
 
         result = []
 
@@ -1596,7 +1595,7 @@ class Provider(kodion.AbstractProvider):
     @staticmethod
     def set_content_type(context, content_type):
         context.set_content_type(content_type)
-        if content_type == kodion.constants.content_type.VIDEOS:
+        if content_type == kodion.constants.content_type.EPISODES:
             context.add_sort_method(kodion.constants.sort_method.UNSORTED,
                                     kodion.constants.sort_method.VIDEO_RUNTIME,
                                     kodion.constants.sort_method.DATE_ADDED,

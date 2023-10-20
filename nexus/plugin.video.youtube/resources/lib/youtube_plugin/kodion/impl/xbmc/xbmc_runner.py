@@ -8,10 +8,9 @@
     See LICENSES/GPL-2.0-only for more information.
 """
 
+import xbmc
 import xbmcgui
 import xbmcplugin
-
-from infotagger.listitem import ListItemInfoTag
 
 from ..abstract_provider_runner import AbstractProviderRunner
 from ...exceptions import KodionException
@@ -68,6 +67,13 @@ class XbmcRunner(AbstractProviderRunner):
                 self.handle, succeeded=True,
                 updateListing=options.get(AbstractProvider.RESULT_UPDATE_LISTING, False),
                 cacheToDisc=options.get(AbstractProvider.RESULT_CACHE_TO_DISC, True))
+
+            # set alternative view mode
+            if context.get_settings().is_override_view_enabled():
+                view_mode = context.get_ui().get_view_mode()
+                if view_mode is not None:
+                    context.log_debug('Override view mode to "%d"' % view_mode)
+                    xbmc.executebuiltin('Container.SetViewMode(%d)' % view_mode)
         else:
             # handle exception
             pass
@@ -95,7 +101,7 @@ class XbmcRunner(AbstractProviderRunner):
 
         item = xbmcgui.ListItem(label=directory_item.get_name(), offscreen=True)
 
-        info_tag = ListItemInfoTag(item, tag_type='video')
+        info_tag = xbmc_items.ListItemInfoTag(item, tag_type='video')
 
         # only set fanart is enabled
         if directory_item.get_fanart() and self.settings.show_fanart():
