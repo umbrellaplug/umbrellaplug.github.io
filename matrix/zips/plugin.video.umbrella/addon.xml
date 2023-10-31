@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.33">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.34">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
 		<import addon="script.module.requests"/>
@@ -172,13 +172,15 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.6.33 - October 31st, 2023[/B]
+[B]Update - v6.6.34 - October 31st, 2023[/B]
 --[THANKS] Thanks to u/Omars-comin and u/Mammoth-Bullfrog-274 for testing.
 --[FIX] Changes made for database name difference in Kodi 21.
 --[ENHANCEMENT] Plex is now built in.
 --[ENHANCEMENT] Easynews is now built in.
 --[ENHANCEMENT] FilePursuit is now built in.
 --[ENHANCEMENT] GDrive is now built in.
+--[FIX] Change made to resolve scrobble failure.
+
 		</news>
 	</extension>
 
