@@ -327,6 +327,25 @@ def router(argv2):
 		tvshows.TVshows().tvshow_watched(url, folderName=folderName)
 
 	####################################################
+	#---Plex
+	####################################################
+	elif action == 'plexAuth':
+		from resources.lib.modules import plex
+		plex.Plex().auth()
+
+	elif action == 'plexRevoke':
+		from resources.lib.modules import plex
+		plex.Plex().revoke()
+
+	elif action == 'plexSelectShare':
+		from resources.lib.modules import plex
+		plex.Plex().get_plexshare_resource()
+
+	elif action == 'plexSeeShare':
+		from resources.lib.modules import plex
+		plex.Plex().see_active_shares()
+
+	####################################################
 	#---SEASONS
 	####################################################
 	elif action == 'seasons':

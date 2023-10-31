@@ -6159,3 +6159,59 @@ msgstr ""
 msgctxt "#40477"
 msgid "Back to TV Shows"
 msgstr ""
+
+msgctxt "#40478"
+msgid "Enable Plex Scraper"
+msgstr ""
+
+msgctxt "#40479"
+msgid "Plex Token"
+msgstr ""
+
+msgctxt "#40480"
+msgid "Plex Client ID"
+msgstr ""
+
+msgctxt "#40481"
+msgid "Plex Device ID"
+msgstr ""
+
+msgctxt "#40482"
+msgid "Plexshare Source Title"
+msgstr ""
+
+msgctxt "#40483"
+msgid "Plexshare accessToken"
+msgstr ""
+
+msgctxt "#40484"
+msgid "Plexshare url"
+msgstr ""
+
+msgctxt "#40485"
+msgid "Authorize Plex"
+msgstr ""
+
+msgctxt "#40486"
+msgid "See Active PlexShares"
+msgstr ""
+
+msgctxt "#40487"
+msgid "(Select/Re-Select) PlexShare Source"
+msgstr ""
+
+msgctxt "#40488"
+msgid "Revoke Plex"
+msgstr ""
+
+msgctxt "#40489"
+msgid "EASYNEWS"
+msgstr ""
+
+msgctxt "#40490"
+msgid "Exclude Adult Results"
+msgstr ""
+
+msgctxt "#40491"
+msgid "Title Check Results"
+msgstr ""

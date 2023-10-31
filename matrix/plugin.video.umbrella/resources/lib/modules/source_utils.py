@@ -118,6 +118,12 @@ def supported_video_extensions():
 		from resources.lib.modules import log_utils
 		log_utils.error()
 
+def scraper_error(provider):
+	import traceback
+	from resources.lib.modules import log_utils
+	failure = traceback.format_exc()
+	log_utils.log(provider.upper() + ' - Exception: \n' + str(failure), caller='scraper_error', level=log_utils.LOGERROR)
+
 def getFileType(name_info=None, url=None):
 	try:
 		file_type = ''

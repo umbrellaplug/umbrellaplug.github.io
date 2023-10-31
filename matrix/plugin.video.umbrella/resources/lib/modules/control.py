@@ -38,6 +38,7 @@ item = xbmcgui.ListItem
 progressDialog = xbmcgui.DialogProgress()
 progressDialogBG = xbmcgui.DialogProgressBG()
 progress_line = '%s[CR]%s'
+progress_line2 = '%s[CR]%s[CR]%s'
 
 addItem = xbmcplugin.addDirectoryItem
 content = xbmcplugin.setContent
@@ -91,6 +92,7 @@ subsFile = joinPath(dataPath, 'substitute.db')
 fanarttvCacheFile = joinPath(dataPath, 'fanarttv.db')
 metaInternalCacheFile = joinPath(dataPath, 'video_cache.db')
 favouritesFile = joinPath(dataPath, 'favourites.db')
+plexSharesFile = joinPath(dataPath, 'plexshares.db')
 trailer = 'plugin://plugin.video.youtube/play/?video_id=%s'
 
 def getKodiVersion(full=False):
@@ -601,6 +603,9 @@ def disable_enable_addon():
     jsonrpc('{"jsonrpc": "2.0", "id":1, "method": "Addons.SetAddonEnabled", "params": {"addonid": "plugin.video.umbrella", "enabled": true }}')
     xbmc.log('[ plugin.video.umbrella ] umbrella re-enabled', 1)
 
+def addonEnabled(addon_id):
+	return condVisibility('System.AddonIsEnabled(%s)' % addon_id)
+
 def update_local_addon():
     execute('UpdateLocalAddons')
 
@@ -630,13 +635,6 @@ def syncAccounts():
 			pass
 		else:
 			modulename = setting('external_provider.module')
-			setSetting('easynews.user', addon(modulename).getSetting('easynews.user'))
-			setSetting('easynews.password', addon(modulename).getSetting('easynews.password'))
-			setSetting('filepursuit.api', addon(modulename).getSetting('filepursuit.api'))
-			setSetting('plex.token', addon(modulename).getSetting('plex.token'))
-			setSetting('plex.client_id', addon(modulename).getSetting('plex.client_id'))
-			setSetting('plex.device_id', addon(modulename).getSetting('plex.device_id'))
-			setSetting('gdrive.cloudflare_url', addon(modulename).getSetting('gdrive.cloudflare_url'))
 
 		if setting('umbrella.colorSecond') == 'false':
 			setSetting('highlight.color', 'FFFFFF33')

@@ -33,3 +33,13 @@ def get_sc(title):
 		from resources.lib.modules import log_utils
 		log_utils.error()
 		return title
+
+def normalize(title):
+	try:
+		import unicodedata
+		title = ''.join(c for c in unicodedata.normalize('NFKD', title) if unicodedata.category(c) != 'Mn')
+		return str(title)
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+		return title

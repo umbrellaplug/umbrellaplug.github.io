@@ -173,6 +173,7 @@ class Collections:
 		self.addDirectoryItem('Magic Mike (2012-2015)', 'collections&url=%s&folderName=%s' % (quote_plus(self.tmdb_link % '33337'),'Magic Mike (2012-2015)'), 'collectionboxset.png', 'DefaultVideoPlaylists.png')
 		self.addDirectoryItem('Major League (1989-1998)', 'collections&url=%s&folderName=%s' % (quote_plus(self.tmdb_link % '33338'),'Major League (1989-1998)'), 'collectionboxset.png', 'DefaultVideoPlaylists.png')
 		self.addDirectoryItem('Man from Snowy River (1982-1988)', 'collections&url=%s&folderName=%s' % (quote_plus(self.tmdb_link % '33339'),'Man from Snowy River (1982-1988)'), 'collectionboxset.png', 'DefaultVideoPlaylists.png')
+		self.addDirectoryItem('Marvel (2008-2023)', 'collections&url=%s&folderName=%s' % (quote_plus(self.tmdb_link % '8276438'),'Marvel (2008-2023)'), 'collectionboxset.png', 'DefaultVideoPlaylists.png')
 		self.addDirectoryItem('The Mask (1994-2005)', 'collections&url=%s&folderName=%s' % (quote_plus(self.tmdb_link % '33340'),'The Mask (1994-2005)'), 'collectionboxset.png', 'DefaultVideoPlaylists.png')
 		self.addDirectoryItem('The Matrix (1999-2021)', 'collections&url=%s&folderName=%s' % (quote_plus(self.tmdbCollection_link % '2344'),'The Matrix (1999-2021)'), 'collectionboxset.png', 'DefaultVideoPlaylists.png')
 		self.addDirectoryItem('Maze Runner(2014-2018)', 'collections&url=%s&folderName=%s' % (quote_plus(self.tmdb_link % '13182'),'Maze Runner(2014-2018)'), 'collectionboxset.png', 'DefaultVideoPlaylists.png')

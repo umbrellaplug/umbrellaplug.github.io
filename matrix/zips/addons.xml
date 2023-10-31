@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.32">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.33">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -173,24 +173,13 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.6.32 - September 18th, 2023[/B]
---[Fix] Fixed broken authorization prompts. Sorry!
---[Enhancement] Added Umbrella Favourites Movies, TV Shows, and Episodes can now be added as favourites.
---[Enhancement] Added ability to show titles on all sections. (Remake any widgets made from Umbrella)
---[Enhancement] Added new list for Digital Releases.
---[Enhancement] Added setting to show or hide release year with movies in general settings.
---[Enhancement] Added Trakt section for skin.
---[Enhancement] Added People search for skin.
---[Enhancement] Added sorting for favourites.
---[Enhancement] Changed text on resolving popups to no longer be bold.
---[Enhancement] Added new search function for trakt lists from skin.
---[Enhancement] Added context menu item to return to movie or tv shows main list.
---[Fix] Removed Refresh Container from Similar from Library.
---[Fix] Removed Copy to Clipboard from Authorization screens.
---[Fix] Changed code for movie and show collection and watchlist import to improve speed.
---[Fix] Made changes to tv show and seasonal level information to avoid imdb id being overwritten.
---[Fix] Changed all occurences of container names to encode for url.
---[Fix] Fixed sort TV Shows sort.
+[B]Update - v6.6.33 - October 31st, 2023[/B]
+--[THANKS] Thanks to u/Omars-comin and u/Mammoth-Bullfrog-274 for testing.
+--[FIX] Changes made for database name difference in Kodi 21.
+--[ENHANCEMENT] Plex is now built in.
+--[ENHANCEMENT] Easynews is now built in.
+--[ENHANCEMENT] FilePursuit is now built in.
+--[ENHANCEMENT] GDrive is now built in.
 		</news>
 	</extension>
 

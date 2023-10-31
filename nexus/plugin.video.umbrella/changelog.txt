@@ -1,3 +1,11 @@
+[B]Update - v6.6.33 - October 31st, 2023[/B]
+--[THANKS] Thanks to u/Omars-comin and u/Mammoth-Bullfrog-274 for testing.
+--[FIX] Changes made for database name difference in Kodi 21.
+--[ENHANCEMENT] Plex is now built in.
+--[ENHANCEMENT] Easynews is now built in.
+--[ENHANCEMENT] FilePursuit is now built in.
+--[ENHANCEMENT] GDrive is now built in.
+
 [B]Update - v6.6.32 - September 18th, 2023[/B]
 --[Fix] Fixed broken authorization prompts. Sorry!
 --[Enhancement] Added Umbrella Favourites Movies, TV Shows, and Episodes can now be added as favourites.

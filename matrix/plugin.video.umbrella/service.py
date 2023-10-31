@@ -311,7 +311,12 @@ class PremAccntNotification:
 		control.log('[ plugin.video.umbrella ] Debrid Account Expiry Notification Service Starting...', LOGINFO)
 		self.duration = [(15, 10), (11, 7), (8, 4), (5, 2), (3, 0)]
 		if control.setting('alldebridusername') != '' and control.setting('alldebridexpirynotice') == 'true':
-			account_info = alldebrid.AllDebrid().account_info()['user']
+			try:
+				account_info = alldebrid.AllDebrid().account_info()['user']
+			except:
+				account_info = None
+				from resources.lib.modules import log_utils
+				log_utils.error()
 			if account_info:
 				if not account_info['isSubscribed']:
 					# log_utils.log('AD account_info = %s' % account_info, log_utils.LOGINFO)

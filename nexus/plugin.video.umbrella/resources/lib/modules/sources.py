@@ -20,6 +20,7 @@ from resources.lib.modules import log_utils
 from resources.lib.modules import string_tools
 from resources.lib.modules.source_utils import supported_video_extensions, getFileType, aliases_check
 from resources.lib.cloud_scrapers import cloudSources
+from resources.lib.internal_scrapers import internalSources
 #from cocoscrapers import sources as fs_sources
 import xbmc
 import xbmcgui
@@ -1040,7 +1041,7 @@ class Sources:
 		if getSetting('easynews.enable') == 'true':
 			easynewsList = [i for i in direct if i['provider'] == 'easynews']
 			directstart.extend(easynewsList)
-		if getSetting('plex.enable') == 'true':
+		if getSetting('plexshare.enable') == 'true':
 			plexList = [i for i in direct if i['provider'] == 'plexshare']
 			directstart.extend(plexList)
 		if getSetting('gdrive.enable') == 'true':
@@ -1514,7 +1515,8 @@ class Sources:
 			if getSetting('external_provider.module', '') == '':
 				#no external_provider_module
 				control.notification(message=control.lang(40447))
-				self.sourceDict = cloudSources()
+				self.sourceDict = internalSources()
+				self.sourceDict.extend = cloudSources()
 			else:
 				try:
 					from sys import path
@@ -1523,24 +1525,26 @@ class Sources:
 					fs_sources = getattr(import_module(getSetting('external_provider.name')), 'sources')
 					if self.all_providers == 'true':
 						self.sourceDict = fs_sources(ret_all=True)
+						self.sourceDict.extend(internalSources())
 					else:
-						#self.sourceDict = self.get_internal_scrapers()
 						self.sourceDict = fs_sources()
 						self.sourceDict.extend(cloudSources())
+						self.sourceDict.extend(internalSources())
 				except:
 					control.notification(message=control.lang(40448))
-					self.sourceDict = cloudSources()
+					self.sourceDict = internalSources()
+					self.sourceDict.extend(cloudSources())
 		else:
-			self.sourceDict = cloudSources()
+			self.sourceDict = internalSources()
+			self.sourceDict.extend(cloudSources())
 		from resources.lib.debrid import premium_hosters
 		self.debrid_resolvers = debrid.debrid_resolvers()
-
 		self.prem_providers = [] # for sorting by debrid and direct source links priority
 		if control.setting('easynews.user'): self.prem_providers += [('easynews', int(getSetting('easynews.priority')))]
-		if control.setting('filepursuit.api'): self.prem_providers += [('filepursuit', int(getSetting('filepursuit.priority')))]
+		if control.setting('filepursuittoken'): self.prem_providers += [('filepursuit', int(getSetting('filepursuit.priority')))]
 		#if control.setting('furk.user_name'): self.prem_providers += [('furk', int(getSetting('furk.priority')))]
-		if control.setting('gdrive.cloudflare_url'): self.prem_providers += [('gdrive', int(getSetting('gdrive.priority')))]
-		if control.setting('plex.token'): self.prem_providers += [('plexshare', int(getSetting('plexshare.priority')))]
+		if control.setting('gdrivetoken'): self.prem_providers += [('gdrive', int(getSetting('gdrive.priority')))]
+		if control.setting('plexsharetoken'): self.prem_providers += [('plexshare', int(getSetting('plexshare.priority')))]
 		self.prem_providers += [(d.name, int(d.sort_priority)) for d in self.debrid_resolvers]
 
 		def cache_prDict():

@@ -2904,7 +2904,7 @@
 						<dependency type="visible">
 							<and>
 								<condition operator="is" setting="sources.highlightmethod">1</condition>
-								<condition operator="!is" setting="plex.token"/>
+								<condition operator="!is" setting="plexsharetoken"/>
 							</and>
 						</dependency>
 					</dependencies>
@@ -2929,7 +2929,7 @@
 						<dependency type="visible">
 							<and>
 								<condition operator="is" setting="sources.highlightmethod">1</condition>
-								<condition operator="!is" setting="gdrive.cloudflare_url"/>
+								<condition operator="!is" setting="gdrivetoken"/>
 							</and>
 						</dependency>
 					</dependencies>
@@ -2954,7 +2954,7 @@
 						<dependency type="visible">
 							<and>
 								<condition operator="is" setting="sources.highlightmethod">1</condition>
-								<condition operator="!is" setting="filepursuit.api"/>
+								<condition operator="!is" setting="filepursuittoken"/>
 							</and>
 						</dependency>
 					</dependencies>
@@ -4225,72 +4225,34 @@
 				</setting>
 			</group>
 			<group id="2" label="40196">
-				<setting id="plex.enable" type="boolean" label="32081" help="">
+				<setting id="plexsharetoken" type="string" label="40479" help="">
 					<level>0</level>
-					<default>true</default>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40479</heading>
+						<hidden>true</hidden>
+					</control>
+				</setting>
+				<setting id="plexshare.enable" type="boolean" label="32081" help="">
+					<level>0</level>
+					<default>false</default>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="!is" setting="plex.token"/>
+							<condition operator="!is" setting="plexsharetoken"/>
 						</dependency>
 					</dependencies>
 					<control type="toggle"/>
-				</setting>
-				<setting id="plex.token" type="string" label="40197" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="enable">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>40197</heading>
-						<hidden>true</hidden>
-					</control>
-				</setting>
-				<setting id="plex.client_id" type="string" label="40198" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="enable">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>40198</heading>
-						<hidden>true</hidden>
-					</control>
-				</setting>
-				<setting id="plex.device_id" type="string" label="40199" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="enable">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>40199</heading>
-						<hidden>true</hidden>
-					</control>
 				</setting>
 				<setting id="plexshare.priority" type="integer" label="40005" help="">
 					<level>0</level>
@@ -4306,8 +4268,8 @@
 						</dependency>
 						<dependency type="visible">
 							<and>
-								<condition operator="!is" setting="plex.token"/>
-								<condition operator="is" setting="plex.enable">true</condition>
+								<condition operator="!is" setting="plexsharetoken"/>
+								<condition operator="is" setting="plexshare.enable">true</condition>
 							</and>
 						</dependency>
 					</dependencies>
@@ -4315,19 +4277,7 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-			</group>
-			<group id="3" label="32327">
-				<setting id="easynews.enable" type="boolean" label="32081" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="easynews.user"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="easynews.user" type="string" label="40006" help="">
+				<setting id="plex.client_id" type="string" label="40480" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -4338,37 +4288,225 @@
 							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 						<dependency type="visible">
-							<and>
-								<condition operator="!is" setting="easynews.user"/>
-								<condition operator="is" setting="easynews.enable">true</condition>
-							</and>
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40480</heading>
+						<hidden>true</hidden>
+					</control>
+				</setting>
+				<setting id="plex.device_id" type="string" label="40481" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40481</heading>
+						<hidden>true</hidden>
+					</control>
+				</setting>
+				<setting id="plexshare.sourceTitle" type="string" label="40482" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40482</heading>
+					</control>
+				</setting>
+				<setting id="plexshare.accessToken" type="string" label="40483" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40483</heading>
+						<hidden>true</hidden>
+					</control>
+				</setting>
+				<setting id="plexshare.url" type="string" label="40484" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40484</heading>
+						<hidden>true</hidden>
+					</control>
+				</setting>
+				<setting id="plexAuthButton" type="action" label="40485" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=plexAuth)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<or>
+								<condition operator="is" setting="plex.device_id"/>
+								<condition operator="is" setting="plex.client_id"/>
+								<condition operator="is" setting="plexsharetoken"/>
+							</or>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="plexSeeActiveShares" type="action" label="40486" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=plexSeeShare)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="plexsharetoken"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+					</control>
+				</setting>
+				<setting id="plexSelectShareButton" type="action" label="40487" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=plexSelectShare)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="plexsharetoken"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="plexRevokeButton" type="action" label="40488" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=plexRevoke)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<or>
+								<condition operator="!is" setting="plex.device_id"/>
+								<condition operator="!is" setting="plex.client_id"/>
+								<condition operator="!is" setting="plexsharetoken"/>
+							</or>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
+					</control>
+				</setting>
+			</group>
+			<group id="3" label="32327">
+				<setting id="easynews.enable" type="boolean" label="32081" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="easynews.user" type="string" label="40006" help="" parent="easynews.enable">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="easynews.enable">true</condition>
 						</dependency>
 					</dependencies>
 					<control type="edit" format="string">
 						<heading>40006</heading>
 					</control>
 				</setting>
-				<setting id="easynews.password" type="string" label="32307" help="">
+				<setting id="easynews.password" type="string" label="32307" help="" parent="easynews.enable">
 					<level>0</level>
 					<default/>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
 					<dependencies>
-						<dependency type="enable">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
 						<dependency type="visible">
-							<and>
-								<condition operator="!is" setting="easynews.user"/>
-								<condition operator="is" setting="easynews.enable">true</condition>
-							</and>
+							<condition operator="is" setting="easynews.enable">true</condition>
 						</dependency>
 					</dependencies>
 					<control type="edit" format="string">
 						<heading>32307</heading>
-						<hidden>true</hidden>
 					</control>
+				</setting>
+				<setting id="easynews.moderation" type="boolean" label="40490" help="" parent="easynews.enable">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="easynews.enable">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="easynews.title.chk" type="boolean" label="40491" help="" parent="easynews.enable">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="easynews.enable">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="easyNewsTitleCheckButton" type="action" label="32137" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=EasyNews_titleCheck)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="easynews.password">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action"/>
 				</setting>
 				<setting id="easynews.priority" type="integer" label="40005" help="">
 					<level>0</level>
@@ -4397,24 +4535,16 @@
 			<group id="4" label="40203">
 				<setting id="filepursuit.enable" type="boolean" label="32081" help="">
 					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="filepursuit.api"/>
-						</dependency>
-					</dependencies>
+					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="filepursuit.api" type="string" label="32309" help="">
+				<setting id="filepursuittoken" type="string" label="32309" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
 					<dependencies>
-						<dependency type="enable">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
 						<dependency type="visible">
 							<condition operator="is" setting="filepursuit.enable">true</condition>
 						</dependency>
@@ -4437,7 +4567,7 @@
 						</dependency>
 						<dependency type="visible">
 							<and>
-								<condition operator="!is" setting="filepursuit.api"/>
+								<condition operator="!is" setting="filepursuittoken"/>
 								<condition operator="is" setting="filepursuit.enable">true</condition>
 							</and>
 						</dependency>
@@ -4450,24 +4580,39 @@
 			<group id="5" label="40205">
 				<setting id="gdrive.enable" type="boolean" label="32081" help="">
 					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="gdrive.title.chk" type="boolean" label="40491" help="" parent="gdrive.enable">
+					<level>0</level>
 					<default>true</default>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="!is" setting="gdrive.cloudflare_url"/>
+							<condition operator="is" setting="gdrive.enable">true</condition>
 						</dependency>
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
-				<setting id="gdrive.cloudflare_url" type="string" label="40206" help="">
+				<setting id="googleDriveTitleCheck" type="action" label="32137" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=gdrive_titleCheck)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="gdrive.enable">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action"/>
+				</setting>
+				<setting id="gdrivetoken" type="string" label="40206" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
 					<dependencies>
-						<dependency type="enable">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
 						<dependency type="visible">
 							<condition operator="is" setting="gdrive.enable">true</condition>
 						</dependency>
@@ -4490,7 +4635,7 @@
 						</dependency>
 						<dependency type="visible">
 							<and>
-								<condition operator="!is" setting="gdrive.cloudflare_url"/>
+								<condition operator="!is" setting="gdrivetoken"/>
 								<condition operator="is" setting="gdrive.enable">true</condition>
 							</and>
 						</dependency>
