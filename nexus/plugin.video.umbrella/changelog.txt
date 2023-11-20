@@ -1,4 +1,4 @@
-[B]Update - v6.6.36 - November 20th, 2023[/B]
+[B]Update - v6.6.37 - November 20th, 2023[/B]
 --[Enhancement] Added language filter for trakt genres.
 --[Enhancement] Added Decades for Trakt genres.
 --[Enhancement] Added Trakt genres for TV and Movies.
