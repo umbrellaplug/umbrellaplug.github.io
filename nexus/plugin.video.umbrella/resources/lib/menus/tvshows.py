@@ -655,7 +655,7 @@ class TVshows:
 			self.list = cache.get(self.trakt_list,self.trakt_hours, url, self.trakt_user, folderName) #trakt most anticipated with genre.
 		if listType == 'decades':
 			from resources.lib.menus import navigator
-			navigator.Navigator().trakt_decades(genre=genre, mediatype='Movies',url=url, folderName=folderName)
+			navigator.Navigator().trakt_decades(genre=genre, mediatype='TVShows',url=url, folderName=folderName)
 		if self.list: self.worker()
 		if self.list: self.movieDirectory(self.list, folderName=folderName)
 		if self.list is None: self.list = []
