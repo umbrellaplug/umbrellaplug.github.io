@@ -32,6 +32,7 @@ class TVshows:
 	def __init__(self, notifications=True):
 		self.list = []
 		self.page_limit = getSetting('page.item.limit')
+		self.genre_limit = getSetting('limit.imdb.genres')
 		self.search_page_limit = getSetting('search.page.limit')
 		self.lang = control.apiLanguage()['tmdb']
 		self.notifications = notifications
@@ -56,24 +57,24 @@ class TVshows:
 		self.imdb_link = 'https://www.imdb.com'
 		self.persons_link = 'https://www.imdb.com/search/name/?count=100&name='
 		self.personlist_link = 'https://www.imdb.com/search/name/?count=100&gender=male,female'
-		self.popular_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&num_votes=100,&release_date=,date[0]&sort=moviemeter,asc&count=%s&start=1' % self.page_limit
-		self.airing_link = 'https://www.imdb.com/search/title/?title_type=tv_episode&release_date=date[1],date[0]&sort=moviemeter,asc&count=%s&start=1' % self.page_limit
-		self.active_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&num_votes=10,&production_status=active&sort=moviemeter,asc&count=%s&start=1' % self.page_limit
-		self.premiere_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&languages=en&num_votes=10,&release_date=date[60],date[0]&sort=release_date,desc&count=%s&start=1' % self.page_limit
-		self.rating_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&num_votes=5000,&release_date=,date[0]&sort=user_rating,desc&count=%s&start=1' % self.page_limit
-		self.views_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&num_votes=100,&release_date=,date[0]&sort=num_votes,desc&count=%s&start=1' % self.page_limit
-		self.person_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&release_date=,date[0]&role=%s&sort=year,desc&count=%s&start=1' % ('%s', self.page_limit)
-		self.genre_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&num_votes=3000,&release_date=,date[0]&genres=%s&sort=%s&count=%s&start=1' % ('%s', self.imdb_sort(type='imdbshows'), self.page_limit)
-		self.keyword_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&release_date=,date[0]&keywords=%s&sort=%s&count=%s&start=1' % ('%s', self.imdb_sort(type='imdbshows'), self.page_limit)
-		self.language_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&num_votes=100,&production_status=released&primary_language=%s&sort=%s&count=%s&start=1' % ('%s', self.imdb_sort(type='imdbshows'), self.page_limit)
-		self.certification_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&release_date=,date[0]&certificates=%s&sort=%s&count=%s&start=1' % ('%s', self.imdb_sort(type='imdbshows'), self.page_limit)
-		self.year_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&num_votes=100,&production_status=released&year=%s,%s&sort=moviemeter,asc&count=%s&start=1' % ('%s', '%s', self.page_limit)
+		self.popular_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&num_votes=100,&release_date=,date[0]&sort=moviemeter,asc&count=%s&start=1' % self.genre_limit
+		self.airing_link = 'https://www.imdb.com/search/title/?title_type=tv_episode&release_date=date[1],date[0]&sort=moviemeter,asc&count=%s&start=1' % self.genre_limit
+		self.active_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&num_votes=10,&production_status=active&sort=moviemeter,asc&count=%s&start=1' % self.genre_limit
+		self.premiere_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&languages=en&num_votes=10,&release_date=date[60],date[0]&sort=release_date,desc&count=%s&start=1' % self.genre_limit
+		self.rating_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&num_votes=5000,&release_date=,date[0]&sort=user_rating,desc&count=%s&start=1' % self.genre_limit
+		self.views_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&num_votes=100,&release_date=,date[0]&sort=num_votes,desc&count=%s&start=1' % self.genre_limit
+		self.person_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&release_date=,date[0]&role=%s&sort=year,desc&count=%s&start=1' % ('%s', self.genre_limit)
+		self.genre_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&num_votes=3000,&release_date=,date[0]&genres=%s&sort=%s&count=%s&start=1' % ('%s', self.imdb_sort(type='imdbshows'), self.genre_limit)
+		self.keyword_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&release_date=,date[0]&keywords=%s&sort=%s&count=%s&start=1' % ('%s', self.imdb_sort(type='imdbshows'),self.genre_limit)
+		self.language_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&num_votes=100,&production_status=released&primary_language=%s&sort=%s&count=%s&start=1' % ('%s', self.imdb_sort(type='imdbshows'), self.genre_limit)
+		self.certification_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&release_date=,date[0]&certificates=%s&sort=%s&count=%s&start=1' % ('%s', self.imdb_sort(type='imdbshows'), self.genre_limit)
+		self.year_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&num_votes=100,&production_status=released&year=%s,%s&sort=moviemeter,asc&count=%s&start=1' % ('%s', '%s', self.genre_limit)
 		self.imdbwatchlist_link = 'https://www.imdb.com/user/ur%s/watchlist?sort=date_added,desc' % self.imdb_user # only used to get users watchlist ID
 		self.imdbwatchlist2_link = 'https://www.imdb.com/list/%s/?view=detail&sort=%s&title_type=tvSeries&start=1' % ('%s', self.imdb_sort(type='shows.watchlist'))
 		self.imdblists_link = 'https://www.imdb.com/user/ur%s/lists?tab=all&sort=mdfd&order=desc&filter=titles' % self.imdb_user
 		self.imdblist_link = 'https://www.imdb.com/list/%s/?view=detail&sort=%s&title_type=tvSeries,tvMiniSeries&start=1' % ('%s', self.imdb_sort())
 		self.imdbratings_link = 'https://www.imdb.com/user/ur%s/ratings?sort=your_rating,desc&mode=detail&start=1' % self.imdb_user # IMDb ratings does not take title_type so filter in imdb_list() function
-		self.anime_link = 'https://www.imdb.com/search/keyword/?keywords=anime&title_type=tvSeries,miniSeries&release_date=,date[0]&sort=moviemeter,asc&count=%s&start=1' % self.page_limit
+		self.anime_link = 'https://www.imdb.com/search/keyword/?keywords=anime&title_type=tvSeries,miniSeries&release_date=,date[0]&sort=moviemeter,asc&count=%s&start=1' % self.genre_limit
 
 		self.trakt_user = getSetting('trakt.user.name').strip()
 		self.traktCredentials = trakt.getTraktCredentialsInfo()
@@ -86,6 +87,11 @@ class TVshows:
 		self.traktlist_link = 'https://api.trakt.tv/users/%s/lists/%s/items/shows?limit=%s&page=1' % ('%s', '%s', self.page_limit) # local pagination, limit and page used to advance, pulled from request
 		self.progress_link = 'https://api.trakt.tv/sync/watched/shows?extended=noseasons'
 		self.progresstv_link = 'https://api.trakt.tv/users/me/watched/shows'
+		self.trakt_genres = 'https://api.trakt.tv/genres/shows/'
+		self.traktanticipated_link = 'https://api.trakt.tv/shows/anticipated?limit=%s&page=1' % self.page_limit 
+		self.trakttrending_link = 'https://api.trakt.tv/shows/trending?limit=%s&page=1' % self.page_limit
+		self.traktmostplayed_link = 'https://api.trakt.tv/shows/played/weekly?limit=%s&page=1' % self.page_limit
+		self.traktmostwatched_link = 'https://api.trakt.tv/shows/watched/weekly?limit=%s&page=1' % self.page_limit
 		self.trakttrending_link = 'https://api.trakt.tv/shows/trending?page=1&limit=%s' % self.page_limit
 		self.showspecials = getSetting('tv.specials') == 'true'
 		
@@ -184,7 +190,7 @@ class TVshows:
 				if idx: self.worker()
 				# self.sort() # switched to request sorting for imdb
 			elif u in self.imdb_link:
-				self.list = cache.get(self.imdb_list, self.imdblist_hours, url, folderName)
+				self.list = cache.get(self.imdb_genre_list, self.imdblist_hours, url, folderName)
 				if idx: self.worker()
 			elif u in self.mbdlist_list_items:
 				self.list = self.mdb_list_items(url, create_directory=False)
@@ -294,7 +300,7 @@ class TVshows:
 		self.list = []
 		try:
 			historyurl = 'https://api.trakt.tv/users/me/history/shows?limit=20&page=1'
-			randomItems = self.trakt_list(historyurl, self.trakt_use, folderName)
+			randomItems = self.trakt_list(historyurl, self.trakt_user, folderName)
 			if not randomItems: return
 			import random
 			item = randomItems[random.randint(0, len(randomItems) - 1)]
@@ -610,14 +616,94 @@ class TVshows:
 			('Biography', 'biography', True), ('Comedy', 'comedy', True, '35'), ('Crime', 'crime', True, '80'), ('Drama', 'drama', True, '18'),
 			('Family', 'family', True, '10751'), ('Fantasy', 'fantasy', True), ('Game-Show', 'game_show', True), ('History', 'history', True),
 			('Horror', 'horror', True), ('Music', 'music', True), ('Musical', 'musical', True), ('Mystery', 'mystery', True, '9648'),
-			('News', 'news', True, '10763'), ('Reality', 'reality_tv', True, '10764'), ('Romance', 'romance', True), ('Science Fiction', 'sci_fi', True, '10765'),
+			('News', 'news', True, '10763'), ('Romance', 'romance', True), ('Science Fiction', 'sci_fi', True, '10765'),
 			('Sport', 'sport', True), ('Talk-Show', 'talk_show', True, '10767'), ('Thriller', 'thriller', True), ('War', 'war', True, '10768'), ('Western', 'western', True, '37')]
-		for i in genres:
-			if self.imdb_link in url: self.list.append({'content': 'genres', 'name': cleangenre.lang(i[0], self.lang), 'url': url % i[1] if i[2] else self.keyword_link % i[1], 'image': i[0] + '.jpg', 'icon': i[0] + '.png', 'action': 'tvshows&folderName=%s' % cleangenre.lang(i[0], self.lang)})
-			if self.tmdb_link in url:
-				try: self.list.append({'content': 'genres', 'name': cleangenre.lang(i[0], self.lang), 'url': url % ('%s', i[3]), 'image': i[0] + '.jpg', 'icon': i[0] + '.png', 'action': 'tmdbTvshows&folderName=%s' % cleangenre.lang(i[0], self.lang)})
-				except: pass
+		if 'trakt_tvshow_genre' in url:
+				titems = trakt.getTraktAsJson(self.trakt_genres)
+				for l in titems:
+					if l.get('name') != 'None':
+						self.list.append({'content': 'genres', 'name': l.get('name'), 'url':l.get('slug'), 'image': l.get('name') + '.jpg', 'icon': l.get('name') + '.png', 'action': 'trakt_tvshow_genre&mediatype=TVShows&genre=%s&folderName=%s' % (l.get('name'),cleangenre.lang(l.get('name'), self.lang))})
+		else:	
+			for i in genres:
+				if self.imdb_link in url: self.list.append({'content': 'genres', 'name': cleangenre.lang(i[0], self.lang), 'url': url % i[1] if i[2] else self.keyword_link % i[1], 'image': i[0] + '.jpg', 'icon': i[0] + '.png', 'action': 'tvshows&folderName=%s' % cleangenre.lang(i[0], self.lang)})
+				if self.tmdb_link in url:
+					try: self.list.append({'content': 'genres', 'name': cleangenre.lang(i[0], self.lang), 'url': url % ('%s', i[3]), 'image': i[0] + '.jpg', 'icon': i[0] + '.png', 'action': 'tmdbTvshows&folderName=%s' % cleangenre.lang(i[0], self.lang)})
+					except: pass
 		self.addDirectory(self.list, folderName=folderName)
+		return self.list
+
+	def trakt_genre_list(self, listType='', genre='', url='', folderName=''):
+		if self.lang == 'en':
+			filterLang = 'en'
+		else:
+			filterLang = self.lang+',en'
+		genreslug = url
+		if listType == 'trending':
+			url = self.trakttrending_link +'&genres=%s&language=%s'% (genreslug, filterLang)
+			self.list = cache.get(self.trakt_list,self.trakt_hours, url, self.trakt_user, folderName) #trakt trending with genre
+		if listType == 'popular':
+			url = self.traktpopular_link +'&genres=%s&language=%s'% (genreslug, filterLang)
+			self.list = cache.get(self.trakt_list,self.trakt_hours, url, self.trakt_user, folderName) #trakt popular with genre.
+		if listType =='mostplayed':
+			url =self.traktmostplayed_link +'&genres=%s&language=%s'% (genreslug, filterLang)
+			self.list = cache.get(self.trakt_list,self.trakt_hours, url, self.trakt_user, folderName) #trakt mostplayed with genre.
+		if listType == 'mostwatched':
+			url = self.traktmostwatched_link +'&genres=%s&language=%s'% (genreslug, filterLang)
+			self.list = cache.get(self.trakt_list,self.trakt_hours, url, self.trakt_user, folderName) #trakt mostwatched with genre.
+		if listType == 'anticipated':
+			url = self.traktanticipated_link +'&genres=%s&language=%s'% (genreslug, filterLang)
+			self.list = cache.get(self.trakt_list,self.trakt_hours, url, self.trakt_user, folderName) #trakt most anticipated with genre.
+		if listType == 'decades':
+			from resources.lib.menus import navigator
+			navigator.Navigator().trakt_decades(genre=genre, mediatype='Movies',url=url, folderName=folderName)
+		if self.list: self.worker()
+		if self.list: self.movieDirectory(self.list, folderName=folderName)
+		if self.list is None: self.list = []
+		return self.list
+
+	def trakt_genre_list_decade(self, decade='', listType='', genre='', url='', folderName=''):
+		if self.lang == 'en':
+			filterLang = 'en'
+		else:
+			filterLang = self.lang+',en'
+		genreslug = url
+		decade = decade
+		folderName = folderName + ' ('+decade+')'
+		if decade == '1930-1939':
+			decades = '1930-1939'
+		elif decade == '1940-1949':
+			decades = '1940-1949'
+		elif decade == '1950-1959':
+			decades = '1950-1959'
+		elif decade == '1960-1969':
+			decades = '1960-1969'
+		elif decade == '1970-1979':
+			decades = '1970-1979'
+		elif decade == '1980-1989':
+			decades = '1980-1989'
+		elif decade == '1990-1999':
+			decades = '1990-1999'
+		elif decade == '2000-2009':
+			decades = '2000-2009'
+		elif decade == '2010-2019':
+			decades = '2010-2019'
+		elif decade == '2020-2029':
+			decades = '2020-2024'
+		if listType == 'trending':
+			url = self.trakttrending_link +'&genres=%s&years=%s&languages=%s'% (genreslug, decades, filterLang)
+			self.list = cache.get(self.trakt_list,self.trakt_hours, url, self.trakt_user, folderName) #trakt trending with genre
+		if listType == 'popular':
+			url = self.traktpopular_link+'&genres=%s&years=%s&languages=%s'% (genreslug, decades, filterLang)
+			self.list = cache.get(self.trakt_list,self.trakt_hours, url, self.trakt_user, folderName) #trakt popular with genre.
+		if listType =='mostplayed':
+			url =self.traktmostplayed_link+'&genres=%s&years=%s&languages=%s'% (genreslug, decades, filterLang)
+			self.list = cache.get(self.trakt_list,self.trakt_hours, url, self.trakt_user, folderName) #trakt mostplayed with genre.
+		if listType == 'mostwatched':
+			url = self.traktmostwatched_link+'&genres=%s&years=%s&languages=%s'% (genreslug, decades, filterLang)
+			self.list = cache.get(self.trakt_list,self.trakt_hours, url, self.trakt_user, folderName) #trakt mostwatched with genre.
+		if self.list: self.worker()
+		if self.list: self.movieDirectory(self.list, folderName=folderName)
+		if self.list is None: self.list = []
 		return self.list
 
 	def networks(self, folderName=''):
@@ -1196,6 +1282,42 @@ class TVshows:
 				from resources.lib.modules import log_utils
 				log_utils.error()
 		return list
+
+	def imdb_genre_list(self, url, isRatinglink=False, folderName=''):
+			list = [] ; items = [] ; dupes = []
+			try:
+				for i in re.findall(r'date\[(\d+)\]', url):
+					url = url.replace('date[%s]' % i, (self.date_time - timedelta(days=int(i))).strftime('%Y-%m-%d'))
+				def imdb_watchlist_id(url):
+					return client.parseDOM(client.request(url), 'meta', ret='content', attrs = {'property': 'pageId'})[0]
+				if url == self.imdbwatchlist_link:
+					url = cache.get(imdb_watchlist_id, 8640, url)
+					url = self.imdbwatchlist2_link % url
+				result = client.request(url)
+				result = result.replace('\n', ' ')
+				items = client.parseDOM(result, 'div', attrs = {'class': 'ipc-metadata-list-summary-item__tc'})
+			except:
+				from resources.lib.modules import log_utils
+				log_utils.error()
+				return
+			next= ''
+			for item in items:
+				try:
+					main_title = client.parseDOM(item, 'h3', attrs = {'class': 'ipc-title__text'})
+					title = main_title[0].split('. ')[1]
+					year = client.parseDOM(item, 'span', attrs = {'class': '.*?dli-title-metadata-item'})[0]
+					year = year[:4]
+					if int(year) > int((self.date_time).strftime('%Y')): raise Exception()
+					imdb = client.parseDOM(item, 'a', ret='href')[0]
+					imdb = re.findall(r'(tt\d*)', imdb)[0]
+					if imdb in dupes: raise Exception()
+					dupes.append(imdb)
+					rating = votes = ''
+					list.append({'title': title, 'tvshowtitle': title, 'originaltitle': title, 'year': year, 'imdb': imdb, 'tmdb': '', 'tvdb': '', 'rating': rating, 'votes': votes, 'next': next})
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+			return list
 
 	def imdb_person_list(self, url):
 		list = []

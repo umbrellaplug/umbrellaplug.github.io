@@ -67,6 +67,7 @@ def addView(content):
 
 def setView(content, viewDict=None):
 	for i in range(0, 200):
+		control.sleep(300)
 		if control.condVisibility('Container.Content(%s)' % content):
 			try:
 				skin = control.skin
@@ -79,13 +80,24 @@ def setView(content, viewDict=None):
 				return control.execute('Container.SetViewMode(%s)' % str(view))
 			except:
 				try:
-					if skin not in viewDict: return
-					else:
-						return control.execute('Container.SetViewMode(%s)' % str(viewDict[skin]))
+					control.sleep(100)
+					skin = control.skin
+					record = (skin, content)
+					dbcon = db.connect(control.viewsFile)
+					dbcur = dbcon.cursor()
+					view = dbcur.execute('''SELECT * FROM views WHERE (skin=? AND view_type=?)''', (record[0], record[1])).fetchone()
+					if not view: raise Exception()
+					view = view[2]
+					return control.execute('Container.SetViewMode(%s)' % str(view))
 				except:
-					from resources.lib.modules import log_utils
-					log_utils.error()
-					return
+					try:
+						if skin not in viewDict: return
+						else:
+							return control.execute('Container.SetViewMode(%s)' % str(viewDict[skin]))
+					except:
+						from resources.lib.modules import log_utils
+						log_utils.error()
+						return
 			finally:
 				dbcur.close() ; dbcon.close()
-		control.sleep(100)
+	control.sleep(100)

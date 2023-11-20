@@ -31,6 +31,10 @@ def router(argv2):
 	folder = params.get('folder')
 	current_setting = params.get('setting')
 	folderName = params.get('folderName')
+	mediatype = params.get('mediatype')
+	listType = params.get('listtype')
+	genre = params.get('genre')
+	decade = params.get('decades')
 	if action is None:
 		from resources.lib.menus import navigator
 		isUpdate = control.homeWindow.getProperty('umbrella.updated')
@@ -93,6 +97,29 @@ def router(argv2):
 	elif action == 'movieGenres':
 		from resources.lib.menus import movies
 		movies.Movies().genres(url, folderName=folderName)
+	elif action == 'trakt_genre_decades':
+		from resources.lib.menus import navigator
+		navigator.Navigator().trakt_genre_decade(mediatype=mediatype, genre=genre, decade=decade, url=url, folderName=folderName)
+	elif action =='trakt_movie_genre':
+		from resources.lib.menus import navigator
+		navigator.Navigator().trakt_genre(mediatype=mediatype, genre=genre, url=url, folderName=folderName)
+	elif action =='trakt_tvshow_genre':
+		from resources.lib.menus import navigator
+		navigator.Navigator().trakt_genre(mediatype=mediatype, genre=genre, url=url, folderName=folderName)
+	elif action == 'trakt_genre':
+		if mediatype == 'Movies':
+			from resources.lib.menus import movies
+			movies.Movies().trakt_genre_list(listType=listType, genre=genre, url=url, folderName=folderName)
+		if mediatype == 'TVShows':
+			from resources.lib.menus import tvshows
+			tvshows.TVshows().trakt_genre_list(listType=listType, genre=genre, url=url, folderName=folderName)
+	elif action == 'trakt_genre_decade':
+		if mediatype == 'Movies':
+			from resources.lib.menus import movies
+			movies.Movies().trakt_genre_list_decade(listType=listType, genre=genre, decade=decade, url=url, folderName=folderName)
+		if mediatype == 'TVShows':
+			from resources.lib.menus import tvshows
+			tvshows.TVshows().trakt_genre_list_decade(listType=listType, genre=genre, decade=decade, url=url, folderName=folderName)
 	elif action == 'movieLanguages':
 		from resources.lib.menus import movies
 		movies.Movies().languages(folderName=folderName)

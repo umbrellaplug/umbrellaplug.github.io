@@ -5101,3 +5101,39 @@ msgstr ""
 msgctxt "#40491"
 msgid "Title Check Results"
 msgstr ""
+
+msgctxt "#40492"
+msgid "IMDb genre list limit"
+msgstr ""
+
+msgctxt "#40493"
+msgid "Genres (Trakt)"
+msgstr ""
+
+msgctxt "#40494"
+msgid "Trending %s %s"
+msgstr ""
+
+msgctxt "#40495"
+msgid "Popular %s %s"
+msgstr ""
+
+msgctxt "#40496"
+msgid "Most Played %s %s"
+msgstr ""
+
+msgctxt "#40497"
+msgid "Most Watched %s %s"
+msgstr ""
+
+msgctxt "#40498"
+msgid "Anticipated %s %s"
+msgstr ""
+
+msgctxt "#40499"
+msgid "Decades %s %s"
+msgstr ""
+
+msgctxt "#40500"
+msgid "%s %s %s"
+msgstr ""
