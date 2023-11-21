@@ -3,7 +3,7 @@
 	Umbrella Add-on
 """
 
-from resources.lib.modules.control import directory as endOfDirectory
+from resources.lib.modules.control import directory as endOfDirectory, setting as getSetting
 from resources.lib.modules import youtube_menu
 
 

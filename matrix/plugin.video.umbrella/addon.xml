@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.37">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.38">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
 		<import addon="script.module.requests"/>
@@ -172,15 +172,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.6.37 - November 20th, 2023[/B]
---[Enhancement] Added language filter for trakt genres.
---[Enhancement] Added Decades for Trakt genres.
---[Enhancement] Added Trakt genres for TV and Movies.
---[Enhancement] Added new icons for different genres from trakt.
---[Fix] Changes made for IMDb lists now have an amount. Set the setting in Settings:General
---[Fix] Several IMDb lists removed due to changes in IMDb website.
---[Fix] 3 second delay added for view to resolve bug of view not being set correctly in some instances.
-
+[B]Update - v6.6.38 - November 21st, 2023[/B]
+--[Fix] Fixed YouTube section.
 		</news>
 	</extension>
 

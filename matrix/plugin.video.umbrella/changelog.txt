@@ -1,3 +1,6 @@
+[B]Update - v6.6.38 - November 21st, 2023[/B]
+--[Fix] Fixed YouTube section.
+
 [B]Update - v6.6.37 - November 20th, 2023[/B]
 --[Enhancement] Added language filter for trakt genres.
 --[Enhancement] Added Decades for Trakt genres.
