@@ -7,7 +7,7 @@ Kodi 21 (Omega) is still in Alpha and not currently supported.
 
 
 ## Current Versions:
-Umbrella - 6.6.37
+Umbrella - 6.6.38
 Umbrella Repo - 2.2.4
 
 ## Installation Instructions:
