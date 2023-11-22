@@ -845,6 +845,8 @@ class Movies:
 		except: pass
 		year = (self.date_time.strftime('%Y'))
 		for i in range(int(year)-0, 1900, -1):
+			if url == 'traktyears':
+				self.list.append({'content': 'years', 'name': str(i), 'url': url % (str(i), str(i)), 'image': 'years.png', 'icon': 'DefaultYear.png', 'action': 'traktYear&folderName=%s'% quote_plus(str(i))})
 			if self.imdb_link in url: self.list.append({'content': 'years', 'name': str(i), 'url': url % (str(i), str(i)), 'image': 'years.png', 'icon': 'DefaultYear.png', 'action': 'movies&folderName=%s'% quote_plus(str(i))})
 			if self.tmdb_link in url: self.list.append({'content': 'years', 'name': str(i), 'url': url % ('%s', str(i)), 'image': 'years.png', 'icon': 'DefaultYear.png', 'action': 'tmdbmovies&folderName=%s' % quote_plus(str(i))})
 		self.addDirectory(self.list, folderName=folderName)

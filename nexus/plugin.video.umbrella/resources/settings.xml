@@ -1221,6 +1221,11 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="navi.movie.imdb.years" type="boolean" label="32458" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
 				<setting id="navi.tv.tmdb.airingtoday" type="boolean" label="32467" help="">
 					<level>0</level>
 					<default>true</default>

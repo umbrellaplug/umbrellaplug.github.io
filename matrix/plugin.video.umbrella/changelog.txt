@@ -1,3 +1,6 @@
+[B]Update - v6.6.39 - November 22nd, 2023[/B]
+--[Fix] Added IMDb Years back in for movies.
+
 [B]Update - v6.6.38 - November 21st, 2023[/B]
 --[Fix] Fixed YouTube section.
 

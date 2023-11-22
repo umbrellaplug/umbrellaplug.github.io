@@ -129,6 +129,9 @@ def router(argv2):
 	elif action == 'movieYears':
 		from resources.lib.menus import movies
 		movies.Movies().years(url, folderName=folderName)
+	elif action == 'traktYear':
+		from resources.lib.menus import movies
+		movies.Movies().years(url, folderName=folderName)
 	elif action == 'moviePersons':
 		from resources.lib.menus import movies
 		movies.Movies().persons(url, folderName=folderName)

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.38">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.39">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -173,8 +173,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.6.38 - November 21st, 2023[/B]
---[Fix] Fixed YouTube section.
+[B]Update - v6.6.39 - November 22nd, 2023[/B]
+--[Fix] Added IMDb Years back in for movies.
 		</news>
 	</extension>
 
