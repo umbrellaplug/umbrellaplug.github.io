@@ -42,7 +42,7 @@ Currently Supported Debrid Providers:
 **The plugin will not work without at least 1 debrid account**
 
 ## Issues
-Issues are closed for a while due to repeat stupid ass requests. I'll re-open them when the community stops acting like a smooth brain.
+NO, YOU!
 
 ## Logs
 Enable Logs: Go to Umbrella settings and select Debugging on the left hand side.
