@@ -2,8 +2,7 @@
 
 Welcome to the umbrellaplug.github.io wiki!
 
-Compatible with Kodi 19 and 20.
-Kodi 21 (Omega) is still in Alpha and not currently supported.
+Compatible with Kodi 19, 20, and 21.
 
 
 ## Current Versions:
