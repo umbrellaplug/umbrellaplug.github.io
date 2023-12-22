@@ -53,8 +53,6 @@ class source:
 			source_utils.scraper_error('FILEPURSUIT')
 			return sources
 
-		#undesirables = source_utils.get_undesirables()
-		#check_foreign_audio = source_utils.check_foreign_audio()
 		for item in results:
 			try:
 				url = item['file_link']

@@ -94,6 +94,7 @@ metaInternalCacheFile = joinPath(dataPath, 'video_cache.db')
 favouritesFile = joinPath(dataPath, 'favourites.db')
 plexSharesFile = joinPath(dataPath, 'plexshares.db')
 trailer = 'plugin://plugin.video.youtube/play/?video_id=%s'
+subtitlesPath = joinPath(dataPath, 'subtitles')
 
 def getKodiVersion(full=False):
 	if full: return xbmc.getInfoLabel("System.BuildVersion")

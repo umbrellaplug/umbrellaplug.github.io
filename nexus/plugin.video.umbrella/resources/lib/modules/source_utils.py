@@ -106,6 +106,39 @@ def seas_ep_filter(season, episode, release_title, split=False):
 		log_utils.error()
 		return None
 
+def seas_filter(season, release_title, split=False):
+	try:
+		release_title = re.sub(r'[^A-Za-z0-9-]+', '.', unquote(release_title).replace('\'', '')).replace('&', 'and').replace('%', '.percent').lower()
+		season = str(season)
+		season_fill = season.zfill(2)
+
+		string1 = r'(s<<S>>[.-])'
+		string2 = r'(season[.-]?<<S>>[.-])|' \
+						r'([s]?<<S>>[x.])'
+		string4 = r'([.-]<<S>>[.-])'
+
+		string_list = []
+		append = string_list.append
+		append(string1.replace('<<S>>', season_fill))
+		append(string1.replace('<<S>>', season))
+		append(string1.replace('<<S>>', season_fill))
+		append(string1.replace('<<S>>', season))
+		append(string2.replace('<<S>>', season_fill))
+		append(string2.replace('<<S>>', season))
+		append(string2.replace('<<S>>', season_fill))
+		append(string2.replace('<<S>>', season))
+		append(string4.replace('<<S>>', season_fill))
+		append(string4.replace('<<S>>', season))
+
+		final_string = '|'.join(string_list)
+		reg_pattern = re.compile(final_string)
+		if split: return release_title.split(re.search(reg_pattern, release_title).group(), 1)[1]
+		else: return bool(re.search(reg_pattern, release_title))
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+		return None
+
 def extras_filter():
 	return ('sample', 'extra', 'deleted', 'unused', 'footage', 'inside', 'blooper', 'making.of', 'feature', 'featurette', 'behind.the.scenes', 'trailer')
 

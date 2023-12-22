@@ -1,3 +1,11 @@
+[B]Update - v6.6.42 - Decemeber 22nd, 2023[/B]
+--[Fix] Fixed issue hiding shows from progress.
+--[Fix] Fixed issue causing hidden items manager to not show.
+--[Omega] Updated value for database to use for Kodi21 MyVideos database file.
+--[Enhancement] OpenSubs has now been changed to OpenSubs.com API due to retirement of API. You will need an account to use OpenSubs now.
+--[Enhancement] Subscene has been added as an alternate provider for OpenSubs.
+--[Info] Whatever provider you select for subtitles will be used for downloading and for playnext.
+
 [B]Update - v6.6.39 - November 22nd, 2023[/B]
 --[Fix] Added IMDb Years back in for movies.
 

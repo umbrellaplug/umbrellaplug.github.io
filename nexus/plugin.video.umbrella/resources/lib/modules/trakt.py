@@ -494,7 +494,7 @@ def hideItems(tvdb_ids):
 		log_utils.error()
 		return False
 
-def hideItem(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True):
+def hideItem(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, tvshow=None):
 	success = None
 	try:
 		sections = ['progress_watched', 'calendar']
@@ -503,6 +503,7 @@ def hideItem(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True
 		if selection == -1: return
 		control.busy()
 		if episode: post = {"shows": [{"ids": {"tvdb": tvdb}}]}
+		elif tvshow: post = {"shows": [{"ids": {"tvdb": tvdb}}]}
 		else: post = {"movies": [{"ids": {"imdb": imdb}}]}
 		if selection in (0, 1):
 			section = sections[selection]
@@ -556,7 +557,7 @@ def removeWatchlistItems(type, id_list):
 				control.notification(title='Trakt Watch List Manager', message='Successfuly Removed %s Item%s' % (total_items, 's' if total_items >1 else ''))
 	except: log_utils.error()
 
-def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, watched=None, unfinished=False):
+def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, watched=None, unfinished=False, tvshow=None):
 	lists = []
 	try:
 		if season: season = int(season)
@@ -615,7 +616,7 @@ def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True,
 			elif items[select][1] == 'unrate':
 				unrate(imdb=imdb, tvdb=tvdb, season=season, episode=episode)
 			elif items[select][1] == 'hideItem':
-				hideItem(name=name, imdb=imdb, tvdb=tvdb, season=season, episode=episode)
+				hideItem(name=name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, tvshow=tvshow)
 			elif items[select][1] == 'hiddenManager':
 				control.execute('RunPlugin(plugin://plugin.video.umbrella/?action=shows_traktHiddenManager)')
 			elif items[select][1] == 'unfinishedEpisodeManager':

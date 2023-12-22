@@ -5085,6 +5085,103 @@
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
+				<setting id="subtitles.service" type="integer" label="40501" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="40502">0</option>
+							<option label="40503">1</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition operator="is" setting="subtitles">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="list" format="string">
+						<heading>40501</heading>
+					</control>
+				</setting>
+				<setting id="opensubsusername" type="string" label="40504" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="subtitles.service">1</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40504</heading>
+					</control>
+				</setting>
+				<setting id="opensubspassword" type="string" label="40505" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="subtitles.service">1</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40505</heading>
+						<hidden>true</hidden>
+					</control>
+				</setting>
+				<setting id="openSubsTest" type="string" label="40507" help="">
+					<level>0</level>
+					<default></default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+								<condition operator="is" setting="subtitles.service">1</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_openSubsTest)</data>
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="openSubsRevoke" type="string" label="40510" help="">
+					<level>0</level>
+					<default></default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+								<condition operator="is" setting="subtitles.service">1</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_openSubsRevoke)</data>
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="opensubstoken" type="string" label="" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading></heading>
+						<hidden>true</hidden>
+					</control>
+				</setting>
 			</group>
 			<group id="2">
 				<setting id="subtitles.utf" type="boolean" label="32355" help="">
@@ -5257,6 +5354,9 @@
 					<dependencies>
 						<dependency type="enable">
 							<condition operator="is" setting="subtitles">true</condition>
+						</dependency>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 					</dependencies>
 					<control type="list" format="string">

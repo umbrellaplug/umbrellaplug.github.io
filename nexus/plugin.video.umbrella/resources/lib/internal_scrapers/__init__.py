@@ -18,11 +18,9 @@ def internalSources():
 					sourceDict.append((module_name, module.source))
 				except Exception as e:
 					if debug_enabled:
-						from resources.lib.modules import log_utils
 						log_utils.log('Error: Loading internal scraper module: "%s": %s' % (module_name, e), level=log_utils.LOGWARNING)
 		return sourceDict
 	except:
-		from resources.lib.modules import log_utils
 		log_utils.error()
 		return []
 
@@ -30,8 +28,7 @@ def enabledCheck(scraper):
 	parent_dict = {'plexshare': 'plexshare', 'easynews':'easynews', 'filepursuit': 'filepursuit', 'gdrive':'gdrive'}
 	try:
 		parent_setting = parent_dict[scraper]
-		from resources.lib.modules import log_utils
-		log_utils.log('internal scraper token check: %s ' % (parent_setting), level=log_utils.LOGDEBUG)
+		#log_utils.log('internal scraper token check: %s ' % (parent_setting), level=log_utils.LOGDEBUG)
 		if parent_setting == 'easynews':
 			pass
 		else:
@@ -39,6 +36,5 @@ def enabledCheck(scraper):
 		if getSetting(parent_setting + '.enable') == 'true': return True
 		else: return False
 	except:
-		from resources.lib.modules import log_utils
 		log_utils.error()
 		return False

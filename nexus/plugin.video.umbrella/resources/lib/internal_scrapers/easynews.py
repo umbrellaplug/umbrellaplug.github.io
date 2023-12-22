@@ -61,8 +61,7 @@ class source:
 			source_utils.scraper_error('EASYNEWS')
 			return sources
 
-		#undesirables = source_utils.get_undesirables()
-		#check_foreign_audio = source_utils.check_foreign_audio()
+
 		for item in files:
 			try:
 				post_hash, post_title, ext, duration = item['0'], item['10'], item['11'], item['14']

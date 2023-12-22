@@ -6039,3 +6039,43 @@ msgstr ""
 msgctxt "#40500"
 msgid "%s %s %s"
 msgstr ""
+
+msgctxt "#40501"
+msgid "Subtitle Service"
+msgstr ""
+
+msgctxt "#40502"
+msgid "Subscene"
+msgstr ""
+
+msgctxt "#40503"
+msgid "OpenSubs"
+msgstr ""
+
+msgctxt "#40504"
+msgid "Open Subtitles Username"
+msgstr ""
+
+msgctxt "#40505"
+msgid "Open Subtitles Password"
+msgstr ""
+
+msgctxt "#40506"
+msgid "%s - Lang Downloaded from Opensubtitles.com"
+msgstr ""
+
+msgctxt "#40507"
+msgid "Check Opensubtitles Account"
+msgstr ""
+
+msgctxt "#40508"
+msgid "Logged in Username: %s [CR] Allowed Downloads: %s"
+msgstr ""
+
+msgctxt "#40509"
+msgid "Unable to authorize opensubs. Please check username and password."
+msgstr ""
+
+msgctxt "#40510"
+msgid "Revoke OpenSubtitles Token"
+msgstr ""

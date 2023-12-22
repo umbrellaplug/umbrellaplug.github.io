@@ -384,10 +384,11 @@ class TVshows:
 
 	def traktHiddenManager(self, idx=True):
 		control.busy()
+		folderName = ''
 		try:
-			if trakt.getProgressActivity() > cache.timeout(self.trakt_list, self.progress_link, self.trakt_user): raise Exception()
-			self.list = cache.get(self.trakt_list, 24, self.progress_link, self.trakt_user)
-		except: self.list = cache.get(self.trakt_list, 0, self.progress_link, self.trakt_user)
+			if trakt.getProgressActivity() > cache.timeout(self.trakt_list, self.progress_link, self.trakt_user, folderName): raise Exception()
+			self.list = cache.get(self.trakt_list, 24, self.progress_link, self.trakt_user, folderName)
+		except: self.list = cache.get(self.trakt_list, 0, self.progress_link, self.trakt_user, folderName)
 
 		if self.list is None: self.list = []
 		for i in self.list:
@@ -1612,7 +1613,7 @@ class TVshows:
 				try:
 					watched = (getTVShowOverlay(indicators[1], imdb, tvdb) == '5') if indicators else False
 					if self.traktCredentials:
-						cm.append((traktManagerMenu, 'RunPlugin(%s?action=tools_traktManager&name=%s&imdb=%s&tvdb=%s&watched=%s)' % (sysaddon, systitle, imdb, tvdb, watched)))
+						cm.append((traktManagerMenu, 'RunPlugin(%s?action=tools_traktManager&name=%s&imdb=%s&tvdb=%s&watched=%s&tvshow=tvshow)' % (sysaddon, systitle, imdb, tvdb, watched)))
 					if watched:
 						meta.update({'playcount': 1, 'overlay': 5})
 						cm.append((unwatchedMenu, 'RunPlugin(%s?action=playcount_TVShow&name=%s&imdb=%s&tvdb=%s&query=4)' % (sysaddon, systitle, imdb, tvdb)))

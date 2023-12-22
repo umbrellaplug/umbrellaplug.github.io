@@ -721,6 +721,12 @@ def router(argv2):
 		if action == 'tools_ShowNews':
 			from resources.lib.modules import newsinfo
 			newsinfo.news()
+		if action == 'tools_openSubsTest':
+			from resources.lib.modules import opensubs
+			opensubs.Opensubs().getAccountStatus()
+		if action == 'tools_openSubsRevoke':
+			from resources.lib.modules import opensubs
+			opensubs.Opensubs().revokeAccess()
 		elif action == 'tools_ShowChangelog':
 			from resources.lib.modules import changelog
 			changelog.get(name)
@@ -801,7 +807,8 @@ def router(argv2):
 			from resources.lib.modules import trakt
 			watched = (params.get('watched') == 'True') if params.get('watched') else None
 			unfinished = (params.get('unfinished') == 'True') if params.get('unfinished') else False
-			trakt.manager(name, imdb, tvdb, season, episode, watched=watched, unfinished=unfinished)
+			tvshow = (params.get('tvshow') == 'tvshow')
+			trakt.manager(name, imdb, tvdb, season, episode, watched=watched, unfinished=unfinished,tvshow=tvshow)
 		elif action == 'tools_likeList':
 			from resources.lib.modules import trakt
 			trakt.like_list(params.get('list_owner'), params.get('list_name'), params.get('list_id'))
