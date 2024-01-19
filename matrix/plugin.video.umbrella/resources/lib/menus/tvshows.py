@@ -1324,7 +1324,8 @@ class TVshows:
 		list = []
 		try:
 			result = client.request(url)
-			items = client.parseDOM(result, 'div', attrs = {'class': '.+? mode-detail'})
+			#items = client.parseDOM(result, 'div', attrs = {'class': '.+? mode-detail'})
+			items = client.parseDOM(result, 'div', attrs = {'class': 'ipc-metadata-list-summary-item__tc'})
 		except: return
 		for item in items:
 			try:
@@ -1656,7 +1657,7 @@ class TVshows:
 								item.setProperty('WatchedProgress', str(int(float(count['watched']) / float(count['total']) * 100)))
 							else:
 								item.setProperties({'UnWatchedEpisodes': str(count['unwatched'])})
-								item.setProperty('WatchedProgress', 0)
+								item.setProperty('WatchedProgress', str(0))
 							item.setProperties({'TotalSeasons': str(meta.get('total_seasons', '')), 'TotalEpisodes': str(count['total'])})
 							
 						else:

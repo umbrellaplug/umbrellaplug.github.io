@@ -13,7 +13,7 @@ import sqlite3
 import xbmc
 import xbmcvfs
 import os
-
+import fnmatch
 
 
 def get(function, duration, *args):
@@ -350,13 +350,24 @@ def clear_local_bookmark(url): # clear all item specific bookmarks from kodi dat
 def get_video_database_path():
 	database_path = control.absPath(control.joinPath(control.dataPath, '..', '..', 'Database', )) # doesn't work with mysql
 	# path_db = 'special://profile/Database/%s' % db_name
+	def find(pattern, path):
+		result = []
+		for root, dirs, files in os.walk(path):
+			for name in files:
+				if fnmatch.fnmatch(name, pattern):
+					result.append(os.path.join(root, name))
+		return result
+	databasefile = find('MyVideos*.db', database_path)
+	database_path_final = databasefile[0]
+	from resources.lib.modules import log_utils
+	log_utils.log('Umbrella MyVideos file path: %s' % str(database_path_final), 1)
 	kodi_version = control.getKodiVersion()
-	if kodi_version == 17: database_path = control.joinPath(database_path, 'MyVideos107.db')
-	elif kodi_version == 18: database_path = control.joinPath(database_path, 'MyVideos116.db')
-	elif kodi_version == 19: database_path = control.joinPath(database_path, 'MyVideos119.db')
-	elif kodi_version == 20: database_path = control.joinPath(database_path, 'MyVideos121.db')
-	elif kodi_version == 21: database_path = control.joinPath(database_path, 'MyVideos124.db')
-	return database_path
+	#if kodi_version == 17: database_path = control.joinPath(database_path, 'MyVideos107.db')
+	#elif kodi_version == 18: database_path = control.joinPath(database_path, 'MyVideos116.db')
+	#elif kodi_version == 19: database_path = control.joinPath(database_path, 'MyVideos119.db')
+	#elif kodi_version == 20: database_path = control.joinPath(database_path, 'MyVideos121.db')
+	#elif kodi_version == 21: database_path = control.joinPath(database_path, 'MyVideos124.db')
+	return database_path_final
 ##################
 
 def clrCache_version_update(clr_providers=False, clr_metacache=False, clr_cache=False, clr_search=False, clr_bookmarks=False):

@@ -778,6 +778,7 @@ class Movies:
 		control.execute('ActivateWindow(Videos,plugin://plugin.video.umbrella/?action=moviePersons&url=%s,return)' % (quote_plus(url)))
 
 	def persons(self, url, folderName=''):
+
 		if url is None: self.list = cache.get(self.imdb_person_list, 24, self.personlist_link)
 		else: self.list = cache.get(self.imdb_person_list, 1, url)
 		if self.list is None: self.list = []
@@ -1461,7 +1462,8 @@ class Movies:
 		self.list = []
 		try:
 			result = client.request(url)
-			items = client.parseDOM(result, 'div', attrs = {'class': '.+?etail'})
+			#items = client.parseDOM(result, 'div', attrs = {'class': '.+?etail'})
+			items = client.parseDOM(result, 'div', attrs = {'class': 'ipc-metadata-list-summary-item__tc'})
 		except: return
 		for item in items:
 			try:

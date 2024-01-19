@@ -1,3 +1,11 @@
+[B]Update - v6.6.43 - January 19th, 2024[/B]
+--[Fix] Added code to check for youtube addon setup with api keys.
+--[Fix] Removed code checking for playnext setup correct in settings change detection.
+--[Fix] Fixed Search Movies by Actor / Search TV Shows by Actor. Thanks Venom123
+--[Enhancement] Added new context menu item for Play Trailer (Select). Venom123 request.
+--[Enhancement] Added code to pause settings monitor in situations of multiple settings being set.
+--[Omega] Made a change for auto detect of MyVideos.db file.
+
 [B]Update - v6.6.42 - Decemeber 22nd, 2023[/B]
 --[Fix] Fixed issue hiding shows from progress.
 --[Fix] Fixed issue causing hidden items manager to not show.

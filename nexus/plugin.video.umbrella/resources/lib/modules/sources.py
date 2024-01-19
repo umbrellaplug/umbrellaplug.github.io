@@ -77,6 +77,10 @@ class Sources:
 
 	def play(self, title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, meta, select, rescrape=None):
 		self.premiered = premiered
+		try:
+			control.checkPlayNextEpisodes()
+		except:
+			log_utils.error()
 		if not self.prem_providers:
 			control.sleep(200) ; control.hide()
 			return control.notification(message=33034)

@@ -143,8 +143,10 @@ class Opensubs():
 
 	def revokeAccess(self):
 		try:
+			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 			control.setSetting('opensubsusername','')
 			control.setSetting('opensubspassword','')
+			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 			control.setSetting('opensubstoken','')
 			self.jwt_token = ''
 			control.openSettings('15.0', 'plugin.video.umbrella')

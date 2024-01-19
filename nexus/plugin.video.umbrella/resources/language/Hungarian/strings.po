@@ -5177,3 +5177,11 @@ msgstr ""
 msgctxt "#40510"
 msgid "Revoke OpenSubtitles Token"
 msgstr ""
+
+msgctxt "#40511"
+msgid "Play Trailer (Select)"
+msgstr ""
+
+msgctxt "#40512"
+msgid "YouTube Trailers:"
+msgstr ""

@@ -450,7 +450,9 @@ def showColorPicker(current_setting):
 	current_value = setting(current_setting)
 	chosen_color = getColorPicker({'current_setting': current_setting, 'current_value': current_value})
 	if chosen_color:
+		homeWindow.setProperty('umbrella.updateSettings', 'false')
 		setSetting(current_setting+'.display', str('[COLOR=%s]%s[/COLOR]' % (chosen_color, chosen_color)))
+		homeWindow.setProperty('umbrella.updateSettings', 'true')
 		setSetting(current_setting, str('%s' % (chosen_color)))
 
 def getMenuEnabled(menu_title):
@@ -632,12 +634,8 @@ def jsondate_to_datetime(jsondate_object, resformat, remove_time=False):
 
 def syncAccounts():
 	try:
-		if setting('external_provider.module','') == '':
-			pass
-		else:
-			modulename = setting('external_provider.module')
-
 		if setting('umbrella.colorSecond') == 'false':
+			homeWindow.setProperty('umbrella.updateSettings', 'false')
 			setSetting('highlight.color', 'FFFFFF33')
 			setSetting('highlight.color.display', '[COLOR=FFFFFF33]FFFFFF33[/COLOR]')
 			setSetting('movie.unaired.identify', 'FF5CFF34')
@@ -670,6 +668,7 @@ def syncAccounts():
 			setSetting('sources.gdrive.color.display', '[COLOR=FFFF4DFF]FFFF4DFF[/COLOR]')
 			setSetting('sources.filepursuit.color', 'FF00CC29')
 			setSetting('sources.filepursuit.color.display', '[COLOR=FF00CC29]FF00CC29[/COLOR]')
+			homeWindow.setProperty('umbrella.updateSettings', 'true')
 			setSetting('umbrella.colorSecond', 'true')
 			notification('Umbrella', 'Reloading addon due to new settings added.')
 		if setting('umbrella.externalWarning') != 'true':
@@ -726,7 +725,9 @@ def setContextColors():
 
 def checkModules():
 	if setting('provider.external.enabled') == 'false':
+		homeWindow.setProperty('umbrella.updateSettings', 'false')
 		setSetting('external_provider.name', '')
+		homeWindow.setProperty('umbrella.updateSettings', 'true')
 		setSetting('external_provider.module', '')
 
 def backToMain(folder):

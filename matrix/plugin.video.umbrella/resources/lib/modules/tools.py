@@ -113,7 +113,9 @@ def external_providers():
 		except:
 			success = False
 		if success:
+			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 			control.setSetting('external_provider.name' , results[chosen].get('addonid').split('.')[-1])
+			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 			control.setSetting('external_provider.module', results[chosen].get('addonid'))
 			control.notification(title=results[chosen].get('addonid').split('.')[-1], message=getLS(40449))
 		else:

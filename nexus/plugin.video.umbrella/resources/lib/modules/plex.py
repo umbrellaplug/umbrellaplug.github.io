@@ -47,10 +47,12 @@ class Plex():
 		if self.token:
 			self.client_id = re.search(r'<client-identifier>(.*?)</client-identifier>', data.text, re.I).group(1)
 			self.progressDialog.close()
+			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 			control.setSetting('plexsharetoken', self.token)
 			control.setSetting('plex.client_id', self.client_id)
 			control.sleep(500)
 			new_id = self.get_authID()
+			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 			control.setSetting('plex.device_id', new_id)
 			self.get_plexshare_resource()
 
@@ -129,8 +131,10 @@ class Plex():
 		url = "https://plex.tv/devices/%s.xml?X-Plex-Token=%s" % (self.device_id, self.token)
 		result = requests.delete(url)
 		if result.status_code != 200: self.plex_error(result.status_code)
+		control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 		control.setSetting('plexsharetoken', '')
 		control.setSetting('plex.client_id', '')
+		control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 		control.setSetting('plex.device_id', '')
 		#control.setSetting('plexshare.sourceTitle', '')
 		#control.setSetting('plexshare.accessToken', '')

@@ -20,6 +20,7 @@ properties = [
 	'context.umbrella.addtoLibrary',
 	'context.umbrella.addtoFavourite',
 	'context.umbrella.playTrailer',
+	'context.umbrella.playTrailerSelect',
 	'context.umbrella.traktManager',
 	'context.umbrella.clearProviders',
 	'context.umbrella.clearBookmark',
@@ -56,6 +57,7 @@ class SettingsMonitor(control.monitor_class):
 		control.refresh_playAction()
 		control.refresh_libPath()
 		window.setProperty('umbrella.debug.reversed', str(control.setting('debug.reversed')))
+		window.setProperty('umbrella.updateSettings', 'true')
 		for id in properties:
 			if control.setting(id) == 'true':
 				xbmc.executebuiltin('SetProperty({0},true,home)'.format(id))
@@ -63,49 +65,52 @@ class SettingsMonitor(control.monitor_class):
 		control.log('[ plugin.video.umbrella ]  Settings Monitor Service Starting...', LOGINFO)
 
 	def onSettingsChanged(self):
-		try:
-			window.clearProperty('umbrella_settings') # Kodi callback when the addon settings are changed
-		except:
-			control.log('[ plugin.video.umbrella ]  Exception clearing settings property...', LOGDEBUG)
-		try:
-			control.sleep(50)
-			refreshed = control.make_settings_dict()
-		except:
-			control.log('[ plugin.video.umbrella ]  Exception making settings dict...', LOGDEBUG)
-		try:
-			control.refresh_playAction()
-		except:
-			control.log('[ plugin.video.umbrella ]  Exception making refreshing playAction...', LOGDEBUG)
-		try:
-			control.refresh_libPath()
-		except:
-			control.log('[ plugin.video.umbrella ]  Exception refreshing libpath...', LOGDEBUG)
-		try:
-			control.checkPlayNextEpisodes()
-		except:
-			control.log('[ plugin.video.umbrella ]  Exception checking playnext episodes...', LOGDEBUG)
-		try:
-			control.refresh_debugReversed()
-		except:
-			control.log('[ plugin.video.umbrella ]  Exception checking debug reversed', LOGDEBUG)
-		try:
-			control.setContextColors()
-		except:
-			control.log('[ plugin.video.umbrella ]  Exception setting context colors...', LOGDEBUG)
-		try:
-			control.checkModules()
-		except:
-			control.log('[ plugin.video.umbrella ]  Exception checking modules...', LOGDEBUG)
-		try:
-			for id in properties:
-				if control.setting(id) == 'true':
-					xbmc.executebuiltin('SetProperty({0},true,home)'.format(id))
-					#xbmc.log('[ plugin.video.umbrella.context ]  menu item enabled: {0}'.format(id), LOGINFO)
-				else:
-					xbmc.executebuiltin('ClearProperty({0},home)'.format(id))
-					#xbmc.log('[ plugin.video.umbrella.context ]  menu item disabled: {0}'.format(id), LOGINFO)
-		except:
-			log_utils.error()
+		if window.getProperty('umbrella.updateSettings') == 'true':
+			try:
+				window.clearProperty('umbrella_settings') # Kodi callback when the addon settings are changed
+			except:
+				control.log('[ plugin.video.umbrella ]  Exception clearing settings property...', LOGDEBUG)
+			try:
+				control.sleep(50)
+				refreshed = control.make_settings_dict()
+			except:
+				control.log('[ plugin.video.umbrella ]  Exception making settings dict...', LOGDEBUG)
+			try:
+				control.refresh_playAction()
+			except:
+				control.log('[ plugin.video.umbrella ]  Exception making refreshing playAction...', LOGDEBUG)
+			try:
+				control.refresh_libPath()
+			except:
+				control.log('[ plugin.video.umbrella ]  Exception refreshing libpath...', LOGDEBUG)
+			#try:
+				#control.checkPlayNextEpisodes()
+			#except:
+				#control.log('[ plugin.video.umbrella ]  Exception checking playnext episodes...', LOGDEBUG)
+			try:
+				control.refresh_debugReversed()
+			except:
+				control.log('[ plugin.video.umbrella ]  Exception checking debug reversed', LOGDEBUG)
+			try:
+				control.setContextColors()
+			except:
+				control.log('[ plugin.video.umbrella ]  Exception setting context colors...', LOGDEBUG)
+			try:
+				control.checkModules()
+			except:
+				control.log('[ plugin.video.umbrella ]  Exception checking modules...', LOGDEBUG)
+			try:
+				for id in properties:
+					if control.setting(id) == 'true':
+						xbmc.executebuiltin('SetProperty({0},true,home)'.format(id))
+						#xbmc.log('[ umbrella settings change ] item enabled: {0}'.format(id), LOGINFO)
+					else:
+						xbmc.executebuiltin('ClearProperty({0},home)'.format(id))
+						#xbmc.log('[ plugin.video.umbrella.context ]  menu item disabled: {0}'.format(id), LOGINFO)
+			except:
+				log_utils.error()
+		else:
+			control.log('[ plugin.video.umbrella ]  Settings monitor turned off.', LOGDEBUG)
 
 class SyncMyAccounts:
 	def run(self):
@@ -383,7 +388,7 @@ def main():
 		PremAccntNotification().run()
 		ReuseLanguageInvokerCheck().run()
 		SyncMovieLibrary().run()
-		control.checkPlayNextEpisodes()
+		#control.checkPlayNextEpisodes()
 		if control.setting('library.service.update') == 'true':
 			libraryService = Thread(target=LibraryService().run)
 			libraryService.start()

@@ -831,11 +831,13 @@ class RealDebrid:
 			control.sleep(500)
 			account_info = self.account_info()
 			username = account_info['username']
+			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 			control.setSetting('realdebridusername', username)
 			control.setSetting('realdebrid.clientid', self.client_ID)
 			control.setSetting('realdebridsecret', self.secret,)
 			control.setSetting('realdebridtoken', self.token)
 			#control.addon('script.module.myaccounts').setSetting('realdebridtoken', self.token)
+			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 			control.setSetting('realdebridrefresh', response['refresh_token'])
 			if fromSettings == 1:
 				control.openSettings('10.2', 'plugin.video.umbrella')
@@ -849,10 +851,12 @@ class RealDebrid:
 
 	def reset_authorization(self, fromSettings=0):
 		try:
+			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 			control.setSetting('realdebrid.clientid', '')
 			control.setSetting('realdebridsecret', '')
 			control.setSetting('realdebridtoken', '')
 			control.setSetting('realdebridrefresh', '')
+			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 			control.setSetting('realdebridusername', '')
 			if fromSettings == 1:
 				control.openSettings('10.2', 'plugin.video.umbrella')

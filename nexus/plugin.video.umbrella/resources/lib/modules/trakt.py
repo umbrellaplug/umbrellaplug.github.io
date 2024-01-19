@@ -106,9 +106,11 @@ def re_auth(headers):
 				return False
 			token, refresh = response['access_token'], response['refresh_token']
 			expires = str(time() + 7776000)
+			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 			setSetting('trakt.isauthed', 'true')
 			setSetting('trakt.user.token', token)
 			setSetting('trakt.refreshtoken', refresh)
+			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 			setSetting('trakt.token.expires', expires)
 			#control.addon('script.module.myaccounts').setSetting('trakt.user.token', token)
 			#control.addon('script.module.myaccounts').setSetting('trakt.refreshtoken', refresh)
@@ -128,8 +130,10 @@ def traktAuth(fromSettings=0):
 		if deviceCode:
 			deviceCode = deviceCode.json()
 			expires_at = time.time() + 7776000
+			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 			control.setSetting('trakt.token.expires', str(expires_at))
 			control.setSetting('trakt.user.token', deviceCode["access_token"])
+			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 			control.setSetting('trakt.refreshtoken', deviceCode["refresh_token"])
 			control.sleep(1000)
 			try:
@@ -154,9 +158,11 @@ def traktRevoke(fromSettings=0):
 		try: 
 			getTrakt('oauth/revoke', post=data)
 		except: pass
+		control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 		control.setSetting('trakt.user.name', '')
 		control.setSetting('trakt.token.expires', '')
 		control.setSetting('trakt.user.token', '')
+		control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 		control.setSetting('trakt.refreshtoken', '')
 		try:	
 			from resources.lib.database import traktsync

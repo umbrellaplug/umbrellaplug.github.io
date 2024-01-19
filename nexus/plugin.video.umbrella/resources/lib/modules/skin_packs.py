@@ -73,7 +73,9 @@ class iconPackHandler:
 
 	def set_active_skin_pack(self, skinpack):
 		#control.setSetting('appearance.1', str(skinpack))
+		control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 		control.setSetting('skin.pack', str(skinpack))
+		control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 		control.setSetting('skinpackicons', str(skinpack))
 		control.openSettings('0.0', 'plugin.video.umbrella')
 
