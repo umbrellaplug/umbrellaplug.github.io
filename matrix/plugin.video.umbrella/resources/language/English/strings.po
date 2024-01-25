@@ -4994,3 +4994,7 @@ msgstr ""
 msgctxt "#40512"
 msgid "YouTube Trailers:"
 msgstr ""
+
+msgctxt "#40513"
+msgid "Local scrobble notification"
+msgstr ""

@@ -133,6 +133,8 @@ def traktAuth(fromSettings=0):
 			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 			control.setSetting('trakt.token.expires', str(expires_at))
 			control.setSetting('trakt.user.token', deviceCode["access_token"])
+			control.setSetting('trakt.scrobble', 'true')
+			control.setSetting('resume.source', '1')
 			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 			control.setSetting('trakt.refreshtoken', deviceCode["refresh_token"])
 			control.sleep(1000)
@@ -162,6 +164,8 @@ def traktRevoke(fromSettings=0):
 		control.setSetting('trakt.user.name', '')
 		control.setSetting('trakt.token.expires', '')
 		control.setSetting('trakt.user.token', '')
+		control.setSetting('trakt.scrobble', 'false')
+		control.setSetting('resume.source', '0')
 		control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 		control.setSetting('trakt.refreshtoken', '')
 		try:	
@@ -1122,7 +1126,6 @@ def markMovieAsWatched(imdb):
 		result = getTraktAsJson('/sync/history', {"movies": [{"ids": {"imdb": imdb}}]})
 		result = result['added']['movies'] != 0
 		if getSetting('debug.level') == '1':
-			from resources.lib.modules import log_utils
 			log_utils.log('Trakt markMovieAsWatched IMDB: %s Result: %s' % (imdb, result), level=log_utils.LOGDEBUG)
 		return result
 	except: log_utils.error()
@@ -1192,7 +1195,6 @@ def markEpisodeAsWatched(imdb, tvdb, season, episode):
 		else:
 			result = result['added']['episodes'] !=0
 		if getSetting('debug.level') == '1':
-			from resources.lib.modules import log_utils
 			log_utils.log('Trakt markEpisodeAsWatched IMDB: %s TVDB: %s Season: %s Episode: %s Result: %s' % (imdb, tvdb, season, episode, result), level=log_utils.LOGDEBUG)
 		return result
 	except: log_utils.error()

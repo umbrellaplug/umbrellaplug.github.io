@@ -451,6 +451,11 @@
 						<popup>false</popup>
 					</control>
 				</setting>
+				<setting id="localnotify" type="integer" label="40513" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
 			</group>
 			<group id="2" label="35055">
 				<setting id="sort.imdbmovies.type" type="integer" label="35054" help="">

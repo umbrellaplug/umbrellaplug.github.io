@@ -700,6 +700,13 @@ class Player(xbmc.Player):
 		log_utils.log('onPlayBackError callback', level=log_utils.LOGDEBUG)
 		#control.checkforSkin(action='off')
 		sysexit(1)
+
+	def onPlayBackPaused(self):
+		log_utils.log('onPlayBackPaused callback', level=log_utils.LOGDEBUG)
+		Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
+		if self.traktCredentials and (getSetting('trakt.scrobble') == 'true'):
+			log_utils.log('Paused: Sending scrobble to trakt.', level=log_utils.LOGDEBUG)
+			Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode)
 ##############################
 
 class PlayNext(xbmc.Player):
@@ -1391,7 +1398,8 @@ class Bookmarks:
 				hours, minutes = divmod(minutes, 60)
 				label = ('%02d:%02d:%02d' % (hours, minutes, seconds))
 				message = getLS(32660)
-				control.notification(title=name, message=message + '(' + label + ')')
+				if getSetting('localnotify') == 'true':
+					control.notification(title=name, message=message + '(' + label + ')')
 			dbcur.connection.commit()
 			try: dbcur.close ; dbcon.close()
 			except: pass

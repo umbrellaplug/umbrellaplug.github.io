@@ -1,3 +1,9 @@
+[B]Update - v6.6.44 - January 25th, 2024[/B]
+--[Enhancement] Added setting for local resume point notification.
+--[Enhancement] Added code to enable Trakt scrobble when Trakt authorized.
+--[Enhancement] Added code to scrobble on Pause.
+--[Fix] Changed some error logging in marking watched.
+
 [B]Update - v6.6.43 - January 19th, 2024[/B]
 --[Fix] Added code to check for youtube addon setup with api keys.
 --[Fix] Removed code checking for playnext setup correct in settings change detection.

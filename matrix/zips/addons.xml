@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.43">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.44">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -167,7 +167,7 @@
 	<extension point="xbmc.addon.metadata">
 		<reuselanguageinvoker>true</reuselanguageinvoker>
 		<summary lang="en">[B]Umbrella[/B] - We do not host any of the contents streamed</summary>
-		<description lang="en">[B]Umbrella[/B][CR] This addon does not form part of the Kodi Media Centre. Please do not seek assistance with this addon from any of the Official Kodi Support Channels.[CR]The author does not host any of the content in this addon and takes no responsibility for content found. We do not know anything about a lab under Raccoon City.</description>
+		<description lang="en">[B]Umbrella[/B][CR] This addon does not form part of the Kodi Media Centre. Please do not seek assistance with this addon from any of the Official Kodi Support Channels.[CR]The author does not host any of the content in this addon and takes no responsibility for content found. We do not know anything about a lab under Raccoon City. Umbrella is not actually an umbrella and will not shield you from rain.</description>
 		<platform>all</platform>
 		<license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
 		<forum />
@@ -182,13 +182,11 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.6.43 - January 19th, 2024[/B]
---[Fix] Added code to check for youtube addon setup with api keys.
---[Fix] Removed code checking for playnext setup correct in settings change detection.
---[Fix] Fixed Search Movies by Actor / Search TV Shows by Actor. Thanks Venom123
---[Enhancement] Added new context menu item for Play Trailer (Select). Venom123 request.
---[Enhancement] Added code to pause settings monitor in situations of multiple settings being set.
---[Omega] Made a change for auto detect of MyVideos.db file.
+[B]Update - v6.6.44 - January 25th, 2024[/B]
+--[Enhancement] Added setting for local resume point notification.
+--[Enhancement] Added code to enable Trakt scrobble when Trakt authorized.
+--[Enhancement] Added code to scrobble on Pause.
+--[Fix] Changed some error logging in marking watched.
 		</news>
 	</extension>
 
