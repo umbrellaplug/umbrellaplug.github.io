@@ -1,3 +1,7 @@
+[B]Update - v6.6.45 - February 1st, 2024[/B]
+--[Enhancement] Added episode type label.
+--[Fix] Changed scrobble on pause to only happen if before marking watched percentage.
+
 [B]Update - v6.6.44 - January 25th, 2024[/B]
 --[Enhancement] Added setting for local resume point notification.
 --[Enhancement] Added code to enable Trakt scrobble when Trakt authorized.

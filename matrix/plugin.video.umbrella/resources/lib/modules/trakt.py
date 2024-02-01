@@ -1251,6 +1251,17 @@ def getEpisodeSummary(id, season, episode, full=True):
 		return cache.get(getTraktAsJson, 48, url)
 	except: log_utils.error()
 
+def getEpisodeType(id, season, episode, full=True):
+	episodeType = ''
+	try:
+		url = '/shows/%s/seasons/%s/episodes/%s' % (id, season, episode)
+		if full: url += '?extended=full'
+		episodeMeta = cache.get(getTraktAsJson, 48, url)
+		episodeType = episodeMeta.get('episode_type')
+	except: 
+		log_utils.error()
+	return episodeType
+
 def getSeasons(id, full=True):
 	try:
 		url = '/shows/%s/seasons' % (id)

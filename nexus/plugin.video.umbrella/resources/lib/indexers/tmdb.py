@@ -743,6 +743,9 @@ class TVshows(TMDb):
 
 	def get_seasonEpisodes_meta(self, tmdb, season): # builds episodes meta from "/season/?" request
 		if not tmdb and not season: return None
+		seasonMeta = cache.get(self.get_showSeasons_meta, 96, tmdb)
+		status = seasonMeta.get('status')
+		lastSeason = list(seasonMeta.get('counts').items())[-1][0]
 		try:
 			if not tmdb: return None
 			result = self.get_season_request(tmdb, season)
@@ -757,6 +760,7 @@ class TVshows(TMDb):
 			meta['premiered'] = str(result.get('air_date', '')) if result.get('air_date') else '' # Kodi season level Information gui seems no longer available in 19 unless you use "mediatype = tvshow" for seasons
 			episodes = []
 			unaired_count = 0
+			midseason = 0
 			for episode in result['episodes']:
 				episode_meta = {}
 				episode_meta['mediatype'] = 'episode'
@@ -779,6 +783,22 @@ class TVshows(TMDb):
 				try: episode_meta['duration'] = episode['runtime']
 				except: episode_meta['duration'] = ''
 				episode_meta['season'] = episode['season_number']
+				episode_meta['episode_type'] = episode.get('episode_type','')
+				if midseason == 1:
+					episode_meta['episode_type'] = 'mid_season_premiere'
+					midseason = 0
+				if episode.get('episode_type') == 'mid_season':
+					if midseason == 0:
+						midseason = 1
+						episode_meta['episode_type'] = 'mid_season_finale'
+				if episode.get('episode_type') == 'finale':
+					if int(season) == int(lastSeason):
+						if status == 'Ended':
+							episode_meta['episode_type'] = 'series_finale'
+						else:
+							episode_meta['episode_type'] = 'season_finale'
+					else:
+						episode_meta['episode_type'] = 'season_finale'
 				episode_meta['plot'] = episode.get('overview', '') if episode.get('overview') else ''
 				if self.lang != 'en' and episode_meta['plot'] in ('', None, 'None'): episode_meta['plot'] = self.get_en_overview(tmdb, episode_meta['season'], episode_meta['episode'], 'episode')
 				episode_meta['code'] = episode['production_code']

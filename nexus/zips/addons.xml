@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.44">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.45">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -182,11 +182,9 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.6.44 - January 25th, 2024[/B]
---[Enhancement] Added setting for local resume point notification.
---[Enhancement] Added code to enable Trakt scrobble when Trakt authorized.
---[Enhancement] Added code to scrobble on Pause.
---[Fix] Changed some error logging in marking watched.
+[B]Update - v6.6.45 - February 1st, 2024[/B]
+--[Enhancement] Added episode type label.
+--[Fix] Changed scrobble on pause to only happen if before marking watched percentage.
 		</news>
 	</extension>
 

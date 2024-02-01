@@ -703,10 +703,14 @@ class Player(xbmc.Player):
 
 	def onPlayBackPaused(self):
 		log_utils.log('onPlayBackPaused callback', level=log_utils.LOGDEBUG)
-		Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
-		if self.traktCredentials and (getSetting('trakt.scrobble') == 'true'):
-			log_utils.log('Paused: Sending scrobble to trakt.', level=log_utils.LOGDEBUG)
-			Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode)
+		watcher = self.getWatchedPercent()
+		if watcher <= int(self.markwatched_percentage):
+			Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
+			if self.traktCredentials and (getSetting('trakt.scrobble') == 'true'):
+				log_utils.log('Paused: Sending scrobble to trakt.', level=log_utils.LOGDEBUG)
+				Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode)
+		else:
+			log_utils.log('Paused, but no scrobble due to being past mark watched percentage.', level=log_utils.LOGDEBUG)
 ##############################
 
 class PlayNext(xbmc.Player):
