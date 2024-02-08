@@ -2259,12 +2259,12 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="remove.av1" type="boolean" label="40403" help="">
+				<setting id="remove.av1" type="boolean" label="40132" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="remove.atvp" type="boolean" label="40132" help="">
+				<setting id="remove.atvp" type="boolean" label="40403" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>

@@ -132,6 +132,7 @@ class PlayNextXML(BaseDialog):
 			self.setProperty('umbrella.landscape', self.meta.get('landscape', ''))
 			self.setProperty('umbrella.fanart', self.meta.get('fanart', ''))
 			self.setProperty('umbrella.thumb', self.meta.get('thumb', ''))
+			self.setProperty('umbrella.episode_type', self.meta.get('episode_type'))
 			try:
 				next_duration = int(self.meta.get('duration')) if self.meta.get('duration') else ''
 				self.setProperty('umbrella.duration', str(int(next_duration)))

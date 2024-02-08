@@ -1,3 +1,8 @@
+[B]Update - v6.6.46 - February 8th, 2024[/B]
+--[Fix] Changed settings that were reversed. ATVP and AV1
+--[Fix] Added fix for progress window causing issues when caching to real-debrid.
+--[Enhancement] Added episode type labels to playnext windows for all 4 themes.
+
 [B]Update - v6.6.45 - February 1st, 2024[/B]
 --[Enhancement] Added episode type label.
 --[Fix] Changed scrobble on pause to only happen if before marking watched percentage.

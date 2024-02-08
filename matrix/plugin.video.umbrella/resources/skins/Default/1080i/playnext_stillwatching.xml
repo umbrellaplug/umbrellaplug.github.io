@@ -77,6 +77,42 @@
 						<aspectratio>scale</aspectratio>
 						<visible>String.IsEmpty(Window.Property(umbrella.landscape)) + String.IsEmpty(Window.Property(umbrella.fanart))</visible>
 					</control>
+					<control type="image">
+                        <texture colordiffuse="80000000">diffuse/landscape_w284_h28.png</texture>
+                        <visible>!String.IsEqual(Window().Property(umbrella.episode_type),standard) + !String.IsEmpty(Window().Property(umbrella.episode_type))</visible>
+                        <height>30</height>
+						<width>250</width>
+					</control>
+					<control type="image">
+						<texture>common/mid_season_finale.png</texture>
+						<height>30</height>
+						<visible>String.IsEqual(Window().Property(umbrella.episode_type),mid_season_finale)</visible>
+						<width>250</width>
+					</control>
+					<control type="image">
+						<texture>common/mid_season_premiere.png</texture>
+						<height>30</height>
+						<visible>String.IsEqual(Window().Property(umbrella.episode_type),mid_season_premiere)</visible>
+						<width>250</width>
+					</control>
+					<control type="image">
+						<texture>common/season_finale.png</texture>
+						<height>30</height>
+						<visible>String.IsEqual(Window().Property(umbrella.episode_type),season_finale)</visible>
+						<width>250</width>
+					</control>
+					<control type="image">
+						<texture>common/season_premiere.png</texture>
+						<height>30</height>
+						<visible>String.IsEqual(Window().Property(umbrella.episode_type),season_premiere)</visible>
+						<width>250</width>
+					</control>
+					<control type="image">
+						<texture>common/series_finale.png</texture>
+						<height>30</height>
+						<visible>String.IsEqual(Window().Property(umbrella.episode_type),series_finale)</visible>
+						<width>250</width>
+					</control>
 					<control type="progress" id="3014">
 						<width>250</width>
 						<top>136</top>

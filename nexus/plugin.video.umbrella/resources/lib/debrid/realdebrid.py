@@ -543,7 +543,7 @@ class RealDebrid:
 		torrent_info = self.torrent_info(torrent_id)
 		if 'error_code' in torrent_info: return _return_failed()
 		status = torrent_info['status']
-		line = '%s\n%s'
+		line = '%s\n%s\n%s'
 		if status == 'magnet_conversion':
 			line1 = getLS(40013)
 			line2 = torrent_info['filename']

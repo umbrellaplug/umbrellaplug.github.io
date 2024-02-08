@@ -784,6 +784,9 @@ class TVshows(TMDb):
 				except: episode_meta['duration'] = ''
 				episode_meta['season'] = episode['season_number']
 				episode_meta['episode_type'] = episode.get('episode_type','')
+
+				if episode.get('episode_number') == 1:
+					episode_meta['episode_type'] = 'season_premiere'
 				if midseason == 1:
 					episode_meta['episode_type'] = 'mid_season_premiere'
 					midseason = 0

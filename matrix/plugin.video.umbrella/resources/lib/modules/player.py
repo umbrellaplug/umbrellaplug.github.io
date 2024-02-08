@@ -772,7 +772,7 @@ class PlayNext(xbmc.Player):
 					if str(item.get('episode')) != helper_episode: continue #episode is a string.... important to note.
 					else: break
 				next_meta = {'tvshowtitle': item.get('tvshowtitle'), 'title': item.get('title'), 'year': item.get('year'), 'premiered': item.get('premiered'), 'season': helper_season, 'episode': helper_episode, 'imdb': item.get('imdb'),
-									'tmdb': item.get('tmdb'), 'tvdb': item.get('tvdb'), 'rating': item.get('rating'), 'landscape': '', 'fanart': item.get('fanart'), 'thumb': item.get('thumb'), 'duration': item.get('duration')}
+									'tmdb': item.get('tmdb'), 'tvdb': item.get('tvdb'), 'rating': item.get('rating'), 'landscape': '', 'fanart': item.get('fanart'), 'thumb': item.get('thumb'), 'duration': item.get('duration'), 'episode_type': item.get('episode_type')}
 			elif 'plugin.video.umbrella' in next_url:
 				next_meta = jsloads(params.get('meta')) if params.get('meta') else ''
 			elif 'videob://' in next_url and not control.addonInstalled('service.upnext'):
@@ -800,7 +800,7 @@ class PlayNext(xbmc.Player):
 			elif self.playnext_theme == '1' and (control.skin in ('skin.arctic.horizon.2')):
 				if self.debuglog:
 					log_utils.log('Show Playnext Theme AH2 with AH2 Skin', level=log_utils.LOGDEBUG)
-				window = PlayNextXML('ahplaynext.xml', control.addonPath(control.addonId()), meta=next_meta)
+				window = PlayNextXML('ahplaynext2.xml', control.addonPath(control.addonId()), meta=next_meta)
 			elif self.playnext_theme == '1' and control.skin in ('skin.arctic.fuse'):
 				if self.debuglog:
 					log_utils.log('Show Playnext Theme AH2 with Arctic Fuse Skin.', level=log_utils.LOGDEBUG)
@@ -836,7 +836,7 @@ class PlayNext(xbmc.Player):
 			elif self.playnext_theme == '2'and control.skin not in ('skin.auramod'):
 				window = StillWatchingXML('auraplaynext_stillwatching2.xml', control.addonPath(control.addonId()), meta=next_meta)
 			elif self.playnext_theme == '1' and control.skin in ('skin.arctic.horizon.2'):
-				window = StillWatchingXML('ahplaynext_stillwatching.xml', control.addonPath(control.addonId()), meta=next_meta)
+				window = StillWatchingXML('ahplaynext_stillwatching2.xml', control.addonPath(control.addonId()), meta=next_meta)
 			elif self.playnext_theme == '1' and control.skin in ('skin.arctic.fuse'):
 				window = StillWatchingXML('ahplaynext_stillwatching3.xml', control.addonPath(control.addonId()), meta=next_meta)
 			elif self.playnext_theme == '1' and control.skin not in ('skin.arctic.horizon.2') and control.skin not in ('skin.arctic.fuse'):

@@ -100,6 +100,36 @@
                     <texture diffuse="diffuse/landscape_w284_h160.png">$INFO[Window().Property(umbrella.thumb)]</texture>
                     <aspectratio scalediffuse="false">scale</aspectratio>
                 </control>
+                <control type="image">
+                    <texture colordiffuse="80000000">diffuse/landscape_w284_h28.png</texture>
+                    <visible>!String.IsEqual(Window().Property(umbrella.episode_type),standard) + !String.IsEmpty(Window().Property(umbrella.episode_type))</visible>
+                    <height>30</height>
+                </control>
+                <control type="image">
+                    <texture>common/mid_season_finale.png</texture>
+                    <height>30</height>
+                    <visible>String.IsEqual(Window().Property(umbrella.episode_type),mid_season_finale)</visible>
+                </control>
+                <control type="image">
+                    <texture>common/mid_season_premiere.png</texture>
+                    <height>30</height>
+                    <visible>String.IsEqual(Window().Property(umbrella.episode_type),mid_season_premiere)</visible>
+                </control>
+                <control type="image">
+                    <texture>common/season_finale.png</texture>
+                    <height>30</height>
+                    <visible>String.IsEqual(Window().Property(umbrella.episode_type),season_finale)</visible>
+                </control>
+                <control type="image">
+                    <texture>common/season_premiere.png</texture>
+                    <height>30</height>
+                    <visible>String.IsEqual(Window().Property(umbrella.episode_type),season_premiere)</visible>
+                </control>
+                <control type="image">
+                    <texture>common/series_finale.png</texture>
+                    <height>30</height>
+                    <visible>String.IsEqual(Window().Property(umbrella.episode_type),series_finale)</visible>
+                </control>
                 <control type="progress" id="3014">
                     <bottom>0</bottom>
                     <height>8</height>
