@@ -2,7 +2,8 @@
 
 Welcome to the umbrellaplug.github.io wiki!
 
-Compatible with Kodi 19, 20, and 21.
+Compatible with Kodi 19 and 20. 
+Kodi 21 is not supported.
 
 
 ## Current Versions:
