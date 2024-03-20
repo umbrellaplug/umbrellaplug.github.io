@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.46">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.47">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
 		<import addon="script.module.requests"/>
@@ -181,10 +181,12 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.6.46 - February 8th, 2024[/B]
---[Fix] Changed settings that were reversed. ATVP and AV1
---[Fix] Added fix for progress window causing issues when caching to real-debrid.
---[Enhancement] Added episode type labels to playnext windows for all 4 themes.
+[B]Update - v6.6.47 - March 20th, 2024[/B]
+--[Fix] Removed subscene for subtitle options.
+--[Fix] Allow resume trakt setting to be set even when scrobble from umbrella is not set.
+--[Fix] Added adjustment for episode size being wrong from elfhosted and selfhosted.
+--[Enhancement] Re-added Languages IMDB.
+--[Change] Made default for all imdb lists 100 now.
 		</news>
 	</extension>
 

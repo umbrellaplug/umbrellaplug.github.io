@@ -1589,7 +1589,7 @@ class Sources:
 				return self.sources
 		for i in self.sources:
 			try:
-				if i['provider'] == 'torrentio': continue # torrentio return file size based on episode query already so bypass re-calc
+				if i['provider'] == 'torrentio' or i['provider'] == 'selfhosted' or i['provider'] == 'elfhosted': continue # torrentio return file size based on episode query already so bypass re-calc
 				if 'package' in i:
 					dsize = i.get('size')
 					if not dsize: continue

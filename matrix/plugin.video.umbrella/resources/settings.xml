@@ -441,7 +441,7 @@
 				</setting>
 				<setting id="limit.imdb.genres" type="integer" label="40492" help="">
 					<level>0</level>
-					<default>20</default>
+					<default>100</default>
 					<constraints>
 						<minimum>20</minimum>
 						<maximum>250</maximum>
@@ -1068,6 +1068,11 @@
 					<control type="toggle"/>
 				</setting>
 				<setting id="navi.movie.imdb.people" type="boolean" label="32460" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="navi.movie.imdb.languages" type="boolean" label="32462" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
@@ -3318,7 +3323,6 @@
 						<dependency type="visible">
 							<and>
 								<condition operator="!is" setting="trakt.user.token"/>
-								<condition operator="!is" setting="trakt.scrobble">true</condition>
 							</and>
 						</dependency>
 					</dependencies>
@@ -5090,24 +5094,6 @@
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
-				<setting id="subtitles.service" type="integer" label="40501" help="">
-					<level>0</level>
-					<default>0</default>
-					<constraints>
-						<options>
-							<option label="40502">0</option>
-							<option label="40503">1</option>
-						</options>
-					</constraints>
-					<dependencies>
-						<dependency type="enable">
-							<condition operator="is" setting="subtitles">true</condition>
-						</dependency>
-					</dependencies>
-					<control type="list" format="string">
-						<heading>40501</heading>
-					</control>
-				</setting>
 				<setting id="opensubsusername" type="string" label="40504" help="">
 					<level>0</level>
 					<default/>
@@ -5116,7 +5102,7 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="subtitles.service">1</condition>
+							<condition operator="is" setting="subtitles">true</condition>
 						</dependency>
 					</dependencies>
 					<control type="edit" format="string">
@@ -5131,7 +5117,7 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="subtitles.service">1</condition>
+							<condition operator="is" setting="subtitles">true</condition>
 						</dependency>
 					</dependencies>
 					<control type="edit" format="string">
@@ -5147,7 +5133,7 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-								<condition operator="is" setting="subtitles.service">1</condition>
+								<condition operator="is" setting="subtitles">true</condition>
 						</dependency>
 					</dependencies>
 					<control type="button" format="action">
@@ -5163,7 +5149,7 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-								<condition operator="is" setting="subtitles.service">1</condition>
+							<condition operator="is" setting="subtitles">true</condition>
 						</dependency>
 					</dependencies>
 					<control type="button" format="action">

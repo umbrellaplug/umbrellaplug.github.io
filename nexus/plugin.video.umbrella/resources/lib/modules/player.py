@@ -623,7 +623,7 @@ class Player(xbmc.Player):
 			else: control.sleep(200)
 		if self.offset != '0' and self.playback_resumed is False:
 			control.sleep(200)
-			if getSetting('trakt.scrobble') == 'true' and getSetting('resume.source') == '1': # re-adjust the resume point since dialog is based on meta runtime vs. getTotalTime() and inaccurate
+			if self.traktCredentials and getSetting('resume.source') == '1': # re-adjust the resume point since dialog is based on meta runtime vs. getTotalTime() and inaccurate
 				try:
 					total_time = self.getTotalTime()
 					progress = float(fetch_bookmarks(self.imdb, self.tmdb, self.tvdb, self.season, self.episode))
@@ -931,33 +931,21 @@ class Subtitles:
 						control.sleep(1000)
 						control.notification(message=getLS(32394) % subLang.upper(), time=5000)
 				return log_utils.log(getLS(32394) % subLang.upper(), level=log_utils.LOGDEBUG)
-			subservice = getSetting('subtitles.service')
-			if subservice == '1':
-				from resources.lib.modules import opensubs
-				if opensubs.Opensubs().auth():
-					log_utils.log('OpenSubs Authorized.', level=log_utils.LOGDEBUG)
-				else:
-					control.setSetting('subtitles.service', '0')
-					subservice = '0'
+			from resources.lib.modules import opensubs
+			if opensubs.Opensubs().auth():
+				log_utils.log('OpenSubs Authorized.', level=log_utils.LOGDEBUG)
+			else:
+				return control.notification(message=getLS(40509), time=5000)
 			if not (season is None or episode is None):
 				#tv show
-				if subservice =='0':
-					from resources.lib.modules import subscene
-					result = subscene.get_subtitles(title, year, season, episode)
-				else:
-					from resources.lib.modules import opensubs
-					result = opensubs.Opensubs().getSubs(title, imdb, year, season, episode)
-				
+				from resources.lib.modules import opensubs
+				result = opensubs.Opensubs().getSubs(title, imdb, year, season, episode)
 				fmt = ['hdtv']
 
 			else:
 				#movie
-				if subservice =='0':
-					from resources.lib.modules import subscene
-					result = subscene.get_subtitles(title, year, season, episode)
-				else:
-					from resources.lib.modules import opensubs
-					result = opensubs.Opensubs().getSubs(title, imdb, year, season, episode)
+				from resources.lib.modules import opensubs
+				result = opensubs.Opensubs().getSubs(title, imdb, year, season, episode)
 				if not result: return
 				try: vidPath = xbmc.Player().getPlayingFile()
 				except: vidPath = ''
@@ -971,32 +959,15 @@ class Subtitles:
 			pFileName = os.path.splitext(pFileName)[0]
 			matches = []
 			if result:
-				if subservice == '0':
-					for j in result:
-						if j['language'] == langs[0].lower():
-							if season:
-								if seas_ep_filter(season, episode, j['fileName']):
-									seq = SequenceMatcher(None, pFileName.lower(), j['fileName'].lower())
-									matches.append({'language': j['language'], 'fileName': j['fileName'], 'subtitleUrl': j['subtitleUrl'],  'ratio': seq.ratio()})
-								if len(matches) == 0:
-									
-									log_utils.log('Subtitle service using Subscene found no matches for episode and season so will now look for season pack match', log_utils.LOGDEBUG)
-									if seas_filter(season, j['fileName']):
-										seq = SequenceMatcher(None, pFileName.lower(), j['fileName'].lower())
-										matches.append({'language': j['language'], 'fileName': j['fileName'], 'subtitleUrl': j['subtitleUrl'],  'ratio': seq.ratio()})
-							else:
+				for j in result:
+					if season:
+							if seas_ep_filter(season, episode, j['fileName']):
 								seq = SequenceMatcher(None, pFileName.lower(), j['fileName'].lower())
-								matches.append({'language': j['language'], 'fileName': j['fileName'], 'subtitleUrl': j['subtitleUrl'],  'ratio': seq.ratio()})
-				else:
-					for j in result:
-						if season:
-								if seas_ep_filter(season, episode, j['fileName']):
-									seq = SequenceMatcher(None, pFileName.lower(), j['fileName'].lower())
-									matches.append({'fileName': j['fileName'], 'fileID': j['fileID'],  'ratio': seq.ratio()})
-						else:
-							seq = SequenceMatcher(None, pFileName.lower(), j['fileName'].lower())
-							matches.append({'fileName': j['fileName'], 'fileID': j['fileID'], 'ratio': seq.ratio()})
-				matches.sort(key = lambda i: i['ratio'], reverse = True)
+								matches.append({'fileName': j['fileName'], 'fileID': j['fileID'],  'ratio': seq.ratio()})
+					else:
+						seq = SequenceMatcher(None, pFileName.lower(), j['fileName'].lower())
+						matches.append({'fileName': j['fileName'], 'fileID': j['fileID'], 'ratio': seq.ratio()})
+			matches.sort(key = lambda i: i['ratio'], reverse = True)
 
 			filter = matches
 			if not filter: 
@@ -1010,15 +981,11 @@ class Subtitles:
 			filename = filter[0]['fileName']
 			if self.debuglog:
 				log_utils.log('downloaded subtitle=%s' % filename, level=log_utils.LOGDEBUG)
-			if subservice == '0':
-				from resources.lib.modules import subscene
-				downloadURL = subscene.get_download_url(filter[0]['subtitleUrl'])
-			else:
-				from resources.lib.modules import opensubs
-				try:
-					downloadURL, downloadFileName = opensubs.Opensubs().downloadSubs(filter[0]['fileID'], filter[0]['fileName'])
-				except:
-					return log_utils.log('Error getting downloadurl or filename from opensubs.')
+			from resources.lib.modules import opensubs
+			try:
+				downloadURL, downloadFileName = opensubs.Opensubs().downloadSubs(filter[0]['fileID'], filter[0]['fileName'])
+			except:
+				return log_utils.log('Error getting downloadurl or filename from opensubs.')
 			if not control.existsPath(control.subtitlesPath): control.makeFile(control.subtitlesPath)
 			download_path = control.subtitlesPath
 			subtitle = download_path
@@ -1030,13 +997,6 @@ class Subtitles:
 						if fnmatch.fnmatch(name, pattern):
 							result.append(os.path.join(root, name))
 				return result
-
-			def download_and_unzip(downloadURL, extract_to='.'):
-				log_utils.log('downloading and unzipping from subscene', level=log_utils.LOGDEBUG)
-				reqqqq = Request(downloadURL, headers={'User-Agent' : "Magic Browser"})
-				http_response = urlopen(reqqqq)
-				zipfile = ZipFile(BytesIO(http_response.read()))
-				zipfile.extractall(path=extract_to)
 			def download_opensubs(downloadURL, downloadFileName):
 				log_utils.log('downloading srt file from opensubs.', level=log_utils.LOGDEBUG)
 				reqqqq = Request(downloadURL, headers={'User-Agent' : "Magic Browser"})
@@ -1052,16 +1012,10 @@ class Subtitles:
 				file.close()
 			from resources.lib.modules import subscene
 			subscene.delete_all_subs()
-			if subservice == '0':
-				try:
-					download_and_unzip(downloadURL, subtitle)
-				except:
-					log_utils.error()
-			else:
-				try:
-					download_opensubs(downloadURL, downloadFileName)
-				except:
-					log_utils.error()
+			try:
+				download_opensubs(downloadURL, downloadFileName)
+			except:
+				log_utils.error()
 			subtitles = find('*.srt', subtitle)
 			subtitle_matches = []
 			if len(subtitles) > 1:
@@ -1096,10 +1050,7 @@ class Subtitles:
 			if getSetting('subtitles.notification') == 'true':
 				if Player().isPlayback():
 					control.sleep(500)
-					if subservice == '0':
-						control.notification(title=filename, message=getLS(32191) % lang.upper())
-					else:
-						control.notification(title=filename, message=getLS(40506) % lang.upper())
+					control.notification(title=filename, message=getLS(40506) % lang.upper())
 			if self.playnext_method== '2' and getSetting('enable.playnext')== 'true' and Player().subtitletime == None: #added to check for playnext using subtitles if downloaded.
 				times = []
 				pattern = r'(\d{2}:\d{2}:\d{2},d{3}$)|(\d{2}:\d{2}:\d{2})'
@@ -1169,30 +1120,21 @@ class Subtitles:
 
 			try: subLang = xbmc.Player().getSubtitles()
 			except: subLang = ''
-			subservice = getSetting('subtitles.service')
-			if subservice == '1':
-				from resources.lib.modules import opensubs
-				if opensubs.Opensubs().auth():
-					pass
-				else:
-					return None
+
+			from resources.lib.modules import opensubs
+			if opensubs.Opensubs().auth():
+				pass
+			else:
+				return None
 			if not (season is None or episode is None):
-				if subservice =='0':
-					from resources.lib.modules import subscene
-					result = subscene.get_subtitles(title, year, season, episode)
-				else:
-					from resources.lib.modules import opensubs
-					result = opensubs.Opensubs().getSubs(title, imdb, year, season, episode)
+				from resources.lib.modules import opensubs
+				result = opensubs.Opensubs().getSubs(title, imdb, year, season, episode)
 				fmt = ['hdtv']
 
 			else:
 				#movie
-				if subservice =='0':
-					from resources.lib.modules import subscene
-					result = subscene.get_subtitles(title, year, season, episode)
-				else:
-					from resources.lib.modules import opensubs
-					result = opensubs.Opensubs().getSubs(title, imdb, year, season, episode)
+				from resources.lib.modules import opensubs
+				result = opensubs.Opensubs().getSubs(title, imdb, year, season, episode)
 				if not result: return
 				try: vidPath = xbmc.Player().getPlayingFile()
 				except: vidPath = ''
@@ -1206,30 +1148,15 @@ class Subtitles:
 			pFileName = os.path.splitext(pFileName)[0]
 			matches = []
 			if result:
-				if subservice == '0':
-					for j in result:
-						if j['language'] == langs[0].lower():
-							if season:
-								if seas_ep_filter(season, episode, j['fileName']):
-									seq = SequenceMatcher(None, pFileName.lower(), j['fileName'].lower())
-									matches.append({'language': j['language'], 'fileName': j['fileName'], 'subtitleUrl': j['subtitleUrl'],  'ratio': seq.ratio()})
-								if len(matches) == 0:
-									if seas_filter(season, j['fileName']):
-										seq = SequenceMatcher(None, pFileName.lower(), j['fileName'].lower())
-										matches.append({'language': j['language'], 'fileName': j['fileName'], 'subtitleUrl': j['subtitleUrl'],  'ratio': seq.ratio()})
-							else:
+				for j in result:
+					if season:
+							if seas_ep_filter(season, episode, j['fileName']):
 								seq = SequenceMatcher(None, pFileName.lower(), j['fileName'].lower())
-								matches.append({'language': j['language'], 'fileName': j['fileName'], 'subtitleUrl': j['subtitleUrl'],  'ratio': seq.ratio()})
-				else:
-					for j in result:
-						if season:
-								if seas_ep_filter(season, episode, j['fileName']):
-									seq = SequenceMatcher(None, pFileName.lower(), j['fileName'].lower())
-									matches.append({'fileName': j['fileName'], 'fileID': j['fileID'],  'ratio': seq.ratio()})
-						else:
-							seq = SequenceMatcher(None, pFileName.lower(), j['fileName'].lower())
-							matches.append({'fileName': j['fileName'], 'fileID': j['fileID'], 'ratio': seq.ratio()})
-				matches.sort(key = lambda i: i['ratio'], reverse = True)
+								matches.append({'fileName': j['fileName'], 'fileID': j['fileID'],  'ratio': seq.ratio()})
+					else:
+						seq = SequenceMatcher(None, pFileName.lower(), j['fileName'].lower())
+						matches.append({'fileName': j['fileName'], 'fileID': j['fileID'], 'ratio': seq.ratio()})
+			matches.sort(key = lambda i: i['ratio'], reverse = True)
 
 			filter = matches
 			if not filter: return None
@@ -1239,12 +1166,8 @@ class Subtitles:
 			filename = filter[0]['fileName']
 			if self.debuglog:
 				log_utils.log('downloaded subtitle=%s' % filename, level=log_utils.LOGDEBUG)
-			if subservice == '0':
-				from resources.lib.modules import subscene
-				downloadURL = subscene.get_download_url(filter[0]['subtitleUrl'])
-			else:
-				from resources.lib.modules import opensubs
-				downloadURL, downloadFileName = opensubs.Opensubs().downloadSubs(filter[0]['fileID'], filter[0]['fileName'])
+			from resources.lib.modules import opensubs
+			downloadURL, downloadFileName = opensubs.Opensubs().downloadSubs(filter[0]['fileID'], filter[0]['fileName'])
 			subtitle = control.transPath(download_path)
 			
 			def find(pattern, path):
@@ -1254,13 +1177,6 @@ class Subtitles:
 						if fnmatch.fnmatch(name, pattern):
 							result.append(os.path.join(root, name))
 				return result
-
-			def download_and_unzip(downloadURL, extract_to='.'):
-				log_utils.log('downloading and unzipping from subscene', level=log_utils.LOGDEBUG)
-				reqqqq = Request(downloadURL, headers={'User-Agent' : "Magic Browser"})
-				http_response = urlopen(reqqqq)
-				zipfile = ZipFile(BytesIO(http_response.read()))
-				zipfile.extractall(path=extract_to)
 			def download_opensubs(downloadURL, downloadFileName):
 				log_utils.log('downloading srt file from opensubs.', level=log_utils.LOGDEBUG)
 				reqqqq = Request(downloadURL, headers={'User-Agent' : "Magic Browser"})
@@ -1276,10 +1192,7 @@ class Subtitles:
 				file.close()
 			from resources.lib.modules import subscene
 			subscene.delete_all_subs()
-			if subservice == '0':
-				download_and_unzip(downloadURL, subtitle)
-			else:
-				download_opensubs(downloadURL, downloadFileName)
+			download_opensubs(downloadURL, downloadFileName)
 			subtitles = find('*.srt', subtitle)
 			subtitle_matches = []
 			if len(subtitles) > 1:
@@ -1333,12 +1246,13 @@ class Subtitles:
 class Bookmarks:
 	def __init__(self):
 		self.debuglog = control.setting('debug.level') == '1'
+		self.traktCredentials = trakt.getTraktCredentialsInfo()
 	def get(self, name, imdb=None, tmdb=None, tvdb=None, season=None, episode=None, year='0', runtime=None, ck=False):
 		markwatched_percentage = int(getSetting('markwatched.percent')) or 85
 		offset = '0'
 		scrobbble = 'Local Bookmark'
 		if getSetting('bookmarks') != 'true': return offset
-		if getSetting('trakt.scrobble') == 'true' and getSetting('resume.source') == '1':
+		if self.traktCredentials and getSetting('resume.source') == '1':
 			scrobbble = 'Trakt Scrobble'
 			try:
 				if not runtime or runtime == 'None': return offset # TMDB sometimes return None as string. duration pulled from kodi library if missing from meta

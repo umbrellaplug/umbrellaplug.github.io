@@ -123,6 +123,8 @@ class Navigator:
 			self.addDirectoryItem(40493 if self.indexLabels else 32455, 'movieGenres&url=trakt_movie_genre&folderName=%s' % quote_plus(getLS(40493 if self.indexLabels else 32455)), 'trakt.png' if self.iconLogos else 'genres.png', 'DefaultGenre.png')
 		if getMenuEnabled('navi.movie.imdb.years'):
 			self.addDirectoryItem(32458 if self.indexLabels else 32457, 'movieYears&url=year&folderName=%s' % quote_plus(getLS(32458 if self.indexLabels else 32457)), 'imdb.png' if self.iconLogos else 'years.png', 'DefaultYear.png')
+		if getMenuEnabled('navi.movie.imdb.languages'):
+			self.addDirectoryItem(32462 if self.indexLabels else 32461, 'movieLanguages&folderName=%s' % quote_plus(getLS(32462 if self.indexLabels else 32461)), 'imdb.png' if self.iconLogos else 'languages.png', 'DefaultAddonLanguage.png')
 		if getMenuEnabled('navi.movie.tmdb.years'):
 			self.addDirectoryItem(32485 if self.indexLabels else 32457, 'movieYears&url=tmdb_year&folderName=%s' % quote_plus(getLS(32485 if self.indexLabels else 32457)), 'tmdb.png' if self.iconLogos else 'years.png', 'DefaultYear.png')
 		if getMenuEnabled('navi.movie.tmdb.certificates'):
