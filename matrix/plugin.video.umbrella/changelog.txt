@@ -1,3 +1,6 @@
+[B]Update - v6.6.48 - March 22nd, 2024[/B]
+--[Fix] Settings change to fix allowing resume from Trakt without Trakt scrobble.
+
 [B]Update - v6.6.47 - March 20th, 2024[/B]
 --[Fix] Removed subscene for subtitle options.
 --[Fix] Allow resume trakt setting to be set even when scrobble from umbrella is not set.
