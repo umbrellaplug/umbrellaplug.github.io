@@ -9,12 +9,14 @@
     See LICENSES/GPL-2.0-only for more information.
 """
 
+from __future__ import absolute_import, division, unicode_literals
+
 import re
 
 try:
     from ....kodion import logger
 except:
-    class logger:
+    class logger(object):
         @staticmethod
         def log_debug(txt):
             print(txt)
@@ -24,7 +26,7 @@ def throttling_reverse(arr):
     """Reverses the input list.
     Needs to do an in-place reversal so that the passed list gets changed.
     To accomplish this, we create a reversed copy, and then change each
-    indvidual element.
+    individual element.
     """
     reverse_copy = arr[::-1]
     for i in range(len(reverse_copy)):
@@ -181,7 +183,7 @@ def js_splice(arr, start, delete_count=None, *items):
         Index at which to start changing the array
     :param int delete_count:
         Number of elements to delete from the array
-    :param *items:
+    :param items:
         Items to add to the array
     Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice  # noqa:E501
     """
@@ -221,7 +223,7 @@ def throttling_splice(d, e):
     js_splice(d, e, 1)
 
 
-class CalculateN:
+class CalculateN(object):
     # References:
     # https://github.com/ytdl-org/youtube-dl/issues/29326#issuecomment-894619419
     # https://github.com/pytube/pytube/blob/fc9aec5c35829f2ebb4ef8dd599b14a666850d20/pytube/cipher.py
