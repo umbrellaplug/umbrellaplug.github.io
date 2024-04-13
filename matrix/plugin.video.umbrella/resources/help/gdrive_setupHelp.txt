@@ -1,3 +1,0 @@
-To generate a GDrive Worker URL, go to  [B]https://gdrive-cfworker.glitch.me/[/B]  and follow the instructions.
-
-Once the instructions have been completed use the URL from Cloudflare project created during instructions for GDrive URL.
