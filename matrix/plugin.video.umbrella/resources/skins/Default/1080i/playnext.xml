@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol always="true">3011</defaultcontrol>
+	<onload>Dialog.Close(fullscreeninfo,true)</onload>
+	<onload>Dialog.Close(videoosd,true)</onload>
+	<controls>
+		<control type="group">
+			<animation type="WindowOpen" reversible="false">
+				<effect type="fade" start="0" end="100" time="400" />
+				<effect type="slide" start="0,-161" end="0,0" time="400" />
+			</animation>
+			<animation type="WindowClose" reversible="false">
+				<effect type="fade" start="100" end="0" time="400" />
+				<effect type="slide" start="0,0" end="0,-161" time="400" />
+			</animation>
+			<control type="group">
+				<top>0</top>
+				<left>0</left>
+				<height>161</height>
+				<width>1050</width>
+
+				<!-- Background -->
+				<control type="image">
+					<top>0</top>
+					<left>0</left>
+					<width>100%</width>
+					<height>100%</height>
+					<texture colordiffuse="$INFO[Window().Property(umbrella.playnext.background.color)]">common/bg.png</texture>
+				</control>
+				<!-- Landscape - Fanart - Thumb - Progress Bar-->
+				<control type="group">
+					<top>10</top>
+					<left>10</left>
+					<control type="image">
+						<top>-2</top>
+						<left>-2</left>
+						<width>254</width>
+						<height>144</height>
+						<texture>common/shadow.png</texture>
+					</control>
+					<control type="image">
+						<width>250</width>
+						<height>141</height>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.playnext.background.color)]">common/white.png</texture>
+						<visible>String.IsEmpty(Window().Property(umbrella.thumb)) + String.IsEmpty(Window().Property(umbrella.landscape)) + String.IsEmpty(Window().Property(umbrella.fanart))</visible>
+					</control>
+					<control type="textbox">
+						<top>10</top>
+						<left>10</left>
+						<width>230</width>
+						<height>121</height>
+						<font>font12</font>
+						<textcolor>ffffffff</textcolor>
+						<shadowcolor>00000000</shadowcolor>
+						<align>center</align>
+						<aligny>center</aligny>
+						<label>$INFO[Window().Property(tvshowtitle)]</label>
+						<visible>String.IsEmpty(Window().Property(umbrella.thumb)) + String.IsEmpty(Window().Property(umbrella.landscape)) + String.IsEmpty(Window().Property(umbrella.fanart))</visible>
+					</control>
+					<control type="image">
+						<width>250</width>
+						<height>141</height>
+						<texture>$INFO[Window().Property(umbrella.landscape)]</texture>
+						<aspectratio>scale</aspectratio>
+					</control>
+					<control type="image">
+						<width>250</width>
+						<height>141</height>
+						<texture>$INFO[Window().Property(umbrella.fanart)]</texture>
+						<aspectratio>scale</aspectratio>
+						<visible>String.IsEmpty(Window().Property(umbrella.landscape))</visible>
+					</control>
+					<control type="image">
+						<width>250</width>
+						<height>141</height>
+						<texture>$INFO[Window().Property(umbrella.thumb)]</texture>
+						<aspectratio>scale</aspectratio>
+						<visible>String.IsEmpty(Window().Property(umbrella.landscape)) + String.IsEmpty(Window().Property(umbrella.fanart))</visible>
+					</control>
+					<control type="image">
+                        <texture colordiffuse="80000000">diffuse/landscape_w284_h28.png</texture>
+                        <visible>!String.IsEqual(Window().Property(umbrella.episode_type),standard) + !String.IsEmpty(Window().Property(umbrella.episode_type))</visible>
+                        <height>30</height>
+						<width>250</width>
+					</control>
+					<control type="image">
+						<texture>common/mid_season_finale.png</texture>
+						<height>30</height>
+						<visible>String.IsEqual(Window().Property(umbrella.episode_type),mid_season_finale)</visible>
+						<width>250</width>
+					</control>
+					<control type="image">
+						<texture>common/mid_season_premiere.png</texture>
+						<height>30</height>
+						<visible>String.IsEqual(Window().Property(umbrella.episode_type),mid_season_premiere)</visible>
+						<width>250</width>
+					</control>
+					<control type="image">
+						<texture>common/season_finale.png</texture>
+						<height>30</height>
+						<visible>String.IsEqual(Window().Property(umbrella.episode_type),season_finale)</visible>
+						<width>250</width>
+					</control>
+					<control type="image">
+						<texture>common/season_premiere.png</texture>
+						<height>30</height>
+						<visible>String.IsEqual(Window().Property(umbrella.episode_type),season_premiere)</visible>
+						<width>250</width>
+					</control>
+					<control type="image">
+						<texture>common/series_finale.png</texture>
+						<height>30</height>
+						<visible>String.IsEqual(Window().Property(umbrella.episode_type),series_finale)</visible>
+						<width>250</width>
+					</control>
+					<control type="progress" id="3014">
+						<width>250</width>
+						<top>136</top>
+						<height>5</height>
+						<reveal>true</reveal>
+						<righttexture></righttexture>
+						<overlaytexture></overlaytexture>
+						<lefttexture></lefttexture>
+						<texturebg colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/white.png</texturebg>
+					</control>
+				</control>
+
+				<!-- Labels -->
+				<control type="group">
+					<top>10</top>
+					<left>270</left>
+					<right>10</right>
+					<control type="label">
+						<description>Default Action in x:xx label</description>
+						<width>auto</width>
+						<height>35</height>
+						<aligny>center</aligny>
+						<font>font25_title</font>
+						<textcolor>eeffffff</textcolor>
+						<shadowcolor>ff000000</shadowcolor>
+						<label>$ADDON[plugin.video.umbrella 32174][COLOR $INFO[Window().Property(skin.selectColor)]][B]$INFO[Player.TimeRemaining(m:ss)][/B][/COLOR]</label>
+						<visible>!Integer.IsGreater(Player.TimeRemaining,290)</visible>
+					</control>
+					<control type="label">
+						<description>Play Next label</description>
+						<width>auto</width>
+						<height>35</height>
+						<aligny>center</aligny>
+						<font>font25_title</font>
+						<textcolor>eeffffff</textcolor>
+						<shadowcolor>ff000000</shadowcolor>
+						<label>$ADDON[plugin.video.umbrella 32168]</label>
+						<visible>Integer.IsGreater(Player.TimeRemaining,290)</visible>
+					</control>
+					<!-- Labels line2, Episode Details -->
+					<control type="grouplist">
+						<orientation>horizontal</orientation>
+						<height>35</height>
+						<top>40</top>
+						<itemgap>0</itemgap>
+						<control type="label">
+							<width>auto</width>
+							<height>35</height>
+							<aligny>center</aligny>
+							<font>font12</font>
+							<textcolor>eeffffff</textcolor>
+							<shadowcolor>ff000000</shadowcolor>
+							<label>$INFO[Window().Property(umbrella.tvshowtitle),, - ]$INFO[Window().Property(umbrella.season),S,]$INFO[Window().Property(umbrella.episode),E, - ]$INFO[Window().Property(umbrella.title)]   </label>
+							<visible>!String.IsEmpty(Window().Property(umbrella.title))</visible>
+						</control>
+						<control type="label">
+							<width>auto</width>
+							<height>35</height>
+							<aligny>center</aligny>
+							<font>font12</font>
+							<textcolor>eeffffff</textcolor>
+							<shadowcolor>ff000000</shadowcolor>
+							<label>$INFO[Window().Property(umbrella.premiered),(,)   ]</label>
+							<visible>!String.IsEmpty(Window().Property(umbrella.premiered))</visible>
+						</control>
+						<control type="image">
+							<description>rating icon</description>
+							<width>19</width>
+							<height>19</height>
+							<aspect>keep</aspect>
+							<texture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/star.png</texture>
+							<animation effect="slide" end="0,8" time="0" condition="true">Conditional</animation>
+							<visible>!String.IsEmpty(Window().Property(umbrella.rating))</visible>
+						</control>
+						<control type="label">
+							<width>auto</width>
+							<height>35</height>
+							<aligny>center</aligny>
+							<label>$INFO[Window().Property(umbrella.rating), ,   ]</label>
+							<font>font12</font>
+							<textcolor>eeffffff</textcolor>
+							<shadowcolor>ff000000</shadowcolor>
+							<visible>!String.IsEmpty(Window().Property(umbrella.rating))</visible>
+						</control>
+					</control>
+
+					<!-- Buttons -->
+					<control type="grouplist">
+						<orientation>horizontal</orientation>
+						<left>0</left>
+						<bottom>0</bottom>
+						<height>75</height>
+						<itemgap>5</itemgap>
+						<usecontrolcoords>true</usecontrolcoords>
+						<control type="button" id="3011">
+							<description>Play Now button</description>
+							<label>    $ADDON[plugin.video.umbrella 32169]</label>
+							<shadowcolor>ff000000</shadowcolor>
+							<height>75</height>
+							<width>200</width>
+							<font>font20_title</font>
+							<textoffsetx>30</textoffsetx>
+							<textcolor>ddffffff</textcolor>
+							<focusedcolor>eeffffff</focusedcolor>
+							<selectedcolor>ddffffff</selectedcolor>
+							<aligny>center</aligny>
+							<align>right</align>
+							<texturefocus border="10" colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/button3.png</texturefocus>
+							<texturenofocus border="10" colordiffuse="1fdedede">common/button3.png</texturenofocus>
+							<pulseonselect>no</pulseonselect>
+						</control>
+						<control type="button" id="3012">
+							<description>Stop playback button</description>
+							<label>    $ADDON[plugin.video.umbrella 32170]</label>
+							<shadowcolor>ff000000</shadowcolor>
+							<height>75</height>
+							<width min="150">auto</width>
+							<font>font20_title</font>
+							<textoffsetx>30</textoffsetx>
+							<textcolor>ddffffff</textcolor>
+							<focusedcolor>eeffffff</focusedcolor>
+							<selectedcolor>ddffffff</selectedcolor>
+							<aligny>center</aligny>
+							<align>right</align>
+							<texturefocus border="10" colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/button3.png</texturefocus>
+							<texturenofocus border="10" colordiffuse="1fdedede">common/button3.png</texturenofocus>
+							<pulseonselect>no</pulseonselect>
+						</control>
+						<control type="button" id="3013">
+							<description>Close button</description>
+							<label>$ADDON[plugin.video.umbrella 33486]</label>
+							<shadowcolor>ff000000</shadowcolor>
+							<height>75</height>
+							<width min="160">auto</width>
+							<font>font20_title</font>
+							<textoffsetx>30</textoffsetx>
+							<textcolor>ddffffff</textcolor>
+							<focusedcolor>eeffffff</focusedcolor>
+							<selectedcolor>ddffffff</selectedcolor>
+							<aligny>center</aligny>
+							<align>right</align>
+							<texturefocus border="10" colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/button3.png</texturefocus>
+							<texturenofocus border="10" colordiffuse="1fdedede">common/button3.png</texturenofocus>
+							<pulseonselect>no</pulseonselect>
+							<visible>String.IsEmpty(Window().Property(umbrella.hidebutton))</visible>
+						</control>
+					</control>
+					<control type="image">
+						<description>play icon on button</description>
+						<left>20</left>
+						<bottom>17</bottom>
+						<width>40</width>
+						<height>40</height>
+						<aspect>keep</aspect>
+						<texture colordiffuse="ddffffff">common/play.png</texture>
+					</control>
+					<control type="image">
+						<description>stop icon on button</description>
+						<left>225</left>
+						<bottom>19</bottom>
+						<width>36</width>
+						<height>36</height>
+						<aspect>keep</aspect>
+						<texture colordiffuse="ddffffff">common/stop.png</texture>
+					</control>
+					<control type="image">
+						<description>close icon on button</description>
+						<left>375</left>
+						<bottom>15</bottom>
+						<width>45</width>
+						<height>45</height>
+						<aspect>keep</aspect>
+						<texture colordiffuse="ddffffff">common/close.png</texture>
+						<visible>String.IsEmpty(Window().Property(umbrella.hidebutton))</visible>
+					</control>
+
+					<!-- Time and EndTime -->
+					<control type="group">
+						<bottom>20</bottom>
+						<right>10</right>
+						<visible>!Window.IsVisible(extendedprogressdialog)</visible>
+						<animation effect="fade" time="150">VisibleChange</animation>
+						<control type="label">
+							<right>0</right>
+							<bottom>0</bottom>
+							<width>200</width>
+							<height>20</height>
+							<font>font12</font>
+							<align>right</align>
+							<textcolor>ddffffff</textcolor>
+							<shadowcolor>ff000000</shadowcolor>
+							<label>$ADDON[plugin.video.umbrella 32171] $INFO[Window().Property(umbrella.endtime)]</label>
+							<visible>!String.IsEmpty(Window.Property(umbrella.endtime))</visible>
+						</control>
+						<control type="label">
+							<right>0</right>
+							<bottom>25</bottom>
+							<width>200</width>
+							<height>20</height>
+							<font>font12</font>
+							<align>right</align>
+							<textcolor>ddffffff</textcolor>
+							<shadowcolor>ff000000</shadowcolor>
+							<label>$INFO[System.Time]</label>
+						</control>
+					</control>
+
+				</control>
+			</control>
+		</control>
+	</controls>
+</window>

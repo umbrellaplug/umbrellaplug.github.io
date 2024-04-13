@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<skins>
+    <skin id="1">
+        <name>Umbrella</name>
+        <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/umbrella.zip</url>
+        <image>https://i.imgur.com/FYv18S4.png</image>
+    </skin>
+    <skin id="2">
+        <name>Umbrella-Maroon</name>
+        <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/umbrella-maroon.zip</url>
+        <image>https://i.imgur.com/0AH3rSs.png</image>
+    </skin>
+    <skin id="3">
+        <name>Exuary</name>
+        <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/exuary.zip</url>
+        <image>https://i.imgur.com/W8yaD6S.png</image>
+    </skin>
+    <skin id="4">
+        <name>Exuary-Red</name>
+        <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/exuary-red.zip</url>
+        <image>https://i.imgur.com/0AH3rSs.png</image>
+    </skin>
+    <skin id="5">
+        <name>Exodus</name>
+        <url>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/xml/skinpack/exodus.zip</url>
+        <image>https://i.imgur.com/uKKtIOM.png</image>
+    </skin>
+</skins>

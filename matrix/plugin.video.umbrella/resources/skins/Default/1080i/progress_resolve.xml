@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <control type="group">
+            <control type="image">
+                <description>background</description>
+                <left>0</left>
+                <top>0</top>
+                <width>1920</width>
+                <height>1080</height>
+                <texture>common/black.png</texture>
+            </control>
+            <control type="image">
+                <left>0</left>
+                <top>0</top>
+                <width>1920</width>
+                <height>1080</height>
+                <texture background="true">$INFO[Window.Property(umbrella.fanart)]</texture>
+                <visible>String.IsEqual(Window().Property(umbrella.fanartBG),1)</visible>
+                <animation effect="fade" start="100" end="20" time="0" tween="sine" easing="in">WindowOpen</animation>
+            </control>
+            <control type="image">
+                <left>0</left>
+                <top>0</top>
+                <width>1920</width>
+                <height>1080</height>
+                <texture background="true">$INFO[Window.Property(umbrella.fanartdefault)]</texture>
+                <visible>String.IsEqual(Window().Property(umbrella.fanartBG),0)</visible>
+                <animation effect="fade" start="100" end="20" time="0" tween="sine" easing="in">WindowOpen</animation>
+            </control>
+        </control>
+        <control type="group">
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" start="0" end="80" time="200"/>
+                <effect type="slide" start="0,-360" end="0" time="200" center="auto" tween="cubic" easing="in" />
+            </animation>
+            <control type="label" id="204">
+                <width>280</width>
+                <height>20</height>
+                <top>20</top>
+                <right>10</right>
+                <label>$ADDON[plugin.video.umbrella 40337]</label>
+                <animation effect="fade" start="100" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+            </control>
+            <control type="image" id="203">
+                <animation effect="fade" start="0" end="100" time="200">WindowOpen</animation>
+                <height>310</height>
+                <top>0</top>
+                <centerleft>50%</centerleft>
+                <aspectratio>keep</aspectratio>
+                <texture>$INFO[Window.Property(umbrella.clearlogo)]</texture>
+            </control>
+            <control type="textbox" id="2001">
+                <centertop>90%</centertop>
+                <centerleft>50%</centerleft>
+                <width>800</width>
+                <height>300</height>
+                <font>font12</font>
+                <align>center</align>
+                <textcolor>FFB7B4BB</textcolor>
+            </control>
+            <control type="textbox" id="2002">
+                <centertop>50%</centertop>
+                <centerleft>50%</centerleft>
+                <width>900</width>
+                <height>300</height>
+                <font>font12</font>
+                <align>center</align>
+                <textcolor>FFB7B4BB</textcolor>
+                <label>[B]$INFO[Window.Property(umbrella.plot)][/B]</label>
+            </control>
+            <control type="image" id="233">
+                <width>90</width>
+                <height>90</height>
+                <top>2</top>
+                <left>2</left>
+                <texture>common/umb8p.png</texture>
+                <animation effect="fade" start="0" end="70" time="0">Visible</animation>
+                <visible>Integer.IsEqual(Window().Property(percent),0)</visible>
+            </control>
+        </control>
+    </controls>
+</window>

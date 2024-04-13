@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <defaultcontrol always="true">3011</defaultcontrol>
+    <onload>Dialog.Close(fullscreeninfo,true)</onload>
+    <onload>Dialog.Close(videoosd,true)</onload>
+    <include>Animation_FadeIn</include>
+    <controls>
+        <control type="image">
+            <height>400</height>
+            <texture>common/dim-top.png</texture>
+        </control>
+        <control type="group">
+            <include>Dimension_UpNext</include>
+            <control type="group">
+                <width>upnext_image_w</width>
+                <control type="image">
+                    <texture diffuse="diffuse/landscape_w284_h160.png">$INFO[Window().Property(umbrella.thumb)]</texture>
+                    <aspectratio scalediffuse="false">scale</aspectratio>
+                </control>
+                <control type="progress" id="3014">
+                    <bottom>0</bottom>
+                    <height>8</height>
+                </control>
+            </control>
+            <control type="group">
+                <left>upnext_image_w</left>
+                <control type="label">
+                    <left>40</left>
+                    <aligny>center</aligny>
+                    <height>40</height>
+                    <label>Next Episode in [COLOR $INFO[Window().Property(skin.selectColor)]][B]$INFO[Player.TimeRemaining(ss)][/B][/COLOR] seconds...</label>
+                    <textcolor>panel_fg_100</textcolor>
+                    <font>font_midi_bold</font>
+					<visible>!Integer.IsGreater(Player.TimeRemaining,59)</visible>
+                </control>
+				<control type="label">
+                    <left>40</left>
+                    <aligny>center</aligny>
+                    <height>40</height>
+                    <label>Next Episode in [COLOR $INFO[Window().Property(skin.selectColor)]][B]$INFO[Player.TimeRemaining(m:ss)][/B][/COLOR]</label>
+                    <textcolor>panel_fg_100</textcolor>
+                    <font>font_midi_bold</font>
+					<visible>Integer.IsGreater(Player.TimeRemaining,60)</visible>
+                </control>
+
+                <control type="group">
+                    <left>44</left>
+                    <top>40</top>
+                    <height>40</height>
+                    <control type="group">
+                        <centertop>50%</centertop>
+                        <height>80</height>
+                        <control type="image">
+                            <aspectratio align="left">keep</aspectratio>
+                            <texture colordiffuse="panel_fg_90">flags/quality/info.png</texture>
+                            <centertop>52%</centertop>
+                            <width>37</width>
+                            <height>24</height>
+                        </control>
+                        <control type="grouplist">
+                            <left>47</left>
+                            <orientation>horizontal</orientation>
+                            <height>80</height>
+                            <itemgap>10</itemgap>
+                            <include content="Info_Line_Label">
+                                <param name="font" value="font_mini_bold" />
+                                <param name="label" value="$INFO[Window().Property(umbrella.tvshowtitle),, - ]$INFO[Window().Property(umbrella.season),,]x$INFO[Window().Property(umbrella.episode),, - ]$INFO[Window().Property(umbrella.title)]" />
+                                <param name="textcolor" value="panel_fg_90" />
+                                <param name="visible" value="!String.IsEmpty(Window.Property(umbrella.title))" />
+                            </include>
+							<include content="Info_Line_Label">
+                                <param name="font" value="font_mini_bold" />
+                                <param name="label" value="$INFO[Window().Property(umbrella.rating)]" />
+                                <param name="textcolor" value="panel_fg_90" />
+                                <param name="visible" value="!String.IsEmpty(Window.Property(umbrella.rating))" />
+                            </include>
+							<control type="image">
+								<description>rating icon</description>
+								<top>20</top>
+								<width>26</width>
+								<height>26</height>
+								<aspect>keep</aspect>
+								<texture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/star.png</texture>
+								<animation effect="slide" end="0,8" time="0" condition="true">Conditional</animation>
+								<visible>!String.IsEmpty(Window().Property(umbrella.rating))</visible>
+							</control>
+                        </control>
+                    </control>
+                </control>
+
+
+
+                <control type="group">
+                    <height>70</height>
+                    <bottom>0</bottom>
+                    <control type="grouplist">
+                        <itemgap>-60</itemgap>
+                        <orientation>horizontal</orientation>
+                        <height>256</height>
+                        <centertop>50%</centertop>
+                        <include content="Object_Info_Button">
+                            <param name="id" value="3013" />
+                            <param name="groupid" value="5012" />
+                            <param name="sliceid" value="5112" />
+                            <param name="label" value="Hide" />
+                            <param name="icon" value="special://skin/extras/icons/eye2.png" />
+                            <param name="visible" value="String.IsEmpty(Window().Property(umbrella.hidebutton))" />
+                        </include>
+                        <include content="Object_Info_Button">
+                            <param name="id" value="3011" />
+                            <param name="groupid" value="5013" />
+                            <param name="sliceid" value="5113" />
+                            <param name="label" value="Watch Now" />
+                            <param name="icon" value="special://skin/extras/icons/play3.png" />
+                            <param name="visible" value="true" />
+                        </include>
+                        <include content="Object_Info_Button">
+                            <param name="id" value="3012" />
+                            <param name="groupid" value="5014" />
+                            <param name="sliceid" value="5114" />
+                            <param name="label" value="Stop" />
+                            <param name="icon" value="special://skin/extras/icons/disabled.png" />
+                            <param name="visible" value="true" />
+                            <onclick>SetFocus(3013)</onclick>
+                            <onclick>Action(Select)</onclick>
+                        </include>
+                    </control>
+                </control>
+            </control>
+        </control>
+        <include content="Object_Hidden_Button">
+            <param name="id" value="3013" />
+        </include>
+    </controls>
+</window>
+

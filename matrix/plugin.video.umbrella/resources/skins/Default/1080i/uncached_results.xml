@@ -1,0 +1,775 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<!-- <defaultcontrol>2001</defaultcontrol> -->
+	<controls>
+		<control type="group">
+            <control type="image">
+                <left>0</left>
+                <top>0</top>
+                <width>1920</width>
+                <height>1080</height>
+                <texture>common/black.png</texture>
+            </control>
+            <control type="image">
+                <left>0</left>
+                <top>0</top>
+                <width>1920</width>
+                <height>1080</height>
+                <texture background="true">$INFO[Window.Property(umbrella.poster1)]</texture>
+                <animation effect="fade" start="0" end="20" time="0" tween="sine">WindowOpen</animation>
+				<visible>String.IsEqual(Window().Property(umbrella.fanartBG),1)</visible>
+            </control>
+			<control type="image">
+                <left>0</left>
+                <top>0</top>
+                <width>1920</width>
+                <height>1080</height>
+                <texture background="true">$INFO[Window.Property(umbrella.fanartdefault)]</texture>
+                <visible>String.IsEqual(Window().Property(umbrella.fanartBG),0)</visible>
+                <animation effect="fade" start="100" end="20" time="0" tween="sine" easing="in">WindowOpen</animation>
+            </control>
+        </control>
+		
+
+<!-- Side Info -->
+        <control type="group">
+            <top>120</top>
+            <left>1400</left>
+            <control type="label">
+                <top>-900</top>
+                <width>400</width>
+                <font>font12</font>
+                <textcolor>AAFFFFFF</textcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <visible>!String.IsEmpty(Window().Property(umbrella.season))</visible>
+                <label>Season: [COLOR $INFO[Window().Property(umbrella.highlight.color)]]$INFO[Window().Property(umbrella.season)][/COLOR] Episode: [COLOR $INFO[Window().Property(umbrella.dialog.color)]]$INFO[Window().Property(umbrella.episode)][/COLOR]</label>
+            </control>
+            <control type="image">
+                <width>400</width>
+                <height>600</height>
+                <top>50</top>
+                <texture background="true">$INFO[Window().Property(umbrella.poster)]</texture>
+            </control>
+
+            <control type="group">
+                <top>420</top>
+                <control type="label">
+                    <top>20</top>
+                    <width>400</width>
+                    <font>font14</font>
+                    <textcolor>AAFFFFFF</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>$INFO[Window().Property(umbrella.title)]</label>
+					<scroll>true</scroll>
+                </control>
+                <control type="label">
+                    <top>150</top>
+                    <width>400</width>
+                    <font>font12</font>
+                    <textcolor>AAFFFFFF</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <visible>!String.IsEmpty(Window().Property(umbrella.season))</visible>
+                    <label>$INFO[Window().Property(umbrella.mpaa)] | Year: [COLOR $INFO[Window().Property(umbrella.dialog.color)]]$INFO[Window().Property(umbrella.year)] [/COLOR] | [COLOR $INFO[Window().Property(umbrella.dialog.color)]]$INFO[Window().Property(umbrella.duration)]min[/COLOR]
+                    </label>
+                </control>
+                <control type="label">
+                    <top>120</top>
+                    <width>400</width>
+                    <font>font12</font>
+                    <textcolor>AAFFFFFF</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <visible>String.IsEmpty(Window().Property(umbrella.season))</visible>
+                    <label>$INFO[Window().Property(umbrella.mpaa)] | Premiered: [COLOR $INFO[Window().Property(umbrella.dialog.color)]]$INFO[Window().Property(umbrella.premiered)] [/COLOR] | [COLOR $INFO[Window().Property(umbrella.dialog.color)]]$INFO[Window().Property(umbrella.duration)]min[/COLOR]</label>
+                </control>
+
+                <control type="textbox">
+                    <wrapmultiline>true</wrapmultiline>
+                    <top>360</top>
+                    <left>-70</left>
+                    <height min="20" max="130">auto</height>
+                    <width>550</width>
+                    <font>font12</font>
+                    <textcolor>AAFFFFFF</textcolor>
+                    <align>center</align>
+                    <label>$INFO[Window().Property(umbrella.plot)]</label>
+					<scroll>true</scroll>
+                </control>
+            </control>
+
+        </control>
+
+<!-- Top Logo/picture  -->
+		<control type="group" id="1">
+			<description>List Header</description>
+			<left>25</left>
+			<top>0</top>
+			<height>80</height>
+			<width min="0" max="1920">auto</width>
+			<control type="textbox">
+				<description>Total Sources Label</description>
+				<left>50</left>
+				<top>110</top>
+				<width>300</width>
+				<height>40</height>
+				<font>font14</font>
+				<textcolor>white</textcolor>
+				<align>left</align>
+				<aligny>bottom</aligny>
+				<autoscroll>false</autoscroll>
+				<label>$INFO[Window().Property(umbrella.total_results)] Total Sources</label>
+			</control>
+			<control type="image">
+				<description>clearlogo</description>
+				<aspectratio align="center" aligny="center">keep</aspectratio>
+				<left>400</left>
+				<top>-15</top>
+				<width>600</width>
+				<height>175%</height>
+				<texture background="true">$INFO[Window().Property(umbrella.clearlogo)]</texture>
+				<!-- <visible>!String.IsEmpty(Window().Property(umbrella.clearlogo))</visible> -->
+			</control>
+			<!-- <control type="textbox"> -->
+				<!-- <description>Title when no clearlogo</description> -->
+				<!-- <left>200</left> -->
+				<!-- <top>0</top> -->
+				<!-- <width>900</width> -->
+				<!-- <height>400</height> -->
+				<!-- <font>font100caps_title</font> -->
+				<!-- <textcolor>$INFO[Window().Property(umbrella.highlight.color)]</textcolor> -->
+				<!-- <align>center</align> -->
+				<!-- <aligny>bottom</aligny> -->
+				<!-- <label>$INFO[Window().Property(umbrella.title)]</label> -->
+				<!-- <visible>String.IsEmpty(Window().Property(umbrella.clearlogo))</visible> -->
+			<!-- </control> -->
+
+<!-- Sources List -->
+			<control type="list" id="2001">
+				<description>Uncached Torrent List</description>
+				<viewtype>list</viewtype>
+				<left>0</left>
+				<top>150</top>
+				<width>1350</width>
+				<height>800</height>
+				<onright>2001</onright>
+				<onleft>2001</onleft>
+				<onup>2001</onup>
+				<ondown>2001</ondown>
+				<scrolltime tween="sine">400</scrolltime>
+				<orientation>Vertical</orientation>
+				<itemlayout height="100" width="1325">
+					<control type="image">
+						<description>Quality Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>$INFO[ListItem.Property(umbrella.quality_icon)]</texture>
+						<visible>!String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon RD</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.realdebridcolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),Real-Debrid)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.IsEqual(Window().Property(umbrella.useprovidercolors),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon AD</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.alldebridcolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),AllDebrid)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon PM</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.premiumizecolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),Premiumize)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon Plex</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.plexcolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),PLEXSHARE)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon EasyNews</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.easynewscolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),EASYNEWS)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon GDrive</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.gdrivecolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),GDRIVE)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon File Pursuit</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.filepursuitcolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),FILEPURSUIT)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
+					</control>
+					<control type="label">
+						<description>Line1 link name</description>
+						<left>110</left>
+						<top>15</top>
+						<width>1240</width>
+						<height>25</height>
+						<font>font13</font>
+						<textcolor>white</textcolor>
+						<align>left</align>
+						<aligny>bottom</aligny>
+						<label>[B]$INFO[ListItem.Property(umbrella.count)]  $INFO[ListItem.Property(umbrella.name)][/B]</label>
+					</control>
+					<control type="label">
+						<description>Line2 uncached torrents</description>
+						<left>180</left>
+						<top>50</top>
+						<width>1170</width>
+						<height>25</height>
+						<font>font12</font>
+						<textcolor>white</textcolor>
+						<align>left</align>
+						<aligny>top</aligny>
+						<label>$INFO[ListItem.Property(umbrella.size_label)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.debrid)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.provider)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]  $INFO[ListItem.Property(umbrella.source)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   SEEDERS: $INFO[ListItem.Property(umbrella.seeders)]</label>
+						<visible>String.Contains(ListItem.Property(umbrella.source),UNCACHED)</visible>
+					</control>
+				</itemlayout>
+				<focusedlayout height="100" width="1325">
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>1350</width>
+						<height>100</height>
+						<texture colordiffuse="$INFO[ListItem.Property(umbrella.providerhighlight)]">common/white.png</texture>
+					</control>
+					<control type="image">
+						<description>Quality Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>$INFO[ListItem.Property(umbrella.quality_icon)]</texture>
+						<visible>!String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon RD</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),Real-Debrid)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon AD</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),AllDebrid)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon PM</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),Premiumize)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon Plex</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),PLEXSHARE)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon EasyNews</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),EASYNEWS)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon GDrive</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),GDRIVE)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon FilePursuit</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.Contains(ListItem.Property(umbrella.provider),FILEPURSUIT)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
+					</control>
+					<control type="label">
+						<description>Line1 link name</description>
+						<left>110</left>
+						<top>15</top>
+						<width>1240</width>
+						<height>25</height>
+						<font>font13</font>
+						<textcolor>black</textcolor>
+						<align>left</align>
+						<aligny>bottom</aligny>
+						<label>[B]$INFO[ListItem.Property(umbrella.count)]  $INFO[ListItem.Property(umbrella.name)][/B]</label>
+					</control>
+					<control type="label">
+						<description>Line2 uncached torrents</description>
+						<left>180</left>
+						<top>50</top>
+						<width>1170</width>
+						<height>25</height>
+						<font>font12</font>
+						<textcolor>black</textcolor>
+						<align>left</align>
+						<aligny>top</aligny>
+						<label>[B]$INFO[ListItem.Property(umbrella.size_label)]   [COLOR black]|[/COLOR]   $INFO[ListItem.Property(umbrella.debrid)]   [COLOR black]|[/COLOR]   $INFO[ListItem.Property(umbrella.provider)]   [COLOR black]|[/COLOR]   $INFO[ListItem.Property(umbrella.source)]   [COLOR black]|[/COLOR]   SEEDERS: $INFO[ListItem.Property(umbrella.seeders)][/B]</label>
+						<visible>String.Contains(ListItem.Property(umbrella.source),UNCACHED)</visible>
+					</control>
+				</focusedlayout>
+			</control>
+			<control type="grouplist" id="2002">
+				<description>Info icons</description>
+				<left>180</left>
+				<top>965</top>
+				<width>1250</width>
+				<height>100</height>
+				<itemgap>20</itemgap>
+				<orientation>horizontal</orientation>
+					<control type="image">
+						<description>Dolby Vision Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>source/dv.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),DOLBY-VISION)</visible>
+					</control>
+					<control type="image">
+						<description>HDR Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>source/hdr.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),HDR) + !String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),HDRIP)</visible>
+					</control>
+					<control type="image">
+						<description>3D Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>source/3d.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),3D)</visible>
+					</control>
+					<control type="image">
+						<description>AV1 Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>source/av1.png</texture>
+						<visible>String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),AV1)</visible>
+					</control>
+					<control type="image">
+						<description>HEVC/H.265 Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>source/hevc.png</texture>
+						<!-- <visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),HEVC) | [String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),DOLBY-VISION) | String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),HDR)] + !String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),HDRIP) + !String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),AVC)</visible> -->
+						<visible>String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),HEVC)</visible>
+					</control>
+					<control type="image">
+						<description>AVC/H.264 Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>source/h264.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),AVC)</visible>
+					</control>
+					<control type="image">
+						<description>MPEG Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>source/mpeg_video.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),MPEG)</visible>
+					</control>
+					<control type="image">
+						<description>WMV Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>source/wmv2.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),WMV)</visible>
+					</control>
+					<control type="image">
+						<description>AVI Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>source/avi.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),AVI)</visible>
+					</control>
+					<control type="image">
+						<description>MKV Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>source/mkv2.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),MKV)</visible>
+					</control>
+					<control type="image">
+						<description>DIVX Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>source/divx.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),DIVX)</visible>
+					</control>
+					<control type="image">
+						<description>XVID Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>source/xvid.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),XVID)</visible>
+					</control>
+					<control type="image">
+						<description>BLURAY Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>source/bluray.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),BLURAY)</visible>
+					</control>
+					<control type="image">
+						<description>M2TS Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>source/m2ts.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),M2TS)</visible>
+					</control>
+					<control type="image">
+						<description>HDTV Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>source/hdtv.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),HDTV)</visible>
+					</control>
+					<control type="image">
+						<description>WEB-DL Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>source/web-dl.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),WEB)</visible>
+					</control>
+					<control type="image">
+						<description>DVD Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>source/dvd.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),DVDRIP)</visible>
+					</control>
+					<control type="image">
+						<description>OPUS Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>audio/opus.png</texture>
+						<visible>String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),OPUS)</visible>
+					</control>
+					<control type="image">
+						<description>DOLBY-ATMOS Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>audio/atmos.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),ATMOS)</visible>
+					</control>
+					<control type="image">
+						<description>DOLBY-TRUEHD Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>audio/dolbytruehd.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),DOLBY-TRUEHD)</visible>
+					</control>
+					<control type="image">
+						<description>DOLBY-DIGITAL Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>audio/dolbydigital.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),DOLBYDIGITAL)</visible>
+					</control>
+					<control type="image">
+						<description>DOLBY-DIGITAL PLUS/EAC3 Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>audio/eac3.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),DD) + !String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),DD-EX)</visible>
+					</control>
+					<control type="image">
+						<description>DOLBY-DIGITAL EX Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>audio/dolbydigital_ex.jpg</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),DD-EX)</visible>
+					</control>
+					<control type="image">
+						<description>DTS-HD MA Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>audio/dtshd_ma.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),DTS-HD MA)</visible>
+					</control>
+					<control type="image">
+						<description>DTS-X Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>audio/dts_x.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),DTS-X)</visible>
+					</control>
+					<control type="image">
+						<description>DTS Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>audio/dts2.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),DTS) + !String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),DTS-X) + !String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),DTS-HD MA)</visible>
+					</control>
+					<control type="image">
+						<description>AAC Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>audio/aac.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),AAC)</visible>
+					</control>
+					<control type="image">
+						<description>MP3 Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>audio/mp3.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),MP3)</visible>
+					</control>
+					<control type="image">
+						<description>FLAC Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>audio/flac.png</texture>
+						<visible>String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),FLAC)</visible>
+					</control>
+					<control type="image">
+						<description>MULTI-LANG Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>audio/multi_lingual.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),MULTI-LANG)</visible>
+					</control>
+					<control type="image">
+						<description>2CH Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>channels/2.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),2CH)</visible>
+					</control>
+					<control type="image">
+						<description>6CH Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>channels/6.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),6CH)</visible>
+					</control>
+					<control type="image">
+						<description>7CH Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>channels/7.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),7CH)</visible>
+					</control>
+					<control type="image">
+						<description>8CH Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>channels/8.png</texture>
+						<visible>String.Contains(Container(2001).ListItem.Property(umbrella.extra_info),8CH)</visible>
+					</control>
+			</control>
+		</control>
+	</controls>
+</window>

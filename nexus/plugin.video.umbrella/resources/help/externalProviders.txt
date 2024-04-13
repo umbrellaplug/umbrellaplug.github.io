@@ -1,0 +1,19 @@
+
+[B]External Providers:[/B]
+By default, Umbrella only includes the ability to scrape your Debrid Service cloud for your personal files.
+
+These internal scrapers are intended to be used for searching and playing back your personal content you have purchased or saved. Umbrella does not host any content.
+
+If you wish to use an external scraper package with Umbrella, you must install that package then set that package as your External Provider. 
+
+External Providers can be enabled in Tools> Providers > Enable External Providers.
+External Providers can be set in Tools> Providers > External Provider
+
+If you already have an external provider installed from a previous setup, 
+the only action you will need to take would be to add the repo for that package 
+to your kodi and set that provider in Umbrella Tools> Providers > External Provider
+
+[B]***NOTICE***[/B]
+External Providers are not intended to be used with Umbrella and therefore will not receive any support. 
+Umbrella does not take responsibility for any results found using external providers.
+Any issue opened for an external provider will immediately be closed and repeat instances will result in a ban from the Umbrella Github.

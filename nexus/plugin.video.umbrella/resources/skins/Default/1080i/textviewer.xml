@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<controls>
+		<control type="group">
+			<left>280</left>
+			<top>50</top>
+			<control type="group">
+				<width>1360</width>
+				<control type="image">
+					<height>980</height>
+					<texture border="16" colordiffuse="$INFO[Window.Property(umbrella.backgroundColor)]">common/dialog.png</texture>
+				</control>
+				<control type="image">
+					<height>50</height>
+					<texture border="16" colordiffuse="$INFO[Window.Property(umbrella.titleBarColor)]">common/dialogtop.png</texture>
+				</control>
+				<control type="image">
+					<left>4</left>
+					<top>4</top>
+					<width>45</width>
+					<height>45</height>
+					<align>left</align>
+					<aligny>top</aligny>
+					<aspectratio aligny="top">keep</aspectratio>
+					<texture colordiffuse="FFCCCCCC">common/icon.png</texture>
+				</control>
+				<control type="label">
+					<width max="1360">auto</width>
+					<top>10</top>
+					<height>20</height>
+					<font>font16</font>
+					<textcolor>$INFO[Window.Property(umbrella.titleTextColor)]</textcolor>
+					<align>center</align>
+					<label>[UPPERCASE]$INFO[Window.Property(umbrella.heading)][/UPPERCASE]</label>
+				</control>
+				<control type="textbox" id="2000">
+					<left>45</left>
+					<top>90</top>
+					<width>1254</width>
+					<height>830</height>
+					<onup>2000</onup>
+					<ondown>2000</ondown>
+					<scrolltime tween="sine">400</scrolltime>
+					<font>font14</font>
+					<textcolor>$INFO[Window.Property(umbrella.textColor)]</textcolor>
+					<label>$INFO[Window().Property(umbrella.text)]</label>
+					<pagecontrol>2060</pagecontrol>
+				</control>
+				<control type="scrollbar" id="2060">
+					<left>1320</left>
+					<top>114</top>
+					<width>30</width>
+					<height>850</height>
+					<texturesliderbackground border="15">scrollbars/scrollbaruni-bg.png</texturesliderbackground>
+					<texturesliderbar border="15">scrollbars/scrollbaruni-bar.png</texturesliderbar>
+					<texturesliderbarfocus colordiffuse="FF000000" border="15">scrollbars/scrollbaruni-bar-focus.png</texturesliderbarfocus>
+					<textureslidernib>scrollbars/scrollbaruni-nib.png</textureslidernib>
+					<textureslidernibfocus>scrollbars/scrollbaruni-nib.png</textureslidernibfocus>
+					<onleft>2060</onleft>
+					<onright>2060</onright>
+					<onup>2060</onup>
+					<ondown>2060</ondown>
+					<showonepage>false</showonepage>
+					<orientation>vertical</orientation>
+				</control>
+			</control>
+		</control>
+	</controls>
+</window>

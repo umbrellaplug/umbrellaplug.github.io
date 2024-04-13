@@ -1,0 +1,13 @@
+
+If enabled Episodes are [COLOR red][B]"hard coded to Auto Play"[/B][/COLOR].  Also note the UpNext addon has been removed
+as of v6.0.0.  There is a new Umbrella window xml to handle this internaly now and is more reliable.
+AddonSignals dependency has also been removed.  You can safely removes both if not used elsewhere.
+You must use the Kodi context menu option [COLOR red][B]"Play from Here"[/B][/COLOR] for continual playback and PlayNext
+popup notification.  You can also set Kodi's settings to use [COLOR red][B]"Play from Here"[/B][/COLOR] as default select method
+for Episodes.  See [COLOR red][B]"System - Settings - Player - Videos - Play next video automatically"[/B][/COLOR].  Then
+select [B][COLOR red]Episodes[/B][/COLOR].
+
+NOTE: If you call up [B]Source Select[/B] continual playback will not function.  Continual playback ONLY operates in AutoPlay mode per above.
+
+PlayNext now has some themes that go with skins included in it. If you have a skin that it has a theme for and you set the setting for 
+Enable Playnext Theme it will automatically apply the theme for that skin. More themes will be added later.

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <defaultcontrol always="true">10</defaultcontrol>
+    <controls>
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">common/white.png</texture>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" start="0" end="80" time="200" tween="sine" easing="in" />
+            </animation>
+        </control>
+        <control type="group">
+            <left>570</left>
+            <top>300</top>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="zoom" start="50" end="100" time="200" center="910,440" tween="quadratic" easing="out" />
+            </animation>
+            <control type="image">
+                <height>480</height>
+                <width>780</width>
+                <texture border="16" colordiffuse="$INFO[Window.Property(umbrella.backgroundColor)]">common/dialog.png</texture>
+            </control>
+            <control type="image">
+                <height>50</height>
+                <width>780</width>
+                <texture border="16" colordiffuse="$INFO[Window.Property(umbrella.titleBarColor)]">common/dialogtop.png</texture>
+            </control>
+            <control type="image">
+                <left>4</left>
+                <top>4</top>
+                <width>45</width>
+                <height>45</height>
+                <align>left</align>
+                <aligny>top</aligny>
+                <aspectratio aligny="top">keep</aspectratio>
+                <texture colordiffuse="FFCCCCCC">common/icon.png</texture>
+            </control>
+            <control type="label">
+                <width max="560">auto</width>
+                <top>10</top>
+                <left>110</left>
+                <height>20</height>
+                <font>font16</font>
+                <textcolor>$INFO[Window.Property(umbrella.titleTextColor)]</textcolor>
+                <align>center</align>
+                <label>[UPPERCASE][B]$INFO[Window.Property(heading)][/B][/UPPERCASE]</label>
+            </control>
+            <control type="textbox">
+                <left>30</left>
+                <top>60</top>
+                <width>720</width>
+                <height>280</height>
+                <font>font13</font>
+                <textcolor>$INFO[Window.Property(umbrella.textColor)]</textcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <label>$INFO[Window.Property(text)]</label>
+            </control>
+            <control type="button" id="10">
+                <description>OK</description>
+                <top>380</top>
+                <left>220</left>
+                <width>340</width>
+                <height>70</height>
+                <onleft>11</onleft>
+                <onright>11</onright>
+                <label>[B]$INFO[Window.Property(ok_label)][/B]</label>
+                <font>font12</font>
+                <textcolor>$INFO[Window.Property(umbrella.buttonTextColorNS)]</textcolor>
+                <focusedcolor>$INFO[Window.Property(umbrella.buttonTextColor)]</focusedcolor>
+                <texturefocus colordiffuse="$INFO[Window.Property(umbrella.buttonColor)]" border="30">common/circle.png</texturefocus>
+                <texturenofocus colordiffuse="$INFO[Window.Property(umbrella.buttonnofocus)]" border="30">common/circle.png</texturenofocus>
+                <align>center</align>
+            </control>
+        </control>
+    </controls>
+</window>

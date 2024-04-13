@@ -1,0 +1,9 @@
+
+If you have an [B]AD, PM, or RD[/B] account do not waste your time turning all scrapers on.  This will
+seriously slow down your scrape process to play time.  Personally I have all three and do not
+use hosters at all.  At most I turn on is 10 torrents and that is more than enough.  I also strongly
+suggest getting a Filepursuit api key, since it's free.  My household is mostly AutoPlay desired users
+and scrape to play time for us is 5 seconds on average.  Do not get carried away turning on a slew
+of scrapers, you're only wasting time doing so.
+
+Easy News, and FilePursuit are now all managed within the scrapers.

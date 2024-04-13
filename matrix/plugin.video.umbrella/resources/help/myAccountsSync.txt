@@ -1,0 +1,2 @@
+
+My accounts is not longer used in the Umbrella plugin. Some accounts may need to be synced with scrapers but most accounts are within the plugin now.
