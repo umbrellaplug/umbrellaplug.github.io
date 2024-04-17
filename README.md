@@ -40,7 +40,7 @@ Currently Supported Debrid Providers:
 **The plugin will not work without at least 1 debrid account**
 
 ## Issues
-NO, YOU!
+Please do not mention any other addons in issues.
 
 ## Logs
 Enable Logs: Go to Umbrella settings and select Debugging on the left hand side.
@@ -58,17 +58,5 @@ Set your settings like this:
 
 **A:** Some yes. Open an issue and use the feature request template.
 
-
-**Q:** How do I contact you?
-
-**A:** You don't.
-
-
-
-**Other Kodi Addons**
-
-[Fen](https://github.com/Tikipeter/repository.tikipeter)
-
-[Seren](https://github.com/nixgates/)
 
 [Setup Instructions](https://github.com/umbrellaplug/umbrellaplug.github.io/wiki#setup-instructions)
