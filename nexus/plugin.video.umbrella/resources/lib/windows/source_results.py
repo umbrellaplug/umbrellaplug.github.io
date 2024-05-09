@@ -180,6 +180,8 @@ class SourceResultsXML(BaseDialog):
 			log_utils.error()
 
 	def get_quality1_iconPath(self, quality):
+		if str(quality) == '4K':
+			quality = '4k'
 		try:
 			return joinPath(transPath('special://home/addons/plugin.video.umbrella/resources/skins/Default/media/resolution1'), '%s.png' % quality)
 		except:

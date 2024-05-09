@@ -88,15 +88,15 @@ def _map_list_items(response):
         items_append(item)
     return items
 def getMDBUserList(self, listType):
-	try:
-		response = session.get(mdblist_baseurl + mdblist_user_list + mdblist_api, timeout=20)
-		if isinstance(response, dict): 
-			log_utils.log(response.error, level=log_utils.LOGDEBUG)
-			return None
-		items = _map_user_list_items(response, listType)
-		return items
-	except: log_utils.error('get MDBList Error: ')
-	return None
+    try:
+        response = session.get(mdblist_baseurl + mdblist_user_list + mdblist_api, timeout=20)
+        if isinstance(response, dict): 
+            log_utils.log(response.error, level=log_utils.LOGDEBUG)
+            return None
+        items = _map_user_list_items(response, listType)
+        return items
+    except: log_utils.error('get MDBList Error: ')
+    return None
 def _map_user_list_items(response, listType):
     items = []
     items_append = items.append
@@ -104,7 +104,7 @@ def _map_user_list_items(response, listType):
     iconPath = control.joinPath(artPath, icon)
     jsonResponse = response.json()
     for i in jsonResponse:
-        if i.get('mediatype') == listType:
+        if i.get('mediatype') == listType or i.get('mediatype') == None:
             item = {}
             item['label'] = i.get('name')
             item['art'] = {'icon': f'{iconPath}'}

@@ -22,8 +22,6 @@ from resources.lib.modules.source_utils import supported_video_extensions, getFi
 from resources.lib.cloud_scrapers import cloudSources
 from resources.lib.internal_scrapers import internalSources
 #from cocoscrapers import sources as fs_sources
-import xbmc
-import xbmcgui
 
 homeWindow = control.homeWindow
 playerWindow = control.playerWindow
@@ -376,6 +374,7 @@ class Sources:
 		try:
 			def sourcesDirMeta(metadata): # pass skin minimal meta needed
 				if not metadata: return metadata
+				if getSetting('prefer.tmdbArt') == 'true': metadata['clearlogo'] = metadata.get('tmdblogo') or metadata.get('clearlogo', '')
 				allowed = ['mediatype', 'imdb', 'tmdb', 'tvdb', 'poster', 'tvshow.poster', 'season_poster', 'season_poster', 'fanart', 'clearart', 'clearlogo', 'discart', 'thumb', 'title', 'tvshowtitle', 'year', 'premiered', 'rating', 'plot', 'duration', 'mpaa', 'season', 'episode', 'castandrole']
 				return {k: v for k, v in iter(metadata.items()) if k in allowed}
 			self.meta = sourcesDirMeta(self.meta)
@@ -1427,7 +1426,7 @@ class Sources:
 						control.cancelPlayback()
 						path = 'PlayMedia(%s?action=rescrapeAuto&title=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&tvshowtitle=%s&premiered=%s&meta=%s&select=%s)' % (
 									plugin, systitle, year, imdb, tmdb, tvdb, season, episode, systvshowtitle, premiered, sysmeta, select)
-						xbmc.executebuiltin(path)
+						control.execute(path)
 						#Sources(all_providers='true', rescrapeAll='true').play(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, self.meta, select=select, rescrape='true')
 					else:
 						control.cancelPlayback()

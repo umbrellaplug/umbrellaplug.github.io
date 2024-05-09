@@ -6,6 +6,7 @@
 import xbmc
 from resources.lib.modules.control import dialog, sleep, condVisibility
 from resources.lib.windows.base import BaseDialog
+from resources.lib.modules.control import setting as getSetting
 
 monitor = xbmc.Monitor()
 

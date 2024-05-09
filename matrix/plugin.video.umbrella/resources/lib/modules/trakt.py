@@ -135,6 +135,8 @@ def traktAuth(fromSettings=0):
 			control.setSetting('trakt.user.token', deviceCode["access_token"])
 			control.setSetting('trakt.scrobble', 'true')
 			control.setSetting('resume.source', '1')
+			control.setSetting('trakt.isauthed', 'true')
+			control.setSetting('trakt.indicators.alt', '1')
 			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 			control.setSetting('trakt.refreshtoken', deviceCode["refresh_token"])
 			control.sleep(1000)
@@ -166,6 +168,7 @@ def traktRevoke(fromSettings=0):
 		control.setSetting('trakt.user.token', '')
 		control.setSetting('trakt.scrobble', 'false')
 		control.setSetting('resume.source', '0')
+		control.setSetting('trakt.isauthed','')
 		control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 		control.setSetting('trakt.refreshtoken', '')
 		try:	

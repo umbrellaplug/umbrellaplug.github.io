@@ -402,6 +402,7 @@ class Movies:
 		try:
 			if int(q['limit']) != len(self.list): raise Exception()
 			if int(q['page']) == total_pages: raise Exception()
+			if len(self.list) == int(self.page_limit): raise Exception()
 			q.update({'page': str(int(q['page']) + 1)})
 			q = (urlencode(q)).replace('%2C', ',')
 			next = url.replace('?' + urlparse(url).query, '') + '?' + q
@@ -1045,6 +1046,7 @@ class Movies:
 					self.list = paginated_ids[index]
 			try:
 				if int(q['limit']) != len(self.list): raise Exception()
+				if len(self.list) == int(self.page_limit): raise Exception()
 				q.update({'page': str(int(q['page']) + 1)})
 				q = (urlencode(q)).replace('%2C', ',')
 				next = url.replace('?' + urlparse(url).query, '') + '?' + q
@@ -1075,6 +1077,7 @@ class Movies:
 					self.list = paginated_ids[index]
 			try:
 				if int(q['limit']) != len(self.list): raise Exception()
+				if len(self.list) == int(self.page_limit): raise Exception()
 				q.update({'page': str(int(q['page']) + 1)})
 				q = (urlencode(q)).replace('%2C', ',')
 				next = url.replace('?' + urlparse(url).query, '') + '?' + q
@@ -1255,6 +1258,7 @@ class Movies:
 
 			if int(q['limit']) != len(self.list): raise Exception()
 			if int(q['page']) == total_pages: raise Exception()
+			if len(self.list) == int(self.page_limit): raise Exception()
 			q.update({'page': str(int(q['page']) + 1)})
 			q = (urlencode(q)).replace('%2C', ',')
 			next = url.replace('?' + urlparse(url).query, '') + '?' + q
@@ -1987,9 +1991,15 @@ class Movies:
 				meta.update({'code': imdb, 'imdbnumber': imdb, 'mediatype': 'movie', 'tag': [imdb, tmdb]})
 				try: meta.update({'genre': cleangenre.lang(meta['genre'], self.lang)})
 				except: pass
-
-				if self.prefer_tmdbArt: poster = meta.get('poster3') or meta.get('poster') or meta.get('poster2') or addonPoster
-				else: poster = meta.get('poster2') or meta.get('poster3') or meta.get('poster') or addonPoster
+				#since you are so bored you are reading my comments in my code from my test repo. below is how you do it correctly. when you figure out a variable it is important to actually apply it. you can fix yours by putting clearlogo in the art.update below or just copy what I did here. "i am mad about comments in your code" cannot wait for that one.
+				if self.prefer_tmdbArt: 
+					poster = meta.get('poster3') or meta.get('poster') or meta.get('poster2') or addonPoster
+					clearlogo = meta.get('tmdblogo') or meta.get('clearlogo','')
+					meta.update({'clearlogo': clearlogo})
+				else: 
+					poster = meta.get('poster2') or meta.get('poster3') or meta.get('poster') or addonPoster
+					clearlogo = meta.get('clearlogo') or meta.get('tmdblogo','')
+					meta.update({'clearlogo': clearlogo})
 				fanart = ''
 				if settingFanart:
 					if self.prefer_tmdbArt: fanart = meta.get('fanart3') or meta.get('fanart') or meta.get('fanart2') or addonFanart

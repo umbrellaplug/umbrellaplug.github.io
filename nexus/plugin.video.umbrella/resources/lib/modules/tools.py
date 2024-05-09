@@ -103,7 +103,13 @@ def external_providers():
 	try:
 		results = control.jsonrpc_get_addons()
 		chosen = control.selectDialog([i.get('name') for i in results], 'Select external provider module:')
-		if chosen == None: return
+		if chosen == None or chosen < 0: 
+			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
+			control.setSetting('provider.external.enabled', 'false')
+			control.setSetting('external_provider.name', '')
+			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
+			control.setSetting('external_provider.module', '')
+			return
 		try:
 			from sys import path
 			path.append(control.transPath('special://home/addons/%s/lib' % results[chosen].get('addonid')))
@@ -121,6 +127,32 @@ def external_providers():
 		else:
 			control.okDialog(title=33586, message=getLS(40446) % results[chosen].get('addonid').upper())
 			return external_providers()
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+
+def delete_all_subs():
+	import os, fnmatch
+	try:
+		from resources.lib.modules import log_utils
+		log_utils.log('removing all subtitle files.', level=log_utils.LOGDEBUG)
+		download_path = control.subtitlesPath
+		subtitle = download_path
+		def find(pattern, path):
+			result = []
+			for root, dirs, files in os.walk(path):
+				for name in files:
+					if fnmatch.fnmatch(name, pattern):
+						result.append(os.path.join(root, name))
+			return result
+
+		subtitles = find('*.*', subtitle)
+		for x in subtitles:
+			try:
+				os.remove(x)
+			except:
+				from resources.lib.modules import log_utils
+				log_utils.error()
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()

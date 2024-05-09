@@ -100,7 +100,7 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="trakt.isauthed"/>
+							<condition operator="is" setting="!trakt.isauthed"/>
 						</dependency>
 					</dependencies>
 					<control type="spinner" format="string"/>
@@ -115,7 +115,7 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="!is" setting="trakt.isauthed"/>
+							<condition operator="is" setting="trakt.isauthed"/>
 						</dependency>
 					</dependencies>
 					<control type="spinner" format="string"/>
@@ -1286,22 +1286,24 @@
 		<category id="tv shows" label="32002" help="40185">
 			<group id="1">
 				
-				<setting id="flatten.tvshows" type="boolean" label="32317" help="">
+				<setting id="flatten.tvshows" type="integer" label="32317" help="">
 					<level>0</level>
-					<default>false</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">true</condition>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
+					<default>2</default>
+					<constraints>
+						<options>
+							<option label="40514">0</option>
+							<option label="40515">1</option>
+							<option label="40516">2</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
 				</setting>
 				<setting id="flatten.desc" type="boolean" label="40136" help="">
 					<level>0</level>
 					<default>false</default>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="flatten.tvshows">true</condition>
+							<condition operator="gt" setting="flatten.tvshows">0</condition>
 						</dependency>
 					</dependencies>
 					<control type="toggle"/>
@@ -4812,10 +4814,10 @@
 					<default>false</default>
 					<dependencies>
 						<dependency type="enable">
-							<condition operator="is" setting="library.service.update">True</condition>
+							<condition operator="is" setting="library.service.update">true</condition>
 						</dependency>
 						<dependency type="visible">
-							<condition operator="is" setting="trakt.isauthed"/>
+							<condition operator="is" setting="trakt.isauthed">true</condition>
 						</dependency>
 					</dependencies>
 					<control type="toggle"/>
@@ -4831,10 +4833,10 @@
 							<condition on="property" name="infoBool">false</condition>
 						</dependency>
 						<dependency type="visible">
-							<condition operator="is" setting="library.autoimportlists">True</condition>
+							<condition operator="is" setting="library.autoimportlists">true</condition>
 						</dependency>
 						<dependency type="visible">
-							<condition operator="is" setting="trakt.isauthed"/>
+							<condition operator="is" setting="trakt.isauthed">true</condition>
 						</dependency>
 					</dependencies>
 					<control type="button" format="action">
@@ -4850,13 +4852,13 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="library.autoimportlists">True</condition>
+							<condition operator="is" setting="library.autoimportlists">true</condition>
 						</dependency>
 						<dependency type="enable">
 							<condition on="property" name="infoBool">false</condition>
 						</dependency>
 						<dependency type="visible">
-							<condition operator="is" setting="trakt.isauthed"/>
+							<condition operator="is" setting="trakt.isauthed">true</condition>
 						</dependency>
 					</dependencies>
 					<control type="button" format="action">
@@ -4873,8 +4875,8 @@
 					<dependencies>
 						<dependency type="visible">
 							<and>
-								<condition operator="is" setting="library.autoimportlists">True</condition>
-								<condition operator="is" setting="trakt.isauthed"/>
+								<condition operator="is" setting="library.autoimportlists">true</condition>
+								<condition operator="is" setting="trakt.isauthed">true</condition>
 							</and>
 						</dependency>
 					</dependencies>
@@ -4892,8 +4894,8 @@
 					<dependencies>
 						<dependency type="visible">
 							<and>
-								<condition operator="is" setting="library.autoimportlists">True</condition>
-								<condition operator="is" setting="trakt.isauthed"/>
+								<condition operator="is" setting="library.autoimportlists">true</condition>
+								<condition operator="is" setting="trakt.isauthed">true</condition>
 							</and>
 						</dependency>
 					</dependencies>
@@ -5779,6 +5781,23 @@
 						<allowempty>true</allowempty>
 					</constraints>
 					<control type="button" format="action"/>
+				</setting>
+				<setting id="user_background" type="path" label="32337" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<writable>false</writable>
+						<masking>image</masking>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="dev.mode.enable">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="image">
+						<heading>32337</heading>
+					</control>
 				</setting>
 				<setting id="use.playeronly" type="boolean" label="40275" help="">
 					<level>0</level>

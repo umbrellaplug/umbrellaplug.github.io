@@ -196,7 +196,8 @@ class TVshows:
 				self.list = self.mdb_list_items(url, create_directory=False)
 				if idx: self.worker()
 			if self.list is None: self.list = []
-			if create_directory: self.tvshowDirectory(self.list, folderName=folderName)
+			if len(self.list) > 0:
+				if create_directory: self.tvshowDirectory(self.list, folderName=folderName)
 			return self.list
 		except:
 			from resources.lib.modules import log_utils
@@ -844,6 +845,7 @@ class TVshows:
 					self.list = paginated_ids[index]
 			try:
 				if int(q['limit']) != len(self.list): raise Exception()
+				if len(self.list) == int(self.page_limit): raise Exception()
 				q.update({'page': str(int(q['page']) + 1)})
 				q = (urlencode(q)).replace('%2C', ',')
 				next = url.replace('?' + urlparse(url).query, '') + '?' + q
@@ -874,6 +876,7 @@ class TVshows:
 					self.list = paginated_ids[index]
 			try:
 				if int(q['limit']) != len(self.list): raise Exception()
+				if len(self.list) == int(self.page_limit): raise Exception()
 				q.update({'page': str(int(q['page']) + 1)})
 				q = (urlencode(q)).replace('%2C', ',')
 				next = url.replace('?' + urlparse(url).query, '') + '?' + q
@@ -977,7 +980,8 @@ class TVshows:
 				for i in range(len(self.list)): self.list[i]['next'] = next
 				self.worker()
 				self.sort(type="shows.favourite")
-				if create_directory: self.tvshowDirectory(self.list, folderName=folderName)
+				if len(self.list) > 0:
+					if create_directory: self.tvshowDirectory(self.list, folderName=folderName)
 				return self.list
 			except:
 				from resources.lib.modules import log_utils
@@ -1039,6 +1043,7 @@ class TVshows:
 			self.list = paginated_ids[index]
 		try:
 			if int(q['limit']) != len(self.list): raise Exception()
+			if len(self.list) == int(self.page_limit): raise Exception()
 			if int(q['page']) == total_pages: raise Exception()
 			q.update({'page': str(int(q['page']) + 1)})
 			q = (urlencode(q)).replace('%2C', ',')
@@ -1173,6 +1178,7 @@ class TVshows:
 		self.list = paginated_ids[index]
 		try:
 			if int(q['limit']) != len(self.list): raise Exception()
+			if len(self.list) == int(self.page_limit): raise Exception()
 			if int(q['page']) == total_pages: raise Exception()
 			q.update({'page': str(int(q['page']) + 1)})
 			q = (urlencode(q)).replace('%2C', ',')
@@ -1547,7 +1553,7 @@ class TVshows:
 		is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
 		settingFanart = getSetting('fanart') == 'true'
 		addonPoster, addonFanart, addonBanner = control.addonPoster(), control.addonFanart(), control.addonBanner()
-		flatten = getSetting('flatten.tvshows') == 'true'
+		flatten = int(getSetting('flatten.tvshows'))
 		if trakt.getTraktIndicatorsInfo(): watchedMenu, unwatchedMenu = getLS(32068), getLS(32069)
 		else: watchedMenu, unwatchedMenu = getLS(32066), getLS(32067)
 		traktManagerMenu, queueMenu = getLS(32070), getLS(32065)
@@ -1588,14 +1594,20 @@ class TVshows:
 				try:
 					if 'tvshowtitle' not in meta: meta.update({'tvshowtitle': title})
 				except: pass
-				if self.prefer_tmdbArt: poster = meta.get('poster3') or meta.get('poster') or meta.get('poster2') or addonPoster
-				else: poster = meta.get('poster2') or meta.get('poster3') or meta.get('poster') or addonPoster
+				if self.prefer_tmdbArt: 
+					poster = meta.get('poster3') or meta.get('poster') or meta.get('poster2') or addonPoster
+					clearlogo = meta.get('tmdblogo') or meta.get('clearlogo', '')
+					meta.update({'clearlogo': clearlogo})
+				else: 
+					poster = meta.get('poster2') or meta.get('poster3') or meta.get('poster') or addonPoster
+					clearlogo = meta.get('clearlogo') or meta.get('tmdblogo', '')
+					meta.update({'clearlogo': clearlogo})
 				landscape = meta.get('landscape')
 				fanart = ''
 				if settingFanart:
 					if self.prefer_tmdbArt: fanart = meta.get('fanart3') or meta.get('fanart') or meta.get('fanart2') or addonFanart
 					else: fanart = meta.get('fanart2') or meta.get('fanart3') or meta.get('fanart') or addonFanart
-				thumb = meta.get('thumb') or poster or landscape # set to show level poster
+				thumb = meta.get('thumb') or poster or landscape
 				icon = meta.get('icon') or poster
 				banner = meta.get('banner3') or meta.get('banner2') or meta.get('banner') or None #changed due to some skins using banner.
 				art = {}
@@ -1604,7 +1616,11 @@ class TVshows:
 				for k in ('metacache', 'poster2', 'poster3', 'fanart2', 'fanart3', 'banner2', 'banner3', 'trailer'): meta.pop(k, None)
 				meta.update({'poster': poster, 'fanart': fanart, 'banner': banner, 'thumb': thumb, 'icon': icon})
 				sysmeta, sysart = quote_plus(jsdumps(meta)), quote_plus(jsdumps(art))
-				if flatten: url = '%s?action=episodes&tvshowtitle=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&meta=%s' % (sysaddon, systitle, year, imdb, tmdb, tvdb, sysmeta)
+				if flatten > 0:
+					total_seasons = meta.get('total_seasons')
+					if flatten == 2 and total_seasons < 2: url = '%s?action=episodes&tvshowtitle=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&meta=%s' % (sysaddon, systitle, year, imdb, tmdb, tvdb, sysmeta)
+					elif flatten == 1: url = '%s?action=episodes&tvshowtitle=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&meta=%s' % (sysaddon, systitle, year, imdb, tmdb, tvdb, sysmeta)
+					else: url = '%s?action=seasons&tvshowtitle=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&art=%s' % (sysaddon, systitle, year, imdb, tmdb, tvdb, sysart)
 				else: url = '%s?action=seasons&tvshowtitle=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&art=%s' % (sysaddon, systitle, year, imdb, tmdb, tvdb, sysart)
 
 ####-Context Menu and Overlays-####

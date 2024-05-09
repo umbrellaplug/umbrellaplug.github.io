@@ -669,9 +669,8 @@ class Player(xbmc.Player):
 				#control.trigger_widget_refresh() # skinshortcuts handles widget refresh
 				#control.checkforSkin(action='off')
 				try:
-					from resources.lib.modules import subscene
-					subscene.delete_all_subs()
-					
+					from resources.lib.modules import tools
+					tools.delete_all_subs()
 				except:
 					log_utils.error()
 				log_utils.log('onPlayBackStopped callback', level=log_utils.LOGDEBUG)
@@ -703,14 +702,14 @@ class Player(xbmc.Player):
 
 	def onPlayBackPaused(self):
 		log_utils.log('onPlayBackPaused callback', level=log_utils.LOGDEBUG)
-		watcher = self.getWatchedPercent()
-		if watcher <= int(self.markwatched_percentage):
-			Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
-			if self.traktCredentials and (getSetting('trakt.scrobble') == 'true'):
-				log_utils.log('Paused: Sending scrobble to trakt.', level=log_utils.LOGDEBUG)
-				Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode)
-		else:
-			log_utils.log('Paused, but no scrobble due to being past mark watched percentage.', level=log_utils.LOGDEBUG)
+		# watcher = self.getWatchedPercent()
+		# if watcher <= int(self.markwatched_percentage):
+		# 	Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
+		# 	if self.traktCredentials and (getSetting('trakt.scrobble') == 'true'):
+		# 		log_utils.log('Paused: Sending scrobble to trakt.', level=log_utils.LOGDEBUG)
+		# 		Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode)
+		# else:
+		# 	log_utils.log('Paused, but no scrobble due to being past mark watched percentage.', level=log_utils.LOGDEBUG)
 ##############################
 
 class PlayNext(xbmc.Player):
@@ -1010,8 +1009,8 @@ class Subtitles:
 				file.write(response)
 				log_utils.log('wrote to file.', level=log_utils.LOGDEBUG)
 				file.close()
-			from resources.lib.modules import subscene
-			subscene.delete_all_subs()
+			from resources.lib.modules import tools
+			tools.delete_all_subs()
 			try:
 				download_opensubs(downloadURL, downloadFileName)
 			except:
@@ -1190,8 +1189,8 @@ class Subtitles:
 				file.write(response)
 				log_utils.log('wrote to file.', level=log_utils.LOGDEBUG)
 				file.close()
-			from resources.lib.modules import subscene
-			subscene.delete_all_subs()
+			from resources.lib.modules import tools
+			tools.delete_all_subs()
 			download_opensubs(downloadURL, downloadFileName)
 			subtitles = find('*.srt', subtitle)
 			subtitle_matches = []

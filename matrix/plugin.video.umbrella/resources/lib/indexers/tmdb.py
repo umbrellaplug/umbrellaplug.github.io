@@ -122,7 +122,8 @@ class Movies(TMDb):
 		TMDb.__init__(self)
 		self.list = []
 		self.meta = []
-		self.movie_link = base_link + 'movie/%s?api_key=%s&language=%s&append_to_response=credits,release_dates,videos,alternative_titles' % ('%s', self.API_key, self.lang)
+		#big thanks to extreme pettiness for this change.
+		self.movie_link = base_link + 'movie/%s?api_key=%s&language=%s&append_to_response=credits,release_dates,videos,alternative_titles, images' % ('%s', self.API_key, self.lang)
 		###  other "append_to_response" options external_ids,images,translations
 		self.art_link = base_link + 'movie/%s/images?api_key=%s' % ('%s', self.API_key)
 		self.external_ids = base_link + 'movie/%s/external_ids?api_key=%s' % ('%s', self.API_key)
@@ -323,6 +324,10 @@ class Movies(TMDb):
 # adult - not used
 			meta['fanart'] = '%s%s' % (self.fanart_path, result['backdrop_path']) if result.get('backdrop_path') else ''
 			meta['belongs_to_collection'] = result.get('belongs_to_collection', '')
+			#big thanks to giant pos for this change!
+			try: tmdblogo_path = [i['file_path'] for i in result['images']['logos'] if 'file_path' in i if i['file_path'].endswith('png')][0]
+			except: tmdblogo_path = ''
+			meta['tmdblogo'] = '%s%s' % (self.fanart_path, tmdblogo_path) if tmdblogo_path else ''
 # budget - not used
 			meta['genre'] = ' / '.join([x['name'] for x in result.get('genres', {})]) or 'NA'
 # homepage - not used
@@ -479,7 +484,8 @@ class TVshows(TMDb):
 		TMDb.__init__(self)
 		self.list = []
 		self.meta = []
-		self.show_link = base_link + 'tv/%s?api_key=%s&language=%s&append_to_response=credits,content_ratings,external_ids,alternative_titles,videos' % ('%s', self.API_key, self.lang)
+		#big thanks to giant pos for this change
+		self.show_link = base_link + 'tv/%s?api_key=%s&language=%s&append_to_response=credits,content_ratings,external_ids,alternative_titles,videos, images' % ('%s', self.API_key, self.lang)
 		# 'append_to_response=translations, aggregate_credits' (DO NOT USE, response data way to massive and bogs the response time)
 		self.art_link = base_link + 'tv/%s/images?api_key=%s' % ('%s', self.API_key)
 		self.tvdb_key = getSetting('tvdb.api.key')
@@ -651,6 +657,10 @@ class TVshows(TMDb):
 		try:
 			meta['mediatype'] = 'tvshow'
 			meta['fanart'] = '%s%s' % (self.fanart_path, result['backdrop_path']) if result.get('backdrop_path') else ''
+			#thanks bitch
+			try: tmdblogo_path = [i['file_path'] for i in result['images']['logos'] if 'file_path' in i if i['file_path'].endswith('png')][0]
+			except: tmdblogo_path = ''
+			meta['tmdblogo'] = '%s%s' % (self.fanart_path, tmdblogo_path) if tmdblogo_path else ''
 			try: meta['duration'] = min(result['episode_run_time']) * 60
 			except: meta['duration'] = ''
 			meta['premiered'] = str(result.get('first_air_date', '')) if result.get('first_air_date') else ''

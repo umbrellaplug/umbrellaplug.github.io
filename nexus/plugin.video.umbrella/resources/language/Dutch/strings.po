@@ -5193,3 +5193,15 @@ msgstr ""
 msgctxt "#40513"
 msgid "Local scrobble notification"
 msgstr ""
+
+msgctxt "#40514"
+msgid "Never"
+msgstr ""
+
+msgctxt "#40515"
+msgid "Always"
+msgstr ""
+
+msgctxt "#40516"
+msgid "One Season"
+msgstr ""

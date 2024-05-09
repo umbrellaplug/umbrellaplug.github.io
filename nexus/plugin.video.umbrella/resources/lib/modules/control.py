@@ -725,9 +725,7 @@ def setContextColors():
 
 def checkModules():
 	if setting('provider.external.enabled') == 'false':
-		homeWindow.setProperty('umbrella.updateSettings', 'false')
 		setSetting('external_provider.name', '')
-		homeWindow.setProperty('umbrella.updateSettings', 'true')
 		setSetting('external_provider.module', '')
 
 def backToMain(folder):
