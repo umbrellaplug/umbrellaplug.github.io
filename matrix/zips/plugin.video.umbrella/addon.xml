@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.50">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.51">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
 		<import addon="script.module.requests"/>
@@ -180,25 +180,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.6.50 - May 8th, 2024[/B]
---[Fix] Removed unused import.
---[Settings] More changes for settings.
---[Fix] Made changes to mdblist to allow for static lists with no list type to still show.
---[Enhancement] Removed previous changes made for fanart.
---[Change] Removed Title of Show from Episode Progress in widgets.
---[Fix] Made changes to pagination for lists equal to the limit.
---[Enhancement] Removed another unneeded file.
---[Fix] Fixed 4k icon missing on some devices.
---[Fix] Made change to resolve issues identifying MyVideos database on some systems.
---[Fix] Removed subscene module and moved delete all function to tools.
---[Enhancement] Changes to TMDb api url to add images. credit -onEMoAr
---[Enhancement] Changes to Episodes, Seasons to include clearlogo. credit -onEMoAr
---[Enhancement] Changes to Movies to include clearlogo correctly. credit -onEMoAr
---[Enhancement] Changes made to allow user fanart background. credit -onEMoAr
---[Fix] Changes made to control module for checking external modules. credit -onEMoAr
---[Fix] Changes made to service module for settings module. credit -onEMoAr
---[Enhancement] Changes made flatten tv shows. credit -onEMoAr
---[Enhancement] Changes made to settings to accomodate changes.
+[B]Update - v6.6.51 - May 9th, 2024[/B]
+--[Fix] Removed code for pagination changes.
 		</news>
 	</extension>
 

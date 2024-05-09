@@ -1,3 +1,6 @@
+[B]Update - v6.6.51 - May 9th, 2024[/B]
+--[Fix] Removed code for pagination changes.
+
 [B]Update - v6.6.50 - May 8th, 2024[/B]
 --[Fix] Removed unused import.
 --[Settings] More changes for settings.
