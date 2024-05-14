@@ -360,6 +360,7 @@ def get_video_database_path():
 						result.append(os.path.join(root, name))
 			return result
 		databasefile = find('MyVideos*.db', database_path)
+		databasefile.sort(reverse=True)
 		database_path_final = databasefile[0]
 		from resources.lib.modules import log_utils
 		log_utils.log('Umbrella MyVideos file path: %s' % str(database_path_final), 1)

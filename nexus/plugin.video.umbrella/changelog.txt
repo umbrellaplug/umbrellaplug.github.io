@@ -1,3 +1,7 @@
+[B]Update - v6.6.52 - May 14th, 2024[/B]
+--[Fix] Change made to database detection code.
+--[Fix] Change made to imdb movie lists.
+
 [B]Update - v6.6.51 - May 9th, 2024[/B]
 --[Fix] Removed code for pagination changes.
 
