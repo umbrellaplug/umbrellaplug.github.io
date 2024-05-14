@@ -193,7 +193,7 @@ class TVshows:
 				self.list = cache.get(self.imdb_genre_list, self.imdblist_hours, url, folderName)
 				if idx: self.worker()
 			elif u in self.mbdlist_list_items:
-				self.list = self.mdb_list_items(url, create_directory=False)
+				self.list = self.mdb_list_items(url, create_directory=False, folderName=folderName)
 				if idx: self.worker()
 			if self.list is None: self.list = []
 			if len(self.list) > 0:
@@ -1187,15 +1187,16 @@ class TVshows:
 		if self.list is None: self.list = []
 		if create_directory: self.tvshowDirectory(self.list, folderName=folderName)
 		return self.list
-	def getMDBUserList(self, create_directory=True, folderName=''): 
+	def getMDBUserList(self, create_directory=True, folderName=''):
+		
 		self.list = []
 		try:
 			#self.list = cache.get(self.mbd_top_lists, 0)
 			self.list = cache.get(self.mbd_user_lists, self.mdblist_hours)
 			#self.list = self.mbd_user_lists()
 			if self.list is None: self.list = []
-			if create_directory: self.addDirectory(self.list, folderName=folderName)
-			return self.list
+			return self.addDirectory(self.list, folderName=folderName)
+
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()
@@ -1215,7 +1216,8 @@ class TVshows:
 				list_count = item.get('params', {}).get('list_count', '')
 				list_url = self.mbdlist_list_items % (list_id)
 				label = '%s - (%s)' % (list_name, list_count)
-				self.list.append({'name': label, 'url': list_url, 'list_owner': list_owner, 'list_name': list_name, 'list_id': list_id, 'context': list_url, 'next': next, 'image': 'mdblist.png', 'icon': 'mdblist.png', 'action': 'tvshows'})
+				folderN = quote_plus(list_name)
+				self.list.append({'name': label, 'url': list_url, 'list_owner': list_owner, 'list_name': list_name, 'list_id': list_id, 'context': list_url, 'next': next, 'image': 'mdblist.png', 'icon': 'mdblist.png','folderName': folderN, 'action': 'tvshows'})
 			except:
 				from resources.lib.modules import log_utils
 				log_utils.error()
@@ -1782,6 +1784,8 @@ class TVshows:
 					elif not icon.startswith('Default'): icon = control.joinPath(artPath, icon)
 				url = '%s?action=%s' % (sysaddon, i['action'])
 				try: url += '&url=%s' % quote_plus(i['url'])
+				except: pass
+				try: url += '&folderName=%s' % quote_plus(name)
 				except: pass
 				cm = []
 				if (i.get('list_type', '') == 'traktPulicList') and self.traktCredentials:

@@ -294,8 +294,8 @@ class Movies:
 			self.list = cache.get(self.mbd_user_lists, self.mdblist_hours)
 			#self.list = self.mbd_user_lists()
 			if self.list is None: self.list = []
-			if create_directory: self.addDirectory(self.list, folderName=folderName)
-			return self.list
+			return self.addDirectory(self.list, folderName=folderName)
+
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()
@@ -2096,6 +2096,7 @@ class Movies:
 			except:
 				from resources.lib.modules import log_utils
 				log_utils.error()
+		
 		if next:
 			try:
 				if not items: raise Exception()
@@ -2159,6 +2160,8 @@ class Movies:
 					elif not icon.startswith('Default'): icon = control.joinPath(artPath, icon)
 				url = '%s?action=%s' % (sysaddon, i['action'])
 				try: url += '&url=%s' % quote_plus(i['url'])
+				except: pass
+				try: url += '&folderName=%s' % quote_plus(name)
 				except: pass
 				cm = []
 				if (i.get('list_type', '') == 'traktPulicList') and self.traktCredentials:
