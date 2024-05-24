@@ -78,7 +78,7 @@ def seas_ep_filter(season, episode, release_title, split=False):
 		string4 = r'([.-]<<S>>[.-]?<<E>>[.-])'
 		string5 = r'(episode[.-]?<<E>>[.-])'
 		string6 = r'([.-]e[p]?[.-]?<<E>>[.-])'
-
+		string7 = r'(^(?=.*[.-]e?0*<<E>>[.-])(?:(?!((?:s|season)[.-]?\d+[.-x]?(?:ep?|episode)[.-]?\d+)|\d+x\d+).)*$)'
 		string_list = []
 		append = string_list.append
 		append(string1.replace('<<S>>', season_fill).replace('<<E>>', episode_fill))
@@ -96,7 +96,7 @@ def seas_ep_filter(season, episode, release_title, split=False):
 		append(string5.replace('<<E>>', episode_fill))
 		append(string5.replace('<<E>>', episode))
 		append(string6.replace('<<E>>', episode_fill))
-
+		append(string7.replace('<<E>>', episode_fill))
 		final_string = '|'.join(string_list)
 		reg_pattern = re.compile(final_string)
 		if split: return release_title.split(re.search(reg_pattern, release_title).group(), 1)[1]

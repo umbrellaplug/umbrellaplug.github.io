@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.53">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.54">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -181,8 +181,9 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.6.53 - May 14th, 2024[/B]
---[Fix] Change made to MDBList pagination code.
+[B]Update - v6.6.54 - May 24th, 2024[/B]
+--[Change] Made change to source_utils code to allow for more title options and less filtering.
+--[Fix] Corrected imdb lists.
 		</news>
 	</extension>
 

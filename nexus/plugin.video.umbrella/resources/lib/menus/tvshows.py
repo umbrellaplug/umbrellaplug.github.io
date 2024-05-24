@@ -69,7 +69,7 @@ class TVshows:
 		self.language_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&num_votes=100,&production_status=released&primary_language=%s&sort=%s&count=%s&start=1' % ('%s', self.imdb_sort(type='imdbshows'), self.genre_limit)
 		self.certification_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&release_date=,date[0]&certificates=%s&sort=%s&count=%s&start=1' % ('%s', self.imdb_sort(type='imdbshows'), self.genre_limit)
 		self.year_link = 'https://www.imdb.com/search/title/?title_type=tv_series,tv_miniseries&num_votes=100,&production_status=released&year=%s,%s&sort=moviemeter,asc&count=%s&start=1' % ('%s', '%s', self.genre_limit)
-		self.imdbwatchlist_link = 'https://www.imdb.com/user/ur%s/watchlist?sort=date_added,desc' % self.imdb_user # only used to get users watchlist ID
+		self.imdbwatchlist_link = 'https://www.imdb.com/user/ur%s/watchlist/?sort=date_added,desc&title_type=tv_series,tv_miniseries' % self.imdb_user # only used to get users watchlist ID
 		self.imdbwatchlist2_link = 'https://www.imdb.com/list/%s/?view=detail&sort=%s&title_type=tvSeries&start=1' % ('%s', self.imdb_sort(type='shows.watchlist'))
 		self.imdblists_link = 'https://www.imdb.com/user/ur%s/lists?tab=all&sort=mdfd&order=desc&filter=titles' % self.imdb_user
 		self.imdblist_link = 'https://www.imdb.com/list/%s/?view=detail&sort=%s&title_type=tvSeries,tvMiniSeries&start=1' % ('%s', self.imdb_sort())
@@ -1228,15 +1228,16 @@ class TVshows:
 		try:
 			for i in re.findall(r'date\[(\d+)\]', url):
 				url = url.replace('date[%s]' % i, (self.date_time - timedelta(days=int(i))).strftime('%Y-%m-%d'))
-			def imdb_watchlist_id(url):
-				return client.parseDOM(client.request(url), 'meta', ret='content', attrs = {'property': 'pageId'})[0]
-			if url == self.imdbwatchlist_link:
-				url = cache.get(imdb_watchlist_id, 8640, url)
-				url = self.imdbwatchlist2_link % url
+			# def imdb_watchlist_id(url):
+			# 	return client.parseDOM(client.request(url), 'meta', ret='content', attrs = {'property': 'pageId'})[0]
+			# if url == self.imdbwatchlist_link:
+			# 	url = cache.get(imdb_watchlist_id, 8640, url)
+			# 	url = self.imdbwatchlist2_link % url
 			result = client.request(url)
 			result = result.replace('\n', ' ')
 			items = client.parseDOM(result, 'div', attrs = {'class': '.+? lister-item'}) + client.parseDOM(result, 'div', attrs = {'class': 'lister-item .+?'})
 			items += client.parseDOM(result, 'div', attrs = {'class': 'list_item.+?'})
+			items += client.parseDOM(result, 'li', attrs = {'class': 'ipc-metadata-list-summary-item'})
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()
@@ -1255,10 +1256,13 @@ class TVshows:
 		except: next = ''
 		for item in items:
 			try:
-				title = client.replaceHTMLCodes(client.parseDOM(item, 'a')[1])
-				year = client.parseDOM(item, 'span', attrs = {'class': 'lister-item-year.+?'})
-				year += client.parseDOM(item, 'span', attrs = {'class': 'year_type'})
-				year = re.findall(r'(\d{4})', year[0])[0]
+				#title = client.replaceHTMLCodes(client.parseDOM(item, 'a')[1])
+				title = client.replaceHTMLCodes(client.parseDOM(item, 'h3')[0]).split('. ')[1]
+				#year = client.parseDOM(item, 'span', attrs = {'class': 'lister-item-year.+?'})
+				year = client.parseDOM(item, 'span', attrs ={'class': '.*?dli-title-metadata-item'})[0]
+				#year += client.parseDOM(item, 'span', attrs = {'class': 'year_type'})
+				year = year[:4]
+				#year = re.findall(r'(\d{4})', year[0])[0]
 				if int(year) > int((self.date_time).strftime('%Y')): raise Exception()
 				imdb = client.parseDOM(item, 'a', ret='href')[0]
 				imdb = re.findall(r'(tt\d*)', imdb)[0]
@@ -1266,8 +1270,10 @@ class TVshows:
 				dupes.append(imdb)
 				rating = votes = ''
 				try:
-					rating = client.parseDOM(item, 'div', attrs = {'class': 'ratings-bar'})
-					rating = client.parseDOM(rating, 'strong')[0]
+					#rating = client.parseDOM(item, 'div', attrs = {'class': 'ratings-bar'})
+					#rating = client.parseDOM(rating, 'strong')[0]
+					ratingItem = client.parseDOM(item, 'div', attrs = {'class': '.*?dli-ratings-container'})
+					rating = re.findall(r'(?<=</svg>).*?(?=<span)', ratingItem[0])
 				except:
 					try:
 						rating = client.parseDOM(item, 'span', attrs = {'class': 'rating-rating'})
@@ -1277,7 +1283,9 @@ class TVshows:
 						except:
 							try: rating = client.parseDOM(item, 'span', attrs = {'class': 'ipl-rating-star__rating'})[0]
 							except: rating = ''
-				try: votes = client.parseDOM(item, 'span', attrs = {'name': 'nv'})[0]
+				try: 
+					#votes = client.parseDOM(item, 'span', attrs = {'name': 'nv'})[0]
+					votes = re.findall(r'(?<=-->).*?(?=<)', ratingItem[0])[0]
 				except:
 					try: votes = client.parseDOM(item, 'div', ret='title', attrs = {'class': '.*?rating-list'})[0]
 					except:
@@ -1674,7 +1682,6 @@ class TVshows:
 								item.setProperties({'UnWatchedEpisodes': str(count['unwatched'])})
 								item.setProperty('WatchedProgress', str(0))
 							item.setProperties({'TotalSeasons': str(meta.get('total_seasons', '')), 'TotalEpisodes': str(count['total'])})
-							
 						else:
 							if control.getKodiVersion() >= 20:
 								item.setProperties({'UnWatchedEpisodes': ''}) # for shows never watched

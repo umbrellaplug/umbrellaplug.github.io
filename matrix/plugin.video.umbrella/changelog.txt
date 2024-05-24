@@ -1,7 +1,13 @@
-[B]Update - v6.6.530 - May 14th, 2024[/B]
+[B]Update - v6.6.54 - May 24th, 2024[/B]
+--[Change] Made change to source_utils code to allow for more title options and less filtering.
+--[Fix] Corrected imdb lists.
+
+[B]Update - v6.6.53 - May 14th, 2024[/B]
+--[Fix] Change made to MDBList pagination code.
+
+[B]Update - v6.6.52 - May 14th, 2024[/B]
 --[Fix] Change made to database detection code.
 --[Fix] Change made to imdb movie lists.
---[Fix] MDBLists code changed to support pagination better and folder names.
 
 [B]Update - v6.6.51 - May 9th, 2024[/B]
 --[Fix] Removed code for pagination changes.

@@ -100,7 +100,7 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="!trakt.isauthed"/>
+							<condition operator="is" setting="trakt.isauthed"></condition>
 						</dependency>
 					</dependencies>
 					<control type="spinner" format="string"/>
@@ -115,7 +115,7 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="trakt.isauthed"/>
+							<condition operator="is" setting="trakt.isauthed">true</condition>
 						</dependency>
 					</dependencies>
 					<control type="spinner" format="string"/>
@@ -4912,7 +4912,7 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="trakt.isauthed"/>
+							<condition operator="is" setting="trakt.isauthed">true</condition>
 						</dependency>
 					</dependencies>
 					<control type="button" format="action">

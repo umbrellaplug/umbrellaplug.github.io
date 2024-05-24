@@ -5010,3 +5010,7 @@ msgstr ""
 msgctxt "#40516"
 msgid "One Season"
 msgstr ""
+
+msgctxt "#40517"
+msgid "Use TMDB Clearlogo"
+msgstr ""

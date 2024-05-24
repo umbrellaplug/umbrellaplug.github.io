@@ -1039,6 +1039,7 @@ class Episodes:
 								else:
 									item.setProperties({'WatchedEpisodes': str(count['watched']), 'UnWatchedEpisodes': str(count['unwatched'])})
 								item.setProperties({'TotalSeasons': str(meta.get('total_seasons', '')), 'TotalEpisodes': str(count['total'])})
+								item.setProperty('WatchedProgress', str(int(float(count['watched']) / float(count['total']) * 100)))
 							else:
 								if control.getKodiVersion() >= 20:
 									item.setProperties({'UnWatchedEpisodes': str(meta.get('total_aired_episodes', ''))}) # for shows never watched
