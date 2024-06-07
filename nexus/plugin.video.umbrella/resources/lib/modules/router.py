@@ -1170,6 +1170,9 @@ def router(argv2):
 		elif action == 'cache_clearCache':
 			from resources.lib.menus import navigator
 			navigator.Navigator().clearCache()
+		elif action == 'cache_fanart':
+			from resources.lib.menus import navigator
+			navigator.Navigator().clearFanart()
 		elif action == 'cache_clearMovieCache':
 			from resources.lib.menus import navigator
 			navigator.Navigator().clearMovieCache()

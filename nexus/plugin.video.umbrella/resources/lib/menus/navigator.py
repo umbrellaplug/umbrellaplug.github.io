@@ -422,6 +422,7 @@ class Navigator:
 		self.addDirectoryItem(32611, 'cache_clearSources', 'settings.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(32612, 'cache_clearMeta', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(32613, 'cache_clearCache', 'settings.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(40519, 'cache_fanart', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(40402, 'cache_clearMovieCache', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(32614, 'cache_clearSearch', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(32615, 'cache_clearBookmarks', 'settings.png', 'DefaultAddonService.png', isFolder=False)
@@ -575,6 +576,8 @@ class Navigator:
 					cache.cache_clear()
 					cache.cache_clear_search()
 					# cache.cache_clear_bookmarks()
+					from resources.lib.database import fanarttv_cache
+					fanarttv_cache.cache_clear()
 					return True
 				except:
 					from resources.lib.modules import log_utils
@@ -623,7 +626,18 @@ class Navigator:
 		if not control.yesnoDialog(getLS(32056), '', ''): return
 		try:
 			from resources.lib.database import cache
-			if cache.cache_clear(): control.notification(message=32092)
+			if cache.cache_clear(): control.notification(message=40518)
+			else: control.notification(message=33586)
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def clearFanart(self):
+		control.hide()
+		if not control.yesnoDialog(getLS(32056), '', ''): return
+		try:
+			from resources.lib.database import fanarttv_cache
+			if fanarttv_cache.cache_clear():control.notification(message=32092)
 			else: control.notification(message=33586)
 		except:
 			from resources.lib.modules import log_utils

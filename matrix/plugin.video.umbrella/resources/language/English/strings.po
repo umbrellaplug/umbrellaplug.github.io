@@ -5014,3 +5014,11 @@ msgstr ""
 msgctxt "#40517"
 msgid "Use TMDB Clearlogo"
 msgstr ""
+
+msgctxt "#40518"
+msgid "Fanart Cache Successfully Cleared!"
+msgstr ""
+
+msgctxt "#40519"
+msgid "Clear [COLOR yellow]Fanart Cache [/COLOR]..."
+msgstr ""

@@ -1,3 +1,7 @@
+[B]Update - v6.6.55 - June 7th, 2024[/B]
+--[Change] Made change to clearlogo code to keep clear logo from show level.
+--[Change] Added clear fanart cache.
+
 [B]Update - v6.6.54 - May 24th, 2024[/B]
 --[Change] Made change to source_utils code to allow for more title options and less filtering.
 --[Fix] Corrected imdb lists.

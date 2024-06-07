@@ -123,7 +123,7 @@ class Movies(TMDb):
 		self.list = []
 		self.meta = []
 		#big thanks to extreme pettiness for this change.
-		self.movie_link = base_link + 'movie/%s?api_key=%s&language=%s&append_to_response=credits,release_dates,videos,alternative_titles, images' % ('%s', self.API_key, self.lang)
+		self.movie_link = base_link + 'movie/%s?api_key=%s&language=%s&append_to_response=credits,release_dates,videos,alternative_titles,images' % ('%s', self.API_key, self.lang)
 		###  other "append_to_response" options external_ids,images,translations
 		self.art_link = base_link + 'movie/%s/images?api_key=%s' % ('%s', self.API_key)
 		self.external_ids = base_link + 'movie/%s/external_ids?api_key=%s' % ('%s', self.API_key)
@@ -485,7 +485,7 @@ class TVshows(TMDb):
 		self.list = []
 		self.meta = []
 		#big thanks to giant pos for this change
-		self.show_link = base_link + 'tv/%s?api_key=%s&language=%s&append_to_response=credits,content_ratings,external_ids,alternative_titles,videos, images' % ('%s', self.API_key, self.lang)
+		self.show_link = base_link + 'tv/%s?api_key=%s&language=%s&append_to_response=credits,content_ratings,external_ids,alternative_titles,videos,images' % ('%s', self.API_key, self.lang)
 		# 'append_to_response=translations, aggregate_credits' (DO NOT USE, response data way to massive and bogs the response time)
 		self.art_link = base_link + 'tv/%s/images?api_key=%s' % ('%s', self.API_key)
 		self.tvdb_key = getSetting('tvdb.api.key')
@@ -657,7 +657,6 @@ class TVshows(TMDb):
 		try:
 			meta['mediatype'] = 'tvshow'
 			meta['fanart'] = '%s%s' % (self.fanart_path, result['backdrop_path']) if result.get('backdrop_path') else ''
-			#thanks bitch
 			try: tmdblogo_path = [i['file_path'] for i in result['images']['logos'] if 'file_path' in i if i['file_path'].endswith('png')][0]
 			except: tmdblogo_path = ''
 			meta['tmdblogo'] = '%s%s' % (self.fanart_path, tmdblogo_path) if tmdblogo_path else ''

@@ -5922,6 +5922,14 @@
 					</constraints>
 					<control type="button" format="action"/>
 				</setting>
+				<setting id="clearFanartButton" type="action" label="40519" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=cache_fanart)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action"/>
+				</setting>
 				<setting id="clearCacheButtonSingle" type="action" label="32613" help="">
 					<level>0</level>
 					<data>RunPlugin(plugin://plugin.video.umbrella/?action=cache_clearCache)</data>
