@@ -1488,14 +1488,15 @@ class Movies:
 		list = []
 		try:
 			result = client.request(url)
-			items = client.parseDOM(result, 'li', attrs={'class': 'ipl-zebra-list__item user-list'})
+			items = client.parseDOM(result, 'li', attrs={'class': 'ipc-metadata-list-summary-item'})
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()
 		for item in items:
 			try:
-				name = client.parseDOM(item, 'a')[0]
-				name = client.replaceHTMLCodes(name)
+				#name = client.parseDOM(item, 'a')[0]
+				#name = client.replaceHTMLCodes(name)
+				name = client.parseDOM(item, 'a', attrs={'class': 'ipc-metadata-list-summary-item__t'})[0]
 				url = client.parseDOM(item, 'a', ret='href')[0]
 				url = url.split('/list/', 1)[-1].strip('/')
 				url = self.imdblist_link % url

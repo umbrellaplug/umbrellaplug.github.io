@@ -21,7 +21,6 @@ from resources.lib.modules import string_tools
 from resources.lib.modules.source_utils import supported_video_extensions, getFileType, aliases_check
 from resources.lib.cloud_scrapers import cloudSources
 from resources.lib.internal_scrapers import internalSources
-#from cocoscrapers import sources as fs_sources
 
 homeWindow = control.homeWindow
 playerWindow = control.playerWindow

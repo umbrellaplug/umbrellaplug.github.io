@@ -1,3 +1,6 @@
+[B]Update - v6.6.56 - June 9th, 2024[/B]
+--[Change] IMDb lists changed to show imdb in my tv and my movie sections if set to public.
+
 [B]Update - v6.6.55 - June 7th, 2024[/B]
 --[Change] Made change to clearlogo code to keep clear logo from show level.
 --[Change] Added clear fanart cache.
