@@ -604,7 +604,7 @@ class Navigator:
 		if not control.yesnoDialog(getLS(32056), '', ''): return
 		try:
 			from resources.lib.database import cache
-			if cache.clearMovieCache(): control.notification(message=32092)
+			if cache.clearMovieCache(): control.notification(message=40520)
 			else: control.notification(message=33586)
 		except:
 			from resources.lib.modules import log_utils
@@ -626,7 +626,7 @@ class Navigator:
 		if not control.yesnoDialog(getLS(32056), '', ''): return
 		try:
 			from resources.lib.database import cache
-			if cache.cache_clear(): control.notification(message=40518)
+			if cache.cache_clear(): control.notification(message=32092)
 			else: control.notification(message=33586)
 		except:
 			from resources.lib.modules import log_utils
@@ -637,7 +637,7 @@ class Navigator:
 		if not control.yesnoDialog(getLS(32056), '', ''): return
 		try:
 			from resources.lib.database import fanarttv_cache
-			if fanarttv_cache.cache_clear():control.notification(message=32092)
+			if fanarttv_cache.cache_clear():control.notification(message=40518)
 			else: control.notification(message=33586)
 		except:
 			from resources.lib.modules import log_utils

@@ -5022,3 +5022,7 @@ msgstr ""
 msgctxt "#40519"
 msgid "Clear [COLOR yellow]Fanart Cache [/COLOR]..."
 msgstr ""
+
+msgctxt "#40520"
+msgid "Library Movie Cache Successfully Cleared!"
+msgstr ""

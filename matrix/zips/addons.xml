@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.56">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.57">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -181,8 +181,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.6.56 - June 9th, 2024[/B]
---[Change] IMDb lists changed to show imdb in my tv and my movie sections if set to public.
+[B]Update - v6.6.57 - June 19th, 2024[/B]
+--[Change] Changed confirmation popup text on cache clearing for new functions.
 		</news>
 	</extension>
 
