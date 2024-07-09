@@ -181,6 +181,37 @@ class Player(xbmc.Player):
 	def getMeta(self, meta):
 		try:
 			if not meta or ('videodb' in control.infoLabel('ListItem.FolderPath')): raise Exception()
+			#
+			def getDBID(meta):
+				try:
+					if self.media_type == 'movie':
+						meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties" : ["title", "originaltitle", "uniqueid", "year", "premiered", "genre", "studio", "country", "runtime", "rating", "votes", "mpaa", "director", "writer", "cast", "plot", "plotoutline", "tagline", "thumbnail", "art", "file"]}, "id": 1}' % (self.year, str(int(self.year) + 1), str(int(self.year) - 1)))
+						meta = jsloads(meta)['result']['movies']
+						try:
+							meta = [i for i in meta if (i.get('uniqueid', []).get('imdb', '') == self.imdb) or (i.get('uniqueid', []).get('unknown', '') == self.imdb)] # scraper now using "unknown"
+						except:
+							if self.debuglog:
+								log_utils.log('Get Meta Failed in getMeta: %s' % str(meta), level=log_utils.LOGDEBUG)
+							meta = None
+						if meta: meta = meta[0]
+						else: raise Exception()
+						return meta.get('movieid')
+					if self.media_type == 'episode':
+						show_meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties" : ["title", "originaltitle", "uniqueid", "mpaa", "year", "genre", "runtime", "thumbnail", "file"]}, "id": 1}' % (self.year, str(int(self.year)+1), str(int(self.year)-1)))
+						show_meta = jsloads(show_meta)['result']['tvshows']
+						show_meta = [i for i in show_meta if i['uniqueid']['imdb'] == self.imdb]
+						show_meta = [i for i in show_meta if (i.get('uniqueid', []).get('imdb', '') == self.imdb) or (i.get('uniqueid', []).get('unknown', '') == self.imdb)] # scraper now using "unknown"
+						if show_meta: show_meta = show_meta[0]
+						else: raise Exception()
+						tvshowid = show_meta['tvshowid']
+						meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params":{"tvshowid": %d, "filter":{"and": [{"field": "season", "operator": "is", "value": "%s"}, {"field": "episode", "operator": "is", "value": "%s"}]}, "properties": ["showtitle", "title", "season", "episode", "firstaired", "runtime", "rating", "director", "writer", "cast", "plot", "thumbnail", "art", "file"]}, "id": 1}' % (tvshowid, self.season, self.episode))
+						meta = jsloads(meta)['result']['episodes']
+						if meta: meta = meta[0]
+						else: raise Exception()
+						return meta.get('episodeid')
+				except:
+					log_utils.error()
+					return ''
 			poster = meta.get('poster3') or meta.get('poster2') or meta.get('poster') #poster2 and poster3 may not be passed anymore
 			thumb = meta.get('thumb')
 			thumb = thumb or poster or control.addonThumb()
@@ -193,6 +224,8 @@ class Player(xbmc.Player):
 			if 'mediatype' not in meta:
 				meta.update({'mediatype': 'episode' if self.episode else 'movie'})
 				if self.episode: meta.update({'tvshowtitle': self.title, 'season': self.season, 'episode': self.episode})
+			self.DBID = getDBID(meta)
+			log_utils.log('dbid set. dbid: %s' % self.DBID, level=LOGINFO)
 			return (poster, thumb, season_poster, fanart, banner, clearart, clearlogo, discart, meta)
 		except: log_utils.error()
 		try:

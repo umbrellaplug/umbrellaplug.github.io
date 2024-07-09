@@ -714,6 +714,9 @@ def router(argv2):
 	elif action == 'colorpicker':
 		control.showColorPicker(current_setting)
 
+	elif action == 'resetCustomBG':
+		from resources.lib.modules import tools
+		tools.resetCustomBG()
 	####################################################
 	#---Tools
 	####################################################

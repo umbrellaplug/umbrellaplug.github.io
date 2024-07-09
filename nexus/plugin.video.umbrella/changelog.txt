@@ -1,3 +1,7 @@
+[B]Update - v6.6.58 - July 8th, 2024[/B]
+--[Change] Added option to use custom background for addon fanart. General settings.
+--[Fix] Corrected anime section to new imdb website format and urls.
+
 [B]Update - v6.6.57 - June 19th, 2024[/B]
 --[Change] Changed confirmation popup text on cache clearing for new functions.
 

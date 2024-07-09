@@ -156,3 +156,11 @@ def delete_all_subs():
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()
+
+def resetCustomBG():
+	try:
+		control.setSetting('custombg','')
+		control.openSettings('0.5', 'plugin.video.umbrella')
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()

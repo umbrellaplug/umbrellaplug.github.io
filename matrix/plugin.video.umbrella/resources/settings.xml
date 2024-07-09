@@ -815,6 +815,30 @@
 					<control type="button" format="action"/>
 				</setting>
 			</group>
+			<group id="5" label="40522">
+				<setting id="custombg" type="path" label="32337" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<writable>false</writable>
+						<masking>image</masking>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="image">
+						<heading>32337</heading>
+					</control>
+				</setting>
+				<setting id="resetCustomBG" type="action" label="40523" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=resetCustomBG)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<close>true</close>
+					</control>
+				</setting>
+			</group>
 		</category>
 		<category id="navigation" label="32621" help="40184">
 			<group id="1" label="32005">
@@ -5771,23 +5795,6 @@
 						<allowempty>true</allowempty>
 					</constraints>
 					<control type="button" format="action"/>
-				</setting>
-				<setting id="user_background" type="path" label="32337" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<writable>false</writable>
-						<masking>image</masking>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="dev.mode.enable">true</condition>
-						</dependency>
-					</dependencies>
-					<control type="button" format="image">
-						<heading>32337</heading>
-					</control>
 				</setting>
 				<setting id="use.playeronly" type="boolean" label="40275" help="">
 					<level>0</level>

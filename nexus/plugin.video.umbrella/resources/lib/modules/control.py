@@ -250,6 +250,10 @@ def addonPoster():
 	return 'DefaultVideo.png'
 
 def addonFanart():
+	custom_bg = setting('custombg')
+	if custom_bg:
+		if custom_bg is None or custom_bg == '': pass
+		else: return custom_bg
 	theme = appearance()
 	art = artPath()
 	if not (art is None and theme in ('-', '')): return joinPath(art, 'fanart.jpg')
