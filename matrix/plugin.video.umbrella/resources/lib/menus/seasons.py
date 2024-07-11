@@ -119,7 +119,10 @@ class Seasons:
 					values['icon'] = art['icon']
 					values['thumb'] = art['thumb'] # thumb here is show_poster from show level TMDb module
 					values['banner'] = art['banner']
-					values['clearlogo'] = art['clearlogo']
+					try:
+						values['clearlogo'] = art['clearlogo']
+					except:
+						values['clearlogo'] = ''
 					values['clearart'] = art['clearart']
 					values['tvshow.poster'] = art['tvshow.poster'] # not used in seasonDirectory() atm
 				for k in ('seasons',): values.pop(k, None) # pop() keys from showSeasons that are not needed anymore
