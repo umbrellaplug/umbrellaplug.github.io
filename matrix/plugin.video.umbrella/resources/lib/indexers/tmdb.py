@@ -136,7 +136,10 @@ class Movies(TMDb):
 			result = cache.get(self.get_request, self.tmdblist_hours, url % self.API_key)
 			if result is None: return
 			if '404:NOT FOUND' in result: return result
-			items = result['results']
+			if 'person' in url:
+				items = result['cast']
+			else:
+				items = result['results']
 		except: return
 		self.list = [] ; sortList = []
 		try:
@@ -200,70 +203,6 @@ class Movies(TMDb):
 		for i in sortList:
 			sorted_list += [item for item in self.list if item['tmdb'] == i] # resort to match TMDb list because threading will lose order.
 		return sorted_list
-
-	def tmdb_collections_list(self, url):
-		try:
-			result = cache.get(self.get_request, self.tmdbcollection_hours, url)
-			if result is None: return
-			if '404:NOT FOUND' in result: return result
-			if '/collection/' in url: items = result['parts']
-			elif '/3/' in url: items = result['items']
-			else: items = result['results']
-		except: return
-		self.list = []
-		try:
-			page = int(result['page'])
-			total = int(result['total_pages'])
-			if page >= total: raise Exception()
-			if 'page=' not in url: raise Exception()
-			next = '%s&page=%s' % (url.split('&page=', 1)[0], page+1)
-		except: next = ''
-		for item in items:
-			try:
-				values = {}
-				values['next'] = next 
-				media_type = item.get('media_type')
-				if media_type == 'tv': continue
-				values['tmdb'] = str(item.get('id', '')) if item.get('id') else ''
-				values['imdb'] = ''
-				values['tvdb'] = ''
-				values['metacache'] = False 
-				self.list.append(values)
-			except:
-				from resources.lib.modules import log_utils
-				log_utils.error()
-
-		def items_list(i):
-			if self.list[i]['metacache']: return
-			try:
-				values = {}
-				tmdb = self.list[i].get('tmdb', '')
-				movie_meta = self.get_movie_meta(tmdb)
-				values.update(movie_meta)
-				imdb = values['imdb']
-				if self.enable_fanarttv:
-					extended_art = fanarttv_cache.get(FanartTv().get_movie_art, 336, imdb, tmdb)
-					if extended_art: values.update(extended_art)
-				values = dict((k,v) for k, v in iter(values.items()) if v is not None and v != '') # remove empty keys so .update() doesn't over-write good meta with empty values.
-				self.list[i].update(values)
-				meta = {'imdb': imdb, 'tmdb': tmdb, 'tvdb': '', 'lang': self.lang, 'user': self.user, 'item': values}
-				self.meta.append(meta)
-			except:
-				from resources.lib.modules import log_utils
-				log_utils.error()
-
-		self.list = metacache.fetch(self.list, self.lang, self.user)
-		threads = []
-		append = threads.append
-		for i in range(0, len(self.list)):
-			append(Thread(target=items_list, args=(i,)))
-		[i.start() for i in threads]
-		[i.join() for i in threads]
-		if self.meta:
-			self.meta = [i for i in self.meta if i.get('tmdb')]
-			metacache.insert(self.meta)
-		self.list = [i for i in self.list if i.get('tmdb')]
-		return self.list
 
 	def tmdb_collections_search(self, url):
 		try:
@@ -478,6 +417,30 @@ class Movies(TMDb):
 			log_utils.error()
 		return result
 
+	def actorSearch(self, url):
+		if not url: return
+		try:
+			result = None
+			find_url = url % self.API_key
+			result = self.get_request(find_url)
+			if result is None: return
+			if '404:NOT FOUND' in result: return result
+			try: result = result['results']
+			except: return None
+			self.list = []
+			for r in result:
+				values = {}
+				values['name'] = r.get('name')
+				values['url'] = base_link + 'person/%s/movie_credits?&api_key=%s' % (r.get('id'), '%s')
+				try: values['image'] = self.profile_path + r.get('profile_path')
+				except: values['image'] = 'DefaultActor.png'
+				self.list.append(values)
+			
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+		return self.list
+
 
 class TVshows(TMDb):
 	def __init__(self):
@@ -509,7 +472,10 @@ class TVshows(TMDb):
 			result = cache.get(self.get_request, self.tmdblist_hours, newurl)
 			if result is None: return
 			if '404:NOT FOUND' in result: return result
-			items = result['results']
+			if 'person' in url:
+				items = result['cast']
+			else:
+				items = result['results']
 		except: return
 		self.list = [] ; sortList = []
 		try:
@@ -1097,6 +1063,30 @@ class TVshows(TMDb):
 			('Amazon', '1024', 'https://i.imgur.com/ru9DDlL.png'),
 			('Hulu', '453', 'https://i.imgur.com/cLVo7NH.png'),
 			('Netflix', '213', 'https://i.postimg.cc/c4vHp9wV/netflix.png')]
+
+	def actorSearch(self, url):
+		if not url: return
+		try:
+			result = None
+			find_url = url % self.API_key
+			result = self.get_request(find_url)
+			if result is None: return
+			if '404:NOT FOUND' in result: return result
+			try: result = result['results']
+			except: return None
+			self.list = []
+			for r in result:
+				values = {}
+				values['name'] = r.get('name')
+				values['url'] = base_link + 'person/%s/tv_credits?&api_key=%s' % (r.get('id'), '%s')
+				try: values['image'] = self.profile_path + r.get('profile_path')
+				except: values['image'] = 'DefaultActor.png'
+				self.list.append(values)
+			
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+		return self.list
 
 
 class Auth:

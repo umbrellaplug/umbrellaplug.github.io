@@ -120,6 +120,7 @@ class TVshows:
 		self.tmdb_genre_link = 'https://api.themoviedb.org/3/discover/tv?api_key=%s&with_genres=%s&include_null_first_air_dates=false&sort_by=%s&page=1' % ('%s', '%s', self.tmdb_DiscoverSort())
 		self.tmdb_year_link = 'https://api.themoviedb.org/3/discover/tv?api_key=%s&language=en-US&include_null_first_air_dates=false&first_air_date_year=%s&sort_by=%s&page=1' % ('%s', '%s', self.tmdb_DiscoverSort())
 		self.tmdb_recommendations = 'https://api.themoviedb.org/3/tv/%s/recommendations?api_key=%s&language=en-US&region=US&page=1'
+		self.tmdb_person_search = 'https://api.themoviedb.org/3/search/person?api_key=%s&query=%s&language=en-US&page=1&include_adult=true' % ('%s','%s')
 		self.mbdlist_list_items = 'https://mdblist.com/api/lists/%s/items?apikey=%s&limit=%s&page=1' % ('%s', mdblist.mdblist_api, self.page_limit)
 		self.simkltrendingtoday_link = 'https://api.simkl.com/tv/trending/today?client_id=%s&extended=tmdb' % '%s'
 		self.simkltrendingweek_link = 'https://api.simkl.com/tv/trending/week?client_id=%s&extended=tmdb' % '%s'
@@ -597,7 +598,8 @@ class TVshows:
 		k.doModal()
 		q = k.getText().strip() if k.isConfirmed() else None
 		if not q: return control.closeAll()
-		url = self.persons_link + quote_plus(q)
+		#url = self.persons_link + quote_plus(q)
+		url = self.tmdb_person_search % ('%s', quote_plus(q))
 		control.closeAll()
 		control.execute('ActivateWindow(Videos,plugin://plugin.video.umbrella/?action=tvPersons&url=%s,return)' % (quote_plus(url)))
 
@@ -605,6 +607,15 @@ class TVshows:
 		if url is None: self.list = cache.get(self.imdb_person_list, 24, self.personlist_link)
 		else: self.list = cache.get(self.imdb_person_list, 1, url)
 		if self.list is None: self.list = []
+		if self.list:
+			for i in range(0, len(self.list)): self.list[i].update({'content': 'actors', 'icon': 'DefaultActor.png', 'action': 'tvshows&folderName=%s' % quote_plus(self.list[i]['name'])})
+		self.addDirectory(self.list, folderName=folderName)
+		return self.list
+
+	def persons_tmdb(self, url, folderName=''):
+		if url is None: return None
+		from resources.lib.indexers import tmdb
+		self.list = tmdb.TVshows().actorSearch(url)
 		if self.list:
 			for i in range(0, len(self.list)): self.list[i].update({'content': 'actors', 'icon': 'DefaultActor.png', 'action': 'tvshows&folderName=%s' % quote_plus(self.list[i]['name'])})
 		self.addDirectory(self.list, folderName=folderName)

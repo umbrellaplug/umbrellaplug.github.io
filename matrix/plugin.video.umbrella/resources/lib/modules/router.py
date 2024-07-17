@@ -134,7 +134,8 @@ def router(argv2):
 		movies.Movies().years(url, folderName=folderName)
 	elif action == 'moviePersons':
 		from resources.lib.menus import movies
-		movies.Movies().persons(url, folderName=folderName)
+		#movies.Movies().persons(url, folderName=folderName)
+		movies.Movies().persons_tmdb(url, folderName=folderName)
 	elif action == 'actorSearchMovies':
 		link = 'https://www.imdb.com/search/name/?count=100&name='
 		name = params.get('name')
@@ -313,7 +314,8 @@ def router(argv2):
 		tvshows.TVshows().years(url, folderName=folderName)
 	elif action == 'tvPersons':
 		from resources.lib.menus import tvshows
-		tvshows.TVshows().persons(url)
+		#tvshows.TVshows().persons(url)
+		tvshows.TVshows().persons_tmdb(url)
 	elif action == 'actorSearchTV':
 		link = 'https://www.imdb.com/search/name/?count=100&name='
 		name = params.get('name')

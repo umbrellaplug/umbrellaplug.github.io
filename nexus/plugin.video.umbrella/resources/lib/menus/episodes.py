@@ -65,6 +65,7 @@ class Episodes:
 	def get(self, tvshowtitle, year, imdb, tmdb, tvdb, meta, season=None, episode=None, create_directory=True):
 		self.list = []
 		def get_episodes(tvshowtitle, imdb, tmdb, tvdb, meta, season):
+			all_episodes = []
 			episodes = cache.get(self.tmdb_list, 168, tvshowtitle, imdb, tmdb, tvdb, meta, season)
 			if not episodes: pass
 			elif episodes[0]['season_isAiring'] == 'true':
@@ -875,9 +876,13 @@ class Episodes:
 					if isMultiList: label = '[COLOR %s]%s[/COLOR] - %s' % (self.highlight_color, tvshowtitle, label)
 				try: labelProgress = label + '[COLOR %s]  [%s][/COLOR]' % (self.highlight_color, str(round(float(i['progress']), 1)) + '%')
 				except: labelProgress = label
+				isUnaired = False
 				try:
-					if i['unaired'] == 'true': labelProgress = '[COLOR %s][I]%s[/I][/COLOR]' % (self.unairedcolor, labelProgress)
-				except: pass
+					if i['unaired'] == 'true': 
+						labelProgress = '[COLOR %s][I]%s[/I][/COLOR]' % (self.unairedcolor, labelProgress)
+						isUnaired = True
+				except: 
+					isUnaired = False
 				if i.get('traktHistory') is True: # uses Trakt lastplayed in utc
 					try:
 						air_datetime = tools.convert_time(stringTime=i.get('lastplayed', ''), zoneFrom='utc', zoneTo='local', formatInput='%Y-%m-%dT%H:%M:%S.000Z', formatOutput='%b %d %Y %I:%M %p', remove_zeroes=True)
@@ -951,8 +956,12 @@ class Episodes:
 				if settingFanart:
 					if self.prefer_tmdbArt: fanart = meta.get('fanart3') or meta.get('fanart') or meta.get('fanart2') or addonFanart
 					else: fanart = meta.get('fanart2') or meta.get('fanart3') or meta.get('fanart') or addonFanart
-				thumb = meta.get('thumb') or landscape or fanart or season_poster
-				icon = meta.get('icon') or season_poster or poster
+				if isUnaired:
+					thumb = landscape or fanart or season_poster
+					icon = season_poster or poster
+				else:
+					thumb = meta.get('thumb') or landscape or fanart or season_poster
+					icon = meta.get('icon') or season_poster or poster
 				banner = meta.get('banner') or addonBanner
 				art = {}
 				art.update({'poster': season_poster, 'tvshow.poster': poster, 'season.poster': season_poster, 'fanart': fanart, 'icon': icon, 'thumb': thumb, 'banner': banner,

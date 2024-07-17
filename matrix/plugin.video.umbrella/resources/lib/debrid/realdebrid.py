@@ -94,6 +94,8 @@ class RealDebrid:
 		return response
 
 	def _post(self, url, data):
+		#pause for real debrid api restriction of 1 request per second
+		#control.sleep(1000)
 		try:
 			original_url = url
 			url = rest_base_url + url
