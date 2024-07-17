@@ -1,0 +1,413 @@
+<?xml version='1.0' encoding='utf-8'?>
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.61">
+	<requires>
+		<import addon="xbmc.python" version="3.0.0" />
+		<import addon="script.module.requests" />
+		<import addon="script.module.metahandler" version="5.0.1a" optional="true" />
+		<import addon="plugin.video.youtube" optional="true" />
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="umbrella.py">
+		<provides>video</provides>
+	</extension>
+	<extension point="kodi.context.item">
+		<menu id="kodi.core.main">
+			<item library="resources\lib\context\addtoLibrary.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Add to Library</label>
+				<visible>
+					!String.IsEmpty(Window(home).Property(context.umbrella.addtoLibrary)) +
+					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
+					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
+					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,tvshow) | String.IsEqual(ListItem.dbtype,season) | String.IsEqual(ListItem.dbtype,movie)]
+				</visible>
+			</item>
+			<item library="resources\lib\context\addtoFavourite.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Add/Remove Favourite</label>
+				<visible>
+					!String.IsEmpty(Window(home).Property(context.umbrella.addtoFavourite)) +
+					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
+					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
+					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,tvshow) | String.IsEqual(ListItem.dbtype,movie)]
+				</visible>
+			</item>
+			<item library="resources\lib\context\playTrailer.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Play Trailer</label>
+				<visible>
+					!String.IsEmpty(Window(home).Property(context.umbrella.playTrailer)) +
+					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
+					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
+					[String.IsEqual(ListItem.dbtype,tvshow) | String.IsEqual(ListItem.dbtype,movie)]
+				</visible>
+			</item>
+			<item library="resources\lib\context\playTrailerSelect.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Play Trailer (Select)</label>
+				<visible>
+					!String.IsEmpty(Window(home).Property(context.umbrella.playTrailerSelect)) +
+					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
+					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
+					[String.IsEqual(ListItem.dbtype,tvshow) | String.IsEqual(ListItem.dbtype,movie)]
+				</visible>
+			</item>
+			<item library="resources\lib\context\traktManager.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Trakt Manager</label>
+				<visible>
+					!String.IsEmpty(Window(home).Property(context.umbrella.traktManager)) +
+					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
+					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
+					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,tvshow) | String.IsEqual(ListItem.dbtype,season) | String.IsEqual(ListItem.dbtype,movie)]
+				</visible>
+			</item>
+			<item library="resources\lib\context\clearProviders.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Clear Providers</label>
+				<visible>
+					[!String.IsEmpty(Window(home).Property(context.umbrella.clearProviders)) +
+					String.StartsWith(ListItem.FolderPath,plugin://plugin.video.umbrella/?action=play) +
+					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
+					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]] |
+					[String.Contains(Container.FolderPath,videodb://) +
+					[String.Contains(Container.ListItem.Path,Window(home).Property(umbrella.movieLib.path)) | String.Contains(Container.ListItem.Path,Window(home).Property(umbrella.tvLib.path))] +
+					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]]
+				</visible>
+			</item>
+			<item library="resources\lib\context\clearBookmark.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Clear Item Bookmark</label>
+				<visible>
+					!String.IsEmpty(Window(home).Property(context.umbrella.clearBookmark)) +
+					String.StartsWith(ListItem.FolderPath,plugin://plugin.video.umbrella/?action=play) +
+					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
+					ListItem.IsResumable +
+					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]
+				</visible>
+			</item>
+			<item library="resources\lib\context\rescrape.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Rescrape Item</label>
+				<visible>
+					[!String.IsEmpty(Window(home).Property(context.umbrella.rescrape)) +
+					String.StartsWith(ListItem.FolderPath,plugin://plugin.video.umbrella/?action=play) +
+					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
+					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]]
+				</visible>
+			</item>
+			<item library="resources\lib\context\addLibtoFavourite.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Add/Remove Favourite</label>
+				<visible>
+					[String.Contains(Container.FolderPath,videodb://) | String.Contains(Container.ListItem.FolderPath,videodb://)] +
+					[String.Contains(Container.ListItem.Path,Window(home).Property(umbrella.movieLib.path)) | String.Contains(Container.ListItem.Path,Window(home).Property(umbrella.tvLib.path))] +
+					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]
+				</visible>
+			</item>
+			<item library="resources\lib\context\libRescrape.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Rescrape Lib Item</label>
+				<visible>
+					[String.Contains(Container.FolderPath,videodb://) | String.Contains(Container.ListItem.FolderPath,videodb://)] +
+					[String.Contains(Container.ListItem.Path,Window(home).Property(umbrella.movieLib.path)) | String.Contains(Container.ListItem.Path,Window(home).Property(umbrella.tvLib.path))] +
+					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]
+				</visible>
+			</item>
+			<item library="resources\lib\context\playFromHere.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Play from here</label>
+				<visible>
+					!String.IsEmpty(Window(home).Property(context.umbrella.playFromHere)) +
+					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
+					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
+					String.IsEqual(ListItem.dbtype,episode)
+				</visible>
+			</item>
+			<item library="resources\lib\context\autoPlay.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Auto Play</label>
+				<visible>
+					String.IsEmpty(Window(home).Property(umbrella.autoPlay.enabled)) +
+					!String.IsEmpty(Window(home).Property(context.umbrella.autoPlay)) +
+					String.StartsWith(ListItem.FolderPath,plugin://plugin.video.umbrella/?action=play) +
+					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
+					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]
+				</visible>
+			</item>
+			<item library="resources\lib\context\sourceSelect.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Source Select</label>
+				<visible>
+					!String.IsEmpty(Window(home).Property(umbrella.autoPlay.enabled)) +
+					!String.IsEmpty(Window(home).Property(context.umbrella.sourceSelect)) +
+					String.StartsWith(ListItem.FolderPath,plugin://plugin.video.umbrella/?action=play) +
+					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
+					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]
+				</visible>
+			</item>
+			<item library="resources\lib\context\findSimilar.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Find Similar</label>
+				<visible>
+					!String.IsEmpty(Window(home).Property(context.umbrella.findSimilar)) +
+					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
+					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
+					[String.IsEqual(ListItem.dbtype,tvshow) | String.IsEqual(ListItem.dbtype,movie)]
+				</visible>
+			</item>
+			<item library="resources\lib\context\browseSeries.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Browse Series</label>
+				<visible>
+					!String.IsEmpty(Window(home).Property(context.umbrella.browseSeries)) +
+					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
+					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
+					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,tvshow)]
+				</visible>
+			</item>
+			<item library="resources\lib\context\browseEpisodes.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Browse Episodes</label>
+				<visible>
+					!String.IsEmpty(Window(home).Property(context.umbrella.browseEpisodes)) +
+					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
+					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
+					String.IsEqual(ListItem.dbtype,episode)
+				</visible>
+			</item>
+		</menu>
+	</extension>
+	<extension point="xbmc.service" library="service.py" start="startup" />
+	<extension point="xbmc.python.module" library="resources/lib/" />
+	<extension point="xbmc.addon.metadata">
+		<reuselanguageinvoker>true</reuselanguageinvoker>
+		<summary lang="en">[B]Umbrella[/B] - We do not host any of the contents streamed</summary>
+		<description lang="en">[B]Umbrella[/B][CR] This addon does not form part of the Kodi Media Centre. Please do not seek assistance with this addon from any of the Official Kodi Support Channels.[CR]The author does not host any of the content in this addon and takes no responsibility for content found. We do not know anything about a lab under Raccoon City. Umbrella is not actually an umbrella and will not shield you from rain.</description>
+		<platform>all</platform>
+		<license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
+		<forum />
+		<website>https://umbrellaplug.github.io</website>
+		<source>https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/</source>
+		<disclaimer lang="en">The author of this addon does not host any of the content which is found and have no affiliation with any of the content providers. This addon simply searches websites for content. Use at your own risk!</disclaimer>
+		<assets>
+			<icon>icon.png</icon>
+			<fanart>fanart.jpg</fanart>
+			<screenshot>resources/screenshots/screenshot001.jpg</screenshot>
+			<screenshot>resources/screenshots/screenshot002.jpg</screenshot>
+			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
+		</assets>
+		<news>
+[B]Update - v6.6.61 - July 17th, 2024[/B]
+--[Fix] Fixed broken season flatten.
+--[Change] Added code to use season artwork for unreleased episodes. (discord poll)
+--[Change] Changed Actor search to use tmdb instead of imdb.
+		</news>
+	</extension>
+
+</addon><addon id="plugin.video.youtube" name="YouTube" version="7.0.5+unofficial.1" provider-name="anxdpanic, bromix, MoojMidge">
+    <requires>
+        <import addon="xbmc.python" version="3.0.0" />
+        <import addon="script.module.requests" version="2.27.1" />
+        <import addon="inputstream.adaptive" version="19.0.0" />
+        <import addon="script.module.inputstreamhelper" version="0.2.2" optional="true" />
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="resources/lib/plugin.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.service" library="resources/lib/service.py" />
+    <extension point="xbmc.python.module" library="resources/lib/" />
+    <extension point="xbmc.python.script" library="resources/lib/script.py">
+        <provides>executable</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <assets>
+            <icon>resources/media/icon.png</icon>
+            <fanart>resources/media/fanart.jpg</fanart>
+        </assets>
+        <platform>all</platform>
+        <license>GPL-2.0-only</license>
+        <forum>https://ytaddon.panicked.xyz/forum</forum>
+        <website>https://www.youtube.com</website>
+        <source>https://github.com/anxdpanic/plugin.video.youtube</source>
+        <reuselanguageinvoker>true</reuselanguageinvoker>
+        <summary lang="bg_BG">Добавка за YouTube</summary>
+        <summary lang="cs_CZ">Plugin pro YouTube</summary>
+        <summary lang="da_DK">Plugin til YouTube</summary>
+        <summary lang="de_DE">Plugin für YouTube</summary>
+        <summary lang="el_GR">Πρόσθετο YouTube</summary>
+        <summary lang="en_GB">Plugin for YouTube</summary>
+        <summary lang="es_ES">Plugin para YouTube</summary>
+        <summary lang="es_MX">Complemento para YouTube</summary>
+        <summary lang="fi_FI">YouTube-lisäosa</summary>
+        <summary lang="fr_FR">Plugin pour YouTube</summary>
+        <summary lang="he_IL">תוסף עבור YouTube</summary>
+        <summary lang="hr_HR">Dodatak za YouTube</summary>
+        <summary lang="hu_HU">YouTube kiegészítő</summary>
+        <summary lang="id_ID">Pengaya untuk YouTube</summary>
+        <summary lang="it_IT">Plugin per YouTube</summary>
+        <summary lang="ko_KR">유튜브 플러그인</summary>
+        <summary lang="nb_NO">Tillegg for YouTube</summary>
+        <summary lang="nl_NL">Plugin voor YouTube</summary>
+        <summary lang="pl_PL">Wtyczka YouTube</summary>
+        <summary lang="ru_RU">Видеодополнение YouTube</summary>
+        <summary lang="sk_SK">Doplnok pre YouTube</summary>
+        <summary lang="sv_SE">Plugin för YouTube</summary>
+        <summary lang="tr_TR">YouTube için eklenti</summary>
+        <summary lang="vi_VN">Plugin dành cho YouTube</summary>
+        <summary lang="zh_CN">油管插件</summary>
+        <summary lang="zh_TW">YouTube附加元件</summary>
+        <description lang="bg_BG">YouTube е един от най-големите уеб сайтове за споделяне на видео в целия свят.</description>
+        <description lang="cs_CZ">YouTube je jedna z největších webových stránek světa sdílející video.</description>
+        <description lang="da_DK">YouTube er et af verdens største videodelingswebsteder.</description>
+        <description lang="de_DE">YouTube ist eines der größten Video-Sharing-Websites der Welt.</description>
+        <description lang="el_GR">Το YouTube είναι μία από τις μεγαλύτερες ιστοσελίδες διαμοιρασμού βίντεο στον κόσμο.</description>
+        <description lang="en_GB">YouTube is one of the biggest video-sharing websites of the world.</description>
+        <description lang="es_ES">YouTube es uno de los sitios web más grande del mundo para compartir vídeos.</description>
+        <description lang="es_MX">YouTube es uno de los más grandes sitios web de intercambio de videos del mundo.</description>
+        <description lang="fi_FI">YouTube on yksi maailman suurimmista videoiden jakosivustoista.</description>
+        <description lang="fr_FR">YouTube est l'un des plus grands sites de partage vidéos du monde.</description>
+        <description lang="he_IL">YouTube הוא אחד מאתרי שיתוף הווידאו הגדולים בעולם.</description>
+        <description lang="hr_HR">YouTube je jedna od najvećih stranica za dijeljenje video sadržaja na svijetu.</description>
+        <description lang="hu_HU">A YouTube világ egyik legnagyobb videómegosztó weboldala.</description>
+        <description lang="id_ID">YouTube adalah salah satu situs web berbagi video terbesar di dunia.</description>
+        <description lang="it_IT">YouTube è uno dei più grandi siti di condivisione video del mondo.</description>
+        <description lang="ko_KR">유튜브는 세상에서 가장 큰 동영상 공유 사이트 중의 하나입니다.</description>
+        <description lang="nb_NO">YouTube er en av verdens største nettsider for videodeling.</description>
+        <description lang="nl_NL">YouTube is een van de grootste videodelenwebsite in de hele wereld.</description>
+        <description lang="pl_PL">YouTube jest jednym z największych na świecie serwisów udostępniania wideo.</description>
+        <description lang="ru_RU">YouTube - популярнейший видеохостинговый сайт, предоставляющий пользователям услуги хранения, доставки и показа видео.</description>
+        <description lang="sk_SK">YouTube je jednou z najväčších stránok na zdieľanie videa na svete.</description>
+        <description lang="sv_SE">YouTube är en av de största videodelningssajterna i världen.</description>
+        <description lang="tr_TR">YouTube, dünya üzerindeki en büyük video paylaşma platformlarından birisidir.</description>
+        <description lang="vi_VN">YouTube là một trong những trang web chia sẻ video lớn nhất trên thế giới.</description>
+        <description lang="zh_CN">油管是世界上最大的视频分享网站之一。</description>
+        <description lang="zh_TW">Youtube 是全世界最大的影片分享網站。</description>
+        <disclaimer lang="cs_CZ">Tento plugin není schválen společností Google</disclaimer>
+        <disclaimer lang="da_DK">Dette plugin er ikke godkendt af Google</disclaimer>
+        <disclaimer lang="de_DE">Dieses Plugin ist nicht von Google befürwortet</disclaimer>
+        <disclaimer lang="el_GR">Η παρούσα μικροεφαρμογή δεν έχει υϊοθετηθεί από την Google</disclaimer>
+        <disclaimer lang="en_GB">This plugin is not endorsed by Google</disclaimer>
+        <disclaimer lang="es_ES">Este add-on no está respaldado por Google</disclaimer>
+        <disclaimer lang="es_MX">Este complemento no está respaldado por Google</disclaimer>
+        <disclaimer lang="fi_FI">Google ei tue tätä lisäosaa</disclaimer>
+        <disclaimer lang="fr_FR">Ce module n'est pas validé par Google</disclaimer>
+        <disclaimer lang="hr_HR">Ovaj dodatak nije podržan od strane Googlea</disclaimer>
+        <disclaimer lang="id_ID">Plugin ini tidak didukung oleh Google</disclaimer>
+        <disclaimer lang="it_IT">Questo plugin non è approvato da Google</disclaimer>
+        <disclaimer lang="ko_KR">이 플러그인은 Google의 허가를 받지 않았습니다</disclaimer>
+        <disclaimer lang="nl_NL">Deze plug-in wordt niet door Google ondersteund</disclaimer>
+        <disclaimer lang="pl_PL">Ta wtyczka nie jest zatwierdzona przez Google</disclaimer>
+        <disclaimer lang="ru_RU">Плагин не поддерживается Google</disclaimer>
+        <disclaimer lang="sk_SK">Tento doplnok nie je schválený spoločnosťou Google</disclaimer>
+        <disclaimer lang="sv_SE">Detta plugin är inte godkänt av Google</disclaimer>
+        <disclaimer lang="tr_TR">Bu eklenti Google tarafından üretilmemiştir</disclaimer>
+        <disclaimer lang="vi_VN">Plugin này không được xác nhận bởi Google</disclaimer>
+        <disclaimer lang="zh_CN">此插件未被谷歌认可</disclaimer>
+        <disclaimer lang="zh_TW">此附加元件未由Google支持</disclaimer>
+    <news>## v7.0.5
+### Fixed
+- Fix typo causing no fractional frame rate hinting to fail
+- Fix typo that caused android player requests to fail
+- Fix error message when rating video
+- Fix various issues with Kodi 18 and Python 2
+- Fix issues with video playback #659, #663
+- Fix typos
+- Fix typo that prevented videos from being listed in Kodi versions prior to v20
+- Try to prevent Kodi freezing when settings are updated and container is reloaded
+- Fix lockups when using xbmc.executebuiltin #653
+- Fix searching for preferred language subtitles not using non-region specific subtitles
+- Fix not being able to set custom watch later history playlist per user
+- Update workarounds for multiple busy dialog crashes #649
+- Fix playing incorrect video when player request is blocked
+
+### Changed
+- Update language used for maintenance action prompts that clear data
+- Display search history as list rather than videos
+- Update Setup Wizard
+  - Add settings for Raspberry Pi 3 class devices (1080p30, VP9 enabled)
+  - Update settings for Raspberry Pi 4 class devices (1080p60, VP9 enabled)
+  - Move option to disable list details to last step in wizard
+- Shared playlist play using default order without prompting
+- Removed dependency on script.module.infotagger
+- Removed Nexus specific releases
+  - Matrix releases will now work in Kodi v19+
+  - Leia releases will work, but are unsupported, for Kodi v18 only
+- Updated client versions used for player requests
+  - Use iOS client as fallback for default client</news></extension>
+</addon><addon id="script.module.metahandler" name="metahandler" version="5.0.1a" provider-name="Eldorado">
+	<requires>
+		<import addon="xbmc.python" version="3.0.0" />
+		<import addon="script.module.six" version="1.14.0+matrix.2" />
+		<import addon="script.module.simplejson" version="3.17.0+matrix.2" />
+		<import addon="script.module.myconnpy" version="8.0.18+matrix.1" />
+	</requires>
+	<extension point="xbmc.python.module" library="lib" />
+	<extension point="xbmc.python.pluginsource" library="lib/default.py" />
+	<extension point="xbmc.addon.metadata">
+		<platform>all</platform>
+		<summary lang="en">Downloads Artwork for TV shows, Movies and Music videos for addons and stores them in a local SQLITE database</summary>
+		<description lang="en">Queries, stores, and returns metadata for TV shows, Movies and Musicvideos. [CR]Sources:[CR]www.thetvdb.com[CR]www.themoviedb.org[CR]www.imdb.com[CR]www.omdbapi.com[CR]This product uses the TMDb API but is not endorsed or certified by TMDb.</description>
+		<disclaimer lang="en" />
+		<language />
+		<license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
+		<forum />
+		<website />
+		<email />
+		<source />
+		<assets>
+			<icon>icon.png</icon>
+			<fanart />
+			<screenshot />
+		</assets>
+		<news>
+[B]Version 5.0.1a[/B]
+- Fixed incorrect meta causing exception on marking as watched. -umbrella
+		</news>
+	</extension>
+</addon><addon id="script.umbrestuary.helper" name="Umbrestuary Helper" version="0.6.16" provider-name="Tikipeter, Ivar Brandt">
+    <requires>
+        <import addon="xbmc.python" version="3.0.0" />
+        <import addon="script.module.requests" version="2.19.1" />
+    </requires>
+    <extension point="xbmc.python.library" library="resources/lib/default.py" />
+    <extension point="xbmc.service" library="resources/lib/service.py" start="startup" />
+    <extension point="xbmc.addon.metadata">
+        <news />
+        <platform>all</platform>
+        <license>GPL-2.0-only</license>
+        <forum />
+        <source />
+        <assets>
+            <icon>resources/media/icon.png</icon>
+            <fanart>resources/media/fanart.jpg</fanart>
+        </assets>
+        <description lang="en_GB">Umbrestuary Helper for the Umbrestuary Skin.</description>
+        <description lang="en_NZ">Umbrestuary Helper for the Umbrestuary Skin.</description>
+        <description lang="en_US">Umbrestuary Helper for the Umbrestuary Skin.</description>
+    </extension>
+</addon><addon id="skin.umbrestuary" version="1.0.20" name="Umbrestuary" provider-name="Ivar Brandt, Umbrella">
+	<requires>
+		<import addon="xbmc.gui" version="5.17.0" />
+		<import addon="script.umbrestuary.helper" />
+	</requires>
+	<extension point="xbmc.gui.skin" debugging="false">
+		<res width="1920" height="1440" aspect="4:3" default="false" folder="xml" />
+		<res width="1920" height="1280" aspect="3:2" default="false" folder="xml" />
+		<res width="1920" height="1200" aspect="16:10" default="false" folder="xml" />
+		<res width="2040" height="1080" aspect="17:9" default="false" folder="xml" />
+		<res width="1920" height="1080" aspect="16:9" default="true" folder="xml" />
+		<res width="2560" height="1080" aspect="21:9" default="false" folder="xml" />
+		<res width="2338" height="1080" aspect="19.5:9" default="false" folder="xml" />
+		<res width="2160" height="1080" aspect="18:9" default="false" folder="xml" />
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<platform>all</platform>
+		<license>CC BY-SA 4.0, GNU GENERAL PUBLIC LICENSE Version 2.0</license>
+		<forum>http://forum.kodi.tv/</forum>
+		<source>https://github.com/xbmc/skin.estuary/</source>
+		<assets>
+			<icon>resources/icon.png</icon>
+			<fanart>resources/fanart.jpg</fanart>
+			<screenshot>resources/images/customizable_widgets.jpg</screenshot>
+			<screenshot>resources/images/stacked_widgets.jpg</screenshot>
+			<screenshot>resources/images/infopanel.jpg</screenshot>
+			<screenshot>resources/images/search_window.jpg</screenshot>
+			<screenshot>resources/images/viewtypes1.jpg</screenshot>
+			<screenshot>resources/images/viewtypes4.jpg</screenshot>
+			<screenshot>resources/images/viewtypes.jpg</screenshot>
+			<screenshot>resources/images/color_theme3.jpg</screenshot>
+			<screenshot>resources/images/color_theme4.jpg</screenshot>
+			<screenshot>resources/images/color_theme5.jpg</screenshot>
+		</assets>
+		<summary lang="en_GB">Umbrestuary skin by Ivar Brandt (Estuary MOD)</summary>
+		<summary lang="en_NZ">Umbrestuary skin by Ivar Brandt (Estuary MOD)</summary>
+		<summary lang="en_US">Umbrestuary skin by Ivar Brandt (Estuary MOD)</summary>
+		<description lang="en_GB">Umbrestuary is a modified version of the default Estuary skin for Kodi Nexus. It is intended for use only with Umbrella.[CR][CR]See [B]CHANGELOG[/B] located in Skin settings » Extra info for latest changes.</description>
+		<description lang="en_NZ">Umbrestuary is a modified version of the default Estuary skin for Kodi Nexus. It is intended for use only with Umbrella.[CR][CR]See [B]CHANGELOG[/B] located in Skin settings » Extra info for latest changes.</description>
+		<description lang="en_US">Umbrestuary is a modified version of the default Estuary skin for Kodi Nexus. It is intended for use only with Umbrella.[CR][CR]See [B]CHANGELOG[/B] located in Skin settings » Extra info for latest changes.</description>
+	</extension>
+</addon></addons>
