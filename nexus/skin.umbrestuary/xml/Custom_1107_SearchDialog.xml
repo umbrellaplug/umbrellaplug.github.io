@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window type="dialog" id="1107">
+	<defaultcontrol>9000</defaultcontrol>
+	<include>Animation_DialogPopupOpenClose</include>
+	<controls>
+		<control type="group">
+			<centerleft>50%</centerleft>
+			<width>600</width>
+			<centertop>60%</centertop>
+			<height>700</height>
+			<include content="DialogBackgroundCommons">
+				<param name="width" value="600" />
+				<param name="height" value="485" />
+				<param name="header_label" value="$LOCALIZE[137]" />
+				<param name="header_id" value="" />
+				<param name="diffusetexture" value="masks/dialog-bg-squareish.png" />
+			</include>
+			<control type="panel" id="9000">
+				<include>ButtonMenuList</include>
+				<content>
+					<item>
+						<label>Search movies</label>
+						<onclick>Dialog.Close(all)</onclick>
+						<onclick>ActivateWindow(Videos,"plugin://plugin.video.umbrella/?action=movieSearchterm&amp;name=",return)</onclick>
+					</item>
+					<item>
+						<label>Search shows</label>
+						<onclick>Dialog.Close(all)</onclick>
+						<onclick>ActivateWindow(Videos,"plugin://plugin.video.umbrella/?action=tvSearchterm&amp;name=",return)</onclick>
+					</item>
+					<item>
+						<label>Search actors/actresses Movies</label>
+						<onclick>Dialog.Close(all)</onclick>
+						<onclick>ActivateWindow(Videos,"plugin://plugin.video.umbrella/?action=actorSearchMovies&amp;name=",return)</onclick>
+					</item>
+					<item>
+						<label>Search actors/actresses TV</label>
+						<onclick>Dialog.Close(all)</onclick>
+						<onclick>ActivateWindow(Videos,"plugin://plugin.video.umbrella/?action=actorSearchTV&amp;name=",return)</onclick>
+					</item>
+					<item>
+						<label>$LOCALIZE[31145]</label>
+						<onclick>Dialog.Close(all)</onclick>
+						<onclick>ActivateWindow(addonbrowser,addons://search/,return)</onclick>
+					</item>
+					<item>
+						<label>$LOCALIZE[31114]</label>
+						<onclick>Dialog.Close(all)</onclick>
+						<onclick condition="System.AddonIsEnabled(plugin.video.youtube)">
+							ActivateWindow(videos,"plugin://plugin.video.youtube/kodion/search/list/",return)</onclick>
+						<onclick
+							condition="System.HasAddon(plugin.video.youtube) + !System.AddonIsEnabled(plugin.video.youtube)">
+							EnableAddon(plugin.video.youtube)</onclick>
+						<onclick condition="!System.HasAddon(plugin.video.youtube)">
+							InstallAddon(plugin.video.youtube)</onclick>
+					</item>
+				</content>
+			</control>
+			<include content="UpDownArrows">
+				<param name="container_id" value="9000" />
+				<param name="posx" value="276" />
+				<param name="up_posy" value="-40" />
+				<param name="down_posy" value="500" />
+			</include>
+		</control>
+	</controls>
+</window>

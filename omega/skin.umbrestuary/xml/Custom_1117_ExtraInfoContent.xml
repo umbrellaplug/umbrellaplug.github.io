@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<includes>
+  <include name="Changelog">
+    <label>[B][COLOR accent_color]Version $INFO[System.AddonVersion(skin.umbrestuary)][/COLOR][/B]
+- Updated Fentastic to work for Umbrella.
+    </label>
+  </include>
+
+
+  <include name="SetupGuide">
+    <label>[B][COLOR accent_color]Welcome to the Umbrestuary Setup Guide[/COLOR][/B]
+
+Umbrestuary is a skin specifically designed for Umbrella users. It can display movie, tvshow, and episode widgets as well as submenu widgets. It can also set paths for main menu items (more on this later). Here in this guide I will show you how these work and how to set them up.
+
+On first install the home screen should be empty. This means that the Movie and Show sections should be missing from the main menu on the left.
+
+Now lets go set up the widgets.
+From this dialog screen click Back on your remote or Backspace if you are using a keyboard. Here you'll see a group of menu items on the left. Navigate up to Main menu items. Here is where we will set up the widgets. 
+
+Click a menu item to toggle the display of a section on and off. This will show or hide the section on the home screen. Now toggle the Movie/Show section to 'on'. You'll see a couple of menu items drop down. They are set main menu path and set widgets.
+
+[B][COLOR deeppink]- Set main menu path[/COLOR][/B] is for setting up the path when clicking on the Movie/Show section in the main menu on the left side of the home screen. You can set this to whatever you path you like within Umbrella. I like to set mine to my Trakt movie/tvshow collection.
+
+[B][COLOR deeppink]- Set widgets[/COLOR][/B] is for setting up the movie/tvshow widgets. These are the main widgets that you'll set up. You can configure up to 10 movie and 10 TV show widgets. After choosing a path you'll have the option to set the label and display type (Poster, Landscape, LandscapeInfo, and Category) for each widget. If you choose the Category display type, you'll have the option to set it up as a stacked widget. After that you can choose the display type for the stacked widget as well.
+
+[B][COLOR accent_color]Stacked widgets[/COLOR][/B] contain a category widget and a normal widget beneath. The category widget "communicates" with the normal widget in order to load the new widget list according to the focused item in the category widget. If the stacked widget that you set up has 20 items in it, then that means you'll be able to have all 20 widgets available from just one widget on the home screen.
+
+That's it! You're all set to go. Enjoy the skin!
+
+If you would like to see a more detailed version of this Setup Guide, please visit my Github repo at https://github.com/ivarbrandt/skin.fentastic
+    </label>
+  </include>
+
+
+  <include name="Tip-Crashes">
+    <label>[COLOR accent_color][B]How to fix Kodi crashes[/B][/COLOR]
+
+If you are experiencing random or semi-random crashes when either returning to the home screen after playback or returning to the home screen after an extended period of time away from the home screen, go into the Umbrella addon » Tools » Turn off reuselanguageinvoker
+
+This should alleviate the crashing on your device. The trade off for this is that you'll lose some speed when navigating Umbrella.
+    </label>
+  </include>
+</includes>

@@ -6,7 +6,7 @@ Compatible with Kodi 19, 20, and 21.
 
 ## Current Versions:
 Umbrella - 6.6.61
-Umbrella Repo - 2.2.4
+Umbrella Repo - 2.2.5
 
 ## Installation Instructions:
 From Kodi:

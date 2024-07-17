@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <defaultcontrol always="true">3011</defaultcontrol>
+    <zorder>0</zorder>
+    <controls>
+        <control type="label" id="4000"><visible>false</visible></control>
+        <control type="group">
+            <right>64</right>
+            <bottom>64</bottom>
+            <width>592</width>
+            <height>333</height>
+            <include>Animation_FadeIn_Slide</include>
+            <include>Animation_FadeOut</include>
+            <control type="label" description="text">
+                <top>-64</top>
+                <left>0</left>
+                <right>20</right>
+                <height>64</height>
+                <aligny>center</aligny>
+                <font>font_small</font>
+                <label>$INFO[Window().Property(umbrella.tvshowtitle),, - ]$INFO[Window().Property(umbrella.season),S,]$INFO[Window().Property(umbrella.episode),E, - ]$INFO[Window().Property(umbrella.title)]</label>
+                <textcolor>main_fg_100</textcolor>
+                <shadowcolor>bf000000</shadowcolor>
+            </control>
+
+            <control type="image" description="fanart">
+                <include condition="!Skin.HasSetting(DisableShadows)">Defs_Shadow_24</include>
+                <fadetime>350</fadetime>
+                <aspectratio scalediffuse="false">scale</aspectratio>
+                <texture>$INFO[Player.Art(fanart)]</texture>
+            </control>
+
+            <control type="image" description="blackline">
+                <width>100%</width>
+                <height>64</height>
+                <bottom>0</bottom>
+                <aspectratio scalediffuse="false">scale</aspectratio>
+                <texture colordiffuse="main_bg_70">common/white.png</texture>
+            </control>
+
+            <control type="image" description="blackline">
+                <height>92</height>
+                <width>92</width>
+                <centertop>50%</centertop>
+                <centerleft>50%</centerleft>
+                <aspectratio scalediffuse="false">keep</aspectratio>
+                <texture colordiffuse="main_bg_70">common/circle.png</texture>
+                <visible>Integer.IsGreater(Player.TimeRemaining,60)</visible>
+            </control>
+            <control type="image" description="blackline">
+                <width>100%</width>
+                <height>64</height>
+                <centertop>25%</centertop>
+                <aspectratio scalediffuse="false">scale</aspectratio>
+                <texture colordiffuse="main_bg_70">common/white.png</texture>
+            </control>
+            <control type="label">
+                <description>StillWatching</description>
+                <centertop>25%</centertop>
+                <centerleft>50%</centerleft>
+                <width>885</width>
+                <font>font_medium_bold</font>
+                <align>center</align>
+                <textcolor>main_fg_100</textcolor>
+                <label>Still Watching?</label>
+            </control>
+            <control type="image" description="blackline">
+                <height>66</height>
+                <width>66</width>
+                <centertop>50%</centertop>
+                <centerleft>50%</centerleft>
+                <aspectratio scalediffuse="false">keep</aspectratio>
+                <texture colordiffuse="main_bg_70">common/circle.png</texture>
+                <visible>!Integer.IsGreater(Player.TimeRemaining,61)</visible>
+            </control>
+            <control type="label">
+                <description>Remaining</description>
+                <centertop>50%</centertop>
+                <centerleft>50%</centerleft>
+                <width>885</width>
+                <font>font_medium_bold</font>
+                <align>center</align>
+                <textcolor>main_fg_100</textcolor>
+                <label>$INFO[Player.TimeRemaining(mm:ss)]</label>
+                <visible>Integer.IsGreater(Player.TimeRemaining,60)</visible>
+            </control>
+            <control type="label">
+                <description>Remaining</description>
+                <centertop>50%</centertop>
+                <centerleft>50%</centerleft>
+                <width>885</width>
+                <font>font_medium_bold</font>
+                <align>center</align>
+                <textcolor>main_fg_100</textcolor>
+                <label>$INFO[Player.TimeRemaining(ss)]</label>
+                <visible>!Integer.IsGreater(Player.TimeRemaining,61)</visible>
+            </control>
+            <control type="label" description="text">
+                <left>20</left>
+                <right>120</right>
+                <height>64</height>
+                <bottom>0</bottom>
+                <aligny>center</aligny>
+                <font>font_tiny</font>
+                <label>$INFO[Control.GetLabel(4000)]</label>
+                <textcolor>Selected</textcolor>
+            </control>
+
+            <control type="button" id="3011">
+                <description>Play</description>
+                <right>64</right>
+                <bottom>8</bottom>
+                <width>48</width>
+                <height>48</height>
+                <label></label>
+                <align>center</align>
+                <aligny>center</aligny>
+                <textoffsetx>0</textoffsetx>
+                <onleft>3011</onleft>
+                <onright>3012</onright>
+                <font>font_tiny_bold</font>
+                <textcolor>main_fg_100</textcolor>
+                <focusedcolor>Selected</focusedcolor>
+                <texturefocus colordiffuse="$VAR[ColorHighlight]" border="5">common/white.png</texturefocus>
+                <texturenofocus colordiffuse="00ffffff" border="5">noop</texturenofocus>
+            </control>
+            <control type="image">
+                <description>Play</description>
+                <right>72</right>
+                <bottom>16</bottom>
+                <width>32</width>
+                <height>32</height>
+                <texture>common/playwhite.png</texture>
+                <aspectratio>keep</aspectratio>
+                <animation effect="fade" start="100" end="50" time="0" condition="!Control.HasFocus(3011)">Conditional</animation>
+            </control>
+            <control type="button" id="3012">
+                <description>Cancel</description>
+                <right>8</right>
+                <bottom>8</bottom>
+                <width>48</width>
+                <height>48</height>
+                <label>X</label>
+                <align>center</align>
+                <aligny>center</aligny>
+                <textoffsetx>0</textoffsetx>
+                <onleft>3011</onleft>
+                <onright>3012</onright>
+                <font>font_tiny_bold</font>
+                <textcolor>main_fg_100</textcolor>
+                <focusedcolor>Selected</focusedcolor>
+                <texturefocus colordiffuse="$VAR[ColorHighlight]" border="5">common/white.png</texturefocus>
+                <texturenofocus colordiffuse="00ffffff" border="5">noop</texturenofocus>
+            </control>
+        </control>
+    </controls>
+</window>

@@ -1,0 +1,10 @@
+Audio filters are used to filter out audio codecs or types that are incompatible with your hardware or you do not want to see in your source results.
+Applying these filters will reduce the amount of sources returned. Only apply filters you need.
+
+Here is the information I had available to me for file types and codecs. If it's wrong, feel free to send me the corrected information.
+
+OPUS - Lossy audio coding format.
+Dolby Digital and all versions - Common audio format used in films. Multiple versions have been produced over the years, commonly use with surround sound and theatre sound systems.
+DTS and all versions - Major competitor to Dolby Digital. Compatible with most hardware.
+MP3 - Common audio format used.
+

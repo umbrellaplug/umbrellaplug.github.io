@@ -1,0 +1,1103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">common/whitesmall.png</texture>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" start="0" end="80" time="200" tween="sine" easing="in" />
+            </animation>
+        </control>
+        <control type="group">
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" start="0" end="100" time="150" tween="sine" easing="in" />
+                <effect type="zoom" start="0" end="100" time="150" center="auto" tween="quadratic" easing="out" />
+            </animation>
+            <left>500</left>
+            <top>325</top>
+            <control type="image">
+                <height>430</height>
+                <width>920</width>
+                <texture border="16" colordiffuse="$INFO[Window.Property(umbrella.backgroundColor)]">common/dialog.png</texture>
+            </control>
+            <control type="image">
+                <height>50</height>
+                <width>920</width>
+                <texture border="16" colordiffuse="$INFO[Window.Property(umbrella.titleBarColor)]">common/dialogtop.png</texture>
+            </control>
+            <control type="image">
+                <left>4</left>
+                <top>4</top>
+                <width>45</width>
+                <height>45</height>
+                <align>left</align>
+                <aligny>top</aligny>
+                <aspectratio aligny="top">keep</aspectratio>
+                <texture colordiffuse="FFCCCCCC">common/icon.png</texture>
+                <visible>String.IsEqual(Window().Property(umbrella.qr),1)+String.IsEqual(Window().Property(umbrella.artwork),0)</visible>
+            </control>
+            <control type="group">
+                <left>5</left>
+                <top>5</top>
+                <control type="image" id="200">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>String.IsEqual(Window().Property(umbrella.qr),1)</visible>
+                </control>
+                <control type="image" id="201">
+                    <left>640</left>
+                    <top>55</top>
+                    <width>250</width>
+                    <height>350</height>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>String.IsEqual(Window().Property(umbrella.artwork),1)</visible>
+                </control>
+                <control type="image" id="2020">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin0.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),0)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2021">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin01.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),01)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2022">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin02.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),02)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2023">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin03.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),03)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2024">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin04.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),04)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2025">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin05.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),05)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2026">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin06.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),06)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2027">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin07.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),07)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2028">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin08.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),08)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2029">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin09.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),09)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2030">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin10.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),10)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2031">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin01.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),11)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2032">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin02.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),12)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2033">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin03.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),13)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2034">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin04.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),14)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2035">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin05.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),15)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2036">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin06.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),16)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2037">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin07.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),17)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2038">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin08.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),18)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2039">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin09.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),19)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2040">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin10.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),20)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2041">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin01.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),21)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2042">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin02.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),22)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2043">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin03.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),23)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2044">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin04.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),24)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2045">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin05.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),25)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2046">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin06.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),26)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2047">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin07.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),27)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2048">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin08.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),28)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2049">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin09.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),29)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2050">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin10.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),30)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2051">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin01.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),31)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2052">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin02.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),32)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2053">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin03.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),33)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2054">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin04.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),34)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2055">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin05.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),35)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2056">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin06.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),36)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2057">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin07.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),37)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2058">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin08.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),38)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2059">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin09.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),39)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2060">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin10.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),40)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2061">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin01.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),41)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2062">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin02.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),42)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2063">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin03.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),43)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2064">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin04.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),44)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2065">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin05.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),45)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2066">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin06.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),46)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2067">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin07.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),47)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2068">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin08.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),48)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2069">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin09.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),49)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2070">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin10.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),50)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2071">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin01.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),51)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2072">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin02.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),52)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2073">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin03.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),53)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2074">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin04.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),54)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2075">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin05.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),55)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2076">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin06.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),56)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2077">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin07.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),57)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2078">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin08.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),58)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2079">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin09.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),59)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2080">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin10.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),60)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2081">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin01.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),61)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2082">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin02.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),62)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2083">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin03.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),63)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2084">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin04.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),64)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2085">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin05.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),65)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2086">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin06.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),66)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2087">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin07.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),67)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2088">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin08.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),68)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2089">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin09.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),69)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2090">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin10.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),70)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2091">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin01.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),71)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2092">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin02.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),72)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2093">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin03.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),73)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2094">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin04.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),74)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2095">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin05.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),75)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2096">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin06.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),76)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2097">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin07.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),77)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2098">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin08.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),78)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2099">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin09.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),79)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2100">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin10.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),80)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2101">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin01.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),81)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2102">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin02.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),82)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2103">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin03.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),83)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2104">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin04.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),84)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2105">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin05.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),85)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2106">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin06.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),86)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2107">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin07.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),87)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2108">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin08.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),88)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2109">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin09.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),89)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2110">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin10.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),90)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2111">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin01.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),91)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2112">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin02.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),92)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2113">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin03.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),93)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2114">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin04.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),94)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2115">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin05.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),95)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2116">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin06.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),96)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2117">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin07.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),97)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2118">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin08.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),98)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2119">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin09.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),99)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="image" id="2120">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/spin10.png</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsEqual(Window().Property(percent),100)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="label" id="2000">
+                    <width>910</width>
+                    <top>5</top>
+                    <left>5</left>
+                    <height>20</height>
+                    <align>center</align>
+                    <font>font16</font>
+                    <textcolor>$INFO[Window.Property(umbrella.titleTextColor)]</textcolor>
+                    <label>[UPPERCASE][B]$INFO[Window.Property(umbrella.label)][/B][/UPPERCASE]</label>
+                </control>
+                <control type="textbox" id="2001">
+                    <top>75</top>
+                    <left>20</left>
+                    <width>600</width>
+                    <height>250</height>
+                    <font>font13</font>
+                    <textcolor>$INFO[Window.Property(umbrella.textColor)]</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                </control>
+                <control type="progress" id="5000">
+                    <description>Progressbar</description>
+                    <top>395</top>
+                    <left>0</left>
+                    <width>910</width>
+                    <height>25</height>
+                    <reveal>true</reveal>
+                    <visible>String.IsEqual(Window().Property(umbrella.qr),1)+Integer.IsGreater(Window().Property(percent),0)</visible>
+                </control>
+            </control>
+        </control>
+    </controls>
+</window>

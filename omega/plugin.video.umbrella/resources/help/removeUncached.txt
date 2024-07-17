@@ -1,0 +1,6 @@
+
+If this option is enabled uncached torrents will be removed from the returned list of sources.  If there
+are no remaining cached torrent sources to display you will be presented with a YesNo dialog to
+confirm if you'd like to review the list of uncached torrents to cache yourself if you do not have the setting to hide the popup set.  If you use
+[B]Source Select[/B], and there are cached torrents to display, you will also have the opertunity to display
+the uncached torrents from a visible top right button.

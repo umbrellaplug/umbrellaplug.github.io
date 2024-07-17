@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol>996</defaultcontrol>
+	<include>Animation_DialogPopupOpenClose</include>
+	<coordinates>
+		<left>0</left>
+		<top>0</top>
+	</coordinates>
+	<controls>
+		<control type="group">
+			<left>735</left>
+			<top>225</top>
+			<include content="DialogBackgroundCommons">
+				<param name="width" value="450" />
+				<param name="height" value="455" />
+				<param name="header_label" value="Context menu" />
+				<param name="header_id" value="" />
+				<param name="diffusetexture" value="masks/addons.png" />
+			</include>
+			<control type="button">
+				<left>-1920</left>
+				<top>-1080</top>
+				<width>5760</width>
+				<height>3240</height>
+				<texturefocus />
+				<texturenofocus />
+				<onclick>Action(close)</onclick>
+			</control>
+			<animation effect="slide" end="0,175" time="0" condition="Window.IsActive(home)">conditional</animation>
+			<control type="grouplist" id="996">
+				<description>grouplist for context buttons</description>
+				<left>0</left>
+				<top>100</top>
+				<width>450</width>
+				<height>325</height>
+				<usecontrolcoords>true</usecontrolcoords>
+			</control>
+			<include content="UpDownArrows">
+				<param name="container_id" value="996" />
+				<param name="posx" value="201" />
+				<param name="up_posy" value="-40" />
+				<param name="down_posy" value="470" />
+			</include>
+			<control type="button" id="1000">
+				<description>button template</description>
+				<left>25</left>
+				<top></top>
+				<width>400</width>
+				<height>65</height>
+				<align>center</align>
+				<textcolor>unfocused_text</textcolor>
+				<focusedcolor>focused_text</focusedcolor>
+				<texturefocus colordiffuse="button_focus">masks/focus.png</texturefocus>
+				<texturenofocus />
+			</control>
+		</control>
+	</controls>
+</window>

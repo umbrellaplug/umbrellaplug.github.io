@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol always="true">52</defaultcontrol>
+	<controls>
+		<include>DefaultBackground</include>
+		<control type="group">
+			<include>Animation_TopSlide</include>
+			<control type="group">
+				<centerleft>50%</centerleft>
+				<top>160</top>
+				<width>250</width>
+				<height>112</height>
+				<control type="image">
+					<left>0</left>
+					<top>0</top>
+					<width>250</width>
+					<height>112</height>
+					<aspectratio aligny="center" align="center">keep</aspectratio>
+					<texture>special://xbmc/media/vendor_logo.png</texture>
+				</control>
+			</control>
+			<control type="textbox">
+				<centerleft>50%</centerleft>
+				<top>220</top>
+				<width>750</width>
+				<height>300</height>
+				<align>center</align>
+				<aligny>center</aligny>
+				<textcolor>99FFFFFF</textcolor>
+				<font>font14</font>
+				<label>$LOCALIZE[31098]</label>
+			</control>
+		</control>
+		<control type="group">
+			<include>Animation_BottomSlide</include>
+			<control type="fixedlist" id="52">
+				<left>0</left>
+				<right>0</right>
+				<top>500</top>
+				<height>300</height>
+				<onleft>52</onleft>
+				<onright>52</onright>
+				<onup>20</onup>
+				<ondown>20</ondown>
+				<focusposition>2</focusposition>
+				<orientation>horizontal</orientation>
+				<scrolltime tween="cubic" easing="out">500</scrolltime>
+				<itemlayout width="384" height="300">
+					<control type="image">
+						<centerleft>50%</centerleft>
+						<top>20</top>
+						<height>200</height>
+						<width>200</width>
+						<texture diffuse="icons/profiles/profile-diffuse.png">$INFO[ListItem.Icon]</texture>
+						<aspectratio scalediffuse="false">scale</aspectratio>
+					</control>
+					<control type="textbox">
+						<left>60</left>
+						<right>60</right>
+						<top>220</top>
+						<height>80</height>
+						<label>$INFO[ListItem.label]</label>
+						<textcolor>unfocused_text</textcolor>
+						<font>font27</font>
+						<align>center</align>
+						<aligny>center</aligny>
+					</control>
+				</itemlayout>
+				<focusedlayout width="384" height="300">
+					<control type="image">
+						<include>FocusBounce</include>
+						<left>40</left>
+						<right>30</right>
+						<width>300</width>
+						<height>300</height>
+						<texture diffuse="masks/addons.png" colordiffuse="button_focus">masks/addons.png</texture>
+						<visible>Control.HasFocus(52)</visible>
+					</control>
+					<control type="image">
+						<centerleft>50%</centerleft>
+						<top>20</top>
+						<height>200</height>
+						<width>200</width>
+						<texture diffuse="icons/profiles/profile-diffuse.png">$INFO[ListItem.Icon]</texture>
+						<aspectratio scalediffuse="false">scale</aspectratio>
+					</control>
+					<control type="textbox">
+						<left>60</left>
+						<right>60</right>
+						<top>220</top>
+						<height>80</height>
+						<label>[B]$INFO[ListItem.label][/B]</label>
+						<textcolor>focused_text</textcolor>
+						<font>font27</font>
+						<align>center</align>
+						<aligny>center</aligny>
+					</control>
+				</focusedlayout>
+			</control>
+			<control type="label">
+				<left>0</left>
+				<right>0</right>
+				<top>860</top>
+				<height>45</height>
+				<font>font25_narrow</font>
+				<textcolor>unfocused_text</textcolor>
+				<align>center</align>
+				<aligny>center</aligny>
+				<label>$INFO[ListItem.label2]</label>
+			</control>
+			<control type="button" id="20">
+				<include>FocusBounce</include>
+				<centerleft>50%</centerleft>
+				<bottom>50</bottom>
+				<width>400</width>
+				<height>100</height>
+				<label>$LOCALIZE[31072]</label>
+				<font>font13</font>
+				<align>center</align>
+				<onclick>ActivateWindow(ShutdownMenu)</onclick>
+				<onleft>52</onleft>
+				<onright>52</onright>
+				<onup>52</onup>
+				<ondown>52</ondown>
+				<texturefocus border="40" colordiffuse="button_focus">masks/categorywidget.png</texturefocus>
+				<texturenofocus border="40" colordiffuse="button_focus2">masks/categorywidget-unfocused.png</texturenofocus>
+			</control>
+		</control>
+		<include>TopBar</include>
+	</controls>
+</window>
