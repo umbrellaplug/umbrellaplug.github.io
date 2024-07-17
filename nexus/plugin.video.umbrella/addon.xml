@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.60">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.6.61">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
 		<import addon="script.module.requests"/>
@@ -180,7 +180,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.6.60 - July 17th, 2024[/B]
+[B]Update - v6.6.61 - July 17th, 2024[/B]
+--[Fix] Fixed broken season flatten.
 --[Change] Added code to use season artwork for unreleased episodes. (discord poll)
 --[Change] Changed Actor search to use tmdb instead of imdb.
 		</news>

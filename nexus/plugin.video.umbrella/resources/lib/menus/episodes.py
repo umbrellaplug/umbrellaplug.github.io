@@ -65,7 +65,6 @@ class Episodes:
 	def get(self, tvshowtitle, year, imdb, tmdb, tvdb, meta, season=None, episode=None, create_directory=True):
 		self.list = []
 		def get_episodes(tvshowtitle, imdb, tmdb, tvdb, meta, season):
-			all_episodes = []
 			episodes = cache.get(self.tmdb_list, 168, tvshowtitle, imdb, tmdb, tvdb, meta, season)
 			if not episodes: pass
 			elif episodes[0]['season_isAiring'] == 'true':

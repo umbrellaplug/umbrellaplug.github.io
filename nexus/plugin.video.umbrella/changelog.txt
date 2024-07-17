@@ -1,3 +1,6 @@
+[B]Update - v6.6.61 - July 17th, 2024[/B]
+--[Fix] Fixed broken season flatten.
+
 [B]Update - v6.6.60 - July 17th, 2024[/B]
 --[Change] Added code to use season artwork for unreleased episodes. (discord poll)
 --[Change] Changed Actor search to use tmdb instead of imdb.
