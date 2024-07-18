@@ -1,3 +1,6 @@
+[B]Update - v6.6.62 - July 18th, 2024[/B]
+--[Fix] Fixed setting for building playlist for next season when playnext was not enabled.
+
 [B]Update - v6.6.61 - July 17th, 2024[/B]
 --[Fix] Fixed broken season flatten.
 

@@ -143,7 +143,7 @@ class Player(xbmc.Player):
 				control.player.play(control.playlist)
 				if self.debuglog:
 					log_utils.log('Played file as playlist.', level=log_utils.LOGDEBUG)
-				if self.multi_season:
+				if self.multi_season and self.enable_playnext:
 					if self.playlist_built == False:
 						log_utils.log('Building Season Playlist platlistAdded and enabled playnext and multi season enabled and playlist_built false.', 1)
 						self.buildSeasonPlaylist(fromEpisode=True)
@@ -154,7 +154,7 @@ class Player(xbmc.Player):
 						self.playlist_built = True
 			else:
 				control.resolve(int(argv[1]), True, item)
-				if self.media_type == 'episode' and self.multi_season and self.playlist_built == False:
+				if self.media_type == 'episode' and self.enable_playnext and self.multi_season and self.playlist_built == False:
 					try:
 						episodeCount = int(meta.get('seasons')[int(season)].get('episode_count'))
 					except:
