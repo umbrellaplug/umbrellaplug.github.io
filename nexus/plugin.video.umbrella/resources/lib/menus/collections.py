@@ -39,10 +39,15 @@ class Collections:
 		if self.tmdb_key == '' or self.tmdb_key is None: self.tmdb_key = 'edde6b5e41246ab79a2697cd125e1781'
 		# self.user = str(self.imdb_user) + str(self.tmdb_key)
 		self.user = str(self.tmdb_key)
-		self.tmdb_link = 'https://api.themoviedb.org/4/list/%s?api_key=%s&sort_by=%s&page=1' % ('%s', self.tmdb_key, self.tmdb_sort())
-		self.tmdbCollection_link = 'https://api.themoviedb.org/3/collection/%s?api_key=%s&page=1' % ('%s', self.tmdb_key) # does not support request sorting
+		use_tmdb = getSetting('tmdb.baseaddress') == 'true'
+		if use_tmdb:
+			tmdb_base = "https://api.tmdb.org"
+		else:
+			tmdb_base = "https://api.themoviedb.org"
+		self.tmdb_link = tmdb_base+'/4/list/%s?api_key=%s&sort_by=%s&page=1' % ('%s', self.tmdb_key, self.tmdb_sort())
+		self.tmdbCollection_link = tmdb_base +'/3/collection/%s?api_key=%s&page=1' % ('%s', self.tmdb_key) # does not support request sorting
 		self.imdb_link = 'https://www.imdb.com/search/title?title=%s&title_type=%s&num_votes=1000,&countries=us&languages=en&sort=%s' % ('%s', '%s', self.imdb_sort())
-		self.tmdbCollectionsSearch_link = 'https://api.themoviedb.org/3/search/collection?api_key=%s&language=en-US&query=%s&page=1' % (self.tmdb_key, '%s')
+		self.tmdbCollectionsSearch_link = tmdb_base+'/3/search/collection?api_key=%s&language=en-US&query=%s&page=1' % (self.tmdb_key, '%s')
 		self.imdblist_hours = int(getSetting('cache.imdblist'))
 		self.hide_watched_in_widget = getSetting('enable.umbrellahidewatched') == 'true'
 		self.useFullContext = getSetting('enable.umbrellawidgetcontext') == 'true'

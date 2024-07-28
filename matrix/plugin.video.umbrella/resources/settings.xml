@@ -4647,6 +4647,10 @@
 				</setting>
 			</group>
 			<group id="2" label="40166">
+				<setting id="tmdb.baseaddress" type="string" label="40524" help="">
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
 				<setting id="tmdb.apikey" type="string" label="40167" help="">
 					<level>0</level>
 					<default/>

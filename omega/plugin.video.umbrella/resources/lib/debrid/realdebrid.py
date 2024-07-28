@@ -471,6 +471,7 @@ class RealDebrid:
 				except: log_utils.error()
 			if match:
 				rd_link = torrent_info['links'][index]
+				log_utils.log('Real-Debrid: rd link being sent: %s' % str(rd_link))
 				file_url = self.unrestrict_link(rd_link)
 				if file_url.endswith('rar'):
 					file_url, failed_reason = None, 'RD returned unsupported .rar file --> %s' % file_url
@@ -662,6 +663,7 @@ class RealDebrid:
 	def add_magnet(self, magnet):
 		try:
 			data = {'magnet': magnet}
+
 			response = self._post(add_magnet_url, data)
 			log_utils.log('Real-Debrid: Sending MAGNET to cloud: %s' % magnet, __name__, log_utils.LOGDEBUG)
 			return response.get('id', "")

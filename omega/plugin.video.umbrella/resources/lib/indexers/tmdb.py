@@ -13,11 +13,21 @@ from resources.lib.database import cache, metacache, fanarttv_cache
 from resources.lib.indexers.fanarttv import FanartTv
 from resources.lib.modules.control import setting as getSetting, notification, sleep, apiLanguage, mpaCountry, openSettings, trailer as control_trailer, yesnoDialog
 
-base_link = "https://api.themoviedb.org/3/"
+
+use_tmdb = getSetting('tmdb.baseaddress') == 'true'
+if use_tmdb:
+    base_link = "https://api.tmdb.org/3/"
+    tmdb_base = "https://api.tmdb.org"
+else:
+	base_link = "https://api.themoviedb.org/3/"
+	tmdb_base = "https://api.themoviedb.org"
 image_path = "https://image.tmdb.org/t/p/%s"
 session = requests.Session()
 retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
-session.mount('https://api.themoviedb.org', HTTPAdapter(max_retries=retries, pool_maxsize=100))
+if use_tmdb:
+    session.mount('https://api.tmdb.org', HTTPAdapter(max_retries=retries, pool_maxsize=100))
+else:
+	session.mount('https://api.themoviedb.org', HTTPAdapter(max_retries=retries, pool_maxsize=100))
 
 
 class TMDb:
@@ -83,7 +93,7 @@ class TMDb:
 			media_type = item.get('list_type')
 			name = item.get('name')
 			list_id =  item.get('id')
-			url = 'https://api.themoviedb.org/4/list/%s?api_key=%s&sort_by=%s&page=1' % (list_id, self.API_key, self.tmdb_sort())
+			url = tmdb_base+'/4/list/%s?api_key=%s&sort_by=%s&page=1' % (list_id, self.API_key, self.tmdb_sort())
 			item = {'media_type': media_type, 'name': name, 'list_id': list_id, 'url': url, 'context': url, 'next': next}
 			list.append(item)
 		return list

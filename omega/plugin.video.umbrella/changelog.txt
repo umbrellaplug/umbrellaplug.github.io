@@ -1,3 +1,8 @@
+[B]Update - v6.6.63 - July 28th, 2024[/B]
+--[Fix] Changed set_info function to no longer unquote paths.
+--[Fix] Fixed bug where trakt lists with same number as limit still showed the next button.
+--[Change] Added ability to use tmdb.org for api calls instead of themoviedb.org.
+
 [B]Update - v6.6.62 - July 18th, 2024[/B]
 --[Fix] Fixed setting for building playlist for next season when playnext was not enabled.
 

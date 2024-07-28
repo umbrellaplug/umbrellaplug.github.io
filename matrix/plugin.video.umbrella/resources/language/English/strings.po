@@ -5038,3 +5038,7 @@ msgstr ""
 msgctxt "#40523"
 msgid "Reset background"
 msgstr ""
+
+msgctxt "#40524"
+msgid "Use tmdb.org instead of themoviedb.org for API"
+msgstr ""
