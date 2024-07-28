@@ -471,7 +471,6 @@ class RealDebrid:
 				except: log_utils.error()
 			if match:
 				rd_link = torrent_info['links'][index]
-				log_utils.log('Real-Debrid: rd link being sent: %s' % str(rd_link))
 				file_url = self.unrestrict_link(rd_link)
 				if file_url.endswith('rar'):
 					file_url, failed_reason = None, 'RD returned unsupported .rar file --> %s' % file_url
