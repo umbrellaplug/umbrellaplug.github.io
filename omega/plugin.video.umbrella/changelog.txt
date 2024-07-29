@@ -1,4 +1,7 @@
-[B]Update - v6.6.63 - July 28th, 2024[/B]
+[B]Update - v6.6.64 - July 29th, 2024[/B]
+--[Fix] Fixed removed function from TMDb movie class.
+
+[B]Update - v6.6.63 - July 27th, 2024[/B]
 --[Fix] Changed set_info function to no longer unquote paths.
 --[Fix] Fixed bug where trakt lists with same number as limit still showed the next button.
 --[Change] Added ability to use tmdb.org for api calls instead of themoviedb.org.
