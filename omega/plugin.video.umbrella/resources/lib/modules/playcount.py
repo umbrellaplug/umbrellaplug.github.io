@@ -9,10 +9,10 @@ tmdb_api_key = 'edde6b5e41246ab79a2697cd125e1781'
 omdb_api_key = 'd4daa2b'
 tvdb_api_key = '06cff30690f9b9622957044f2159ffae'
 traktIndicators = trakt.getTraktIndicatorsInfo()
-if not traktIndicators:
-	try:
-		if not condVisibility('System.HasAddon(script.module.metahandler)'): execute('InstallAddon(script.module.metahandler)', wait=True)
-	except: pass
+#if not traktIndicators:
+#	try:
+#		if not condVisibility('System.HasAddon(script.module.metahandler)'): execute('InstallAddon(script.module.metahandler)', wait=True)
+#	except: pass
 
 
 def getMovieIndicators(refresh=False):
@@ -24,8 +24,10 @@ def getMovieIndicators(refresh=False):
 			indicators = trakt.cachesyncMovies(timeout=timeout)
 			return indicators
 		else:
-			from metahandler import metahandlers
-			indicators = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
+#			from metahandler import metahandlers
+#			indicators = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
+			from resources.lib.database import watchedcache
+			indicators = watchedcache
 			return indicators
 	except:
 		from resources.lib.modules import log_utils
@@ -40,8 +42,10 @@ def getTVShowIndicators(refresh=False):
 			indicators = trakt.cachesyncTVShows(timeout=timeout)
 			return indicators
 		else:
-			from metahandler import metahandlers
-			indicators = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
+#			from metahandler import metahandlers
+#			indicators = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
+			from resources.lib.database import watchedcache
+			indicators = watchedcache
 			return indicators
 	except:
 		from resources.lib.modules import log_utils
@@ -58,8 +62,10 @@ def getSeasonIndicators(imdb, tvdb, refresh=False):
 			indicators = trakt.cachesyncSeasons(imdb, tvdb, timeout=timeout)
 			return indicators
 		else:
-			from metahandler import metahandlers
-			indicators = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
+#			from metahandler import metahandlers
+#			indicators = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
+			from resources.lib.database import watchedcache
+			indicators = watchedcache
 			return indicators
 	except:
 		from resources.lib.modules import log_utils
@@ -73,7 +79,7 @@ def getMovieOverlay(indicators, imdb):
 			playcount = '5' if len(playcount) > 0 else '4'
 			return playcount
 		else: # indicators will be metahandler object
-			playcount = indicators._get_watched('movie', imdb, '', '')
+			playcount = indicators.get_watched('movie', imdb, '')
 			return str(playcount)
 	except:
 		from resources.lib.modules import log_utils
@@ -123,7 +129,7 @@ def getEpisodeOverlay(indicators, imdb, tvdb, season, episode):
 			playcount = '5' if len(playcount) > 0 else '4'
 			return playcount
 		else: # indicators will be metahandler object
-			playcount = indicators._get_watched_episode({'imdb_id': imdb, 'season': season, 'episode': episode, 'premiered': ''})
+			playcount = indicators.get_watched_episode('episode', imdb, '', season=season, episode=episode)
 			return str(playcount)
 	except:
 		from resources.lib.modules import log_utils
@@ -167,10 +173,12 @@ def markMovieDuringPlayback(imdb, watched):
 			else: trakt.markMovieAsNotWatched(imdb)
 			trakt.cachesyncMovies()
 		else:
-			from metahandler import metahandlers
-			metaget = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
-			metaget.get_meta('movie', name='', imdb_id=imdb)
-			metaget.change_watched('movie', name='', imdb_id=imdb, watched=int(watched))
+#			from metahandler import metahandlers
+#			metaget = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
+#			metaget.get_meta('movie', name='', imdb_id=imdb)
+#			metaget.change_watched('movie', name='', imdb_id=imdb, watched=int(watched))
+			from resources.lib.database import watchedcache
+			watchedcache.change_watched('movie', imdb, '', watched=int(watched))
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()
@@ -182,11 +190,13 @@ def markEpisodeDuringPlayback(imdb, tvdb, season, episode, watched):
 			else: trakt.markEpisodeAsNotWatched(imdb, tvdb, season, episode)
 			trakt.cachesyncTV(imdb, tvdb) # updates all watched shows, as well as season indicators and counts for given ID of show
 		else:
-			from metahandler import metahandlers
-			metaget = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
-			metaget.get_meta('tvshow', name='', imdb_id=imdb)
-			metaget.get_episode_meta('', imdb_id=imdb, season=season, episode=episode)
-			metaget.change_watched('episode', '', imdb_id=imdb, season=season, episode=episode, watched=int(watched))
+#			from metahandler import metahandlers
+#			metaget = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
+#			metaget.get_meta('tvshow', name='', imdb_id=imdb)
+#			metaget.get_episode_meta('', imdb_id=imdb, season=season, episode=episode)
+#			metaget.change_watched('episode', '', imdb_id=imdb, season=season, episode=episode, watched=int(watched))
+			from resources.lib.database import watchedcache
+			watchedcache.change_watched('episode', imdb, '', season=season, episode=episode, watched=int(watched))
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()
@@ -197,10 +207,12 @@ def movies(name, imdb, watched):
 			if int(watched) == 5: trakt.watch(content_type='movie', name=name, imdb=imdb, refresh=True)
 			else: trakt.unwatch(content_type='movie', name=name, imdb=imdb, refresh=True)
 		else:
-			from metahandler import metahandlers
-			metaget = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
-			metaget.get_meta('movie', name=name, imdb_id=imdb)
-			metaget.change_watched('movie', name=name, imdb_id=imdb, watched=int(watched))
+#			from metahandler import metahandlers
+#			metaget = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
+#			metaget.get_meta('movie', name=name, imdb_id=imdb)
+#			metaget.change_watched('movie', name=name, imdb_id=imdb, watched=int(watched))
+			from resources.lib.database import watchedcache
+			watchedcache.change_watched('movie', imdb, '', title=name, watched=int(watched))
 			containerRefresh()
 	except:
 		from resources.lib.modules import log_utils
@@ -258,13 +270,16 @@ def episodes(name, imdb, tvdb, season, episode, watched):
 			if int(watched) == 5: trakt.watch(content_type='episode', name=name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=True)
 			else: trakt.unwatch(content_type='episode', name=name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=True)
 		else:
-			from metahandler import metahandlers
-			metaget = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
-			show_meta = metaget.get_meta('tvshow', name=name, imdb_id=imdb)
-			episode_meta = metaget.get_episode_meta(name, imdb_id=imdb, season=season, episode=episode)
-			metaget.change_watched('episode', '', imdb_id=imdb, season=season, episode=episode, watched=int(watched))
+#			from metahandler import metahandlers
+#			metaget = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
+#			show_meta = metaget.get_meta('tvshow', name=name, imdb_id=imdb)
+#			episode_meta = metaget.get_episode_meta(name, imdb_id=imdb, season=season, episode=episode)
+#			metaget.change_watched('episode', '', imdb_id=imdb, season=season, episode=episode, watched=int(watched))
+			from resources.lib.database import watchedcache
+			watchedcache.change_watched('episode', imdb, '', season=season, episode=episode, title=name, watched=int(watched))
 			# watched_episodes = metaget._get_watched_episode({'imdb_id': imdb, 'season': season, 'episode': episode, 'premiered': ''})
-			watched_episodes = metaget._get_watched_episode({'imdb_id': imdb, 'tvdb_id': tvdb, 'season': season, 'episode': episode, 'premiered': ''})
+#			watched_episodes = metaget._get_watched_episode({'imdb_id': imdb, 'tvdb_id': tvdb, 'season': season, 'episode': episode, 'premiered': ''})
+			# tvshowsUpdate(imdb=imdb, tvdb=tvdb) # control.refresh() done in this function
 			containerRefresh()
 			# tvshowsUpdate(imdb=imdb, tvdb=tvdb) # control.refresh() done in this function
 	except:

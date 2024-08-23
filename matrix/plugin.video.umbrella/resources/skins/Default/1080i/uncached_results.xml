@@ -171,7 +171,7 @@
 						<aligny>center</aligny>
 						<aspectratio>keep</aspectratio>
 						<texture>$INFO[ListItem.Property(umbrella.quality_icon)]</texture>
-						<visible>!String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+						<visible>String.IsEqual(Window().Property(umbrella.usecoloricons),0)</visible>
 					</control>
 					<control type="image">
 						<description>Quality Icon RD</description>
@@ -287,7 +287,7 @@
 						<aligny>center</aligny>
 						<aspectratio>keep</aspectratio>
 						<texture>$INFO[ListItem.Property(umbrella.quality_icon)]</texture>
-						<visible>!String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+						<visible>String.IsEqual(Window().Property(umbrella.usecoloricons),0)</visible>
 					</control>
 					<control type="image">
 						<description>Quality Icon RD</description>

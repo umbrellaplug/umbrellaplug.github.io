@@ -1657,7 +1657,7 @@ class TVshows:
 				meta.update({'poster': poster, 'fanart': fanart, 'banner': banner, 'thumb': thumb, 'icon': icon})
 				sysmeta, sysart = quote_plus(jsdumps(meta)), quote_plus(jsdumps(art))
 				if flatten > 0:
-					total_seasons = meta.get('total_seasons')
+					total_seasons = meta.get('total_seasons') or 2
 					if flatten == 2 and total_seasons < 2: url = '%s?action=episodes&tvshowtitle=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&meta=%s' % (sysaddon, systitle, year, imdb, tmdb, tvdb, sysmeta)
 					elif flatten == 1: url = '%s?action=episodes&tvshowtitle=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&meta=%s' % (sysaddon, systitle, year, imdb, tmdb, tvdb, sysmeta)
 					else: url = '%s?action=seasons&tvshowtitle=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&art=%s' % (sysaddon, systitle, year, imdb, tmdb, tvdb, sysart)
@@ -1773,7 +1773,8 @@ class TVshows:
 				if 'imdb.com' in url and 'start' in url_params:
 					page = '  [I](%s)[/I]' % str(int(((int(url_params.get('start')) - 1) / int(self.page_limit)) + 1))
 				else: page = '  [I](%s)[/I]' % url_params.get('page')
-				nextMenu = '[COLOR skyblue]' + nextMenu + page + '[/COLOR]'
+				nextColor = '[COLOR %s]' % getSetting('highlight.color')
+				nextMenu = nextColor + nextMenu + page + '[/COLOR]'
 				u = urlparse(url).netloc.lower()
 				if u in self.imdb_link or u in self.trakt_link:
 					url = '%s?action=tvshowPage&url=%s&folderName=%s' % (sysaddon, quote_plus(url), quote_plus(folderName))
@@ -1863,7 +1864,8 @@ class TVshows:
 			url_params = dict(parse_qsl(urlsplit(url).query))
 			nextMenu = getLS(32053)
 			page = '  [I](%s)[/I]' % url_params.get('page')
-			nextMenu = '[COLOR skyblue]' + nextMenu + page + '[/COLOR]'
+			nextColor = '[COLOR %s]' % getSetting('highlight.color')
+			nextMenu = nextColor + nextMenu + page + '[/COLOR]'
 			icon = control.addonNext()
 			url = '%s?action=tv_PublicLists&url=%s' % (sysaddon, quote_plus(url))
 			item = control.item(label=nextMenu, offscreen=True)

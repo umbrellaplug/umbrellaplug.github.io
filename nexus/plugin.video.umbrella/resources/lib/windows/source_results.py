@@ -5,7 +5,7 @@
 
 from json import dumps as jsdumps
 from urllib.parse import quote_plus
-from resources.lib.modules.control import joinPath, transPath, dialog, notification, addonFanart, setting as getSetting
+from resources.lib.modules.control import joinPath, transPath, dialog, notification, addonFanart, setting as getSetting, getProviderColors
 from resources.lib.modules import tools
 from resources.lib.windows.base import BaseDialog
 
@@ -20,8 +20,8 @@ class SourceResultsXML(BaseDialog):
 		self.meta = kwargs.get('meta')
 		self.defaultbg = addonFanart()
 		self.dnlds_enabled = True if getSetting('downloads') == 'true' and (getSetting('movie.download.path') != '' or getSetting('tv.download.path') != '') else False
-		self.useProviderColors = True if kwargs.get('colors')['useproviders'] == True else False
-		self.colors = kwargs.get('colors')
+		self.colors = getProviderColors()
+		self.useProviderColors = True if self.colors['useproviders'] == True else False
 		self.sourceHighlightColor = self.colors['defaultcolor']
 		self.realdebridHighlightColor = self.colors['realdebrid']
 		self.alldebridHighlightColor = self.colors['alldebrid']
@@ -290,6 +290,7 @@ class SourceResultsXML(BaseDialog):
 				duration = int(self.meta.get('duration')) / 60
 				self.setProperty('umbrella.duration', str(int(duration)))
 			else: self.setProperty('umbrella.duration', 'NA ')
+			self.setProperty('umbrella.uncached_results', 'true' if self.uncached else 'false')
 			self.setProperty('umbrella.total_results', self.total_results)
 			self.setProperty('umbrella.highlight.color', self.highlight_color)
 			self.setProperty('umbrella.dialog.color', self.dialogColor)

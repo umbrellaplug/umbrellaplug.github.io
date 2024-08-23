@@ -1644,9 +1644,6 @@ class Movies:
 							from resources.lib.modules import log_utils
 							log_utils.error()
 						try:
-							if control.setting('debug.level') == '1':
-								from resources.lib.modules import log_utils
-								log_utils.log('Getting Movies from cached database list.', level=log_utils.LOGDEBUG)
 							sameGenreMoviesSelect = dbcur.execute('''SELECT * FROM movies WHERE %s;'''% localCache).fetchall()
 							if not sameGenreMoviesSelect: 
 								return
@@ -2116,7 +2113,8 @@ class Movies:
 				elif 'www.imdb.com/movies-coming-soon/' in url: page = '  [I](%s)[/I]' % re.search(r'(\d{4}-\d{2})', url).group(1)
 				else: page = '  [I](%s)[/I]' % url_params.get('page')
 				if 'None' in page: page = page.split('  [I]')[0]
-				nextMenu = '[COLOR skyblue]' + nextMenu + page + '[/COLOR]'
+				nextColor ='[COLOR %s]' % getSetting('highlight.color')
+				nextMenu = nextColor + nextMenu + page + '[/COLOR]'
 				u = urlparse(url).netloc.lower()
 				if u not in self.tmdb_link: url = '%s?action=moviePage&url=%s&folderName=%s' % (sysaddon, quote_plus(url), quote_plus(folderName))
 				elif u in self.tmdb_link: url = '%s?action=tmdbmoviePage&url=%s&folderName=%s' % (sysaddon, quote_plus(url), quote_plus(folderName))
@@ -2208,7 +2206,8 @@ class Movies:
 			url_params = dict(parse_qsl(urlsplit(url).query))
 			nextMenu = getLS(32053)
 			page = '  [I](%s)[/I]' % url_params.get('page')
-			nextMenu = '[COLOR skyblue]' + nextMenu + page + '[/COLOR]'
+			nextColor = '[COLOR %s]' % getSetting('highlight.color')
+			nextMenu = nextColor +nextMenu + page  + '[/COLOR]'
 			icon = control.addonNext()
 			url = '%s?action=movies_PublicLists&url=%s' % (sysaddon, quote_plus(url))
 			item = control.item(label=nextMenu, offscreen=True)

@@ -5,7 +5,7 @@
 
 from json import dumps as jsdumps
 from urllib.parse import quote_plus
-from resources.lib.modules.control import joinPath, transPath, dialog, getProviderHighlightColor, addonFanart, notification, setting as getSetting
+from resources.lib.modules.control import joinPath, transPath, dialog, getProviderHighlightColor, addonFanart, notification, setting as getSetting, getProviderColors
 from resources.lib.modules.source_utils import getFileType
 from resources.lib.modules import tools
 from resources.lib.windows.base import BaseDialog
@@ -19,8 +19,8 @@ class UncachedResultsXML(BaseDialog):
 		self.total_results = str(len(self.uncached))
 		self.meta = kwargs.get('meta')
 		self.defaultbg = addonFanart()
-		self.useProviderColors = True if kwargs.get('colors')['useproviders'] == "True" else False
-		self.colors = kwargs.get('colors')
+		self.colors = getProviderColors()
+		self.useProviderColors = True if self.colors['useproviders'] == True else False
 		self.sourceHighlightColor = self.colors['defaultcolor']
 		self.realdebridHighlightColor = self.colors['realdebrid']
 		self.alldebridHighlightColor = self.colors['alldebrid']

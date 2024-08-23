@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from resources.lib.windows.base import BaseDialog
-from resources.lib.modules.control import darkColor, setting as getSetting, log
+from resources.lib.modules.control import isDarkColor, setting as getSetting, log
 
 
 class TextViewerXML(BaseDialog):
@@ -14,7 +14,7 @@ class TextViewerXML(BaseDialog):
 		self.buttonColor = getSetting('dialogs.button.color')
 		self.customBackgroundColor = getSetting('dialogs.customcolor')
 		log('customBackgroundColor: %s' % self.customBackgroundColor,1)
-		self.dark_text_background = darkColor(self.customBackgroundColor)
+		self.dark_text_background = isDarkColor(self.customBackgroundColor)
 		self.useCustomTitleColor = getSetting('dialogs.usecolortitle') == 'true'
 		self.customTitleColor = getSetting('dialogs.titlebar.color')
 
@@ -38,13 +38,13 @@ class TextViewerXML(BaseDialog):
 			#need to use a custom titlebar color
 			self.setProperty('umbrella.titleBarColor', self.customTitleColor)
 			log('customTitleColor: %s' % self.customTitleColor,1)
-			if darkColor(self.customTitleColor) == 'dark':
+			if isDarkColor(self.customTitleColor):
 				self.setProperty('umbrella.titleTextColor', 'FFF5F5F5')
 			else:
 				self.setProperty('umbrella.titleTextColor', 'FF302F2F')
 			self.setProperty('umbrella.headertextcolor', self.customTitleColor)
 		log('button color: %s '% self.buttonColor,1)
-		if darkColor(self.buttonColor) == 'dark':
+		if isDarkColor(self.buttonColor):
 			self.setProperty('umbrella.buttonTextColor', 'FFF5F5F5')
 		else:
 			self.setProperty('umbrella.buttonTextColor', 'FF302F2F')

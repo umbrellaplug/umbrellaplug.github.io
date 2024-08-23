@@ -191,18 +191,6 @@
 				<orientation>Vertical</orientation>
 				<itemlayout height="100" width="1325">
 					<control type="image">
-						<description>Quality Icon</description>
-						<left>0</left>
-						<top>0</top>
-						<width>100</width>
-						<height>100</height>
-						<align>left</align>
-						<aligny>center</aligny>
-						<aspectratio>keep</aspectratio>
-						<texture>$INFO[ListItem.Property(umbrella.quality_icon)]</texture>
-						<visible>!String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
-					</control>
-					<control type="image">
 						<description>Quality Icon RD</description>
 						<left>0</left>
 						<top>0</top>
@@ -271,6 +259,18 @@
 						<align>left</align>
 						<texture colordiffuse="$INFO[Window().Property(umbrella.filepursuitcolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
 						<visible>String.Contains(ListItem.Property(umbrella.provider),FILEPURSUIT)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)+String.Contains(ListItem.Property(umbrella.source),DIRECT)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<aligny>center</aligny>
+						<aspectratio>keep</aspectratio>
+						<texture>$INFO[ListItem.Property(umbrella.quality_icon)]</texture>
+						<visible>String.IsEqual(Window().Property(umbrella.usecoloricons),0)</visible>
 					</control>
 					<control type="label">
 						<description>Line1 link name</description>
@@ -402,7 +402,7 @@
 						<align>left</align>
 						<aspectratio>keep</aspectratio>
 						<texture>$INFO[ListItem.Property(umbrella.quality_icon)]</texture>
-						<visible>!String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+						<visible>String.IsEqual(Window().Property(umbrella.usecoloricons),0)</visible>
 					</control>
 					<control type="image">
 						<description>Quality Icon RD</description>

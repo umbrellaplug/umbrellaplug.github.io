@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <!-- background -->
+        <control type="group">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <visible>!String.IsEqual(Window.Property(umbrella.icononly),true)+!String.IsEqual(Window.Property(umbrella.isHidden),true)</visible>
+            <control type="image">
+                <description>background</description>
+                <texture>common/black.png</texture>
+            </control>
+            <control type="image">
+                <texture background="true">$INFO[Window.Property(umbrella.fanart)]</texture>
+                <animation effect="fade" start="20" end="20" time="0">WindowOpen</animation>
+            </control>
+        </control>
+        <control type="image"> 
+        <!-- top right icon -->
+            <left>360r</left>
+            <top>15</top>
+            <width>50</width>
+            <height>50</height>
+            <texture>common/spinner.gif</texture>
+            <animation effect="fade" start="80" end="80" time="0">WindowOpen</animation>
+            <visible>String.IsEqual(Window.Property(umbrella.icononly),true)+!String.IsEqual(Window.Property(umbrella.isHidden),true)</visible>
+        </control>
+        <control type="label">
+        <!-- press cancel to go back -->
+            <left>300r</left>
+            <top>30</top>
+            <width>380</width>
+            <height>20</height>
+            <font>font12</font>
+            <label>[UPPERCASE]$ADDON[plugin.video.umbrella 40337][/UPPERCASE]</label>
+            <animation effect="fade" start="80" end="80" time="0">WindowOpen</animation>
+            <visible>!String.IsEqual(Window.Property(umbrella.icononly),true)+!String.IsEqual(Window.Property(umbrella.isHidden),true)</visible>
+        </control>
+        <control type="image">
+        <!-- clearlogo -->
+            <height>310</height>
+            <width min="0" max="1120">auto</width>
+            <top>100</top>
+            <centerleft>50%</centerleft>
+            <aspectratio>keep</aspectratio>
+            <texture background="true">$INFO[Window.Property(umbrella.clearlogo)]</texture>
+            <animation effect="fade" start="80" end="80" time="0">WindowOpen</animation>
+            <visible>!String.IsEqual(Window.Property(umbrella.icononly),true)+!String.IsEqual(Window.Property(umbrella.isHidden),true)</visible>
+        </control>
+        <control type="image" id="2220">
+        <!-- spinner gif -->
+            <left>10</left>
+            <top>15</top>
+            <width>75</width>
+            <height>75</height>
+            <aspectratio>keep</aspectratio>
+            <texture>common/spinner.gif</texture>
+            <animation effect="fade" start="20" end="20" time="0">WindowOpen</animation>
+            <aspectratio>keep</aspectratio>
+            <visible>Integer.IsGreater(Window().Property(percent),0)+!String.IsEqual(Window.Property(umbrella.icononly),true)+!String.IsEqual(Window.Property(umbrella.isHidden),true)</visible>
+        </control>
+        <control type="group">
+        <!-- textbox control 2001 for text -->
+            <visible>!String.IsEqual(Window.Property(umbrella.icononly),true)+!String.IsEqual(Window.Property(umbrella.isHidden),true)</visible>
+            <control type="textbox" id="2001">
+                <top>560</top>
+                <centerleft>50%</centerleft>
+                <width>840</width>
+                <height>800</height>
+                <font>font12</font>
+                <align>center</align>
+                <textcolor>FFB7B4BB</textcolor>
+            </control>
+            <!-- <control type="progress" id="5000">
+                <top>815</top>
+                <centerleft>50%</centerleft>
+                <width>480</width>
+                <height>25</height>
+                <reveal>true</reveal>
+            </control> -->
+        </control>
+    </controls>
+</window>

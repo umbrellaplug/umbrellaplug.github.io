@@ -6,11 +6,10 @@
 from datetime import datetime, timedelta
 from json import dumps as jsdumps, loads as jsloads
 import re
-import _strptime # import _strptime to workaround python 2 bug with threads
 from sys import exit as sysexit
 from threading import Thread
 from time import time
-from urllib.parse import unquote, urlencode, quote_plus
+from urllib.parse import unquote, quote_plus
 from sqlite3 import dbapi2 as database
 from resources.lib.database import metacache, providerscache
 from resources.lib.modules import cleandate
@@ -42,42 +41,28 @@ class Sources:
 		self.all_providers = all_providers
 		self.custom_query = custom_query
 		self.filterless_scrape = filterless_scrape
-		self.rescrapeAll = rescrapeAll
 		self.time = datetime.now()
 		self.getConstants()
 		self.enable_playnext = getSetting('enable.playnext') == 'true'
 		self.dev_mode = getSetting('dev.mode.enable') == 'true'
 		self.dev_disable_single = getSetting('dev.disable.single') == 'true'
-		self.useTitleSubs = getSetting('sources.useTitleSubs') == 'true'
 		# self.dev_disable_single_filter = getSetting('dev.disable.single.filter') == 'true'
-		
 		self.dev_disable_season_packs = getSetting('dev.disable.season.packs') == 'true'
 		self.dev_disable_season_filter = getSetting('dev.disable.season.filter') == 'true'
 		self.dev_disable_show_packs = getSetting('dev.disable.show.packs') == 'true'
 		self.dev_disable_show_filter = getSetting('dev.disable.show.filter') == 'true'
+		self.highlight_color = getSetting('scraper.dialog.color')
+		
+		self.rescrapeAll = rescrapeAll
+		self.retryallsources = getSetting('sources.retryall') == 'true'
 		self.uncached_nopopup = getSetting('sources.nocachepopup') == 'true'
-		self.highlight_color = getSetting('highlight.color')
-		self.sourceHighlightColor = getSetting('sources.highlight.color')
-		self.realdebridHighlightColor = control.getProviderHighlightColor('real-debrid')
-		self.alldebridHighlightColor = control.getProviderHighlightColor('alldebrid')
-		self.premiumizeHighlightColor = control.getProviderHighlightColor('premiumize.me')
-		self.easynewsHighlightColor = control.getProviderHighlightColor('easynews')
-		self.plexHighlightColor = control.getProviderHighlightColor('plexshare')
-		self.gdriveHighlightColor = control.getProviderHighlightColor('gdrive')
-		self.filePursuitHighlightColor = control.getProviderHighlightColor('filepursuit')
-		self.useProviders = True if getSetting('sources.highlightmethod') == '1' else False
-		self.providerColors = {"useproviders": self.useProviders, "defaultcolor": self.sourceHighlightColor, "realdebrid": self.realdebridHighlightColor, "alldebrid": self.alldebridHighlightColor, "premiumize": self.premiumizeHighlightColor, "easynews": self.easynewsHighlightColor, "plexshare": self.plexHighlightColor, "gdrive": self.gdriveHighlightColor, "filepursuit": self.filePursuitHighlightColor}
 		self.providercache_hours = int(getSetting('cache.providers'))
 		self.debuglog = control.setting('debug.level') == '1'
-		self.retryallsources = getSetting('sources.retryall') == 'true'
 		self.external_module = getSetting('external_provider.module')
+		self.isHidden = getSetting('progress.dialog') == '4'
+		self.useTitleSubs = getSetting('sources.useTitleSubs') == 'true'
 
 	def play(self, title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, meta, select, rescrape=None):
-		self.premiered = premiered
-		try:
-			control.checkPlayNextEpisodes()
-		except:
-			log_utils.error()
 		if not self.prem_providers:
 			control.sleep(200) ; control.hide()
 			return control.notification(message=33034)
@@ -228,6 +213,7 @@ class Sources:
 				filter += [i for i in items if i not in uncached_items]
 				if filter: pass
 				elif not filter:
+					homeWindow.clearProperty('umbrella.window_keep_alive')
 					if not self.uncached_nopopup:
 						if control.yesnoDialog('No cached torrents returned. Would you like to view the uncached torrents to cache yourself?', '', ''):
 							control.cancelPlayback()
@@ -275,7 +261,6 @@ class Sources:
 
 	def sourceSelect(self, title, items, uncached_items, meta):
 		try:
-			from resources.lib.windows.source_results import SourceResultsXML
 			control.hide()
 			control.playlist.clear()
 			if not items:
@@ -382,13 +367,18 @@ class Sources:
 				uncached_items = self.sort_byQuality(source_list=uncached_items)
 			if items == uncached_items:
 				from resources.lib.windows.uncached_results import UncachedResultsXML
-				window = UncachedResultsXML('uncached_results.xml', control.addonPath(control.addonId()), uncached=uncached_items, meta=self.meta, colors=self.providerColors)
-			else: window = SourceResultsXML('source_results.xml', control.addonPath(control.addonId()), results=items, uncached=uncached_items, meta=self.meta, colors=self.providerColors)
+				window = UncachedResultsXML('uncached_results.xml', control.addonPath(control.addonId()), uncached=uncached_items, meta=self.meta)
+			else:
+				from resources.lib.windows.source_results import SourceResultsXML
+				window = SourceResultsXML('source_results.xml', control.addonPath(control.addonId()), results=items, uncached=uncached_items, meta=self.meta)
 			action, chosen_source = window.run()
 			del window
 			if action == 'play_Item' and self.uncached_chosen != True:
 				return self.playItem(title, items, chosen_source.getProperty('umbrella.source_dict'), self.meta)
 			else:
+				homeWindow.clearProperty('umbrella.window_keep_alive')
+				try: self.window.close()
+				except: pass
 				control.cancelPlayback()
 		except:
 			log_utils.error('Error sourceSelect(): ')
@@ -413,35 +403,36 @@ class Sources:
 					resolve_items = [i for i in chosen_source + sources_next + sources_prev]
 			except: log_utils.error()
 			try:
-				resolvePoster = meta.get('poster')
+				poster = meta.get('poster')
 			except:
-				resolvePoster = None
+				poster = ''
 			header = homeWindow.getProperty(self.labelProperty) + ': Resolving...'
-			if getSetting('progress.dialog') == '0':
-				if getSetting('dialogs.useumbrelladialog') == 'true':
-					progressDialog = control.getProgressWindow(header, resolvePoster, 0,1)
-					progressDialog.set_controls()
-				else:
-					progressDialog = control.progressDialog
-					progressDialog.create(header,'')
-			if getSetting('progress.dialog') == '1':
+			try:
+				if getSetting('progress.dialog') == '0':
+					progressDialog = control.getProgressWindow(header, icon=poster)
+				elif getSetting('progress.dialog') in ('2', '3', '4'):
+					if homeWindow.getProperty('umbrella.window_keep_alive') != 'true':
+						progressDialog = self.getWindowProgress(title, meta)
+						Thread(target=self.window_monitor, args=(progressDialog,)).start()
+					else: progressDialog = self.window
+				else: raise Exception()
+			except:
+				homeWindow.clearProperty('umbrella.window_keep_alive')
 				progressDialog = control.progressDialogBG
 				progressDialog.create(header, '')
-			if getSetting('progress.dialog') == '2':
-				progressDialog = self.getProcessResolver(title, meta)
-			if getSetting('progress.dialog') == '3' or getSetting('progress.dialog') == '4':
-				progressDialog = self.getIconProgress()
 			for i in range(len(resolve_items)):
 				try:
 					resolve_index = items.index(resolve_items[i])+1
 					src_provider = resolve_items[i]['debrid'] if resolve_items[i].get('debrid') else ('%s - %s' % (resolve_items[i]['source'], resolve_items[i]['provider']))
 					if getSetting('progress.dialog') == '0':
-						if getSetting('dialogs.useumbrelladialog') == 'true':
-							label = '[COLOR %s]%s[CR]%s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), resolve_items[i]['provider'].upper(), resolve_items[i]['info'])
-						else:
-							label = '[COLOR %s]%s[CR]%02d - %s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), resolve_index, resolve_items[i]['name'], str(round(resolve_items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
-					elif getSetting('progress.dialog') == '2':
 						label = '[COLOR %s]%s[CR]%s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), resolve_items[i]['provider'].upper(), resolve_items[i]['info'])
+					elif getSetting('progress.dialog') == '2':
+						resolveInfo = resolve_items[i]['info'].replace('/',' ')
+						if meta.get('plot'):
+							plotLabel = '[COLOR %s]%s[/COLOR][CR][CR]' %  (getSetting('sources.highlight.color'),meta.get('plot'))
+						else:
+							plotLabel = ''
+						label = plotLabel + '[COLOR %s]%s[CR]%s[CR]%s[CR]%s[CR]%02d - %s[/COLOR]' % (self.highlight_color, src_provider.upper(), resolve_items[i]['provider'].upper(), resolve_items[i]['quality'].upper(), resolveInfo, resolve_index, resolve_items[i]['name'][:30])
 					else:
 						label = '[COLOR %s]%s[CR]%02d - %s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), resolve_index, resolve_items[i]['name'], str(round(resolve_items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
 					control.sleep(100)
@@ -449,7 +440,7 @@ class Sources:
 						if progressDialog.iscanceled(): break
 						progressDialog.update(int((100 / float(len(resolve_items))) * i), label)
 					except: 
-							progressDialog.update(int((100 / float(len(resolve_items))) * i), '[COLOR %s]Resolving...[/COLOR]%s' % (self.highlight_color, resolve_items[i]['name']))
+						progressDialog.update(int((100 / float(len(resolve_items))) * i), '[COLOR %s]Resolving...[/COLOR]%s' % (self.highlight_color, resolve_items[i]['name']))
 					w = Thread(target=self.sourcesResolve, args=(resolve_items[i],))
 					w.start()
 					for x in range(40):
@@ -469,9 +460,10 @@ class Sources:
 					if not any(x in self.url.lower() for x in video_extensions) and 'plex.direct:' not in self.url:
 						log_utils.log('Playback not supported for (playItem()): %s' % self.url, level=log_utils.LOGWARNING)
 						continue
-					try: progressDialog.close()
-					except: pass
-					del progressDialog
+					if homeWindow.getProperty('umbrella.window_keep_alive') != 'true':
+						try: progressDialog.close()
+						except: pass
+						del progressDialog
 					from resources.lib.modules import player
 					player.Player().play_source(title, self.year, self.season, self.episode, self.imdb, self.tmdb, self.tvdb, self.url, meta)
 					return self.url
@@ -483,6 +475,7 @@ class Sources:
 		except: log_utils.error('Error playItem: ')
 
 	def getSources(self, title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, meta=None, preScrape=False):
+		self.window = None
 		if preScrape:
 			self.isPrescrape = True
 			if tvshowtitle is not None:
@@ -583,24 +576,22 @@ class Sources:
 				except: log_utils.error()
 			#progressDialog = control.progressDialog if getSetting('progress.dialog') == '0' else control.progressDialogBG
 			header = homeWindow.getProperty(self.labelProperty) + ': Scraping...'
-			if getSetting('progress.dialog') == '0':
-				if getSetting('dialogs.useumbrelladialog') == 'true':
-					progressDialog = control.getProgressWindow(header, None, 0, 0)
-					progressDialog.set_controls()
-				else:
-					progressDialog = control.progressDialog
-					progressDialog.create(header,'')
-			if getSetting('progress.dialog') == '1':
+			try:
+				if getSetting('progress.dialog') == '0':
+					progressDialog = control.getProgressWindow(header, icon='')
+					debrid_message = '[COLOR %s][B]Please wait...[CR]Checking Providers[/B][/COLOR]' % self.highlight_color
+				elif getSetting('progress.dialog') in ('2', '3','4'):
+					try: meta = self.meta
+					except: meta = {'title': title, 'year': year, 'imdb': imdb, 'tvdb': tvdb, 'season': season, 'episode': episode, 'tvshowtitle': tvshowtitle}
+					progressDialog = self.getWindowProgress(title, meta)
+					Thread(target=self.window_monitor, args=(progressDialog,)).start()
+					debrid_message = '[COLOR %s][B]Please wait...[CR]Checking Providers[/B][/COLOR]' % self.highlight_color
+				else: raise Exception()
+			except:
+				homeWindow.clearProperty('umbrella.window_keep_alive')
 				progressDialog = control.progressDialogBG
 				progressDialog.create(header, '')
-			if getSetting('progress.dialog') == '2':
-				try:
-					prometa = self.meta
-				except:
-					prometa = None
-				progressDialog = self.getProgressScraper(title, year, imdb, tvdb, season, episode, prometa)
-			if getSetting('progress.dialog') == '3' or getSetting('progress.dialog') == '4':
-				progressDialog = self.getIconProgress()
+				debrid_message = '[COLOR %s][B]Please wait...  Checking Providers[/B][/COLOR]' % self.highlight_color
 			self.prepareSources()
 			sourceDict = self.sourceDict
 			progressDialog.update(0, getLS(32600)) # preparing sources
@@ -643,7 +634,7 @@ class Sources:
 					elif pack == 'show': name = '%s (show pack)' % name
 					threads_append(Thread(target=self.getEpisodeSource, args=(imdb, season, episode, data, i[0], i[1], pack), name=name))
 			[i.start() for i in threads]
-			sdc = getSetting('scraper.dialog.color')
+			sdc = getSetting('sources.highlight.color')
 			string1 = getLS(32404) % (self.highlight_color, sdc, '%s') # msgid "[COLOR %s]Time elapsed:[/COLOR]  [COLOR %s]%s seconds[/COLOR]"
 			string3 = getLS(32406) % (self.highlight_color, sdc, '%s') # msgid "[COLOR %s]Remaining providers:[/COLOR] [COLOR %s]%s[/COLOR]"
 			string4 = getLS(32407) % (self.highlight_color, sdc, '%s') # msgid "[COLOR %s]Unfiltered Total: [/COLOR]  [COLOR %s]%s[/COLOR]"
@@ -686,7 +677,8 @@ class Sources:
 			try:
 				if control.monitor.abortRequested(): return sysexit()
 				try:
-					if progressDialog.iscanceled(): break
+					if progressDialog.iscanceled(): 
+						break
 				except: pass
 
 				if terminate_onCloud:
@@ -727,18 +719,15 @@ class Sources:
 				try:
 					info = [x.getName() for x in threads if x.is_alive() is True]
 					line1 = pdiag_format % (source_4k_label, source_1080_label, source_720_label, source_sd_label)
-					line2 = string4 % source_total_label + '     ' + string1 % round(time() - start_time, 1)
+					#line2 = string4 % source_total_label + '     ' + string1 % round(time() - start_time, 1)
+					line2 = string1 % round(time() - start_time, 1)
 					if len(info) > 6: line3 = string3 % str(len(info))
 					elif len(info) > 0: line3 = string3 % (', '.join(info))
 					else: break
-					#if len(info) > 6: line3f = string3f % str(len(info))
-					#elif len(info) > 0: line3f = string3f % (', '.join(info))
-					#else: break
-					#line1f = pdiagfull_format % (source_4k_label, source_1080_label, source_720_label, source_sd_label)
-					#line2f = string4f % source_total_label + '     ' + string1f % round(time() - start_time, 1)
 					current_time = time()
 					current_progress = current_time - start_time
-					percent = int((current_progress / float(timeout)) * 100)
+					#percent = int((current_progress / float(timeout)) * 100)
+					percent = int((len(sourceDict) - len(info)) * 100 / len(sourceDict))
 					if progressDialog != control.progressDialog and progressDialog != control.progressDialogBG:
 						progressDialog.update(max(1, percent), line1 + '[CR]' + line2 + '[CR]' + line3)
 					elif progressDialog != control.progressDialogBG: progressDialog.update(max(1, percent), line1 + '[CR]' + line2 + '[CR]' + line3)
@@ -749,15 +738,17 @@ class Sources:
 					break
 				control.sleep(25)
 			except: log_utils.error()
-		try: progressDialog.close()
-		except: pass
-		del progressDialog
+		progressDialog.update(100, debrid_message)
 		del threads[:] # Make sure any remaining providers are stopped, only deletes threads not started yet.
 		self.sources.extend(self.scraper_sources)
 		self.tvshowtitle = tvshowtitle
 		self.year = year
 		homeWindow.clearProperty('fs_filterless_search')
 		if len(self.sources) > 0: self.sourcesFilter()
+		if homeWindow.getProperty('umbrella.window_keep_alive') != 'true':
+			try: progressDialog.close()
+			except: pass
+			del progressDialog
 		return self.sources
 
 	def preResolve(self, next_sources, next_meta):
@@ -1198,50 +1189,44 @@ class Sources:
 		return filter
 
 	def sourcesAutoPlay(self, items):
-		control.hide()
-		control.sleep(200)
+		#control.hide()
+		#control.sleep(200)
 		if getSetting('autoplay.sd') == 'true': items = [i for i in items if not i['quality'] in ('4K', '1080p', '720p')]
 		header = homeWindow.getProperty(self.labelProperty) + ': Resolving...'
 		try:
-			resolvePoster = self.meta.get('poster')
+			poster = self.meta.get('poster')
 		except:
-			resolvePoster = None
+			poster = ''
 		try:
 			if getSetting('progress.dialog') == '0':
-				if getSetting('dialogs.useumbrelladialog') == 'true':
-					progressDialog = control.getProgressWindow(header, resolvePoster, 0,1)
-					progressDialog.set_controls()
-				else:
-					progressDialog = control.progressDialog
-					progressDialog.create(header,'')
-			if getSetting('progress.dialog') == '1':
-				progressDialog = control.progressDialogBG
-				progressDialog.create(header, '')
-			if getSetting('progress.dialog') == '2':
-				progressDialog = self.getProcessResolver(self.title, self.meta)
-			if getSetting('progress.dialog') == '3' or getSetting('progress.dialog') == '4':
-				progressDialog = self.getIconProgress()
-		except: pass
+				progressDialog = control.getProgressWindow(header, icon=poster)
+			elif getSetting('progress.dialog') in ('2', '3', '4'):
+				if homeWindow.getProperty('umbrella.window_keep_alive') != 'true':
+					progressDialog = self.getWindowProgress(self.title, self.meta)
+					Thread(target=self.window_monitor, args=(progressDialog,)).start()
+				else: progressDialog = self.window
+			else: raise Exception()
+		except:
+			homeWindow.clearProperty('umbrella.window_keep_alive')
+			progressDialog = control.progressDialogBG
+			progressDialog.create(header, '')
 		for i in range(len(items)):
 			try:
 				src_provider = items[i]['debrid'] if items[i].get('debrid') else ('%s - %s' % (items[i]['source'], items[i]['provider']))
-				if progressDialog != control.progressDialog and progressDialog != control.progressDialogBG:
-					sdc = getSetting('scraper.dialog.color')
-					#label = '[B][COLOR %s]%s[CR]%02d.)%s[CR]%s[/COLOR][/B]' % (sdc, src_provider.upper(), i+1, items[i]['name'], str(round(items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
-					label = '[COLOR %s]%s[CR]%s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), items[i]['provider'].upper() ,items[i]['info'])
+				if getSetting('progress.dialog') == '2':
+					resolveInfo = items[i]['info'].replace('/',' ')
+					if self.meta.get('plot'):
+						plotLabel = '[COLOR %s]%s[/COLOR][CR][CR]' % (getSetting('sources.highlight.color'), self.meta.get('plot'))
+					else:
+						plotLabel = ''
+					label = plotLabel + '[B][COLOR %s]%s[CR]%s[CR]%s[CR]%s[/COLOR][/B]' % (self.highlight_color, src_provider.upper(), items[i]['provider'].upper(),items[i]['quality'].upper(), resolveInfo)
 				else:
-					label = '[COLOR %s]%s[CR]%02d.)%s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), i+1, items[i]['name'], str(round(items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
-					
-				
+					label = '[B][COLOR %s]%s[CR]%s[CR]%s[/COLOR][/B]' % (self.highlight_color, src_provider.upper(), items[i]['provider'].upper(), items[i]['info'])
 				control.sleep(100)
 				try:
 					if progressDialog.iscanceled(): break
 					progressDialog.update(int((100 / float(len(items))) * i), label)
-				except: 
-					if progressDialog != control.progressDialog and progressDialog != control.progressDialogBG:
-						progressDialog.update(int((100 / float(len(items))) * i), '[COLOR %s]Resolving...[/COLOR]%02d.)%s' % (sdc, i+1, items[i]['name']))
-					else:
-						progressDialog.update(int((100 / float(len(items))) * i), '[COLOR %s]Resolving...[/COLOR]%02d.)%s' % (self.highlight_color, i+1, items[i]['name']))
+				except: progressDialog.update(int((100 / float(len(items))) * i), '[COLOR %s]Resolving...[/COLOR]%s' % (self.highlight_color, items[i]['name']))
 				try:
 					if control.monitor.abortRequested(): return sysexit()
 					url = self.sourcesResolve(items[i])
@@ -1253,9 +1238,10 @@ class Sources:
 						break
 				except: pass
 			except: log_utils.error()
-		try: progressDialog.close()
-		except: pass
-		del progressDialog
+		if homeWindow.getProperty('umbrella.window_keep_alive') != 'true':
+			try: progressDialog.close()
+			except: pass
+			del progressDialog
 		return url
 
 	def sourcesResolve(self, item):
@@ -1398,6 +1384,7 @@ class Sources:
 
 	def errorForSources(self,title=None, year=None, imdb=None, tmdb=None, tvdb=None, season=None, episode=None, tvshowtitle=None, premiered=None):
 		try:
+			homeWindow.clearProperty('umbrella.window_keep_alive')
 			control.sleep(200)
 			control.hide()
 			if self.url == 'close://': 
@@ -1518,7 +1505,7 @@ class Sources:
 				#no external_provider_module
 				control.notification(message=control.lang(40447))
 				self.sourceDict = internalSources()
-				self.sourceDict.extend = cloudSources()
+				self.sourceDict.extend(cloudSources())
 			else:
 				try:
 					from sys import path
@@ -1762,38 +1749,21 @@ class Sources:
 		filter += [i for i in source_list if i['quality'] == 'CAM']
 		return filter
 
-	def getProgressScraper(self, title, year, imdb, tvdb, season, episode, meta):
-		from resources.lib.windows.progress_scrape import ProgressScrape
-		window = ProgressScrape('progress_scrape.xml', control.addonPath(control.addonId()), title=title, year=year, imdb=imdb, tvdb=tvdb, season=season, episode=episode, meta=meta)
+	def getWindowProgress(self, title, meta):
+		from resources.lib.windows.source_progress import WindowProgress
+		window = WindowProgress('source_progress.xml', control.addonPath(control.addonId()), title=title, meta=meta)
 		Thread(target=window.run).start()
 		return window
 
-	def getProcessResolver(self, title, meta):
-		year, imdb, tvdb, season, episode = self.year, self.imdb, self.tvdb, self.season, self.episode
-		if meta: meta = meta
-		else: meta = None
-		from resources.lib.windows.progress_resolve import ProgressResolve
-		window = ProgressResolve('progress_resolve.xml', control.addonPath(control.addonId()), title=title, year=year, imdb=imdb, tvdb=tvdb, season=season, episode=episode, meta=meta)
-		Thread(target=window.run).start()
-		return window
-
-	def getIconProgress(self):
-		blindmode = 'icon_scrape.xml'
-		if getSetting('progress.dialog') == '4':
-			blindmode = 'blind_scrape.xml'
-		from resources.lib.windows.icon_scrape import IconScrape
-		window = IconScrape(blindmode, control.addonPath(control.addonId()))
-		Thread(target=window.run).start()
-		return window
-
-	def getInfo(self):
-		#import xbmcgui
-		# li = xbmcgui.Window(xbmcgui.getCurrentWindowId()).getSelectedItem()
-		# dialog = xbmcgui.Dialog(li)
-		# return dialog.info(li)
-		#control.execute('Action(Info)')
-		#li = xbmcgui.Window().getControl(xbmcgui.getCurrentWindowId()).getSelectedItem()
-		pass
+	def window_monitor(self, window=None):
+		if window is None: return
+		self.window = window
+		homeWindow.setProperty('umbrella.window_keep_alive', 'true')
+		while homeWindow.getProperty('umbrella.window_keep_alive') == 'true': control.sleep(200)
+		homeWindow.clearProperty('umbrella.window_keep_alive')
+		try: self.window.close()
+		except: pass
+		self.window = None
 
 	def get_internal_scrapers(self):
 		settings = ['provider.external', 'provider.plex', 'provider.gdrive']

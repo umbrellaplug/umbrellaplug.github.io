@@ -337,7 +337,6 @@ class Movies(TMDb):
 # adult - not used
 			meta['fanart'] = '%s%s' % (self.fanart_path, result['backdrop_path']) if result.get('backdrop_path') else ''
 			meta['belongs_to_collection'] = result.get('belongs_to_collection', '')
-			#big thanks to giant pos for this change!
 			try: tmdblogo_path = [i['file_path'] for i in result['images']['logos'] if 'file_path' in i if i['file_path'].endswith('png')][0]
 			except: tmdblogo_path = ''
 			meta['tmdblogo'] = '%s%s' % (self.fanart_path, tmdblogo_path) if tmdblogo_path else ''
@@ -521,7 +520,6 @@ class TVshows(TMDb):
 		TMDb.__init__(self)
 		self.list = []
 		self.meta = []
-		#big thanks to giant pos for this change
 		self.show_link = base_link + 'tv/%s?api_key=%s&language=%s&append_to_response=credits,content_ratings,external_ids,alternative_titles,videos,images' % ('%s', self.API_key, self.lang)
 		# 'append_to_response=translations, aggregate_credits' (DO NOT USE, response data way to massive and bogs the response time)
 		self.art_link = base_link + 'tv/%s/images?api_key=%s' % ('%s', self.API_key)

@@ -757,7 +757,8 @@ class Collections:
 					page = '  [I](%s)[/I]' % str(((int(url_params.get('start')) - 1) / int(self.page_limit)) + 1)
 				else:
 					page = '  [I](%s)[/I]' % url_params.get('page')
-				nextMenu = '[COLOR skyblue]' + nextMenu + page + '[/COLOR]'
+				nextColor = '[COLOR %s]' % getSetting('highlight.color')
+				nextMenu = nextColor + nextMenu + page + '[/COLOR]'
 				url = '%s?action=collections&url=%s&folderName=%s' % (sysaddon, quote_plus(url), folderName)
 				item = control.item(label=nextMenu, offscreen=True)
 				icon = control.addonNext()

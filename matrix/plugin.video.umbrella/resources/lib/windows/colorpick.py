@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from resources.lib.windows.base import BaseDialog
 from resources.lib.modules import colors
-from resources.lib.modules.control import dialog, setting as getSetting, darkColor
+from resources.lib.modules.control import dialog, setting as getSetting, isDarkColor
 
 button_ids = (10, 11)
 palettes = {'rainbow': colors.rainbow}
@@ -22,7 +22,7 @@ class ColorPick(BaseDialog):
         self.lightordark = getSetting('dialogs.lightordarkmode')
         self.buttonColor = getSetting('dialogs.button.color')
         self.customBackgroundColor = getSetting('dialogs.customcolor')
-        self.dark_text_background = darkColor(self.customBackgroundColor)
+        self.dark_text_background = isDarkColor(self.customBackgroundColor)
         self.useCustomTitleColor = getSetting('dialogs.usecolortitle') == 'true'
         self.customTitleColor = getSetting('dialogs.titlebar.color')
         self.set_properties()
@@ -78,11 +78,11 @@ class ColorPick(BaseDialog):
         if self.useCustomTitleColor:
             #need to use a custom titlebar color
             self.setProperty('umbrella.titleBarColor', self.customTitleColor)
-            if darkColor(self.customTitleColor) == 'dark':
+            if isDarkColor(self.customTitleColor):
                 self.setProperty('umbrella.titleTextColor', 'FFF5F5F5')
             else:
                 self.setProperty('umbrella.titleTextColor', 'FF302F2F')
-        if darkColor(self.buttonColor) == 'dark':
+        if isDarkColor(self.buttonColor):
             self.setProperty('umbrella.buttonTextColor', 'FFF5F5F5')
         else:
             self.setProperty('umbrella.buttonTextColor', 'FF302F2F')
@@ -105,7 +105,7 @@ class ColorPick(BaseDialog):
         elif self.lightordark == '2':
             #ohh now we need a custom color, aren't we just special.
             self.setProperty('umbrella.backgroundColor', self.customBackgroundColor) #setting custom color because screw your light or dark mode.
-            if self.dark_text_background == 'dark':
+            if self.dark_text_background == True:
                 self.setProperty('umbrella.textColor', 'FFF5F5F5')
                 self.setProperty('umbrella.buttonTextColorNS', 'FFF5F5F5')
                 self.setProperty('umbrella.buttonnofocus', 'FFF5F5F5')

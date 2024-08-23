@@ -34,7 +34,6 @@ class Search:
 				log_utils.error()
 		list = sorted(list, key=lambda k: re.sub(r'(^the |^a |^an )', '', k['name'].lower()))
 		return list
-	#just getting started working on some keyword searches with imdb. eat a dick pov douche....
 	def movieKeywordSearch(self, keywords):
 		result = None
 		if keywords:

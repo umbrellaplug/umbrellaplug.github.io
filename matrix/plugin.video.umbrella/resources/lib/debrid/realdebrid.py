@@ -345,7 +345,8 @@ class RealDebrid:
 				nextMenu = getLS(32053)
 				url = '%s?action=rd_MyDownloads&query=%s' % (sysaddon, page)
 				page = '  [I](%s)[/I]' % page
-				nextMenu = '[COLOR skyblue]' + nextMenu + page + '[/COLOR]'
+				nextColor = '[COLOR %s]' % getSetting('highlight.color')
+				nextMenu =  nextColor + nextMenu + page + '[/COLOR]'
 				item = control.item(label=nextMenu, offscreen=True)
 				icon = control.addonNext()
 				item.setArt({'icon': rd_icon, 'poster': rd_icon, 'thumb': rd_icon, 'fanart': addonFanart, 'banner': rd_icon})

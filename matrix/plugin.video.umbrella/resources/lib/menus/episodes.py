@@ -22,6 +22,7 @@ from resources.lib.modules.player import Bookmarks
 
 getLS = control.lang
 getSetting = control.setting
+KODI_VERSION = control.getKodiVersion()
 
 
 class Episodes:
@@ -786,14 +787,14 @@ class Episodes:
 				log_utils.error()
 		return items
 
-	def episodeDirectory(self, items, unfinished=False, next=True, folderName=''):
+	def episodeDirectory(self, items, unfinished=False, next=True, playlist=False, folderName=''):
 		from sys import argv # some functions like ActivateWindow() throw invalid handle less this is imported here.
 		if self.useContainerTitles: control.setContainerName(folderName)
 		if not items: # with reuselanguageinvoker on an empty directory must be loaded, do not use sys.exit()
 			control.hide() ; control.notification(title=32326, message=33049)
 		sysaddon, syshandle = 'plugin://plugin.video.umbrella/', int(argv[1])
 		is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
-		#if not is_widget: control.playlist.clear()
+		if not is_widget and not playlist: control.playlist.clear()
 		settingFanart = getSetting('fanart') == 'true'
 		addonPoster, addonFanart, addonBanner = control.addonPoster(), control.addonFanart(), control.addonBanner()
 
@@ -846,6 +847,7 @@ class Episodes:
 		from resources.lib.modules import favourites
 		favoriteItems = favourites.getFavourites(content='episode')
 		favoriteItems = [(x[0]) for x in favoriteItems]
+		if playlist: listitems = [] ; append = listitems.append
 		for i in items:
 			try:
 
@@ -941,7 +943,8 @@ class Episodes:
 						if airFormat == '0': air = airtime
 						elif airFormat == '1': air = airday
 						elif airFormat == '2': air = air = ' '.join(air)
-						if airLocation == '0' or airLocation == '1': air = '[COLOR skyblue][%s][/COLOR]' % air
+						#if airLocation == '0' or airLocation == '1': air = '[COLOR skyblue][%s][/COLOR]' % air
+						if airLocation == '0' or airLocation == '1': air = '[COLOR %s][%s][/COLOR]' % (self.highlight_color, air)
 						if airBold == 'true': air = '[B]%s[/B]' % str(air)
 						if airLocation == '0': labelProgress = '%s %s' % (air, labelProgress)
 						elif airLocation == '1': labelProgress = '%s %s' % (labelProgress, air)
@@ -1039,7 +1042,7 @@ class Episodes:
 							try: count = getShowCount(getSeasonIndicators(imdb, tvdb)[1], imdb, tvdb) # if indicators and no matching imdb_id in watched items then it returns None and we use TMDb meta to avoid Trakt request
 							except: count = None
 							if count:
-								if control.getKodiVersion() >= 20:
+								if KODI_VERSION >= 20:
 									if int(count['watched']) > 0:
 										item.setProperties({'WatchedEpisodes': str(count['watched']), 'UnWatchedEpisodes': str(count['unwatched'])})
 									else:
@@ -1049,7 +1052,7 @@ class Episodes:
 								item.setProperties({'TotalSeasons': str(meta.get('total_seasons', '')), 'TotalEpisodes': str(count['total'])})
 								item.setProperty('WatchedProgress', str(int(float(count['watched']) / float(count['total']) * 100)))
 							else:
-								if control.getKodiVersion() >= 20:
+								if KODI_VERSION >= 20:
 									item.setProperties({'UnWatchedEpisodes': str(meta.get('total_aired_episodes', ''))}) # for shows never watched
 								else:
 									item.setProperties({'WatchedEpisodes': '0', 'UnWatchedEpisodes': str(meta.get('total_aired_episodes', ''))}) # for shows never watched
@@ -1095,11 +1098,12 @@ class Episodes:
 					resumetime = ''
 				
 				control.set_info(item, meta, setUniqueIDs=setUniqueIDs, resumetime=resumetime)
-				if is_widget and control.getKodiVersion() > 19.5 and self.useFullContext != True:
+				if is_widget and KODI_VERSION > 19.5 and not self.useFullContext:
 					pass
 				else:
 					item.addContextMenuItems(cm)
-				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=isFolder)
+				if playlist: append((url, item, isFolder))
+				else: control.addItem(handle=syshandle, url=url, listitem=item, isFolder=isFolder)
 			except:
 				from resources.lib.modules import log_utils
 				log_utils.error()
@@ -1116,14 +1120,17 @@ class Episodes:
 				else:
 					page = url_params.get('page')
 					page = '  [I](%s)[/I]' % page
-				nextMenu = '[COLOR skyblue]' + nextMenu + page + '[/COLOR]'
+				nextColor = '[COLOR %s]' % getSetting('highlight.color')
+				nextMenu = nextColor + nextMenu + page + '[/COLOR]'
 				if '/users/me/history/' in url: url = '%s?action=calendar&url=%s&folderName=%s' % (sysaddon, quote_plus(url), quote_plus(folderName))
 				item = control.item(label=nextMenu, offscreen=True)
 				icon = control.addonNext()
 				item.setArt({'icon': icon, 'thumb': icon, 'poster': icon, 'banner': icon})
 				item.setProperty ('SpecialSort', 'bottom')
-				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)
+				if playlist: append((url, item, True))
+				else: control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)
 			except: pass
+		if playlist: return listitems
 		if isMultiList and multi_unwatchedEnabled: # Show multi episodes as show, in order to display unwatched count if enabled.
 			control.content(syshandle, 'tvshows')
 			control.directory(syshandle, cacheToDisc=False) # disable cacheToDisc so unwatched counts loads fresh data counts if changes made
@@ -1162,7 +1169,7 @@ class Episodes:
 				meta = dict({'plot': name})
 				control.set_info(item, meta)
 				is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
-				if is_widget and control.getKodiVersion() > 19.5 and self.useFullContext != True:
+				if is_widget and KODI_VERSION > 19.5 and self.useFullContext != True:
 					pass
 				else:
 					item.addContextMenuItems(cm)
