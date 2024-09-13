@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.0">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.1">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
 		<import addon="script.module.requests"/>
@@ -179,23 +179,10 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.0 - August 23rd, 2024[/B]
---[Fix] Please go to kodi settings and clear any settings set for "Play next video automatically". This is likely been set to "Episodes" previously by Umbrella.
---[Fix] Playlist generation code changed for kodi 21.1 changes.
---[Changes] Metahandler requirement removed and local tracking added from Infinity.
---[Changes] Scraping windows and progress windows updated and changed. credit kodifitzwell
---[Changes] Window monitor implemented.
---[Changes] Episodes use a global variable instead of checking kodi version multiple times.
---[Changes] Episodes handle playlists.
---[Changes] Epsiodes use highlight color for next button text color.
---[Changes] Added getProviderColors function to control. 
---[Changes] Added refresh_contextProperties to control. 
---[Changes] Modified darkColor function in control. 
---[Changes] large amount of changes to the player module and how playlists are built for playnext. 
---[Credit] A lot of the changes in this version come from infinity. credit and thanks to kodifitzwell
---[Fix] TVShows tvshowDirectory function modified for situations where meta was not passed in so flatten function had no total seasons to compare to.
---[Fix] Made changes to playnext using subtitles to return default time when no subtitles are found. thanks adam
---[Changes] More under the hood changes.
+[B]Update - v6.7.1 - September 13th, 2024[/B]
+--[Fix] Fixed MDBList to not be limited to 20 results.
+--[Fix] Fixed scraper dialog not showing incorrectly on TV Shows from library.
+--[Changes] Re-added the ability to use default kodi prompts for scraping dialog.
 		</news>
 	</extension>
 

@@ -128,7 +128,7 @@ class TVshows:
 		self.tmdb_year_link = tmdb_base+'/3/discover/tv?api_key=%s&language=en-US&include_null_first_air_dates=false&first_air_date_year=%s&sort_by=%s&page=1' % ('%s', '%s', self.tmdb_DiscoverSort())
 		self.tmdb_recommendations = tmdb_base+'/3/tv/%s/recommendations?api_key=%s&language=en-US&region=US&page=1'
 		self.tmdb_person_search = tmdb_base+'/3/search/person?api_key=%s&query=%s&language=en-US&page=1&include_adult=true' % ('%s','%s')
-		self.mbdlist_list_items = 'https://mdblist.com/api/lists/%s/items?apikey=%s&limit=%s&page=1' % ('%s', mdblist.mdblist_api, self.page_limit)
+		self.mbdlist_list_items = 'https://mdblist.com/api/lists/%s/items?apikey=%s&page=1' % ('%s', mdblist.mdblist_api)
 		self.simkltrendingtoday_link = 'https://api.simkl.com/tv/trending/today?client_id=%s&extended=tmdb' % '%s'
 		self.simkltrendingweek_link = 'https://api.simkl.com/tv/trending/week?client_id=%s&extended=tmdb' % '%s'
 		self.simkltrendingmonth_link = 'https://api.simkl.com/tv/trending/month?client_id=%s&extended=tmdb'% '%s'
@@ -1208,7 +1208,7 @@ class TVshows:
 		self.list = paginated_ids[index]
 		try:
 			if useNext == False: raise Exception()
-			if int(q['limit']) != len(self.list): raise Exception()
+			if int(self.page_limit) != len(self.list): raise Exception()
 			if int(q['page']) == total_pages: raise Exception()
 			q.update({'page': str(int(q['page']) + 1)})
 			q = (urlencode(q)).replace('%2C', ',')

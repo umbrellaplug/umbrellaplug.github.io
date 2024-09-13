@@ -8,22 +8,6 @@ from resources.lib.modules import control
 
 
 def router(argv2):
-    #the below code was used as a workaround for using the info button and play next automatically set to episode combination in kodi 21
-    #it has been commented out due to being told it this is not the correct way to handle this issue.
-	# try:
-	# 	if argv2 == '':
-	# 		argv4 = control.infoLabel('ListItem.FileNameAndPath')
-	# 		argv5 = argv4.split('plugin://plugin.video.umbrella/?')[1]
-	# 		params = dict(parse_qsl(argv5.replace('?', '')))
-	# 		episode = params.get('episode')
-	# 		if params.get('action') == 'play_Item' and episode:
-	# 			from resources.lib.modules import log_utils
-	# 			log_utils.log('Umbrella Hacky Workaround is being applied. Thanks Adam', 1)
-	# 			argv4 = argv4.split('plugin://plugin.video.umbrella/?')[1]
-	# 			argv2 = argv4
-	# except:
-	# 	argv2 = argv2
-
 	try:
 		params = dict(parse_qsl(argv2.replace('?', '')))
 	except:

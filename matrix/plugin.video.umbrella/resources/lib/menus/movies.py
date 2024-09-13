@@ -149,7 +149,7 @@ class Movies:
 		self.trakt_popularLists_link = 'https://api.trakt.tv/lists/popular?limit=%s&page=1' % self.page_limit
 		self.trakt_trendingLists_link = 'https://api.trakt.tv/lists/trending?limit=%s&page=1' % self.page_limit
 		self.trakt_similiar = 'https://api.trakt.tv/movies/%s/related?limit=%s&page=1' % ('%s', self.page_limit)
-		self.mbdlist_list_items = 'https://mdblist.com/api/lists/%s/items?apikey=%s&limit=%s&page=1' % ('%s', mdblist.mdblist_api, self.page_limit)
+		self.mbdlist_list_items = 'https://mdblist.com/api/lists/%s/items?apikey=%s&page=1' % ('%s', mdblist.mdblist_api)
 		self.simkltrendingtoday_link = 'https://api.simkl.com/movies/trending/today?client_id=%s&extended=tmdb' % '%s'
 		self.simkltrendingweek_link = 'https://api.simkl.com/movies/trending/week?client_id=%s&extended=tmdb' % '%s'
 		self.simkltrendingmonth_link = 'https://api.simkl.com/movies/trending/month?client_id=%s&extended=tmdb'% '%s'
@@ -268,6 +268,7 @@ class Movies:
 	def getMBDTopLists(self, create_directory=True, folderName=''): 
 		self.list = []
 		try:
+
 			self.list = cache.get(self.mbd_top_lists, self.mdblist_hours)
 			if self.list is None: self.list = []
 			if create_directory: self.addDirectory(self.list, folderName=folderName)
@@ -380,7 +381,7 @@ class Movies:
 		self.list = paginated_ids[index]
 		try:
 			if useNext == False: raise Exception()
-			if int(q['limit']) != len(self.list): raise Exception()
+			if int(self.page_limit) != len(self.list): raise Exception()
 			if int(q['page']) == total_pages: raise Exception()
 			q.update({'page': str(int(q['page']) + 1)})
 			q = (urlencode(q)).replace('%2C', ',')

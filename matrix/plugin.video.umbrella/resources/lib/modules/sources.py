@@ -101,6 +101,7 @@ class Sources:
 			homeWindow.clearProperty(self.labelProperty)
 			homeWindow.setProperty(self.labelProperty, p_label)
 			url = None
+			
 			self.mediatype = 'movie' if tvshowtitle is None else 'episode'
 			try: meta = jsloads(unquote(meta.replace('%22', '\\"')))
 			except: pass
@@ -153,13 +154,13 @@ class Sources:
 				try:
 					if self.mediatype != 'episode': raise Exception()
 					# do not add IMDBNUMBER as tmdb scraper puts their id in the key value
-					show_meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties" : ["title", "originaltitle", "uniqueid", "mpaa", "year", "genre", "runtime", "thumbnail", "file"]}, "id": 1}' % (self.year, str(int(self.year)+1), str(int(self.year)-1)))
+					show_meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties" : ["title", "originaltitle", "uniqueid", "mpaa", "year", "genre", "runtime", "thumbnail", "file"]}, "id": 1}' % (year, str(int(year)+1), str(int(year)-1)))
 					show_meta = jsloads(show_meta)['result']['tvshows']
 					show_meta = [i for i in show_meta if i.get('uniqueid', []).get('imdb', '') == imdb]
 					if show_meta: show_meta = show_meta[0]
 					else: raise Exception()
 					tvshowid = show_meta['tvshowid']
-					meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params":{"tvshowid": %d, "filter":{"and": [{"field": "season", "operator": "is", "value": "%s"}, {"field": "episode", "operator": "is", "value": "%s"}]}, "properties": ["title", "season", "episode", "showtitle", "firstaired", "runtime", "rating", "director", "writer", "cast", "plot", "thumbnail", "art", "file"]}, "id": 1}' % (tvshowid, self.season, self.episode))
+					meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params":{"tvshowid": %d, "filter":{"and": [{"field": "season", "operator": "is", "value": "%s"}, {"field": "episode", "operator": "is", "value": "%s"}]}, "properties": ["title", "season", "episode", "showtitle", "firstaired", "runtime", "rating", "director", "writer", "cast", "plot", "thumbnail", "art", "file"]}, "id": 1}' % (tvshowid, season, episode))
 					meta = jsloads(meta)['result']['episodes']
 					if meta: meta = meta[0]
 					else: raise Exception()
@@ -176,7 +177,7 @@ class Sources:
 					clearart = cleanLibArt(meta.get('art').get('tvshow.clearart', ''))
 					clearlogo = cleanLibArt(meta.get('art').get('tvshow.clearlogo', ''))
 					discart = cleanLibArt(meta.get('art').get('discart'))
-					meta.update({'imdb': self.imdb, 'tmdb': self.tmdb, 'tvdb': self.tvdb, 'poster': poster, 'fanart': fanart, 'clearart': clearart, 'clearlogo': clearlogo, 'discart': discart})
+					meta.update({'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb, 'poster': poster, 'fanart': fanart, 'clearart': clearart, 'clearlogo': clearlogo, 'discart': discart})
 					return meta
 				except:
 					log_utils.error()
@@ -409,7 +410,11 @@ class Sources:
 			header = homeWindow.getProperty(self.labelProperty) + ': Resolving...'
 			try:
 				if getSetting('progress.dialog') == '0':
-					progressDialog = control.getProgressWindow(header, icon=poster)
+					if getSetting('dialogs.useumbrelladialog') == 'true':
+						progressDialog = control.getProgressWindow(header, icon=poster)
+					else:
+						progressDialog = control.progressDialog
+						progressDialog.create(header,'')
 				elif getSetting('progress.dialog') in ('2', '3', '4'):
 					if homeWindow.getProperty('umbrella.window_keep_alive') != 'true':
 						progressDialog = self.getWindowProgress(title, meta)
@@ -425,7 +430,10 @@ class Sources:
 					resolve_index = items.index(resolve_items[i])+1
 					src_provider = resolve_items[i]['debrid'] if resolve_items[i].get('debrid') else ('%s - %s' % (resolve_items[i]['source'], resolve_items[i]['provider']))
 					if getSetting('progress.dialog') == '0':
-						label = '[COLOR %s]%s[CR]%s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), resolve_items[i]['provider'].upper(), resolve_items[i]['info'])
+						if getSetting('dialogs.useumbrelladialog') == 'true':
+							label = '[COLOR %s]%s[CR]%s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), resolve_items[i]['provider'].upper(), resolve_items[i]['info'])
+						else:
+							label = '[COLOR %s]%s[CR]%02d - %s[CR]%s[/COLOR]' % (self.highlight_color, src_provider.upper(), resolve_index, resolve_items[i]['name'], str(round(resolve_items[i]['size'], 2)) + ' GB') # using "[CR]" has some weird delay with progressDialog.update() at times
 					elif getSetting('progress.dialog') == '2':
 						resolveInfo = resolve_items[i]['info'].replace('/',' ')
 						if meta.get('plot'):
@@ -578,8 +586,13 @@ class Sources:
 			header = homeWindow.getProperty(self.labelProperty) + ': Scraping...'
 			try:
 				if getSetting('progress.dialog') == '0':
-					progressDialog = control.getProgressWindow(header, icon='')
-					debrid_message = '[COLOR %s][B]Please wait...[CR]Checking Providers[/B][/COLOR]' % self.highlight_color
+					if getSetting('dialogs.useumbrelladialog') == 'true':
+						progressDialog = control.getProgressWindow(header, icon='')
+						debrid_message = '[COLOR %s][B]Please wait...[CR]Checking Providers[/B][/COLOR]' % self.highlight_color
+					else:
+						progressDialog = control.progressDialog
+						progressDialog.create(header,'')
+						debrid_message = '[COLOR %s][B]Please wait...[CR]Checking Providers[/B][/COLOR]' % self.highlight_color
 				elif getSetting('progress.dialog') in ('2', '3','4'):
 					try: meta = self.meta
 					except: meta = {'title': title, 'year': year, 'imdb': imdb, 'tvdb': tvdb, 'season': season, 'episode': episode, 'tvshowtitle': tvshowtitle}
@@ -1199,7 +1212,11 @@ class Sources:
 			poster = ''
 		try:
 			if getSetting('progress.dialog') == '0':
-				progressDialog = control.getProgressWindow(header, icon=poster)
+				if getSetting('dialogs.useumbrelladialog') == 'true':
+					progressDialog = control.getProgressWindow(header, icon=poster)
+				else:
+					progressDialog = control.progressDialog
+					progressDialog.create(header,'')
 			elif getSetting('progress.dialog') in ('2', '3', '4'):
 				if homeWindow.getProperty('umbrella.window_keep_alive') != 'true':
 					progressDialog = self.getWindowProgress(self.title, self.meta)
