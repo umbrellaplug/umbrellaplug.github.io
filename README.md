@@ -5,7 +5,7 @@ Welcome to the umbrellaplug.github.io
 Compatible with Kodi 19, 20, and 21.
 
 ## Current Versions:
-Umbrella - 6.7
+Umbrella - 6.7.1
 Umbrella Repo - 2.2.6
 
 ## Installation Instructions:
@@ -37,7 +37,12 @@ Currently Supported Debrid Providers:
 - Real Debrid
 - Premiumize
 
-**The plugin will not work without at least 1 debrid account**
+Currently Supported Other Providers:
+- Easynews
+- Plex
+- Google Drive
+
+**The plugin will not work without at least 1 of these types of accounts**
 
 ## Issues
 Please do not mention any other addons in issues.
