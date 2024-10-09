@@ -5217,3 +5217,23 @@ msgstr ""
 msgctxt "#40520"
 msgid "Library Movie Cache Successfully Cleared!"
 msgstr ""
+
+msgctxt "#40521"
+msgid "Use custom background for Fanart"
+msgstr ""
+
+msgctxt "#40522"
+msgid "Background"
+msgstr ""
+
+msgctxt "#40523"
+msgid "Reset background"
+msgstr ""
+
+msgctxt "#40524"
+msgid "Use tmdb.org instead of themoviedb.org for API"
+msgstr ""
+
+msgctxt "#40525"
+msgid "Umbrella Addon Settings"
+msgstr ""

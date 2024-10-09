@@ -1,6 +1,10 @@
+[B]Update - v6.7.22 - October 8th, 2024[/B]
+--[Changes] Added code needed for comet debrid tokens.
+--[Changes] Removed several "open settings" entries due to kodi 21 opening settings to first page every time.
+
 [B]Update - v6.7.1 - September 13th, 2024[/B]
 --[Fix] Fixed MDBList to not be limited to 20 results.
---[Fix] Fixed scraper dialog not showing incorrectly on TV Shows from library.
+--[Fix] Fixed scraper dialog not showing correctly on TV Shows from library.
 --[Changes] Re-added the ability to use default kodi prompts for scraping dialog.
 
 [B]Update - v6.7.0 - August 23rd, 2024[/B]

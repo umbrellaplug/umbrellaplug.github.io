@@ -285,9 +285,7 @@ try:
 		except:
 			repoVersion = 'unknown'
 			repoName = 'Unknown Repo'
-		
-	#fsVersion = control.addon('script.module.cocoscrapers').getAddonInfo('version')
-	#maVersion = control.addon('script.module.myaccounts').getAddonInfo('version')
+
 	log_utils.log('########   CURRENT Umbrella VERSIONS REPORT   ########', level=LOGINFO)
 	if testUmbrella == True:
 		log_utils.log('########   TEST Umbrella Version   ########', level=LOGINFO)
@@ -296,7 +294,6 @@ try:
 	log_utils.log('##   python Version: %s' % pythonVersion, level=LOGINFO)
 	log_utils.log('##   plugin.video.umbrella Version: %s' % str(addonVersion), level=LOGINFO)
 	log_utils.log('##   %s Version: %s' % (str(repoName), str(repoVersion)), level=LOGINFO)
-	#log_utils.log('##   script.module.cocoscrapers Version: %s' % str(fsVersion), level=LOGINFO)
 	log_utils.log('######   UMBRELLA SERVICE ENTERING KEEP ALIVE   #####', level=LOGINFO)
 except:
 	log_utils.log('## ERROR GETTING Umbrella VERSION - Missing Repo or failed Install ', level=LOGINFO)

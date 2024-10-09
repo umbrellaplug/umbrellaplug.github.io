@@ -5205,3 +5205,39 @@ msgstr ""
 msgctxt "#40516"
 msgid "One Season"
 msgstr ""
+
+msgctxt "#40517"
+msgid "Use TMDB Clearlogo"
+msgstr ""
+
+msgctxt "#40518"
+msgid "Fanart Cache Successfully Cleared!"
+msgstr ""
+
+msgctxt "#40519"
+msgid "Clear [COLOR yellow]Fanart Cache [/COLOR]..."
+msgstr ""
+
+msgctxt "#40520"
+msgid "Library Movie Cache Successfully Cleared!"
+msgstr ""
+
+msgctxt "#40521"
+msgid "Use custom background for Fanart"
+msgstr ""
+
+msgctxt "#40522"
+msgid "Background"
+msgstr ""
+
+msgctxt "#40523"
+msgid "Reset background"
+msgstr ""
+
+msgctxt "#40524"
+msgid "Use tmdb.org instead of themoviedb.org for API"
+msgstr ""
+
+msgctxt "#40525"
+msgid "Umbrella Addon Settings"
+msgstr ""

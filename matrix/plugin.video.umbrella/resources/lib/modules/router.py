@@ -778,36 +778,6 @@ def router(argv2):
 		elif action == 'tools_contextUmbrellaSettings':
 			control.openSettings('0.0', 'context.umbrella')
 			control.trigger_widget_refresh()
-		elif action == 'tools_cocoScrapersSettings':
-			if query == 'EasyNews':
-				control.openSettings('1.2', 'script.module.cocoscrapers')
-				control.sleep(500)
-				while control.condVisibility('Window.IsVisible(addonsettings)') or control.homeWindow.getProperty('cocoscrapers.active') == 'true':
-					control.sleep(500)
-				control.sleep(100)
-				control.syncAccounts()
-				control.sleep(100)
-				control.openSettings('11.3', 'plugin.video.umbrella')
-			elif query == 'FilePursuit':
-				control.openSettings('1.3', 'script.module.cocoscrapers')
-				control.sleep(500)
-				while control.condVisibility('Window.IsVisible(addonsettings)') or control.homeWindow.getProperty('cocoscrapers.active') == 'true':
-					control.sleep(500)
-				control.sleep(100)
-				control.syncAccounts()
-				control.sleep(100)
-				control.openSettings('11.4', 'plugin.video.umbrella')
-			elif query == 'Plex':
-				control.openSettings('1.1', 'script.module.cocoscrapers')
-				control.sleep(500)
-				while control.condVisibility('Window.IsVisible(addonsettings)') or control.homeWindow.getProperty('cocoscrapers.active') == 'true':
-					control.sleep(500)
-				control.sleep(100)
-				control.syncAccounts()
-				control.sleep(100)
-				control.openSettings('11.7', 'plugin.video.umbrella')
-			else:
-				control.openSettings('0.0','script.module.cocoscrapers')
 		elif action == 'tools_traktManager':
 			from resources.lib.modules import trakt
 			watched = (params.get('watched') == 'True') if params.get('watched') else None

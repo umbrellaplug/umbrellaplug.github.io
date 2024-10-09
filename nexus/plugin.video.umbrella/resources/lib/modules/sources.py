@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-	Umbrella Add-on Updated 10-3-22
+	Umbrella Add-on Updated 10-6-24
 """
 
 from datetime import datetime, timedelta
@@ -523,7 +523,7 @@ class Sources:
 					if i == 'GB': i = 'UK'
 					alias = {'title': tvshowtitle + ' ' + i, 'country': i.lower()}
 					if not alias in aliases: aliases.append(alias)
-			data = {'title': title, 'year': year, 'imdb': imdb, 'tvdb': tvdb, 'season': season, 'episode': episode, 'tvshowtitle': tvshowtitle, 'aliases': aliases, 'premiered': premiered}
+			data = {'title': title, 'year': year, 'imdb': imdb, 'tvdb': tvdb, 'season': season, 'episode': episode, 'tvshowtitle': tvshowtitle, 'aliases': aliases, 'premiered': premiered, 'debrid_service': self.comet_debrid_service , 'debrid_token': self.comet_debrid_token}
 			for i in scraperDict:
 				name, pack = i[0].upper(), i[2]
 				if pack == 'season': name = '%s (season pack)' % name
@@ -622,7 +622,7 @@ class Sources:
 				trakt_aliases = self.getAliasTitles(imdb, content) # cached for 7 days in trakt module called
 				try: aliases.extend([i for i in trakt_aliases if not i in aliases]) # combine TMDb and Trakt aliases
 				except: pass
-				data = {'title': title, 'aliases': aliases, 'year': year, 'imdb': imdb}
+				data = {'title': title, 'aliases': aliases, 'year': year, 'imdb': imdb, 'debrid_service': self.comet_debrid_service , 'debrid_token': self.comet_debrid_token}
 				for i in sourceDict: threads_append(Thread(target=self.getMovieSource, args=(imdb, data, i[0], i[1]), name=i[0].upper()))
 			else:
 				scraperDict = [(i[0], i[1], '') for i in sourceDict] if ((not self.dev_mode) or (not self.dev_disable_single)) else []
@@ -640,7 +640,7 @@ class Sources:
 						alias = {'title': tvshowtitle + ' ' + i, 'country': i.lower()}
 						if not alias in aliases: aliases.append(alias)
 				aliases = aliases_check(tvshowtitle, aliases)
-				data = {'title': title, 'year': year, 'imdb': imdb, 'tvdb': tvdb, 'season': season, 'episode': episode, 'tvshowtitle': tvshowtitle, 'aliases': aliases, 'premiered': premiered}
+				data = {'title': title, 'year': year, 'imdb': imdb, 'tvdb': tvdb, 'season': season, 'episode': episode, 'tvshowtitle': tvshowtitle, 'aliases': aliases, 'premiered': premiered, 'debrid_service': self.comet_debrid_service , 'debrid_token': self.comet_debrid_token}
 				for i in scraperDict:
 					name, pack = i[0].upper(), i[2]
 					if pack == 'season': name = '%s (season pack)' % name
@@ -1545,6 +1545,12 @@ class Sources:
 			self.sourceDict.extend(cloudSources())
 		from resources.lib.debrid import premium_hosters
 		self.debrid_resolvers = debrid.debrid_resolvers()
+		try:
+			self.comet_debrid_service = self.debrid_resolvers[0].name
+			self.comet_debrid_token = self.debrid_resolvers[0].token
+		except:
+			self.comet_debrid_service = ''
+			self.comet_debrid_token = ''
 		self.prem_providers = [] # for sorting by debrid and direct source links priority
 		if control.setting('easynews.user'): self.prem_providers += [('easynews', int(getSetting('easynews.priority')))]
 		if control.setting('filepursuittoken'): self.prem_providers += [('filepursuit', int(getSetting('filepursuit.priority')))]
