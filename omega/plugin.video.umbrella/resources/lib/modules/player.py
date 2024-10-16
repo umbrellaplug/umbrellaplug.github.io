@@ -80,6 +80,7 @@ class Player(xbmc.Player):
 			self.title, self.year = title, str(year)
 			if self.media_type == 'movie':
 				self.name, self.season, self.episode = '%s (%s)' % (title, self.year), None, None
+			
 			elif self.media_type == 'episode':
 				self.name, self.season, self.episode = '%s S%02dE%02d' % (title, int(season), int(episode)), '%01d' % int(season), '%01d' % int(episode)
 			self.imdb, self.tmdb, self.tvdb = imdb or '', tmdb or '', tvdb or ''

@@ -1,3 +1,6 @@
+[B]Update - v6.7.23 - October 16th, 2024[/B]
+--[Fix] Modified rescrape with all providers.
+
 [B]Update - v6.7.22 - October 8th, 2024[/B]
 --[Changes] Added code needed for comet debrid tokens.
 --[Changes] Removed several "open settings" entries due to kodi 21 opening settings to first page every time.

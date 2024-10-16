@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.22">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.23">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -180,9 +180,9 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.22 - October 8th, 2024[/B]
---[Changes] Added code needed for comet debrid tokens.
---[Changes] Removed several "open settings" entries due to kodi 21 opening settings to first page every time.
+[B]Update - v6.7.23 - October 16th, 2024[/B]
+--[Fix] Modified rescrape with all providers.
+
 		</news>
 	</extension>
 
