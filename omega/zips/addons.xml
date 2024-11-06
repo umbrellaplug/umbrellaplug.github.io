@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.23">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.24">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -180,9 +180,10 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.23 - October 16th, 2024[/B]
---[Fix] Modified rescrape with all providers.
-
+[B]Update - v6.7.24 - November 6th, 2024[/B]
+--[Change] Added language filter setting to several trakt lists. Enable in settings Trakt section.
+--[Workaround] Added workaround from Peter for RD returning empty hash lists.
+--[Logging] Logging added for when temp fix is used.
 		</news>
 	</extension>
 
@@ -316,36 +317,6 @@
   - Leia releases will work, but are unsupported, for Kodi v18 only
 - Updated client versions used for player requests
   - Use iOS client as fallback for default client</news></extension>
-</addon><addon id="script.module.metahandler" name="metahandler" version="5.0.1a" provider-name="Eldorado">
-	<requires>
-		<import addon="xbmc.python" version="3.0.0" />
-		<import addon="script.module.six" version="1.14.0+matrix.2" />
-		<import addon="script.module.simplejson" version="3.17.0+matrix.2" />
-		<import addon="script.module.myconnpy" version="8.0.18+matrix.1" />
-	</requires>
-	<extension point="xbmc.python.module" library="lib" />
-	<extension point="xbmc.python.pluginsource" library="lib/default.py" />
-	<extension point="xbmc.addon.metadata">
-		<platform>all</platform>
-		<summary lang="en">Downloads Artwork for TV shows, Movies and Music videos for addons and stores them in a local SQLITE database</summary>
-		<description lang="en">Queries, stores, and returns metadata for TV shows, Movies and Musicvideos. [CR]Sources:[CR]www.thetvdb.com[CR]www.themoviedb.org[CR]www.imdb.com[CR]www.omdbapi.com[CR]This product uses the TMDb API but is not endorsed or certified by TMDb.</description>
-		<disclaimer lang="en" />
-		<language />
-		<license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
-		<forum />
-		<website />
-		<email />
-		<source />
-		<assets>
-			<icon>icon.png</icon>
-			<fanart />
-			<screenshot />
-		</assets>
-		<news>
-[B]Version 5.0.1a[/B]
-- Fixed incorrect meta causing exception on marking as watched. -umbrella
-		</news>
-	</extension>
 </addon><addon id="script.umbrestuary.helper" name="Umbrestuary Helper" version="0.6.16" provider-name="Tikipeter, Ivar Brandt">
     <requires>
         <import addon="xbmc.python" version="3.0.0" />

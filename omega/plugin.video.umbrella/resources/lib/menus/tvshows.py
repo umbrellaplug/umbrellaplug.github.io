@@ -35,6 +35,7 @@ class TVshows:
 		self.genre_limit = getSetting('limit.imdb.genres')
 		self.search_page_limit = getSetting('search.page.limit')
 		self.lang = control.apiLanguage()['tmdb']
+		self.traktlang = control.apiLanguage()['trakt']
 		self.notifications = notifications
 		self.enable_fanarttv = getSetting('enable.fanarttv') == 'true'
 		self.prefer_tmdbArt = getSetting('prefer.tmdbArt') == 'true'
@@ -92,12 +93,17 @@ class TVshows:
 		self.trakttrending_link = 'https://api.trakt.tv/shows/trending?limit=%s&page=1' % self.page_limit
 		self.traktmostplayed_link = 'https://api.trakt.tv/shows/played/weekly?limit=%s&page=1' % self.page_limit
 		self.traktmostwatched_link = 'https://api.trakt.tv/shows/watched/weekly?limit=%s&page=1' % self.page_limit
-		self.trakttrending_link = 'https://api.trakt.tv/shows/trending?page=1&limit=%s' % self.page_limit
+		if getSetting('trakt.useLanguage') == 'true':
+			self.trakttrending_link = 'https://api.trakt.tv/shows/trending?page=1&limit=%s&languages=%s' % (self.page_limit, self.traktlang)
+			self.trakttrending_recent_link = 'https://api.trakt.tv/shows/trending?page=1&limit=%s&%s&languages=%s' % (self.page_limit, traktyears, self.traktlang)
+			self.traktpopular_link = 'https://api.trakt.tv/shows/popular?page=1&limit=%s&languages=%s' % (self.page_limit, self.traktlang)
+			self.traktrecommendations_link = 'https://api.trakt.tv/recommendations/shows?limit=40&languages=%s' % self.traktlang
+		else:
+			self.trakttrending_link = 'https://api.trakt.tv/shows/trending?page=1&limit=%s' % self.page_limit
+			self.trakttrending_recent_link = 'https://api.trakt.tv/shows/trending?page=1&limit=%s&%s' % (self.page_limit, traktyears)
+			self.traktpopular_link = 'https://api.trakt.tv/shows/popular?page=1&limit=%s' % self.page_limit
+			self.traktrecommendations_link = 'https://api.trakt.tv/recommendations/shows?limit=40'
 		self.showspecials = getSetting('tv.specials') == 'true'
-		
-		self.trakttrending_recent_link = 'https://api.trakt.tv/shows/trending?page=1&limit=%s&%s' % (self.page_limit, traktyears)
-		self.traktpopular_link = 'https://api.trakt.tv/shows/popular?page=1&limit=%s' % self.page_limit
-		self.traktrecommendations_link = 'https://api.trakt.tv/recommendations/shows?limit=40'
 		self.trakt_popularLists_link = 'https://api.trakt.tv/lists/popular?limit=40&page=1' # use limit=40 due to filtering out Movie only lists
 		self.trakt_trendingLists_link = 'https://api.trakt.tv/lists/trending?limit=40&page=1'
 		

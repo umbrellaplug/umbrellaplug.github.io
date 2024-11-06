@@ -133,22 +133,32 @@ class Movies:
 		self.trakthistory_link = 'https://api.trakt.tv/users/me/history/movies?limit=%s&page=1' % self.page_limit
 		self.traktlist_link = 'https://api.trakt.tv/users/%s/lists/%s/items/movies?limit=%s&page=1' % ('%s', '%s', self.page_limit) # local pagination, limit and page used to advance, pulled from request
 		self.traktunfinished_link = 'https://api.trakt.tv/sync/playback/movies?limit=40'
-		self.traktanticipated_link = 'https://api.trakt.tv/movies/anticipated?limit=%s&page=1' % self.page_limit 
-		self.trakttrending_link = 'https://api.trakt.tv/movies/trending?limit=%s&page=1' % self.page_limit
-		self.traktmostplayed_link = 'https://api.trakt.tv/movies/played/weekly?limit=%s&page=1' % self.page_limit
-		self.traktmostwatched_link = 'https://api.trakt.tv/movies/watched/weekly?limit=%s&page=1' % self.page_limit
-		self.trakt_genres = 'https://api.trakt.tv/genres/movies/'
+		self.traktanticipated_link = 'https://api.trakt.tv/movies/anticipated?limit=%s&page=1' % self.page_limit
 		if datetime.today().month > 6:
 			traktyears='years='+str(datetime.today().year)
 		else:
 			traktyears='years='+str(int(datetime.today().year-1))+'-'+str(datetime.today().year)
-		self.trakttrending_recent_link = 'https://api.trakt.tv/movies/trending?limit=%s&page=1&%s' % (self.page_limit, traktyears)
-		self.traktboxoffice_link = 'https://api.trakt.tv/movies/boxoffice' # Returns the top 10 grossing movies in the U.S. box office last weekend
-		self.traktpopular_link = 'https://api.trakt.tv/movies/popular?limit=%s&page=1' % self.page_limit
-		self.traktrecommendations_link = 'https://api.trakt.tv/recommendations/movies?limit=40'
+		if getSetting('trakt.useLanguage') == 'true':
+			self.trakttrending_link = 'https://api.trakt.tv/movies/trending?limit=%s&page=1&languages=%s' % (self.page_limit,self.lang)
+			self.traktmostplayed_link = 'https://api.trakt.tv/movies/played/weekly?limit=%s&page=1&languages=%s' % (self.page_limit,self.lang)
+			self.traktmostwatched_link = 'https://api.trakt.tv/movies/watched/weekly?limit=%s&page=1&languages=%s' % (self.page_limit,self.lang)
+			self.trakttrending_recent_link = 'https://api.trakt.tv/movies/trending?limit=%s&page=1&%s' % (self.page_limit, traktyears)
+			self.traktboxoffice_link = 'https://api.trakt.tv/movies/boxoffice?languages=%s' % self.lang # Returns the top 10 grossing movies in the U.S. box office last weekend
+			self.traktpopular_link = 'https://api.trakt.tv/movies/popular?limit=%s&page=1&languages=%s' % (self.page_limit, self.lang)
+			self.traktrecommendations_link = 'https://api.trakt.tv/recommendations/movies?limit=40&languages=%s' % self.lang
+			self.trakt_similiar = 'https://api.trakt.tv/movies/%s/related?limit=%s&page=1&languages=%s' % ('%s', self.page_limit, self.lang)
+		else:
+			self.trakttrending_link = 'https://api.trakt.tv/movies/trending?limit=%s&page=1' % self.page_limit
+			self.traktmostplayed_link = 'https://api.trakt.tv/movies/played/weekly?limit=%s&page=1' % self.page_limit
+			self.traktmostwatched_link = 'https://api.trakt.tv/movies/watched/weekly?limit=%s&page=1' % self.page_limit
+			self.trakttrending_recent_link = 'https://api.trakt.tv/movies/trending?limit=%s&page=1&%s' % (self.page_limit, traktyears)
+			self.traktboxoffice_link = 'https://api.trakt.tv/movies/boxoffice' # Returns the top 10 grossing movies in the U.S. box office last weekend
+			self.traktpopular_link = 'https://api.trakt.tv/movies/popular?limit=%s&page=1' % self.page_limit
+			self.traktrecommendations_link = 'https://api.trakt.tv/recommendations/movies?limit=40'
+			self.trakt_similiar = 'https://api.trakt.tv/movies/%s/related?limit=%s&page=1' % ('%s', self.page_limit)
+		self.trakt_genres = 'https://api.trakt.tv/genres/movies/'
 		self.trakt_popularLists_link = 'https://api.trakt.tv/lists/popular?limit=%s&page=1' % self.page_limit
 		self.trakt_trendingLists_link = 'https://api.trakt.tv/lists/trending?limit=%s&page=1' % self.page_limit
-		self.trakt_similiar = 'https://api.trakt.tv/movies/%s/related?limit=%s&page=1' % ('%s', self.page_limit)
 		self.mbdlist_list_items = 'https://mdblist.com/api/lists/%s/items?apikey=%s&page=1' % ('%s', mdblist.mdblist_api)
 		self.simkltrendingtoday_link = 'https://api.simkl.com/movies/trending/today?client_id=%s&extended=tmdb' % '%s'
 		self.simkltrendingweek_link = 'https://api.simkl.com/movies/trending/week?client_id=%s&extended=tmdb' % '%s'

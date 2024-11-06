@@ -5046,3 +5046,7 @@ msgstr ""
 msgctxt "#40525"
 msgid "Umbrella Addon Settings"
 msgstr ""
+
+msgctxt "#40526"
+msgid "Use language setting for trakt lists"
+msgstr ""
