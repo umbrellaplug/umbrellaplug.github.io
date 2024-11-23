@@ -1670,39 +1670,10 @@ class Sources:
 	def rd_cache_chk_list(self, torrent_List, hashList):
 		if len(torrent_List) == 0: return
 		try:
-			from resources.lib.debrid.realdebrid import RealDebrid
-			cached = RealDebrid().check_cache(hashList)
-			if not cached: 
-				cached = Sources().rd_temp_fix(hashList)
-			if cached: 
-				for i in torrent_List:
-					if 'rd' not in cached.get(i['hash'].lower(), {}): # i['hash'] could still be base32 here and not found due to conversion above
-						if 'package' in i: i.update({'source': 'uncached (pack) torrent'})
-						else: i.update({'source': 'uncached torrent'})
-						continue
-					elif len(cached[i['hash'].lower()]['rd']) >= 1:
-						if 'package' in i: i.update({'source': 'cached (pack) torrent'})
-						else: i.update({'source': 'cached torrent'})
-					else:
-						if 'package' in i: i.update({'source': 'uncached (pack) torrent'})
-						else: i.update({'source': 'uncached torrent'})
-				return torrent_List
-			else:
-				return None
+			for i in torrent_List:
+				i.update({'source': 'unchecked'})
+			return torrent_List
 		except: log_utils.error()
-
-	def rd_temp_fix(self, hashList):
-		log_utils.log('Real-Debrid temp fix being applied for blank hash lists.', log_utils.LOGDEBUG)
-		from resources.lib.debrid.realdebrid import RealDebrid
-		import random, string
-		results, retries = [], 0
-		while retries < 3 and not results:
-			random_hash = ''.join(random.choices(string.ascii_lowercase + string.digits, k=40))
-			hashList.append(random_hash)
-			results = RealDebrid().check_cache(hashList)
-			hashList.remove(random_hash)
-			retries += 1
-		return results
 
 	def clr_item_providers(self, title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered):
 		providerscache.remove(self.getSources, title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered) # function cache removal of selected item ONLY

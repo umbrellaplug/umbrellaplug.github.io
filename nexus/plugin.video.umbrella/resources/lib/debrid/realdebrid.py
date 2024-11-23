@@ -202,6 +202,13 @@ class RealDebrid:
 			return self._get(url)
 		except: log_utils.error()
 
+	def user_cloud_info_check(self, file_id):
+		try:
+			url = 'torrents/info/%s' % file_id
+			return self._get(url)
+		except: log_utils.error()
+
+
 
 	def user_torrents_to_listItem(self):
 		try:
@@ -377,99 +384,51 @@ class RealDebrid:
 		from resources.lib.modules.source_utils import seas_ep_filter, extras_filter
 		# from resources.lib.cloud_scrapers.cloud_utils import cloud_check_title # alias and title checking no longer used
 		try:
-			failed_reason, torrent_id, file_url, match = 'Unknown', None, None, False
+			#failed_reason, torrent_id, file_url, match = 'Unknown', None, None, False
 			extensions = supported_video_extensions()
 			extras_filtering_list = extras_filter()
 			info_hash = info_hash.lower()
-			torrent_files = self._get(check_cache_url + '/' + info_hash)
-			# log_utils.log('torrent_files = %s' % torrent_files, __name__)
-			if not torrent_files: return log_utils.log('Real-Debrid: Error RESOLVE MAGNET "%s" : (Server Failed to respond)' % magnet_url, __name__, log_utils.LOGWARNING)
-			if info_hash not in torrent_files: return log_utils.log('Real-Debrid: Error RESOLVE MAGNET "%s" : (info_hash no longer cached)' % magnet_url, __name__, log_utils.LOGWARNING)
-			torrent_id = self.add_magnet(magnet_url) # add_magent() returns id
-			torrent_files = torrent_files[info_hash]['rd']
-			if not torrent_files: failed_reason = 'magnet is no longer cached'
 			compare_title = re.sub(r'[^A-Za-z0-9-]+', '.', title.replace('\'', '').replace('&', 'and').replace('%', '.percent')).lower()
-			#######################################
-			# sort torrent_files so vid only at top
-			vid_only = [item for item in torrent_files if self.video_only(item, extensions)]
-			remainder = [i for i in torrent_files if not i in vid_only]
-			torrent_files = vid_only + remainder
-			#######################################
+			elapsed_time, transfer_finished = 0, False
+			torrent_id = self.add_magnet(magnet_url)
+			self.add_torrent_select(torrent_id,'all')
+			torrent_info = self.user_cloud_info_check(torrent_id)
+			if not torrent_info['links']: return None
+			if 'error' in torrent_info: return None
+			control.sleep(1000)
+			while elapsed_time <= 7 and not transfer_finished:
+				active_count = self.torrents_activeCount()
+				active_list = active_count['list']
+				elapsed_time += 1
+				if info_hash in active_list: control.sleep(1000)
+				else: transfer_finished = True
+			if not transfer_finished:
+				self.delete_torrent(torrent_id)
+				return None
+			selected_files = [(idx, i) for idx, i in enumerate([i for i in torrent_info['files'] if i['selected'] == 1])]
+			match = False
+			selected_files = sorted(selected_files, key=lambda x: x[1]['bytes'], reverse=True)
 			if season:
-				###########################################################################################
-				# remove cached items that do not contain the episode needed - see "self.name_check" below
-				season_m2ts_check = self.m2ts_check(torrent_files)
-				if season_m2ts_check:
-					torrent_files, failed_reason = [], 'Can not resolve .m2ts season disk episode'
+				correct_files = []
+				correct_file_check = False
+				for value in selected_files:
+					correct_file_check = seas_ep_filter(season, episode, value[1]['path'])
+					if correct_file_check: correct_files.append(value[1]); break
+				if len(correct_files) == 0: match = False
 				else:
-					torrent_files = [item for item in torrent_files if self.name_check(item, season, episode, seas_ep_filter)]
-					if not torrent_files: failed_reason = 'no matching season/episode found'
-				###########################################################################################
+					for i in correct_files:
+						compare_link = seas_ep_filter(season, episode, i['path'], split=True)
+						compare_link = re.sub(compare_title, '', compare_link)
+						if any(x in compare_link for x in extras_filtering_list): continue
+						else: match = True; break
+				if match: index = [i[0] for i in selected_files if i[1]['path'] == correct_files[0]['path']][0]
 			else:
-				m2ts_check = self.m2ts_check(torrent_files)
-				if m2ts_check: m2ts_key, torrent_files = self.m2ts_key_value(torrent_files) 
-				else: torrent_files = self.sort_cache_list([(item, max([i['filesize'] for i in item.values()])) for item in torrent_files])
-			for item in torrent_files:
-				try:
-					if not season and not m2ts_check:
-						item_values = self.sort_cache_list([(i['filename'], i['filesize']) for i in item.values()])
-						for value in item_values:
-							filename = re.sub(r'[^A-Za-z0-9-]+', '.', value.replace('\'', '').replace('&', 'and').replace('%', '.percent')).lower()
-							filename_info = filename.replace(compare_title, '') 
-							if any(x in filename_info for x in extras_filtering_list): continue
-							# break
-					torrent_keys = item.keys()
-					# log_utils.log('torrent_keys = %s' % torrent_keys, __name__)
-					if len(torrent_keys) == 0: continue
-					torrent_keys = ','.join(torrent_keys)
-					self.add_torrent_select(torrent_id, torrent_keys)
-					torrent_info = self.torrent_info(torrent_id)
-					# log_utils.log('torrent_info = %s' % torrent_info, __name__)
-					# log_utils.log('torrent_info[links]: = %s' %  torrent_info['links'], __name__)
-					######################################
-					# check here if no "links" in result
-					if not torrent_info['links']:
-						failed_reason = 'No RD created links found'
-						continue
-					######################################
-					if 'error' in torrent_info: continue
-					selected_files = [(idx, i) for idx, i in enumerate([i for i in torrent_info['files'] if i['selected'] == 1])]
-					# log_utils.log('selected_files = %s' % selected_files, __name__)
-					if season:
-						correct_files = []
-						append = correct_files.append
-						correct_file_check = False
-						for value in selected_files:
-							correct_file_check = seas_ep_filter(season, episode, value[1]['path'])
-							if correct_file_check:
-								# log_utils.log('value = %s' % str(value), __name__)
-								append(value[1])
-								break
-							else: failed_reason = 'no matching season/episode found'
-						if len(correct_files) == 0: continue
-						for i in correct_files:
-							compare_link = seas_ep_filter(season, episode, i['path'], split=True)
-							compare_link = re.sub(compare_title, '', compare_link)
-							if any(x in compare_link for x in extras_filtering_list): continue
-							else:
-								match = True
-								break
-						if match:
-							index = [i[0] for i in selected_files if i[1]['path'] == correct_files[0]['path']][0]
-							break
-					elif m2ts_check:
-						match, index = True, [i[0] for i in selected_files if i[1]['id'] == m2ts_key][0]
-						break
-					else:
-						match = False
-						for value in selected_files:
-							filename = re.sub(r'[^A-Za-z0-9-]+', '.', value[1]['path'].rsplit('/', 1)[1].replace('\'', '').replace('&', 'and').replace('%', '.percent')).lower()
-							filename_info = filename.replace(compare_title, '') 
-							if any(x in filename_info for x in extras_filtering_list): continue
-							match, index = True, value[0]
-							break
-						if match: break
-				except: log_utils.error()
+				selected_files = sorted(selected_files, key=lambda x: x[1]['bytes'], reverse=True)
+				for value in selected_files:
+					filename = re.sub(r'[^A-Za-z0-9-]+', '.', value[1]['path'].rsplit('/', 1)[1].replace('\'', '').replace('&', 'and').replace('%', '.percent')).lower()
+					filename_info = filename.replace(compare_title, '')
+					if any(x in filename_info for x in extras_filtering_list): continue
+					match, index = True, value[0]; break
 			if match:
 				rd_link = torrent_info['links'][index]
 				file_url = self.unrestrict_link(rd_link)
@@ -481,6 +440,8 @@ class RealDebrid:
 				except:
 						file_url, failed_reason = None, 'RD returned unsupported file extension or error getting file extension.' 
 				if not self.store_to_cloud: self.delete_torrent(torrent_id)
+			else:
+				self.delete_torrent(torrent_id)
 			if not file_url:
 				log_utils.log('Real-Debrid: FAILED TO RESOLVE MAGNET "%s" : (%s)' % (magnet_url, failed_reason), __name__, log_utils.LOGWARNING)
 				self.delete_torrent(torrent_id)
@@ -675,19 +636,6 @@ class RealDebrid:
 			data = {'files': file_ids}
 			return self._post(url, data)
 		except: log_utils.error('Real-Debrid Error: ADD SELECT FILES %s : ' % torrent_id)
-
-	# def add_torrent_select(self, torrent_id, file_ids=None):
-		# try:
-			# url = '%s/%s' % (select_files_url, torrent_id)
-			# if file_ids == None:
-				# extensions = supported_video_extensions()
-				# info = self.torrent_info(torrent_id)
-				# files = info['files']
-				# file_ids = [str(item['id']) for item in files if item['path'].lower().endswith(tuple(extensions))]
-				# file_ids = ','.join(file_ids)
-			# data = {'files': file_ids}
-			# return self._post(url, data)
-		# except: log_utils.error('Real-Debrid Error: ADD SELECT FILES %s : ' % torrent_id)
 
 	def create_transfer(self, magnet_url):
 		try:
