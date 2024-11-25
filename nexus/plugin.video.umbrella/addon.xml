@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.25">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.26">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
 		<import addon="script.module.requests"/>
@@ -179,8 +179,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.25 - November 23rd, 2024[/B]
---[Change] Added workaround for RD. Thank you Peter.
+[B]Update - v6.7.26 - November 25th, 2024[/B]
+--[Change] Adjustments made for rd workaround and max amount of downloads.
 		</news>
 	</extension>
 

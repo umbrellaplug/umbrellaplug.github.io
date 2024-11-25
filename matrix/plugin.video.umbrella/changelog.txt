@@ -1,3 +1,6 @@
+[B]Update - v6.7.26 - November 25th, 2024[/B]
+--[Change] Adjustments made for rd workaround and max amount of downloads.
+
 [B]Update - v6.7.25 - November 23rd, 2024[/B]
 --[Change] Added workaround for RD. Thank you Peter.
 
