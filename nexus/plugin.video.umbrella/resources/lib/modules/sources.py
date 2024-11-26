@@ -1628,23 +1628,24 @@ class Sources:
 		return self.sources
 
 	def ad_cache_chk_list(self, torrent_List, hashList):
-		if len(torrent_List) == 0: return
+		#if len(torrent_List) == 0: return
 		try:
-			from resources.lib.debrid.alldebrid import AllDebrid
-			cached = AllDebrid().check_cache(hashList)
-			if not cached: return None
-			cached = cached['magnets']
+			# from resources.lib.debrid.alldebrid import AllDebrid
+			# cached = AllDebrid().check_cache(hashList)
+			# if not cached: return None
+			# cached = cached['magnets']
 			count = 0
 			for i in torrent_List:
-				if 'error' in cached[count]: # list index out of range
-					count += 1
-					continue
-				if cached[count]['instant'] is False:
-					if 'package' in i: i.update({'source': 'uncached (pack) torrent'})
-					else: i.update({'source': 'uncached torrent'})
-				else:
-					if 'package' in i: i.update({'source': 'cached (pack) torrent'})
-					else: i.update({'source': 'cached torrent'})
+				# if 'error' in cached[count]: # list index out of range
+				# 	count += 1
+				# 	continue
+				# if cached[count]['instant'] is False:
+				# 	if 'package' in i: i.update({'source': 'uncached (pack) torrent'})
+				# 	else: i.update({'source': 'uncached torrent'})
+				# else:
+				# 	if 'package' in i: i.update({'source': 'cached (pack) torrent'})
+				# 	else: i.update({'source': 'cached torrent'})
+				i.update({'source': 'unchecked'})
 				count += 1
 			return torrent_List
 		except: log_utils.error()

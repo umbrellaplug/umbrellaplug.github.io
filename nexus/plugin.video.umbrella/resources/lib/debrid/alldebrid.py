@@ -80,7 +80,7 @@ class AllDebrid:
 			if 'Response [500]' in str(response):
 				log_utils.log('AllDebrid: Status code 500 – Internal Server Error', __name__, log_utils.LOGWARNING)
 				return None
-			if not response:
+			if response is None:
 				log_utils.log('AllDebrid: No Response from server', __name__, log_utils.LOGWARNING)
 				return None
 			response = response.json()
