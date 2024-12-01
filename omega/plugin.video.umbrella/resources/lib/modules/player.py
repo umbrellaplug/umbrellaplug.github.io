@@ -470,7 +470,8 @@ class Player(xbmc.Player):
 				log_utils.error()
 				xbmc.sleep(1000)
 		homeWindow.clearProperty(pname)
-		if playlist_skip: pass
+		if playlist_skip:
+			self.onPlayBackEnded()
 		else:
 			if (int(self.current_time) > 180 and (self.getWatchedPercent() < int(self.markwatched_percentage))): # kodi is unreliable issuing callback "onPlayBackStopped" and "onPlayBackEnded"
 				self.playbackStopped_triggered = True
@@ -548,10 +549,13 @@ class Player(xbmc.Player):
 
 	def onPlayBackStopped(self):
 		try:
-			playerWindow.clearProperty('umbrella.preResolved_nextUrl')
-			playerWindow.clearProperty('umbrella.playlistStart_position')
-			clear_local_bookmarks() # clear all umbrella bookmarks from kodi database
-			control.playlist.clear()
+			play_next_play_pressed = playerWindow.getProperty('umbrella.playnextPlayPressed') == '1'
+			if not play_next_play_pressed:
+				playerWindow.clearProperty('umbrella.preResolved_nextUrl')
+				playerWindow.clearProperty('umbrella.playlistStart_position')
+				clear_local_bookmarks() # clear all umbrella bookmarks from kodi database
+				control.playlist.clear()
+
 			if not self.onPlayBackStopped_ran or (self.playbackStopped_triggered and not self.onPlayBackStopped_ran): # Kodi callback unreliable and often not issued
 				self.onPlayBackStopped_ran = True
 				self.playbackStopped_triggered = False
@@ -582,7 +586,7 @@ class Player(xbmc.Player):
 		except:
 			playingfile = False
 		log_utils.log('onPlayBackEnded Playlist Position: %s isPlaying: %s' % (control.playlist.getposition(), playingfile), level=log_utils.LOGDEBUG)
-		if control.playlist.getposition() == control.playlist.size() or control.playlist.size() == 1 or (control.playlist.getposition() == 0 and playerWindow.getProperty('playnextPlayPressed') == '0'):
+		if control.playlist.getposition() == control.playlist.size() or control.playlist.size() == 1 or (control.playlist.getposition() == 0 and playerWindow.getProperty('umbrella.playnextPlayPressed') == '0'):
 			control.playlist.clear()
 		log_utils.log('onPlayBackEnded callback', level=log_utils.LOGDEBUG)
 		#control.checkforSkin(action='off')
@@ -759,7 +763,9 @@ class PlayNext(xbmc.Player):
 				next_sources = providerscache.get(sources.Sources().getSources, self.providercache_hours, title, year, imdb, tmdb, tvdb, str(season), str(episode), tvshowtitle, premiered, next_meta, True)
 				if not self.isPlayingVideo():
 					return playerWindow.clearProperty('umbrella.preResolved_nextUrl')
-				sources.Sources().preResolve(next_sources, next_meta)
+				autoplay = getSetting('play.mode.tv') == '1'
+
+				sources.Sources().preResolve(next_sources, next_meta, autoplay)
 			else:
 				playerWindow.clearProperty('umbrella.preResolved_nextUrl')
 		except:

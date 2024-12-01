@@ -43,8 +43,19 @@ class StillWatchingXML(BaseDialog):
 			self.doClose()
 
 	def onClick(self, control_id):
-		if control_id == 3011: # Play Now, skip to end of current
-			xbmc.executebuiltin('PlayerControl(BigSkipForward)')
+		if control_id == 3011:  # Play Now
+			playerWindow.setProperty('umbrella.playnextPlayPressed', str(1))
+			from resources.lib.modules import log_utils
+			log_utils.log('PlayNext Play Button! Playlist Position: %s Playlist Count: %s ' % (
+			control.playlist.getposition(), control.playlist.size()), log_utils.LOGDEBUG)
+
+			playNext_behavior = getSetting('playnext.behavior')  # 0 == Play immediately, 1 == Background scrape
+			if playNext_behavior == '0':
+				if getSetting('play.mode.tv') == '0':  # Source select
+					playerWindow.clearProperty('umbrella.preResolved_nextUrl')
+				xbmc.executebuiltin(
+					'PlayerControl(Next)')  # This seems more stable than BigStepForward since onPlaybackEnded() is never called
+
 			self.doClose()
 		if control_id == 3012: # Stop playback
 			xbmc.executebuiltin('PlayerControl(Playlist.Clear)')

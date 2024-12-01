@@ -52,7 +52,16 @@ class Sources:
 		self.dev_disable_show_packs = getSetting('dev.disable.show.packs') == 'true'
 		self.dev_disable_show_filter = getSetting('dev.disable.show.filter') == 'true'
 		self.highlight_color = getSetting('scraper.dialog.color')
-		
+		self.mediatype = None
+		self.imdb = None
+		self.tmdb = None
+		self.tvdb = None
+		self.title = None
+		self.year = None
+		self.season = None
+		self.episode = None
+		self.ids = None
+
 		self.rescrapeAll = rescrapeAll
 		self.retryallsources = getSetting('sources.retryall') == 'true'
 		self.uncached_nopopup = getSetting('sources.nocachepopup') == 'true'
@@ -68,8 +77,19 @@ class Sources:
 			return control.notification(message=33034)
 		try:
 			control.sleep(200)
-			if control.playlist.getposition() == 0 or control.playlist.size() <= 1 or rescrape == 'true': 
+			if control.playlist.getposition() == 0 or control.playlist.size() <= 1:
 				playerWindow.clearProperty('umbrella.preResolved_nextUrl')
+			elif rescrape == 'true':
+				playerWindow.clearProperty('umbrella.preResolved_nextUrl')
+				control.homeWindow.clearProperty('umbrella.preResolved_nextSources')
+
+			# 0 = source select, 1 = autoplay
+			if select is None:
+				if episode == None:
+					select = getSetting('play.mode.movie')
+				else:
+					select = getSetting('play.mode.tv')
+
 			preResolved_nextUrl = playerWindow.getProperty('umbrella.preResolved_nextUrl')
 			if preResolved_nextUrl != '':
 				control.sleep(500)
@@ -80,166 +100,26 @@ class Sources:
 					log_utils.log('Playing preResolved_nextUrl = %s' % preResolved_nextUrl, level=log_utils.LOGDEBUG)
 				from resources.lib.modules import player
 				return player.Player().play_source(title, year, season, episode, imdb, tmdb, tvdb, preResolved_nextUrl, meta)
-			if title: title = self.getTitle(title)
-			if tvshowtitle: tvshowtitle = self.getTitle(tvshowtitle)
-			homeWindow.clearProperty(self.metaProperty)
-			homeWindow.setProperty(self.metaProperty, meta)
-			homeWindow.clearProperty(self.seasonProperty)
-			homeWindow.setProperty(self.seasonProperty, season)
-			homeWindow.clearProperty(self.episodeProperty)
-			homeWindow.setProperty(self.episodeProperty, episode)
-			homeWindow.clearProperty(self.titleProperty)
-			homeWindow.setProperty(self.titleProperty, title)
-			homeWindow.clearProperty(self.imdbProperty)
-			homeWindow.setProperty(self.imdbProperty, imdb)
-			homeWindow.clearProperty(self.tmdbProperty)
-			homeWindow.setProperty(self.tmdbProperty, tmdb)
-			homeWindow.clearProperty(self.tvdbProperty)
-			homeWindow.setProperty(self.tvdbProperty, tvdb)
-			p_label = '[COLOR %s]%s (%s)[/COLOR]' % (self.highlight_color, title, year) if tvshowtitle is None else \
-			'[COLOR %s]%s (S%02dE%02d)[/COLOR]' % (self.highlight_color, tvshowtitle, int(season), int(episode))
-			homeWindow.clearProperty(self.labelProperty)
-			homeWindow.setProperty(self.labelProperty, p_label)
-			url = None
-			
-			self.mediatype = 'movie' if tvshowtitle is None else 'episode'
-			try: meta = jsloads(unquote(meta.replace('%22', '\\"')))
-			except: pass
-			self.meta = meta
-			if meta == None:
-				if self.debuglog:
-					log_utils.log('No meta was passed in. Trying to find meta now.',level=log_utils.LOGDEBUG)
-				self.imdb_user = getSetting('imdbuser').replace('ur', '')
-				self.tmdb_key = getSetting('tmdb.apikey')
-				if not self.tmdb_key: self.tmdb_key = 'edde6b5e41246ab79a2697cd125e1781'
-				self.tvdb_key = getSetting('tvdb.apikey')
-				if self.mediatype == 'episode': self.user = str(self.imdb_user) + str(self.tvdb_key)
-				else: self.user = str(self.tmdb_key)
-				self.lang = control.apiLanguage()['tvdb']
-				self.ids = {'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb}
-				meta = metacache.fetch([{'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb}], self.lang, self.user)[0]
-				if meta != self.ids: meta = dict((k, v) for k, v in iter(meta.items()) if v is not None and v != '')
-			def checkLibMeta(): # check Kodi db for meta for library playback.
-				def cleanLibArt(art):
-					if not art: return ''
-					art = unquote(art.replace('image://', ''))
-					if art.endswith('/'): art = art[:-1]
-					return art
-				try:
-					if self.mediatype != 'movie': raise Exception()
-					# do not add IMDBNUMBER as tmdb scraper puts their id in the key value
-					meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties" : ["title", "originaltitle", "uniqueid", "year", "premiered", "genre", "studio", "country", "runtime", "rating", "votes", "mpaa", "director", "writer", "cast", "plot", "plotoutline", "tagline", "thumbnail", "art", "file"]}, "id": 1}' % (year, str(int(year) + 1), str(int(year) - 1)))
-					meta = jsloads(meta)['result']['movies']
-					try:
-						meta = [i for i in meta if i.get('uniqueid', []).get('imdb', '') == imdb]
-					except:
-						if self.debuglog:
-							log_utils.log('Get Meta Failed in checkLibMeta: %s' % str(meta), level=log_utils.LOGDEBUG)
-						meta = None
-					if meta: meta = meta[0]
-					else: raise Exception()
-					if 'mediatype' not in meta: meta.update({'mediatype': 'movie'})
-					if 'duration' not in meta: meta.update({'duration': meta.get('runtime')}) # Trakt scrobble resume needs this for lib playback
-					if 'castandrole' not in meta: meta.update({'castandrole': [(i['name'], i['role']) for i in meta.get('cast')]})
-					poster = cleanLibArt(meta.get('art').get('poster', '')) or self.poster
-					fanart = cleanLibArt(meta.get('art').get('fanart', '')) or self.fanart
-					clearart = cleanLibArt(meta.get('art').get('clearart', ''))
-					clearlogo = cleanLibArt(meta.get('art').get('clearlogo', ''))
-					discart = cleanLibArt(meta.get('art').get('discart'))
-					meta.update({'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb, 'poster': poster, 'fanart': fanart, 'clearart': clearart, 'clearlogo': clearlogo, 'discart': discart})
-					return meta
-				except:
-					log_utils.error()
-					meta = {}
-				try:
-					if self.mediatype != 'episode': raise Exception()
-					# do not add IMDBNUMBER as tmdb scraper puts their id in the key value
-					show_meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties" : ["title", "originaltitle", "uniqueid", "mpaa", "year", "genre", "runtime", "thumbnail", "file"]}, "id": 1}' % (year, str(int(year)+1), str(int(year)-1)))
-					show_meta = jsloads(show_meta)['result']['tvshows']
-					show_meta = [i for i in show_meta if i.get('uniqueid', []).get('imdb', '') == imdb]
-					if show_meta: show_meta = show_meta[0]
-					else: raise Exception()
-					tvshowid = show_meta['tvshowid']
-					meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params":{"tvshowid": %d, "filter":{"and": [{"field": "season", "operator": "is", "value": "%s"}, {"field": "episode", "operator": "is", "value": "%s"}]}, "properties": ["title", "season", "episode", "showtitle", "firstaired", "runtime", "rating", "director", "writer", "cast", "plot", "thumbnail", "art", "file"]}, "id": 1}' % (tvshowid, season, episode))
-					meta = jsloads(meta)['result']['episodes']
-					if meta: meta = meta[0]
-					else: raise Exception()
-					if 'mediatype' not in meta: meta.update({'mediatype': 'episode'})
-					if 'tvshowtitle' not in meta: meta.update({'tvshowtitle': meta.get('showtitle')})
-					if 'castandrole' not in meta: meta.update({'castandrole': [(i['name'], i['role']) for i in meta.get('cast')]})
-					if 'genre' not in meta: meta.update({'genre': show_meta.get('genre')})
-					if 'duration' not in meta: meta.update({'duration': meta.get('runtime')}) # Trakt scrobble resume needs this for lib playback but Kodi lib returns "0" for shows or episodes
-					if 'mpaa' not in meta: meta.update({'mpaa': show_meta.get('mpaa')})
-					if 'premiered' not in meta: meta.update({'premiered': meta.get('firstaired')})
-					if 'year' not in meta: meta.update({'year': show_meta.get('year')}) # shows year not year episode aired
-					poster = cleanLibArt(meta.get('art').get('season.poster', '')) or self.poster
-					fanart = cleanLibArt(meta.get('art').get('tvshow.fanart', '')) or self.poster
-					clearart = cleanLibArt(meta.get('art').get('tvshow.clearart', ''))
-					clearlogo = cleanLibArt(meta.get('art').get('tvshow.clearlogo', ''))
-					discart = cleanLibArt(meta.get('art').get('discart'))
-					meta.update({'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb, 'poster': poster, 'fanart': fanart, 'clearart': clearart, 'clearlogo': clearlogo, 'discart': discart})
-					return meta
-				except:
-					log_utils.error()
-					meta = {}
-			if self.meta is None or 'videodb' in control.infoLabel('ListItem.FolderPath'):
-				self.meta = checkLibMeta()
-			if self.mediatype == 'movie':
-				if getSetting('imdb.Moviemeta.check') == 'true': # check IMDB. TMDB and Trakt differ on a ratio of 1 in 20 and year is off by 1, some meta titles mismatch
-					title, year = self.imdb_meta_chk(imdb, title, year)
-				if title == 'The F**k-It List': title = 'The Fuck-It List'
-			if self.mediatype == 'episode':
-				if getSetting('imdb.Showmeta.check') == 'true':
-					tvshowtitle, year = self.imdb_meta_chk(imdb, tvshowtitle, year)
-				if tvshowtitle == 'The End of the F***ing World': tvshowtitle = 'The End of the Fucking World'
-				if self.useTitleSubs:
-					tvshowtitle = self.subTitle(tvshowtitle)
-					if self.meta:
-						self.meta.update({'tvshowtitle': tvshowtitle})
-						p_label = '[COLOR %s]%s (%s)[/COLOR]' % (self.highlight_color, title, year) if tvshowtitle is None else \
-						'[COLOR %s]%s (S%02dE%02d)[/COLOR]' % (self.highlight_color, tvshowtitle, int(season), int(episode))
-						homeWindow.clearProperty(self.labelProperty)
-						homeWindow.setProperty(self.labelProperty, p_label)
-						homeWindow.clearProperty(self.metaProperty)
-						homeWindow.setProperty(self.metaProperty, jsdumps(self.meta))
-				self.total_seasons, self.season_isAiring = self.get_season_info(imdb, tmdb, tvdb, meta, season)
-			if rescrape: self.clr_item_providers(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered)
-			items = providerscache.get(self.getSources, self.providercache_hours, title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered)
-			if not items:
-				self.url = url
-				return self.errorForSources(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered)
-			filter = [] ; uncached_items = []
-			if getSetting('torrent.remove.uncached') == 'true':
-				uncached_items += [i for i in items if re.match(r'^uncached.*torrent', i['source'])]
-				filter += [i for i in items if i not in uncached_items]
-				if filter: pass
-				elif not filter:
-					homeWindow.clearProperty('umbrella.window_keep_alive')
-					if not self.uncached_nopopup:
-						if control.yesnoDialog('No cached torrents returned. Would you like to view the uncached torrents to cache yourself?', '', ''):
-							control.cancelPlayback()
-							select = '0'
-							self.uncached_chosen = True
-							filter += uncached_items
-				items = filter
-				if not items:
-					self.url = url
-					return self.errorForSources(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered)
-			else: uncached_items += [i for i in items if re.match(r'^uncached.*torrent', i['source'])]
-			if select is None:
-				if episode is not None and self.enable_playnext: select = '1'
-				elif episode == None:
-					select = getSetting('play.mode.movie')
-				else: select = getSetting('play.mode.tv')
-			title = tvshowtitle if tvshowtitle is not None else title
-			self.imdb = imdb ; self.tmdb = tmdb ; self.tvdb = tvdb ; self.title = title ; self.year = year
-			self.season = season ; self.episode = episode
-			self.ids = {'imdb': self.imdb, 'tmdb': self.tmdb, 'tvdb': self.tvdb}
+
+			self.setSourcesProperties(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, meta)
+
+			items = [] ; uncached_items = [] ; url = None
+			pre_resolved_sources = control.homeWindow.getProperty('umbrella.preResolved_nextSources')
+			if pre_resolved_sources != '':
+				next_sources = jsloads(pre_resolved_sources)
+				control.homeWindow.clearProperty('umbrella.preResolved_nextSources')
+				if next_sources != '':
+					uncached_items = [i for i in next_sources if re.match(r'^uncached.*torrent', i['source'])]
+					items = [i for i in next_sources if i not in uncached_items]
+			else:
+				items, uncached_items = self.resolveSources(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, meta, select, rescrape)
+
 			if len(items) > 0:
 				if select == '0':
 					control.sleep(200)
 					return self.sourceSelect(title, items, uncached_items, self.meta)
-				else: url = self.sourcesAutoPlay(items)
+				else:
+					url = self.sourcesAutoPlay(items)
 			if url == 'close://' or url is None:
 				self.url = url
 				return self.errorForSources()
@@ -262,10 +142,210 @@ class Sources:
 			log_utils.error()
 			control.cancelPlayback()
 
+	def setSourcesProperties(self, title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, meta):
+
+		if title: title = self.getTitle(title)
+		if tvshowtitle: tvshowtitle = self.getTitle(tvshowtitle)
+		homeWindow.clearProperty(self.metaProperty)
+		homeWindow.setProperty(self.metaProperty, meta)
+		homeWindow.clearProperty(self.seasonProperty)
+		homeWindow.setProperty(self.seasonProperty, season)
+		homeWindow.clearProperty(self.episodeProperty)
+		homeWindow.setProperty(self.episodeProperty, episode)
+		homeWindow.clearProperty(self.titleProperty)
+		homeWindow.setProperty(self.titleProperty, title)
+		homeWindow.clearProperty(self.imdbProperty)
+		homeWindow.setProperty(self.imdbProperty, imdb)
+		homeWindow.clearProperty(self.tmdbProperty)
+		homeWindow.setProperty(self.tmdbProperty, tmdb)
+		homeWindow.clearProperty(self.tvdbProperty)
+		homeWindow.setProperty(self.tvdbProperty, tvdb)
+		p_label = '[COLOR %s]%s (%s)[/COLOR]' % (self.highlight_color, title, year) if tvshowtitle is None else \
+			'[COLOR %s]%s (S%02dE%02d)[/COLOR]' % (self.highlight_color, tvshowtitle, int(season), int(episode))
+		homeWindow.clearProperty(self.labelProperty)
+		homeWindow.setProperty(self.labelProperty, p_label)
+
+		self.mediatype = 'movie' if tvshowtitle is None else 'episode'
+		try:
+			meta = jsloads(unquote(meta.replace('%22', '\\"')))
+		except:
+			pass
+		self.meta = meta
+		if meta == None:
+			if self.debuglog:
+				log_utils.log('No meta was passed in. Trying to find meta now.', level=log_utils.LOGDEBUG)
+			self.imdb_user = getSetting('imdbuser').replace('ur', '')
+			self.tmdb_key = getSetting('tmdb.apikey')
+			if not self.tmdb_key: self.tmdb_key = 'edde6b5e41246ab79a2697cd125e1781'
+			self.tvdb_key = getSetting('tvdb.apikey')
+			if self.mediatype == 'episode':
+				self.user = str(self.imdb_user) + str(self.tvdb_key)
+			else:
+				self.user = str(self.tmdb_key)
+			self.lang = control.apiLanguage()['tvdb']
+			self.ids = {'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb}
+			meta = metacache.fetch([{'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb}], self.lang, self.user)[0]
+			if meta != self.ids: meta = dict((k, v) for k, v in iter(meta.items()) if v is not None and v != '')
+
+		def checkLibMeta():  # check Kodi db for meta for library playback.
+			def cleanLibArt(art):
+				if not art: return ''
+				art = unquote(art.replace('image://', ''))
+				if art.endswith('/'): art = art[:-1]
+				return art
+
+			try:
+				if self.mediatype != 'movie': raise Exception()
+				# do not add IMDBNUMBER as tmdb scraper puts their id in the key value
+				meta = control.jsonrpc(
+					'{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties" : ["title", "originaltitle", "uniqueid", "year", "premiered", "genre", "studio", "country", "runtime", "rating", "votes", "mpaa", "director", "writer", "cast", "plot", "plotoutline", "tagline", "thumbnail", "art", "file"]}, "id": 1}' % (
+					year, str(int(year) + 1), str(int(year) - 1)))
+				meta = jsloads(meta)['result']['movies']
+				try:
+					meta = [i for i in meta if i.get('uniqueid', []).get('imdb', '') == imdb]
+				except:
+					if self.debuglog:
+						log_utils.log('Get Meta Failed in checkLibMeta: %s' % str(meta), level=log_utils.LOGDEBUG)
+					meta = None
+				if meta:
+					meta = meta[0]
+				else:
+					raise Exception()
+				if 'mediatype' not in meta: meta.update({'mediatype': 'movie'})
+				if 'duration' not in meta: meta.update(
+					{'duration': meta.get('runtime')})  # Trakt scrobble resume needs this for lib playback
+				if 'castandrole' not in meta: meta.update(
+					{'castandrole': [(i['name'], i['role']) for i in meta.get('cast')]})
+				poster = cleanLibArt(meta.get('art').get('poster', '')) or self.poster
+				fanart = cleanLibArt(meta.get('art').get('fanart', '')) or self.fanart
+				clearart = cleanLibArt(meta.get('art').get('clearart', ''))
+				clearlogo = cleanLibArt(meta.get('art').get('clearlogo', ''))
+				discart = cleanLibArt(meta.get('art').get('discart'))
+				meta.update(
+					{'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb, 'poster': poster, 'fanart': fanart, 'clearart': clearart,
+					 'clearlogo': clearlogo, 'discart': discart})
+				return meta
+			except:
+				log_utils.error()
+				meta = {}
+			try:
+				if self.mediatype != 'episode': raise Exception()
+				# do not add IMDBNUMBER as tmdb scraper puts their id in the key value
+				show_meta = control.jsonrpc(
+					'{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties" : ["title", "originaltitle", "uniqueid", "mpaa", "year", "genre", "runtime", "thumbnail", "file"]}, "id": 1}' % (
+					year, str(int(year) + 1), str(int(year) - 1)))
+				show_meta = jsloads(show_meta)['result']['tvshows']
+				show_meta = [i for i in show_meta if i.get('uniqueid', []).get('imdb', '') == imdb]
+				if show_meta:
+					show_meta = show_meta[0]
+				else:
+					raise Exception()
+				tvshowid = show_meta['tvshowid']
+				meta = control.jsonrpc(
+					'{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params":{"tvshowid": %d, "filter":{"and": [{"field": "season", "operator": "is", "value": "%s"}, {"field": "episode", "operator": "is", "value": "%s"}]}, "properties": ["title", "season", "episode", "showtitle", "firstaired", "runtime", "rating", "director", "writer", "cast", "plot", "thumbnail", "art", "file"]}, "id": 1}' % (
+					tvshowid, season, episode))
+				meta = jsloads(meta)['result']['episodes']
+				if meta:
+					meta = meta[0]
+				else:
+					raise Exception()
+				if 'mediatype' not in meta: meta.update({'mediatype': 'episode'})
+				if 'tvshowtitle' not in meta: meta.update({'tvshowtitle': meta.get('showtitle')})
+				if 'castandrole' not in meta: meta.update(
+					{'castandrole': [(i['name'], i['role']) for i in meta.get('cast')]})
+				if 'genre' not in meta: meta.update({'genre': show_meta.get('genre')})
+				if 'duration' not in meta: meta.update({'duration': meta.get(
+					'runtime')})  # Trakt scrobble resume needs this for lib playback but Kodi lib returns "0" for shows or episodes
+				if 'mpaa' not in meta: meta.update({'mpaa': show_meta.get('mpaa')})
+				if 'premiered' not in meta: meta.update({'premiered': meta.get('firstaired')})
+				if 'year' not in meta: meta.update({'year': show_meta.get('year')})  # shows year not year episode aired
+				poster = cleanLibArt(meta.get('art').get('season.poster', '')) or self.poster
+				fanart = cleanLibArt(meta.get('art').get('tvshow.fanart', '')) or self.poster
+				clearart = cleanLibArt(meta.get('art').get('tvshow.clearart', ''))
+				clearlogo = cleanLibArt(meta.get('art').get('tvshow.clearlogo', ''))
+				discart = cleanLibArt(meta.get('art').get('discart'))
+				meta.update(
+					{'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb, 'poster': poster, 'fanart': fanart, 'clearart': clearart,
+					 'clearlogo': clearlogo, 'discart': discart})
+				return meta
+			except:
+				log_utils.error()
+				meta = {}
+
+		if self.meta is None or 'videodb' in control.infoLabel('ListItem.FolderPath'):
+			self.meta = checkLibMeta()
+		if self.mediatype == 'movie':
+			if getSetting(
+					'imdb.Moviemeta.check') == 'true':  # check IMDB. TMDB and Trakt differ on a ratio of 1 in 20 and year is off by 1, some meta titles mismatch
+				title, year = self.imdb_meta_chk(imdb, title, year)
+			if title == 'The F**k-It List': title = 'The Fuck-It List'
+		if self.mediatype == 'episode':
+			if getSetting('imdb.Showmeta.check') == 'true':
+				tvshowtitle, year = self.imdb_meta_chk(imdb, tvshowtitle, year)
+			if tvshowtitle == 'The End of the F***ing World': tvshowtitle = 'The End of the Fucking World'
+			if self.useTitleSubs:
+				tvshowtitle = self.subTitle(tvshowtitle)
+				if self.meta:
+					self.meta.update({'tvshowtitle': tvshowtitle})
+					p_label = '[COLOR %s]%s (%s)[/COLOR]' % (
+					self.highlight_color, title, year) if tvshowtitle is None else \
+						'[COLOR %s]%s (S%02dE%02d)[/COLOR]' % (
+						self.highlight_color, tvshowtitle, int(season), int(episode))
+					homeWindow.clearProperty(self.labelProperty)
+					homeWindow.setProperty(self.labelProperty, p_label)
+					homeWindow.clearProperty(self.metaProperty)
+					homeWindow.setProperty(self.metaProperty, jsdumps(self.meta))
+			self.total_seasons, self.season_isAiring = self.get_season_info(imdb, tmdb, tvdb, meta, season)
+
+
+		title = tvshowtitle if tvshowtitle is not None else title
+		self.imdb = imdb
+		self.tmdb = tmdb
+		self.tvdb = tvdb
+		self.title = title
+		self.year = year
+		self.season = season
+		self.episode = episode
+		self.ids = {'imdb': self.imdb, 'tmdb': self.tmdb, 'tvdb': self.tvdb}
+
+	def resolveSources(self, title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, meta, select, rescrape=None):
+
+		if rescrape: self.clr_item_providers(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered)
+		items = providerscache.get(self.getSources, self.providercache_hours, title, year, imdb, tmdb, tvdb, season,
+								   episode, tvshowtitle, premiered)
+		url = None
+		if not items:
+			self.url = url
+			return self.errorForSources(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered)
+		filter = [] ; uncached_items = []
+		if getSetting('torrent.remove.uncached') == 'true':
+			uncached_items += [i for i in items if re.match(r'^uncached.*torrent', i['source'])]
+			filter += [i for i in items if i not in uncached_items]
+			if filter:
+				pass
+			elif not filter:
+				homeWindow.clearProperty('umbrella.window_keep_alive')
+				if not self.uncached_nopopup:
+					if control.yesnoDialog(
+							'No cached torrents returned. Would you like to view the uncached torrents to cache yourself?',
+							'', ''):
+						control.cancelPlayback()
+						select = '0'
+						self.uncached_chosen = True
+						filter += uncached_items
+			items = filter
+			if not items:
+				self.url = url
+				return self.errorForSources(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered)
+		else:
+			uncached_items += [i for i in items if re.match(r'^uncached.*torrent', i['source'])]
+
+		return items, uncached_items
+
 	def sourceSelect(self, title, items, uncached_items, meta):
 		try:
 			control.hide()
-			control.playlist.clear()
+			# control.playlist.clear()
 			if not items:
 				control.sleep(200) ; control.hide() ; sysexit()
 ## - compare meta received to database and use largest(eventually switch to a request to fetch missing db meta for item)
@@ -766,7 +846,7 @@ class Sources:
 			del progressDialog
 		return self.sources
 
-	def preResolve(self, next_sources, next_meta):
+	def preResolve(self, next_sources, next_meta, autoplay=False):
 		try:
 			if not next_sources: raise Exception()
 			homeWindow.setProperty(self.metaProperty, jsdumps(next_meta))
@@ -795,13 +875,19 @@ class Sources:
 					if url:
 						control.sleep(500)
 						player_hasVideo = control.condVisibility('Player.HasVideo')
-						if player_hasVideo: # do not setPropery if user stops playback quickly because "onPlayBackStopped" is already called and won't be able to clear it.
-							playerWindow.setProperty('umbrella.preResolved_nextUrl', url)
-							if self.debuglog:
-								log_utils.log('preResolved_nextUrl : %s' % url, level=log_utils.LOGDEBUG)
+						if autoplay:
+							if player_hasVideo: # do not setPropery if user stops playback quickly because "onPlayBackStopped" is already called and won't be able to clear it.
+								playerWindow.setProperty('umbrella.preResolved_nextUrl', url)
+								if self.debuglog:
+									log_utils.log('preResolved_nextUrl : %s' % url, level=log_utils.LOGDEBUG)
+							else:
+								if self.debuglog:
+									log_utils.log('player_hasVideo = %s : skipping setting preResolved_nextUrl' % player_hasVideo, level=log_utils.LOGWARNING)
 						else:
+							homeWindow.setProperty('umbrella.preResolved_nextSources', jsdumps(next_sources))
 							if self.debuglog:
-								log_utils.log('player_hasVideo = %s : skipping setting preResolved_nextUrl' % player_hasVideo, level=log_utils.LOGWARNING)
+								log_utils.log('preResolved_nextSources', level=log_utils.LOGDEBUG)
+
 						break
 				except: pass
 			except: log_utils.error()
