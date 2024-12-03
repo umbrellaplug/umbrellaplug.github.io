@@ -879,11 +879,13 @@ class Episodes:
 				except: labelProgress = label
 				isUnaired = False
 				try:
-					if i['unaired'] == 'true': 
-						labelProgress = '[COLOR %s][I]%s[/I][/COLOR]' % (self.unairedcolor, labelProgress)
-						isUnaired = True
+    					if i['unaired'] == 'true': 
+        					labelProgress = '[COLOR %s][I]%s[/I][/COLOR]' % (self.unairedcolor, labelProgress)
+        					i['label'] = labelProgress  # Ensure label is updated
+        					i['title'] = labelProgress  # Match title to label
+        					isUnaired = True
 				except: 
-					isUnaired = False
+    					isUnaired = False
 				if i.get('traktHistory') is True: # uses Trakt lastplayed in utc
 					try:
 						air_datetime = tools.convert_time(stringTime=i.get('lastplayed', ''), zoneFrom='utc', zoneTo='local', formatInput='%Y-%m-%dT%H:%M:%S.000Z', formatOutput='%b %d %Y %I:%M %p', remove_zeroes=True)
