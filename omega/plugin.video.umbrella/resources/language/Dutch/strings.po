@@ -5241,3 +5241,15 @@ msgstr ""
 msgctxt "#40525"
 msgid "Umbrella Addon Settings"
 msgstr ""
+
+msgctxt "#40530"
+msgid "Play button behavior"
+msgstr ""
+
+msgctxt "#40531"
+msgid "Play immediately"
+msgstr ""
+
+msgctxt "#40532"
+msgid "Background scrape"
+msgstr ""

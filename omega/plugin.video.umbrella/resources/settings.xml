@@ -1652,6 +1652,26 @@
 						<heading>40025</heading>
 					</control>
 				</setting>
+
+				<setting id="playnext.behavior" type="integer" label="40530" help="" parent="enable.playnext">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="40531">0</option>
+							<option label="40532">1</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="enable.playnext">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="list" format="string">
+						<heading>40530</heading>
+					</control>
+				</setting>
+
 				<setting id="showHelpPlayNext" type="action" label="32137" help="">
 					<level>0</level>
 					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=playnext)</data>
