@@ -29,6 +29,9 @@ class SourceResultsXML(BaseDialog):
 		self.easynewsHighlightColor = self.colors['easynews']
 		self.plexHighlightColor = self.colors['plexshare']
 		self.gdriveHighlightColor = self.colors['gdrive']
+		self.torboxHighlightColor = self.colors['torbox']
+		self.easyDebridHighlightColor = self.colors['easydebrid']
+		self.offcloudHighlightColor = self.colors['offcloud']
 		#self.furkHighlightColor = self.colors['furk']
 		self.filePursuitHighlightColor = self.colors['filepursuit']
 		self.dialogColor = getSetting('scraper.dialog.color')
@@ -96,7 +99,7 @@ class SourceResultsXML(BaseDialog):
 				if not 'UNCACHED' in source and self.dnlds_enabled:
 					cm_list += [('[B]Download[/B]', 'download')]
 					cm_list += [('[B]Create Strm File[/B]', 'strmFile')]
-				if re_match(r'^CACHED.*TORRENT', source):
+				if re_match(r'^CACHED.*TORRENT', source) and debrid is not 'EasyDebrid':
 					debrid = chosen_source.getProperty('umbrella.debrid')
 					cm_list += [('[B]Save to %s Cloud[/B]' % debrid, 'saveToCloud')]
 				chosen_cm_item = dialog.contextmenu([i[0] for i in cm_list])
@@ -143,6 +146,10 @@ class SourceResultsXML(BaseDialog):
 						from resources.lib.debrid import alldebrid
 						transfer_function = alldebrid.AllDebrid
 						debrid_icon = alldebrid.ad_icon
+					elif debrid == 'Offcloud':
+						from resources.lib.debrid import offcloud
+						transfer_function = offcloud.Offcloud
+						debrid_icon = offcloud.oc_icon
 					elif debrid == 'Premiumize':
 						from resources.lib.debrid import premiumize
 						transfer_function = premiumize.Premiumize
@@ -151,6 +158,14 @@ class SourceResultsXML(BaseDialog):
 						from resources.lib.debrid import realdebrid
 						transfer_function = realdebrid.RealDebrid
 						debrid_icon = realdebrid.rd_icon
+					elif debrid == 'TorBox':
+						from resources.lib.debrid import torbox
+						transfer_function = torbox.TorBox
+						debrid_icon = torbox.tb_icon
+					elif debrid == 'EasyDebrid':
+						from resources.lib.debrid import easydebrid
+						transfer_function = easydebrid.EasyDebrid
+						debrid_icon = easydebrid.ed_icon
 					result = transfer_function().create_transfer(magnet)
 					if result: notification(message='Sending MAGNET to the %s cloud' % debrid, icon=debrid_icon)
 			elif action in self.closing_actions:
@@ -190,7 +205,7 @@ class SourceResultsXML(BaseDialog):
 
 	def debrid_abv(self, debrid):
 		try:
-			d_dict = {'AllDebrid': 'AD', 'Premiumize.me': 'PM', 'Real-Debrid': 'RD'}
+			d_dict = {'AllDebrid': 'AD', 'EasyDebrid': 'ED','Premiumize.me': 'PM', 'Real-Debrid': 'RD', 'Torbox': 'TB', 'Offcloud': 'OC'}
 			d = d_dict[debrid]
 		except:
 			d = ''
@@ -198,7 +213,7 @@ class SourceResultsXML(BaseDialog):
 
 	def debrid_name(self, debrid):
 		try:
-			d_dict = {'AllDebrid': 'AllDebrid', 'Premiumize.me': 'Premiumize', 'Real-Debrid': 'Real-Debrid'}
+			d_dict = {'AllDebrid': 'AllDebrid', 'EasyDebrid': 'EasyDebrid','Premiumize.me': 'Premiumize', 'Real-Debrid': 'Real-Debrid', 'TorBox': 'TorBox', 'Offcloud': 'Offcloud'}
 			d = d_dict[debrid]
 		except:
 			d = ''
@@ -223,6 +238,12 @@ class SourceResultsXML(BaseDialog):
 								providerHighlight = self.alldebridHighlightColor
 							elif str(item.get('debrid')).lower()== 'premiumize.me':
 								providerHighlight = self.premiumizeHighlightColor
+							elif str(item.get('debrid')).lower()== 'torbox':
+								providerHighlight = self.torboxHighlightColor
+							elif str(item.get('debrid')).lower()== 'easydebrid':
+								providerHighlight = self.easyDebridHighlightColor
+							elif str(item.get('debrid')).lower()== 'offcloud':
+								providerHighlight = self.offcloudHighlightColor
 						else:
 							if item.get('provider') == 'easynews':
 								providerHighlight = self.easynewsHighlightColor
@@ -312,6 +333,9 @@ class SourceResultsXML(BaseDialog):
 				self.setProperty('umbrella.easynewscolor', self.easynewsHighlightColor)
 				self.setProperty('umbrella.gdrivecolor', self.gdriveHighlightColor)
 				self.setProperty('umbrella.filepursuitcolor', self.filePursuitHighlightColor)
+				self.setProperty('umbrella.torboxcolor', self.torboxHighlightColor)
+				self.setProperty('umbrella.easydebridcolor', self.easyDebridHighlightColor)
+				self.setProperty('umbrella.offcloudcolor', self.offcloudHighlightColor)
 				
 				if getSetting('sources.usecoloricons') == 'true':
 					self.setProperty('umbrella.usecoloricons', '1')

@@ -221,6 +221,36 @@
 						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),Premiumize)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
 					</control>
 					<control type="image">
+						<description>Quality Icon TB</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.torboxcolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),TorBox)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon ED</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.easydebridcolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),EasyDebrid)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon OC</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.offcloudcolor)]">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),Offcloud)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
 						<description>Quality Icon Plex</description>
 						<left>0</left>
 						<top>0</top>
@@ -374,7 +404,7 @@
 						<align>left</align>
 						<aligny>top</aligny>
 						<label>$INFO[ListItem.Property(umbrella.size_label)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.debrid)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.provider)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   $INFO[ListItem.Property(umbrella.source)]   [COLOR $INFO[ListItem.Property(umbrella.providerhighlight)]]|[/COLOR]   HOSTER</label>
-						<visible>!String.Contains(ListItem.Property(umbrella.source),DIRECT) + !String.Contains(ListItem.Property(umbrella.source),LOCAL) + !String.Contains(ListItem.Property(umbrella.source),TORRENT) + !String.IsEqual(ListItem.Property(umbrella.source),CLOUD)</visible>
+						<visible>!String.Contains(ListItem.Property(umbrella.source),UNCHECKED) + !String.Contains(ListItem.Property(umbrella.source),DIRECT) + !String.Contains(ListItem.Property(umbrella.source),LOCAL) + !String.Contains(ListItem.Property(umbrella.source),TORRENT) + !String.IsEqual(ListItem.Property(umbrella.source),CLOUD)</visible>
 					</control>
 				</itemlayout>
 				<focusedlayout height="100" width="1325">
@@ -433,6 +463,36 @@
 						<align>left</align>
 						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
 						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),Premiumize)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon TB</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),TorBox)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon ED</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),EasyDebrid)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
+					</control>
+					<control type="image">
+						<description>Quality Icon OC</description>
+						<left>0</left>
+						<top>0</top>
+						<width>100</width>
+						<height>100</height>
+						<align>left</align>
+						<texture colordiffuse="black">$INFO[ListItem.Property(umbrella.quality_icon1)]</texture>
+						<visible>String.IsEqual(ListItem.Property(umbrella.debrid),Offcloud)+String.IsEqual(Window().Property(umbrella.usecoloricons),1)</visible>
 					</control>
 					<control type="image">
 						<description>Quality Icon Plex</description>
@@ -563,7 +623,7 @@
 						<align>left</align>
 						<aligny>top</aligny>
 						<label>[B]$INFO[ListItem.Property(umbrella.size_label)]   [COLOR black]|[/COLOR]   $INFO[ListItem.Property(umbrella.debrid)]   [COLOR black]|[/COLOR]   $INFO[ListItem.Property(umbrella.provider)]   [COLOR black]|[/COLOR]   $INFO[ListItem.Property(umbrella.source)]   [COLOR black]|[/COLOR]   HOSTER[/B]</label>
-						<visible>!String.Contains(ListItem.Property(umbrella.source),DIRECT) + !String.Contains(ListItem.Property(umbrella.source),LOCAL) + !String.Contains(ListItem.Property(umbrella.source),TORRENT) + !String.IsEqual(ListItem.Property(umbrella.source),CLOUD)</visible>
+						<visible>!String.Contains(ListItem.Property(umbrella.source),UNCHECKED) + !String.Contains(ListItem.Property(umbrella.source),DIRECT) + !String.Contains(ListItem.Property(umbrella.source),LOCAL) + !String.Contains(ListItem.Property(umbrella.source),TORRENT) + !String.IsEqual(ListItem.Property(umbrella.source),CLOUD)</visible>
 					</control>
 				</focusedlayout>
 			</control>

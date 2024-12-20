@@ -181,6 +181,7 @@ class Premiumize:
 		except: log_utils.error()
 
 	def get_hosts(self):
+		
 		hosts_dict = {'Premiumize.me': []}
 		hosts = []
 		append = hosts.append

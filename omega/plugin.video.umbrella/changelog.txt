@@ -1,3 +1,12 @@
+[B]Update - v6.7.28 - December 20th, 2024[/B]
+--[Changes] Added TorBox, EasyDebrid, and Offcloud. Credit to kodifitzwell.
+--[Info] Thanks DaleAlanC for allowing use of your TorBox for testing.
+--[Info] Thanks Peter for allowing use of your Offcloud for testing.
+--[Fix] Made authorization and revokes return to settings.
+--[Fix] Fixed provider highlight for uncached torrents from Offcloud.
+--[Fix] Removed logging causing hang when searching sources.
+--[Info] With 3 providers being added at once I expect bugs. Please let me know if any issues come up. Issues on github will be reopened.
+
 [B]Update - v6.7.27 - November 25th, 2024[/B]
 --[Change] AD
 

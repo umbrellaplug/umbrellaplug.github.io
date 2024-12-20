@@ -5237,3 +5237,71 @@ msgstr ""
 msgctxt "#40525"
 msgid "Umbrella Addon Settings"
 msgstr ""
+
+msgctxt "#40526"
+msgid "Use language setting for trakt lists"
+msgstr ""
+
+msgctxt "#40527"
+msgid "Enable TorBox Menu"
+msgstr ""
+
+msgctxt "#40528"
+msgid "TorBox Revoked"
+msgstr ""
+
+msgctxt "#40529"
+msgid "TorBox"
+msgstr ""
+
+msgctxt "#40530"
+msgid "Account ID"
+msgstr ""
+
+msgctxt "#40531"
+msgid "Error Connecting to TorBox"
+msgstr ""
+
+msgctxt "#40532"
+msgid "TorBox Highlight Color"
+msgstr ""
+
+msgctxt "#40533"
+msgid "Play button behavior"
+msgstr ""
+
+msgctxt "#40534"
+msgid "Play immediately"
+msgstr ""
+
+msgctxt "#40535"
+msgid "Background scrape"
+msgstr ""
+
+msgctxt "#40536"
+msgid "EasyDebrid Highlight Color"
+msgstr ""
+
+msgctxt "#40537"
+msgid "EasyDebrid"
+msgstr ""
+
+msgctxt "#40538"
+msgid "easydebrid token"
+msgstr ""
+
+msgctxt "#40539"
+msgid "EasyDebrid successfully authorized"
+msgstr ""
+
+msgctxt "#40540"
+msgid "Offcloud"
+msgstr ""
+
+msgctxt "#40541"
+msgid "Enable Offcloud Menu"
+msgstr ""
+
+msgctxt "#40542"
+msgid "Offcloud Highlight Color"
+msgstr ""

@@ -171,8 +171,12 @@ def openSettings(query=None, id=addonInfo('id')):
 		execute('Addon.OpenSettings(%s)' % id)
 		if not query: return
 		c, f = query.split('.')
-		execute('SetFocus(%i)' % (int(c) - 100))
-		execute('SetFocus(%i)' % (int(f) - 80))
+		if getKodiVersion() > 20.0:
+			execute('SetFocus(%i)' % (int(c) - 200))
+			execute('SetFocus(%i)' % (int(f) - 180))
+		else:
+			execute('SetFocus(%i)' % (int(c) - 100))
+			execute('SetFocus(%i)' % (int(f) - 80))
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()
@@ -454,7 +458,10 @@ def getProviderColors():
 		'easynews': getProviderHighlightColor('easynews'),
 		'plexshare': getProviderHighlightColor('plexshare'),
 		'gdrive': getProviderHighlightColor('gdrive'),
-		'filepursuit': getProviderHighlightColor('filepursuit')
+		'filepursuit': getProviderHighlightColor('filepursuit'),
+		'easydebrid': getProviderHighlightColor('easydebrid'),
+		'offcloud': getProviderHighlightColor('offcloud'),
+		'torbox': getProviderHighlightColor('torbox')
 	}
 
 def getColorPicker(params):

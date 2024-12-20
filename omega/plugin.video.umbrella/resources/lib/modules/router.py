@@ -477,6 +477,17 @@ def router(argv2):
 			from resources.lib.debrid import alldebrid
 			alldebrid.AllDebrid().restart_transfer(params.get('id'), name, silent=False)
 
+	elif action and action.startswith('ed_'):
+		if action == 'ed_AccountInfo':
+			from resources.lib.debrid import easydebrid
+			easydebrid.EasyDebrid().account_info_to_dialog()
+		elif action == 'ed_Authorize':
+			from resources.lib.debrid import easydebrid
+			easydebrid.EasyDebrid().auth()
+		elif action == 'ed_Deauthorize':
+			from resources.lib.debrid import easydebrid
+			easydebrid.EasyDebrid().remove_auth()
+
 	elif action and action.startswith('en_'):
 		if action == 'en_ServiceNavigator':
 			from resources.lib.menus import navigator
@@ -587,6 +598,56 @@ def router(argv2):
 			from resources.lib.debrid import realdebrid
 			realdebrid.RealDebrid().delete_download(params.get('id'), name)
 
+	elif action and action.startswith('tb_'):
+		if action == 'tb_Authorize':
+			from resources.lib.debrid import torbox
+			torbox.TorBox().auth()
+		elif action == 'tb_Revoke':
+			from resources.lib.debrid import torbox
+			torbox.TorBox().remove_auth()
+		elif action == 'tb_AccountInfo':
+			from resources.lib.debrid import torbox
+			torbox.TorBox().account_info_to_dialog()
+		elif action == 'tb_CloudStorage':
+			from resources.lib.debrid import torbox
+			torbox.TorBox().user_cloud_to_listItem()
+		elif action == 'tb_BrowseUserTorrents':
+			from resources.lib.debrid import torbox
+			torbox.TorBox().browse_user_torrents(params.get('id'))
+		elif action == 'tb_DeleteUserTorrent':
+			from resources.lib.debrid import torbox
+			torbox.TorBox().delete_user_torrent(params.get('id'), name)
+		if action == 'tb_ServiceNavigator':
+			from resources.lib.menus import navigator
+			navigator.Navigator().torbox_service()
+
+	elif action and action.startswith('oc_'):
+		if action == 'oc_ServiceNavigator':
+			from resources.lib.menus import navigator
+			navigator.Navigator().offcloud_service()
+		elif action == 'oc_AccountInfo':
+			from resources.lib.debrid import offcloud
+			offcloud.Offcloud().account_info_to_dialog()
+		elif action == 'oc_Authorize':
+			from resources.lib.debrid import offcloud
+			offcloud.Offcloud().auth()
+		elif action == 'oc_Deauthorize':
+			from resources.lib.debrid import offcloud
+			offcloud.Offcloud().remove_auth()
+		elif action == 'oc_CloudStorage':
+			from resources.lib.debrid import offcloud
+			offcloud.Offcloud().user_cloud_to_listItem()
+		elif action == 'oc_BrowseUserTorrents':
+			from resources.lib.debrid import offcloud
+			offcloud.Offcloud().browse_user_torrents(params.get('id'))
+		elif action == 'oc_DeleteUserTorrent':
+			from resources.lib.debrid import offcloud
+			offcloud.Offcloud().delete_user_torrent(params.get('id'), name)
+		elif action == 'oc_UserCloudClear':
+			from resources.lib.debrid import offcloud
+			offcloud.Offcloud().user_cloud_clear()
+
+
 	####################################################
 	#---Anime
 	####################################################
@@ -681,11 +742,28 @@ def router(argv2):
 				except:
 					import traceback
 					traceback.print_exc()
+			if caller == 'easydebrid':
+				control.busy()
+				try:
+					from resources.lib.modules import downloader
+					from resources.lib.debrid import easydebrid
+					downloader.download(name, image, easydebrid.EasyDebrid().unrestrict_link(url.replace(' ', '%20')))
+				except:
+					import traceback
+					traceback.print_exc()
 			if caller == 'easynews':
 				control.busy()
 				try:
 					from resources.lib.modules import downloader
 					downloader.download(name, image, url)
+				except:
+					import traceback
+					traceback.print_exc()
+			if caller == 'offcloud':
+				control.busy()
+				try:
+					from resources.lib.modules import downloader
+					downloader.download(name, image, url.replace(' ', '%20'))
 				except:
 					import traceback
 					traceback.print_exc()
@@ -710,6 +788,17 @@ def router(argv2):
 				except:
 					import traceback
 					traceback.print_exc()
+			if caller == 'torbox':
+				control.busy()
+				try:
+					from resources.lib.modules import downloader
+					from resources.lib.debrid import torbox
+					url = torbox.TorBox().unrestrict_link(url.replace(' ', '%20'))
+					downloader.download(name, image, torbox.TorBox().add_headers_to_url(url))
+				except:
+					import traceback
+					traceback.print_exc()
+
 	####################################################
 	#---Color Picker
 	####################################################
@@ -1030,6 +1119,10 @@ def router(argv2):
 			from resources.lib.debrid.premiumize import Premiumize as debrid_function
 		elif caller == 'AllDebrid':
 			from resources.lib.debrid.alldebrid import AllDebrid as debrid_function
+		elif caller == 'EasyDebrid':
+			from resources.lib.debrid.easydebrid import EasyDebrid as debrid_function
+		elif caller == 'TorBox':
+			from resources.lib.debrid.torbox import TorBox as debrid_function
 		success = debrid_function().add_uncached_torrent(url, pack=pack)
 		if success:
 			from resources.lib.modules import sources

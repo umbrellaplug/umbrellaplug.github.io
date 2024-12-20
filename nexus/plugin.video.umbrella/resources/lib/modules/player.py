@@ -550,6 +550,7 @@ class Player(xbmc.Player):
 		try:
 			playerWindow.clearProperty('umbrella.preResolved_nextUrl')
 			playerWindow.clearProperty('umbrella.playlistStart_position')
+			homeWindow.clearProperty('umbrella.window_keep_alive')
 			clear_local_bookmarks() # clear all umbrella bookmarks from kodi database
 			control.playlist.clear()
 			if not self.onPlayBackStopped_ran or (self.playbackStopped_triggered and not self.onPlayBackStopped_ran): # Kodi callback unreliable and often not issued

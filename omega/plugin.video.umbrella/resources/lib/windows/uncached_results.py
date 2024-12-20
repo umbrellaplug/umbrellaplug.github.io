@@ -28,6 +28,9 @@ class UncachedResultsXML(BaseDialog):
 		self.easynewsHighlightColor = self.colors['easynews']
 		self.plexHighlightColor = self.colors['plexshare']
 		self.gdriveHighlightColor = self.colors['gdrive']
+		self.torboxHighlightColor = self.colors['torbox']
+		self.easyDebridHighlightColor = self.colors['easydebrid']
+		self.offcloudHighlightColor = self.colors['offcloud']
 		#self.furkHighlightColor = self.colors['furk']
 		self.filePursuitHighlightColor = self.colors['filepursuit']
 		self.source_color = self.source_color = getSetting('sources.highlight.color')
@@ -134,7 +137,7 @@ class UncachedResultsXML(BaseDialog):
 
 	def debrid_abv(self, debrid):
 		try:
-			d_dict = {'AllDebrid': 'AD', 'Premiumize.me': 'PM', 'Real-Debrid': 'RD'}
+			d_dict = {'AllDebrid': 'AD', 'EasyDebrid': 'ED','Premiumize.me': 'PM', 'Real-Debrid': 'RD', 'Torbox': 'TB', 'Offcloud': 'OC'}
 			d = d_dict[debrid]
 		except:
 			d = ''
@@ -142,7 +145,7 @@ class UncachedResultsXML(BaseDialog):
 
 	def debrid_name(self, debrid):
 		try:
-			d_dict = {'AllDebrid': 'AllDebrid', 'Premiumize.me': 'Premiumize', 'Real-Debrid': 'Real-Debrid'}
+			d_dict = {'AllDebrid': 'AllDebrid', 'EasyDebrid': 'EasyDebrid','Premiumize.me': 'Premiumize', 'Real-Debrid': 'Real-Debrid', 'TorBox': 'TorBox', 'Offcloud': 'Offcloud'}
 			d = d_dict[debrid]
 		except:
 			d = ''
@@ -165,6 +168,12 @@ class UncachedResultsXML(BaseDialog):
 								providerHighlight = self.alldebridHighlightColor
 							elif str(item.get('debrid')).lower()== 'premiumize.me':
 								providerHighlight = self.premiumizeHighlightColor
+							elif str(item.get('debrid')).lower()== 'torbox':
+								providerHighlight = self.torboxHighlightColor
+							elif str(item.get('debrid')).lower()== 'easydebrid':
+								providerHighlight = self.easyDebridHighlightColor
+							elif str(item.get('debrid')).lower()== 'offcloud':
+								providerHighlight = self.offcloudHighlightColor
 						else:
 							if item.get('provider') == 'easynews':
 								providerHighlight = self.easynewsHighlightColor
@@ -183,6 +192,7 @@ class UncachedResultsXML(BaseDialog):
 					listitem.setProperty('umbrella.debrid', self.debrid_name(item.get('debrid')))
 					listitem.setProperty('umbrella.debridabrv', self.debrid_abv(item.get('debrid')))
 					listitem.setProperty('umbrella.provider', item.get('provider').upper())
+					listitem.setProperty('umbrella.plexsource', item.get('plexsource', '').upper())
 					listitem.setProperty('umbrella.source', item.get('source').upper())
 					listitem.setProperty('umbrella.seeders', str(item.get('seeders')))
 					listitem.setProperty('umbrella.hash', item.get('hash', 'N/A'))
@@ -249,7 +259,10 @@ class UncachedResultsXML(BaseDialog):
 				self.setProperty('umbrella.gdrivecolor', self.gdriveHighlightColor)
 				#self.setProperty('umbrella.furkcolor', self.furkHighlightColor)
 				self.setProperty('umbrella.filepursuitcolor', self.filePursuitHighlightColor)
-				
+				self.setProperty('umbrella.torboxcolor', self.torboxHighlightColor)
+				self.setProperty('umbrella.easydebridcolor', self.easyDebridHighlightColor)
+				self.setProperty('umbrella.offcloudcolor', self.offcloudHighlightColor)
+    
 				if getSetting('sources.usecoloricons') == 'true':
 					self.setProperty('umbrella.usecoloricons', '1')
 				else:

@@ -892,6 +892,15 @@
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
+				<setting id="navi.offcloud" type="boolean" label="40541" help="" parent="navi.prem.services">
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="navi.prem.services">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
 				<setting id="navi.premiumize" type="boolean" label="32225" help="" parent="navi.prem.services">
 					<level>0</level>
 					<default>true</default>
@@ -904,6 +913,15 @@
 				</setting>
 				<setting id="navi.realdebrid" type="boolean" label="32226" help="" parent="navi.prem.services">
 					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="navi.prem.services">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="navi.torbox" type="boolean" label="40527" help="" parent="navi.prem.services">
 					<default>true</default>
 					<dependencies>
 						<dependency type="visible">
@@ -2850,6 +2868,54 @@
 					</dependencies>
 					<control type="edit" format="string"></control>
 				</setting>
+				<setting id="sources.easydebrid.color.display" type="string" label="40536" help="">
+					<default>[COLOR FF31697E]FF31697E[/COLOR]</default> <!--  -->
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="sources.highlightmethod">1</condition>
+								<condition operator="!is" setting="easydebridtoken"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=sources.easydebrid.color)</data>
+					</control>
+				</setting>
+				<setting id="sources.easydebrid.color" type="string" label="40536" help="">
+					<default>FF31697E</default> <!--  -->
+					<visible>false</visible>
+					<control type="edit" format="string"/>
+				</setting>
+				<setting id="sources.offcloud.color.display" type="string" label="40542" help="">
+					<default>[COLOR FF5824b3]FF5824b3[/COLOR]</default> <!--  -->
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="sources.highlightmethod">1</condition>
+								<condition operator="!is" setting="offcloudtoken"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=sources.offcloud.color)</data>
+					</control>
+				</setting>
+				<setting id="sources.offcloud.color" type="string" label="40542" help="">
+					<default>FF5824b3</default> <!--  -->
+					<visible>false</visible>
+					<control type="edit" format="string"/>
+				</setting>
+				<setting id="sources.premiumize.me.color" type="string" label="40273" help="">
+					<level>0</level>
+					<default>FF4700B4</default> <!-- purple blue -->
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
+				</setting>
 				<setting id="sources.premiumize.me.color.display" type="string" label="40273" help="">
 					<level>0</level>
 					<default>[COLOR=FF4700B4]FF4700B4[/COLOR]</default> <!-- purple blue -->
@@ -2865,15 +2931,30 @@
 						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=sources.premiumize.me.color)</data>
 					</control>
 				</setting>
-				<setting id="sources.premiumize.me.color" type="string" label="40273" help="">
+				<setting id="sources.torbox.color" type="string" label="40532" help="">
 					<level>0</level>
-					<default>FF4700B4</default> <!-- purple blue -->
+					<default>FF00B445</default> <!-- bright green -->
 					<dependencies>
 						<dependency type="visible">
 							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 					</dependencies>
 					<control type="edit" format="string"></control>
+				</setting>
+				<setting id="sources.torbox.color.display" type="string" label="40532" help="">
+					<level>0</level>
+					<default>[COLOR=FF00B445]FF00B445[/COLOR]</default> <!-- bright green -->
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="sources.highlightmethod">1</condition>
+								<condition operator="!is" setting="torboxtoken"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=sources.torbox.color)</data>
+					</control>
 				</setting>
 				<setting id="sources.easynews.color.display" type="string" label="40274" help="">
 					<level>0</level>
@@ -3727,7 +3808,183 @@
 					<control type="button" format="action"/>
 				</setting>
 			</group>
-			<group id="2" label="40057">
+			<group id="2" label="40537">
+				<setting id="easydebridAuthorizeButton" type="action" label="32306" help="">
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=ed_Authorize&amp;query=9.0)</data>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="easydebridtoken"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="easydebridRevokeButton" type="action" label="40110" help="">
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=ed_Deauthorize&amp;query=9.0)</data>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="easydebridtoken"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="easydebrid.enable" type="boolean" label="32081" help="">
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="easydebridtoken"/>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="easydebridtoken" type="string" label="40538" help="">
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<visible>false</visible>
+					<control type="edit" format="string"/>
+				</setting>
+				<setting id="easydebrid.priority" type="integer" label="40005" help="">
+					<default>10</default>
+					<constraints>
+						<minimum>1</minimum>
+						<step>1</step>
+						<maximum>10</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="easydebridtoken"/>
+								<condition operator="is" setting="easydebrid.enable">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="easydebridAccountInfo" type="action" label="32153" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=ed_AccountInfo)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="easydebridtoken"/>
+								<condition operator="is" setting="easydebrid.enable">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action"/>
+				</setting>
+			</group>
+			<group id="3" label="40540">
+				<setting id="offcloudAuthorizeButton" type="action" label="32306" help="">
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=oc_Authorize&amp;query=9.0)</data>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="offcloudtoken"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="offcloudRevokeButton" type="action" label="40110" help="">
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=oc_Deauthorize&amp;query=9.0)</data>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="offcloudtoken"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="offcloud.enable" type="boolean" label="32081" help="">
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="offcloudtoken"/>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="offcloudtoken" type="string" label="octoken" help="">
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<visible>false</visible>
+					<control type="edit" format="string"/>
+				</setting>
+				<setting id="offcloud.username" type="string" label="40006" help="">
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<enable>false</enable>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="offcloudtoken"/>
+								<condition operator="is" setting="offcloud.enable">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"/>
+				</setting>
+				<setting id="offcloud.priority" type="integer" label="40005" help="">
+					<default>10</default>
+					<constraints>
+						<minimum>1</minimum>
+						<step>1</step>
+						<maximum>10</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="offcloudtoken"/>
+								<condition operator="is" setting="offcloud.enable">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="oc_cloud.enabled" type="boolean" label="32050" help="">
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="offcloudtoken"/>
+								<condition operator="is" setting="offcloud.enable">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="offcloudAccountInfo" type="action" label="32153" help="">
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=oc_AccountInfo)</data>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="offcloudtoken"/>
+								<condition operator="is" setting="offcloud.enable">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action"/>
+				</setting>
+			</group>
+			<group id="4" label="40057">
 				<setting id="premiumAuthorizeButton" type="action" label="40121" help="">
 					<level>0</level>
 					<data>RunPlugin(plugin://plugin.video.umbrella/?action=pm_Authorize)</data>
@@ -3921,7 +4178,7 @@
 					<control type="button" format="action"/>
 				</setting>
 			</group>
-			<group id="3" label="40058">
+			<group id="5" label="40058">
 				<setting id="rdAuthorizeButton" type="action" label="40121" help="">
 					<level>0</level>
 					<data>RunPlugin(plugin://plugin.video.umbrella/?action=rd_Authorize)</data>
@@ -4154,6 +4411,140 @@
 							<and>
 								<condition operator="!is" setting="realdebridtoken"/>
 								<condition operator="is" setting="realdebrid.enable">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action"/>
+				</setting>
+			</group>
+			<group id="6" label="40529">
+				<setting id="torbox.enable" type="boolean" label="32081" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="torboxtoken"/>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="torboxtoken" type="string" label="torbox token" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>torbox token</heading>
+					</control>
+				</setting>
+				<setting id="torbox.username" type="string" label="40006" help="">
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<enable>false</enable>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="torboxtoken"/>
+								<condition operator="is" setting="torbox.enable">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"/>
+				</setting>
+				<setting id="torbox.priority" type="integer" label="40005" help="">
+					<level>0</level>
+					<default>10</default>
+					<constraints>
+						<minimum>1</minimum>
+						<step>1</step>
+						<maximum>10</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="torboxtoken"/>
+								<condition operator="is" setting="torbox.enable">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="torbox.saveToCloud" type="boolean" label="32684" help="">
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="torboxtoken"/>
+								<condition operator="is" setting="torbox.enable">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="tb_cloud.enabled" type="boolean" label="32050" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="torboxtoken"/>
+								<condition operator="is" setting="torbox.enable">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="tbAuthorizeButton" type="action" label="40121" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tb_Authorize)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="torboxtoken"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="tbRevokeButton" type="action" label="40110" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tb_Revoke)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="torboxtoken"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="tbAccountInfoButton" type="action" label="32153" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tb_AccountInfo)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="torboxtoken"/>
+								<condition operator="is" setting="torbox.enable">true</condition>
 							</and>
 						</dependency>
 					</dependencies>

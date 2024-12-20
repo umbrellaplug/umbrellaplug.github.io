@@ -30,7 +30,7 @@ single_expiry = timedelta(hours=6)
 season_expiry = timedelta(hours=48)
 show_expiry = timedelta(hours=48)
 video_extensions = supported_video_extensions()
-internal_scrapers_clouds_list = [('realdebrid', 'rd_cloud', 'rd'), ('premiumize', 'pm_cloud', 'pm'), ('alldebrid', 'ad_cloud', 'ad')]
+internal_scrapers_clouds_list = [('realdebrid', 'rd_cloud', 'rd'), ('premiumize', 'pm_cloud', 'pm'), ('alldebrid', 'ad_cloud', 'ad'),('torbox', 'tb_cloud', 'tb'),('offcloud', 'oc_cloud', 'oc')]
 
 class Sources:
 	def __init__(self, all_providers=False, custom_query=False, filterless_scrape=False, rescrapeAll=False):
@@ -467,7 +467,7 @@ class Sources:
 						control.sleep(200)
 					if not self.url: continue
 					# if not any(x in self.url.lower() for x in video_extensions):
-					if not any(x in self.url.lower() for x in video_extensions) and 'plex.direct:' not in self.url:
+					if not any(x in self.url.lower() for x in video_extensions) and 'plex.direct:' not in self.url and 'torbox' not in self.url:
 						log_utils.log('Playback not supported for (playItem()): %s' % self.url, level=log_utils.LOGWARNING)
 						continue
 					if homeWindow.getProperty('umbrella.window_keep_alive') != 'true':
@@ -525,7 +525,8 @@ class Sources:
 					if i == 'GB': i = 'UK'
 					alias = {'title': tvshowtitle + ' ' + i, 'country': i.lower()}
 					if not alias in aliases: aliases.append(alias)
-			data = {'title': title, 'year': year, 'imdb': imdb, 'tvdb': tvdb, 'season': season, 'episode': episode, 'tvshowtitle': tvshowtitle, 'aliases': aliases, 'premiered': premiered, 'debrid_service': self.comet_debrid_service , 'debrid_token': self.comet_debrid_token}
+			data = {'title': title, 'year': year, 'imdb': imdb, 'tvdb': tvdb, 'season': season, 'episode': episode, 'tvshowtitle': tvshowtitle, 'aliases': aliases, 'premiered': premiered}
+			if self.debrid_service: data.update({'debrid_service': self.debrid_service, 'debrid_token': self.debrid_token})
 			for i in scraperDict:
 				name, pack = i[0].upper(), i[2]
 				if pack == 'season': name = '%s (season pack)' % name
@@ -624,7 +625,8 @@ class Sources:
 				trakt_aliases = self.getAliasTitles(imdb, content) # cached for 7 days in trakt module called
 				try: aliases.extend([i for i in trakt_aliases if not i in aliases]) # combine TMDb and Trakt aliases
 				except: pass
-				data = {'title': title, 'aliases': aliases, 'year': year, 'imdb': imdb, 'debrid_service': self.comet_debrid_service , 'debrid_token': self.comet_debrid_token}
+				data = {'title': title, 'aliases': aliases, 'year': year, 'imdb': imdb}
+				if self.debrid_service: data.update({'debrid_service': self.debrid_service, 'debrid_token': self.debrid_token})
 				for i in sourceDict: threads_append(Thread(target=self.getMovieSource, args=(imdb, data, i[0], i[1]), name=i[0].upper()))
 			else:
 				scraperDict = [(i[0], i[1], '') for i in sourceDict] if ((not self.dev_mode) or (not self.dev_disable_single)) else []
@@ -642,7 +644,8 @@ class Sources:
 						alias = {'title': tvshowtitle + ' ' + i, 'country': i.lower()}
 						if not alias in aliases: aliases.append(alias)
 				aliases = aliases_check(tvshowtitle, aliases)
-				data = {'title': title, 'year': year, 'imdb': imdb, 'tvdb': tvdb, 'season': season, 'episode': episode, 'tvshowtitle': tvshowtitle, 'aliases': aliases, 'premiered': premiered, 'debrid_service': self.comet_debrid_service , 'debrid_token': self.comet_debrid_token}
+				data = {'title': title, 'year': year, 'imdb': imdb, 'tvdb': tvdb, 'season': season, 'episode': episode, 'tvshowtitle': tvshowtitle, 'aliases': aliases, 'premiered': premiered}
+				if self.debrid_service: data.update({'debrid_service': self.debrid_service, 'debrid_token': self.debrid_token})
 				for i in scraperDict:
 					name, pack = i[0].upper(), i[2]
 					if pack == 'season': name = '%s (season pack)' % name
@@ -1041,7 +1044,6 @@ class Sources:
 			self.sources = [i for i in self.sources if ' 7CH ' not in i.get('info', '')]
 		if getSetting('remove.channel.8ch') == 'true':
 			self.sources = [i for i in self.sources if ' 8CH ' not in i.get('info', '')]
-
 		local = [i for i in self.sources if 'local' in i and i['local'] is True] # for library and videoscraper (skips cache check)
 		self.sources = [i for i in self.sources if not i in local]
 		direct = [i for i in self.sources if i['direct'] == True] # acct scrapers (skips cache check)
@@ -1058,7 +1060,12 @@ class Sources:
 		if getSetting('filepursuit.enable') == 'true':
 			fPursuitList = [i for i in direct if i['provider'] == 'filepursuit']
 			directstart.extend(fPursuitList)
-
+		if getSetting('tb_cloud.enabled') == 'true':
+			tbCloudList = [i for i in direct if i['provider'] == 'tb_cloud']
+			directstart.extend(tbCloudList)
+		if getSetting('oc_cloud.enabled') == 'true':
+			ocCloudList = [i for i in direct if i['provider'] == 'oc_cloud']
+			directstart.extend(ocCloudList)
 		#direct = directstart
 		self.sources = [i for i in self.sources if not i in directstart]
 		from copy import deepcopy
@@ -1092,12 +1099,26 @@ class Sources:
 					valid_hoster = [i for i in valid_hosters if d.valid_url(i)]
 					threads.append(Thread(target=checkStatus, args=(self.ad_cache_chk_list, d.name, valid_hoster)))
 				except: log_utils.error()
+			if d.name == 'Offcloud' and getSetting('offcloud.enable') == 'true':
+				try:
+					valid_hoster = []
+					threads.append(Thread(target=checkStatus, args=(self.oc_cache_chk_list, d.name, valid_hoster)))
+				except: log_utils.error()
+			if d.name == 'EasyDebrid' and getSetting('easydebrid.enable') == 'true':
+				try:
+					valid_hoster = []
+					threads.append(Thread(name=d.name.upper(), target=checkStatus, args=(self.ed_cache_chk_list, d.name, valid_hoster)))
+				except: log_utils.error()
+			if d.name == 'TorBox' and getSetting('torbox.enable') == 'true':
+				try:
+					valid_hoster = []
+					threads.append(Thread(target=checkStatus, args=(self.tb_cache_chk_list, d.name, valid_hoster)))
+				except: log_utils.error()
 		if threads:
 			[i.start() for i in threads]
 			[i.join() for i in threads]
 		#self.filter += direct # add direct links in to be considered in priority sorting
 		self.filter += directstart
-		
 		try:
 			if len(self.prem_providers) > 1: # resort for debrid/direct priorty, when more than 1 account, because of order cache check threads finish
 				self.prem_providers.sort(key=lambda k: k[1])
@@ -1179,7 +1200,8 @@ class Sources:
 			a = i['url'].lower()
 			for sublist in filter:
 				try:
-					if i['source'] == 'cloud': break
+					if i['source'] == 'cloud':
+						break
 					b = sublist['url'].lower()
 					if 'magnet:' in a:
 						if i['hash'].lower() in b:
@@ -1286,7 +1308,14 @@ class Sources:
 						from resources.lib.debrid.premiumize import Premiumize as debrid_function
 					elif debrid_provider == 'AllDebrid':
 						from resources.lib.debrid.alldebrid import AllDebrid as debrid_function
+					elif debrid_provider == 'Offcloud':
+						from resources.lib.debrid.offcloud import Offcloud as debrid_function
+					elif debrid_provider == 'EasyDebrid':
+						from resources.lib.debrid.easydebrid import EasyDebrid as debrid_function
+					elif debrid_provider == 'TorBox':
+						from resources.lib.debrid.torbox import TorBox as debrid_function
 					else: return
+					
 					url = debrid_function().resolve_magnet(url, item['hash'], season, episode, title)
 					self.url = url
 					return url
@@ -1297,7 +1326,7 @@ class Sources:
 			try:
 				direct = item['direct']
 				if direct:
-					direct_sources = ('ad_cloud', 'pm_cloud', 'rd_cloud')
+					direct_sources = ('ad_cloud', 'oc_cloud', 'pm_cloud', 'rd_cloud', 'tb_cloud')
 					if item['provider'] in direct_sources:
 						try:
 							call = [i[1] for i in self.sourceDict if i[0] == item['provider']][0]
@@ -1315,6 +1344,8 @@ class Sources:
 						from resources.lib.debrid.premiumize import Premiumize as debrid_function
 					elif debrid_provider == 'AllDebrid':
 						from resources.lib.debrid.alldebrid import AllDebrid as debrid_function
+					#elif debrid_provider == 'TorBox':
+					#	from resources.lib.debrid.torbox import TorBox as debrid_function
 					url = debrid_function().unrestrict_link(url)
 					self.url = url
 					return url
@@ -1330,6 +1361,12 @@ class Sources:
 				from resources.lib.debrid.premiumize import Premiumize as debrid_function
 			elif provider in ('AllDebrid', 'AD'):
 				from resources.lib.debrid.alldebrid import AllDebrid as debrid_function
+			elif provider in ('Offcloud', 'OC'):
+				from resources.lib.debrid.offcloud import Offcloud as debrid_function
+			elif provider in ('EasyDebrid', 'ED'):
+				from resources.lib.debrid.easydebrid import EasyDebrid as debrid_function
+			elif provider in ('TorBox', 'TB'):
+				from resources.lib.debrid.torbox import TorBox as debrid_function
 			else: return
 			debrid_files = None
 			control.busy()
@@ -1352,6 +1389,12 @@ class Sources:
 			elif provider in ('Premiumize.me', 'PM'):
 				self.url = debrid_function().add_headers_to_url(chosen_result['link'])
 			elif provider in ('AllDebrid', 'AD'):
+				self.url = debrid_function().unrestrict_link(chosen_result['link'])
+			elif provider in ('Offcloud', 'OC'):
+				self.url = chosen_result['link']
+			elif provider in ('EasyDebrid', 'ED'):
+				self.url = debrid_function().unrestrict_link(chosen_result['link'])
+			elif provider in ('TorBox', 'TB'):
 				self.url = debrid_function().unrestrict_link(chosen_result['link'])
 			from resources.lib.modules import player
 			meta = jsloads(unquote(homeWindow.getProperty(self.metaProperty).replace('%22', '\\"'))) # needed for CM "showDebridPack" action
@@ -1407,39 +1450,27 @@ class Sources:
 			homeWindow.clearProperty('umbrella.window_keep_alive')
 			control.sleep(200)
 			control.hide()
-			if self.url == 'close://': 
-				control.notification(message=32400)
-				control.cancelPlayback()
-			else: 
-				if self.retryallsources:
-					if self.rescrapeAll != 'true':
-						control.sleep(200)
-						control.notification(message=40404)
-						if self.mediatype == 'movie':
-							select = getSetting('play.mode.movie')
-						else: 
-							select = getSetting('play.mode.tv')
-						self.all_providers = 'true'
-						self.rescrapeAll = 'true'
-						plugin = 'plugin://plugin.video.umbrella/'
-						systitle = quote_plus(title)
-						if tvshowtitle:
-							systvshowtitle = quote_plus(tvshowtitle)
-						else:
-							systvshowtitle = ''
-						meta = self.meta
-						sysmeta = quote_plus(jsdumps(meta))
-						control.cancelPlayback()
-						path = 'PlayMedia(%s?action=rescrapeAuto&title=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&tvshowtitle=%s&premiered=%s&meta=%s&select=%s)' % (
-									plugin, systitle, year, imdb, tmdb, tvdb, season, episode, systvshowtitle, premiered, sysmeta, select)
-						control.execute(path)
-						#Sources(all_providers='true', rescrapeAll='true').play(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, self.meta, select=select, rescrape='true')
-					else:	
-						control.cancelPlayback()
-						control.notification(message=32401)
-				else:
+			if self.url == 'close://': control.notification(message=32400)
+			elif self.retryallsources:
+				if self.rescrapeAll == 'true':
 					control.notification(message=32401)
+				else:
+					control.notification(message=40404)
 					control.cancelPlayback()
+					control.sleep(200)
+					plugin = 'plugin://plugin.video.umbrella/'
+					select = getSetting('play.mode.movie') if self.mediatype == 'movie' else getSetting('play.mode.tv')
+					systitle, sysmeta = quote_plus(title), quote_plus(jsdumps(self.meta))
+					if tvshowtitle:
+						url = '%s?action=rescrapeAuto&title=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&tvshowtitle=%s&premiered=%s&meta=%s&select=%s' % (
+								plugin, systitle, year, imdb, tmdb, tvdb, season, episode, quote_plus(tvshowtitle), premiered, sysmeta, select)
+					else:
+						url = '%s?action=rescrapeAuto&title=%s&year=%s&imdb=%s&tmdb=%s&premiered=%s&meta=%s&select=%s' % (
+								plugin, systitle, year, imdb, tmdb, premiered, sysmeta, select)
+					return control.execute('PlayMedia(%s)' % url)
+#					Sources(all_providers='true', rescrapeAll='true').play(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, self.meta, select=select, rescrape='true')
+			else: control.notification(message=32401)
+			control.cancelPlayback()
 		except: log_utils.error()
 
 	def getAliasTitles(self, imdb, content):
@@ -1548,12 +1579,14 @@ class Sources:
 			self.sourceDict.extend(cloudSources())
 		from resources.lib.debrid import premium_hosters
 		self.debrid_resolvers = debrid.debrid_resolvers()
-		try:
-			self.comet_debrid_service = self.debrid_resolvers[0].name
-			self.comet_debrid_token = self.debrid_resolvers[0].token
-		except:
-			self.comet_debrid_service = ''
-			self.comet_debrid_token = ''
+		for resolver in ('Real-Debrid', 'Premiumize.me', 'AllDebrid'):
+			try:
+				options = ((i.name, i.token) for i in self.debrid_resolvers if i.name == resolver)
+				if resolver := next(options, None):
+					self.debrid_service, self.debrid_token = (*resolver,)
+					break
+			except: pass
+		else: self.debrid_service, self.debrid_token = '', ''
 		self.prem_providers = [] # for sorting by debrid and direct source links priority
 		if control.setting('easynews.user'): self.prem_providers += [('easynews', int(getSetting('easynews.priority')))]
 		if control.setting('filepursuittoken'): self.prem_providers += [('filepursuit', int(getSetting('filepursuit.priority')))]
@@ -1600,7 +1633,8 @@ class Sources:
 				return self.sources
 		for i in self.sources:
 			try:
-				if i['provider'] == 'torrentio' or i['provider'] == 'selfhosted' or i['provider'] == 'elfhosted': continue # torrentio return file size based on episode query already so bypass re-calc
+#				if i['provider'] == 'torrentio' or i['provider'] == 'selfhosted' or i['provider'] == 'elfhosted': continue # torrentio return file size based on episode query already so bypass re-calc
+				if i['provider'] in ('torrentio', 'comet', 'knightcrawler', 'mediafusion', 'selfhosted'): continue # torrentio return file size based on episode query already so bypass re-calc
 				if 'package' in i:
 					dsize = i.get('size')
 					if not dsize: continue
@@ -1649,6 +1683,58 @@ class Sources:
 				count += 1
 			return torrent_List
 		except: log_utils.error()
+
+	def oc_cache_chk_list(self, torrent_List, hashList):
+		if len(torrent_List) == 0: return
+		try:
+			from resources.lib.debrid.offcloud import Offcloud
+			cached = Offcloud().check_cache(hashList)
+			if not cached: return None
+			cached = cached['cachedItems']
+			for i in torrent_List:
+				if i['hash'].lower() in cached:
+					if 'package' in i: i.update({'source': 'cached (pack) torrent'})
+					else: i.update({'source': 'cached torrent'})
+				else:
+					if 'package' in i: i.update({'source': 'uncached (pack) torrent'})
+					else: i.update({'source': 'uncached torrent'})
+			return torrent_List
+		except: log_utils.error()
+
+	def ed_cache_chk_list(self, torrent_List, hashList):
+		if len(torrent_List) == 0: return
+		try:
+			from resources.lib.debrid.easydebrid import EasyDebrid
+			cached = EasyDebrid().check_cache(hashList)
+			if not cached: return None
+			cached = cached['cached']
+			for i, is_cached in zip(torrent_List, cached):
+				if i['hash'].lower() and is_cached:
+					if 'package' in i: i.update({'source': 'cached (pack) torrent'})
+					else: i.update({'source': 'cached torrent'})
+				else:
+					if 'package' in i: i.update({'source': 'uncached (pack) torrent'})
+					else: i.update({'source': 'uncached torrent'})
+			return torrent_List
+		except: log_utils.error()
+
+	def tb_cache_chk_list(self, torrent_List, hashList):
+		if len(torrent_List) == 0: return
+		try:
+			from resources.lib.debrid.torbox import TorBox
+			cached = TorBox().check_cache(hashList)
+			if not cached: return None
+			cached = [i['hash'] for i in cached['data']]
+			for i in torrent_List:
+				if i['hash'].lower() in cached:
+					if 'package' in i: i.update({'source': 'cached (pack) torrent'})
+					else: i.update({'source': 'cached torrent'})
+				else:
+					if 'package' in i: i.update({'source': 'uncached (pack) torrent'})
+					else: i.update({'source': 'uncached torrent'})
+			return torrent_List
+		except: log_utils.error()
+
 
 	def pm_cache_chk_list(self, torrent_List, hashList):
 		if len(torrent_List) == 0: return

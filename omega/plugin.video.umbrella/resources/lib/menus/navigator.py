@@ -362,23 +362,23 @@ class Navigator:
 		#-- Providers - 
 		#self.addDirectoryItem(32651, 'tools_cocoScrapersSettings', 'cocoscrapers.png', 'DefaultAddonService.png', isFolder=False)
 		#-- General - 0
-		self.addDirectoryItem(40525, 'tools_openSettings&query=0.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(32043, 'tools_openSettings&query=0.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#-- Sorting and Filtering - 4
-		##self.addDirectoryItem(40162, 'tools_openSettings&query=6.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(40162, 'tools_openSettings&query=6.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#-- Accounts - 7
-		##self.addDirectoryItem(32044, 'tools_openSettings&query=10.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
-		##self.addDirectoryItem(40452, 'tools_openSettings&query=11.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
-		##self.addDirectoryItem(40124, 'tools_openSettings&query=12.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
-		##self.addDirectoryItem(40123, 'tools_openSettings&query=8.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(32044, 'tools_openSettings&query=10.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(40452, 'tools_openSettings&query=11.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(40124, 'tools_openSettings&query=12.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(40123, 'tools_openSettings&query=8.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		if self.traktCredentials: self.addDirectoryItem(35057, 'tools_traktToolsNavigator&folderName=%s' % quote_plus(getLS(40461)), 'tools.png', 'DefaultAddonService.png', isFolder=True)
 		#-- Navigation - 1
-		##self.addDirectoryItem(32362, 'tools_openSettings&query=1.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(32362, 'tools_openSettings&query=1.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#-- Playback - 3
-		##self.addDirectoryItem(32045, 'tools_openSettings&query=5.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(32045, 'tools_openSettings&query=5.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#-- Downloads - 10
-		##self.addDirectoryItem(32048, 'tools_openSettings&query=14.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(32048, 'tools_openSettings&query=14.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#-- Subtitles - 11
-		##self.addDirectoryItem(32046, 'tools_openSettings&query=15.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(32046, 'tools_openSettings&query=15.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(32556, 'library_Navigator&folderName=%s' % quote_plus(getLS(32541)), 'tools.png', 'DefaultAddonService.png', isFolder=True)
 		self.addDirectoryItem(32049, 'tools_viewsNavigator', 'settings.png', 'DefaultAddonService.png', isFolder=True)
 		self.addDirectoryItem(32361, 'tools_resetViewTypes', 'settings.png', 'DefaultAddonService.png', isFolder=False)
@@ -475,9 +475,11 @@ class Navigator:
 		if self.useContainerTitles: control.setContainerName(folderName)
 		if getMenuEnabled('navi.alldebrid'): self.addDirectoryItem(40059, 'ad_ServiceNavigator&folderName=%s' % quote_plus(getLS(40059)), 'alldebrid.png', 'alldebrid.png')
 		if getMenuEnabled('navi.easynews'): self.addDirectoryItem(32327, 'en_ServiceNavigator&folderName=%s' % quote_plus(getLS(32327)), 'easynews.png', 'easynews.png')
+		if getMenuEnabled('navi.offcloud'): self.addDirectoryItem(40540, 'oc_ServiceNavigator&folderName=%s' % quote_plus(getLS(40540)), 'offcloud.png', 'offcloud.png')
 		#if getMenuEnabled('navi.furk'): self.addDirectoryItem('Furk.net', 'furk_ServiceNavigator', 'furk.png', 'furk.png')
 		if getMenuEnabled('navi.premiumize'): self.addDirectoryItem(40057, 'pm_ServiceNavigator&folderName=%s' % quote_plus(getLS(40057)), 'premiumize.png', 'premiumize.png')
 		if getMenuEnabled('navi.realdebrid'): self.addDirectoryItem(40058, 'rd_ServiceNavigator&folderName=%s' % quote_plus(getLS(40058)), 'realdebrid.png', 'realdebrid.png')
+		if getMenuEnabled('navi.torbox'): self.addDirectoryItem(40529, 'tb_ServiceNavigator&folderName=%s' % quote_plus(getLS(35539)), 'torbox.png', 'torbox.png')
 		self.endDirectory()
 
 	def alldebrid_service(self, folderName=''):
@@ -497,6 +499,23 @@ class Navigator:
 			self.addDirectoryItem('Easy News: Account Info', 'en_AccountInfo', 'easynews.png', 'DefaultAddonService.png', isFolder=False)
 		else:
 			self.addDirectoryItem('[I]Please setup in Settings.[/I]', 'tools_openSettings&query=10.0', 'easynews.png', 'DefaultAddonService.png', isFolder=False)
+		self.endDirectory()
+
+	def offcloud_service(self):
+		if getSetting('offcloudtoken'):
+			self.addDirectoryItem('Offcloud: Cloud Storage', 'oc_CloudStorage', 'offcloud.png', 'DefaultAddonService.png')
+			self.addDirectoryItem('Offcloud: Account Info', 'oc_AccountInfo', 'offcloud.png', 'DefaultAddonService.png', isFolder=False)
+			self.addDirectoryItem('Offcloud: Clear Cloud Storage', 'oc_UserCloudClear', 'offcloud.png', 'DefaultAddonService.png', isFolder=False)
+		else:
+			self.addDirectoryItem('[I]Please setup in Accounts[/I]', 'tools_openSettings&query=9.1', 'offcloud.png', 'DefaultAddonService.png', isFolder=False)
+		self.endDirectory()
+
+	def torbox_service(self):
+		if getSetting('torboxtoken'):
+			self.addDirectoryItem('TorBox: Cloud Storage', 'tb_CloudStorage', 'torbox.png', 'DefaultAddonService.png')
+			self.addDirectoryItem('TorBox: Account Info', 'tb_AccountInfo', 'torbox.png', 'DefaultAddonService.png', isFolder=False)
+		else:
+			self.addDirectoryItem('[I]Please setup in Accounts[/I]', 'tools_openSettings&query=10.0', 'torbox.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 
 	def premiumize_service(self, folderName=''):

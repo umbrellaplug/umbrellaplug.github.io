@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.27">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.28">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
 		<import addon="script.module.requests"/>
@@ -179,8 +179,14 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.27 - November 25th, 2024[/B]
---[Change] AD
+[B]Update - v6.7.28 - December 20th, 2024[/B]
+--[Changes] Added TorBox, EasyDebrid, and Offcloud. Credit to kodifitzwell.
+--[Info] Thanks DaleAlanC for allowing use of your TorBox for testing.
+--[Info] Thanks Peter for allowing use of your Offcloud for testing.
+--[Fix] Made authorization and revokes return to settings.
+--[Fix] Fixed provider highlight for uncached torrents from Offcloud.
+--[Fix] Removed logging causing hang when searching sources.
+--[Info] With 3 providers being added at once I expect bugs. Please let me know if any issues come up. Issues on github will be reopened.
 		</news>
 	</extension>
 
