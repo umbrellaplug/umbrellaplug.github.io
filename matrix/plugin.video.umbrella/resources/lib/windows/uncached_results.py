@@ -84,7 +84,8 @@ class UncachedResultsXML(BaseDialog):
 				if 'UNCACHED' in source:
 					debrid = chosen_source.getProperty('umbrella.debrid')
 					seeders = chosen_source.getProperty('umbrella.seeders')
-					cm_list += [('[B]Cache to %s Cloud (seeders=%s)[/B]' % (debrid, seeders) , 'cacheToCloud')]
+					if debrid is not "EasyDebrid":
+						cm_list += [('[B]Cache to %s Cloud (seeders=%s)[/B]' % (debrid, seeders) , 'cacheToCloud')]
 
 				chosen_cm_item = dialog.contextmenu([i[0] for i in cm_list])
 				if chosen_cm_item == -1: return

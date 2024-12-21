@@ -99,8 +99,8 @@ class SourceResultsXML(BaseDialog):
 				if not 'UNCACHED' in source and self.dnlds_enabled:
 					cm_list += [('[B]Download[/B]', 'download')]
 					cm_list += [('[B]Create Strm File[/B]', 'strmFile')]
+				debrid = chosen_source.getProperty('umbrella.debrid')
 				if re_match(r'^CACHED.*TORRENT', source) and debrid is not 'EasyDebrid':
-					debrid = chosen_source.getProperty('umbrella.debrid')
 					cm_list += [('[B]Save to %s Cloud[/B]' % debrid, 'saveToCloud')]
 				chosen_cm_item = dialog.contextmenu([i[0] for i in cm_list])
 				if chosen_cm_item == -1: return

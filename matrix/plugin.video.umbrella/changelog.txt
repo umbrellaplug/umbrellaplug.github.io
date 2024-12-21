@@ -1,3 +1,6 @@
+[B]Update - v6.7.29 - December 21st, 2024[/B]
+--[Fix] Quick fix for context menu on source results.
+
 [B]Update - v6.7.28 - December 20th, 2024[/B]
 --[Changes] Added TorBox, EasyDebrid, and Offcloud. Credit to kodifitzwell.
 --[Info] Thanks DaleAlanC for allowing use of your TorBox for testing.
