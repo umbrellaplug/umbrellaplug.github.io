@@ -514,6 +514,7 @@ class Navigator:
 		if getSetting('torboxtoken'):
 			self.addDirectoryItem('TorBox: Cloud Storage', 'tb_CloudStorage', 'torbox.png', 'DefaultAddonService.png')
 			self.addDirectoryItem('TorBox: Account Info', 'tb_AccountInfo', 'torbox.png', 'DefaultAddonService.png', isFolder=False)
+			self.addDirectoryItem('TorBox: Delete All Cloud Files', 'tb_DeleteCloud', 'torbox.png', 'DefaultAddonService.png', isFolder=False)
 		else:
 			self.addDirectoryItem('[I]Please setup in Accounts[/I]', 'tools_openSettings&query=10.0', 'torbox.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()

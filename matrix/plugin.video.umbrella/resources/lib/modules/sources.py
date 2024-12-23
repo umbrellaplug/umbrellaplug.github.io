@@ -791,7 +791,7 @@ class Sources:
 							log_utils.log('preResolve failed for : next_sources[i]=%s' % str(next_sources[i]), level=log_utils.LOGWARNING)
 						continue
 					# if not any(x in url.lower() for x in video_extensions):
-					if not any(x in url.lower() for x in video_extensions) and 'plex.direct:' not in url:
+					if not any(x in url.lower() for x in video_extensions) and 'plex.direct:' not in url and 'torbox' not in url:
 						if self.debuglog:
 							log_utils.log('preResolve Playback not supported for (sourcesAutoPlay()): %s' % url, level=log_utils.LOGWARNING)
 						continue
@@ -1272,7 +1272,7 @@ class Sources:
 					if control.monitor.abortRequested(): return sysexit()
 					url = self.sourcesResolve(items[i])
 					# if not any(x in url.lower() for x in video_extensions):
-					if not any(x in url.lower() for x in video_extensions) and 'plex.direct:' not in url:
+					if not any(x in url.lower() for x in video_extensions) and 'plex.direct:' not in url and 'torbox' not in url:
 						log_utils.log('Playback not supported for (sourcesAutoPlay()): %s' % url, level=log_utils.LOGWARNING)
 						continue
 					if url:

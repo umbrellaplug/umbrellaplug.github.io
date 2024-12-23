@@ -620,6 +620,9 @@ def router(argv2):
 		if action == 'tb_ServiceNavigator':
 			from resources.lib.menus import navigator
 			navigator.Navigator().torbox_service()
+		if action == 'tb_DeleteCloud':
+			from resources.lib.debrid import torbox
+			torbox.TorBox().delete_all_user_torrents()
 
 	elif action and action.startswith('oc_'):
 		if action == 'oc_ServiceNavigator':
