@@ -362,12 +362,12 @@ def get_video_database_path():
 		databasefile = find('MyVideos*.db', database_path)
 		databasefile.sort(reverse=True)
 		database_path_final = databasefile[0]
-		from resources.lib.modules import log_utils
-		log_utils.log('Umbrella MyVideos file path: %s' % str(database_path_final), 1)
+		#from resources.lib.modules import log_utils
+		#log_utils.log('Umbrella MyVideos file path: %s' % str(database_path_final), 1)
 		databaseFound = True
 	except:
-		from resources.lib.modules import log_utils
-		log_utils.log('Umbrella MyVideos file path exception manual selection needed', 1)
+		#from resources.lib.modules import log_utils
+		#log_utils.log('Umbrella MyVideos file path exception manual selection needed', 1)
 		databaseFound = False
 	if databaseFound == False:
 		kodi_version = control.getKodiVersion()

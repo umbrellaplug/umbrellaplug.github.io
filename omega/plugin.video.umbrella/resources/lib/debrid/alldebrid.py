@@ -522,7 +522,7 @@ class AllDebrid:
 			if control.monitor.abortRequested(): return sysexit()
 			try:
 				if self.progressDialog.iscanceled():
-					if control.yesnoDialog('Delete AD download also?', 'No will continue the download', 'but close dialog'):
+					if control.yesnoDialog('Delete AD download also?', 'No will continue the download', 'but close dialog','AllDebrid', 'No', 'Yes'):
 						return _return_failed(getLS(40014))
 					else:
 						self.progressDialog.close()

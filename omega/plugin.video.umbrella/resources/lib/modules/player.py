@@ -297,18 +297,13 @@ class Player(xbmc.Player):
 		#just checking here for an empty playlist.
 		try:
 			#check if no playlist is currently added.
-			log_utils.log('checkPlaylist() item media type: %s' % str(self.media_type), level=log_utils.LOGDEBUG)
 			if control.playlist.getposition() == -1 and self.media_type == 'episode':
-				log_utils.log('checkPlaylist() current playlist position is -1 sending to singleItemPlaylist', level=log_utils.LOGDEBUG)
 				control.player.stop()
 				control.playlist.clear()
 				return self.singleItemPlaylist(item)
 			else:
-				if self.media != 'episode':
-					log_utils.log('checkPlaylist() else statement and item is not an episode. returning FALSE', level=log_utils.LOGDEBUG)
 				return False
 		except:
-			log_utils.log('checkPlaylist() exception: returning false.', level=log_utils.LOGDEBUG)
 			return False
 
 	def singleItemPlaylist(self, item):

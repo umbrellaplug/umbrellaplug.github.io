@@ -147,13 +147,78 @@ class TorBox:
 			return None
 
 	def add_uncached_torrent(self, magnet_url, pack=False):
-		
+		def _return_failed(message=getLS(33586)):
+			try: self.progressDialog.close()
+			except: pass
+			self.delete_torrent(transfer_id)
+			control.hide()
+			control.sleep(500)
+			control.okDialog(title=getLS(40018), message=message)
+			return False
 		control.busy()
-		result = self.create_transfer(magnet_url)
+		transfer_id = self.create_transfer(magnet_url)
+		if not transfer_id: return _return_failed()
+		transfer_info = self.list_transfer(transfer_id)
+		if not transfer_info: return _return_failed()
+		interval = 5
+		line = '%s\n%s\n%s'
+		line1 = '%s...' % (getLS(40017) % getLS(40529))
+		line2 = transfer_info['name']
+		if transfer_info['download_state'] == 'metaDL':
+			line3 = 'Downloading torrent metadata from TorBox'
+		else:
+			line3 = transfer_info['download_state']
+		if control.setting('dialogs.useumbrelladialog') == 'true':
+			self.progressDialog = control.getProgressWindow(getLS(40018), None, 0)
+			self.progressDialog.set_controls()
+			self.progressDialog.update(0, line % (line1, line2, line3))
+		else:
+			self.progressDialog = control.progressDialog
+			self.progressDialog.create(getLS(40018), line % (line1, line2, line3))
+		while not transfer_info['download_state'] == 'completed':
+			control.sleep(1000 * interval)
+			transfer_info = self.list_transfer(transfer_id)
+			file_size = transfer_info['size']
+			line2 = transfer_info['name']
+			if transfer_info['download_state'] == 'downloading':
+				download_speed = round(float(transfer_info['download_speed']) / (1000**2), 2)
+				progress = int(float(transfer_info['total_downloaded']) / file_size * 100) if file_size > 0 else 0
+				line3 = getLS(40016) % (download_speed, transfer_info['seeds'], progress, round(float(file_size) / (1000 ** 3), 2))
+			elif transfer_info['download_state'] == 'uploading':
+				upload_speed = round(float(transfer_info['upload_speed']) / (1000 ** 2), 2)
+				progress = int(float(transfer_info['total_uploaded']) / file_size * 100) if file_size > 0 else 0
+				line3 = getLS(40015) % (upload_speed, progress, round(float(file_size) / (1000 ** 3), 2))
+			elif transfer_info['download_state'] == 'stalledDL':
+				line3 = 'Downloading is currently stalled. There are no seeds.'
+				progress = int(float(transfer_info['total_downloaded']) / file_size * 100) if file_size > 0 else 0
+			else:
+				if transfer_info['download_state'] == 'metaDL':
+					line3 = 'Downloading torrent metadata from TorBox'
+				else:
+					line3 = transfer_info['download_state']
+				progress = 0
+			self.progressDialog.update(progress, line % (line1, line2, line3))
+			if control.monitor.abortRequested(): return sysexit()
+			try:
+				if self.progressDialog.iscanceled():
+					if control.yesnoDialog('Delete TorBox download also?', 'No will continue the download', 'but close dialog','TorBox','No','Yes'):
+						return _return_failed(getLS(40014))
+					else:
+						self.progressDialog.close()
+						control.hide()
+						return False
+			except: pass
+		control.sleep(1000 * interval)
+		try: self.progressDialog.close()
+		except: pass
 		control.hide()
-		if result: control.okDialog(title='default', message=getLS(40017) % 'TorBox')
-		else: return control.okDialog(title=getLS(40018), message=getLS(33586))
 		return True
+
+	def list_transfer(self, transferid):
+		torrent_info = self.torrent_info(transferid)
+		torrent_info = torrent_info['data']
+		return torrent_info
+
 
 	def _m2ts_check(self, folder_items):
 		for item in folder_items:
@@ -305,7 +370,7 @@ class TorBox:
 			except: pass
 		for count, req in enumerate(que_files, 1):
 			try:
-				i = Thread(target=self.delete_torrent_queued, args=(req['id'],))
+				i = Thread(target=self.delete_torrent, args=(req['id'],))
 				append(i)
 				i.start()
 				progressBG.update(int(count / len_que_files * 100), 'Deleting %s...' % req['name'])
@@ -329,4 +394,4 @@ class TorBox:
 		for torrent in data:
 			name = torrent.get('name','Unknown')
 			request_id = torrent.get('id')
-			self.delete_torrent_queued(request_id, name, multi=True)
+			self.delete_torrent(request_id, name, multi=True)

@@ -1699,7 +1699,7 @@ class TVshows:
 					cm.append((addToFavourites, 'RunPlugin(%s?action=add_favorite&meta=%s&content=%s)' % (sysaddon, sysmeta, 'tvshows')))
 				if not is_widget and page > 2:
 					cm.append((getLS(40477), 'RunPlugin(%s?action=return_home&folder=%s)' % (sysaddon, 'tvshows')))
-				cm.append(('[COLOR red]Umbrella Settings[/COLOR]', 'RunPlugin(%s?action=tools_openSettings)' % sysaddon))
+				cm.append(('[COLOR %s]Umbrella Settings[/COLOR]' % self.highlight_color, 'RunPlugin(%s?action=tools_openSettings)' % sysaddon))
 ####################################
 				if trailer: meta.update({'trailer': trailer}) # removed temp so it's not passed to CM items, only skin
 				else: meta.update({'trailer': '%s?action=play_Trailer&type=%s&name=%s&year=%s&imdb=%s' % (sysaddon, 'show', systitle, year, imdb)})
@@ -1848,7 +1848,7 @@ class TVshows:
 					if getSetting('library.service.update') == 'true':
 						cm.append((addToLibrary, 'RunPlugin(%s?action=library_tvshowsToLibrary&url=%s&name=%s)' % (sysaddon, quote_plus(i['context']), name)))
 				except: pass
-				cm.append(('[COLOR red]Umbrella Settings[/COLOR]', 'RunPlugin(%s?action=tools_openSettings)' % sysaddon))
+				cm.append(('[COLOR %s]Umbrella Settings[/COLOR]' % self.highlight_color, 'RunPlugin(%s?action=tools_openSettings)' % sysaddon))
 				item = control.item(label=name, offscreen=True)
 				item.setArt({'icon': icon, 'poster': poster, 'thumb': icon, 'fanart': control.addonFanart(), 'banner': poster})
 				#item.setInfo(type='video', infoLabels={'plot': name}) #k20setinfo

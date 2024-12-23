@@ -1,3 +1,7 @@
+[B]Update - v6.7.31 - December 23rd, 2024[/B]
+--[Change] Made changes to the cache torrent function for TorBox.
+--[Change] Made context menu use highlight color for Umbrella Settings
+
 [B]Update - v6.7.30 - December 23rd, 2024[/B]
 --[Fix] Added fix for TorBox files being skipped on autoplay.
 --[Change] Added function to clear all files from TorBox cloud.

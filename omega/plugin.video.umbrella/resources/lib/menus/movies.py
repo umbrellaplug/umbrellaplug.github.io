@@ -2075,7 +2075,7 @@ class Movies:
 				cm.append((clearSourcesMenu, 'RunPlugin(%s?action=cache_clearSources)' % sysaddon))
 				if not is_widget and page > 2:
 					cm.append((getLS(40476), 'RunPlugin(%s?action=return_home&folder=%s)' % (sysaddon, 'movies')))
-				cm.append(('[COLOR red]Umbrella Settings[/COLOR]', 'RunPlugin(%s?action=tools_openSettings)' % sysaddon))
+				cm.append(('[COLOR %s]Umbrella Settings[/COLOR]' % self.highlight_color, 'RunPlugin(%s?action=tools_openSettings)' % sysaddon))
 ####################################
 				if trailer: meta.update({'trailer': trailer}) # removed temp so it's not passed to CM items, only infoLabels for skin
 				else: meta.update({'trailer': '%s?action=play_Trailer&type=%s&name=%s&year=%s&imdb=%s' % (sysaddon, 'movie', sysname, year, imdb)})
@@ -2195,7 +2195,7 @@ class Movies:
 					if getSetting('library.service.update') == 'true':
 						cm.append((addToLibrary, 'RunPlugin(%s?action=library_moviesToLibrary&url=%s&name=%s)' % (sysaddon, quote_plus(i['context']), name)))
 				except: pass
-				cm.append(('[COLOR red]Umbrella Settings[/COLOR]', 'RunPlugin(%s?action=tools_openSettings)' % sysaddon))
+				cm.append(('[COLOR %s]Umbrella Settings[/COLOR]' % self.highlight_color, 'RunPlugin(%s?action=tools_openSettings)' % sysaddon))
 				item = control.item(label=name, offscreen=True)
 				item.setArt({'icon': icon, 'poster': poster, 'thumb': icon, 'fanart': control.addonFanart(), 'banner': poster})
 				#item.setInfo(type='video', infoLabels={'plot': name})#changed for kodi20 setinfo method

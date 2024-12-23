@@ -134,8 +134,8 @@ def external_providers():
 def delete_all_subs():
 	import os, fnmatch
 	try:
-		from resources.lib.modules import log_utils
-		log_utils.log('removing all subtitle files.', level=log_utils.LOGDEBUG)
+		#from resources.lib.modules import log_utils
+		#log_utils.log('removing all subtitle files.', level=log_utils.LOGDEBUG)
 		download_path = control.subtitlesPath
 		subtitle = download_path
 		def find(pattern, path):

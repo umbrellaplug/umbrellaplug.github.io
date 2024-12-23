@@ -1459,7 +1459,9 @@ class Sources:
 					control.cancelPlayback()
 					control.sleep(200)
 					plugin = 'plugin://plugin.video.umbrella/'
-					select = getSetting('play.mode.movie') if self.mediatype == 'movie' else getSetting('play.mode.tv')
+					if not episode: mediatype = 'movie'
+					else: mediatype = 'episode'
+					select = getSetting('play.mode.movie') if mediatype == 'movie' else getSetting('play.mode.tv')
 					systitle, sysmeta = quote_plus(title), quote_plus(jsdumps(self.meta))
 					if tvshowtitle:
 						url = '%s?action=rescrapeAuto&title=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&tvshowtitle=%s&premiered=%s&meta=%s&select=%s' % (

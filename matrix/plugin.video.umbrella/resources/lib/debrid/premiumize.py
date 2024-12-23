@@ -306,7 +306,7 @@ class Premiumize:
 			if control.monitor.abortRequested(): return sysexit()
 			try:
 				if self.progressDialog.iscanceled():
-					if control.yesnoDialog('Delete PM download also?', 'No will continue the download', 'but close dialog'):
+					if control.yesnoDialog('Delete PM download also?', 'No will continue the download', 'but close dialog','Premiumize','No','Yes'):
 						return _return_failed(getLS(40014))
 					else:
 						self.progressDialog.close()

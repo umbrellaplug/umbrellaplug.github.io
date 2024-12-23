@@ -5122,3 +5122,7 @@ msgstr ""
 msgctxt "#40544"
 msgid "[B]Delete all queued torrents from TorBox?[/B]"
 msgstr ""
+
+msgctxt "#40545"
+msgid "No"
+msgstr ""

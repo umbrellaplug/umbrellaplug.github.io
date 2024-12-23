@@ -37,6 +37,7 @@ class Seasons:
 		self.tmdblist_hours = int(getSetting('cache.tmdblist'))
 		self.hide_watched_in_widget = getSetting('enable.umbrellahidewatched') == 'true'
 		self.useFullContext = getSetting('enable.umbrellawidgetcontext') == 'true'
+		self.highlight_color = getSetting('highlight.color')
 
 	def get(self, tvshowtitle, year, imdb, tmdb, tvdb, art, idx=True, create_directory=True): # may need to add a cache duration over-ride param to pass
 		self.list = []
@@ -206,7 +207,7 @@ class Seasons:
 				# cm.append((showPlaylistMenu, 'RunPlugin(%s?action=playlist_Show)' % sysaddon))
 				# cm.append((clearPlaylistMenu, 'RunPlugin(%s?action=playlist_Clear)' % sysaddon))
 				cm.append((addToLibrary, 'RunPlugin(%s?action=library_tvshowToLibrary&tvshowtitle=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s)' % (sysaddon, systitle, year, imdb, tmdb, tvdb)))
-				cm.append(('[COLOR red]Umbrella Settings[/COLOR]', 'RunPlugin(%s?action=tools_openSettings)' % sysaddon))
+				cm.append(('[COLOR %s]Umbrella Settings[/COLOR]' % self.highlight_color, 'RunPlugin(%s?action=tools_openSettings)' % sysaddon))
 ####################################
 				item = control.item(label=label, offscreen=True)
 				#if 'castandart' in i: item.setCast(i['castandart'])
