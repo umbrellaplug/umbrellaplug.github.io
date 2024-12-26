@@ -14,7 +14,7 @@ def cloudSources():
 			if is_pkg or 'cloud_utils' in module_name: continue
 			if enabledCheck(module_name):
 				try:
-					module = loader.find_module(module_name).load_module(module_name)
+					module = loader.find_spec(module_name).loader.load_module(module_name)
 					sourceDict.append((module_name, module.source))
 				except Exception as e:
 					if debug_enabled:

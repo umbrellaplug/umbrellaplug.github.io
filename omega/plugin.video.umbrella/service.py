@@ -99,7 +99,7 @@ class SettingsMonitor(control.monitor_class):
 			control.log('[ plugin.video.umbrella ]  Exception checking modules...', LOGDEBUG)
 		try:
 			control.sleep(50)
-			refreshed = control.make_settings_dict()
+			control.make_settings_dict()
 			window.setProperty('umbrella.updateSettings','true')
 		except:
 			control.log('[ plugin.video.umbrella ]  Exception making settings dict...', LOGDEBUG)

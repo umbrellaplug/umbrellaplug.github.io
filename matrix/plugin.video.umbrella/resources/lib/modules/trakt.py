@@ -670,7 +670,8 @@ def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True,
 					else: traktsync.delete_collection_items([tvdb], 'shows_collection', 'tvdb')
 
 				control.hide()
-				list = re.search('\[B](.+?)\[/B]', items[select][0]).group(1)
+				#list = re.search('\[B](.+?)\[/B]', items[select][0]).group(1)
+				list = re.search(r'\[B\](.+?)\[/B\]', items[select][0]).group(1)
 				message = getLS(33583) if 'remove' in items[select][1] else getLS(33582)
 				if items[select][0].startswith('Add'): refresh = False
 				control.hide()

@@ -1,6 +1,10 @@
-[B]Update - v6.7.31 - December 23rd, 2024[/B]
+[B]Update - v6.7.31 - December 26th, 2024[/B]
 --[Change] Made changes to the cache torrent function for TorBox.
 --[Change] Made context menu use highlight color for Umbrella Settings
+--[Fix] Changes in module loads for internal and cloud scrapers.
+--[Fix] Change in way Trakt regular expression for list was handled.
+--[Fix] Change to source_utils for title regedit.
+--[Fix] Fixed error in code comparing string literal.
 
 [B]Update - v6.7.30 - December 23rd, 2024[/B]
 --[Fix] Added fix for TorBox files being skipped on autoplay.

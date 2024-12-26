@@ -226,7 +226,7 @@ def clean_name(release_title):
 		if releasetitle_startswith('rifftrax'): return release_title # removed by "undesirables" anyway so exit
 		for i in unwanted_tags:
 			if releasetitle_startswith(i):
-				release_title = re.sub(r'^%s' % i.replace('+', '\+'), '', release_title, 1, re.I)
+				release_title = re.sub(r'^%s' % re.escape(i), '', release_title, 1, re.I)
 		release_title = release_title.lstrip('+.-:/ ')
 		release_title = re.sub(r'^\[.*?]', '', release_title, 1, re.I)
 		release_title = release_title.lstrip('.-[](){}:/')
