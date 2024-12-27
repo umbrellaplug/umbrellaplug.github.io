@@ -1,3 +1,7 @@
+[B]Update - v6.7.32 - December 27th, 2024[/B]
+--[Fix] Used changes from kodifitzwell for TorBox cloud scraping and playing from cloud.
+--[Change] Used updates from kodifitzwell for TorBox for usenet.
+
 [B]Update - v6.7.31 - December 26th, 2024[/B]
 --[Change] Made changes to the cache torrent function for TorBox.
 --[Change] Made context menu use highlight color for Umbrella Settings

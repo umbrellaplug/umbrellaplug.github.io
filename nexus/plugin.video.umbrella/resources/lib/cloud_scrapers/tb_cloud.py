@@ -4,6 +4,7 @@
 """
 
 import re
+from threading import Thread
 from resources.lib.cloud_scrapers import cloud_utils
 from resources.lib.database import cache
 from resources.lib.debrid.torbox import TorBox
@@ -34,20 +35,25 @@ class source:
 			self.episode = str(data['episode']) if 'tvshowtitle' in data else None
 			query_list = self.episode_query_list() if 'tvshowtitle' in data else self.year_query_list()
 			# log_utils.log('query_list = %s' % query_list)
-			cloud_folders = TorBox().user_cloud()
-			if not cloud_folders: return sources
-			cloud_folders = [i for i in cloud_folders['data'] if i['download_finished']]
-			if not cloud_folders: return sources
+			folders = []
+			threads = (
+				Thread(target=self._scraper, args=(TorBox().user_cloud, folders, 'torent')),
+				Thread(target=self._scraper, args=(TorBox().user_cloud_usenet, folders, 'usenet'))
+			)
+			[i.start() for i in threads]
+			[i.join() for i in threads]
+			if not folders: return sources
 			extras_filter = cloud_utils.extras_filter()
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error('TB_CLOUD: ')
 			return sources
 
-		for folder in cloud_folders:
+		for folder in folders:
 			try:
 				folder_name = folder.get('name', '')
-				if not cloud_utils.cloud_check_title(title, aliases, folder_name): continue
+#				if not cloud_utils.cloud_check_title(title, aliases, folder_name): continue
+				mediatype = folder.get('mediatype', '')
 				request_id = folder.get('id', '')
 				folder_files = folder['files']
 			except:
@@ -90,9 +96,14 @@ class source:
 #						name = name[len(name)-1]
 #						index_pos = folder_files.index(file)
 #						link = torrent_info['links'][index_pos]
-						link = '%d,%d' % (int(request_id), file['id'])
+						link = '%d,%d,%s' % (int(request_id), file['id'], mediatype)
 						size = file.get('size', '')
 
+					if not (
+						cloud_utils.cloud_check_title(title, aliases, name)
+						or # because usenet obfuscation
+						cloud_utils.cloud_check_title(title, aliases, folder_name)
+					): continue
 					name_info = sc_utils.info_from_name(name, title, self.year, hdlr, episode_title)
 					hash = folder.get('hash', '')
 					quality, info = sc_utils.get_release_quality(name_info, name)
@@ -145,9 +156,15 @@ class source:
 
 	def resolve(self, url):
 		try:
-			url = cache.get(TorBox().unrestrict_link, 48, url)
+			url, mediatype = url.rsplit(',', 1)
+			if mediatype == 'usenet': url = cache.get(TorBox().unrestrict_usenet, 1, url)
+			else: url = cache.get(TorBox().unrestrict_link, 1, url)
 			return url
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error('TB_CLOUD: ')
 			return None
+
+	def _scraper(self, function, results, mediatype):
+		try: results += [{**i, 'mediatype': mediatype} for i in function()['data'] if i['download_finished']]
+		except: pass

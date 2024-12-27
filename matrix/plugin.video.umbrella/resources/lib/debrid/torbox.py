@@ -18,10 +18,14 @@ session.mount(base_url, requests.adapters.HTTPAdapter(max_retries=1))
 
 class TorBox:
 	download = '/torrents/requestdl'
+	download_usenet = '/usenet/requestdl'
 	remove = '/torrents/controltorrent'
+	remove_usenet = '/usenet/controlusenetdownload'
 	stats = '/user/me'
 	history = '/torrents/mylist'
+	history_usenet = '/usenet/mylist'
 	explore = '/torrents/mylist?id=%s'
+	explore_usenet = '/usenet/mylist?id=%s'
 	cache = '/torrents/checkcached'
 	cloud = '/torrents/createtorrent'
 	queued = '/torrents/getqueued'
@@ -72,11 +76,21 @@ class TorBox:
 	def delete_torrent_queued(self, request_id=''):
 		data = {'torrent_id': request_id, 'operation': 'delete'}
 		return self._POST(self.removeQueued, json=data)
-
+		
+	def delete_usenet(self, request_id=''):
+		data = {'usenet_id': request_id, 'operation': 'delete'}
+		return self._POST(self.remove_usenet, json=data)
+		
 	def unrestrict_link(self, file_id):
 		torrent_id, file_id = file_id.split(',')
-		params = {'token': self.api_key, 'torrent_id': torrent_id, 'file_id': file_id, 'user_ip': True}
+		params = {'token': self.api_key, 'torrent_id': torrent_id, 'file_id': file_id}
 		try: return self._GET(self.download, params=params)['data']
+		except: return None
+		
+	def unrestrict_usenet(self, file_id):
+		usenet_id, file_id = file_id.split(',')
+		params = {'token': self.api_key, 'usenet_id': usenet_id, 'file_id': file_id}
+		try: return self._GET(self.download_usenet, params=params)['data']
 		except: return None
 
 	def check_cache_single(self, hash):
@@ -266,8 +280,12 @@ class TorBox:
 			return control.selectDialog(items, 'TorBox')
 		except: log_utils.error()
 
-	def user_cloud(self):
-		url = self.history
+	def user_cloud(self, request_id=None):
+		url = self.explore % request_id if request_id else self.history
+		return self._GET(url)
+
+	def user_cloud_usenet(self, request_id=None):
+		url = self.explore_usenet % request_id if request_id else self.history_usenet
 		return self._GET(url)
 
 	def user_cloud_clear(self):
@@ -282,17 +300,21 @@ class TorBox:
 		highlight_color = getSetting('highlight.color')
 		folder_str, deleteMenu = getLS(40046).upper(), getLS(40050)
 		file_str, downloadMenu = getLS(40047).upper(), getLS(40048)
-		cloud_dict = self.user_cloud()
-		cloud_dict = [i for i in cloud_dict['data'] if i['download_finished']]
-		for count, item in enumerate(cloud_dict, 1):
+		folders = []
+		try: folders += [{**i, 'mediatype': 'torent'} for i in self.user_cloud()['data'] if i['download_finished']]
+		except: pass
+		try: folders += [{**i, 'mediatype': 'usenet'} for i in self.user_cloud_usenet()['data'] if i['download_finished']]
+		except: pass
+		folders.sort(key=lambda k: k['updated_at'], reverse=True)
+		for count, item in enumerate(folders, 1):
 			try:
 				cm = []
 				folder_name = string_tools.strip_non_ascii_and_unprintable(item['name'])
 				status_str = '[COLOR %s]%s[/COLOR]' % (highlight_color, item['download_state'].capitalize())
-				cm.append((deleteMenu % 'Torrent', 'RunPlugin(%s?action=tb_DeleteUserTorrent&id=%s&name=%s)' %
-					(sysaddon, item['id'], quote_plus(folder_name))))
+				cm.append((deleteMenu % 'Torrent', 'RunPlugin(%s?action=tb_DeleteUserTorrent&id=%s&mediatype=%s&name=%s)' %
+					(sysaddon, item['id'], item['mediatype'], quote_plus(folder_name))))
 				label = '%02d | [B]%s[/B] | [B]%s[/B] | [I]%s [/I]' % (count, status_str, folder_str, folder_name)
-				url = '%s?action=tb_BrowseUserTorrents&id=%s' % (sysaddon, item['id'])
+				url = '%s?action=tb_BrowseUserTorrents&id=%s&mediatype=%s' % (sysaddon, item['id'], item['mediatype'])
 				item = control.item(label=label, offscreen=True)
 				item.addContextMenuItems(cm)
 				item.setArt({'icon': tb_icon, 'poster': tb_icon, 'thumb': tb_icon, 'fanart': addonFanart, 'banner': tb_icon})
@@ -302,13 +324,13 @@ class TorBox:
 		control.content(syshandle, 'files')
 		control.directory(syshandle, cacheToDisc=True)
 
-	def browse_user_torrents(self, folder_id):
+	def browse_user_torrents(self, folder_id, mediatype):
 		sysaddon, syshandle = 'plugin://plugin.video.umbrella/', int(argv[1])
 		quote_plus = requests.utils.quote
 		extensions = supported_video_extensions()
 		file_str, downloadMenu = getLS(40047).upper(), getLS(40048)
-		torrent_files = self.torrent_info(folder_id)
-		video_files = [i for i in torrent_files['data']['files'] if i['short_name'].lower().endswith(tuple(extensions))]
+		files = self.user_cloud_usenet(folder_id) if mediatype == 'usenet' else self.user_cloud(folder_id)
+		video_files = [i for i in files['data']['files'] if i['short_name'].lower().endswith(tuple(extensions))]
 		for count, item in enumerate(video_files, 1):
 			try:
 				cm = []
@@ -317,9 +339,9 @@ class TorBox:
 				display_size = float(int(size)) / 1073741824
 				label = '%02d | [B]%s[/B] | %.2f GB | [I]%s [/I]' % (count, file_str, display_size, name)
 				item = '%d,%d' % (int(folder_id), item['id'])
-				url = '%s?action=play_URL&url=%s&caller=torbox&type=unrestrict' % (sysaddon, item)
-				cm.append((downloadMenu, 'RunPlugin(%s?action=download&name=%s&image=%s&url=%s&caller=torbox&type=unrestrict)' %
-					(sysaddon, quote_plus(name), quote_plus(tb_icon), item)))
+				url = '%s?action=play_URL&url=%s&caller=torbox&mediatype=%s&type=unrestrict' % (sysaddon, item, mediatype)
+				cm.append((downloadMenu, 'RunPlugin(%s?action=download&name=%s&image=%s&url=%s&caller=torbox&mediatype=%s&type=unrestrict)' %
+					(sysaddon, quote_plus(name), quote_plus(tb_icon), item, mediatype)))
 				item = control.item(label=label, offscreen=True)
 				item.addContextMenuItems(cm)
 				item.setArt({'icon': tb_icon, 'poster': tb_icon, 'thumb': tb_icon, 'fanart': addonFanart, 'banner': tb_icon})
@@ -329,10 +351,10 @@ class TorBox:
 		control.content(syshandle, 'files')
 		control.directory(syshandle, cacheToDisc=True)
 
-	def delete_user_torrent(self, request_id, name, multi=False):
+	def delete_user_torrent(self, request_id, mediatype, name, multi=False):
 		if multi == False:
 			if not control.yesnoDialog(getLS(40050) % '?\n' + name, '', ''): return
-		result = self.delete_torrent(request_id)
+		result = self.delete_usenet(request_id) if mediatype == 'usenet' else self.delete_torrent(request_id)
 		if result['success']:
 			control.notification(message='TorBox: %s was removed' % name, icon=tb_icon)
 			if not multi: control.refresh()
@@ -386,7 +408,8 @@ class TorBox:
 		for torrent in data:
 			name = torrent.get('name','Unknown')
 			request_id = torrent.get('id')
-			self.delete_user_torrent(request_id, name, multi=True)
+			mediatype = torrent.get('mediatype')
+			self.delete_user_torrent(request_id, mediatype, name, multi=True)
 
 	def delete_queued_torrents(self, data):
 		if not control.yesnoDialog(getLS(40544), '', ''): return

@@ -613,10 +613,10 @@ def router(argv2):
 			torbox.TorBox().user_cloud_to_listItem()
 		elif action == 'tb_BrowseUserTorrents':
 			from resources.lib.debrid import torbox
-			torbox.TorBox().browse_user_torrents(params.get('id'))
+			torbox.TorBox().browse_user_torrents(params.get('id'), mediatype)
 		elif action == 'tb_DeleteUserTorrent':
 			from resources.lib.debrid import torbox
-			torbox.TorBox().delete_user_torrent(params.get('id'), name)
+			torbox.TorBox().delete_user_torrent(params.get('id'), mediatype, name)
 		if action == 'tb_ServiceNavigator':
 			from resources.lib.menus import navigator
 			navigator.Navigator().torbox_service()
@@ -796,7 +796,8 @@ def router(argv2):
 				try:
 					from resources.lib.modules import downloader
 					from resources.lib.debrid import torbox
-					url = torbox.TorBox().unrestrict_link(url.replace(' ', '%20'))
+					if mediatype == 'usenet': url = torbox.TorBox().unrestrict_usenet(url.replace(' ', '%20'))
+					else: url = torbox.TorBox().unrestrict_link(url.replace(' ', '%20'))
 					downloader.download(name, image, torbox.TorBox().add_headers_to_url(url))
 				except:
 					import traceback
@@ -968,6 +969,12 @@ def router(argv2):
 			elif caller == 'alldebrid':
 				from resources.lib.debrid import alldebrid
 				if params.get('type') == 'unrestrict': control.player.play(alldebrid.AllDebrid().unrestrict_link(url.replace(' ', '%20')))
+				else: control.player.play(url.replace(' ', '%20'))
+			elif caller == 'torbox':
+				from resources.lib.debrid import torbox
+				if params.get('type') == 'unrestrict':
+					if mediatype == 'usenet': control.player.play(torbox.TorBox().unrestrict_usenet(url.replace(' ', '%20')))
+					else: control.player.play(torbox.TorBox().unrestrict_link(url.replace(' ', '%20')))
 				else: control.player.play(url.replace(' ', '%20'))
 			else:
 				control.player.play(url.replace(' ', '%20'))
