@@ -1,0 +1,4 @@
+
+In Fen Light->Tools there is a "TV Shows Progress Manager" feature which will allow you to hide/unhide shows from the TVShow Progress/Next Episodes displays.
+If using Trakt for your Watched Status Provider, this is easier than going to the Trakt website to hide/unhide shows from progress.
+If using Fen Light for your Watched Status Provider, this gives you the opportunity to "hide" tv shows whose progress you do not want to include.

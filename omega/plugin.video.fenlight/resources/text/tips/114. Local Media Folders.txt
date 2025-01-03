@@ -1,0 +1,20 @@
+
+Fen Light includes 5 'Local Media Folder' scrapers.
+Choose a Movie and TV Show directory for any of these scrapers, and Fen Light will scan those directories for results. There is a small amount of leeway for how folder structures must be set out, but to assure best chances of a relevant file being found, it is best to have the following structure:
+        - Movies Folder    <----Enter this into the scraper setting.
+                - Movie 1 Folder
+                        - movie1.file
+                - Movie 2 Folder
+                        - movie2.file
+        - TV Shows Folder    <----Enter this into the scraper setting.
+                - TV Show 1 Folder
+                        - Season 1 Folder
+                                - s01e01.file
+                - TV Show 2 Folder
+                        - Season 1 Folder
+                                - s01e01.file
+To Use:
+Go to Settings->Accounts->'Local Media Folders'. Turn ON 'Enable'. Also set any additional settings needed here.
+Select "Set Folder Scrapers", and assign Network/Local folders, giving them a label and assigning their location.
+
+NOTE: You don't need to set both a Movie and TV Show folder for each of the Folder Scrapers, just leave which ever you don't want to use blank.

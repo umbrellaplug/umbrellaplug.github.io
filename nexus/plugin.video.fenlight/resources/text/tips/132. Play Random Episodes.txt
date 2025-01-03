@@ -1,0 +1,4 @@
+
+Fen Light allows you to either autoplay a single random episode from a TV Show, or autoplay continual random episdoes from a TV Show. To access this feature, bring up the context menu on a TV Show, and select "Options..." -> "Play Random".
+
+You can then choose between "Single Random Play" or "Continual Random Play". Single Random Play will autoplay a single episode from the TV Show at random, while Continual Random Play will autoplay episodes continually until stopped.

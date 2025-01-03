@@ -1,0 +1,13 @@
+
+Fen Light has the ability to update itself. It no longer relies on a repository being installed to update.
+
+You can set the update behavior in Settings->General->Manage Addon Updates.
+
+For "Update Action" there are 4 choices:
+
+1. PROMPT: Fen Light will enact a confirm dialog for you to interact with when an update is available.
+2. AUTOMATIC: Fen Light will automatically install the new version of itself when an update is available.
+3. NOTIFICATION: Fen Light will display a notification when an update is available. Users will have to install the update manually (see below).
+4. OFF: Fen Light will not even check if there is an update available.
+
+If you need to update Fen Light manually, navigate to Tools->Update Utilities and select "Check for Updates". A confirm dialog will appear and you can select to install the update.

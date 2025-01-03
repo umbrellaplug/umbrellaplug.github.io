@@ -372,9 +372,11 @@ class TorBox:
 		return self._GET(url)
 
 	def delete_all_user_torrents(self):
+		if not control.yesnoDialog(getLS(40546), '', ''): return
 		files = self.user_cloud().get('data', [])
 		que_files = self.queued_torrents().get('data', [])
-		list_len = int(len(files)) + int(len(que_files))
+		usenet_files = self.user_cloud_usenet().get('data', [])
+		list_len = int(len(files)) + int(len(que_files) + int(len(usenet_files)))
 		if list_len < 1: return control.notification(title='Torbox', message='No Files found to remove.', icon=tb_icon)
 		threads = []
 		append = threads.append
@@ -393,6 +395,14 @@ class TorBox:
 		for count, req in enumerate(que_files, 1):
 			try:
 				i = Thread(target=self.delete_torrent, args=(req['id'],))
+				append(i)
+				i.start()
+				progressBG.update(int(count / len_que_files * 100), 'Deleting %s...' % req['name'])
+				control.sleep(200)
+			except: pass
+		for count, req in enumerate(usenet_files, 1):
+			try:
+				i = Thread(target=self.delete_usenet, args=(req['id'],))
 				append(i)
 				i.start()
 				progressBG.update(int(count / len_que_files * 100), 'Deleting %s...' % req['name'])

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <defaultcontrol always="true">2000</defaultcontrol>
+    <controls>
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">fenlight_common/white.png</texture>
+        </control>
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <aspectratio>scale</aspectratio>
+            <texture>$INFO[Window.Property(fanart)]</texture>
+            <animation effect="fade" end="35" time="120">WindowOpen</animation>
+        </control>
+        <control type="group">
+            <animation effect="fade" end="100" time="200">WindowOpen</animation>
+            <control type="group">
+                <control type="image">
+                    <top>5</top>
+                    <left>5</left>
+                    <width>60</width>
+                    <height>60</height>
+                    <aspectratio aligny="top">keep</aspectratio>
+                    <texture>fenlight_common/fenlight.png</texture>
+                </control>
+                <control type="label">
+                    <top>20</top>
+                    <left>1590</left>
+                    <width max="300">auto</width>
+                    <height>20</height>
+                    <font>font37</font> <!-- FENLIGHT_38 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>right</align>
+                    <aligny>center</aligny>
+                    <label>[B]$INFO[System.Time][/B]</label>
+                </control>
+                <control type="label">
+                    <top>50</top>
+                    <left>1540</left>
+                    <width max="350">auto</width>
+                    <height>20</height>
+                    <font>font10</font> <!-- FENLIGHT_21 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>right</align>
+                    <aligny>center</aligny>
+                    <label>$INFO[System.Date]</label>
+                </control>
+                <control type="label">
+                    <left>75</left>
+                    <top>25</top>
+                    <width>1520</width>
+                    <height>20</height>
+                    <font>font10</font> <!-- FENLIGHT_21 -->
+                    <textcolor>FFFFFFFF</textcolor>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <label>[UPPERCASE]Page $INFO[Window.Property(page_no)][B] | $INFO[Container(2000).ListItem.Property(name)][/B][/UPPERCASE]</label>
+                </control>
+            </control>
+            <control type="panel" id="2000">
+                <pagecontrol>2060</pagecontrol>
+                <left>135</left>
+                <top>80</top>
+                <width>1650</width>
+                <height>990</height>
+                <onleft>2060</onleft>
+                <onright>2060</onright>
+                <scrolltime tween="sine">350</scrolltime>
+                <itemlayout height="330" width="330">
+                    <control type="image">
+                        <left>0</left>
+                        <top>0</top>
+                        <width>320</width>
+                        <height>320</height>
+                        <texture colordiffuse="FF1F2020" border="12">fenlight_common/panel-256-box.png</texture>
+                    </control>
+                    <control type="image">
+                        <left>10</left>
+                        <top>10</top>
+                        <width>300</width>
+                        <height>300</height>
+                        <aspectratio>keep</aspectratio>
+                        <texture fallback="$INFO[Window.Property(backup_thumbnail)]">$INFO[ListItem.Property(thumb)]</texture>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="330" width="330">
+                    <control type="group">
+                        <control type="image">
+                            <animation effect="fade" start="100" end="60" condition="Control.HasFocus(2060)">Conditional</animation>
+                            <animation type="Focus" reversible="false">
+                                <effect type="zoom" end="105" time="75" tween="sine" easing="out" center="auto" />
+                                <effect type="zoom" end="95" time="225" tween="sine" delay="100" easing="out" center="auto" />
+                            </animation>
+                            <left>0</left>
+                            <top>0</top>
+                            <width>320</width>
+                            <height>320</height>
+                            <texture colordiffuse="FFCCCCCC" border="12">fenlight_common/panel-256-box.png</texture>
+                        </control>
+                        <control type="image">
+                            <left>10</left>
+                            <top>10</top>
+                            <width>300</width>
+                            <height>300</height>
+                            <aspectratio>keep</aspectratio>
+                            <texture>$INFO[ListItem.Property(thumb)]</texture>
+                        </control>
+                    </control>
+                </focusedlayout>
+            </control>
+            <control type="scrollbar" id="2060">
+                <top>100</top>
+                <left>1880</left>
+                <width>10</width>
+                <height>940</height>
+                <onleft>2000</onleft>
+                <onright>2000</onright>
+                <texturesliderbackground colordiffuse="FF1F2020">fenlight_common/white.png</texturesliderbackground>
+                <texturesliderbar colordiffuse="FF555556">fenlight_common/white.png</texturesliderbar>
+                <texturesliderbarfocus colordiffuse="FFCCCCCC">fenlight_common/white.png</texturesliderbarfocus>
+                <showonepage>false</showonepage>
+                <orientation>vertical</orientation>
+                <visible>Control.IsVisible(2000)</visible>
+            </control>
+        </control>
+    </controls>
+</window>

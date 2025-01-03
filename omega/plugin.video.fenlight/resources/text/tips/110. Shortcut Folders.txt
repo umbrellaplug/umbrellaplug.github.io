@@ -1,0 +1,14 @@
+
+Fen Light offers the ability to make your own 'Folders' within the main menus (Root, Movies or TV Shows). This allows you to fill that folder with items from all the other lists, or from Trakt lists. You can name the folders anything, so you can have 'themed' folders with different content.
+
+To make a new Shortcut Folder, navigate to Tools->Shortcut Folders Manager and select 'Make New Shortcut Folder' to make a new folder. This folder will not yet be assigned to a list.
+
+Once you have made your new shortcut folder, you can select "Add Content" from within the shortcut folder, where you will then be able to browse the Fen Light folder structure and select a list item to place in the Shortcut Folder.
+
+You place a premade Shortcut Folder within a main menu (Root, Movies or TV Shows) by selecting 'Add Content' and navigating to the folder you wish to add.
+
+As well as adding menus/lists to your shortcut folders, you can also re-arrange their order within the folder by bringing up context menu, selecting 'Edit', and selecting 'Move'. then select the items new position. You can also delete an item from your folder or clear the entire contents of the folder.
+
+Also, in Tools->Shortcut Folders Manager, you can delete a shortcut folder completely.
+
+You can have as many shortcut folders as you wish, and you can place them in more than one main menu. If you remove a folder from a menu, it will still exist waiting to be placed in another menu. You must go to the Shortcut Folders Manager to delete a folder completely.

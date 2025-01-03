@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <defaultcontrol always="true">5000</defaultcontrol>
+    <controls>
+        <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>1920</width>
+        <height>1080</height>
+            <texture colordiffuse="FF000000">fenlight_common/white.png</texture>
+        </control>
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <aspectratio>scale</aspectratio>
+            <texture>$INFO[Window.Property(fanart)]</texture>
+            <animation effect="fade" end="35" time="120">WindowOpen</animation>
+        </control>
+        <control type="group">
+            <animation effect="fade" end="100" time="200">WindowOpen</animation>
+            <control type="list" id="5000">
+                <left>-90</left>
+                <top>0</top>
+                <width>2100</width>
+                <height>1080</height>
+                <onleft>5000</onleft>
+                <onright>5000</onright>
+                <scrolltime tween="sine">400</scrolltime>
+                <orientation>Horizontal</orientation>
+                <itemlayout height="1080" width="1920">
+                    <control type="image">
+                        <left>90</left>
+                        <top>0</top>
+                        <width>1920</width>
+                        <height>1080</height>
+                        <aspectratio>keep</aspectratio>
+                        <fadetime>200</fadetime>
+                        <texture>$INFO[ListItem.Property(image)]</texture>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="1080" width="1920">
+                    <control type="image">
+                        <left>90</left>
+                        <top>0</top>
+                        <width>1920</width>
+                        <height>1080</height>
+                        <aspectratio>keep</aspectratio>
+                        <fadetime>200</fadetime>
+                        <texture fallback="$INFO[Window.Property(backup_thumbnail)]">$INFO[ListItem.Property(image)]</texture>
+                    </control>
+                </focusedlayout>
+            </control>
+            <!-- Logo, Info, Clock & Date -->
+            <control type="group">
+                <control type="image">
+                    <top>0</top>
+                    <left>0</left>
+                    <width>1920</width>
+                    <height>70</height>
+                    <texture colordiffuse="80302F2F">fenlight_common/white.png</texture>
+                </control>
+                <control type="image">
+                    <top>5</top>
+                    <left>5</left>
+                    <width>60</width>
+                    <height>60</height>
+                    <aspectratio aligny="top">keep</aspectratio>
+                    <texture>fenlight_common/fenlight.png</texture>
+                </control>
+                <control type="label">
+                    <left>75</left>
+                    <top>25</top>
+                    <width>1770</width>
+                    <height>20</height>
+                    <font>font10</font> <!-- FENLIGHT_21 -->
+                    <textcolor>FFFFFFFF</textcolor>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <label>[UPPERCASE][B]$INFO[Container(5000).ListItem.Property(title)][/B][/UPPERCASE]</label>
+                </control>
+            </control>
+        </control>
+    </controls>
+</window>

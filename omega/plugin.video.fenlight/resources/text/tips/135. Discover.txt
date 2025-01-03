@@ -1,0 +1,15 @@
+
+Discover is a feature that allows you to make custom lists using the filter values you provide. Only the filters you wish to use need to be assigned a value, the rest can be left blank. Once you've set your desired filters, select 'Save & Exit'.
+
+Your lists can be viewed by selecting them in the Discovery sections, and can also be added to any main Fen lists by using the Edit Main Menus feature.
+
+There are many different lists you could make using different filters, below is an example:
+
+[B]EXAMPLE:[/B]
+You want to make a list for Comedy/Action Movies made in the 1980's that are PG Rated:
+- Assign a "[B]Year Start[/B]" filter of "1980"
+- Assign a "[B]Year End[/B]" filter of "1989"
+- Assign a "[B]Include Genres[/B]" filter of "Action, Comedy"
+- Assign a "[B]Certification[/B]" filter of "PG"
+Only want movies with Tom Hanks in your new list? Add a 'Tom Hanks' filter for 'Includes Cast'.
+- [B]Enjoy your 1980's Action/Comedy Family Movie Night.[/B]

@@ -1,0 +1,157 @@
+[COLOR darkgoldenrod]GOD BLESS HIM AND KEEP HIM SAFE.[/COLOR]
+
+[COLOR dodgerblue][B]Version 2.0.07[/B][/COLOR]
+- Added support for Season and Episode items included in Trakt list contents (My Lists, Liked Lists).
+- Updated Trakt icon.
+- Many smaller tweaks to various functions.
+- Other changes/fixes.
+
+[COLOR dodgerblue][B]Version 2.0.06[/B][/COLOR]
+- Fixed Results Highlight Color bug.
+- Added TorBox highlight color choice.
+- Fixed AI Upscaled/Enhanced filter not working. You will need to re-set this if you want to Exclude these results.
+- Fixed Offcloud login accepting incorrect credentials.
+- Fixed "Browse" in single episode list to honor flatten seasons setting.
+- Other changes/fixes.
+
+[COLOR dodgerblue][B]Version 2.0.05[/B][/COLOR]
+- Added OffCloud suppport. Big thanks to kodifitzwell who allowed me to steal a large portion of his code.
+- Added Easydebrid suppport. Big thanks to kodifitzwell who allowed me to steal a large portion of his code.
+- Added TorBox suppport. Big thanks to kodifitzwell who allowed me to steal a large portion of his code. Big thanks also to [B]DaleAlanC[/B] for lending me their account.
+- Other changes/fixes.
+
+[COLOR dodgerblue][B]Version 2.0.04[/B][/COLOR]
+- AD fix.
+- Reinstate Upload Manager, but I have disabled the Rollback Feature.
+- Added settings General->Manage Addon Updates... "Github Username" & "Github Repo Address". In these, you can enter the username and repo address of another dev who may wish to push a Fen Light release. Devs will need to check the code within updater.py and make sure their repo is structured correctly. Basically repo_name/packages/CONTENT.
+
+[COLOR dodgerblue][B]Version 2.0.03[/B][/COLOR]
+- Let's try this again.
+- Fixed Reviews in Extras Menu. Clear IMDb cache and restart Kodi to refresh new data.
+- Added some to the Years menu.
+- Final release of this addon. Hopefully. So long all.
+
+[COLOR dodgerblue][B]Version 2.0.02[/B][/COLOR]
+- Oop. Spoke too soon.
+- Fix for browsing/downloading pack results through RD.
+- Quick fix for some media causing error when saving to favorites.
+- Quick fix to correct sequential playback.
+- Final release of this addon. Hopefully. So long all.
+
+[COLOR dodgerblue][B]Version 2.0.01[/B][/COLOR]
+- Fixed RD compatibility.
+- Removed update service.
+- Final release of this addon. So long all.
+
+[COLOR dodgerblue][B]Version 1.0.94[/B][/COLOR]
+NOTE: THERE ARE NO FIXES IN THIS RELEASE FOR REAL DEBRID INTEGRATION.
+- Added info for the unwatched count for single episode lists. This only shows for skins that support this.
+- Added Settings->Single Episode Lists->Trakt Calendar->"Flatten TV Shows Airing on Same Day". Use this to limit single episode lists to only display the first episode when multiple episodes are released on the same day.
+- Added ability to manually enter view type ids if needed. Enable "Control Viewtypes Within Addon" in Settings->Content->General, then you can enable "Manually Enter Viewtype Values" and enter the viewtype ids.
+- Fixed progress status on episodes when opening all instead of seasons.
+- Better detection of best instance of video for Official, first released trailer.
+- Other changes/fixes.
+
+[COLOR dodgerblue][B]Version 1.0.93[/B][/COLOR]
+- Couple of quick fixes.
+
+[COLOR dodgerblue][B]Version 1.0.92[/B][/COLOR]
+- [CONTEXT MENU->OPTIONS->ASSIGN AN EPISODE GROUP TO...] Added option for TV Shows to assign an episode group from TMDb. These episode groups cover alternate season and episode orders based on other parameters. For example, it might be possible to set the episode order for a TV Show based on it's streaming aired order, or it's order from another service such as TVDb. These Custom Episode Groups will not change how the episodes are arranged within Fen Light, rather the information from them will be used when scraping for results for playback. This feature may be particularly useful when dealing with Anime content, but can be set for any TV Show.
+- Added Settings->Results->General->"Retry With Custom Episode Group When No Results". Enable this and Fen Light will rescrape using a custom episode group if no results are found. If a custom episode group is already assigned to the TV Show (above for details), then a rescrape will occur using instead the default season/episode values instead.
+- Added Settings->General->General->"Limit Concurrent Threads". Use this if your device is erroring by not allowing python to start new threads once a certain threshold is reached. There is a hard limit of 60 if this is not enabled and set to a user preference. Min/max settings are 10/300.
+- Temporary workaround for the RD "no cached results" error currently randomly affecting calls to check RD's cache. Will be removed once their API is fixed for this endpoint.
+- Fixed "Parental Guide" in Extras window. To get fresh results (empty results are cached), clear IMDb Database and restart Kodi.
+- Improved trailer choice for metadata. Clear metadata cache for benefits.
+- Other changes/fixes.
+
+[COLOR dodgerblue][B]Version 1.0.90/91[/B][/COLOR]
+- Added Settings->Results->Sorting & Filtering->"Custom Autoplay Sort To Top". This will allow you to set 5 different video/audio characteristics that you wish to see brought to the top of the sources list for autoplay. Things like "HEVC" or "DOLBY VISION" etc. These will be weighted on importance, with the higher the position in the list of 5 the higher the importance when sorting to the top.
+- As a result, the other filtering options which previously featured an "INCLUDE, EXCLUDE, PREFER (AUTOPLAY)" setting have been reset, and the "PREFER (AUTOPLAY)" option has been removed.
+- Other changes/fixes.
+
+[COLOR dodgerblue][B]Version 1.0.89[/B][/COLOR]
+- Couple of quick fixes.
+
+[COLOR dodgerblue][B]Version 1.0.88[/B][/COLOR]
+- Quick fix for PM browsing.
+
+[COLOR dodgerblue][B]Version 1.0.87[/B][/COLOR]
+- Fixed incorrect aired episode totals in seasons container.
+- Optimizations to service procedures to help Fen Light start quicker on Kodi opening.
+- Other changes/fixes.
+
+[COLOR dodgerblue][B]Version 1.0.86[/B][/COLOR]
+- FIXED UPDATER BUG. IT IS SAFE TO UPDATE TO THIS VERSION. IF YOU ARE ON VERSION 1.0.85, THEN DOWNGRADE FIRST BEFORE UPDATING.
+- Fixed searching Trakt user lists.
+- Fixed little filter error in fetching MPAA ratings.
+- Other changes/fixes.
+
+[COLOR dodgerblue][B]Version 1.0.85[/B][/COLOR]
+- Added Settings->Content->General->"Service used for Because You Watched". Choose which service provides recommendations for the Because You Watched menus. Options are Recommended (TMDb) or More Like This (IMDb). TMDb by default.
+- Added "Because You Watched" section to the Random menu. This will take random media from up to the last 5 movies/episodes you have watched, select one of those at random, and display recommended media from that watched item.
+- Added Settings->Content->General->"Seeds used for Because You Watched Random". Choose how much previously watched media is used for recommendations for the Because You Watched Random menu. You can choose from the previous 1 to 5 watched items as the list from which the seed will be added.
+- Partial fix for Parental Guidance in Extras window. IMDb look to be in the process of changing this on their website, so if the new layout loads, it will still not work. Clear Main Cache to clear any null values for this.
+- Other changes/fixes.
+
+[COLOR dodgerblue][B]Version 1.0.83/84[/B][/COLOR]
+- Added a favorites entry for Anime. All shows favorited from within the Anime section will be saved as an Anime favorite, rather than a TV Show favorite.
+- Added "Anime" to the Search menu. Will exclusively search for Anime TV Shows. Can be added to the Anime section if preferred using the menu edit system.
+- Added Settings->Content->General->Include Unaired Media in Trakt Watchlists. On by default. Disable this to hide Movies/TV Shows in your Trakt Watchlists that have yet to air.
+- Lowered caching times of some lists. Raised caching times of some others.
+- Reduced to 12 hours the cached contents of Trakt "Liked" lists.
+- Other changes/fixes.
+
+[COLOR dodgerblue][B]Version 1.0.81/82[/B][/COLOR]
+- Added 'Anime' section to Root Menu (Main Menu). To add this, context menu on any current Root Menu item->Check for New Menu Items. Add the Anime menu item where you please. If this doesn't work, then select Context Menu->Restore Menu.
+- Anime is also included in the "Random Lists" menu, where the Anime lists can be randomized just like the Movie and TV Show lists.
+- Added Settings->Content->General->"Watched (Still Airing) TV Shows Location". Select from "Watched", "In Progress" or "Both". This decides which menu fully watched, but still airing, TV Shows will be included in. Default is "Watched" (which is the current behavior).
+- Excluded some genres from the "Popular" TV Shows list. Atleast until TMDb get that list sorted out. Clear the Lists cache to get slightly better results there.
+- Other changes/fixes.
+
+[COLOR dodgerblue][B]Version 1.0.78/79/80[/B][/COLOR]
+- Added "AI Enhanced/Upscaled Files Filter" to Settings->Results->Sorting and Filtering. Set to Include, Exclude, Prefer (Autoplay).
+- Fix for Trakt liked lists not updating with new content. New content will be checked for every 24 hours.
+- Other changes/fixes.
+
+[COLOR dodgerblue][B]Version 1.0.77[/B][/COLOR]
+- Small adjustments to Extras and People windows.
+- Other changes/fixes.
+
+[COLOR dodgerblue][B]Version 1.0.76[/B][/COLOR]
+- More fine tuning of random widgets, mainly concerning the shortcuts folder. This is quickly becoming messy code though, which I'm not a fan of.
+- Other changes/fixes.
+- God Bless him and keep him safe.
+
+[COLOR dodgerblue][B]Version 1.0.75[/B][/COLOR]
+- Couple more adjustments to random widgets functions.
+
+[COLOR dodgerblue][B]Version 1.0.74[/B][/COLOR]
+- Added Settings->Results->Sorting and Filtering->Results Size Sort Direction. Default to Descending.
+- Quick fix for auto widget refreshing.
+
+[COLOR dodgerblue][B]Version 1.0.72/73[/B][/COLOR]
+- Added "Single Episode Lists" settings category. Some re-organizing of settings.
+- Added Settings->Content->Widgets->"Refresh Widgets on Timer". Enable this, set a timer value, and FenLight will refresh your widgets when the timer is due. Off by default. Also added boolean to enable/disable Notifications when this occurs. If you use "random" widgets (made using the various methods in Fen Light) then you will need to set a value here or else the random widgets will only show fresh random content on each Kodi start.
+- Bifurcated (thanks for the new word) Minimum Size setting into movies/episodes for filtering results.
+- Other changes/fixes.
+
+[COLOR dodgerblue][B]Version 1.0.71[/B][/COLOR]
+- Quick fix for choosing Easynews language filters.
+
+[COLOR dodgerblue][B]Version 1.0.70[/B][/COLOR]
+- Quick fix for Extras Videos.
+
+............
+............
+............
+
+[COLOR dodgerblue][B]Version 1.0.0[/B][/COLOR]
+- Initial Release
+- This is an English language only addon.
+
+
+
+
+
+
+++

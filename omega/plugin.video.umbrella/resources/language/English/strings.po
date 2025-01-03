@@ -5126,3 +5126,7 @@ msgstr ""
 msgctxt "#40545"
 msgid "No"
 msgstr ""
+
+msgctxt "#40546"
+msgid "[B]Delete all cloud files from TorBox?[/B]"
+msgstr ""

@@ -1,0 +1,618 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <!-- Background -->
+        <control type="group">
+            <width>1920</width>
+            <height>1080</height>
+            <control type="image">
+                <texture colordiffuse="FF000000">fenlight_common/white.png</texture>
+            </control>
+            <control type="image">
+                <texture>$INFO[Window.Property(fanart)]</texture>
+                <aspectratio>scale</aspectratio>
+                <animation effect="fade" end="25">WindowOpen</animation>
+            </control>
+        </control>
+        <control type="group">
+            <animation effect="fade" end="100" time="200">WindowOpen</animation>
+            <!-- Logo & Directions -->
+            <control type="group">
+                <control type="image">
+                    <left>5</left>
+                    <top>5</top>
+                    <width>60</width>
+                    <height>60</height>
+                    <aspectratio aligny="top">keep</aspectratio>
+                    <texture>fenlight_common/fenlight.png</texture>
+                </control>
+                <control type="label">
+                    <left>70</left>
+                    <top>22</top>
+                    <width max="1160">auto</width>
+                    <height>20</height>
+                    <font>font10</font> <!-- FENLIGHT_21 -->
+                    <textcolor>FFFFFFFF</textcolor>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <label>[UPPERCASE]Press [B]BACK[/B] to Cancel[/UPPERCASE]</label>
+                    <visible>String.IsEqual(Window.Property(window_mode),scraper)</visible>
+                </control>
+                <control type="label">
+                    <left>70</left>
+                    <top>22</top>
+                    <width max="1160">auto</width>
+                    <height>20</height>
+                    <font>font10</font> <!-- FENLIGHT_21 -->
+                    <textcolor>FFFFFFFF</textcolor>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <label>[UPPERCASE]Press [B]BACK[/B] to Cancel [B]|[/B] Press [B]RIGHT[/B] to Skip[/UPPERCASE]</label>
+                    <visible>String.IsEqual(Window.Property(window_mode),resolver) + !String.IsEqual(Window.Property(enable_busy_spinner),true)</visible>
+                </control>
+            </control>
+            <!-- Clearlogo & Title/Genre -->
+            <control type="group">
+                <control type="image">
+                    <top>280</top>
+                    <left>395</left>
+                    <width>1130</width>
+                    <height max="250">auto</height>
+                    <aspectratio>keep</aspectratio>
+                    <align>center</align>
+                    <aligny>bottom</aligny>
+                    <texture background="true">$INFO[Window.Property(clearlogo)]</texture>
+                    <visible>!String.IsEmpty(Window.Property(clearlogo))</visible>
+                </control>
+                <control type="label">
+                    <top>400</top>
+                    <width>1920</width>
+                    <height>30</height>
+                    <font>font60</font> <!-- FENLIGHT_60_BOLD -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>center</align>
+                    <aligny>bottom</aligny>
+                    <label>[B]$INFO[Window.Property(title)][/B]</label>
+                    <visible>String.IsEmpty(Window.Property(clearlogo))</visible>
+                </control>
+                <control type="label">
+                    <top>480</top>
+                    <width>1920</width>
+                    <height>25</height>
+                    <font>font14</font> <!-- FENLIGHT_33 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>center</align>
+                    <aligny>bottom</aligny>
+                    <label>[I]$INFO[Window.Property(genre)][/I]</label>
+                    <visible>String.IsEmpty(Window.Property(clearlogo))</visible>
+                </control>
+            </control>
+            <!-- Busy Spinner -->
+            <control type="image">
+                <visible>String.IsEqual(Window.Property(enable_busy_spinner),true)</visible>
+                <left>715</left>
+                <top>552</top>
+                <width>30</width>
+                <height>30</height>
+                <texture flipx="true" colordiffuse="FFFAFAFA">fenlight_common/spinner.png</texture>
+                <animation effect="fade" time="320" delay="400">Visible</animation>
+                <animation effect="rotate" end="360" center="auto" time="1200" loop="true" reversible="false" condition="true">Conditional</animation>
+                <animation effect="fade" start="70" time="1200" condition="true" pulse="true">Conditional</animation>
+            </control>
+            <!-- Progress -->
+            <control type="group">
+                <top>560</top>
+                <left>750</left>
+                <control type="group">
+                    <control type="image">
+                        <left>0</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),1)</visible>
+                    </control>
+                    <control type="image">
+                        <left>20</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),5)</visible>
+                    </control>
+                    <control type="image">
+                        <left>40</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),10)</visible>
+                    </control>
+                    <control type="image">
+                        <left>60</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),15)</visible>
+                    </control>
+                    <control type="image">
+                        <left>80</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),20)</visible>
+                    </control>
+                    <control type="image">
+                        <left>100</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),25)</visible>
+                    </control>
+                    <control type="image">
+                        <left>120</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),30)</visible>
+                    </control>
+                    <control type="image">
+                        <left>140</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),35)</visible>
+                    </control>
+                    <control type="image">
+                        <left>160</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),40)</visible>
+                    </control>
+                    <control type="image">
+                        <left>180</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),45)</visible>
+                    </control>
+                    <control type="image">
+                        <left>200</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),50)</visible>
+                    </control>
+                    <control type="image">
+                        <left>220</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),55)</visible>
+                    </control>
+                    <control type="image">
+                        <left>240</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),60)</visible>
+                    </control>
+                    <control type="image">
+                        <left>260</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),65)</visible>
+                    </control>
+                    <control type="image">
+                        <left>280</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),70)</visible>
+                    </control>
+                    <control type="image">
+                        <left>300</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),75)</visible>
+                    </control>
+                    <control type="image">
+                        <left>320</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),80)</visible>
+                    </control>
+                    <control type="image">
+                        <left>340</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),85)</visible>
+                    </control>
+                    <control type="image">
+                        <left>360</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),90)</visible>
+                    </control>
+                    <control type="image">
+                        <left>380</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),95)</visible>
+                    </control>
+                    <control type="image">
+                        <left>400</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF434343">fenlight_common/white.png</texture>
+                        <visible>Integer.IsLess(Window().Property(percent),99)</visible>
+                    </control>
+                </control>
+                <control type="group">
+                    <control type="image">
+                        <left>0</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),1)</visible>
+                    </control>
+                    <control type="image">
+                        <left>20</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),5)</visible>
+                    </control>
+                    <control type="image">
+                        <left>40</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),10)</visible>
+                    </control>
+                    <control type="image">
+                        <left>60</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),15)</visible>
+                    </control>
+                    <control type="image">
+                        <left>80</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),20)</visible>
+                    </control>
+                    <control type="image">
+                        <left>100</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),25)</visible>
+                    </control>
+                    <control type="image">
+                        <left>120</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),30)</visible>
+                    </control>
+                    <control type="image">
+                        <left>140</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),35)</visible>
+                    </control>
+                    <control type="image">
+                        <left>160</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),40)</visible>
+                    </control>
+                    <control type="image">
+                        <left>180</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),45)</visible>
+                    </control>
+                    <control type="image">
+                        <left>200</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),50)</visible>
+                    </control>
+                    <control type="image">
+                        <left>220</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),55)</visible>
+                    </control>
+                    <control type="image">
+                        <left>240</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),60)</visible>
+                    </control>
+                    <control type="image">
+                        <left>260</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),65)</visible>
+                    </control>
+                    <control type="image">
+                        <left>280</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),70)</visible>
+                    </control>
+                    <control type="image">
+                        <left>300</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),75)</visible>
+                    </control>
+                    <control type="image">
+                        <left>320</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),80)</visible>
+                    </control>
+                    <control type="image">
+                        <left>340</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),85)</visible>
+                    </control>
+                    <control type="image">
+                        <left>360</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),90)</visible>
+                    </control>
+                    <control type="image">
+                        <left>380</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),95)</visible>
+                    </control>
+                    <control type="image">
+                        <left>400</left>
+                        <width>15</width>
+                        <height>15</height>
+                        <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                        <visible>Integer.IsGreaterOrEqual(Window().Property(percent),99)</visible>
+                    </control>
+                </control>
+            </control>
+            <!-- Scraper -->
+            <control type="group">
+                <visible>String.IsEqual(Window.Property(window_mode),scraper)</visible>
+                <top>490</top>
+                <control type="group">
+                    <top>70</top>
+                    <left>690</left>
+                    <control type="group">
+                        <control type="label">
+                            <top>50</top>
+                            <left>10</left>
+                            <width>100</width>
+                            <height>0</height>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <font>font12</font> <!-- FENLIGHT_26 -->
+                            <label>[COLOR FF7C7C7C][B]4K[/B][/COLOR]</label>
+                        </control>
+                        <control type="label">
+                            <top>100</top>
+                            <left>10</left>
+                            <width>100</width>
+                            <height>0</height>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <font>font12</font> <!-- FENLIGHT_26 -->
+                            <label>[COLOR FFFFFFFF][B]$INFO[Window.Property(results_4k)][/B][/COLOR]</label>
+                        </control>
+                    </control>
+                    <control type="group">
+                        <left>100</left>
+                        <control type="label">
+                            <top>50</top>
+                            <left>10</left>
+                            <width>100</width>
+                            <height>0</height>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <font>font12</font> <!-- FENLIGHT_26 -->
+                            <label>[COLOR FF7C7C7C][B]1080[/B][/COLOR]</label>
+                        </control>
+                        <control type="label">
+                            <top>100</top>
+                            <left>10</left>
+                            <width>100</width>
+                            <height>0</height>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <font>font12</font> <!-- FENLIGHT_26 -->
+                            <label>[COLOR FFFFFFFF][B]$INFO[Window.Property(results_1080p)][/B][/COLOR]</label>
+                        </control>
+                    </control>
+                    <control type="group">
+                        <left>200</left>
+                        <control type="label">
+                            <top>50</top>
+                            <left>10</left>
+                            <width>100</width>
+                            <height>0</height>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <font>font12</font> <!-- FENLIGHT_26 -->
+                            <label>[COLOR FF7C7C7C][B]720[/B][/COLOR]</label>
+                        </control>
+                        <control type="label">
+                            <top>100</top>
+                            <left>10</left>
+                            <width>100</width>
+                            <height>0</height>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <font>font12</font> <!-- FENLIGHT_26 -->
+                            <label>[COLOR FFFFFFFF][B]$INFO[Window.Property(results_720p)][/B][/COLOR]</label>
+                        </control>
+                    </control>
+                    <control type="group">
+                        <left>300</left>
+                        <control type="label">
+                            <top>50</top>
+                            <left>10</left>
+                            <width>100</width>
+                            <height>0</height>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <font>font12</font> <!-- FENLIGHT_26 -->
+                            <label>[COLOR FF7C7C7C][B]SD[/B][/COLOR]</label>
+                        </control>
+                        <control type="label">
+                            <top>100</top>
+                            <left>10</left>
+                            <width>100</width>
+                            <height>0</height>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <font>font12</font> <!-- FENLIGHT_26 -->
+                            <label>[COLOR FFFFFFFF][B]$INFO[Window.Property(results_sd)][/B][/COLOR]</label>
+                        </control>
+                    </control>
+                    <control type="group">
+                        <left>400</left>
+                        <control type="label">
+                            <top>50</top>
+                            <left>10</left>
+                            <width>100</width>
+                            <height>0</height>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <font>font12</font> <!-- FENLIGHT_26 -->
+                            <label>[COLOR FF7C7C7C][B]TOTAL[/B][/COLOR]</label>
+                        </control>
+                        <control type="label">
+                            <top>100</top>
+                            <left>10</left>
+                            <width>100</width>
+                            <height>0</height>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <font>font12</font> <!-- FENLIGHT_26 -->
+                            <label>[COLOR FFFFFFFF][B]$INFO[Window.Property(results_total)][/B][/COLOR]</label>
+                        </control>
+                    </control>
+                </control>
+                <control type="textbox" id="2001">
+                    <top>220</top>
+                    <left>735</left>
+                    <width>450</width>
+                    <height>310</height>
+                    <align>center</align>
+                    <aligny>bottom</aligny>
+                    <font>font12</font> <!-- FENLIGHT_26 -->
+                    <textcolor>FFFFFFFF</textcolor>
+                </control>
+            </control>
+            <!-- Resolver -->
+            <control type="group">
+                <visible>String.IsEqual(Window.Property(window_mode),resolver)</visible>
+                <control type="textbox">
+                    <left>550</left>
+                    <top>600</top>
+                    <width>820</width>
+                    <height>310</height>
+                    <font>font12</font> <!-- FENLIGHT_26 -->
+                    <align>center</align>
+                    <aligny>bottom</aligny>
+                    <textcolor>FFB7B4BB</textcolor>
+                    <label>$INFO[Window.Property(text)]</label>
+                </control>
+                <control type="textbox" id="2002">
+                    <top>970</top>
+                    <left>360</left>
+                    <width>1200</width>
+                    <height>100</height>
+                    <font>font12</font> <!-- FENLIGHT_26 -->
+                    <align>center</align>
+                    <aligny>bottom</aligny>
+                    <textcolor>FFB7B4BB</textcolor>
+                </control>
+            </control>
+            <!-- Resume -->
+            <control type="grouplist">
+                <visible>String.IsEqual(Window.Property(window_mode),resume)</visible>
+                <top>620</top>
+                <left>650</left>
+                <orientation>horizontal</orientation>
+                <itemgap>10</itemgap>
+                <control type="button" id="10">
+                    <description>Resume</description>
+                    <width>200</width>
+                    <height>60</height>
+                    <onleft>12</onleft>
+                    <onright>11</onright>
+                    <label>Resume $INFO[Window.Property(resume_percent)]%</label>
+                    <font>font12</font> <!-- FENLIGHT_26 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <focusedcolor>FF1F2020</focusedcolor>
+                    <texturefocus colordiffuse="FFCCCCCC" border="30">fenlight_common/circle.png</texturefocus>
+                    <texturenofocus colordiffuse="FF4a4347" border="30">fenlight_common/circle.png</texturenofocus>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                </control>
+                <control type="button" id="11">
+                    <description>Start Over</description>
+                    <width>200</width>
+                    <height>60</height>
+                    <onleft>10</onleft>
+                    <onright>12</onright>
+                    <label>Start Over</label>
+                    <font>font12</font> <!-- FENLIGHT_26 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <focusedcolor>FF1F2020</focusedcolor>
+                    <texturefocus colordiffuse="FFCCCCCC" border="30">fenlight_common/circle.png</texturefocus>
+                    <texturenofocus colordiffuse="FF4a4347" border="30">fenlight_common/circle.png</texturenofocus>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                </control>
+                <control type="button" id="12">
+                    <description>Cancel</description>
+                    <width>200</width>
+                    <height>60</height>
+                    <onleft>11</onleft>
+                    <onright>10</onright>
+                    <label>Cancel</label>
+                    <font>font12</font> <!-- FENLIGHT_26 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <focusedcolor>FF1F2020</focusedcolor>
+                    <texturefocus colordiffuse="FFCCCCCC" border="30">fenlight_common/circle.png</texturefocus>
+                    <texturenofocus colordiffuse="FF4a4347" border="30">fenlight_common/circle.png</texturenofocus>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                </control>
+            </control>
+        </control>
+    </controls>
+</window>

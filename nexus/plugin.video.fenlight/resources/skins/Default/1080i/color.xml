@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <!-- Background -->
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">fenlight_common/white.png</texture>
+            <animation effect="fade" end="80" time="120">WindowOpen</animation>
+        </control>
+        <!-- Colors Panel -->
+        <control type="group">
+            <left>130</left>
+            <top>70</top>
+            <animation effect="fade" end="100" time="200">WindowOpen</animation>
+            <control type="group">
+                <control type="image">
+                    <left>-2</left>
+                    <top>-2</top>
+                    <width>1662</width>
+                    <height>942</height>
+                    <texture colordiffuse="FFCCCCCC" border="30">fenlight_common/circle.png</texture>
+                </control>
+                <control type="image">
+                    <width>1658</width>
+                    <height>938</height>
+                    <texture colordiffuse="FF1F2020" border="30">fenlight_common/circle.png</texture>
+                </control>
+                <control type="image">
+                    <left>10</left>
+                    <top>10</top>
+                    <width>45</width>
+                    <height>45</height>
+                    <align>left</align>
+                    <aligny>top</aligny>
+                    <aspectratio aligny="top">keep</aspectratio>
+                    <texture colordiffuse="FFCCCCCC">fenlight_common/fenlight.png</texture>
+                </control>
+                <control type="label">
+                    <top>20</top>
+                    <left>5</left>
+                    <width max="1650">auto</width>
+                    <height>20</height>
+                    <font>font14</font> <!-- FENLIGHT_33 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>[B]Choose Highlight Color[/B]</label>
+                </control>
+            </control>
+            <!-- Color picker panel -->
+            <control type="panel" id="2000">
+                <visible>!String.IsEqual(Window.Property(show_busy_dialog),true)</visible>
+                <left>30</left>
+                <top>115</top>
+                <width>1365</width>
+                <height>840</height>
+                <orientation>vertical</orientation>
+                <itemlayout height="44" width="44">
+                    <control type="image">
+                        <left>0</left>
+                        <top>0</top>
+                        <width>40</width>
+                        <height>40</height>
+                        <texture colordiffuse="$INFO[ListItem.Property(highlight)]">fenlight_common/white.png</texture>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="44" width="44">
+                    <control type="group">
+                        <animation effect="zoom" time="100" tween="sine" easing="inout" start="100" end="140" center="auto">Focus</animation>
+                        <control type="image">
+                            <left>0</left>
+                            <top>0</top>
+                            <width>44</width>
+                            <height>44</height>
+                            <texture colordiffuse="FFCCCCCC">fenlight_common/white.png</texture>
+                        </control>
+                        <control type="image">
+                            <left>2</left>
+                            <top>2</top>
+                            <width>40</width>
+                            <height>40</height>
+                            <texture colordiffuse="$INFO[ListItem.Property(highlight)]">fenlight_common/white.png</texture>
+                        </control>
+                    </control>
+                </focusedlayout>
+            </control>
+            <!-- Buttons -->
+            <control type="group">
+                <visible>!String.IsEqual(Window.Property(show_busy_dialog),true)</visible>
+                <left>1405</left>
+                <top>240</top>
+                <control type="button" id="10">
+                    <description>OK</description>
+                    <width>240</width>
+                    <height>60</height>
+                    <onup>12</onup>
+                    <ondown>11</ondown>
+                    <onleft>2000</onleft>
+                    <onright>2000</onright>
+                    <label>OK</label>
+                    <font>font12</font> <!-- FENLIGHT_26 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <focusedcolor>FF1F2020</focusedcolor>
+                    <texturefocus colordiffuse="FFCCCCCC" border="30">fenlight_common/circle.png</texturefocus>
+                    <texturenofocus colordiffuse="FF4a4347" border="30">fenlight_common/circle.png</texturenofocus>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                </control>
+                <control type="button" id="11">
+                    <description>Cancel</description>
+                    <top>80</top>
+                    <width>240</width>
+                    <height>60</height>
+                    <onup>10</onup>
+                    <ondown>12</ondown>
+                    <onleft>2000</onleft>
+                    <onright>2000</onright>
+                    <label>Cancel</label>
+                    <font>font12</font> <!-- FENLIGHT_26 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <focusedcolor>FF1F2020</focusedcolor>
+                    <texturefocus colordiffuse="FFCCCCCC" border="30">fenlight_common/circle.png</texturefocus>
+                    <texturenofocus colordiffuse="FF4a4347" border="30">fenlight_common/circle.png</texturenofocus>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                </control>
+                <control type="label">
+                    <top>200</top>
+                    <width>240</width>
+                    <height>30</height>
+                    <align>center</align>
+                    <aligny>bottom</aligny>
+                    <textcolor>white</textcolor>
+                    <shadowcolor>black</shadowcolor>
+                    <font>font12</font> <!-- FENLIGHT_26 -->
+                    <label>[B]Enter Value[/B]</label>
+                </control>
+                <control type="button" id="12">
+                    <description>Input Value Choice</description>
+                    <top>240</top>
+                    <width>240</width>
+                    <height>60</height>
+                    <onup>11</onup>
+                    <ondown>10</ondown>
+                    <onleft>2000</onleft>
+                    <onright>2000</onright>
+                    <label>$INFO[Container(2000).ListItem.Property(highlight)]</label>
+                    <font>font12</font> <!-- FENLIGHT_26 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <focusedcolor>FF1F2020</focusedcolor>
+                    <texturefocus colordiffuse="FFCCCCCC" border="30">fenlight_common/circle.png</texturefocus>
+                    <texturenofocus colordiffuse="FF4a4347" border="30">fenlight_common/circle.png</texturenofocus>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                </control>
+                <control type="image">
+                    <left>5</left>
+                    <top>320</top>
+                    <width>235</width>
+                    <height>300</height>
+                    <aspectratio>stretch</aspectratio>
+                    <texture border="30" colordiffuse="$INFO[Container(2000).ListItem.Property(highlight)]">fenlight_common/dialog.png</texture>
+                </control>
+            </control>
+        </control>
+    </controls>
+</window>

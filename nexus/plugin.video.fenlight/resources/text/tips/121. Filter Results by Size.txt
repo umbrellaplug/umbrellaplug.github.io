@@ -1,0 +1,14 @@
+
+The setting for Filter Results by Size is located at Settings->Sorting & Filtering.
+
+When you enter your internet speed (in Mbit/s), Fen Light will determine the maximum allowable size of results based on the duration of the Movie/Episode.
+
+e.g. If you set your internet speed to 20Mbit/s, then the following maximum filesizes would be used by Fen Light:
+10min = ~1.35 Gig
+30mins = ~4 Gig
+60 mins = ~8 Gig
+90min = ~12.5 Gig
+120min = ~16.2 Gig etc...
+This is done on the fly, so any duration will have an equivalent maximum file size.
+
+Try it out to see...

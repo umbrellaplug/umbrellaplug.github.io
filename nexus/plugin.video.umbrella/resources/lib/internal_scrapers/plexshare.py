@@ -6,7 +6,6 @@
 	Umbrella Addon
 """
 import re
-import time
 import requests
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -62,7 +61,7 @@ class source:
 			if 'tvshowtitle' in data:
 				title, episode_title = data['tvshowtitle'], data['title']
 				hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode']))
-				url = '%s%s' % (base_link, episodesearch % (quote(title+' '+episode_title)))
+				url = '%s%s' % (base_link, episodesearch % (quote(episode_title)))
 				years = None
 			else:
 				title, episode_title = data['title'], None
@@ -70,12 +69,15 @@ class source:
 				url = '%s%s' % (base_link, moviesearch % (quote(title), year))
 				years = [str(int(year)-1), str(year), str(int(year)+1)]
 
-			try: results = requests.get(url,timeout=6)
+			try: results = requests.get(url,timeout=10)
 			except requests.exceptions.SSLError: 
 				results = requests.get(url, verify=False)
 
-			if episode_title: results = re.findall(r'(<Video.+?type="episode".+?</Video>)', results.text, flags=re.M | re.S)
-			else: results = re.findall(r'(<Video.+?type="movie".+?</Video>)', results.text, flags=re.M | re.S)
+			if episode_title:
+				results = re.findall(r'(<Video[^>]*type="episode"[^>]*>.*?</Video>)', results.text, flags=re.M | re.S)
+			else:
+				results = re.findall(r'(<Video[^>]*type="movie"[^>]*>.*?</Video>)', results.text, flags=re.M | re.S)
+
 
 		except:
 			source_utils.scraper_error('PLEXSHARE')
@@ -122,7 +124,7 @@ class source:
 
 					if self.composite_installed:
 						key = parseDOM(result, 'Video', ret='key')[0]
-						url = '%s%s?X-Plex-Client-Identifier=%s&X-Plex-Token=%s&mode=5' % (play_link, key, self.client_id, accessToken)
+						url = '%s%s&mode=5' % (play_link, key)
 					else:
 						key = parseDOM(result, 'Part', ret='key')[count].rsplit('/', 1)[0] # remove "/file.mkv" to replace with true file name for dnld
 						url = '%s%s/%s?X-Plex-Client-Identifier=%s&X-Plex-Token=%s' % (play_link, key, file_name, self.client_id, accessToken)

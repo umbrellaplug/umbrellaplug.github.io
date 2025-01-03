@@ -1,0 +1,2 @@
+
+In Tools->Set Views you can set the desired views for Movies, TV Shows etc so that they will honor that view when navigating through Fen Light.

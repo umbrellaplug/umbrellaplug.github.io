@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <!-- Background -->
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">fenlight_common/white.png</texture>
+            <animation effect="fade" end="80" time="120">WindowOpen</animation>
+        </control>
+        <!-- Filter Window -->
+        <control type="group">
+            <top>92</top>
+            <left>92</left>
+            <animation effect="fade" end="100" time="200">WindowOpen</animation>
+            <control type="image">
+                <left>-2</left>
+                <top>-2</top>
+                <width>1736</width>
+                <height>907</height>
+                <texture colordiffuse="FFCCCCCC" border="30">fenlight_common/circle.png</texture>
+            </control>
+            <control type="image">
+                <width>1732</width>
+                <height>903</height>
+                <texture colordiffuse="FF1F2020" border="30">fenlight_common/circle.png</texture>
+            </control>
+            <control type="image">
+                <left>12</left>
+                <top>12</top>
+                <width>40</width>
+                <height>40</height>
+                <align>left</align>
+                <aligny>top</aligny>
+                <aspectratio aligny="top">keep</aspectratio>
+                <texture colordiffuse="FFCCCCCC">fenlight_common/fenlight.png</texture>
+            </control>
+            <control type="label">
+                <width max="1635">auto</width>
+                <top>12</top>
+                <left>30</left>
+                <height>20</height>
+                <font>font12</font> <!-- FENLIGHT_26 -->
+                <textcolor>FFCCCCCC</textcolor>
+                <shadowcolor>FF000000</shadowcolor>
+                <align>center</align>
+                <label>[UPPERCASE][B]DISCOVER[/B][/UPPERCASE]</label>
+            </control>
+            <control type="image">
+                <left>1302</left>
+                <top>360</top>
+                <width max="420">auto</width>
+                <aspectratio aligny="top">keep</aspectratio>
+                <texture diffuse="fenlight_diffuse/poster_w217_h320.png">$INFO[Container(2100).ListItem.Property(icon)]</texture>
+                <fadetime>100</fadetime>
+            </control>
+            <!-- Filter List -->
+            <control type="fixedlist" id="2100">
+                <pagecontrol>4100</pagecontrol>
+                <left>15</left>
+                <top>65</top>
+                <width>1242</width>
+                <height>720</height>
+                <onup>2100</onup>
+                <ondown>2100</ondown>
+                <onleft condition="String.IsEqual(Window.Property(active_attributes),true)">10</onleft>
+                <onleft condition="!String.IsEqual(Window.Property(active_attributes),true)">11</onleft>
+                <onright>4100</onright>
+                <scrolltime tween="sine">350</scrolltime>
+                <orientation>Vertical</orientation>
+                <focusposition>3</focusposition>
+                <movement>4</movement>
+                <scrolltime tween="sine">200</scrolltime>
+                <itemlayout height="90" width="1242">
+                    <control type="label">
+                        <width max="360">auto</width>
+                        <left>15</left>
+                        <top>45</top>
+                        <height>5</height>
+                        <font>font12</font> <!-- FENLIGHT_26 -->
+                        <textcolor>FFCCCCCC</textcolor>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <label>[UPPERCASE]$INFO[ListItem.Property(label1)][/UPPERCASE]</label>
+                    </control>
+                    <control type="label">
+                        <width max="782">auto</width>
+                        <left>440</left>
+                        <top>45</top>
+                        <height>5</height>
+                        <font>font12</font> <!-- FENLIGHT_26 -->
+                        <textcolor>FFA9A8A8</textcolor>
+                        <align>right</align>
+                        <aligny>center</aligny>
+                        <label>[UPPERCASE]$INFO[ListItem.Property(label2)][/UPPERCASE]</label>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="90" width="1242">
+                    <control type="image">
+                        <animation effect="fade" start="100" end="50" time="0" condition="!Control.HasFocus(2100)">Conditional</animation>
+                        <width>1242</width>
+                        <texture colordiffuse="FFCCCCCC" border="30">fenlight_common/circle.png</texture>
+                    </control>
+                    <control type="label">
+                        <left>15</left>
+                        <top>45</top>
+                        <height>5</height>
+                        <width max="360">auto</width>
+                        <font>font12</font> <!-- FENLIGHT_26 -->
+                        <textcolor>FF1F2020</textcolor>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <label>[UPPERCASE]$INFO[ListItem.Property(label1)][/UPPERCASE]</label>
+                        <scroll>Control.HasFocus(2100)</scroll>
+                    </control>
+                    <control type="label">
+                        <width max="782">auto</width>
+                        <left>440</left>
+                        <top>45</top>
+                        <height>5</height>
+                        <font>font12</font> <!-- FENLIGHT_26 -->
+                        <textcolor>FF4a4347</textcolor>
+                        <align>right</align>
+                        <aligny>center</aligny>
+                        <label>[UPPERCASE]$INFO[ListItem.Property(label2)][/UPPERCASE]</label>
+                        <scroll>Control.HasFocus(2100)</scroll>
+                    </control>
+                </focusedlayout>
+            </control>
+            <control type="scrollbar" id="4100">
+                <top>65</top>
+                <left>1277</left>
+                <width>10</width>
+                <height>720</height>
+                <onleft>2100</onleft>
+                <onright condition="String.IsEqual(Window.Property(active_attributes),true)">10</onright>
+                <onright condition="!String.IsEqual(Window.Property(active_attributes),true)">11</onright>
+                <texturesliderbackground colordiffuse="FF1F2020">fenlight_common/white.png</texturesliderbackground>
+                <texturesliderbar colordiffuse="FF555556">fenlight_common/white.png</texturesliderbar>
+                <texturesliderbarfocus colordiffuse="FFCCCCCC">fenlight_common/white.png</texturesliderbarfocus>
+                <showonepage>false</showonepage>
+                <orientation>vertical</orientation>
+            </control>
+            <control type="group">
+                <top>850</top>
+                <left>15</left>
+                <control type="image">
+                    <left>-2</left>
+                    <top>-2</top>
+                    <width>1699</width>
+                    <height>84</height>
+                    <texture colordiffuse="FFCCCCCC" border="30">fenlight_common/circle.png</texture>
+                </control>
+                <control type="image">
+                    <width>1695</width>
+                    <height>80</height>
+                    <texture colordiffuse="FF1F2020" border="30">fenlight_common/circle.png</texture>
+                </control>
+                <control type="label">
+                    <top>10</top>
+                    <left>30</left>
+                    <width>1635</width>
+                    <height>20</height>
+                    <font>font12</font> <!-- FENLIGHT_26 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <label>[UPPERCASE]$INFO[Window.Property(list_label)][/UPPERCASE]</label>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <scroll>true</scroll>
+                </control>
+                <control type="label">
+                    <top>45</top>
+                    <left>30</left>
+                    <width>1635</width>
+                    <height>20</height>
+                    <font>font10</font> <!-- FENLIGHT_21 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <label>[UPPERCASE][I]$INFO[Window.Property(url_label)][/I][/UPPERCASE]</label>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <scroll>true</scroll>
+                </control>
+                <control type="group">
+                    <top>4</top>
+                    <left>115</left>
+                    <width>1530</width>
+                    <height>70</height>
+                    <control type="textbox">
+                        <font>font12</font> <!-- FENLIGHT_26 -->
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <textcolor>FFCCCCCC</textcolor>
+                        <label>$INFO[Container(2100).ListItem.Property(setting_description)]</label>
+                        <autoscroll time="7000" delay="15000" repeat="7000">true</autoscroll>
+                        <visible>Control.HasFocus(2100)</visible>
+                    </control>
+                    <control type="textbox">
+                        <font>font12</font> <!-- FENLIGHT_26 -->
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <textcolor>FFCCCCCC</textcolor>
+                        <label>$INFO[Container(2000).ListItem.Label,All settings related to [UPPERCASE][B],[/B][/UPPERCASE] settings]</label>
+                        <autoscroll time="7000" delay="15000" repeat="7000">true</autoscroll>
+                        <visible>Control.HasFocus(2000)</visible>
+                    </control>
+                </control>
+            </control>
+            <control type="group">
+                <top>65</top>
+                <left>1342</left>
+                <control type="button" id="10">
+                    <description>Save and Exit</description>
+                    <width>340</width>
+                    <height>85</height>
+                    <onup>11</onup>
+                    <ondown>11</ondown>
+                    <onleft>2100</onleft>
+                    <onright>2100</onright>
+                    <label>Save and Exit</label>
+                    <font>font12</font> <!-- FENLIGHT_26 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <focusedcolor>FF1F2020</focusedcolor>
+                    <texturefocus colordiffuse="FFCCCCCC" border="30">fenlight_common/circle.png</texturefocus>
+                    <texturenofocus colordiffuse="FF4a4347" border="30">fenlight_common/circle.png</texturenofocus>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <visible>String.IsEqual(Window.Property(active_attributes),true)</visible>
+                </control>
+                <control type="button" id="11">
+                    <description>Exit</description>
+                    <animation effect="slide" end="0,-95" time="0" condition="!String.IsEqual(Window.Property(active_attributes),true)">Conditional</animation>
+                    <top>95</top>
+                    <width>340</width>
+                    <height>85</height>
+                    <onup>10</onup>
+                    <ondown>10</ondown>
+                    <onleft>2100</onleft>
+                    <onright>2100</onright>
+                    <label>Exit</label>
+                    <font>font12</font> <!-- FENLIGHT_26 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <focusedcolor>FF1F2020</focusedcolor>
+                    <texturefocus colordiffuse="FFCCCCCC" border="30">fenlight_common/circle.png</texturefocus>
+                    <texturenofocus colordiffuse="FF4a4347" border="30">fenlight_common/circle.png</texturenofocus>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                </control>
+            </control>
+        </control>
+    </controls>
+</window>

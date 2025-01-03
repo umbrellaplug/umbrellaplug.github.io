@@ -1,0 +1,24 @@
+Within Fen Light, there are a couple of methods to achieve "random" widget content.
+
+The easiest method is to point widgets to any of the lists included in the "Random Lists" section of Fen Light. This section has 3 options: Movie Lists, TV Show Lists or Trakt Lists. Let us look at all 3 here...
+
+MOVIE/TV SHOW LISTS:
+In this menu you will find all of the generic movie/tvshow lists that are included within Fen Light. Lists like "Trending" and "Popular". Simply point your widget to one of these lists and they will populate your widget with a random list of 20 movies/tvshows based on 3 of the first 10 pages of that list.
+You can name the widget anything you like for these lists, with some exceptions.....
+
+If you select a list from any of the movie/tvshow lists where there are normally extra choices (Genres, Providers, Languages, Years, Decades, Certifications or Networks), then you may want to display on your widget label the actual genre, provider etc that has currently been chosen from random. To do this, you will need to set a special value for the widget's label when making it.
+
+The widget's label will need to be set as follows: `$INFO[Window.Property(fenlight.[NAME OF LIST])]` where `[NAME OF LIST]` will be the name of the random list you want to use. It will be the default filled in value for the label. For example, if you want to make a widget showing random movie genres, then the `[NAME OF LIST]` will be `Movies Random Genres`. So the value to enter as the widget's label will be `$INFO[Window.Property(fenlight.Movies Random Genres)]`.
+
+TRAKT LISTS:
+The random trakt list options will behave the same as the movie/tvshow options above. The lists that will need a special widget label set in this category will be Trakt My Lists and Trakt Liked Lists. If you select either of these as your source for a widget, then the label of the widget should be either `$INFO[Window.Property(fenlight.Trakt My Lists)]` or `$INFO[Window.Property(fenlight.Trakt Liked Lists)]` respectively. As you can see, the same method is used as with the movie/tvshow special random lists.
+
+
+
+
+The second option to utilize random lists in Fen Light is to assign as "Random" a Shortcut Folder you have made (see Shortcut Folders Tips for more info on making a Shortcut Folder).
+This essentially becomes a list of lists, where one of those lists is chosen at random to display.
+
+The widget's label will need to be set similarly to the special labels described above, yet this time you will use the Shortcut Folder's name as the value within the special label.
+
+For example, if you have made a Shortcut Folder and named it "My Shortcuts 01" and have added some lists from Fen Light into it and assigned it as "Random", then you can make a random widget item by pointing the widget to that folder. The label for the widget, if you want the name of the currently chosen random list to show, would be `$INFO[Window.Property(fenlight.My Shortcuts 01)]`. As you can see, it follows the same principle as the other dynamic widget labels above. This time you enter the name of the Shortcut Folder you are pointing the widget to.

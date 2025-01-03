@@ -1,0 +1,4 @@
+
+In Settings-->Features-->Custom Actions there is a setting to allow Fenlight to open it's custom windows for context menu and information (Extras) instead of Kodi's default dialogs.
+
+This is a semi-experimental feature that may not work well on certain skins/hardware.

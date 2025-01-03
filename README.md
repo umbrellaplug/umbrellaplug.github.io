@@ -5,7 +5,7 @@ Welcome to the umbrellaplug.github.io
 Compatible with Kodi 19, 20, and 21.
 
 ## Current Versions:
-Umbrella - 6.7.31
+Umbrella - 6.7.33
 Umbrella Repo - 2.2.6
 
 ## Installation Instructions:
@@ -45,7 +45,7 @@ Currently Supported Other Providers:
 **The plugin will not work without at least 1 of these types of accounts**
 
 ## Issues
-Please do not mention any other addons in issues.
+Please do not mention any other addons in issues. Any issue opened for Fen Lite will be closed immediately. No work will be done on Fen Lite, it is only being hosted.
 
 ## Logs
 Enable Logs: Go to Umbrella settings and select Debugging on the left hand side.

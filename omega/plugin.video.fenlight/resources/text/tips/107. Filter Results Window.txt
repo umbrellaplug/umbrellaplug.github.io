@@ -1,0 +1,16 @@
+
+You can now filter results AFTER you have scraped for them in Fen Light. Press left when shown results to open the filter sideblade.
+
+You can filter results here by the quality of the result, or the provider of the result.
+
+Or choose one of the filter types "Filter by Title" or "Filter by Extra Info"...
+
+[B]Filter Title[/B]
+- Use this to input a Keyword(s) that Fen Light will then use to search the Titles of the results. Fen Light will remove results who's title does not contain the Keyword(s).
+
+[B]Filter Extra Info[/B]
+- Use this to choose a Keyword(s) that Fen Light will then use to search the Extra Info of the results. Fen Light will remove results who's Extra Info does not contain the Keyword(s).
+
+To remove the filter and return to displaying ALL the results, simply press "BACK".
+
+Try it out to see...

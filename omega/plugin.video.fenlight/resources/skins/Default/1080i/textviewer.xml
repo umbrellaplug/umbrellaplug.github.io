@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">fenlight_common/white.png</texture>
+            <animation effect="fade" end="80" time="120">WindowOpen</animation>
+        </control>
+        <control type="group">
+            <left>280</left>
+            <top>50</top>
+            <animation effect="fade" end="100" time="200">WindowOpen</animation>
+            <control type="group">
+                <control type="image">
+                    <left>-2</left>
+                    <top>-2</top>
+                    <width>1362</width>
+                    <height>982</height>
+                    <texture colordiffuse="FFCCCCCC" border="30">fenlight_common/circle.png</texture>
+                </control>
+                <control type="image">
+                    <width>1358</width>
+                    <height>978</height>
+                    <texture colordiffuse="FF1F2020" border="30">fenlight_common/circle.png</texture>
+                </control>
+                <control type="image">
+                    <left>15</left>
+                    <top>15</top>
+                    <width>70</width>
+                    <height>70</height>
+                    <align>left</align>
+                    <aligny>top</aligny>
+                    <aspectratio aligny="top">keep</aspectratio>
+                    <texture colordiffuse="FFCCCCCC">fenlight_common/fenlight.png</texture>
+                </control>
+                <control type="label">
+                    <top>40</top>
+                    <left>105</left>
+                    <width max="1115">auto</width>
+                    <height>20</height>
+                    <font>font14</font> <!-- FENLIGHT_33 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <shadowcolor>FF000000</shadowcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>[B]$INFO[Window.Property(heading)][/B]</label>
+                </control>
+                <control type="textbox" id="2000">
+                    <visible>String.IsEqual(Window.Property(font_size),small)</visible>
+                    <left>45</left>
+                    <top>114</top>
+                    <width>1254</width>
+                    <height>816</height>
+                    <font>font12</font> <!-- FENLIGHT_26 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <label>$INFO[Window.Property(text)]</label>
+                    <pagecontrol>2060</pagecontrol>
+                    <autoscroll>false</autoscroll>
+                </control>
+                <control type="textbox" id="2000">
+                    <visible>String.IsEqual(Window.Property(font_size),large)</visible>
+                    <left>45</left>
+                    <top>114</top>
+                    <width>1254</width>
+                    <height>826</height>
+                    <font>font14</font> <!-- FENLIGHT_33 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <label>$INFO[Window.Property(text)]</label>
+                    <pagecontrol>2061</pagecontrol>
+                    <autoscroll>false</autoscroll>
+                </control>
+                <control type="scrollbar" id="2060">
+                    <visible>String.IsEqual(Window.Property(font_size),small)</visible>
+                    <left>1335</left>
+                    <top>110</top>
+                    <width>10</width>
+                    <height>820</height>
+                    <texturesliderbackground colordiffuse="FF1F2020">fenlight_common/white.png</texturesliderbackground>
+                    <texturesliderbar colordiffuse="FF555556">fenlight_common/white.png</texturesliderbar>
+                    <texturesliderbarfocus colordiffuse="FFCCCCCC">fenlight_common/white.png</texturesliderbarfocus>
+                    <onleft>2060</onleft>
+                    <onright>2060</onright>
+                    <showonepage>false</showonepage>
+                    <orientation>vertical</orientation>
+                </control>
+                <control type="scrollbar" id="2061">
+                    <visible>String.IsEqual(Window.Property(font_size),large)</visible>
+                    <left>1335</left>
+                    <top>110</top>
+                    <width>10</width>
+                    <height>820</height>
+                    <texturesliderbackground colordiffuse="FF1F2020">fenlight_common/white.png</texturesliderbackground>
+                    <texturesliderbar colordiffuse="FF555556">fenlight_common/white.png</texturesliderbar>
+                    <texturesliderbarfocus colordiffuse="FFCCCCCC">fenlight_common/white.png</texturesliderbarfocus>
+                    <onleft>2061</onleft>
+                    <onright>2061</onright>
+                    <showonepage>false</showonepage>
+                    <orientation>vertical</orientation>
+                </control>
+            </control>
+        </control>
+    </controls>
+</window>

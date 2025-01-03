@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <onload>SetFocus(2001,0,absolute)</onload>
+    <controls>
+        <!-- Background -->
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">fenlight_common/white.png</texture>
+            <animation effect="fade" end="80" time="120">WindowOpen</animation>
+        </control>
+        <control type="group">
+            <left>190</left>
+            <top>255</top>
+            <animation effect="fade" end="100" time="200">WindowOpen</animation>
+            <!-- Logo and Background-->
+            <control type="group">
+                <control type="image">
+                    <left>-2</left>
+                    <top>-2</top>
+                    <width>1544</width>
+                    <height>574</height>
+                    <texture colordiffuse="FFCCCCCC" border="30">fenlight_common/circle.png</texture>
+                </control>
+                <control type="image">
+                    <width>1540</width>
+                    <height>570</height>
+                    <texture colordiffuse="FF1F2020" border="30">fenlight_common/circle.png</texture>
+                </control>
+                <control type="image">
+                    <left>12</left>
+                    <top>12</top>
+                    <width>40</width>
+                    <height>40</height>
+                    <align>left</align>
+                    <aligny>top</aligny>
+                    <aspectratio aligny="top">keep</aspectratio>
+                    <texture colordiffuse="FFCCCCCC">fenlight_common/fenlight.png</texture>
+                </control>
+                <control type="label">
+                    <width max="1700">auto</width>
+                    <top>22</top>
+                    <left>0</left>
+                    <height>20</height>
+                    <font>font12</font> <!-- FENLIGHT_26 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>[UPPERCASE][B]Folder Sources Settings[/B][/UPPERCASE]</label>
+                </control>
+            </control>
+            <control type="list" id="2001">
+                <left>20</left>
+                <top>100</top>
+                <width>300</width>
+                <height>425</height>
+                <onleft>SetFocus(2101,0,absolute)</onleft>
+                <onright>SetFocus(2101,0,absolute)</onright>
+                <onup>2001</onup>
+                <ondown>2001</ondown>
+                <orientation>Vertical</orientation>
+                <scrolltime tween="cubic" easing="out">500</scrolltime>
+                <itemlayout height="85" width="300">
+                    <control type="label">
+                        <left>40</left>
+                        <width>220</width>
+                        <height>85</height>
+                        <label>[UPPERCASE]$INFO[ListItem.Property(setting_label)][/UPPERCASE]</label>
+                        <font>font12</font> <!-- FENLIGHT_26 -->
+                        <textcolor>FFCCCCCC</textcolor>
+                        <aligny>center</aligny>
+                        <align>center</align>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="85" width="300">
+                    <control type="group">
+                        <animation effect="fade" start="100" end="50" time="0" condition="!Control.HasFocus(2001)">Conditional</animation>
+                        <height>85</height>
+                        <control type="image">
+                            <width>300</width>
+                            <texture colordiffuse="FFCCCCCC" border="30">fenlight_common/circle.png</texture>
+                        </control>
+                    </control>
+                    <control type="label">
+                        <left>40</left>
+                        <width>220</width>
+                        <height>85</height>
+                        <label>[UPPERCASE]$INFO[ListItem.Property(setting_label)][/UPPERCASE]</label>
+                        <font>font12</font> <!-- FENLIGHT_26 -->
+                        <textcolor>FF1F2020</textcolor>
+                        <aligny>center</aligny>
+                        <scroll>Control.HasFocus(2001)</scroll>
+                        <align>center</align>
+                    </control>
+                </focusedlayout>
+                <content>
+                    <item id="10">
+                        <property name="setting_label">Folder 1</property>
+                    </item>
+                    <item id="20">
+                        <property name="setting_label">Folder 2</property>
+                    </item>
+                    <item id="30">
+                        <property name="setting_label">Folder 3</property>
+                    </item>
+                    <item id="40">
+                        <property name="setting_label">Folder 4</property>
+                    </item>
+                    <item id="50">
+                        <property name="setting_label">Folder 5</property>
+                    </item>
+                </content>
+            </control>
+            <control type="list" id="2101">
+                <left>350</left>
+                <top>100</top>
+                <width>1160</width>
+                <height>425</height>
+                <onleft>2001</onleft>
+                <onright>2001</onright>
+                <orientation>Vertical</orientation>
+                <scrolltime tween="cubic" easing="out">500</scrolltime>
+                <itemlayout height="85" width="1160">
+                    <!-- LABEL -->
+                    <control type="label">
+                        <left>40</left>
+                        <width>330</width>
+                        <height>85</height>
+                        <label>[UPPERCASE]$INFO[ListItem.Property(setting_label)][/UPPERCASE]</label>
+                        <font>font12</font> <!-- FENLIGHT_26 -->
+                        <textcolor>FFCCCCCC</textcolor>
+                        <aligny>center</aligny>
+                        <scroll>false</scroll>
+                    </control>
+                    <!-- SETTING VALUE LABEL -->
+                    <control type="label">
+                        <left>400</left>
+                        <width>725</width>
+                        <height>85</height>
+                        <label>[UPPERCASE][B]$INFO[ListItem.Property(setting_value)][/B][/UPPERCASE]</label>
+                        <font>font12</font> <!-- FENLIGHT_26 -->
+                        <textcolor>FFCCCCCC</textcolor>
+                        <align>right</align>
+                        <aligny>center</aligny>
+                        <scroll>Control.HasFocus(100)</scroll>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="85" width="1160">
+                    <!-- HIGHLIGHT -->
+                    <control type="image">
+                        <visible>Control.HasFocus(2101)</visible>
+                        <height>85</height>
+                        <width>1160</width>
+                        <texture colordiffuse="FFCCCCCC" border="30">fenlight_common/circle.png</texture>
+                    </control>
+                    <!-- LABEL -->
+                    <control type="group">
+                        <control type="label">
+                            <visible>Control.HasFocus(2101)</visible>
+                            <left>40</left>
+                            <width>330</width>
+                            <height>85</height>
+                            <label>[UPPERCASE]$INFO[ListItem.Property(setting_label)][/UPPERCASE]</label>
+                            <font>font12</font> <!-- FENLIGHT_26 -->
+                            <textcolor>FF1F2020</textcolor>
+                            <aligny>center</aligny>
+                            <scroll>Control.HasFocus(2101)</scroll>
+                        </control>
+                        <control type="label">
+                            <visible>!Control.HasFocus(2101)</visible>
+                            <left>40</left>
+                            <width>330</width>
+                            <height>85</height>
+                            <label>[UPPERCASE]$INFO[ListItem.Property(setting_label)][/UPPERCASE]</label>
+                            <font>font12</font> <!-- FENLIGHT_26 -->
+                            <textcolor>FFCCCCCC</textcolor>
+                            <aligny>center</aligny>
+                            <scroll>false</scroll>
+                        </control>
+                    </control>
+                    <!-- SETTING VALUE LABEL -->
+                    <control type="group">
+                        <control type="label">
+                            <visible>Control.HasFocus(2101)</visible>
+                            <left>400</left>
+                            <width>725</width>
+                            <height>85</height>
+                            <label>[UPPERCASE][B]$INFO[ListItem.Property(setting_value)][/B][/UPPERCASE]</label>
+                            <font>font12</font> <!-- FENLIGHT_26 -->
+                            <textcolor>FF1F2020</textcolor>
+                            <align>right</align>
+                            <aligny>center</aligny>
+                            <scroll>Control.HasFocus(2101)</scroll>
+                        </control>
+                        <control type="label">
+                            <visible>!Control.HasFocus(2101)</visible>
+                            <left>400</left>
+                            <width>725</width>
+                            <height>85</height>
+                            <label>[UPPERCASE][B]$INFO[ListItem.Property(setting_value)][/B][/UPPERCASE]</label>
+                            <font>font12</font> <!-- FENLIGHT_26 -->
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>right</align>
+                            <aligny>center</aligny>
+                            <scroll>false</scroll>
+                        </control>
+                    </control>
+                </focusedlayout>
+                <content>
+                    <item>
+                        <visible>Container(2001).HasFocus(10)</visible>
+                        <property name="setting_label">Display Name</property>
+                        <property name="setting_value">$INFO[Window(10000).Property(fenlight.folder1.display_name)]</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_string&amp;setting_id=folder1.display_name)</onclick>
+                    </item>
+                    <item>
+                        <visible>Container(2001).HasFocus(10)</visible>
+                        <property name="setting_label">Movies Directory</property>
+                        <property name="setting_value">$INFO[Window(10000).Property(fenlight.folder1.movies_directory)]</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_source_folder_path&amp;setting_id=folder1.movies_directory)</onclick>
+                    </item>
+                    <item>
+                        <visible>Container(2001).HasFocus(10)</visible>
+                        <property name="setting_label">TV Shows Directory</property>
+                        <property name="setting_value">$INFO[Window(10000).Property(fenlight.folder1.tv_shows_directory)]</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_source_folder_path&amp;setting_id=folder1.tv_shows_directory)</onclick>
+                    </item>
+                    <item>
+                        <visible>Container(2001).HasFocus(10)</visible>
+                        <property name="setting_label">Restore Default</property>
+                        <property name="setting_value">...</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=clear_sources_folder_choice&amp;setting_id=folder1)</onclick>
+                    </item>
+                    <item>
+                        <visible>Container(2001).HasFocus(20)</visible>
+                        <property name="setting_label">Display Name</property>
+                        <property name="setting_value">$INFO[Window(10000).Property(fenlight.folder2.display_name)]</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_string&amp;setting_id=folder2.display_name)</onclick>
+                    </item>
+                    <item>
+                        <visible>Container(2001).HasFocus(20)</visible>
+                        <property name="setting_label">Movies Directory</property>
+                        <property name="setting_value">$INFO[Window(10000).Property(fenlight.folder2.movies_directory)]</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_source_folder_path&amp;setting_id=folder2.movies_directory)</onclick>
+                    </item>
+                    <item>
+                        <visible>Container(2001).HasFocus(20)</visible>
+                        <property name="setting_label">TV Shows Directory</property>
+                        <property name="setting_value">$INFO[Window(10000).Property(fenlight.folder2.tv_shows_directory)]</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_source_folder_path&amp;setting_id=folder2.tv_shows_directory)</onclick>
+                    </item>
+                    <item>
+                        <visible>Container(2001).HasFocus(20)</visible>
+                        <property name="setting_label">Restore Default</property>
+                        <property name="setting_value">...</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=clear_sources_folder_choice&amp;setting_id=folder2)</onclick>
+                    </item>
+                    <item>
+                        <visible>Container(2001).HasFocus(30)</visible>
+                        <property name="setting_label">Display Name</property>
+                        <property name="setting_value">$INFO[Window(10000).Property(fenlight.folder3.display_name)]</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_string&amp;setting_id=folder3.display_name)</onclick>
+                    </item>
+                    <item>
+                        <visible>Container(2001).HasFocus(30)</visible>
+                        <property name="setting_label">Movies Directory</property>
+                        <property name="setting_value">$INFO[Window(10000).Property(fenlight.folder3.movies_directory)]</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_source_folder_path&amp;setting_id=folder3.movies_directory)</onclick>
+                    </item>
+                    <item>
+                        <visible>Container(2001).HasFocus(30)</visible>
+                        <property name="setting_label">TV Shows Directory</property>
+                        <property name="setting_value">$INFO[Window(10000).Property(fenlight.folder3.tv_shows_directory)]</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_source_folder_path&amp;setting_id=folder3.tv_shows_directory)</onclick>
+                    </item>
+                    <item>
+                        <visible>Container(2001).HasFocus(30)</visible>
+                        <property name="setting_label">Restore Default</property>
+                        <property name="setting_value">...</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=clear_sources_folder_choice&amp;setting_id=folder3)</onclick>
+                    </item>
+                    <item>
+                        <visible>Container(2001).HasFocus(40)</visible>
+                        <property name="setting_label">Display Name</property>
+                        <property name="setting_value">$INFO[Window(10000).Property(fenlight.folder4.display_name)]</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_string&amp;setting_id=folder4.display_name)</onclick>
+                    </item>
+                    <item>
+                        <visible>Container(2001).HasFocus(40)</visible>
+                        <property name="setting_label">Movies Directory</property>
+                        <property name="setting_value">$INFO[Window(10000).Property(fenlight.folder4.movies_directory)]</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_source_folder_path&amp;setting_id=folder4.movies_directory)</onclick>
+                    </item>
+                    <item>
+                        <visible>Container(2001).HasFocus(40)</visible>
+                        <property name="setting_label">TV Shows Directory</property>
+                        <property name="setting_value">$INFO[Window(10000).Property(fenlight.folder4.tv_shows_directory)]</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_source_folder_path&amp;setting_id=folder4.tv_shows_directory)</onclick>
+                    </item>
+                    <item>
+                        <visible>Container(2001).HasFocus(40)</visible>
+                        <property name="setting_label">Restore Default</property>
+                        <property name="setting_value">...</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=clear_sources_folder_choice&amp;setting_id=folder4)</onclick>
+                    </item>
+                    <item>
+                        <visible>Container(2001).HasFocus(50)</visible>
+                        <property name="setting_label">Display Name</property>
+                        <property name="setting_value">$INFO[Window(10000).Property(fenlight.folder5.display_name)]</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_string&amp;setting_id=folder5.display_name)</onclick>
+                    </item>
+                    <item>
+                        <visible>Container(2001).HasFocus(50)</visible>
+                        <property name="setting_label">Movies Directory</property>
+                        <property name="setting_value">$INFO[Window(10000).Property(fenlight.folder5.movies_directory)]</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_source_folder_path&amp;setting_id=folder5.movies_directory)</onclick>
+                    </item>
+                    <item>
+                        <visible>Container(2001).HasFocus(50)</visible>
+                        <property name="setting_label">TV Shows Directory</property>
+                        <property name="setting_value">$INFO[Window(10000).Property(fenlight.folder5.tv_shows_directory)]</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=settings_manager.set_source_folder_path&amp;setting_id=folder5.tv_shows_directory)</onclick>
+                    </item>
+                    <item>
+                        <visible>Container(2001).HasFocus(50)</visible>
+                        <property name="setting_label">Restore Default</property>
+                        <property name="setting_value">...</property>
+                        <onclick>RunPlugin(plugin://plugin.video.fenlight/?mode=clear_sources_folder_choice&amp;setting_id=folder5)</onclick>
+                    </item>
+                </content>
+            </control>
+        </control>
+    </controls>
+</window>

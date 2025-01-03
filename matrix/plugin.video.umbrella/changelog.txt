@@ -1,3 +1,8 @@
+[B]Update - v6.7.33 - Jan 3rd, 2024[/B]
+--[Fix] Changes in title searching format for plex.
+--[Fix] Changes in sources to support composite.
+--[Change] Added prompt for cloud delete from Torbox and added usenet files also.
+
 [B]Update - v6.7.32 - December 27th, 2024[/B]
 --[Fix] Used changes from kodifitzwell for TorBox cloud scraping and playing from cloud.
 --[Change] Used updates from kodifitzwell for TorBox for usenet.

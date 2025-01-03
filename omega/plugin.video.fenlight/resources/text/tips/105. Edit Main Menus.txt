@@ -1,0 +1,4 @@
+
+Pressing the Context Menu on Root, Movie or TV Show menu items will allow you to change many things about the menu systems in Fen Light. A few include removing a menu item, changing it's position within the menu, or adding lists from other menus.
+
+Also, try out the Shortcut Folders feature, for many more options to customize Fen Light. See 'Shortcut Folders' tip for more info.

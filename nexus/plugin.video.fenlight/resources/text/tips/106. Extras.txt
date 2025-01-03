@@ -1,0 +1,6 @@
+
+Movie and TV Show context menus have an 'Extras...' listing.
+
+This will open a fullscreen window with information about the movie/tv show including cast, ratings, similar media, reviews, etc.
+
+Set preferences for the Extras window under Settings->Features->Extras.

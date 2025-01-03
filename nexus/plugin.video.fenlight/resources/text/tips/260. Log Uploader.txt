@@ -1,0 +1,4 @@
+
+Fen Light features a Log Uploader so you can upload your current Kodi log file and receive a url to post for assistance.
+
+To access the Log Uploader, navigate to Tools-->Changelog & Log Utils-->Upload Kodi Log to Pastebin.

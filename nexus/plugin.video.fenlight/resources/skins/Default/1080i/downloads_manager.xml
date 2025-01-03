@@ -1,0 +1,789 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">fenlight_common/white.png</texture>
+            <animation effect="fade" end="80" time="120">WindowOpen</animation>
+        </control>
+        <control type="group">
+            <left>484</left>
+            <top>100</top>
+            <animation effect="fade" end="100" time="200">WindowOpen</animation>
+            <control type="group">
+                <top>40</top>
+                <control type="group">
+                    <control type="image">
+                        <left>-2</left>
+                        <top>-2</top>
+                        <width>952</width>
+                        <height>807</height>
+                        <texture colordiffuse="FFCCCCCC" border="30">fenlight_common/circle.png</texture>
+                    </control>
+                    <control type="image">
+                        <width>948</width>
+                        <height>803</height>
+                        <texture colordiffuse="FF1F2020" border="30">fenlight_common/circle.png</texture>
+                    </control>
+                </control>
+                <control type="image">
+                    <left>10</left>
+                    <top>10</top>
+                    <width>45</width>
+                    <height>45</height>
+                    <align>left</align>
+                    <aligny>top</aligny>
+                    <aspectratio aligny="top">keep</aspectratio>
+                    <texture colordiffuse="FFCCCCCC">fenlight_common/fenlight.png</texture>
+                </control>
+                <control type="label">
+                    <width max="728">auto</width>
+                    <top>30</top>
+                    <left>110</left>
+                    <height>20</height>
+                    <font>font12</font> <!-- FENLIGHT_26 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <shadowcolor>FF000000</shadowcolor>
+                    <align>center</align>
+                    <label>[UPPERCASE][B]Active Downloads:  [COLOR FFB40025]$INFO[Window.Property(active)][/COLOR]     |     Queued Downloads:  [COLOR FFB40025]$INFO[Window.Property(queued)][/B][/COLOR][/UPPERCASE]</label>
+                </control>
+                <control type="label">
+                    <visible>Integer.IsGreater(Window.Property(active),0) | Integer.IsGreater(Window.Property(queued),0)</visible>
+                    <width max="728">auto</width>
+                    <top>70</top>
+                    <left>110</left>
+                    <height>20</height>
+                    <font>font12</font> <!-- FENLIGHT_26 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <shadowcolor>FF000000</shadowcolor>
+                    <align>center</align>
+                    <label>[UPPERCASE][I](select download for options)[/I][/UPPERCASE]</label>
+                </control>
+            </control>
+            <control type="list" id="2500">
+                <left>30</left>
+                <top>180</top>
+                <width>890</width>
+                <height>630</height>
+                <onup>2500</onup>
+                <ondown>2500</ondown>
+                <onleft>4500</onleft>
+                <onright>4500</onright>
+                <orientation>Vertical</orientation>
+                <scrolltime tween="sine">200</scrolltime>
+                <itemlayout height="90" width="890">
+                    <control type="label">
+                        <left>35</left>
+                        <width max="820">auto</width>
+                        <top>25</top>
+                        <height>5</height>
+                        <font>font12</font> <!-- FENLIGHT_26 -->
+                        <textcolor>FFCCCCCC</textcolor>
+                        <aligny>center</aligny>
+                        <scroll>false</scroll>
+                        <label>[UPPERCASE][B]$INFO[ListItem.Property(name)][/B][/UPPERCASE]</label>
+                    </control>
+                    <control type="label">
+                        <left>35</left>
+                        <top>60</top>
+                        <width>60</width>
+                        <height>5</height>
+                        <font>font12</font> <!-- FENLIGHT_26 -->
+                        <textcolor>FFB40025</textcolor>
+                        <aligny>center</aligny>
+                        <label>[B]$INFO[ListItem.Property(percent),,%][/B]</label>
+                    </control>
+                    <control type="label">
+                        <visible>String.IsEqual(ListItem.Property(status),paused)</visible>
+                        <left>100</left>
+                        <top>60</top>
+                        <width max="820">auto</width>
+                        <height>5</height>
+                        <font>font12</font> <!-- FENLIGHT_26 -->
+                        <textcolor>FFB40025</textcolor>
+                        <aligny>center</aligny>
+                        <align>left</align>
+                        <label>[UPPERCASE][B]Paused[/B][/UPPERCASE]</label>
+                    </control>
+                    <control type="label">
+                        <visible>String.IsEqual(ListItem.Property(status),queued)</visible>
+                        <left>100</left>
+                        <top>60</top>
+                        <width max="820">auto</width>
+                        <height>5</height>
+                        <font>font12</font> <!-- FENLIGHT_26 -->
+                        <textcolor>FFB40025</textcolor>
+                        <aligny>center</aligny>
+                        <align>left</align>
+                        <label>[UPPERCASE][B]Queued[/B][/UPPERCASE]</label>
+                    </control>
+                    <!-- PROGRESS -->
+                    <control type="group">
+                        <visible>!String.IsEqual(ListItem.Property(status),paused) + !String.IsEqual(ListItem.Property(status),queued)</visible>
+                        <top>53</top>
+                        <left>100</left>
+                        <control type="image">
+                            <left>0</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),1)</visible>
+                        </control>
+                        <control type="image">
+                            <left>35</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),5)</visible>
+                        </control>
+                        <control type="image">
+                            <left>70</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),10)</visible>
+                        </control>
+                        <control type="image">
+                            <left>105</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),15)</visible>
+                        </control>
+                        <control type="image">
+                            <left>140</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),20)</visible>
+                        </control>
+                        <control type="image">
+                            <left>175</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),25)</visible>
+                        </control>
+                        <control type="image">
+                            <left>210</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),30)</visible>
+                        </control>
+                        <control type="image">
+                            <left>245</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),35)</visible>
+                        </control>
+                        <control type="image">
+                            <left>280</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),40)</visible>
+                        </control>
+                        <control type="image">
+                            <left>315</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),45)</visible>
+                        </control>
+                        <control type="image">
+                            <left>350</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),50)</visible>
+                        </control>
+                        <control type="image">
+                            <left>385</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),55)</visible>
+                        </control>
+                        <control type="image">
+                            <left>420</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),60)</visible>
+                        </control>
+                        <control type="image">
+                            <left>455</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),65)</visible>
+                        </control>
+                        <control type="image">
+                            <left>490</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),70)</visible>
+                        </control>
+                        <control type="image">
+                            <left>525</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),75)</visible>
+                        </control>
+                        <control type="image">
+                            <left>560</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),80)</visible>
+                        </control>
+                        <control type="image">
+                            <left>595</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),85)</visible>
+                        </control>
+                        <control type="image">
+                            <left>630</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),90)</visible>
+                        </control>
+                        <control type="image">
+                            <left>665</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),95)</visible>
+                        </control>
+                        <control type="image">
+                            <left>700</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),99)</visible>
+                        </control>
+                    </control>
+                    <control type="group">
+                        <visible>!String.IsEqual(ListItem.Property(status),paused) + !String.IsEqual(ListItem.Property(status),queued)</visible>
+                        <top>53</top>
+                        <left>100</left>
+                        <control type="image">
+                            <left>0</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),1)</visible>
+                        </control>
+                        <control type="image">
+                            <left>35</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),5)</visible>
+                        </control>
+                        <control type="image">
+                            <left>70</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),10)</visible>
+                        </control>
+                        <control type="image">
+                            <left>105</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),15)</visible>
+                        </control>
+                        <control type="image">
+                            <left>140</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),20)</visible>
+                        </control>
+                        <control type="image">
+                            <left>175</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),25)</visible>
+                        </control>
+                        <control type="image">
+                            <left>210</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),30)</visible>
+                        </control>
+                        <control type="image">
+                            <left>245</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),35)</visible>
+                        </control>
+                        <control type="image">
+                            <left>280</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),40)</visible>
+                        </control>
+                        <control type="image">
+                            <left>315</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),45)</visible>
+                        </control>
+                        <control type="image">
+                            <left>350</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),50)</visible>
+                        </control>
+                        <control type="image">
+                            <left>385</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),55)</visible>
+                        </control>
+                        <control type="image">
+                            <left>420</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),60)</visible>
+                        </control>
+                        <control type="image">
+                            <left>455</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),65)</visible>
+                        </control>
+                        <control type="image">
+                            <left>490</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),70)</visible>
+                        </control>
+                        <control type="image">
+                            <left>525</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),75)</visible>
+                        </control>
+                        <control type="image">
+                            <left>560</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),80)</visible>
+                        </control>
+                        <control type="image">
+                            <left>595</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),85)</visible>
+                        </control>
+                        <control type="image">
+                            <left>630</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),90)</visible>
+                        </control>
+                        <control type="image">
+                            <left>665</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),95)</visible>
+                        </control>
+                        <control type="image">
+                            <left>700</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),99)</visible>
+                        </control>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="90" width="890">
+                    <control type="image">
+                        <animation effect="fade" start="100" end="50" time="0" condition="!Control.HasFocus(2500)">Conditional</animation>
+                        <width>890</width>
+                        <texture colordiffuse="FFCCCCCC" border="30">fenlight_common/circle.png</texture>
+                    </control>
+                    <control type="label">
+                        <width max="820">auto</width>
+                        <left>35</left>
+                        <top>25</top>
+                        <height>5</height>
+                        <font>font12</font> <!-- FENLIGHT_26 -->
+                        <textcolor>FF1F2020</textcolor>
+                        <aligny>center</aligny>
+                        <scroll>false</scroll>
+                        <label>[UPPERCASE][B]$INFO[ListItem.Property(name)][/B][/UPPERCASE]</label>
+                    </control>
+                    <control type="label">
+                        <left>35</left>
+                        <top>60</top>
+                        <width>60</width>
+                        <height>5</height>
+                        <font>font12</font> <!-- FENLIGHT_26 -->
+                        <textcolor>FFB40025</textcolor>
+                        <aligny>center</aligny>
+                        <label>[B]$INFO[ListItem.Property(percent),,%][/B]</label>
+                    </control>
+                    <control type="label">
+                        <visible>String.IsEqual(ListItem.Property(status),paused)</visible>
+                        <left>100</left>
+                        <top>60</top>
+                        <width max="820">auto</width>
+                        <height>5</height>
+                        <font>font12</font> <!-- FENLIGHT_26 -->
+                        <textcolor>FFB40025</textcolor>
+                        <aligny>center</aligny>
+                        <align>left</align>
+                        <label>[UPPERCASE][B]Paused[/B][/UPPERCASE]</label>
+                    </control>
+                    <control type="label">
+                        <visible>String.IsEqual(ListItem.Property(status),queued)</visible>
+                        <left>100</left>
+                        <top>60</top>
+                        <width max="820">auto</width>
+                        <height>5</height>
+                        <font>font12</font> <!-- FENLIGHT_26 -->
+                        <textcolor>FFB40025</textcolor>
+                        <aligny>center</aligny>
+                        <align>left</align>
+                        <label>[UPPERCASE][B]Queued[/B][/UPPERCASE]</label>
+                    </control>
+                    <!-- PROGRESS -->
+                    <control type="group">
+                        <visible>!String.IsEqual(ListItem.Property(status),paused) + !String.IsEqual(ListItem.Property(status),queued)</visible>
+                        <top>53</top>
+                        <left>100</left>
+                        <control type="image">
+                            <left>0</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),1)</visible>
+                        </control>
+                        <control type="image">
+                            <left>35</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),5)</visible>
+                        </control>
+                        <control type="image">
+                            <left>70</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),10)</visible>
+                        </control>
+                        <control type="image">
+                            <left>105</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),15)</visible>
+                        </control>
+                        <control type="image">
+                            <left>140</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),20)</visible>
+                        </control>
+                        <control type="image">
+                            <left>175</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),25)</visible>
+                        </control>
+                        <control type="image">
+                            <left>210</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),30)</visible>
+                        </control>
+                        <control type="image">
+                            <left>245</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),35)</visible>
+                        </control>
+                        <control type="image">
+                            <left>280</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),40)</visible>
+                        </control>
+                        <control type="image">
+                            <left>315</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),45)</visible>
+                        </control>
+                        <control type="image">
+                            <left>350</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),50)</visible>
+                        </control>
+                        <control type="image">
+                            <left>385</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),55)</visible>
+                        </control>
+                        <control type="image">
+                            <left>420</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),60)</visible>
+                        </control>
+                        <control type="image">
+                            <left>455</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),65)</visible>
+                        </control>
+                        <control type="image">
+                            <left>490</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),70)</visible>
+                        </control>
+                        <control type="image">
+                            <left>525</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),75)</visible>
+                        </control>
+                        <control type="image">
+                            <left>560</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),80)</visible>
+                        </control>
+                        <control type="image">
+                            <left>595</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),85)</visible>
+                        </control>
+                        <control type="image">
+                            <left>630</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),90)</visible>
+                        </control>
+                        <control type="image">
+                            <left>665</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),95)</visible>
+                        </control>
+                        <control type="image">
+                            <left>700</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FF7C7C7C">fenlight_common/white.png</texture>
+                            <visible>Integer.IsLess(ListItem.Property(percent),99)</visible>
+                        </control>
+                    </control>
+                    <control type="group">
+                        <visible>!String.IsEqual(ListItem.Property(status),paused) + !String.IsEqual(ListItem.Property(status),queued)</visible>
+                        <top>53</top>
+                        <left>100</left>
+                        <control type="image">
+                            <left>0</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),1)</visible>
+                        </control>
+                        <control type="image">
+                            <left>35</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),5)</visible>
+                        </control>
+                        <control type="image">
+                            <left>70</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),10)</visible>
+                        </control>
+                        <control type="image">
+                            <left>105</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),15)</visible>
+                        </control>
+                        <control type="image">
+                            <left>140</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),20)</visible>
+                        </control>
+                        <control type="image">
+                            <left>175</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),25)</visible>
+                        </control>
+                        <control type="image">
+                            <left>210</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),30)</visible>
+                        </control>
+                        <control type="image">
+                            <left>245</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),35)</visible>
+                        </control>
+                        <control type="image">
+                            <left>280</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),40)</visible>
+                        </control>
+                        <control type="image">
+                            <left>315</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),45)</visible>
+                        </control>
+                        <control type="image">
+                            <left>350</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),50)</visible>
+                        </control>
+                        <control type="image">
+                            <left>385</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),55)</visible>
+                        </control>
+                        <control type="image">
+                            <left>420</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),60)</visible>
+                        </control>
+                        <control type="image">
+                            <left>455</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),65)</visible>
+                        </control>
+                        <control type="image">
+                            <left>490</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),70)</visible>
+                        </control>
+                        <control type="image">
+                            <left>525</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),75)</visible>
+                        </control>
+                        <control type="image">
+                            <left>560</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),80)</visible>
+                        </control>
+                        <control type="image">
+                            <left>595</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),85)</visible>
+                        </control>
+                        <control type="image">
+                            <left>630</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),90)</visible>
+                        </control>
+                        <control type="image">
+                            <left>665</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),95)</visible>
+                        </control>
+                        <control type="image">
+                            <left>700</left>
+                            <width>30</width>
+                            <height>15</height>
+                            <texture colordiffuse="FFB40025">fenlight_common/white.png</texture>
+                            <visible>Integer.IsGreaterOrEqual(ListItem.Property(percent),99)</visible>
+                        </control>
+                    </control>
+                </focusedlayout>
+            </control>
+        </control>
+    </controls>
+</window>

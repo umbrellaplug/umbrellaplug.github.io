@@ -1,0 +1,4 @@
+
+Since Fen Light uses it's own window to display results, you are able to change the look of how those results are displayed.
+
+Navigate to Settings->Results->Display and select "Results Display". A dialog will appear where you can choose the window style you prefer for displaying results.
