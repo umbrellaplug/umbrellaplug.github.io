@@ -1,0 +1,8 @@
+
+In Settings-->Features-->Custom Actions there are a few settings you can try that will attempt to make various Fen specific adjustments to default Kodi behavior.
+
+- "Open Fen Menu Editor Instead of Kodi Context Menu (Menus)": When enabled, this will open Fen's "Menu Editor" feature when the context menu is used on Root/Movies/TV Shows menus.
+- "Open Fen Options Instead of Kodi Context Menu (Media)": When enabled, this will open Fen's "Options" feature when the context menu is used on media within Fen.
+- "Open Fen Extras Instead of Kodi Info Dialog": When enabled, this will open Fen's "Extras" feature when "Information" is called on media within Fen.
+
+These are semi-experimental features that may not work well on certain skins/hardware.

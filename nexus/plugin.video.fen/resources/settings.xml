@@ -1,0 +1,3669 @@
+<?xml version="1.0" ?>
+<settings version="1">
+	<section id="plugin.video.fen">
+		<!-- General -->
+		<category id="general" label="32001" help="">
+			<!-- Manage Updates -->
+			<group id="1" label="33185">
+				<setting id="update.action" type="integer" label="33188" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32521">0</option>
+							<option label="33189">1</option>
+							<option label="33087">2</option>
+							<option label="32027">3</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="update.delay" type="integer" label="33190" help="">
+					<level>0</level>
+					<default>45</default>
+					<constraints>
+						<minimum>10</minimum>
+						<step>1</step>
+						<maximum>300</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+			</group>
+			<!-- General -->
+			<group id="2" label="32001">
+				<setting id="auto_start_fen" type="boolean" label="32017" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="auto_invoker_fix" type="boolean" label="33160" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="kodi_menu_cache" type="boolean" label="32539" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="limit_concurrent_threads" type="boolean" label="32744" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="max_threads" type="integer" label="32745" help="" parent="limit_concurrent_threads">
+					<level>0</level>
+					<default>60</default>
+					<constraints>
+						<minimum>10</minimum>
+						<step>5</step>
+						<maximum>500</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="limit_concurrent_threads">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="addon_fanart" type="path" label="32157" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<writable>false</writable>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="image">
+						<heading>32157</heading>
+					</control>
+				</setting>
+				<setting id="addon_fanart.restore" type="string" label="33161" parent="addon_fanart" help="">
+					<level>0</level>
+					<default>$ADDON[plugin.video.fen 32652]</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="addon_fanart"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=restore_addon_fanart_choice)</data>
+					</control>
+				</setting>
+				<setting id="main_highlight_name" type="string" label="32124" help="">
+					<level>0</level>
+					<default>[COLOR=FFC0C0C0]FFC0C0C0[/COLOR]</default>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=highlight_color_choice)</data>
+					</control>
+				</setting>
+				<setting id="use_skin_fonts" type="boolean" label="33162" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="use_custom_skins" type="boolean" label="33124" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+			</group>
+			<!-- Watched Indicators -->
+			<group id="3" label="32034">
+				<setting id="trakt.indicators_active" type="string" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="watched_indicators" type="integer" label="32035" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32036">0</option>
+							<option label="32037">1</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="trakt.indicators_active">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="amble.indicators" type="string" label="32039" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+						<dependency type="visible">
+							<condition operator="is" setting="trakt.indicators_active">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>32039</heading>
+					</control>
+				</setting>
+			</group>
+			<!-- Trakt Cache -->
+			<group id="4" label="32087">
+				<setting id="trakt.sync_interval" type="integer" label="33099" help="">
+					<level>0</level>
+					<default>30</default>
+					<constraints>
+						<minimum>5</minimum>
+						<step>5</step>
+						<maximum>600</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="trakt.sync_refresh_widgets" type="boolean" label="32048" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+			</group>
+			<!-- UTC Time Offset -->
+			<group id="5" label="32101">
+				<setting id="datetime.offset" type="integer" label="32045" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<minimum>-15</minimum>
+						<step>1</step>
+						<maximum>15</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+			</group>
+			<!--Downloads -->
+			<group id="6" label="32107">
+				<setting id="movie_download_directory" type="path" label="32116" help="">
+					<level>0</level>
+					<default>special://profile/addon_data/plugin.video.fen/Movies Downloads/</default>
+					<constraints>
+						<writable>false</writable>
+					</constraints>
+					<control type="button" format="path">
+						<heading>32116</heading>
+					</control>
+				</setting>
+				<setting id="tvshow_download_directory" type="path" label="32117" help="">
+					<level>0</level>
+					<default>special://profile/addon_data/plugin.video.fen/TV Show Downloads/</default>
+					<constraints>
+						<writable>false</writable>
+					</constraints>
+					<control type="button" format="path">
+						<heading>32117</heading>
+					</control>
+				</setting>
+				<setting id="premium_download_directory" type="path" label="32210" help="">
+					<level>0</level>
+					<default>special://profile/addon_data/plugin.video.fen/Premium Downloads/</default>
+					<constraints>
+						<writable>false</writable>
+					</constraints>
+					<control type="button" format="path">
+						<heading>32210</heading>
+					</control>
+				</setting>
+				<setting id="image_download_directory" type="path" label="33005" help="">
+					<level>0</level>
+					<default>special://profile/addon_data/plugin.video.fen/Image Downloads/</default>
+					<constraints>
+						<writable>false</writable>
+					</constraints>
+					<control type="button" format="path">
+						<heading>33005</heading>
+					</control>
+				</setting>
+			</group>
+		</category>
+		<!-- Features -->
+		<category id="features" label="33112" help="">
+			<!-- Extras -->
+			<group id="1" label="33038">
+				<setting id="extras.open_action" type="integer" label="32026" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32965">0</option>
+							<option label="32028">1</option>
+							<option label="32029">2</option>
+							<option label="32030">3</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="extras.manage" type="string" label="32046" help="">
+					<level>0</level>
+					<default>$ADDON[plugin.video.fen 32652]</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=extras_lists_choice)</data>
+					</control>
+				</setting>
+				<setting id="extras.button_choice" type="string" label="33118" help="">
+					<level>0</level>
+					<default>$ADDON[plugin.video.fen 32652]</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=extras_buttons_choice)</data>
+					</control>
+				</setting>
+				<setting id="extras.restore_default" type="string" label="33119" help="">
+					<level>0</level>
+					<default>$ADDON[plugin.video.fen 32652]</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=default_extras_buttons_choice)</data>
+					</control>
+				</setting>
+				<setting id="extras.enable_extra_ratings" type="boolean" label="33061" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="extras.enabled_ratings" type="string" label="33135" help="" parent="extras.enable_extra_ratings">
+					<level>0</level>
+					<default>Meta, Tom/Critic, Tom/User, IMDb, TMDb</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="extras.enable_extra_ratings">true</condition>
+								<condition operator="!is" setting="omdb_api"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=extras_ratings_choice)</data>
+					</control>
+				</setting>
+				<setting id="extras.ratings_amble" type="string" label="33113" help="" parent="extras.enable_extra_ratings">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="extras.enable_extra_ratings">true</condition>
+								<condition operator="is" setting="omdb_api"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>33113</heading>
+					</control>
+				</setting>
+				<setting id="extras.enable_scrollbars" type="boolean" label="32846" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="extras.exclude_non_acting_roles" type="boolean" label="33040" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="extras.windowed_playback" type="boolean" label="33148" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+			</group>
+			<!-- Custom Actions -->
+			<group id="2" label="33098">
+				<setting id="custom_context_main_menu" type="boolean" label="33097" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="custom_context_menu" type="boolean" label="32788" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="custom_info_dialog" type="boolean" label="32980" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+			</group>
+		</category>
+		<!-- Navigation -->
+		<category id="navigation" label="32492" help="">
+			<!-- Sorting - Personal Lists-->
+			<group id="1" label="32694">
+				<setting id="sort.progress" type="integer" label="32476" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32228">0</option>
+							<option label="32226">1</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="sort.watched" type="integer" label="32475" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32228">0</option>
+							<option label="32226">1</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="sort.collection" type="integer" label="32499" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32228">0</option>
+							<option label="32223">1</option>
+							<option label="32221">2</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="sort.watchlist" type="integer" label="32500" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32228">0</option>
+							<option label="32223">1</option>
+							<option label="32221">2</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+			</group>
+			<!-- Sorting - Generic Movie Lists-->
+			<group id="2" label="32093">
+				<setting id="sort.movies.genres" type="string" label="32470" help="">
+					<level>0</level>
+					<default>popularity.desc</default>
+					<constraints>
+						<options>
+							<option label="33166">popularity.asc</option>
+							<option label="33167">popularity.desc</option>
+							<option label="33168">primary_release_date.asc</option>
+							<option label="33169">primary_release_date.desc</option>
+							<option label="33170">revenue.asc</option>
+							<option label="33171">revenue.desc</option>
+							<option label="33174">vote_average.asc&amp;vote_count.gte=250</option>
+							<option label="33175">vote_average.desc&amp;vote_count.gte=250</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="sort.movies.languages" type="string" label="32471" help="">
+					<level>0</level>
+					<default>popularity.desc</default>
+					<constraints>
+						<options>
+							<option label="33166">popularity.asc</option>
+							<option label="33167">popularity.desc</option>
+							<option label="33168">primary_release_date.asc</option>
+							<option label="33169">primary_release_date.desc</option>
+							<option label="33170">revenue.asc</option>
+							<option label="33171">revenue.desc</option>
+							<option label="33174">vote_average.asc&amp;vote_count.gte=250</option>
+							<option label="33175">vote_average.desc&amp;vote_count.gte=250</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="sort.movies.certifications" type="string" label="32473" help="">
+					<level>0</level>
+					<default>popularity.desc</default>
+					<constraints>
+						<options>
+							<option label="33166">popularity.asc</option>
+							<option label="33167">popularity.desc</option>
+							<option label="33168">primary_release_date.asc</option>
+							<option label="33169">primary_release_date.desc</option>
+							<option label="33170">revenue.asc</option>
+							<option label="33171">revenue.desc</option>
+							<option label="33174">vote_average.asc&amp;vote_count.gte=250</option>
+							<option label="33175">vote_average.desc&amp;vote_count.gte=250</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="sort.movies.years" type="string" label="32472" help="">
+					<level>0</level>
+					<default>popularity.desc</default>
+					<constraints>
+						<options>
+							<option label="33166">popularity.asc</option>
+							<option label="33167">popularity.desc</option>
+							<option label="33168">primary_release_date.asc</option>
+							<option label="33169">primary_release_date.desc</option>
+							<option label="33170">revenue.asc</option>
+							<option label="33171">revenue.desc</option>
+							<option label="33174">vote_average.asc&amp;vote_count.gte=250</option>
+							<option label="33175">vote_average.desc&amp;vote_count.gte=250</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="sort.movies.decades" type="string" label="33085" help="">
+					<level>0</level>
+					<default>popularity.desc</default>
+					<constraints>
+						<options>
+							<option label="33166">popularity.asc</option>
+							<option label="33167">popularity.desc</option>
+							<option label="33168">primary_release_date.asc</option>
+							<option label="33169">primary_release_date.desc</option>
+							<option label="33170">revenue.asc</option>
+							<option label="33171">revenue.desc</option>
+							<option label="33174">vote_average.asc&amp;vote_count.gte=250</option>
+							<option label="33175">vote_average.desc&amp;vote_count.gte=250</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="sort.movies.networks" type="string" label="32480" help="">
+					<level>0</level>
+					<default>popularity.desc</default>
+					<constraints>
+						<options>
+							<option label="33166">popularity.asc</option>
+							<option label="33167">popularity.desc</option>
+							<option label="33168">primary_release_date.asc</option>
+							<option label="33169">primary_release_date.desc</option>
+							<option label="33170">revenue.asc</option>
+							<option label="33171">revenue.desc</option>
+							<option label="33174">vote_average.asc&amp;vote_count.gte=250</option>
+							<option label="33175">vote_average.desc&amp;vote_count.gte=250</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+			</group>
+			<!-- Sorting - Generic TV Show Lists-->
+			<group id="3" label="33180">
+				<setting id="sort.tvshows.genres" type="string" label="32470" help="">
+					<level>0</level>
+					<default>popularity.desc</default>
+					<constraints>
+						<options>
+							<option label="33166">popularity.asc</option>
+							<option label="33167">popularity.desc</option>
+							<option label="33186">first_air_date.asc</option>
+							<option label="33187">first_air_date.desc</option>
+							<option label="33174">vote_average.asc&amp;vote_count.gte=250</option>
+							<option label="33175">vote_average.desc&amp;vote_count.gte=250</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="sort.tvshows.languages" type="string" label="32471" help="">
+					<level>0</level>
+					<default>popularity.desc</default>
+					<constraints>
+						<options>
+							<option label="33166">popularity.asc</option>
+							<option label="33167">popularity.desc</option>
+							<option label="33186">first_air_date.asc</option>
+							<option label="33187">first_air_date.desc</option>
+							<option label="33174">vote_average.asc&amp;vote_count.gte=250</option>
+							<option label="33175">vote_average.desc&amp;vote_count.gte=250</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="sort.tvshows.years" type="string" label="32472" help="">
+					<level>0</level>
+					<default>popularity.desc</default>
+					<constraints>
+						<options>
+							<option label="33166">popularity.asc</option>
+							<option label="33167">popularity.desc</option>
+							<option label="33186">first_air_date.asc</option>
+							<option label="33187">first_air_date.desc</option>
+							<option label="33174">vote_average.asc&amp;vote_count.gte=250</option>
+							<option label="33175">vote_average.desc&amp;vote_count.gte=250</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="sort.tvshows.decades" type="string" label="33085" help="">
+					<level>0</level>
+					<default>popularity.desc</default>
+					<constraints>
+						<options>
+							<option label="33166">popularity.asc</option>
+							<option label="33167">popularity.desc</option>
+							<option label="33186">first_air_date.asc</option>
+							<option label="33187">first_air_date.desc</option>
+							<option label="33174">vote_average.asc&amp;vote_count.gte=250</option>
+							<option label="33175">vote_average.desc&amp;vote_count.gte=250</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="sort.tvshows.networks" type="string" label="32480" help="">
+					<level>0</level>
+					<default>popularity.desc</default>
+					<constraints>
+						<options>
+							<option label="33166">popularity.asc</option>
+							<option label="33167">popularity.desc</option>
+							<option label="33186">first_air_date.asc</option>
+							<option label="33187">first_air_date.desc</option>
+							<option label="33174">vote_average.asc&amp;vote_count.gte=250</option>
+							<option label="33175">vote_average.desc&amp;vote_count.gte=250</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+			</group>
+			<!-- Content -->
+			<group id="4" label="32693">
+				<setting id="paginate.lists" type="integer" label="32019" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32027">0</option>
+							<option label="32167">1</option>
+							<option label="32168">2</option>
+							<option label="32030">3</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="paginate.limit_addon" type="integer" label="33142" help="" parent="paginate.lists">
+					<level>0</level>
+					<default>20</default>
+					<dependencies>
+						<dependency type="visible">
+							<or>
+								<condition operator="is" setting="paginate.lists">1</condition>
+								<condition operator="is" setting="paginate.lists">3</condition>
+							</or>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="integer">
+						<heading>32020</heading>
+					</control>
+				</setting>
+				<setting id="paginate.limit_widgets" type="integer" label="33143" help="" parent="paginate.lists">
+					<level>0</level>
+					<default>20</default>
+					<dependencies>
+						<dependency type="visible">
+							<or>
+								<condition operator="is" setting="paginate.lists">2</condition>
+								<condition operator="is" setting="paginate.lists">3</condition>
+							</or>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="integer">
+						<heading>32020</heading>
+					</control>
+				</setting>
+				<setting id="paginate.jump_to" type="integer" label="32585" help="" parent="paginate.lists">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32978">0</option>
+							<option label="32979">1</option>
+							<option label="32030">2</option>
+							<option label="32027">3</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<or>
+								<condition operator="is" setting="paginate.lists">1</condition>
+								<condition operator="is" setting="paginate.lists">3</condition>
+							</or>
+						</dependency>
+					</dependencies>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="ignore_articles" type="boolean" label="32025" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="show_specials" type="boolean" label="32008" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="use_season_title" type="boolean" label="32010" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="show_unaired" type="boolean" label="32073" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="show_unaired_watchlist" type="boolean" label="32525" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="include_year_in_title" type="integer" label="33101" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32013">0</option>
+							<option label="32028">1</option>
+							<option label="32029">2</option>
+							<option label="32030">3</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="default_all_episodes" type="integer" label="32009" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32013">0</option>
+							<option label="32032">1</option>
+							<option label="32033">2</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="single_ep_display" type="integer" label="32194" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32201">0</option>
+							<option label="32202">1</option>
+							<option label="32203">2</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="single_ep_format" type="integer" label="32077" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32229">0</option>
+							<option label="32230">1</option>
+							<option label="32231">2</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="tv_progress_location" type="integer" label="33153" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="33154">0</option>
+							<option label="33155">1</option>
+							<option label="32030">2</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="avoid_episode_spoilers" type="boolean" label="33100" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+			</group>
+			<!-- Trakt Calendar -->
+			<group id="5" label="32081">
+				<setting id="trakt.calendar_sort_order" type="integer" label="32067" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32225">0</option>
+							<option label="32224">1</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="trakt.calendar_previous_days" type="integer" label="32083" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<minimum>0</minimum>
+						<step>1</step>
+						<maximum>30</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="trakt.calendar_future_days" type="integer" label="32084" help="">
+					<level>0</level>
+					<default>7</default>
+					<constraints>
+						<minimum>0</minimum>
+						<step>1</step>
+						<maximum>30</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+			</group>
+			<!-- Next Episodes -->
+			<group id="6" label="32483">
+				<setting id="nextep.sort_type" type="integer" label="32066" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32226">0</option>
+							<option label="32227">1</option>
+							<option label="32228">2</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="nextep.sort_order" type="integer" label="32067" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32225">0</option>
+							<option label="32224">1</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="nextep.sort_airing_today_to_top" type="boolean" label="32819" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="nextep.include_airdate" type="boolean" label="32076" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="nextep.include_unaired" type="boolean" label="32073" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="nextep.include_unwatched" type="integer" label="32074" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32965">0</option>
+							<option label="32500">1</option>
+							<option label="32453">2</option>
+							<option label="32030">3</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+			</group>
+			<!-- Widgets -->
+			<group id="7" label="32085">
+				<setting id="widget_hide_watched" type="boolean" label="32465" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="widget_hide_next_page" type="boolean" label="32746" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+			</group>
+		</category>
+		<!-- Metadata -->
+		<category id="metadata" label="32146" help="">
+			<!-- Fanart -->
+			<group id="1" label="32147">
+				<setting id="get_fanart_data" type="boolean" label="32148" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="fanarttv.default" type="boolean" label="32012" help="" parent="get_fanart_data">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="get_fanart_data">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+			</group>
+			<!-- Image Resolution -->
+			<group id="2" label="32149">
+				<setting id="image_resolutions" type="integer" label="32170" help="">
+					<level>0</level>
+					<default>2</default>
+					<constraints>
+						<options>
+							<option label="32163">0</option>
+							<option label="32164">1</option>
+							<option label="32165">2</option>
+							<option label="32166">3</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="image_resolutions_amble" type="string" label="33103" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>33103</heading>
+					</control>
+				</setting>
+			</group>
+			<!-- Language -->
+			<group id="3" label="32658">
+				<setting id="meta_language_display" type="string" label="32145" help="">
+					<level>0</level>
+					<default>English</default>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=meta_language_choice)</data>
+					</control>
+				</setting>
+				<setting id="meta_mpaa_region_display" type="string" label="33132" help="">
+					<level>0</level>
+					<default>United States</default>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=mpaa_region_choice)</data>
+					</control>
+				</setting>
+			</group>
+			<!-- Search -->
+			<group id="4" label="32450">
+				<setting id="meta_use_year_in_search" type="boolean" label="33095" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+			</group>
+			<!-- Filter -->
+			<group id="5" label="32670">
+				<setting id="meta_filter" type="boolean" label="32142" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+			</group>
+		</category>
+		<!-- Meta Accounts -->
+		<category id="meta accounts" label="32684" help="">
+			<!-- Trakt -->
+			<group id="1" label="32037">
+				<setting id="trakt.amble" type="string" label="33152" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>32180</heading>
+					</control>
+				</setting>
+				<setting id="trakt.user" type="string" label="32056" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>32056</heading>
+					</control>
+				</setting>
+			</group>
+			<!-- TMDb -->
+			<group id="2" label="32068">
+				<setting id="tmdb_api" type="string" label="32053" help="">
+					<level>0</level>
+					<default>b370b60447737762ca38457bd77579b3</default>
+					<control type="edit" format="string">
+						<heading>32053</heading>
+					</control>
+				</setting>
+			</group>
+			<!-- Fanart.tv -->
+			<group id="3" label="32173">
+				<setting id="fanart_amble1" type="string" label="32180" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>32180</heading>
+					</control>
+				</setting>
+				<setting id="fanart_client_key" type="string" label="32053" help="">
+					<level>0</level>
+					<default>fa836e1c874ba95ab08a14ee88e05565</default>
+					<control type="edit" format="string">
+						<heading>32053</heading>
+					</control>
+				</setting>
+			</group>
+			<!-- OMDb -->
+			<group id="4" label="32578">
+				<setting id="omdb_api" type="string" label="32579" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="edit" format="string">
+						<heading>32579</heading>
+					</control>
+				</setting>
+			</group>
+			<!-- IMDb -->
+			<group id="5" label="32064">
+				<setting id="imdb_user" type="string" label="32065" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="edit" format="string">
+						<heading>32065</heading>
+					</control>
+				</setting>
+				<setting id="imdb_lists.sort_type" type="integer" label="32066" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32215">0</option>
+							<option label="32216">1</option>
+							<option label="32217">2</option>
+							<option label="32218">3</option>
+							<option label="32219">4</option>
+							<option label="32220">5</option>
+							<option label="32221">6</option>
+							<option label="32222">7</option>
+							<option label="32223">8</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="imdb_user"/>
+						</dependency>
+					</dependencies>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="imdb_lists.sort_direction" type="integer" label="32067" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32224">0</option>
+							<option label="32225">1</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="imdb_user"/>
+						</dependency>
+					</dependencies>
+					<control type="spinner" format="string"/>
+				</setting>
+			</group>
+		</category>
+		<!-- Provider Accounts -->
+		<category id="provider accounts" label="32685" help="">
+			<!-- General -->
+			<group id="1" label="32001">
+				<setting id="check_premium_account_status" type="boolean" label="32209" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+			</group>
+			<!-- External Scrapers -->
+			<group id="2" label="32079">
+				<setting id="provider.external" type="boolean" label="32055" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="external_scraper.name" type="string" label="33133" help="" parent="provider.external">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="provider.external">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=external_scraper_choice)</data>
+					</control>
+				</setting>
+			</group>
+			<!-- Real Debrid -->
+			<group id="3" label="32054">
+				<setting id="rd.amble" type="string" label="33152" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>32180</heading>
+					</control>
+				</setting>
+				<setting id="rd.token" type="string" label="rd token" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">hidden</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>rd token</heading>
+					</control>
+				</setting>
+				<setting id="rd.enabled" type="boolean" label="32055" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="rd.token"/>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="rd.account_id" type="string" label="32056" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="rd.token"/>
+								<condition operator="is" setting="rd.enabled">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>32056</heading>
+					</control>
+				</setting>
+				<setting id="store_resolved_torrent.real-debrid" type="integer" label="32060" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32965">0</option>
+							<option label="32129">1</option>
+							<option label="32078">2</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="rd.token"/>
+								<condition operator="is" setting="rd.enabled">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="provider.rd_cloud" type="boolean" label="32748" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="rd.token"/>
+								<condition operator="is" setting="rd.enabled">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="rd_cloud.title_filter" type="boolean" label="32172" help="" parent="provider.rd_cloud">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="rd.token"/>
+								<condition operator="is" setting="rd.enabled">true</condition>
+								<condition operator="is" setting="provider.rd_cloud">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="check.rd_cloud" type="boolean" label="32104" help="" parent="provider.rd_cloud">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="rd.token"/>
+								<condition operator="is" setting="rd.enabled">true</condition>
+								<condition operator="is" setting="provider.rd_cloud">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="results.sort_rdcloud_first" type="boolean" label="32103" help="" parent="provider.rd_cloud">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="rd.token"/>
+								<condition operator="is" setting="rd.enabled">true</condition>
+								<condition operator="is" setting="provider.rd_cloud">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="rd.priority" type="integer" label="32011" help="">
+					<level>0</level>
+					<default>10</default>
+					<constraints>
+						<minimum>1</minimum>
+						<step>1</step>
+						<maximum>10</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="rd.token"/>
+								<condition operator="is" setting="rd.enabled">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+			</group>
+			<!-- Premiumize -->
+			<group id="4" label="32061">
+				<setting id="pm.amble" type="string" label="33152" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>32180</heading>
+					</control>
+				</setting>
+				<setting id="pm.token" type="string" label="pm token" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">hidden</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>pm token</heading>
+					</control>
+				</setting>
+				<setting id="pm.enabled" type="boolean" label="32055" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="pm.token"/>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="pm.account_id" type="string" label="32056" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="pm.token"/>
+								<condition operator="is" setting="pm.enabled">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>32056</heading>
+					</control>
+				</setting>
+				<setting id="store_resolved_torrent.premiumize.me" type="integer" label="32060" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32965">0</option>
+							<option label="32129">1</option>
+							<option label="32078">2</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="pm.token"/>
+								<condition operator="is" setting="pm.enabled">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="provider.pm_cloud" type="boolean" label="32748" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="pm.token"/>
+								<condition operator="is" setting="pm.enabled">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="pm_cloud.title_filter" type="boolean" label="32172" help="" parent="provider.pm_cloud">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="pm.token"/>
+								<condition operator="is" setting="pm.enabled">true</condition>
+								<condition operator="is" setting="provider.pm_cloud">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="check.pm_cloud" type="boolean" label="32104" help="" parent="provider.pm_cloud">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="pm.token"/>
+								<condition operator="is" setting="pm.enabled">true</condition>
+								<condition operator="is" setting="provider.pm_cloud">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="results.sort_pmcloud_first" type="boolean" label="32103" help="" parent="provider.pm_cloud">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="pm.token"/>
+								<condition operator="is" setting="pm.enabled">true</condition>
+								<condition operator="is" setting="provider.pm_cloud">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="pm.priority" type="integer" label="32011" help="">
+					<level>0</level>
+					<default>10</default>
+					<constraints>
+						<minimum>1</minimum>
+						<step>1</step>
+						<maximum>10</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="pm.token"/>
+								<condition operator="is" setting="pm.enabled">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+			</group>
+			<!-- All Debrid -->
+			<group id="5" label="32063">
+				<setting id="ad.amble" type="string" label="33152" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>32180</heading>
+					</control>
+				</setting>
+				<setting id="ad.token" type="string" label="ad token" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">hidden</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>ad token</heading>
+					</control>
+				</setting>
+				<setting id="ad.enabled" type="boolean" label="32055" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="ad.token"/>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="ad.account_id" type="string" label="32056" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="ad.token"/>
+								<condition operator="is" setting="ad.enabled">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>32056</heading>
+					</control>
+				</setting>
+				<setting id="store_resolved_torrent.alldebrid" type="integer" label="32060" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32965">0</option>
+							<option label="32129">1</option>
+							<option label="32078">2</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="ad.token"/>
+								<condition operator="is" setting="ad.enabled">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="provider.ad_cloud" type="boolean" label="32748" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="ad.token"/>
+								<condition operator="is" setting="ad.enabled">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="ad_cloud.title_filter" type="boolean" label="32172" help="" parent="provider.ad_cloud">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="ad.token"/>
+								<condition operator="is" setting="ad.enabled">true</condition>
+								<condition operator="is" setting="provider.ad_cloud">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="check.ad_cloud" type="boolean" label="32104" help="" parent="provider.ad_cloud">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="ad.token"/>
+								<condition operator="is" setting="ad.enabled">true</condition>
+								<condition operator="is" setting="provider.ad_cloud">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="results.sort_adcloud_first" type="boolean" label="32103" help="" parent="provider.ad_cloud">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="ad.token"/>
+								<condition operator="is" setting="ad.enabled">true</condition>
+								<condition operator="is" setting="provider.ad_cloud">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="provider.ad_cloud" type="boolean" label="32748" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="ad.token"/>
+								<condition operator="is" setting="ad.enabled">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="ad.priority" type="integer" label="32011" help="">
+					<level>0</level>
+					<default>10</default>
+					<constraints>
+						<minimum>1</minimum>
+						<step>1</step>
+						<maximum>10</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="ad.token"/>
+								<condition operator="is" setting="ad.enabled">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+			</group>
+			<!-- Furk -->
+			<group id="6" label="32069">
+				<setting id="provider.furk" type="boolean" label="32055" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="furk_login" type="string" label="32051" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="provider.furk">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>32051</heading>
+					</control>
+				</setting>
+				<setting id="furk_password" type="string" label="32052" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="provider.furk">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>32052</heading>
+					</control>
+				</setting>
+				<setting id="furk_api_key" type="string" label="32053" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="provider.furk">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>32053</heading>
+					</control>
+				</setting>
+				<setting id="furk.title_filter" type="boolean" label="32172" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="provider.furk">true</condition>
+							<or>
+								<condition operator="!is" setting="furk_login"/>
+								<condition operator="!is" setting="furk_api_key"/>
+							</or>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="check.furk" type="boolean" label="32104" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="provider.furk">true</condition>
+							<or>
+								<condition operator="!is" setting="furk_login"/>
+								<condition operator="!is" setting="furk_api_key"/>
+							</or>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="fu.priority" type="integer" label="32011" help="">
+					<level>0</level>
+					<default>6</default>
+					<constraints>
+						<minimum>1</minimum>
+						<step>1</step>
+						<maximum>10</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="provider.furk">true</condition>
+							<or>
+								<condition operator="!is" setting="furk_login"/>
+								<condition operator="!is" setting="furk_api_key"/>
+							</or>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+			</group>
+			<!-- Easynews -->
+			<group id="7" label="32070">
+				<setting id="provider.easynews" type="boolean" label="32055" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="easynews_user" type="string" label="32051" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="provider.easynews">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>32051</heading>
+					</control>
+				</setting>
+				<setting id="easynews_password" type="string" label="32052" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="provider.easynews">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>32052</heading>
+					</control>
+				</setting>
+				<setting id="easynews.use_custom_farm" type="string" label="32119" help="">
+					<level>0</level>
+					<default>False</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="provider.easynews">true</condition>
+								<condition operator="!is" setting="easynews_password"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=easynews_use_custom_farm_choice)</data>
+					</control>
+				</setting>
+				<setting id="easynews.server_name" type="string" label="32696" help="" parent="easynews.use_custom_farm">
+					<level>0</level>
+					<default>Auto:443</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="provider.easynews">true</condition>
+								<condition operator="!is" setting="easynews_password"/>
+								<condition operator="is" setting="easynews.use_custom_farm">True</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=easynews_server_choice)</data>
+					</control>
+				</setting>
+				<setting id="easynews.title_filter" type="boolean" label="32172" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="provider.easynews">true</condition>
+								<condition operator="!is" setting="easynews_password"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="easynews.filter_lang" type="boolean" label="32835" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="provider.easynews">true</condition>
+								<condition operator="!is" setting="easynews_password"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="easynews.lang_filters" type="string" label="32836" help="" parent="easynews.filter_lang">
+					<level>0</level>
+					<default>eng</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="provider.easynews">true</condition>
+								<condition operator="!is" setting="easynews_password"/>
+								<condition operator="is" setting="easynews.filter_lang">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=set_language_filter_choice&amp;filter_setting=easynews.lang_filters&amp;multi_choice=true)</data>
+					</control>
+				</setting>
+				<setting id="check.easynews" type="boolean" label="32104" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="provider.easynews">true</condition>
+								<condition operator="!is" setting="easynews_password"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="en.priority" type="integer" label="32011" help="">
+					<level>0</level>
+					<default>7</default>
+					<constraints>
+						<minimum>1</minimum>
+						<step>1</step>
+						<maximum>10</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="provider.easynews">true</condition>
+								<condition operator="!is" setting="easynews_password"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+			</group>
+			<!-- Folders 1-5 -->
+			<group id="8" label="32108">
+				<setting id="folders.amble" type="string" label="32511" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>32180</heading>
+					</control>
+				</setting>
+				<setting id="provider.folders" type="boolean" label="32055" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="folders.title_filter" type="boolean" label="32172" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="provider.folders">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="check.folders" type="boolean" label="32104" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="provider.folders">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="results.sort_folders_first" type="boolean" label="32103" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="provider.folders">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="results.folders_ignore_filters" type="boolean" label="33042" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="provider.folders">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+			</group>
+		</category>
+		<!-- Results -->
+		<category id="results" label="32139" help="">
+			<!-- Display -->
+			<group id="1" label="32140">
+				<setting id="results.timeout" type="integer" label="32141" help="">
+					<level>0</level>
+					<default>20</default>
+					<control type="edit" format="integer">
+						<heading>32141</heading>
+					</control>
+				</setting>
+				<setting id="results.list_format" type="string" label="32102" help="">
+					<level>0</level>
+					<default>List</default>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=results_format_choice)</data>
+					</control>
+				</setting>
+				<setting id="results.use_contrast" type="boolean" label="33093" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+			</group>
+			<!--General -->
+			<group id="2" label="32001">
+				<setting id="search.enable.yearcheck" type="boolean" label="33006" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="search.finish.early" type="boolean" label="32120" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="torrent.display.uncached" type="boolean" label="32160" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="results.autorescrape_with_all" type="boolean" label="33165" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="results.ignore_filter" type="integer" label="32050" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32027">0</option>
+							<option label="32192">1</option>
+							<option label="32521">2</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+			</group>
+			<!-- Sorting and Filtering -->
+			<group id="3" label="32150">
+				<setting id="results.sort_order_display" type="string" label="32151" help="">
+					<level>0</level>
+					<default>$ADDON[plugin.video.fen 32582]</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=results_sorting_choice)</data>
+					</control>
+				</setting>
+				<setting id="results.size_sort_direction" type="integer" label="32782" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32225">0</option>
+							<option label="32224">1</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="results.filter_size_method" type="integer" label="32161" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32027">0</option>
+							<option label="32125">1</option>
+							<option label="32126">2</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="results.size.auto" type="integer" label="32123" help="" parent="results.filter_size_method">
+					<level>0</level>
+					<default>20</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="results.filter_size_method">1</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="integer">
+						<heading>32123</heading>
+					</control>
+				</setting>
+				<setting id="results.size.manual" type="integer" label="32023" help="" parent="results.filter_size_method">
+					<level>0</level>
+					<default>10000</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="results.filter_size_method">2</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="integer">
+						<heading>32023</heading>
+					</control>
+				</setting>
+				<setting id="results.size.min_manual" type="integer" label="33134" help="" parent="results.filter_size_method">
+					<level>0</level>
+					<default>0</default>
+					<dependencies>
+						<dependency type="visible">
+							<or>
+								<condition operator="is" setting="results.filter_size_method">1</condition>
+								<condition operator="is" setting="results.filter_size_method">2</condition>
+							</or>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="integer">
+						<heading>33134</heading>
+					</control>
+				</setting>
+				<setting id="results.include.unknown.size" type="boolean" label="32162" help="" parent="results.filter_size_method">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<or>
+								<condition operator="is" setting="results.filter_size_method">1</condition>
+								<condition operator="is" setting="results.filter_size_method">2</condition>
+							</or>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="include_prerelease_results" type="boolean" label="32155" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="include_3d_results" type="boolean" label="32156" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="filter_hevc" type="integer" label="32177" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32188">0</option>
+							<option label="32189">1</option>
+							<option label="32190">2</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="filter_hevc.max_quality" type="string" label="32981" help="" parent="filter_hevc">
+					<level>0</level>
+					<default>4K</default>
+					<constraints>
+						<options>
+							<option>4K</option>
+							<option>1080p</option>
+							<option>720p</option>
+							<option>SD</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<or>
+								<condition operator="is" setting="filter_hevc">0</condition>
+								<condition operator="is" setting="filter_hevc">2</condition>
+							</or>
+						</dependency>
+					</dependencies>
+					<control type="list" format="string">
+						<heading>32981</heading>
+					</control>
+				</setting>
+				<setting id="filter_hevc.max_autoplay_quality" type="string" label="32988" help="" parent="filter_hevc">
+					<level>0</level>
+					<default>4K</default>
+					<constraints>
+						<options>
+							<option>4K</option>
+							<option>1080p</option>
+							<option>720p</option>
+							<option>SD</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<or>
+								<condition operator="is" setting="filter_hevc">0</condition>
+								<condition operator="is" setting="filter_hevc">2</condition>
+							</or>
+						</dependency>
+					</dependencies>
+					<control type="list" format="string">
+						<heading>32988</heading>
+					</control>
+				</setting>
+				<setting id="filter_hdr" type="integer" label="32158" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32188">0</option>
+							<option label="32189">1</option>
+							<option label="32190">2</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="filter_dv" type="integer" label="32159" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32188">0</option>
+							<option label="32189">1</option>
+							<option label="32190">2</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="filter_av1" type="integer" label="32038" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32188">0</option>
+							<option label="32189">1</option>
+							<option label="32190">2</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="filter_audio" type="string" label="32002" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=audio_filters_choice)</data>
+					</control>
+				</setting>
+			</group>
+			<!-- Results Color Highlights -->
+			<group id="4" label="32138">
+				<setting id="highlight.type" type="integer" label="32204" help="">
+					<level>0</level>
+					<default>1</default>
+					<constraints>
+						<options>
+							<option label="32240">0</option>
+							<option label="32583">1</option>
+							<option label="32241">2</option>
+							<option label="33141">3</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="hoster.identify_name" type="string" label="32127" help="" parent="highlight.type">
+					<level>0</level>
+					<default>[COLOR=FF0166FF]FF0166FF[/COLOR]</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="highlight.type">0</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=scraper_color_choice&amp;setting=hoster)</data>
+					</control>
+				</setting>
+				<setting id="torrent.identify_name" type="string" label="32128" help="" parent="highlight.type">
+					<level>0</level>
+					<default>[COLOR=FFFF00FE]FFFF00FE[/COLOR]</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="highlight.type">0</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=scraper_color_choice&amp;setting=torrent)</data>
+					</control>
+				</setting>
+				<setting id="provider.rd_colour_name" type="string" label="32206" help="" parent="highlight.type">
+					<level>0</level>
+					<default>[COLOR=FF3C9900]FF3C9900[/COLOR]</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="highlight.type">1</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=scraper_color_choice&amp;setting=rd)</data>
+					</control>
+				</setting>
+				<setting id="provider.pm_colour_name" type="string" label="32207" help="" parent="highlight.type">
+					<level>0</level>
+					<default>FFFF3300</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="highlight.type">1</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=scraper_color_choice&amp;setting=pm)</data>
+					</control>
+				</setting>
+				<setting id="provider.ad_colour_name" type="string" label="32208" help="" parent="highlight.type">
+					<level>0</level>
+					<default>[COLOR=FFE6B800]FFE6B800[/COLOR]</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="highlight.type">1</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=scraper_color_choice&amp;setting=ad)</data>
+					</control>
+				</setting>
+				<setting id="provider.furk_colour_name" type="string" label="32235" help="" parent="highlight.type">
+					<level>0</level>
+					<default>[COLOR=FFE6002E]FFE6002E[/COLOR]</default>
+					<dependencies>
+						<dependency type="visible">
+							<or>
+								<condition operator="is" setting="highlight.type">0</condition>
+								<condition operator="is" setting="highlight.type">1</condition>
+							</or>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=scraper_color_choice&amp;setting=furk)</data>
+					</control>
+				</setting>
+				<setting id="provider.easynews_colour_name" type="string" label="32236" help="" parent="highlight.type">
+					<level>0</level>
+					<default>[COLOR=FF00B3B2]FF00B3B2[/COLOR]</default>
+					<dependencies>
+						<dependency type="visible">
+							<or>
+								<condition operator="is" setting="highlight.type">0</condition>
+								<condition operator="is" setting="highlight.type">1</condition>
+							</or>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=scraper_color_choice&amp;setting=easynews)</data>
+					</control>
+				</setting>
+				<setting id="provider.debrid_cloud_colour_name" type="string" label="32244" help="" parent="highlight.type">
+					<level>0</level>
+					<default>[COLOR=FF7A01CC]FF7A01CC[/COLOR]</default>
+					<dependencies>
+						<dependency type="visible">
+							<or>
+								<condition operator="is" setting="highlight.type">0</condition>
+								<condition operator="is" setting="highlight.type">1</condition>
+							</or>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=scraper_color_choice&amp;setting=debrid_cloud)</data>
+					</control>
+				</setting>
+				<setting id="provider.folders_colour_name" type="string" label="32519" help="" parent="highlight.type">
+					<level>0</level>
+					<default>[COLOR=FFB36B00]FFB36B00[/COLOR]</default>
+					<dependencies>
+						<dependency type="visible">
+							<or>
+								<condition operator="is" setting="highlight.type">0</condition>
+								<condition operator="is" setting="highlight.type">1</condition>
+							</or>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=scraper_color_choice&amp;setting=folders)</data>
+					</control>
+				</setting>
+				<setting id="scraper_4k_highlight_name" type="string" label="32520" help="" parent="highlight.type">
+					<level>0</level>
+					<default>[COLOR=FFFF00FE]FFFF00FE[/COLOR]</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="highlight.type">2</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=scraper_quality_color_choice&amp;setting=scraper_4k_highlight)</data>
+					</control>
+				</setting>
+				<setting id="scraper_1080p_highlight_name" type="string" label="32523" help="" parent="highlight.type">
+					<level>0</level>
+					<default>[COLOR=FFE6B800]FFE6B800[/COLOR]</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="highlight.type">2</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=scraper_quality_color_choice&amp;setting=scraper_1080p_highlight)</data>
+					</control>
+				</setting>
+				<setting id="scraper_720p_highlight_name" type="string" label="32618" help="" parent="highlight.type">
+					<level>0</level>
+					<default>[COLOR=FF3C9900]FF3C9900[/COLOR]</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="highlight.type">2</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=scraper_quality_color_choice&amp;setting=scraper_720p_highlight)</data>
+					</control>
+				</setting>
+				<setting id="scraper_SD_highlight_name" type="string" label="32647" help="" parent="highlight.type">
+					<level>0</level>
+					<default>[COLOR=FF0166FF]FF0166FF[/COLOR]</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="highlight.type">2</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=scraper_quality_color_choice&amp;setting=scraper_SD_highlight)</data>
+					</control>
+				</setting>
+				<setting id="scraper_single_highlight_name" type="string" label="33159" help="" parent="highlight.type">
+					<level>0</level>
+					<default>[COLOR=FF008EB2]FF008EB2[/COLOR]</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="highlight.type">3</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=scraper_quality_color_choice&amp;setting=scraper_single_highlight)</data>
+					</control>
+				</setting>
+			</group>
+			<!-- Progress Color Highlights -->
+			<group id="5" label="32829">
+				<setting id="scraper_flag_identify_colour_name" type="string" label="32830" help="" parent="highlight.type">
+					<level>0</level>
+					<default>[COLOR=FF7C7C7C]FF7C7C7C[/COLOR]</default>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=scraper_color_choice&amp;setting=scraper_flag)</data>
+					</control>
+				</setting>
+				<setting id="scraper_result_identify_colour_name" type="string" label="33050" help="" parent="highlight.type">
+					<level>0</level>
+					<default>[COLOR=FFFFFFFF]FFFFFFFF[/COLOR]</default>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=scraper_color_choice&amp;setting=scraper_result)</data>
+					</control>
+				</setting>
+			</group>
+		</category>
+		<!-- Playback -->
+		<category id="playback" label="32174" help="">
+			<!-- Playback Movies -->
+			<group id="1" label="32028">
+				<setting id="auto_play_movie" type="boolean" label="32175" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="results_quality_movie" type="string" label="32176" help="">
+					<level>0</level>
+					<default>SD, 720p, 1080p, 4K</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="auto_play_movie">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=set_quality_choice&amp;quality_setting=results_quality_movie)</data>
+					</control>
+				</setting>
+				<setting id="autoplay_quality_movie" type="string" label="32834" help="">
+					<level>0</level>
+					<default>SD, 720p, 1080p, 4K</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="auto_play_movie">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=set_quality_choice&amp;quality_setting=autoplay_quality_movie)</data>
+					</control>
+				</setting>
+				<setting id="auto_resume_movie" type="integer" label="32181" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32013">0</option>
+							<option label="32015">1</option>
+							<option label="32191">2</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+			</group>
+			<!-- Playback Episodes -->
+			<group id="2" label="32506">
+				<setting id="auto_play_episode" type="boolean" label="32175" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="results_quality_episode" type="string" label="32176" help="">
+					<level>0</level>
+					<default>SD, 720p, 1080p, 4K</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="auto_play_episode">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=set_quality_choice&amp;quality_setting=results_quality_episode)</data>
+					</control>
+				</setting>
+				<setting id="autoplay_quality_episode" type="string" label="32834" help="">
+					<level>0</level>
+					<default>SD, 720p, 1080p, 4K</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="auto_play_episode">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=set_quality_choice&amp;quality_setting=autoplay_quality_episode)</data>
+					</control>
+				</setting>
+				<setting id="autoplay_next_episode" type="boolean" label="32178" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="auto_play_episode">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="autoplay_alert_method" type="integer" label="33088" help="" parent="autoplay_next_episode">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="33094">0</option>
+							<option label="33087">1</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="auto_play_episode">true</condition>
+								<condition operator="is" setting="autoplay_next_episode">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="autoplay_default_action" type="integer" label="33089" help="" parent="autoplay_next_episode">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32764">0</option>
+							<option label="32840">1</option>
+							<option label="32154">2</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="auto_play_episode">true</condition>
+								<condition operator="is" setting="autoplay_next_episode">true</condition>
+								<condition operator="is" setting="autoplay_alert_method">0</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="autoplay_next_window_percentage" type="integer" label="32005" help="" parent="autoplay_next_episode">
+					<level>0</level>
+					<default>95</default>
+					<constraints>
+						<minimum>75</minimum>
+						<step>1</step>
+						<maximum>99</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="auto_play_episode">true</condition>
+								<condition operator="is" setting="autoplay_next_episode">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="autoplay_use_chapters" type="boolean" label="33151" help="" parent="autoplay_next_episode">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="auto_play_episode">true</condition>
+								<condition operator="is" setting="autoplay_next_episode">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="auto_resume_episode" type="integer" label="32181" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32013">0</option>
+							<option label="32015">1</option>
+							<option label="32191">2</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+			</group>
+			<!-- Playback Utilities -->
+			<group id="3" label="32122">
+				<setting id="playback.resume_percent" type="integer" label="33073" help="">
+					<level>0</level>
+					<default>5</default>
+					<constraints>
+						<minimum>1</minimum>
+						<step>1</step>
+						<maximum>35</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="playback.watched_percent" type="integer" label="33072" help="">
+					<level>0</level>
+					<default>90</default>
+					<constraints>
+						<minimum>65</minimum>
+						<step>1</step>
+						<maximum>95</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="playback.limit_resolve" type="boolean" label="33102" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="playback.disable_content_lookup" type="boolean" label="32171" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="playback.monitor_success" type="boolean" label="33114" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="playback.pause_start" type="integer" label="32677" help="" parent="playback.monitor_success">
+					<level>0</level>
+					<default>1500</default>
+					<constraints>
+						<minimum>500</minimum>
+						<step>500</step>
+						<maximum>5000</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="playback.monitor_success">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="playback.easynews_max_retries" type="integer" label="33126" help="" parent="playback.monitor_success">
+					<level>0</level>
+					<default>1</default>
+					<constraints>
+						<minimum>0</minimum>
+						<step>1</step>
+						<maximum>5</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="playback.monitor_success">true</condition>
+								<condition operator="is" setting="provider.easynews">true</condition>
+								<condition operator="!is" setting="easynews_password"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="playback.volumecheck_enabled" type="boolean" label="33064" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="playback.volumecheck_percent" type="integer" label="33065" help="" parent="playback.volumecheck_enabled">
+					<level>0</level>
+					<default>50</default>
+					<constraints>
+						<minimum>1</minimum>
+						<step>1</step>
+						<maximum>100</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="playback.volumecheck_enabled">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+			</group>
+			<!-- Subtitles -->
+			<group id="4" label="32182">
+				<setting id="subtitles.subs_action" type="integer" label="32183" help="">
+					<level>0</level>
+					<default>2</default>
+					<constraints>
+						<options>
+							<option label="32192">0</option>
+							<option label="32193">1</option>
+							<option label="32027">2</option>
+						</options>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="subtitles.language_primary" type="string" label="32184" help="" parent="subtitles.subs_action">
+					<level>0</level>
+					<default>eng</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="subtitles.subs_action">2</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=set_language_filter_choice&amp;filter_setting=subtitles.language_primary&amp;include_none=true)</data>
+					</control>
+				</setting>
+				<setting id="subtitles.language_secondary" type="string" label="32466" help="" parent="subtitles.subs_action">
+					<level>0</level>
+					<default>None</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="subtitles.subs_action">2</condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.fen/?mode=set_language_filter_choice&amp;filter_setting=subtitles.language_secondary&amp;include_none=true)</data>
+					</control>
+				</setting>
+				<setting id="subtitles.auto_enable" type="boolean" label="32186" help="" parent="subtitles.subs_action">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="subtitles.subs_action">2</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+			</group>
+		</category>
+		<!-- Misc & Hidden -->
+		<category id="hidden" label="32513" help="">
+			<!-- Misc -->
+			<group id="1" label="32513">
+				<setting id="tools.make_fen_work" type="boolean" label="33144" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+			<!-- Hidden -->
+				<setting id="external_scraper.module" type="string" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="trakt.expires" type="string" help="">
+					<level>0</level>
+					<default>0</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="trakt.refresh" type="string" help="">
+					<level>0</level>
+					<default>0</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="trakt.token" type="string" help="">
+					<level>0</level>
+					<default>0</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="rd.client_id" type="string" label="rd client_id" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>rd client_id</heading>
+					</control>
+				</setting>
+				<setting id="rd.refresh" type="string" label="rd refresh" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>rd refresh</heading>
+					</control>
+				</setting>
+				<setting id="rd.secret" type="string" label="rd secret" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>rd secret</heading>
+					</control>
+				</setting>
+				<setting id="meta_language" type="string" label="meta_language" help="">
+					<level>0</level>
+					<default>en</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">hidden</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>meta_language</heading>
+					</control>
+				</setting>
+				<setting id="meta_mpaa_region" type="string" label="meta_language" help="">
+					<level>0</level>
+					<default>US</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">hidden</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>meta_mpaa_region</heading>
+					</control>
+				</setting>
+				<setting id="results.sort_order" type="string" help="">
+					<level>0</level>
+					<default>1</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">hidden</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="database.maintenance.due" type="string" help="">
+					<level>0</level>
+					<default>0</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">hidden</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="reuse_language_invoker" type="string" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">hidden</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="folder1.display_name" type="string" help="">
+					<level>0</level>
+					<default>Folder 1</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="folder1.movies_directory" type="string" help="">
+					<level>0</level>
+					<default>None</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="folder1.tv_shows_directory" type="string" help="">
+					<level>0</level>
+					<default>None</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="folder2.display_name" type="string" help="">
+					<level>0</level>
+					<default>Folder 2</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="folder2.movies_directory" type="string" help="">
+					<level>0</level>
+					<default>None</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="folder2.tv_shows_directory" type="string" help="">
+					<level>0</level>
+					<default>None</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="folder3.display_name" type="string" help="">
+					<level>0</level>
+					<default>Folder 3</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="folder3.movies_directory" type="string" help="">
+					<level>0</level>
+					<default>None</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="folder3.tv_shows_directory" type="string" help="">
+					<level>0</level>
+					<default>None</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="folder4.display_name" type="string" help="">
+					<level>0</level>
+					<default>Folder 4</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="folder4.movies_directory" type="string" help="">
+					<level>0</level>
+					<default>None</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="folder4.tv_shows_directory" type="string" help="">
+					<level>0</level>
+					<default>None</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="folder5.display_name" type="string" help="">
+					<level>0</level>
+					<default>Folder 5</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="folder5.movies_directory" type="string" help="">
+					<level>0</level>
+					<default>None</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="folder5.tv_shows_directory" type="string" help="">
+					<level>0</level>
+					<default>None</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="easynews.farm" type="string" help="">
+					<level>0</level>
+					<default>auto</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="easynews.port" type="string" help="">
+					<level>0</level>
+					<default>443</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="version_number" type="string" help="">
+					<level>0</level>
+					<default>0</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="dummy_setting" type="string" help="">
+					<level>0</level>
+					<default>foo</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="extras.enabled" type="string" help="">
+					<level>0</level>
+					<default>2000,2050,2051,2052,2053,2054,2055,2056,2057,2058,2059,2060,2061,2062,2063</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="main_highlight" type="string" help="">
+					<level>0</level>
+					<default>FFC0C0C0</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="provider.furk_colour" type="string" help="">
+					<level>0</level>
+					<default>FFE6002E</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="provider.easynews_colour" type="string" help="">
+					<level>0</level>
+					<default>FF00B3B2</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="provider.debrid_cloud_colour" type="string" help="">
+					<level>0</level>
+					<default>FF7A01CC</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="provider.folders_colour" type="string" help="">
+					<level>0</level>
+					<default>FFB36B00</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="hoster.identify" type="string" help="">
+					<level>0</level>
+					<default>FF0166FF</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="torrent.identify" type="string" help="">
+					<level>0</level>
+					<default>FFFF00FE</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="provider.rd_colour" type="string" help="">
+					<level>0</level>
+					<default>FF3C9900</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="provider.pm_colour" type="string" help="">
+					<level>0</level>
+					<default>FFFF3300</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="provider.ad_colour" type="string" help="">
+					<level>0</level>
+					<default>FFE6B800</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="scraper_4k_highlight" type="string" help="">
+					<level>0</level>
+					<default>FFFF00FE</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="scraper_1080p_highlight" type="string" help="">
+					<level>0</level>
+					<default>FFE6B800</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="scraper_720p_highlight" type="string" help="">
+					<level>0</level>
+					<default>FF3C9900</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="scraper_SD_highlight" type="string" help="">
+					<level>0</level>
+					<default>FF0166FF</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="scraper_single_highlight" type="string" help="">
+					<level>0</level>
+					<default>FF008EB2</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="scraper_flag_identify_colour" type="string" help="">
+					<level>0</level>
+					<default>FF7C7C7C</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="scraper_result_identify_colour" type="string" help="">
+					<level>0</level>
+					<default>FFFFFFFF</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="extras.tvshow.button10" type="string" label="tvshow.button10" help="">
+					<level>0</level>
+					<default>tvshow_browse</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>tvshow.button10</heading>
+					</control>
+				</setting>
+				<setting id="extras.tvshow.button11" type="string" label="tvshow.button11" help="">
+					<level>0</level>
+					<default>show_trailers</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>tvshow.button11</heading>
+					</control>
+				</setting>
+				<setting id="extras.tvshow.button12" type="string" label="tvshow.button12" help="">
+					<level>0</level>
+					<default>show_trakt_manager</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>tvshow.button12</heading>
+					</control>
+				</setting>
+				<setting id="extras.tvshow.button13" type="string" label="tvshow.button13" help="">
+					<level>0</level>
+					<default>show_images</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>tvshow.button13</heading>
+					</control>
+				</setting>
+				<setting id="extras.tvshow.button14" type="string" label="tvshow.button14" help="">
+					<level>0</level>
+					<default>show_extrainfo</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>tvshow.button14</heading>
+					</control>
+				</setting>
+				<setting id="extras.tvshow.button15" type="string" label="tvshow.button15" help="">
+					<level>0</level>
+					<default>show_genres</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>tvshow.button15</heading>
+					</control>
+				</setting>
+				<setting id="extras.tvshow.button16" type="string" label="tvshow.button16" help="">
+					<level>0</level>
+					<default>play_nextep</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>tvshow.button16</heading>
+					</control>
+				</setting>
+				<setting id="extras.tvshow.button17" type="string" label="tvshow.button17" help="">
+					<level>0</level>
+					<default>show_options</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>tvshow.button17</heading>
+					</control>
+				</setting>
+				<setting id="extras.movie.button10" type="string" label="movie.button10" help="">
+					<level>0</level>
+					<default>movies_play</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>movie.button10</heading>
+					</control>
+				</setting>
+				<setting id="extras.movie.button11" type="string" label="movie.button11" help="">
+					<level>0</level>
+					<default>show_trailers</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>movie.button11</heading>
+					</control>
+				</setting>
+				<setting id="extras.movie.button12" type="string" label="movie.button12" help="">
+					<level>0</level>
+					<default>show_trakt_manager</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>movie.button12</heading>
+					</control>
+				</setting>
+				<setting id="extras.movie.button13" type="string" label="movie.button13" help="">
+					<level>0</level>
+					<default>show_images</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>movie.button13</heading>
+					</control>
+				</setting>
+				<setting id="extras.movie.button14" type="string" label="movie.button14" help="">
+					<level>0</level>
+					<default>show_extrainfo</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>movie.button14</heading>
+					</control>
+				</setting>
+				<setting id="extras.movie.button15" type="string" label="movie.button15" help="">
+					<level>0</level>
+					<default>show_genres</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>movie.button15</heading>
+					</control>
+				</setting>
+				<setting id="extras.movie.button16" type="string" label="movie.button16" help="">
+					<level>0</level>
+					<default>show_director</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>movie.button16</heading>
+					</control>
+				</setting>
+				<setting id="extras.movie.button17" type="string" label="movie.button17" help="">
+					<level>0</level>
+					<default>show_options</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>movie.button17</heading>
+					</control>
+				</setting>
+				<setting id="first_use" type="string" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="view.main" type="string" help="">
+					<level>0</level>
+					<default>55</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="view.movies" type="string" help="">
+					<level>0</level>
+					<default>500</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="view.tvshows" type="string" help="">
+					<level>0</level>
+					<default>500</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="view.seasons" type="string" help="">
+					<level>0</level>
+					<default>55</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="view.episodes" type="string" help="">
+					<level>0</level>
+					<default>55</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="view.episodes_single" type="string" help="">
+					<level>0</level>
+					<default>55</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="view.premium" type="string" help="">
+					<level>0</level>
+					<default>55</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+			</group>
+		</category>
+	</section>
+</settings>

@@ -1,0 +1,6 @@
+
+NOTE: To activate 'Jump To...', you need to set 'Paginate Lists when Possible' (Settings->General->Navigation) to ON. Turning this setting OFF will make FEN load the contents of an ENTIRE list at once, meaning Jump To is not needed. 
+
+When the above setting is ON you will notice in 'personal' lists in Fen i.e. your Trakt lists or Fen Favorites etc, there will be a 'Jump To...' icon at the beginning of the list. This allows you to Jump To a certain page of content within that list. This is to help with navigating large lists without having to go page to page. You can also set the number of items to be displayed per page. Any number of items is possible in the settings.
+
+Try it out to see...

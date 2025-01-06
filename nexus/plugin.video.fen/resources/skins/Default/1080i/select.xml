@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">fen_common/white.png</texture>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" start="0" end="80" time="120" />
+            </animation>
+        </control>
+        <control type="group">
+            <left>310</left>
+            <top>100</top>
+            <animation effect="slide" end="220,0" time="0" condition="String.IsEqual(Window().Property(narrow_window),true)">Conditional</animation>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" end="100" time="200" />
+            </animation>
+            <control type="group">
+                <top>40</top>
+                <control type="group">
+                    <visible>!String.IsEqual(Window().Property(narrow_window),true)</visible>
+                    <control type="image">
+                        <left>-2</left>
+                        <top>-2</top>
+                        <width>1302</width>
+                        <height>807</height>
+                        <texture colordiffuse="FFCCCCCC" border="30">fen_common/circle.png</texture>
+                    </control>
+                    <control type="image">
+                        <width>1298</width>
+                        <height>803</height>
+                        <texture colordiffuse="FF1F2020" border="30">fen_common/circle.png</texture>
+                    </control>
+                </control>
+                <control type="group">
+                    <visible>String.IsEqual(Window().Property(narrow_window),true)</visible>
+                    <control type="image">
+                        <left>-2</left>
+                        <top>-2</top>
+                        <width>782</width>
+                        <height>807</height>
+                        <texture colordiffuse="FFCCCCCC" border="30">fen_common/circle.png</texture>
+                    </control>
+                    <control type="image">
+                        <width>778</width>
+                        <height>803</height>
+                        <texture colordiffuse="FF1F2020" border="30">fen_common/circle.png</texture>
+                    </control>
+                </control>
+                <control type="image">
+                    <left>10</left>
+                    <top>10</top>
+                    <width>45</width>
+                    <height>45</height>
+                    <align>left</align>
+                    <aligny>top</aligny>
+                    <aspectratio aligny="top">keep</aspectratio>
+                    <texture colordiffuse="FFCCCCCC">fen_common/fen.png</texture>
+                </control>
+                <control type="label">
+                    <visible>!String.IsEqual(Window().Property(narrow_window),true)</visible>
+                    <width max="1100">auto</width>
+                    <top>10</top>
+                    <left>110</left>
+                    <height>20</height>
+                    <font>font12</font> <!-- FEN_26 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <shadowcolor>FF000000</shadowcolor>
+                    <align>center</align>
+                    <label>[UPPERCASE][B]$INFO[Window().Property(heading)][/B][/UPPERCASE]</label>
+                </control>
+                <control type="label">
+                    <visible>String.IsEqual(Window().Property(narrow_window),true)</visible>
+                    <width max="580">auto</width>
+                    <top>10</top>
+                    <left>110</left>
+                    <height>20</height>
+                    <font>font12</font> <!-- FEN_26 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <shadowcolor>FF000000</shadowcolor>
+                    <align>center</align>
+                    <label>[UPPERCASE][B]$INFO[Window().Property(heading)][/B][/UPPERCASE]</label>
+                </control>
+                <control type="group">
+                    <control type="image">
+                        <left>770</left>
+                        <top>65</top>
+                        <height>720</height>
+                        <width>500</width>
+                        <aspectratio aligny="bottom">keep</aspectratio>
+                        <texture diffuse="fen_diffuse/poster_w217_h320.png">$INFO[Container(2025).ListItem.Property(icon)]</texture>
+                        <fadetime>100</fadetime>
+                        <visible>String.IsEqual(Window().Property(multi_choice),false)</visible>
+                    </control>
+                    <control type="image">
+                        <left>820</left>
+                        <top>370</top>
+                        <height>400</height>
+                        <width>400</width>
+                        <aspectratio aligny="bottom">keep</aspectratio>
+                        <texture diffuse="fen_diffuse/poster_w217_h320.png">$INFO[Container(2025).ListItem.Property(icon)]</texture>
+                        <fadetime>100</fadetime>
+                        <visible>String.IsEqual(Window().Property(multi_choice),true)</visible>
+                    </control>
+                </control>
+            </control>
+            <control type="fixedlist" id="2025">
+                <animation effect="slide" end="0,-270" time="0" condition="Integer.IsEqual(Container(2025).NumItems,1) | Integer.IsEqual(Container(2025).NumItems,2)">Conditional</animation>
+                <animation effect="slide" end="0,-180" time="0" condition="Integer.IsEqual(Container(2025).NumItems,3) | Integer.IsEqual(Container(2025).NumItems,4)">Conditional</animation>
+                <animation effect="slide" end="0,-90" time="0" condition="Integer.IsEqual(Container(2025).NumItems,5) | Integer.IsEqual(Container(2025).NumItems,6)">Conditional</animation>
+                <pagecontrol>2065</pagecontrol>
+                <left>15</left>
+                <top>105</top>
+                <width>700</width>
+                <height>720</height>
+                <onup>2025</onup>
+                <ondown>2025</ondown>
+                <onright>2065</onright>
+                <orientation>Vertical</orientation>
+                <focusposition>3</focusposition>
+                <movement>4</movement>
+                <scrolltime tween="sine">200</scrolltime>
+                <itemlayout height="90" width="700">
+                    <control type="label">
+                        <description>Only Line1</description>
+                        <visible>String.IsEqual(Window().Property(multi_line),false)</visible>
+                        <width max="632">auto</width>
+                        <left>34</left>
+                        <top>45</top>
+                        <height>5</height>
+                        <font>font12</font> <!-- FEN_26 -->
+                        <textcolor>FFCCCCCC</textcolor>
+                        <aligny>center</aligny>
+                        <label>[UPPERCASE]$INFO[ListItem.Property(line1)][/UPPERCASE]</label>
+                    </control>
+                    <control type="group">
+                        <description>Line1 and Line2</description>
+                        <visible>String.IsEqual(Window().Property(multi_line),true)</visible>
+                        <width max="632">auto</width>
+                        <left>34</left>
+                        <control type="label">
+                            <top>25</top>
+                            <height>5</height>
+                            <font>font12</font> <!-- FEN_26 -->
+                            <textcolor>FFCCCCCC</textcolor>
+                            <aligny>center</aligny>
+                            <label>[UPPERCASE][B]$INFO[ListItem.Property(line1)][/B][/UPPERCASE]</label>
+                        </control>
+                        <control type="label">
+                            <top>60</top>
+                            <height>5</height>
+                            <font>font12</font> <!-- FEN_26 -->
+                            <textcolor>FFA9A8A8</textcolor>
+                            <aligny>center</aligny>
+                            <label>[UPPERCASE][I]$INFO[ListItem.Property(line2)][/I][/UPPERCASE]</label>
+                        </control>
+                    </control>
+                    <control type="image">
+                        <top>0</top>
+                        <left>2</left>
+                        <width>30</width>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <aspectratio>keep</aspectratio>
+                        <texture colordiffuse="red">fen_common/overlay_selected.png</texture>
+                        <visible>!String.IsEmpty(ListItem.Property(check_status))</visible>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="90" width="700">
+                    <control type="image">
+                        <animation effect="fade" start="100" end="50" time="0" condition="!Control.HasFocus(2025)">Conditional</animation>
+                        <width>700</width>
+                        <texture colordiffuse="FFCCCCCC" border="30">fen_common/circle.png</texture>
+                    </control>
+                    <control type="label">
+                        <description>Only Line1</description>
+                        <visible>String.IsEqual(Window().Property(multi_line),false)</visible>
+                        <left>34</left>
+                        <top>45</top>
+                        <height>5</height>
+                        <width max="632">auto</width>
+                        <font>font12</font> <!-- FEN_26 -->
+                        <textcolor>FF1F2020</textcolor>
+                        <aligny>center</aligny>
+                        <label>[UPPERCASE]$INFO[ListItem.Property(line1)][/UPPERCASE]</label>
+                    </control>
+                    <control type="group">
+                        <description>Line1 and Line2</description>
+                        <visible>String.IsEqual(Window().Property(multi_line),true)</visible>
+                        <width max="632">auto</width>
+                        <left>34</left>
+                        <control type="label">
+                            <top>25</top>
+                            <height>5</height>
+                            <font>font12</font> <!-- FEN_26 -->
+                            <textcolor>FF1F2020</textcolor>
+                            <aligny>center</aligny>
+                            <label>[UPPERCASE][B]$INFO[ListItem.Property(line1)][/B][/UPPERCASE]</label>
+                        </control>
+                        <control type="label">
+                            <top>60</top>
+                            <height>5</height>
+                            <font>font12</font> <!-- FEN_26 -->
+                            <textcolor>FF4a4347</textcolor>
+                            <aligny>center</aligny>
+                            <label>[UPPERCASE][I]$INFO[ListItem.Property(line2)][/I][/UPPERCASE]</label>
+                        </control>
+                    </control>
+                    <control type="image">
+                        <top>0</top>
+                        <left>2</left>
+                        <width>30</width>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <aspectratio>keep</aspectratio>
+                        <texture colordiffuse="red">fen_common/overlay_selected.png</texture>
+                        <visible>!String.IsEmpty(ListItem.Property(check_status))</visible>
+                    </control>
+                </focusedlayout>
+            </control>
+            <control type="group">
+                <visible>String.IsEqual(Window().Property(multi_choice),true)</visible>
+                <top>105</top>
+                <left>850</left>
+                <control type="button" id="10">
+                    <description>True</description>
+                    <width>340</width>
+                    <height>85</height>
+                    <onup>13</onup>
+                    <ondown>11</ondown>
+                    <onleft>2025</onleft>
+                    <onright>2025</onright>
+                    <label>OK</label>
+                    <font>font12</font> <!-- FEN_26 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <focusedcolor>FF1F2020</focusedcolor>
+                    <texturefocus colordiffuse="FFCCCCCC" border="30">fen_common/circle.png</texturefocus>
+                    <texturenofocus colordiffuse="FF4a4347" border="30">fen_common/circle.png</texturenofocus>
+                    <align>center</align>
+                </control>
+                <control type="button" id="11">
+                    <description>False</description>
+                    <top>95</top>
+                    <width>340</width>
+                    <height>85</height>
+                    <onup>10</onup>
+                    <ondown>12</ondown>
+                    <onleft>2025</onleft>
+                    <onright>2025</onright>
+                    <label>Cancel</label>
+                    <font>font12</font> <!-- FEN_26 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <focusedcolor>FF1F2020</focusedcolor>
+                    <texturefocus colordiffuse="FFCCCCCC" border="30">fen_common/circle.png</texturefocus>
+                    <texturenofocus colordiffuse="FF4a4347" border="30">fen_common/circle.png</texturenofocus>
+                    <align>center</align>
+                </control>
+                <control type="button" id="12">
+                    <description>Select All</description>
+                    <top>190</top>
+                    <width>340</width>
+                    <height>85</height>
+                    <onup>11</onup>
+                    <ondown>13</ondown>
+                    <onleft>2025</onleft>
+                    <onright>2025</onright>
+                    <label>Select All</label>
+                    <font>font12</font> <!-- FEN_26 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <focusedcolor>FF1F2020</focusedcolor>
+                    <texturefocus colordiffuse="FFCCCCCC" border="30">fen_common/circle.png</texturefocus>
+                    <texturenofocus colordiffuse="FF4a4347" border="30">fen_common/circle.png</texturenofocus>
+                    <align>center</align>
+                    <visible>String.IsEqual(Window().Property(select_button),select_all)</visible>
+                </control>
+                <control type="button" id="13">
+                    <description>Deselect All</description>
+                    <top>190</top>
+                    <width>340</width>
+                    <height>85</height>
+                    <onup>12</onup>
+                    <ondown>10</ondown>
+                    <onleft>2025</onleft>
+                    <onright>2025</onright>
+                    <label>Deselect All</label>
+                    <font>font12</font> <!-- FEN_26 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <focusedcolor>FF1F2020</focusedcolor>
+                    <texturefocus colordiffuse="FFCCCCCC" border="30">fen_common/circle.png</texturefocus>
+                    <texturenofocus colordiffuse="FF4a4347" border="30">fen_common/circle.png</texturenofocus>
+                    <align>center</align>
+                    <visible>String.IsEqual(Window().Property(select_button),deselect_all)</visible>
+                </control>
+            </control>
+            <control type="scrollbar" id="2065">
+                <top>105</top>
+                <left>740</left>
+                <width>10</width>
+                <height>720</height>
+                <texturesliderbackground colordiffuse="FF1F2020">fen_common/white.png</texturesliderbackground>
+                <texturesliderbar colordiffuse="FF555556">fen_common/white.png</texturesliderbar>
+                <texturesliderbarfocus colordiffuse="FFCCCCCC">fen_common/white.png</texturesliderbarfocus>
+                <onleft>2025</onleft>
+                <onright>10</onright>
+                <showonepage>false</showonepage>
+                <orientation>vertical</orientation>
+                <visible>Control.IsVisible(2025)</visible>
+            </control>
+        </control>
+    </controls>
+</window>

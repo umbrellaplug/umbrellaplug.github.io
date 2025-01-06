@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">common/white.png</texture>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" start="0" end="80" time="120" />
+            </animation>
+        </control>
+        <control type="group">
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" end="100" time="200" />
+            </animation>
+            <left>500</left>
+            <top>325</top>
+            <control type="image">
+                <height>430</height>
+                <width>920</width>
+                <include>Texture_Dialog</include>
+            </control>
+            <control type="image">
+                <left>2</left>
+                <top>2</top>
+                <width>45</width>
+                <height>45</height>
+                <align>left</align>
+                <aligny>top</aligny>
+                <aspectratio aligny="top">keep</aspectratio>
+                <texture colordiffuse="dialog_fg_70">common/fen.png</texture>
+            </control>
+            <control type="group">
+                <left>5</left>
+                <top>5</top>
+                <control type="label">
+                    <top>-40</top>
+                    <left>0</left>
+                    <width>1035</width>
+                    <height>5</height>
+                    <font>font_tiny</font>
+                    <align>left</align>
+                    <aligny>bottom</aligny>
+                    <label>[COLOR B3CCCCCC]$ADDON[plugin.video.fen 33138][/COLOR]</label>
+                </control>
+                <control type="image" id="200">
+                    <left>640</left>
+                    <top>70</top>
+                    <width>280</width>
+                    <height>300</height>
+                    <aspectratio aligny="bottom">keep</aspectratio>
+                </control>
+                <control type="label" id="2000">
+                    <width>910</width>
+                    <top>12</top>
+                    <left>5</left>
+                    <height>20</height>
+                    <align>center</align>
+                    <font>font_mini</font>
+                    <textcolor>dialog_fg_70</textcolor>
+                </control>
+                <control type="textbox" id="2001">
+                    <top>100</top>
+                    <left>20</left>
+                    <width>600</width>
+                    <height>250</height>
+                    <font>font13</font>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <textcolor>dialog_fg_70</textcolor>
+                </control>
+                <control type="progress" id="5000">
+                    <description>Progressbar</description>
+                    <top>395</top>
+                    <left>0</left>
+                    <width>910</width>
+                    <height>25</height>
+                    <reveal>true</reveal>
+                </control>
+            </control>
+        </control>
+    </controls>
+</window>

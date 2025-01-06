@@ -1,0 +1,6 @@
+
+TMDb offers Posters, Fanart and Clearlogos for Movies and TV Shows. Often they supply more than one of each of these artworks. In Fen, you can choose which of these are used as the main artwork for each Movie/TV Show.
+
+To change any of the artwork choices, select "Set Artwork" in the "Options..." context menu item and select from the artwork choices available. These selections will survive any auto refreshing of metadata Fen might do, but can be cleared so as to again display the default artwork by manually selecting "Re-cache Movies/TV Shows Info" in the same "Options..." menu.
+
+Try it out to see...

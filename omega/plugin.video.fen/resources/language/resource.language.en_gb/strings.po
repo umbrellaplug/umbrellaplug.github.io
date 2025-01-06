@@ -1,0 +1,3966 @@
+# Kodi Media Center language file
+# Addon Name: Fen
+# Addon id: plugin.video.fen
+# Addon Provider: Tiki
+# Translator English: Tiki
+msgid ""
+msgstr ""
+
+msgctxt "#32001"
+msgid "General"
+msgstr ""
+
+msgctxt "#32002"
+msgid "Choose Audio Properties to Exclude"
+msgstr ""
+
+msgctxt "#32003"
+msgid "Databases"
+msgstr ""
+
+msgctxt "#32004"
+msgid "Based On %s"
+msgstr ""
+
+msgctxt "#32005"
+msgid "Show Alert After (%) Playback"
+msgstr ""
+
+msgctxt "#32006"
+msgid "Scrape with ALL External Scrapers"
+msgstr ""
+
+msgctxt "#32007"
+msgid "Download Pack"
+msgstr ""
+
+msgctxt "#32008"
+msgid "Show TV Show Specials When Available"
+msgstr ""
+
+msgctxt "#32009"
+msgid "Flatten TV Show Seasons"
+msgstr ""
+
+msgctxt "#32010"
+msgid "Use Season Titles When Available"
+msgstr ""
+
+msgctxt "#32011"
+msgid "Priority (Lower Number Equals Higher Priority)"
+msgstr ""
+
+msgctxt "#32012"
+msgid "Use as Default Provider (Slow)"
+msgstr ""
+
+msgctxt "#32013"
+msgid "Never"
+msgstr ""
+
+msgctxt "#32014"
+msgid "Rescrape & Select Source"
+msgstr ""
+
+msgctxt "#32015"
+msgid "Always"
+msgstr ""
+
+msgctxt "#32016"
+msgid "Add to Cloud"
+msgstr ""
+
+msgctxt "#32017"
+msgid "Auto Start FEN when Kodi Starts"
+msgstr "FEN Automatisch Starten Als Kodi Opstart"
+
+msgctxt "#32018"
+msgid "Set"
+msgstr ""
+
+msgctxt "#32019"
+msgid "Paginate Lists When Available"
+msgstr ""
+
+msgctxt "#32020"
+msgid "Include Widget Items..."
+msgstr ""
+
+msgctxt "#32021"
+msgid "No results. Access Filtered Results?"
+msgstr ""
+
+msgctxt "#32022"
+msgid "Page"
+msgstr ""
+
+msgctxt "#32023"
+msgid "Maximum Size (MB)"
+msgstr ""
+
+msgctxt "#32024"
+msgid "Disable"
+msgstr ""
+
+msgctxt "#32025"
+msgid "Ignore Articles When Sorting Lists"
+msgstr ""
+
+msgctxt "#32026"
+msgid "Open Extras When Selecting..."
+msgstr ""
+
+msgctxt "#32027"
+msgid "Off"
+msgstr ""
+
+msgctxt "#32028"
+msgid "Movies"
+msgstr ""
+
+msgctxt "#32029"
+msgid "TV Shows"
+msgstr ""
+
+msgctxt "#32030"
+msgid "Both"
+msgstr ""
+
+msgctxt "#32031"
+msgid "Choose Files to Download"
+msgstr ""
+
+msgctxt "#32032"
+msgid "If Only One Season"
+msgstr ""
+
+msgctxt "#32033"
+msgid "Always"
+msgstr ""
+
+msgctxt "#32034"
+msgid "Watched Indicators"
+msgstr ""
+
+msgctxt "#32035"
+msgid "Watched Status Provider"
+msgstr ""
+
+msgctxt "#32036"
+msgid "Fen"
+msgstr ""
+
+msgctxt "#32037"
+msgid "Trakt"
+msgstr ""
+
+msgctxt "#32038"
+msgid "AV1 Files Filter"
+msgstr ""
+
+msgctxt "#32039"
+msgid "Authorize Trakt for More options"
+msgstr ""
+
+msgctxt "#32040"
+msgid "Percentage Played"
+msgstr ""
+
+msgctxt "#32041"
+msgid "Time Remaining"
+msgstr ""
+
+msgctxt "#32042"
+msgid "Set Watched in Kodi Library when Watched in Fen"
+msgstr ""
+
+msgctxt "#32043"
+msgid "Most Watched"
+msgstr ""
+
+msgctxt "#32044"
+msgid "Continue Transfer in Background?"
+msgstr ""
+
+msgctxt "#32045"
+msgid "UTC (+/-)"
+msgstr ""
+
+msgctxt "#32046"
+msgid "Enable Content for Extras Lists"
+msgstr ""
+
+msgctxt "#32047"
+msgid "Enter Color Value"
+msgstr ""
+
+msgctxt "#32048"
+msgid "Attempt to Reload Widgets After Resync"
+msgstr ""
+
+msgctxt "#32049"
+msgid "Press Context Menu to Download Image..."
+msgstr ""
+
+msgctxt "#32050"
+msgid "Ignore All Filters When No Results Available"
+msgstr ""
+
+msgctxt "#32051"
+msgid "Login"
+msgstr ""
+
+msgctxt "#32052"
+msgid "Password"
+msgstr ""
+
+msgctxt "#32053"
+msgid "API Key (optional)"
+msgstr ""
+
+msgctxt "#32054"
+msgid "Real Debrid"
+msgstr ""
+
+msgctxt "#32055"
+msgid "Enable"
+msgstr ""
+
+msgctxt "#32056"
+msgid "Username"
+msgstr ""
+
+msgctxt "#32057"
+msgid "Authorize"
+msgstr ""
+
+msgctxt "#32058"
+msgid "Re-Authorize"
+msgstr ""
+
+msgctxt "#32059"
+msgid "Revoke Authorization"
+msgstr ""
+
+msgctxt "#32060"
+msgid "Add Resolved Torrents to Cloud"
+msgstr ""
+
+msgctxt "#32061"
+msgid "Premiumize"
+msgstr ""
+
+msgctxt "#32062"
+msgid "Customer ID"
+msgstr ""
+
+msgctxt "#32063"
+msgid "All Debrid"
+msgstr ""
+
+msgctxt "#32064"
+msgid "IMDb"
+msgstr ""
+
+msgctxt "#32065"
+msgid "User"
+msgstr ""
+
+msgctxt "#32066"
+msgid "Sort Type"
+msgstr ""
+
+msgctxt "#32067"
+msgid "Sort Order"
+msgstr ""
+
+msgctxt "#32068"
+msgid "TMDb"
+msgstr ""
+
+msgctxt "#32069"
+msgid "Furk"
+msgstr ""
+
+msgctxt "#32070"
+msgid "Easynews"
+msgstr ""
+
+msgctxt "#32071"
+msgid "Autoplay Disabled"
+msgstr ""
+
+msgctxt "#32072"
+msgid "Content and Sorting"
+msgstr ""
+
+msgctxt "#32073"
+msgid "Include Unaired Episodes When Available Within 7 Days"
+msgstr ""
+
+msgctxt "#32074"
+msgid "Include Trakt Watchlist/Fen Favorites"
+msgstr ""
+
+msgctxt "#32075"
+msgid "Later"
+msgstr ""
+
+msgctxt "#32076"
+msgid "Include Airdate in Title"
+msgstr ""
+
+msgctxt "#32077"
+msgid "Single Episode Lists Airdate Format"
+msgstr ""
+
+msgctxt "#32078"
+msgid "Show Packs Only"
+msgstr ""
+
+msgctxt "#32079"
+msgid "External Scrapers"
+msgstr ""
+
+msgctxt "#32080"
+msgid "Unwatched Color"
+msgstr ""
+
+msgctxt "#32081"
+msgid "Trakt Calendar"
+msgstr ""
+
+msgctxt "#32082"
+msgid "Already In List"
+msgstr ""
+
+msgctxt "#32083"
+msgid "Show Previous Days"
+msgstr ""
+
+msgctxt "#32084"
+msgid "Show Future Days"
+msgstr ""
+
+msgctxt "#32085"
+msgid "Widgets"
+msgstr ""
+
+msgctxt "#32086"
+msgid "Max. Items"
+msgstr ""
+
+msgctxt "#32087"
+msgid "Trakt Cache"
+msgstr ""
+
+msgctxt "#32088"
+msgid "Uncached"
+msgstr ""
+
+msgctxt "#32089"
+msgid "Show"
+msgstr ""
+
+msgctxt "#32090"
+msgid "On"
+msgstr ""
+
+msgctxt "#32091"
+msgid "Full"
+msgstr ""
+
+msgctxt "#32092"
+msgid "Keywords"
+msgstr ""
+
+msgctxt "#32093"
+msgid "Sorting - Generic Movie Lists"
+msgstr ""
+
+msgctxt "#32094"
+msgid "Details"
+msgstr ""
+
+msgctxt "#32095"
+msgid "Highlight Color"
+msgstr ""
+
+msgctxt "#32096"
+msgid "Internal Scrapers"
+msgstr ""
+
+msgctxt "#32097"
+msgid "PM Cloud"
+msgstr ""
+
+msgctxt "#32098"
+msgid "RD Cloud"
+msgstr ""
+
+msgctxt "#32099"
+msgid "AD Cloud"
+msgstr ""
+
+msgctxt "#32100"
+msgid "Site"
+msgstr ""
+
+msgctxt "#32101"
+msgid "UTC Time Offset"
+msgstr ""
+
+msgctxt "#32102"
+msgid "Results Display Format"
+msgstr ""
+
+msgctxt "#32103"
+msgid "Show Results at Top"
+msgstr ""
+
+msgctxt "#32104"
+msgid "Check Before Full Search"
+msgstr ""
+
+msgctxt "#32105"
+msgid "Quality Limit"
+msgstr ""
+
+msgctxt "#32106"
+msgid "Hash"
+msgstr "Hash"
+
+msgctxt "#32107"
+msgid "Downloads"
+msgstr ""
+
+msgctxt "#32108"
+msgid "Folders 1-5"
+msgstr ""
+
+msgctxt "#32109"
+msgid "Choose Folder Scraper"
+msgstr ""
+
+msgctxt "#32110"
+msgid "Folder 1"
+msgstr ""
+
+msgctxt "#32111"
+msgid "Folder 2"
+msgstr ""
+
+msgctxt "#32112"
+msgid "Folder 3"
+msgstr ""
+
+msgctxt "#32113"
+msgid "Folder 4"
+msgstr ""
+
+msgctxt "#32114"
+msgid "Folder 5"
+msgstr ""
+
+msgctxt "#32115"
+msgid "Display Name"
+msgstr ""
+
+msgctxt "#32116"
+msgid "Movies Directory"
+msgstr ""
+
+msgctxt "#32117"
+msgid "TV Shows Directory"
+msgstr ""
+
+msgctxt "#32118"
+msgid "External Scrapers"
+msgstr ""
+
+msgctxt "#32119"
+msgid "Use Custom Server Location Within Fen"
+msgstr ""
+
+msgctxt "#32120"
+msgid "Stop Search Early if Most Sources Finished"
+msgstr ""
+
+msgctxt "#32121"
+msgid "Playback Failed"
+msgstr ""
+
+msgctxt "#32122"
+msgid "Playback Utilities"
+msgstr ""
+
+msgctxt "#32123"
+msgid "Internet Speed (Mbit/s)"
+msgstr ""
+
+msgctxt "#32124"
+msgid "Custom Windows Highlight Color"
+msgstr ""
+
+msgctxt "#32125"
+msgid "Use Line Speed"
+msgstr ""
+
+msgctxt "#32126"
+msgid "Use Size"
+msgstr ""
+
+msgctxt "#32127"
+msgid "Hosters Color"
+msgstr ""
+
+msgctxt "#32128"
+msgid "Torrents Color"
+msgstr ""
+
+msgctxt "#32129"
+msgid "All"
+msgstr ""
+
+msgctxt "#32130"
+msgid "4K"
+msgstr ""
+
+msgctxt "#32131"
+msgid "1080P"
+msgstr ""
+
+msgctxt "#32132"
+msgid "720P"
+msgstr ""
+
+msgctxt "#32133"
+msgid "SD"
+msgstr ""
+
+msgctxt "#32134"
+msgid "Multi File Pack Download Started..."
+msgstr ""
+
+msgctxt "#32135"
+msgid "Scrape with Custom Values"
+msgstr ""
+
+msgctxt "#32136"
+msgid "Press Context Menu for Playback Options..."
+msgstr ""
+
+msgctxt "#32137"
+msgid "Rename"
+msgstr ""
+
+msgctxt "#32138"
+msgid "Results Color Highlights"
+msgstr ""
+
+msgctxt "#32139"
+msgid "Results"
+msgstr ""
+
+msgctxt "#32140"
+msgid "Display"
+msgstr ""
+
+msgctxt "#32141"
+msgid "Scraper Timeout"
+msgstr ""
+
+msgctxt "#32142"
+msgid "Include Adult Content"
+msgstr ""
+
+msgctxt "#32143"
+msgid "Search Dialog Heading"
+msgstr ""
+
+msgctxt "#32144"
+msgid "Choose Notifications"
+msgstr ""
+
+msgctxt "#32145"
+msgid "Metadata Language"
+msgstr ""
+
+msgctxt "#32146"
+msgid "Metadata"
+msgstr ""
+
+msgctxt "#32147"
+msgid "Extra Art (Powered by Fanart.tv)"
+msgstr ""
+
+msgctxt "#32148"
+msgid "Enable Extra Art"
+msgstr ""
+
+msgctxt "#32149"
+msgid "TMDb Image Resolution"
+msgstr ""
+
+msgctxt "#32150"
+msgid "Sorting and Filtering"
+msgstr ""
+
+msgctxt "#32151"
+msgid "Results Sorting"
+msgstr ""
+
+msgctxt "#32152"
+msgid "Filter Results"
+msgstr ""
+
+msgctxt "#32153"
+msgid "Value must begin with [B]FF[/B], be [B]8[/B] characters in length and be [B]Alphanumeric[/B].[CR][CR]Please try again.."
+msgstr ""
+
+msgctxt "#32154"
+msgid "Pause & Wait"
+msgstr ""
+
+msgctxt "#32155"
+msgid "Include Pre-Release Results (CAM/SCR/TELE)"
+msgstr ""
+
+msgctxt "#32156"
+msgid "Include 3D Results"
+msgstr ""
+
+msgctxt "#32157"
+msgid "Assign Addon Background Image..."
+msgstr ""
+
+msgctxt "#32158"
+msgid "HDR Files Filter"
+msgstr ""
+
+msgctxt "#32159"
+msgid "Dolby Vision Files Filter"
+msgstr ""
+
+msgctxt "#32160"
+msgid "Display Uncached Torrents"
+msgstr ""
+
+msgctxt "#32161"
+msgid "Filter Results by Size"
+msgstr ""
+
+msgctxt "#32162"
+msgid "Include Results With Unknown Size"
+msgstr ""
+
+msgctxt "#32163"
+msgid "Low"
+msgstr ""
+
+msgctxt "#32164"
+msgid "Medium"
+msgstr ""
+
+msgctxt "#32165"
+msgid "High"
+msgstr ""
+
+msgctxt "#32166"
+msgid "Original"
+msgstr ""
+
+msgctxt "#32167"
+msgid "Within Addon Only"
+msgstr ""
+
+msgctxt "#32168"
+msgid "Widgets Only"
+msgstr ""
+
+msgctxt "#32169"
+msgid "Filter by [B]Info[/B]..."
+msgstr ""
+
+msgctxt "#32170"
+msgid "Resolution"
+msgstr ""
+
+msgctxt "#32171"
+msgid "Disable Content Lookup Before Playback"
+msgstr ""
+
+msgctxt "#32172"
+msgid "Filter Results by Name"
+msgstr ""
+
+msgctxt "#32173"
+msgid "Fanart.tv"
+msgstr ""
+
+msgctxt "#32174"
+msgid "Playback"
+msgstr ""
+
+msgctxt "#32175"
+msgid "Auto Play"
+msgstr ""
+
+msgctxt "#32176"
+msgid "Limit Quality"
+msgstr ""
+
+msgctxt "#32177"
+msgid "HEVC Files Filter"
+msgstr ""
+
+msgctxt "#32178"
+msgid "Autoplay Next Episode"
+msgstr ""
+
+msgctxt "#32179"
+msgid "Check for Corrupt Databases"
+msgstr ""
+
+msgctxt "#32180"
+msgid "Become a VIP member at fanart.tv for many benefits"
+msgstr ""
+
+msgctxt "#32181"
+msgid "Automatically Resume Playback"
+msgstr ""
+
+msgctxt "#32182"
+msgid "Subtitles (Powered by opensubtitles.org)"
+msgstr ""
+
+msgctxt "#32183"
+msgid "Download Subtitles Action"
+msgstr ""
+
+msgctxt "#32184"
+msgid "Primary Language"
+msgstr ""
+
+msgctxt "#32185"
+msgid "Scrape with DEFAULT External Scrapers"
+msgstr ""
+
+msgctxt "#32186"
+msgid "Force Enable Local Subs"
+msgstr ""
+
+msgctxt "#32187"
+msgid "Playback Options"
+msgstr ""
+
+msgctxt "#32188"
+msgid "Include"
+msgstr ""
+
+msgctxt "#32189"
+msgid "Exclude"
+msgstr ""
+
+msgctxt "#32190"
+msgid "Prefer (Autoplay)"
+msgstr ""
+
+msgctxt "#32191"
+msgid "Autoplay Only"
+msgstr ""
+
+msgctxt "#32192"
+msgid "Auto"
+msgstr ""
+
+msgctxt "#32193"
+msgid "Select"
+msgstr ""
+
+msgctxt "#32194"
+msgid "Single Episode Lists Title Format"
+msgstr ""
+
+msgctxt "#32195"
+msgid "Directories"
+msgstr ""
+
+msgctxt "#32196"
+msgid "Updates"
+msgstr ""
+
+msgctxt "#32197"
+msgid "Favorites Manager"
+msgstr ""
+
+msgctxt "#32198"
+msgid "Trakt Lists Manager"
+msgstr ""
+
+msgctxt "#32199"
+msgid "Trakt List"
+msgstr ""
+
+msgctxt "#32200"
+msgid "Recently Watched Episodes"
+msgstr ""
+
+msgctxt "#32201"
+msgid "TITLE: SxE - EPISODE"
+msgstr ""
+
+msgctxt "#32202"
+msgid "SxE - EPISODE"
+msgstr ""
+
+msgctxt "#32203"
+msgid "EPISODE"
+msgstr ""
+
+msgctxt "#32204"
+msgid "Highlight Results Based On"
+msgstr ""
+
+msgctxt "#32205"
+msgid "Trakt Lists"
+msgstr ""
+
+msgctxt "#32206"
+msgid "Real Debrid Color"
+msgstr ""
+
+msgctxt "#32207"
+msgid "Premiumize Color"
+msgstr ""
+
+msgctxt "#32208"
+msgid "All Debrid Color"
+msgstr ""
+
+msgctxt "#32209"
+msgid "Check Accounts Status on Startup"
+msgstr ""
+
+msgctxt "#32210"
+msgid "Premium Files Directory"
+msgstr ""
+
+msgctxt "#32211"
+msgid "Notifications"
+msgstr ""
+
+msgctxt "#32212"
+msgid "Scrape with an Alias"
+msgstr ""
+
+msgctxt "#32213"
+msgid "[B]Following Databases Rebuilt:[/B]"
+msgstr ""
+
+msgctxt "#32214"
+msgid "Old"
+msgstr ""
+
+msgctxt "#32215"
+msgid "List Default"
+msgstr ""
+
+msgctxt "#32216"
+msgid "Alphabetical"
+msgstr ""
+
+msgctxt "#32217"
+msgid "IMDb Rating"
+msgstr ""
+
+msgctxt "#32218"
+msgid "Popularity"
+msgstr ""
+
+msgctxt "#32219"
+msgid "Your Rating"
+msgstr ""
+
+msgctxt "#32220"
+msgid "Number Of Ratings"
+msgstr ""
+
+msgctxt "#32221"
+msgid "Release Date"
+msgstr ""
+
+msgctxt "#32222"
+msgid "Runtime"
+msgstr ""
+
+msgctxt "#32223"
+msgid "Date Added"
+msgstr ""
+
+msgctxt "#32224"
+msgid "Ascending"
+msgstr ""
+
+msgctxt "#32225"
+msgid "Descending"
+msgstr ""
+
+msgctxt "#32226"
+msgid "Recently Watched"
+msgstr ""
+
+msgctxt "#32227"
+msgid "Airdate"
+msgstr ""
+
+msgctxt "#32228"
+msgid "Title"
+msgstr ""
+
+msgctxt "#32229"
+msgid "Day-Month-Year"
+msgstr ""
+
+msgctxt "#32230"
+msgid "Year-Month-Day"
+msgstr ""
+
+msgctxt "#32231"
+msgid "Month-Day-Year"
+msgstr ""
+
+msgctxt "#32232"
+msgid "One Hour"
+msgstr ""
+
+msgctxt "#32233"
+msgid "One Day"
+msgstr ""
+
+msgctxt "#32234"
+msgid "One Week"
+msgstr ""
+
+msgctxt "#32235"
+msgid "Furk Color"
+msgstr ""
+
+msgctxt "#32236"
+msgid "Easynews Color"
+msgstr ""
+
+msgctxt "#32237"
+msgid "No Corrupt or Missing Databases"
+msgstr ""
+
+msgctxt "#32238"
+msgid "Scraper Module"
+msgstr ""
+
+msgctxt "#32239"
+msgid "Media Title"
+msgstr ""
+
+msgctxt "#32240"
+msgid "Scraper Type"
+msgstr ""
+
+msgctxt "#32241"
+msgid "Quality"
+msgstr ""
+
+msgctxt "#32242"
+msgid "Hourly Intervals"
+msgstr ""
+
+msgctxt "#32243"
+msgid "Daily Time"
+msgstr ""
+
+msgctxt "#32244"
+msgid "Debrid Cloud Color"
+msgstr ""
+
+msgctxt "#32245"
+msgid "[B]CHOOSE SETTINGS GROUP...[/B]"
+msgstr ""
+
+msgctxt "#32246"
+msgid "Subtitles"
+msgstr ""
+
+msgctxt "#32247"
+msgid "Settings"
+msgstr ""
+
+msgctxt "#32450"
+msgid "Search"
+msgstr ""
+
+msgctxt "#32451"
+msgid "Discover"
+msgstr ""
+
+msgctxt "#32452"
+msgid "Popular People"
+msgstr ""
+
+msgctxt "#32453"
+msgid "Favorites"
+msgstr ""
+
+msgctxt "#32454"
+msgid "My Lists"
+msgstr ""
+
+msgctxt "#32455"
+msgid "My Services"
+msgstr ""
+
+msgctxt "#32456"
+msgid "Tools"
+msgstr ""
+
+msgctxt "#32457"
+msgid "Root"
+msgstr ""
+
+msgctxt "#32458"
+msgid "Trending"
+msgstr ""
+
+msgctxt "#32459"
+msgid "Popular"
+msgstr ""
+
+msgctxt "#32460"
+msgid "Premieres"
+msgstr ""
+
+msgctxt "#32461"
+msgid "Latest Releases"
+msgstr ""
+
+msgctxt "#32462"
+msgid "Top 10 Box Office"
+msgstr ""
+
+msgctxt "#32463"
+msgid "Blockbusters"
+msgstr ""
+
+msgctxt "#32464"
+msgid "In Theaters"
+msgstr ""
+
+msgctxt "#32465"
+msgid "Hide Watched Items in Widgets"
+msgstr ""
+
+msgctxt "#32466"
+msgid "Secondary Language"
+msgstr ""
+
+msgctxt "#32467"
+msgid "Anticipated"
+msgstr ""
+
+msgctxt "#32468"
+msgid "Oscar Winners"
+msgstr ""
+
+msgctxt "#32469"
+msgid "Up Coming"
+msgstr ""
+
+msgctxt "#32470"
+msgid "Genres"
+msgstr ""
+
+msgctxt "#32471"
+msgid "Languages"
+msgstr ""
+
+msgctxt "#32472"
+msgid "Years"
+msgstr ""
+
+msgctxt "#32473"
+msgid "Certifications"
+msgstr ""
+
+msgctxt "#32474"
+msgid "Because You Watched..."
+msgstr ""
+
+msgctxt "#32475"
+msgid "Watched"
+msgstr ""
+
+msgctxt "#32476"
+msgid "In Progress"
+msgstr ""
+
+msgctxt "#32477"
+msgid "Search"
+msgstr ""
+
+msgctxt "#32478"
+msgid "Airing Today"
+msgstr ""
+
+msgctxt "#32479"
+msgid "On the Air"
+msgstr ""
+
+msgctxt "#32480"
+msgid "Networks"
+msgstr ""
+
+msgctxt "#32481"
+msgid "In Progress TV Shows"
+msgstr ""
+
+msgctxt "#32482"
+msgid "In Progress Episodes"
+msgstr ""
+
+msgctxt "#32483"
+msgid "Next Episodes"
+msgstr ""
+
+msgctxt "#32484"
+msgid "[B]%s: [/B]%s"
+msgstr ""
+
+msgctxt "#32485"
+msgid "Premium Files"
+msgstr ""
+
+msgctxt "#32486"
+msgid "History"
+msgstr ""
+
+msgctxt "#32487"
+msgid "Help"
+msgstr ""
+
+msgctxt "#32488"
+msgid "Premium"
+msgstr ""
+
+msgctxt "#32489"
+msgid "Active"
+msgstr ""
+
+msgctxt "#32490"
+msgid "Failed"
+msgstr ""
+
+msgctxt "#32491"
+msgid "Video"
+msgstr ""
+
+msgctxt "#32492"
+msgid "Navigation"
+msgstr ""
+
+msgctxt "#32493"
+msgid "Files"
+msgstr ""
+
+msgctxt "#32494"
+msgid "Account Info"
+msgstr ""
+
+msgctxt "#32495"
+msgid "(Re)Authorize"
+msgstr ""
+
+msgctxt "#32496"
+msgid "Cloud Storage"
+msgstr ""
+
+msgctxt "#32497"
+msgid "Clear %s Cache"
+msgstr ""
+
+msgctxt "#32498"
+msgid "Recently Added"
+msgstr ""
+
+msgctxt "#32499"
+msgid "Collection"
+msgstr ""
+
+msgctxt "#32500"
+msgid "Watchlist"
+msgstr ""
+
+msgctxt "#32501"
+msgid "Lists"
+msgstr ""
+
+msgctxt "#32502"
+msgid "Liked Lists"
+msgstr ""
+
+msgctxt "#32503"
+msgid "Recommended"
+msgstr ""
+
+msgctxt "#32504"
+msgid "Random"
+msgstr ""
+
+msgctxt "#32505"
+msgid "Recently Aired"
+msgstr ""
+
+msgctxt "#32506"
+msgid "Episodes"
+msgstr ""
+
+msgctxt "#32507"
+msgid "People"
+msgstr ""
+
+msgctxt "#32508"
+msgid "Changelog"
+msgstr ""
+
+msgctxt "#32509"
+msgid "Log Viewer"
+msgstr ""
+
+msgctxt "#32510"
+msgid "Set Views"
+msgstr ""
+
+msgctxt "#32511"
+msgid "[I]Manage Folders at Tools->Accounts Manager[/I]"
+msgstr ""
+
+msgctxt "#32512"
+msgid "Clear Databases"
+msgstr ""
+
+msgctxt "#32513"
+msgid "Misc"
+msgstr ""
+
+msgctxt "#32514"
+msgid "Shortcut Folders Manager"
+msgstr ""
+
+msgctxt "#32515"
+msgid "Sources Folders"
+msgstr ""
+
+msgctxt "#32516"
+msgid "Options..."
+msgstr ""
+
+msgctxt "#32517"
+msgid "Authorize Debrid Services"
+msgstr ""
+
+msgctxt "#32518"
+msgid "Tips for Fen Use"
+msgstr ""
+
+msgctxt "#32519"
+msgid "Folders 1-5 Color"
+msgstr ""
+
+msgctxt "#32520"
+msgid "4K Results Color"
+msgstr ""
+
+msgctxt "#32521"
+msgid "Prompt"
+msgstr ""
+
+msgctxt "#32522"
+msgid "Fen First Use"
+msgstr ""
+
+msgctxt "#32523"
+msgid "1080P Results Color"
+msgstr ""
+
+msgctxt "#32524"
+msgid "Cache"
+msgstr ""
+
+msgctxt "#32525"
+msgid "Include Unaired Media in Trakt Watchlists"
+msgstr ""
+
+msgctxt "#32526"
+msgid "Clean"
+msgstr ""
+
+msgctxt "#32527"
+msgid "Meta"
+msgstr ""
+
+msgctxt "#32528"
+msgid "Bookmark Page Progress"
+msgstr ""
+
+msgctxt "#32529"
+msgid "[B]%s[/B] has settings already.[CR]What do you want to do?"
+msgstr ""
+
+msgctxt "#32530"
+msgid "Change SOME Info"
+msgstr ""
+
+msgctxt "#32531"
+msgid "Clear ALL Info"
+msgstr ""
+
+msgctxt "#32532"
+msgid "[B]%s[/B] info cleared"
+msgstr ""
+
+msgctxt "#32533"
+msgid "Scrapers"
+msgstr ""
+
+msgctxt "#32534"
+msgid "Debrid"
+msgstr ""
+
+msgctxt "#32535"
+msgid "Success.[CR][B]%s[/B] set as External Scraper"
+msgstr ""
+
+msgctxt "#32536"
+msgid "The [B]%s[/B] Module is not compatible.[CR]Please choose a different Module..."
+msgstr ""
+
+msgctxt "#32537"
+msgid "Season"
+msgstr ""
+
+msgctxt "#32538"
+msgid "Kodi"
+msgstr ""
+
+msgctxt "#32539"
+msgid "Enable Kodi Menu Caching"
+msgstr ""
+
+msgctxt "#32540"
+msgid "Choose Random Play Type..."
+msgstr ""
+
+msgctxt "#32541"
+msgid "Single Random Play"
+msgstr ""
+
+msgctxt "#32542"
+msgid "Continual Random Play"
+msgstr ""
+
+msgctxt "#32543"
+msgid "Year"
+msgstr ""
+
+msgctxt "#32544"
+msgid "Browse %s Season %s"
+msgstr ""
+
+msgctxt "#32545"
+msgid "Time"
+msgstr ""
+
+msgctxt "#32546"
+msgid "Tips"
+msgstr ""
+
+msgctxt "#32547"
+msgid "Set view and then click here"
+msgstr ""
+
+msgctxt "#32548"
+msgid "Action"
+msgstr ""
+
+msgctxt "#32549"
+msgid "Adventure"
+msgstr ""
+
+msgctxt "#32550"
+msgid "Animation"
+msgstr ""
+
+msgctxt "#32551"
+msgid "Comedy"
+msgstr ""
+
+msgctxt "#32552"
+msgid "Crime"
+msgstr ""
+
+msgctxt "#32553"
+msgid "Documentary"
+msgstr ""
+
+msgctxt "#32554"
+msgid "Drama"
+msgstr ""
+
+msgctxt "#32555"
+msgid "Family"
+msgstr ""
+
+msgctxt "#32556"
+msgid "Kids"
+msgstr ""
+
+msgctxt "#32557"
+msgid "Mystery"
+msgstr ""
+
+msgctxt "#32558"
+msgid "Fantasy"
+msgstr ""
+
+msgctxt "#32559"
+msgid "History"
+msgstr ""
+
+msgctxt "#32560"
+msgid "Horror"
+msgstr ""
+
+msgctxt "#32561"
+msgid "Music"
+msgstr ""
+
+msgctxt "#32562"
+msgid "Romance"
+msgstr ""
+
+msgctxt "#32563"
+msgid "Science Fiction"
+msgstr ""
+
+msgctxt "#32564"
+msgid "TV Movie"
+msgstr ""
+
+msgctxt "#32565"
+msgid "Thriller"
+msgstr ""
+
+msgctxt "#32566"
+msgid "War"
+msgstr ""
+
+msgctxt "#32567"
+msgid "Western"
+msgstr ""
+
+msgctxt "#32568"
+msgid "News"
+msgstr ""
+
+msgctxt "#32569"
+msgid "Reality"
+msgstr ""
+
+msgctxt "#32570"
+msgid "Soap"
+msgstr ""
+
+msgctxt "#32571"
+msgid "Talk"
+msgstr ""
+
+msgctxt "#32572"
+msgid "War & Politics"
+msgstr ""
+
+msgctxt "#32573"
+msgid "Auto [B]Page %d[/B] Selected"
+msgstr ""
+
+msgctxt "#32574"
+msgid "Error"
+msgstr ""
+
+msgctxt "#32575"
+msgid "None Found"
+msgstr ""
+
+msgctxt "#32576"
+msgid "Success"
+msgstr ""
+
+msgctxt "#32577"
+msgid "[B]Please Wait..[/B]"
+msgstr ""
+
+msgctxt "#32578"
+msgid "OMDb"
+msgstr ""
+
+msgctxt "#32579"
+msgid "API Key"
+msgstr ""
+
+msgctxt "#32580"
+msgid "Are you sure?"
+msgstr ""
+
+msgctxt "#32581"
+msgid "Updates Available"
+msgstr ""
+
+msgctxt "#32582"
+msgid "Quality, Provider, Size"
+msgstr ""
+
+msgctxt "#32583"
+msgid "Provider"
+msgstr ""
+
+msgctxt "#32584"
+msgid "Size"
+msgstr ""
+
+msgctxt "#32585"
+msgid ""Jump To..." Navigation"
+msgstr ""
+
+msgctxt "#32586"
+msgid "Cloud"
+msgstr ""
+
+msgctxt "#32587"
+msgid "Choose %s Scraper Position"
+msgstr ""
+
+msgctxt "#32588"
+msgid "Place [B]%s[/B] 1st"
+msgstr ""
+
+msgctxt "#32589"
+msgid "Place [B]%s[/B] 2nd"
+msgstr ""
+
+msgctxt "#32590"
+msgid "Place [B]%s[/B] 3rd"
+msgstr ""
+
+msgctxt "#32591"
+msgid "Place [B]%s[/B] 4th"
+msgstr ""
+
+msgctxt "#32592"
+msgid "Similar"
+msgstr ""
+
+msgctxt "#32593"
+msgid "Recommended"
+msgstr ""
+
+msgctxt "#32594"
+msgid "Hours"
+msgstr ""
+
+msgctxt "#32595"
+msgid "24 Hours"
+msgstr ""
+
+msgctxt "#32596"
+msgid "Manage In Progress Shows"
+msgstr ""
+
+msgctxt "#32597"
+msgid "Manage Unwatched TV Shows"
+msgstr ""
+
+msgctxt "#32598"
+msgid "Currently"
+msgstr ""
+
+msgctxt "#32599"
+msgid "TV Shows Progress Manager"
+msgstr ""
+
+msgctxt "#32600"
+msgid "Basic"
+msgstr ""
+
+msgctxt "#32601"
+msgid "Advanced"
+msgstr ""
+
+msgctxt "#32602"
+msgid "Add To"
+msgstr ""
+
+msgctxt "#32603"
+msgid "Remove From"
+msgstr ""
+
+msgctxt "#32604"
+msgid "RE-CACHE %s INFO"
+msgstr ""
+
+msgctxt "#32605"
+msgid "Extra Info"
+msgstr ""
+
+msgctxt "#32606"
+msgid "Trailer"
+msgstr ""
+
+msgctxt "#32607"
+msgid "Reviews"
+msgstr ""
+
+msgctxt "#32608"
+msgid "Actors Info"
+msgstr ""
+
+msgctxt "#32609"
+msgid "Director Info"
+msgstr ""
+
+msgctxt "#32610"
+msgid "Extended Info"
+msgstr ""
+
+msgctxt "#32611"
+msgid "Refresh Widgets"
+msgstr ""
+
+msgctxt "#32612"
+msgid "More from"
+msgstr ""
+
+msgctxt "#32613"
+msgid "Play Random"
+msgstr ""
+
+msgctxt "#32614"
+msgid "Close"
+msgstr ""
+
+msgctxt "#32615"
+msgid "Studio"
+msgstr ""
+
+msgctxt "#32616"
+msgid "Poster"
+msgstr ""
+
+msgctxt "#32617"
+msgid "Fanart"
+msgstr ""
+
+msgctxt "#32618"
+msgid "720P Results Color"
+msgstr "720P Resultaten Kleur"
+
+msgctxt "#32619"
+msgid "Tagline"
+msgstr ""
+
+msgctxt "#32620"
+msgid "Premiered"
+msgstr ""
+
+msgctxt "#32621"
+msgid "Rating"
+msgstr ""
+
+msgctxt "#32622"
+msgid "Runtime"
+msgstr ""
+
+msgctxt "#32623"
+msgid "Votes"
+msgstr ""
+
+msgctxt "#32624"
+msgid "Genre/s"
+msgstr ""
+
+msgctxt "#32625"
+msgid "Budget"
+msgstr ""
+
+msgctxt "#32626"
+msgid "Revenue"
+msgstr ""
+
+msgctxt "#32627"
+msgid "Director"
+msgstr ""
+
+msgctxt "#32628"
+msgid "Writer/s"
+msgstr ""
+
+msgctxt "#32629"
+msgid "Homepage"
+msgstr ""
+
+msgctxt "#32630"
+msgid "Status"
+msgstr ""
+
+msgctxt "#32631"
+msgid "Type"
+msgstr ""
+
+msgctxt "#32632"
+msgid "Classification"
+msgstr ""
+
+msgctxt "#32633"
+msgid "Created By"
+msgstr ""
+
+msgctxt "#32634"
+msgid "Last Aired"
+msgstr ""
+
+msgctxt "#32635"
+msgid "Next Aired"
+msgstr ""
+
+msgctxt "#32636"
+msgid "Seasons"
+msgstr ""
+
+msgctxt "#32637"
+msgid "Clear Scrapers Cache"
+msgstr ""
+
+msgctxt "#32638"
+msgid "Results Display"
+msgstr ""
+
+msgctxt "#32639"
+msgid "Clear Bookmark Page Progress"
+msgstr ""
+
+msgctxt "#32640"
+msgid "Change Folder Path?"
+msgstr ""
+
+msgctxt "#32641"
+msgid "Open"
+msgstr ""
+
+msgctxt "#32642"
+msgid "[B]Mark Watched %s[/B]"
+msgstr ""
+
+msgctxt "#32643"
+msgid "[B]Mark Unwatched %s[/B]"
+msgstr ""
+
+msgctxt "#32644"
+msgid "[B]Add/Remove[/B]"
+msgstr ""
+
+msgctxt "#32645"
+msgid "[B]Extras...[/B]"
+msgstr ""
+
+msgctxt "#32646"
+msgid "[B]Options...[/B]"
+msgstr ""
+
+msgctxt "#32647"
+msgid "SD Results Color"
+msgstr "SD Resultaten Kleur"
+
+msgctxt "#32648"
+msgid "[B]Hide from Recommendations[/B]"
+msgstr ""
+
+msgctxt "#32649"
+msgid "[B]Exit Movie List[/B]"
+msgstr ""
+
+msgctxt "#32650"
+msgid "[B]Exit TV Show List[/B]"
+msgstr ""
+
+msgctxt "#32651"
+msgid "[B]Clear Progress[/B]"
+msgstr ""
+
+msgctxt "#32652"
+msgid "..."
+msgstr ""
+
+msgctxt "#32653"
+msgid "[B]Refresh[/B]"
+msgstr ""
+
+msgctxt "#32654"
+msgid "Start"
+msgstr ""
+
+msgctxt "#32655"
+msgid "End"
+msgstr ""
+
+msgctxt "#32656"
+msgid "Clear All Filters"
+msgstr ""
+
+msgctxt "#32657"
+msgid "Keywords"
+msgstr ""
+
+msgctxt "#32658"
+msgid "Language"
+msgstr ""
+
+msgctxt "#32659"
+msgid "Region"
+msgstr ""
+
+msgctxt "#32660"
+msgid "Companies"
+msgstr ""
+
+msgctxt "#32661"
+msgid "Minimum"
+msgstr ""
+
+msgctxt "#32662"
+msgid "Maximum"
+msgstr ""
+
+msgctxt "#32663"
+msgid "Number of Votes"
+msgstr ""
+
+msgctxt "#32664"
+msgid "Cast"
+msgstr ""
+
+msgctxt "#32665"
+msgid "Adult"
+msgstr ""
+
+msgctxt "#32666"
+msgid "[B]SAVE & BROWSE RESULTS FOR:[/B]  [I]%s[/I]"
+msgstr ""
+
+msgctxt "#32667"
+msgid "[B]EXPORT SEARCH:[/B]  [I]%s[/I]"
+msgstr ""
+
+msgctxt "#32668"
+msgid "Change"
+msgstr ""
+
+msgctxt "#32669"
+msgid "Optional"
+msgstr ""
+
+msgctxt "#32670"
+msgid "Filter"
+msgstr ""
+
+msgctxt "#32671"
+msgid "Clear"
+msgstr ""
+
+msgctxt "#32672"
+msgid "Similar to"
+msgstr ""
+
+msgctxt "#32673"
+msgid "Recommended based on"
+msgstr ""
+
+msgctxt "#32674"
+msgid "Time elapsed: %s seconds"
+msgstr ""
+
+msgctxt "#32675"
+msgid "%s seconds"
+msgstr ""
+
+msgctxt "#32676"
+msgid "Remaining"
+msgstr ""
+
+msgctxt "#32677"
+msgid "Pause Between Playback Attempts (in ms)"
+msgstr ""
+
+msgctxt "#32678"
+msgid "[B]Preparing sources[/B]"
+msgstr ""
+
+msgctxt "#32679"
+msgid "Filter by [B]Title[/B]..."
+msgstr ""
+
+msgctxt "#32680"
+msgid "Restart Fen Services"
+msgstr ""
+
+msgctxt "#32681"
+msgid "Choose Addons"
+msgstr ""
+
+msgctxt "#32682"
+msgid "Clear Current Folder"
+msgstr ""
+
+msgctxt "#32683"
+msgid "Choose New Folder"
+msgstr ""
+
+msgctxt "#32684"
+msgid "Meta Accounts"
+msgstr ""
+
+msgctxt "#32685"
+msgid "Provider Accounts"
+msgstr ""
+
+msgctxt "#32686"
+msgid "Filters Ignored"
+msgstr ""
+
+msgctxt "#32687"
+msgid "Include HDR Results"
+msgstr ""
+
+msgctxt "#32688"
+msgid "Complete file is [B]%dMB[/B]"
+msgstr ""
+
+msgctxt "#32689"
+msgid "Continue with download?"
+msgstr ""
+
+msgctxt "#32690"
+msgid "Downloading [B]%s[/B]"
+msgstr ""
+
+msgctxt "#32691"
+msgid "Download Progress: "
+msgstr ""
+
+msgctxt "#32692"
+msgid "No URL found for Download. Pick another Source: "
+msgstr ""
+
+msgctxt "#32693"
+msgid "Content"
+msgstr ""
+
+msgctxt "#32694"
+msgid "Sorting - Personal Lists"
+msgstr ""
+
+msgctxt "#32695"
+msgid "Press Context Menu for Search..."
+msgstr ""
+
+msgctxt "#32696"
+msgid "Choose Server Location and Port"
+msgstr ""
+
+msgctxt "#32697"
+msgid "Export List"
+msgstr ""
+
+msgctxt "#32698"
+msgid "Remove From History"
+msgstr ""
+
+msgctxt "#32699"
+msgid "Clear All History"
+msgstr ""
+
+msgctxt "#32700"
+msgid "Navigate to: [B]%s[/B]"
+msgstr ""
+
+msgctxt "#32701"
+msgid "Enter the following code: [B]%s[/B]"
+msgstr ""
+
+msgctxt "#32702"
+msgid "Make New Shortcut Folder"
+msgstr ""
+
+msgctxt "#32703"
+msgid "[B]Delete Shortcut Folder[/B]"
+
+msgctxt "#32704"
+msgid "A folder path needs to be set to use this scraper.[CR]Try again?"
+msgstr ""
+
+msgctxt "#32705"
+msgid "[B]Edit Menu[/B]"
+msgstr ""
+
+msgctxt "#32706"
+msgid "[B]Browse[/B] Removed items"
+msgstr ""
+
+msgctxt "#32707"
+msgid "Place [B]%s[/B] below [B]%s[/B]"
+msgstr ""
+
+msgctxt "#32708"
+msgid "Place [B]%s[/B] at Top of List"
+msgstr ""
+
+msgctxt "#32709"
+msgid "Top Position"
+msgstr ""
+
+msgctxt "#32710"
+msgid "Existing Shortcut Folder"
+msgstr ""
+
+msgctxt "#32711"
+msgid "Edit [B]'%s'[/B] Folder..."
+msgstr ""
+
+msgctxt "#32712"
+msgid "Move"
+msgstr ""
+
+msgctxt "#32713"
+msgid "Remove"
+msgstr ""
+
+msgctxt "#32714"
+msgid "'A folder name needs to be set to use this scraper.[CR]Try again?'"
+msgstr ""
+
+msgctxt "#32715"
+msgid "[B]MAKE NEW FOLDER[/B]"
+msgstr ""
+
+msgctxt "#32716"
+msgid "Move [B]'%s'[/B] to a different position in the list"
+msgstr ""
+
+msgctxt "#32717"
+msgid "Remove [B]'%s'[/B] from the list"
+msgstr ""
+
+msgctxt "#32718"
+msgid "Add [B]'%s'[/B] to a different Menu list"
+msgstr ""
+
+msgctxt "#32719"
+msgid "Add [B]'%s'[/B] to a [B]Shortcut Folder[/B]"
+msgstr ""
+
+msgctxt "#32720"
+msgid "Add a Trakt list to [B]'%s'[/B] Menu"
+msgstr ""
+
+msgctxt "#32721"
+msgid "Re-add a removed item from [B]'%s'[/B] Menu"
+msgstr ""
+
+msgctxt "#32722"
+msgid "Restore [B]'%s'[/B] Menu to default"
+msgstr ""
+
+msgctxt "#32723"
+msgid "Check if [B]'%s'[/B] Menu has New Menu items"
+msgstr ""
+
+msgctxt "#32724"
+msgid "Reload [B]'%s'[/B]"
+msgstr ""
+
+msgctxt "#32725"
+msgid "Add a [B]Shortcut Folder[/B] to [B]'%s'[/B] Menu"
+msgstr ""
+
+msgctxt "#32726"
+msgid "Choose Menu to add %s Into.."
+msgstr ""
+
+msgctxt "#32727"
+msgid "New item [B]%s[/B] Exists"
+msgstr ""
+
+msgctxt "#32728"
+msgid "Would you like to add this to the Menu?"
+msgstr ""
+
+msgctxt "#32729"
+msgid "You Must Also Remove Instances of this Shortcut Folder from any Lists Individually"
+msgstr ""
+
+msgctxt "#32730"
+msgid "[B]Add to a Menu[/B]"
+msgstr ""
+
+msgctxt "#32731"
+msgid "[B]Add to a Shortcut Folder[/B]"
+msgstr ""
+
+msgctxt "#32732"
+msgid "Saving Torrent to the %s Cloud"
+msgstr ""
+
+msgctxt "#32733"
+msgid "Fen Cloud Transfer"
+msgstr ""
+
+msgctxt "#32734"
+msgid "Downloading at %s MB/s from %s peers, %s%% of %sGB completed"
+msgstr ""
+
+msgctxt "#32735"
+msgid "Uploading at %s MB/s, %s%% of %s GB completed"
+msgstr ""
+
+msgctxt "#32736"
+msgid "Cancelled"
+msgstr ""
+
+msgctxt "#32737"
+msgid "Converting MAGNET..."
+msgstr ""
+
+msgctxt "#32738"
+msgid "%s seeders"
+msgstr ""
+
+msgctxt "#32739"
+msgid "Downloading %s GB @ %s mbps from %s peers, %s %% completed"
+msgstr ""
+
+msgctxt "#32740"
+msgid "OpenSubtitles Rate Limited. Retrying in 10 secs.."
+msgstr ""
+
+msgctxt "#32741"
+msgid "You must authenticate with Trakt. Do you want to authenticate now?"
+msgstr ""
+
+msgctxt "#32742"
+msgid "folder"
+msgstr ""
+
+msgctxt "#32743"
+msgid "file"
+msgstr ""
+
+msgctxt "#32744"
+msgid "Limit Concurrent Threads"
+msgstr ""
+
+msgctxt "#32745"
+msgid "Maximum Active Threads"
+msgstr ""
+
+msgctxt "#32746"
+msgid "Hide Next Page Item in Widgets"
+msgstr ""
+
+msgctxt "#32747"
+msgid "Download File"
+msgstr ""
+
+msgctxt "#32748"
+msgid "Search Cloud Storage"
+msgstr ""
+
+msgctxt "#32749"
+msgid "[B]Customer ID:[/B] %s"
+msgstr ""
+
+msgctxt "#32750"
+msgid "[B]Expires:[/B] %s"
+msgstr ""
+
+msgctxt "#32751"
+msgid "[B]Days Remaining:[/B] %s"
+msgstr ""
+
+msgctxt "#32752"
+msgid "[B]Points Used:[/B] %.f"
+msgstr ""
+
+msgctxt "#32753"
+msgid "[B]Space Used:[/B] %.2f"
+msgstr ""
+
+msgctxt "#32754"
+msgid "[B]Fair Use (Percentage Used):[/B] %s"
+msgstr ""
+
+msgctxt "#32755"
+msgid "[B]Username:[/B] %s"
+msgstr ""
+
+msgctxt "#32756"
+msgid "[B]Email:[/B] %s"
+msgstr ""
+
+msgctxt "#32757"
+msgid "[B]Status:[/B] %s"
+msgstr ""
+
+msgctxt "#32758"
+msgid "[B]Account:[/B] %s"
+msgstr ""
+
+msgctxt "#32759"
+msgid "[B]Fidelity Points:[/B] %s"
+msgstr ""
+
+msgctxt "#32760"
+msgid "No Results"
+msgstr ""
+
+msgctxt "#32761"
+msgid "[B]Data Used:[/B] %s"
+msgstr ""
+
+msgctxt "#32762"
+msgid "[B]Data Remaining:[/B] %s"
+msgstr ""
+
+msgctxt "#32763"
+msgid "Browse Songs or Play Full Album?"
+msgstr ""
+
+msgctxt "#32764"
+msgid "Play"
+msgstr ""
+
+msgctxt "#32765"
+msgid "All Movies Already in Trakt Collection"
+msgstr ""
+
+msgctxt "#32766"
+msgid "[B]Remove from My Files[/B]"
+msgstr ""
+
+msgctxt "#32767"
+msgid "[B]Protect File[/B]"
+msgstr ""
+
+msgctxt "#32768"
+msgid "[B]Unprotect File[/B]"
+msgstr ""
+
+msgctxt "#32769"
+msgid "Add to My Files"
+msgstr ""
+
+msgctxt "#32770"
+msgid "[B]Monthly Limit:[/B] %s GB"
+msgstr ""
+
+msgctxt "#32771"
+msgid "[B]Current Month:[/B]"
+msgstr ""
+
+msgctxt "#32772"
+msgid "[B]Current Subscription:[/B]"
+msgstr ""
+
+msgctxt "#32773"
+msgid "[B]Resets On:[/B] %s"
+msgstr ""
+
+msgctxt "#32774"
+msgid "[B]Renewal Needed On:[/B] %s"
+msgstr ""
+
+msgctxt "#32775"
+msgid "Speed"
+msgstr ""
+
+msgctxt "#32776"
+msgid "[B]Like List[/B]"
+msgstr ""
+
+msgctxt "#32777"
+msgid "Log Utils"
+msgstr ""
+
+msgctxt "#32778"
+msgid "[B]PERSONAL:[/B] [I]%s[/I]"
+msgstr ""
+
+msgctxt "#32779"
+msgid "[B]LIKED:[/B] [I]%s[/I]"
+msgstr ""
+
+msgctxt "#32780"
+msgid "[B]Make a new Trakt list[/B]"
+msgstr ""
+
+msgctxt "#32781"
+msgid "[B]Delete list[/B]"
+msgstr ""
+
+msgctxt "#32782"
+msgid "Size Sort Order"
+msgstr ""
+
+msgctxt "#32783"
+msgid "[B]Unlike List[/B]"
+msgstr ""
+
+msgctxt "#32784"
+msgid "[B]Switch Jump To Action[/B]"
+msgstr ""
+
+msgctxt "#32785"
+msgid "Delete"
+msgstr ""
+
+msgctxt "#32786"
+msgid "[B]Remove from history[/B]"
+msgstr ""
+
+msgctxt "#32787"
+msgid "Kodi Library Sync Complete"
+msgstr ""
+
+msgctxt "#32788"
+msgid "Open Options for Context Menu (Media)"
+msgstr ""
+
+msgctxt "#32789"
+msgid "Check for Updates"
+msgstr ""
+
+msgctxt "#32790"
+msgid "Settings Refreshed"
+msgstr ""
+
+msgctxt "#32791"
+msgid "Finish Rewatching"
+msgstr ""
+
+msgctxt "#32792"
+msgid "Downloaded Subtitles Found"
+msgstr ""
+
+msgctxt "#32793"
+msgid "No Subtitles Found"
+msgstr ""
+
+msgctxt "#32794"
+msgid "Searching Secondary Language"
+msgstr ""
+
+msgctxt "#32795"
+msgid "Clear Old Subtitle Files When Kodi Starts"
+msgstr ""
+
+msgctxt "#32796"
+msgid "Directed"
+msgstr ""
+
+msgctxt "#32797"
+msgid "Biography"
+msgstr ""
+
+msgctxt "#32798"
+msgid "Images"
+msgstr ""
+
+msgctxt "#32799"
+msgid "Next Page (%s) >>"
+msgstr ""
+
+msgctxt "#32800"
+msgid "Kodi Log Uploader"
+msgstr ""
+
+msgctxt "#32801"
+msgid "[B]Next Up:[/B]"
+msgstr ""
+
+msgctxt "#32802"
+msgid "Still watching?"
+msgstr ""
+
+msgctxt "#32803"
+msgid "Unwatched"
+msgstr ""
+
+msgctxt "#32804"
+msgid "Hidden"
+msgstr ""
+
+msgctxt "#32805"
+msgid "Accounts Manager"
+msgstr ""
+
+msgctxt "#32806"
+msgid "Select TV Show to Hide/Unhide from Progress:"
+msgstr ""
+
+msgctxt "#32807"
+msgid "Scrape With All Filters Ignored"
+msgstr ""
+
+msgctxt "#32808"
+msgid "Disable All Filters for Search?"
+msgstr ""
+
+msgctxt "#32809"
+msgid "Clearing Trakt Cache"
+msgstr ""
+
+msgctxt "#32810"
+msgid "[B]Exit Results[/B]"
+msgstr ""
+
+msgctxt "#32811"
+msgid "Next Episode In"
+msgstr ""
+
+msgctxt "#32812"
+msgid "Cleaned Addon: [B]%s[/B]"
+msgstr ""
+
+msgctxt "#32813"
+msgid "Removed Settings: [B]%s[/B]"
+msgstr ""
+
+msgctxt "#32814"
+msgid "Browsed Pages"
+msgstr ""
+
+msgctxt "#32815"
+msgid "List Data"
+msgstr ""
+
+msgctxt "#32816"
+msgid "Clearing"
+msgstr ""
+
+msgctxt "#32817"
+msgid "Settings File"
+msgstr ""
+
+msgctxt "#32818"
+msgid "Database Files"
+msgstr ""
+
+msgctxt "#32819"
+msgid "Sort Episodes Airing Today to Top"
+msgstr ""
+
+msgctxt "#32820"
+msgid "Choose Data"
+msgstr ""
+
+msgctxt "#32821"
+msgid "[I]Jump to %s Starting with '%s'[/I]"
+msgstr ""
+
+msgctxt "#32822"
+msgid "[I]Jump to Page %s[/I]"
+msgstr ""
+
+msgctxt "#32823"
+msgid "[B]NAME:[/B]"
+msgstr ""
+
+msgctxt "#32824"
+msgid "Yes"
+msgstr ""
+
+msgctxt "#32825"
+msgid "BIRTHDAY"
+msgstr ""
+
+msgctxt "#32826"
+msgid "DIED"
+msgstr ""
+
+msgctxt "#32827"
+msgid "AGE"
+msgstr ""
+
+msgctxt "#32828"
+msgid "No"
+msgstr ""
+
+msgctxt "#32829"
+msgid "Progress Color Highlights"
+msgstr ""
+
+msgctxt "#32830"
+msgid "Scrape Display Color"
+msgstr ""
+
+msgctxt "#32831"
+msgid "Download this Torrent to your [B]%s[/B] Cloud?"
+msgstr ""
+
+msgctxt "#32832"
+msgid "Resume"
+msgstr ""
+
+msgctxt "#32833"
+msgid "Start Over"
+msgstr ""
+
+msgctxt "#32834"
+msgid "Limit Auto Play Quality"
+msgstr ""
+
+msgctxt "#32835"
+msgid "Filter Languages"
+msgstr ""
+
+msgctxt "#32836"
+msgid "Choose Languages To Include"
+msgstr ""
+
+msgctxt "#32837"
+msgid "Exit"
+msgstr ""
+
+msgctxt "#32838"
+msgid "Browse"
+msgstr ""
+
+msgctxt "#32839"
+msgid "OK"
+msgstr ""
+
+msgctxt "#32840"
+msgid "Cancel"
+msgstr ""
+
+msgctxt "#32841"
+msgid "Options"
+msgstr ""
+
+msgctxt "#32842"
+msgid "Plot"
+msgstr ""
+
+msgctxt "#32843"
+msgid "Male"
+msgstr ""
+
+msgctxt "#32844"
+msgid "Female"
+msgstr ""
+
+msgctxt "#32845"
+msgid "GENDER"
+msgstr ""
+
+msgctxt "#32846"
+msgid "Enable Scrollbars for Extras Lists"
+msgstr ""
+
+msgctxt "#32847"
+msgid "Select Genres to Include in Search"
+msgstr ""
+
+msgctxt "#32848"
+msgid "Yesterday"
+msgstr ""
+
+msgctxt "#32849"
+msgid "Today"
+msgstr ""
+
+msgctxt "#32850"
+msgid "Tomorrow"
+msgstr ""
+
+msgctxt "#32851"
+msgid "Jump To Action Switched to [B]%s[/B]"
+msgstr ""
+
+msgctxt "#32852"
+msgid "Local Subtitles Found"
+msgstr ""
+
+msgctxt "#32853"
+msgid "Upload Kodi Log to Pastebin"
+msgstr ""
+
+msgctxt "#32854"
+msgid "No Debrid Providers Enabled"
+msgstr ""
+
+msgctxt "#32855"
+msgid "Show Log Errors Only?"
+msgstr ""
+
+msgctxt "#32856"
+msgid "Syncing Kodi Library Watched Status"
+msgstr ""
+
+msgctxt "#32857"
+msgid "New"
+msgstr ""
+
+msgctxt "#32858"
+msgid "Spotlight"
+msgstr ""
+
+msgctxt "#32859"
+msgid "True"
+msgstr ""
+
+msgctxt "#32860"
+msgid "False"
+msgstr ""
+
+msgctxt "#32861"
+msgid "Arabic"
+msgstr ""
+
+msgctxt "#32862"
+msgid "Bosnian"
+msgstr ""
+
+msgctxt "#32863"
+msgid "Bulgarian"
+msgstr ""
+
+msgctxt "#32864"
+msgid "Chinese"
+msgstr ""
+
+msgctxt "#32865"
+msgid "Croatian"
+msgstr ""
+
+msgctxt "#32866"
+msgid "Dutch"
+msgstr ""
+
+msgctxt "#32867"
+msgid "English"
+msgstr ""
+
+msgctxt "#32868"
+msgid "Finnish"
+msgstr ""
+
+msgctxt "#32869"
+msgid "French"
+msgstr ""
+
+msgctxt "#32870"
+msgid "German"
+msgstr ""
+
+msgctxt "#32871"
+msgid "Greek"
+msgstr ""
+
+msgctxt "#32872"
+msgid "Hebrew"
+msgstr ""
+
+msgctxt "#32873"
+msgid "Hindi"
+msgstr ""
+
+msgctxt "#32874"
+msgid "Hungarian"
+msgstr ""
+
+msgctxt "#32875"
+msgid "Icelandic"
+msgstr ""
+
+msgctxt "#32876"
+msgid "Italian"
+msgstr ""
+
+msgctxt "#32877"
+msgid "Japanese"
+msgstr ""
+
+msgctxt "#32878"
+msgid "Korean"
+msgstr ""
+
+msgctxt "#32879"
+msgid "Macedonian"
+msgstr ""
+
+msgctxt "#32880"
+msgid "Norwegian"
+msgstr ""
+
+msgctxt "#32881"
+msgid "Persian"
+msgstr ""
+
+msgctxt "#32882"
+msgid "Polish"
+msgstr ""
+
+msgctxt "#32883"
+msgid "Portuguese"
+msgstr ""
+
+msgctxt "#32884"
+msgid "Punjabi"
+msgstr ""
+
+msgctxt "#32885"
+msgid "Romanian"
+msgstr ""
+
+msgctxt "#32886"
+msgid "Russian"
+msgstr ""
+
+msgctxt "#32887"
+msgid "Serbian"
+msgstr ""
+
+msgctxt "#32888"
+msgid "Slovenian"
+msgstr ""
+
+msgctxt "#32889"
+msgid "Spanish"
+msgstr ""
+
+msgctxt "#32890"
+msgid "Swedish"
+msgstr ""
+
+msgctxt "#32891"
+msgid "Turkish"
+msgstr ""
+
+msgctxt "#32892"
+msgid "Ukrainian"
+msgstr ""
+
+msgctxt "#32893"
+msgid "Afghanistan"
+msgstr ""
+
+msgctxt "#32894"
+msgid "Albania"
+msgstr ""
+
+msgctxt "#32895"
+msgid "Algeria"
+msgstr ""
+
+msgctxt "#32896"
+msgid "Antarctica"
+msgstr ""
+
+msgctxt "#32897"
+msgid "Argentina"
+msgstr ""
+
+msgctxt "#32898"
+msgid "Armenia"
+msgstr ""
+
+msgctxt "#32899"
+msgid "Australia"
+msgstr ""
+
+msgctxt "#32900"
+msgid "Austria"
+msgstr ""
+
+msgctxt "#32901"
+msgid "Bangladesh"
+msgstr ""
+
+msgctxt "#32902"
+msgid "Belarus"
+msgstr ""
+
+msgctxt "#32903"
+msgid "Belgium"
+msgstr ""
+
+msgctxt "#32904"
+msgid "Brazil"
+msgstr ""
+
+msgctxt "#32905"
+msgid "Bulgaria"
+msgstr ""
+
+msgctxt "#32906"
+msgid "Cambodia"
+msgstr ""
+
+msgctxt "#32907"
+msgid "Canada"
+msgstr ""
+
+msgctxt "#32908"
+msgid "Chile"
+msgstr ""
+
+msgctxt "#32909"
+msgid "China"
+msgstr ""
+
+msgctxt "#32910"
+msgid "Croatia"
+msgstr ""
+
+msgctxt "#32911"
+msgid "Czech Republic"
+msgstr ""
+
+msgctxt "#32912"
+msgid "Denmark"
+msgstr ""
+
+msgctxt "#32913"
+msgid "Germany"
+msgstr ""
+
+msgctxt "#32914"
+msgid "France"
+msgstr ""
+
+msgctxt "#32915"
+msgid "Finland"
+msgstr ""
+
+msgctxt "#32916"
+msgid "Egypt"
+msgstr ""
+
+msgctxt "#32917"
+msgid "Greece"
+msgstr ""
+
+msgctxt "#32918"
+msgid "Hong Kong"
+msgstr ""
+
+msgctxt "#32919"
+msgid "Hungary"
+msgstr ""
+
+msgctxt "#32920"
+msgid "Iceland"
+msgstr ""
+
+msgctxt "#32921"
+msgid "India"
+msgstr ""
+
+msgctxt "#32922"
+msgid "Indonesia"
+msgstr ""
+
+msgctxt "#32923"
+msgid "Iran"
+msgstr ""
+
+msgctxt "#32924"
+msgid "Iraq"
+msgstr ""
+
+msgctxt "#32925"
+msgid "Ireland"
+msgstr ""
+
+msgctxt "#32926"
+msgid "Israel"
+msgstr ""
+
+msgctxt "#32927"
+msgid "Italy"
+msgstr ""
+
+msgctxt "#32928"
+msgid "Japan"
+msgstr ""
+
+msgctxt "#32929"
+msgid "Malaysia"
+msgstr ""
+
+msgctxt "#32930"
+msgid "Nepal"
+msgstr ""
+
+msgctxt "#32931"
+msgid "Netherlands"
+msgstr ""
+
+msgctxt "#32932"
+msgid "New Zealand"
+msgstr ""
+
+msgctxt "#32933"
+msgid "Norway"
+msgstr ""
+
+msgctxt "#32934"
+msgid "Pakistan"
+msgstr ""
+
+msgctxt "#32935"
+msgid "Paraguay"
+msgstr ""
+
+msgctxt "#32936"
+msgid "Peru"
+msgstr ""
+
+msgctxt "#32937"
+msgid "Philippines"
+msgstr ""
+
+msgctxt "#32938"
+msgid "Poland"
+msgstr ""
+
+msgctxt "#32939"
+msgid "Portugal"
+msgstr ""
+
+msgctxt "#32940"
+msgid "Puerto Rico"
+msgstr ""
+
+msgctxt "#32941"
+msgid "Romania"
+msgstr ""
+
+msgctxt "#32942"
+msgid "Russian Federation"
+msgstr ""
+
+msgctxt "#32943"
+msgid "Saudi Arabia"
+msgstr ""
+
+msgctxt "#32944"
+msgid "Serbia"
+msgstr ""
+
+msgctxt "#32945"
+msgid "Singapore"
+msgstr ""
+
+msgctxt "#32946"
+msgid "Slovakia"
+msgstr ""
+
+msgctxt "#32947"
+msgid "Slovenia"
+msgstr ""
+
+msgctxt "#32948"
+msgid "South Africa"
+msgstr ""
+
+msgctxt "#32949"
+msgid "Spain"
+msgstr ""
+
+msgctxt "#32950"
+msgid "Sri Lanka"
+msgstr ""
+
+msgctxt "#32951"
+msgid "Sweden"
+msgstr ""
+
+msgctxt "#32952"
+msgid "Switzerland"
+msgstr ""
+
+msgctxt "#32953"
+msgid "Thailand"
+msgstr ""
+
+msgctxt "#32954"
+msgid "Turkey"
+msgstr ""
+
+msgctxt "#32955"
+msgid "Ukraine"
+msgstr ""
+
+msgctxt "#32956"
+msgid "United Arab Emirates"
+msgstr ""
+
+msgctxt "#32957"
+msgid "United Kingdom"
+msgstr ""
+
+msgctxt "#32958"
+msgid "United States"
+msgstr ""
+
+msgctxt "#32959"
+msgid "Uruguay"
+msgstr ""
+
+msgctxt "#32960"
+msgid "Venezuela"
+msgstr ""
+
+msgctxt "#32961"
+msgid "Viet Nam"
+msgstr ""
+
+msgctxt "#32962"
+msgid "Yemen"
+msgstr ""
+
+msgctxt "#32963"
+msgid "Zimbabwe"
+msgstr ""
+
+msgctxt "#32964"
+msgid "Jump To..."
+msgstr ""
+
+msgctxt "#32965"
+msgid "None"
+msgstr ""
+
+msgctxt "#32966"
+msgid "Please go to [B]https://trakt.tv/activate[/B] and enter the code"
+msgstr ""
+
+msgctxt "#32967"
+msgid "Trakt & Fen Watched Status"
+msgstr ""
+
+msgctxt "#32968"
+msgid "Checking %s Watched Status"
+msgstr ""
+
+msgctxt "#32969"
+msgid "Syncing %s Watched Status"
+msgstr ""
+
+msgctxt "#32970"
+msgid "Notify"
+msgstr ""
+
+msgctxt "#32971"
+msgid "MONDAY"
+msgstr ""
+
+msgctxt "#32972"
+msgid "TUESDAY"
+msgstr ""
+
+msgctxt "#32973"
+msgid "WEDNESDAY"
+msgstr ""
+
+msgctxt "#32974"
+msgid "THURSDAY"
+msgstr ""
+
+msgctxt "#32975"
+msgid "FRIDAY"
+msgstr ""
+
+msgctxt "#32976"
+msgid "SATURDAY"
+msgstr ""
+
+msgctxt "#32977"
+msgid "SUNDAY"
+msgstr ""
+
+msgctxt "#32978"
+msgid "Page No."
+msgstr ""
+
+msgctxt "#32979"
+msgid "Alphanum"
+msgstr ""
+
+msgctxt "#32980"
+msgid "Open Extras for Info Dialog (Media)"
+msgstr ""
+
+msgctxt "#32981"
+msgid "Max. HEVC Quality"
+msgstr ""
+
+msgctxt "#32982"
+msgid "[B]Download Archive[/B]"
+msgstr ""
+
+msgctxt "#32983"
+msgid "No New Items"
+msgstr ""
+
+msgctxt "#32984"
+msgid "Trivia"
+msgstr ""
+
+msgctxt "#32985"
+msgid "Contains Spoilers"
+msgstr ""
+
+msgctxt "#32986"
+msgid "Blunders"
+msgstr ""
+
+msgctxt "#32987"
+msgid "Info"
+msgstr ""
+
+msgctxt "#32988"
+msgid "Max. Autoplay HEVC Quality"
+msgstr ""
+
+msgctxt "#32989"
+msgid "Parental Guide"
+msgstr ""
+
+msgctxt "#32990"
+msgid "Sex & Nudity"
+msgstr ""
+
+msgctxt "#32991"
+msgid "Violence & Gore"
+msgstr ""
+
+msgctxt "#32992"
+msgid "Profanity"
+msgstr ""
+
+msgctxt "#32993"
+msgid "Alcohol, Drugs & Smoking"
+msgstr ""
+
+msgctxt "#32994"
+msgid "Frightening & Intense Scenes"
+msgstr ""
+
+msgctxt "#32995"
+msgid "Current Page"
+msgstr ""
+
+msgctxt "#32996"
+msgid "Mild"
+msgstr ""
+
+msgctxt "#32997"
+msgid "Moderate"
+msgstr ""
+
+msgctxt "#32998"
+msgid "Severe"
+msgstr ""
+
+msgctxt "#32999"
+msgid "Update Available"
+msgstr ""
+
+msgctxt "#33000"
+msgid "Confirm"
+msgstr ""
+
+msgctxt "#33001"
+msgid "Please update to version [B]%s[/B]"
+msgstr ""
+
+msgctxt "#33002"
+msgid "%s Update"
+msgstr ""
+
+msgctxt "#33003"
+msgid "Enable Season/Show Pack Search"
+msgstr ""
+
+msgctxt "#33004"
+msgid "Browse Pack"
+msgstr ""
+
+msgctxt "#33005"
+msgid "Image Files Directory"
+msgstr ""
+
+msgctxt "#33006"
+msgid "Check Year Before Search"
+msgstr ""
+
+msgctxt "#33007"
+msgid "No External Scrapers Module Enabled"
+msgstr ""
+
+msgctxt "#33008"
+msgid "No External Providers Enabled"
+msgstr ""
+
+msgctxt "#33009"
+msgid "Error Importing External Module."
+msgstr ""
+
+msgctxt "#33010"
+msgid "Popular Today"
+msgstr ""
+
+msgctxt "#33011"
+msgid "Featured"
+msgstr ""
+
+msgctxt "#33012"
+msgid "Most Voted"
+msgstr ""
+
+msgctxt "#33013"
+msgid "Default"
+msgstr ""
+
+msgctxt "#33014"
+msgid "Choose Files"
+msgstr ""
+
+msgctxt "#33015"
+msgid "External Scraper"
+msgstr ""
+
+msgctxt "#33017"
+msgid "Set Language Invoker (ADVANCED!!)"
+msgstr ""
+
+msgctxt "#33018"
+msgid "[B]Reuse Langauage Invoker[/B] is currently set to %s.\nDo you wish to change this setting to %s?"
+msgstr ""
+
+msgctxt "#33019"
+msgid "Changing this setting can create problems within Fen. Continue?"
+msgstr ""
+
+msgctxt "#33020"
+msgid "Fen will reload your profile to refresh the addon.xml"
+msgstr ""
+
+msgctxt "#33021"
+msgid "[B]Reuse Language Invoker[/B] SETTING/XML mismatch"
+msgstr ""
+
+msgctxt "#33022"
+msgid "No Trakt or IMDb Account Detected"
+msgstr ""
+
+msgctxt "#33023"
+msgid "[B]***START FULL SCRAPE***[/B]"
+msgstr ""
+
+msgctxt "#33024"
+msgid "Enabled"
+msgstr ""
+
+msgctxt "#33025"
+msgid "My Accounts"
+msgstr ""
+
+msgctxt "#33026"
+msgid "My Accounts Manager"
+msgstr ""
+
+msgctxt "#33027"
+msgid "Open My Accounts  [I](Enter Account Details Here)[/I]"
+msgstr ""
+
+msgctxt "#33028"
+msgid "(Re)Sync Fen Settings with My Accounts"
+msgstr ""
+
+msgctxt "#33029"
+msgid "[I]Please visit My Accounts to change settings[/I]"
+msgstr ""
+
+msgctxt "#33030"
+msgid "Settings Updated"
+msgstr "Instellingen Bijgewerkt"
+
+msgctxt "#33031"
+msgid "Hoster"
+msgstr ""
+
+msgctxt "#33032"
+msgid "Videos"
+msgstr ""
+
+msgctxt "#33033"
+msgid "ERROR UPDATING ADDON....Cancelling"
+msgstr ""
+
+msgctxt "#33034"
+msgid "[B]%s[/B] Updated"
+msgstr ""
+
+msgctxt "#33035"
+msgid "Updating [B]%s[/B]"
+msgstr ""
+
+msgctxt "#33036"
+msgid "CLEAR %s:  [I]%s[/I]"
+msgstr ""
+
+msgctxt "#33037"
+msgid "[B]EXTRAS:[/B] %s"
+msgstr ""
+
+msgctxt "#33038"
+msgid "Extras"
+msgstr ""
+
+msgctxt "#33039"
+msgid "Error. Log Upload Failed"
+msgstr ""
+
+msgctxt "#33040"
+msgid "Exclude Non Acting Roles in Person Results"
+msgstr ""
+
+msgctxt "#33041"
+msgid "Next Episode"
+msgstr ""
+
+msgctxt "#33042"
+msgid "Ignore Quality and Size Filters"
+msgstr ""
+
+msgctxt "#33043"
+msgid "Set Artwork"
+msgstr ""
+
+msgctxt "#33044"
+msgid "Aliases"
+msgstr ""
+
+msgctxt "#33045"
+msgid "Tagged"
+msgstr "Getagd"
+
+msgctxt "#33046"
+msgid "%s of %s Watched"
+msgstr ""
+
+msgctxt "#33047"
+msgid "Error. No Movies Added to Trakt Collection"
+msgstr ""
+
+msgctxt "#33048"
+msgid "Watched Status"
+msgstr ""
+
+msgctxt "#33049"
+msgid "Watched Progress"
+msgstr ""
+
+msgctxt "#33050"
+msgid "Scrape Results Color"
+msgstr ""
+
+msgctxt "#33051"
+msgid "Slideshow"
+msgstr ""
+
+msgctxt "#33052"
+msgid "Backing up current addon"
+msgstr ""
+
+msgctxt "#33053"
+msgid "Downloading update"
+msgstr ""
+
+msgctxt "#33054"
+msgid "Extracting update"
+msgstr ""
+
+msgctxt "#33055"
+msgid "Cleaning temp files"
+msgstr ""
+
+msgctxt "#33056"
+msgid "Deleting Backup Folder"
+msgstr ""
+
+msgctxt "#33057"
+msgid "Sci-Fi & Fantasy"
+msgstr ""
+
+msgctxt "#33058"
+msgid "No Finish Time"
+msgstr ""
+
+msgctxt "#33059"
+msgid "Duration"
+msgstr ""
+
+msgctxt "#33060"
+msgid "Production Status"
+msgstr ""
+
+msgctxt "#33061"
+msgid "Enable Extra Ratings"
+msgstr ""
+
+msgctxt "#33062"
+msgid "Finish Watching"
+msgstr ""
+
+msgctxt "#33063"
+msgid "Enter Keyword (Comma Separated for Multiple)"
+msgstr ""
+
+msgctxt "#33064"
+msgid "Check Volume Before Start of Playback"
+msgstr ""
+
+msgctxt "#33065"
+msgid "Set Max. Percent Starting Volume (0-100)"
+msgstr ""
+
+msgctxt "#33066"
+msgid "Set Artwork for %s"
+msgstr ""
+
+msgctxt "#33067"
+msgid "Trending Recent"
+msgstr ""
+
+msgctxt "#33068"
+msgid "Clearlogo"
+msgstr ""
+
+msgctxt "#33069"
+msgid "No Extra Artwork Available"
+msgstr ""
+msgstr ""
+
+msgctxt "#33070"
+msgid "No Rank"
+msgstr ""
+
+msgctxt "#33071"
+msgid "Preview"
+msgstr ""
+
+msgctxt "#33072"
+msgid "Mark Watched After (Playback %)"
+msgstr ""
+
+msgctxt "#33073"
+msgid "Set Resume Point After (Playback %)"
+msgstr ""
+
+msgctxt "#33074"
+msgid "Linked"
+msgstr ""
+
+msgctxt "#33075"
+msgid "Clear Link to [B]%s[/B]?"
+msgstr ""
+
+msgctxt "#33076"
+msgid "This Folder is Already Linked to %s: [CR][B]%s[/B][CR]Do you wish to Link this Folder to Different Movie/TV Show?"
+msgstr ""
+
+msgctxt "#33077"
+msgid "Link this Folder to a %s"
+msgstr ""
+
+msgctxt "#33078"
+msgid "[B]Link Movie/TV Show[/B]"
+msgstr ""
+
+msgctxt "#33079"
+msgid "[B]Clear Movie/TV Show Link[/B]"
+msgstr ""
+
+msgctxt "#33080"
+msgid "Movie Sets"
+msgstr ""
+
+msgctxt "#33081"
+msgid "[B]Add Set to Trakt Collection[/B]"
+msgstr ""
+
+msgctxt "#33082"
+msgid "Already in Collection"
+msgstr ""
+
+msgctxt "#33083"
+msgid "Not Currently in Collection"
+msgstr ""
+
+msgctxt "#33084"
+msgid "Success.[CR]Added [B]%d Movies[/B] to Trakt Collection"
+msgstr ""
+
+msgctxt "#33085"
+msgid "Decades"
+msgstr ""
+
+msgctxt "#33087"
+msgid "Notification"
+msgstr ""
+
+msgctxt "#33088"
+msgid "Next Episode Alert Method"
+msgstr ""
+
+msgctxt "#33089"
+msgid "When No Interaction with Window"
+msgstr ""
+
+msgctxt "#33090"
+msgid "Now"
+msgstr ""
+
+msgctxt "#33091"
+msgid "Auto Scrape Sources Ready"
+msgstr ""
+
+msgctxt "#33092"
+msgid "No Auto Scrape Sources Found"
+msgstr ""
+
+msgctxt "#33093"
+msgid "Use Contrast Display Style"
+msgstr ""
+
+msgctxt "#33094"
+msgid "Window"
+msgstr ""
+
+msgctxt "#33095"
+msgid "Prompt for Year in Search"
+msgstr ""
+
+msgctxt "#33096"
+msgid "Choose Media Types for Fen Extras Window..."
+msgstr ""
+
+msgctxt "#33097"
+msgid "Open Menu Editor for Context Menu (Menus)"
+msgstr ""
+
+msgctxt "#33098"
+msgid "Custom Actions"
+msgstr ""
+
+msgctxt "#33099"
+msgid "Resync Internal (mins)"
+msgstr ""
+
+msgctxt "#33100"
+msgid "Avoid Episode Spoilers in Fen Custom Windows"
+msgstr ""
+
+msgctxt "#33101"
+msgid "Include Year in Title"
+msgstr ""
+
+msgctxt "#33102"
+msgid "Limit Resolve Attempts to Selected Result Only"
+msgstr ""
+
+msgctxt "#33103"
+msgid "Clear Meta Cache for changes to take effect"
+msgstr ""
+
+msgctxt "#33104"
+msgid "Local"
+msgstr ""
+
+msgctxt "#33105"
+msgid "* Hidden to Prevent Spoilers *"
+msgstr ""
+
+msgctxt "#33106"
+msgid "Choose Highlight Color"
+msgstr ""
+
+msgctxt "#33107"
+msgid "Restore Default Highlight Colors"
+msgstr ""
+
+msgctxt "#33108"
+msgid "Edit"
+msgstr ""
+
+msgctxt "#33109"
+msgid "Browse Folder or Edit Settings"
+msgstr ""
+
+msgctxt "#33110"
+msgid "Extracting Color Palette. Please Wait."
+msgstr ""
+
+msgctxt "#33111"
+msgid "Color Palette Folder not Found. Please Report this Issue"
+msgstr ""
+
+msgctxt "#33112"
+msgid "Features"
+msgstr ""
+
+msgctxt "#33113"
+msgid "[I]Enter OMDb key in Metadata Accounts settings for Ratings Options[/I]"
+msgstr ""
+
+msgctxt "#33114"
+msgid "Monitor For Successful Playback"
+msgstr ""
+
+msgctxt "#33115"
+msgid "Play Next"
+msgstr ""
+
+msgctxt "#33116"
+msgid "No Episodes Available"
+msgstr ""
+
+msgctxt "#33117"
+msgid "Trakt Manager"
+msgstr ""
+
+msgctxt "#33118"
+msgid "Set Actions for Extras Buttons"
+msgstr ""
+
+msgctxt "#33119"
+msgid "Restore Extras Buttons to Default Actions"
+msgstr ""
+
+msgctxt "#33120"
+msgid "Choose Media Type to Set Buttons"
+msgstr ""
+
+msgctxt "#33121"
+msgid "Choose Button to Set"
+msgstr ""
+
+msgctxt "#33122"
+msgid "Choose Action For %s"
+msgstr ""
+
+msgctxt "#33123"
+msgid "Choose to Set Back to Default"
+msgstr ""
+
+msgctxt "#33124"
+msgid "Use Custom Skin XMLs When Available"
+msgstr ""
+
+msgctxt "#33125"
+msgid "Custom skins automatically updated to version [B]%s[/B]"
+msgstr ""
+
+msgctxt "#33126"
+msgid "Maximum Easynews Retries (0 for no retries)"
+msgstr ""
+
+msgctxt "#33127"
+msgid "[B]Initializing Scrapers[/B]"
+msgstr ""
+
+msgctxt "#33128"
+msgid "[B]Please Wait...[/B]"
+msgstr ""
+
+msgctxt "#33129"
+msgid "Press Info Button for More Info..."
+msgstr ""
+
+msgctxt "#33130"
+msgid "Mark Watched"
+msgstr ""
+
+msgctxt "#33131"
+msgid "Mark Unwatched"
+msgstr ""
+
+msgctxt "#33132"
+msgid "MPAA Region"
+msgstr ""
+
+msgctxt "#33133"
+msgid "Choose External Scrapers Module"
+msgstr ""
+
+msgctxt "#33134"
+msgid "Minimum Size (MB)"
+msgstr ""
+
+msgctxt "#33135"
+msgid "Ratings to Display"
+msgstr ""
+
+msgctxt "#33136"
+msgid "You must select at least 1 Ratings Provider"
+msgstr ""
+
+msgctxt "#33137"
+msgid "Choose Icon"
+msgstr ""
+
+msgctxt "#33137"
+msgid "[B]Browse...[/B]"
+msgstr ""
+
+msgctxt "#33138"
+msgid "Press [B][COLOR $INFO[Window().Property(highlight_var)]]BACK[/COLOR][/B] to Cancel"
+msgstr ""
+
+msgctxt "#33139"
+msgid "Press [B][COLOR $INFO[Window().Property(highlight_var)]]RIGHT[/COLOR][/B] to Skip"
+msgstr ""
+
+msgctxt "#33140"
+msgid "Add Content"
+msgstr ""
+
+msgctxt "#33141"
+msgid "Single Color"
+msgstr ""
+
+msgctxt "#33142"
+msgid "Addon Item Limit"
+msgstr ""
+
+msgctxt "#33143"
+msgid "Widgets Item Limit"
+msgstr ""
+
+msgctxt "#33144"
+msgid "Make Fen Work Properly"
+msgstr ""
+
+msgctxt "#33145"
+msgid "Current Kodi Log"
+msgstr ""
+
+msgctxt "#33146"
+msgid "Previous Kodi Log"
+msgstr ""
+
+msgctxt "#33147"
+msgid "Choose Which Log File to Upload"
+msgstr ""
+
+msgctxt "#33148"
+msgid "Play Extras Videos in Windowed Mode"
+msgstr ""
+
+msgctxt "#33149"
+msgid "Select All"
+msgstr ""
+
+msgctxt "#33150"
+msgid "Deselect All"
+msgstr ""
+
+msgctxt "#33151"
+msgid "Use Chapter Info For Alert When Available"
+msgstr ""
+
+msgctxt "#33152"
+msgid "[I]Manage Account Authorization at Tools->Accounts Manager[/I]"
+msgstr ""
+
+msgctxt "#33153"
+msgid "Watched (Still Airing) TV Shows Location"
+msgstr ""
+
+msgctxt "#33154"
+msgid "Watched"
+msgstr ""
+
+msgctxt "#33155"
+msgid "In Progress"
+msgstr ""
+
+msgctxt "#33156"
+msgid "Enter Value"
+msgstr ""
+
+msgctxt "#33157"
+msgid "Choose Palette"
+msgstr ""
+
+msgctxt "#33158"
+msgid "Comments"
+msgstr ""
+
+msgctxt "#33159"
+msgid "Single Color For All"
+msgstr ""
+
+msgctxt "#33160"
+msgid "Auto fix Invoker Mismatch on Update"
+msgstr ""
+
+msgctxt "#33161"
+msgid "Restore Default Background Image"
+msgstr ""
+
+msgctxt "#33162"
+msgid "Attempt to use Skin Fonts in Fen Windows"
+msgstr ""
+
+msgctxt "#33163"
+msgid "Waiting for Input"
+msgstr ""
+
+msgctxt "#33164"
+msgid "Success.[CR][B]%s[/B] set as External Scraper"
+msgstr ""
+
+msgctxt "#33165"
+msgid "Retry With All Scrapers When No Results Available"
+msgstr ""
+
+msgctxt "#33166"
+msgid "Popularity (asc)"
+msgstr ""
+
+msgctxt "#33167"
+msgid "Popularity (desc)"
+msgstr ""
+
+msgctxt "#33168"
+msgid "Release Date (asc)"
+msgstr ""
+
+msgctxt "#33169"
+msgid "Release Date (desc)"
+msgstr ""
+
+msgctxt "#33170"
+msgid "Total Revenue (asc)"
+msgstr ""
+
+msgctxt "#33171"
+msgid "Total Revenue (desc)"
+msgstr ""
+
+msgctxt "#33172"
+msgid "Title (asc)"
+msgstr ""
+
+msgctxt "#33173"
+msgid "Title (desc)"
+msgstr ""
+
+msgctxt "#33174"
+msgid "Rating (asc)"
+msgstr ""
+
+msgctxt "#33175"
+msgid "Rating (desc)"
+msgstr ""
+
+msgctxt "#33176"
+msgid "Fen Updater"
+msgstr ""
+
+msgctxt "#33177"
+msgid "Installed Version: [B]%s[/B][CR]Online Version: [B]%s[/B][CR][CR] "
+msgstr ""
+
+msgctxt "#33178"
+msgid "[B]No Update Available[/B]"
+msgstr ""
+
+msgctxt "#33179"
+msgid "[B]An Update is Available[/B][CR]Perform Update?"
+msgstr ""
+
+msgctxt "#33180"
+msgid "Sorting - Generic TV Show Lists"
+msgstr ""
+
+msgctxt "#33181"
+msgid "Fen Update Occuring"
+msgstr ""
+
+msgctxt "#33182"
+msgid "Fen Update Available"
+msgstr ""
+
+msgctxt "#33183"
+msgid "Error Updating.[CR]Please install new update manually"
+msgstr ""
+
+msgctxt "#33184"
+msgid "Success.[CR]Fen updated to version [B]%s[/B]"
+msgstr ""
+
+msgctxt "#33185"
+msgid "Manage Addon Updates"
+msgstr ""
+
+msgctxt "#33186"
+msgid "First Aired (asc)"
+msgstr ""
+
+msgctxt "#33187"
+msgid "First Aired (desc)"
+msgstr ""
+
+msgctxt "#33188"
+msgid "Update Action"
+msgstr ""
+
+msgctxt "#33189"
+msgid "Automatic"
+msgstr ""
+
+msgctxt "#33190"
+msgid "Delay Before Running (secs)"
+msgstr ""
+
+
+###################################################################################################################################
+
+msgctxt "#33016"
+msgid ""
+msgstr ""
+
+msgctxt "#33086"
+msgid ""
+msgstr ""

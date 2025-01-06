@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <onload>Dialog.Close(fullscreeninfo,true)</onload>
+    <onload>Dialog.Close(videoosd,true)</onload>
+    <animation type="WindowOpen" reversible="false">
+        <effect type="fade" end="100" time="600" />
+    </animation>
+    <controls>
+        <control type="image">
+            <height>550</height>
+            <texture>fen_common/dim-top.png</texture>
+        </control>
+        <control type="group">
+            <left>20</left>
+            <top>20</top>
+            <height>160</height>
+            <control type="image">
+                <left>-1</left>
+                <top>-1</top>
+                <width>286</width>
+                <height>162</height>
+                <texture border="16" colordiffuse="FFCCCCCC">fen_common/dialog.png</texture>
+            </control>
+            <control type="image">
+                <width>284</width>
+                <texture colordiffuse="FF000000" diffuse="fen_diffuse/landscape_w284_h160.png">fen_common/white.png</texture>
+            </control>
+            <control type="image">
+                <width>284</width>
+                <aspectratio>scale</aspectratio>
+                <texture diffuse="fen_diffuse/landscape_w284_h160.png">$INFO[Window.Property(thumb)]</texture>
+                <animation effect="fade" start="100" end="65" time="0">WindowOpen</animation>
+            </control>
+            <control type="image">
+                <top>80</top>
+                <left>72</left>
+                <width>140</width>
+                <texture>$INFO[Window.Property(clearlogo)]</texture>
+                <aspectratio>keep</aspectratio>
+                <animation effect="fade" start="100" end="80" time="0">WindowOpen</animation>
+            </control>
+            <!-- Episode Status -->
+            <control type="group">
+                <visible>!String.IsEmpty(Window.Property(episode_status.highlight))</visible>
+                <control type="image">
+                    <top>8</top>
+                    <left>0</left>
+                    <width>284</width>
+                    <height>35</height>
+                    <texture colordiffuse="Window.Property(episode_status.highlight)">fen_common/white.png</texture>
+                </control>
+                <control type="image">
+                    <top>8</top>
+                    <left>0</left>
+                    <width>284</width>
+                    <height>35</height>
+                    <texture>$INFO[Window.Property(episode_status.flag)]</texture>
+                </control>
+            </control>
+            <!-- Episode Status -->
+            <control type="group">
+                <visible>!String.IsEmpty(Window.Property(episode_status.highlight))</visible>
+                <control type="image">
+                    <top>8</top>
+                    <left>0</left>
+                    <width>284</width>
+                    <height>35</height>
+                    <texture colordiffuse="Window.Property(episode_status.highlight)">fen_common/white.png</texture>
+                </control>
+                <control type="image">
+                    <top>8</top>
+                    <left>0</left>
+                    <width>284</width>
+                    <height>35</height>
+                    <texture>$INFO[Window.Property(episode_status.flag)]</texture>
+                </control>
+            </control>
+            <control type="group">
+                <left>275</left>
+                <!-- Main Heading & Timer -->
+                <control type="group">
+                    <!-- Logo -->
+                    <control type="image">
+                        <left>30</left>
+                        <top>0</top>
+                        <width>45</width>
+                        <height>45</height>
+                        <align>left</align>
+                        <aligny>top</aligny>
+                        <aspectratio aligny="top">keep</aspectratio>
+                        <texture colordiffuse="FFB7B4BB">fen_common/fen.png</texture>
+                    </control>
+                    <!-- Autoplay -->
+                    <control type="group">
+                        <visible>String.IsEmpty(Window.Property(pause_timer))</visible>
+                        <control type="label">
+                            <left>80</left>
+                            <aligny>center</aligny>
+                            <height>40</height>
+                            <label>[B]$ADDON[plugin.video.fen 32811] $INFO[Player.TimeRemaining()][/B]</label>
+                            <font>font14</font> <!-- FEN_33 -->
+                            <textcolor>FFB7B4BB</textcolor>
+                        </control>
+                    </control>
+                    <!-- Waiting For Input -->
+                    <control type="label">
+                        <visible>!String.IsEmpty(Window.Property(pause_timer))</visible>
+                        <left>80</left>
+                        <aligny>center</aligny>
+                        <height>40</height>
+                        <label>[B]$ADDON[plugin.video.fen 33163] $INFO[Window.Property(pause_timer)][/B]</label>
+                        <font>font14</font> <!-- FEN_33 -->
+                        <textcolor>FFB7B4BB</textcolor>
+                    </control>
+                </control>
+                <!-- Text Body -->
+                <control type="label">
+                    <top>45</top>
+                    <left>35</left>
+                    <height>35</height>
+                    <width>auto</width>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>$INFO[Window.Property(next_ep_title)][B] | [/B]$INFO[Window.Property(next_ep_season)]x$INFO[Window.Property(next_ep_episode)][B] | [/B]$INFO[Window.Property(next_ep_ep_name)]</label>
+                    <font>font10</font> <!-- FEN_21 -->
+                    <textcolor>FFB7B4BB</textcolor>
+                </control>
+                <!-- Buttons -->
+                <control type="grouplist">
+                    <left>30</left>
+                    <top>100</top>
+                    <width>530</width>
+                    <height>70</height>
+                    <orientation>horizontal</orientation>
+                    <itemgap>10</itemgap>
+                    <control type="button" id="10">
+                        <description>Close</description>
+                        <width>160</width>
+                        <height>60</height>
+                        <onleft>12</onleft>
+                        <onright>11</onright>
+                        <label>$ADDON[plugin.video.fen 32614]</label>
+                        <font>font10</font> <!-- FEN_21 -->
+                        <textcolor>FFCCCCCC</textcolor>
+                        <focusedcolor>FF1F2020</focusedcolor>
+                        <texturefocus colordiffuse="FFCCCCCC" border="30">fen_common/circle.png</texturefocus>
+                        <texturenofocus colordiffuse="FF4a4347" border="30">fen_common/circle.png</texturenofocus>
+                        <align>center</align>
+                    </control>
+                    <control type="button" id="11">
+                        <description>Play</description>
+                        <width>160</width>
+                        <height>60</height>
+                        <onleft>10</onleft>
+                        <onright>12</onright>
+                        <label>$ADDON[plugin.video.fen 32764]</label>
+                        <font>font10</font> <!-- FEN_21 -->
+                        <textcolor>FFCCCCCC</textcolor>
+                        <focusedcolor>FF1F2020</focusedcolor>
+                        <texturefocus colordiffuse="FFCCCCCC" border="30">fen_common/circle.png</texturefocus>
+                        <texturenofocus colordiffuse="FF4a4347" border="30">fen_common/circle.png</texturenofocus>
+                        <align>center</align>
+                    </control>
+                    <control type="button" id="12">
+                        <description>Cancel</description>
+                        <width>160</width>
+                        <height>60</height>
+                        <onleft>11</onleft>
+                        <onright>10</onright>
+                        <label>$ADDON[plugin.video.fen 32840]</label>
+                        <font>font10</font> <!-- FEN_21 -->
+                        <textcolor>FFCCCCCC</textcolor>
+                        <focusedcolor>FF1F2020</focusedcolor>
+                        <texturefocus colordiffuse="FFCCCCCC" border="30">fen_common/circle.png</texturefocus>
+                        <texturenofocus colordiffuse="FF4a4347" border="30">fen_common/circle.png</texturenofocus>
+                        <align>center</align>
+                    </control>
+                </control>
+            </control>
+        </control>
+    </controls>
+</window>

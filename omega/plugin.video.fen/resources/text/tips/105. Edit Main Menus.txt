@@ -1,0 +1,5 @@
+
+Pressing the Context Menu on menu items and selecting 'Edit Menu' will allow you to change many things about the menu systems in Fen. A few include removing a menu item, changing it's position within the menu, or adding a Trakt list to the menu. For example, Fen might come with too many menu items for your liking, so you can choose the ones you want and remove the ones you don't find useful. You can add back a menu item previously removed, or reset the menu to default if you change your mind. If you remove an item, then 'Browse Removed Item' will appear in the context menu. This will allow you to still navigate into a menu item that you have removed.
+Try it out to see...
+
+Also, try out the Shortcut Folders feature, for many more options to customize Fen. See 'Shortcut Folders' tip for more info.

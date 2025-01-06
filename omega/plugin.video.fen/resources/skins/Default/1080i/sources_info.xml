@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">fen_common/white.png</texture>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" start="0" end="80" time="120" />
+            </animation>
+        </control>
+        <control type="group">
+            <left>290</left>
+            <top>80</top>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" end="100" time="200" />
+            </animation>
+            <control type="group">
+                <control type="image">
+                    <left>-2</left>
+                    <top>-2</top>
+                    <width>1337</width>
+                    <height>947</height>
+                    <texture border="16" colordiffuse="$INFO[Window.Property(highlight)]">fen_common/dialog.png</texture>
+                </control>
+                <control type="image">
+                    <width>1333</width>
+                    <height>943</height>
+                    <texture border="16" colordiffuse="FF1F2020">fen_common/dialog.png</texture>
+                </control>
+                <control type="image">
+                    <left>15</left>
+                    <top>15</top>
+                    <width>70</width>
+                    <height>70</height>
+                    <align>left</align>
+                    <aligny>top</aligny>
+                    <aspectratio aligny="top">keep</aspectratio>
+                    <texture colordiffuse="FFCCCCCC">fen_common/fen.png</texture>
+                </control>
+            </control>
+            <control type="image">
+                <left>-20</left>
+                <top>30</top>
+                <width>400</width>
+                <height>400</height>
+                <align>top</align>
+                <aligny>left</aligny>
+                <aspectratio>keep</aspectratio>
+                <texture colordiffuse="$INFO[Window.Property(highlight)]">$INFO[Window.Property(provider_icon)]</texture>
+            </control>
+            <control type="image">
+                <left>1080</left>
+                <top>130</top>
+                <width>200</width>
+                <height>200</height>
+                <align>top</align>
+                <aligny>right</aligny>
+                <aspectratio>keep</aspectratio>
+                <texture colordiffuse="$INFO[Window.Property(highlight)]">$INFO[Window.Property(quality_icon)]</texture>
+            </control>
+            <control type="group">
+                <left>30</left>
+                <top>420</top>
+                <control type="label">
+                    <width max="1275">auto</width>
+                    <height>20</height>
+                    <font>font14</font> <!-- FEN_33 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <label>[UPPERCASE][COLOR $INFO[Window.Property(highlight)]][B]$ADDON[plugin.video.fen 32583]: [/B][/COLOR]$INFO[Window.Property(provider)][/UPPERCASE]</label>
+                </control>
+                <control type="label">
+                    <top>50</top>
+                    <width max="1275">auto</width>
+                    <height>20</height>
+                    <font>font14</font> <!-- FEN_33 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <label>[UPPERCASE][COLOR $INFO[Window.Property(highlight)]][B]$ADDON[plugin.video.fen 33031]: [/B][/COLOR]$INFO[Window.Property(source_type)][/UPPERCASE]</label>
+                </control>
+                <control type="label">
+                    <top>100</top>
+                    <width max="1275">auto</width>
+                    <height>20</height>
+                    <font>font14</font> <!-- FEN_33 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <label>[UPPERCASE][COLOR $INFO[Window.Property(highlight)]][B]$ADDON[plugin.video.fen 32100]: [/B][/COLOR]$INFO[Window.Property(source_site)][/UPPERCASE]</label>
+                </control>
+                <control type="label">
+                    <top>150</top>
+                    <width max="1275">auto</width>
+                    <height>20</height>
+                    <font>font14</font> <!-- FEN_33 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <label>[UPPERCASE][COLOR $INFO[Window.Property(highlight)]][B]$ADDON[plugin.video.fen 32241]: [/B][/COLOR]$INFO[Window.Property(quality)][/UPPERCASE]</label>
+                </control>
+                <control type="label">
+                    <top>200</top>
+                    <width max="1275">auto</width>
+                    <height>20</height>
+                    <font>font14</font> <!-- FEN_33 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <label>[UPPERCASE][COLOR $INFO[Window.Property(highlight)]][B]$ADDON[plugin.video.fen 32584]: [/B][/COLOR]$INFO[Window.Property(size_label)][/UPPERCASE]</label>
+                </control>
+                <control type="label">
+                    <top>250</top>
+                    <width max="1275">auto</width>
+                    <height>20</height>
+                    <font>font14</font> <!-- FEN_33 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <label>[UPPERCASE][COLOR $INFO[Window.Property(highlight)]][B]$ADDON[plugin.video.fen 32106]: [/B][/COLOR]$INFO[Window.Property(hash)][/UPPERCASE]</label>
+                </control>
+                <control type="label">
+                    <top>300</top>
+                    <width max="1275">auto</width>
+                    <height>20</height>
+                    <font>font14</font> <!-- FEN_33 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <label>[UPPERCASE][COLOR $INFO[Window.Property(highlight)]][B]$ADDON[plugin.video.fen 32987]: [/B][/COLOR]$INFO[Window.Property(extraInfo)][/UPPERCASE]</label>
+                </control>
+                <control type="textbox">
+                    <top>340</top>
+                    <left>0</left>
+                    <width max="1275">auto</width>
+                    <height>140</height>
+                    <font>font14</font> <!-- FEN_33 -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>left</align>
+                    <aligny>top</aligny>
+                    <label>[UPPERCASE][COLOR $INFO[Window.Property(highlight)]][B]$ADDON[plugin.video.fen 32228]: [/B][/COLOR]$INFO[Window.Property(name)][/UPPERCASE]</label>
+                </control>
+            </control>
+        </control>
+    </controls>
+</window>

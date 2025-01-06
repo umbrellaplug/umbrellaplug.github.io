@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">common/white.png</texture>
+        </control>
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <aspectratio>keep</aspectratio>
+            <texture>$INFO[Window.Property(fanart)]</texture>
+            <animation effect="fade" end="35" time="0">WindowOpen</animation>
+        </control>
+        <control type="group">
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" end="100" time="500" delay="200" />
+            </animation>
+            <control type="group">
+                <animation effect="fade" start="0" end="100" delay="400" time="450">WindowOpen</animation>
+                <control type="image">
+                    <top>5</top>
+                    <left>5</left>
+                    <width>60</width>
+                    <height>60</height>
+                    <aspectratio aligny="top">keep</aspectratio>
+                    <texture>common/fen.png</texture>
+                </control>
+                <control type="label">
+                    <top>20</top>
+                    <left>1590</left>
+                    <width max="300">auto</width>
+                    <height>20</height>
+                    <font>font_midi</font>
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>right</align>
+                    <aligny>center</aligny>
+                    <label>[B]$INFO[System.Time][/B]</label>
+                </control>
+                <control type="label">
+                    <top>50</top>
+                    <left>1540</left>
+                    <width max="350">auto</width>
+                    <height>20</height>
+                    <font>font_tiny</font>
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>right</align>
+                    <aligny>center</aligny>
+                    <label>$INFO[System.Date]</label>
+                </control>
+                <control type="label">
+                    <left>75</left>
+                    <top>22</top>
+                    <width>1560</width>
+                    <height>20</height>
+                    <font>font_tiny</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <label>[UPPERCASE]$ADDON[plugin.video.fen 32022] $INFO[Window.Property(page_no)][B][COLOR $VAR[ColorHighlight]] | [/COLOR]$INFO[Container(2000).ListItem.Property(name)][/B][/UPPERCASE]</label>
+                </control>
+            </control>
+            <control type="panel" id="2000">
+                <pagecontrol>2060</pagecontrol>
+                <left>160</left>
+                <top>90</top>
+                <width>1600</width>
+                <height>960</height>
+                <onup>2000</onup>
+                <ondown>2000</ondown>
+                <onleft>noop</onleft>
+                <onright>2060</onright>
+                <scrolltime tween="sine">350</scrolltime>
+                <itemlayout height="320" width="320">
+                    <control type="image">
+                        <left>10</left>
+                        <top>10</top>
+                        <width>280</width>
+                        <height>280</height>
+                        <aspectratio>keep</aspectratio>
+                        <texture>$INFO[ListItem.Property(thumb)]</texture>
+                    </control>
+                    <control type="label">
+                        <left>5</left>
+                        <top>295</top>
+                        <width max="310">auto</width>
+                        <height>20</height>
+                        <font>font_tiny</font>
+                        <textcolor>FFB7B4BB</textcolor>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <label>[UPPERCASE]$INFO[ListItem.Property(name)][/UPPERCASE]</label>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="320" width="320">
+                    <control type="group">
+                        <animation effect="zoom" start="100" end="105" time="200" tween="sine" easing="inout" center="auto">Focus</animation>
+                        <animation effect="zoom" start="105" end="100" time="200" tween="sine" easing="inout" center="auto">UnFocus</animation>
+                        <control type="image">
+                            <animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+                            <left>0</left>
+                            <top>0</top>
+                            <width>300</width>
+                            <height>320</height>
+                            <texture border="30">special://profile/addon_data/script.texturemaker/ArcticHorizon/box_v.png</texture>
+                        </control>
+                        <control type="image">
+                            <left>10</left>
+                            <top>10</top>
+                            <width>280</width>
+                            <height>280</height>
+                            <aspectratio>keep</aspectratio>
+                            <texture>$INFO[ListItem.Property(thumb)]</texture>
+                        </control>
+                        <control type="label">
+                            <left>5</left>
+                            <top>295</top>
+                            <width max="290">auto</width>
+                            <height>20</height>
+                            <font>font_tiny</font>
+                            <textcolor>$VAR[ColorSelected]</textcolor>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <label>[UPPERCASE]$INFO[ListItem.Property(name)][/UPPERCASE]</label>
+                        </control>
+                    </control>
+                </focusedlayout>
+            </control>
+            <control type="scrollbar" id="2060">
+                <top>100</top>
+                <left>1880</left>
+                <width>10</width>
+                <height>940</height>
+                <onleft>2000</onleft>
+                <onright>2000</onright>
+                <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_v.png</texturesliderbarfocus>
+                <showonepage>false</showonepage>
+                <orientation>vertical</orientation>
+                <visible>Control.IsVisible(2000)</visible>
+            </control>
+        </control>
+    </controls>
+</window>

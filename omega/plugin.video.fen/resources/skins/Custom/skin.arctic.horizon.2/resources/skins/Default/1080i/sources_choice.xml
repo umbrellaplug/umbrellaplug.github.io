@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">common/white.png</texture>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" start="0" end="80" time="120" />
+            </animation>
+        </control>
+        <control type="group">
+            <left>320</left>
+            <top>285</top>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" end="100" time="200" />
+            </animation>
+            <control type="image">
+                <height>460</height>
+                <width>1250</width>
+                <include>Texture_Dialog</include>
+            </control>
+            <control type="image">
+                <left>7</left>
+                <top>7</top>
+                <width>45</width>
+                <height>45</height>
+                <align>left</align>
+                <aligny>top</aligny>
+                <aspectratio aligny="top">keep</aspectratio>
+                <texture colordiffuse="dialog_fg_70">common/fen.png</texture>
+            </control>
+            <control type="image">
+                <top>70</top>
+                <left>610</left>
+                <height>360</height>
+                <width>600</width>
+                <aspectratio>stretch</aspectratio>
+                <align>top</align>
+                <texture>$INFO[Container(5001).ListItem.Property(image)]</texture>
+                <fadetime>100</fadetime>
+            </control>
+            <control type="fixedlist" id="5001">
+                <pagecontrol>5060</pagecontrol>
+                <left>0</left>
+                <top>70</top>
+                <width>530</width>
+                <height>360</height>
+                <onup>5001</onup>
+                <ondown>5001</ondown>
+                <onright>5060</onright>
+                <scrolltime tween="sine">200</scrolltime>
+                <orientation>Vertical</orientation>
+                <focusposition>1</focusposition>
+                <movement>2</movement>
+                <itemlayout height="90" width="530">
+                    <control type="label">
+                        <width max="480">auto</width>
+                        <left>40</left>
+                        <height>90</height>
+                        <font>font12</font>
+                        <textcolor>dialog_fg_70</textcolor>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <label>[UPPERCASE]$INFO[ListItem.Property(name)][/UPPERCASE]</label>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="90" width="530">
+                    <control type="image">
+                        <width>530</width>
+                        <height>90</height>
+                        <aligny>top</aligny>
+                        <texture border="30">special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texture>
+                        <animation effect="fade" start="100" end="30" time="0" condition="!Control.HasFocus(5001)">Conditional</animation>
+                    </control>
+                    <control type="label">
+                        <left>40</left>
+                        <width max="480">auto</width>
+                        <height>90</height>
+                        <font>font12</font>
+                        <textcolor>$VAR[ColorSelected]</textcolor>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <label>[UPPERCASE]$INFO[ListItem.Property(name)][/UPPERCASE]</label>
+                    </control>
+                </focusedlayout>
+            </control>
+            <control type="scrollbar" id="5060">
+                <top>70</top>
+                <left>560</left>
+                <width>10</width>
+                <height>360</height>
+                <onleft>5001</onleft>
+                <onright>5001</onright>
+                <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_v.png</texturesliderbarfocus>
+                <showonepage>false</showonepage>
+                <orientation>vertical</orientation>
+                <visible>Control.IsVisible(5001)</visible>
+            </control>
+        </control>
+    </controls>
+</window>

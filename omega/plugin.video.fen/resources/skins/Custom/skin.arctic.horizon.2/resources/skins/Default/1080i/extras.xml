@@ -1,0 +1,1883 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <!-- Background -->
+        <control type="group">
+            <width>1920</width>
+            <height>1080</height>
+            <control type="image">
+                <texture colordiffuse="FF000000">common/white.png</texture>
+            </control>
+            <control type="image" id="202">
+                <aspectratio>keep</aspectratio>
+                <animation effect="fade" start="100" end="25" time="800">WindowOpen</animation>
+            </control>
+        </control>
+        <control type="group">
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" end="100" time="400" delay="500" />
+            </animation>
+            <!-- Fen Logo and Tips/Clock & Date --> 
+            <control type="group">
+                <left>5</left>
+                <control type="image">
+                    <top>5</top>
+                    <width>60</width>
+                    <height>60</height>
+                    <aspectratio aligny="top">keep</aspectratio>
+                    <texture>common/fen.png</texture>
+                </control>
+                <control type="group">
+                    <visible>!Control.HasFocus(2050) + !Control.HasFocus(2051) + !Control.HasFocus(2057) + !Control.HasFocus(2058) + !Control.HasFocus(2059) + !Control.HasFocus(2060) + !Control.HasFocus(2061) + !Control.HasFocus(2062)</visible>
+                    <control type="label">
+                        <top>20</top>
+                        <left>1590</left>
+                        <width max="300">auto</width>
+                        <height>20</height>
+                        <font>font_midi</font>
+                        <textcolor>FFCCCCCC</textcolor>
+                        <align>right</align>
+                        <aligny>center</aligny>
+                        <label>[B]$INFO[System.Time][/B]</label>
+                    </control>
+                    <control type="label">
+                        <top>50</top>
+                        <left>1540</left>
+                        <width max="350">auto</width>
+                        <height>20</height>
+                        <font>font_tiny</font>
+                        <textcolor>FFCCCCCC</textcolor>
+                        <align>right</align>
+                        <aligny>center</aligny>
+                        <label>$INFO[System.Date]</label>
+                    </control>
+                </control>
+                <control type="group">
+                    <left>1335</left>
+                    <top>25</top>
+                    <control type="image">
+                        <top>0</top>
+                        <left>510</left>
+                        <width>35</width>
+                        <height>35</height>
+                        <aspectratio>keep</aspectratio>
+                        <texture>dialog/info.png</texture>
+                        <visible>Control.HasFocus(2050) | Control.HasFocus(2051) | Control.HasFocus(2057) | Control.HasFocus(2058) | Control.HasFocus(2059) | Control.HasFocus(2060) | Control.HasFocus(2061) | Control.HasFocus(2062)</visible>
+                    </control>
+                    <control type="label">
+                        <width max="500">auto</width>
+                        <height>20</height>
+                        <font>font_mini</font>
+                        <textcolor>FFCCCCCC</textcolor>
+                        <align>right</align>
+                        <aligny>top</aligny>
+                        <label>$ADDON[plugin.video.fen 32695]</label>
+                        <visible>Control.HasFocus(2050)</visible>
+                    </control>
+                    <control type="label">
+                        <width max="500">auto</width>
+                        <height>20</height>
+                        <font>font_mini</font>
+                        <textcolor>FFCCCCCC</textcolor>
+                        <align>right</align>
+                        <aligny>top</aligny>
+                        <label>$ADDON[plugin.video.fen 32049]</label>
+                        <visible>Control.HasFocus(2057) | Control.HasFocus(2058)</visible>
+                    </control>
+                    <control type="label">
+                        <width max="500">auto</width>
+                        <height>20</height>
+                        <font>font_mini</font> <!-- FEN_26 -->
+                        <textcolor>FFCCCCCC</textcolor>
+                        <align>right</align>
+                        <aligny>top</aligny>
+                        <label>$ADDON[plugin.video.fen 33129]</label>
+                        <visible>Control.HasFocus(2051) | Control.HasFocus(2059) | Control.HasFocus(2060) | Control.HasFocus(2061) | Control.HasFocus(2062)</visible>
+                    </control>
+                </control>
+            </control>
+            <!-- Top Heading, Poster and Clearlogo -->
+            <control type="group">
+                <control type="image" id="200">
+                    <top>80</top>
+                    <left>1250</left>
+                    <width>650</width>
+                    <height>1000</height>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <texture diffuse="diffuse/poster_w544_h800.png" />
+                </control>
+                <control type="group">
+                    <control type="image"id="201">
+                        <top>35</top>
+                        <left>70</left>
+                        <height max="250">auto</height>
+                        <width max="1130">auto</width>
+                        <aspectratio>keep</aspectratio>
+                        <align>center</align>
+                        <aligny>bottom</aligny>
+                    </control>
+                    <control type="label">
+                        <top>150</top>
+                        <left>70</left>
+                        <width max="1130">auto</width>
+                        <height>30</height>
+                        <font>font_huge_bold</font>
+                        <textcolor>FFCCCCCC</textcolor>
+                        <align>center</align>
+                        <aligny>bottom</aligny>
+                        <label>[B]$INFO[Window.Property(title)][/B]</label>
+                        <visible>String.IsEqual(Window.Property(clearlogo),false)</visible>
+                    </control>
+                </control>
+            </control>
+            <!-- Top 4 Lines Info -->
+            <control type="group">
+                <animation effect="fade" start="100" end="0" time="0" condition="!Control.HasFocus(10) + !Control.HasFocus(11) + !Control.HasFocus(12) + !Control.HasFocus(13) + !Control.HasFocus(14) + !Control.HasFocus(15) + !Control.HasFocus(16) + !Control.HasFocus(17)">Conditional</animation>
+                <top>295</top>
+                <left>50</left>
+                <!-- Line 1 -->
+                <control type="label">
+                    <width max="1150">auto</width>
+                    <height>25</height>
+                    <font>font_midi</font>
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>center</align>
+                    <label>[I]$INFO[Window.Property(genre)][/I]</label>
+                </control>
+                <!-- Line 2 -->
+                <control type="label" id="2001">
+                    <top>55</top>
+                    <width max="1150">auto</width>
+                    <height>25</height>
+                    <font>font_midi</font>
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>center</align>
+                </control>
+                <!-- Line 3 -->
+                <control type="label" id="3001">
+                    <top>105</top>
+                    <width max="1150">auto</width>
+                    <height>25</height>
+                    <font>font_midi</font>
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>center</align>
+                </control>
+                <!-- Line 4 -->
+                <control type="grouplist">
+                    <top>170</top>
+                    <width>1110</width>
+                    <orientation>horizontal</orientation>
+                    <itemgap>30</itemgap>
+                    <align>center</align>
+                    <control type="grouplist">
+                        <width>130</width>
+                        <orientation>horizontal</orientation>
+                        <itemgap>0</itemgap>
+                        <align>center</align>
+                        <visible>String.IsEqual(Window.Property(metascore_rating),true)</visible>
+                        <control type="image" id="4101">
+                            <width>52</width>
+                            <height>32</height>
+                            <aspectratio>keep</aspectratio>
+                            <align>right</align>
+                            <aligny>center</aligny>
+                        </control>
+                        <control type="label" id="4001">
+                            <width max="75">auto</width>
+                            <height>32</height>
+                            <font>font_mini</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>center</aligny>
+                        </control>
+                    </control>
+                    <control type="grouplist">
+                        <width>130</width>
+                        <orientation>horizontal</orientation>
+                        <itemgap>0</itemgap>
+                        <align>center</align>
+                        <visible>String.IsEqual(Window.Property(tomatometer_rating),true)</visible>
+                        <control type="image" id="4102">
+                            <width>52</width>
+                            <height>32</height>
+                            <aspectratio>keep</aspectratio>
+                            <align>right</align>
+                            <aligny>center</aligny>
+                        </control>
+                        <control type="label" id="4002">
+                            <width max="75">auto</width>
+                            <height>32</height>
+                            <font>font_mini</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>center</aligny>
+                        </control>
+                    </control>
+                    <control type="grouplist">
+                        <width>130</width>
+                        <orientation>horizontal</orientation>
+                        <itemgap>0</itemgap>
+                        <align>center</align>
+                        <visible>String.IsEqual(Window.Property(tomatousermeter_rating),true)</visible>
+                        <control type="image" id="4103">
+                            <width>52</width>
+                            <height>32</height>
+                            <aspectratio>keep</aspectratio>
+                            <align>right</align>
+                            <aligny>center</aligny>
+                        </control>
+                        <control type="label" id="4003">
+                            <width max="75">auto</width>
+                            <height>32</height>
+                            <font>font_mini</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>center</aligny>
+                        </control>
+                    </control>
+                    <control type="grouplist">
+                        <width>130</width>
+                        <orientation>horizontal</orientation>
+                        <itemgap>10</itemgap>
+                        <align>center</align>
+                        <visible>String.IsEqual(Window.Property(imdb_rating),true)</visible>
+                        <control type="image" id="4104">
+                            <width>52</width>
+                            <height>32</height>
+                            <aspectratio>keep</aspectratio>
+                            <align>right</align>
+                            <aligny>center</aligny>
+                        </control>
+                        <control type="label" id="4004">
+                            <width max="75">auto</width>
+                            <height>32</height>
+                            <font>font_mini</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>center</aligny>
+                        </control>
+                    </control>
+                    <control type="grouplist">
+                        <width>130</width>
+                        <orientation>horizontal</orientation>
+                        <itemgap>0</itemgap>
+                        <align>center</align>
+                        <visible>String.IsEqual(Window.Property(tmdb_rating),true)</visible>
+                        <control type="image" id="4105">
+                            <width>52</width>
+                            <height>32</height>
+                            <aspectratio>keep</aspectratio>
+                            <align>right</align>
+                            <aligny>center</aligny>
+                        </control>
+                        <control type="label" id="4005">
+                            <width max="75">auto</width>
+                            <height>32</height>
+                            <font>font_mini</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>center</aligny>
+                        </control>
+                    </control>
+                </control>
+            </control>
+            <!-- Body -->
+            <control type="grouplist">
+                <animation effect="slide" end="0,-220" time="0" reversible="true" condition="[!Control.HasFocus(10) + !Control.HasFocus(11) + !Control.HasFocus(12) + !Control.HasFocus(13) + !Control.HasFocus(14) + !Control.HasFocus(15) + !Control.HasFocus(16) + !Control.HasFocus(17)]">Conditional</animation>
+                <top>530</top>
+                <left>50</left>
+                <width>1920</width>
+                <height>780</height>
+                <orientation>vertical</orientation>
+                <scrolltime tween="sine">500</scrolltime>
+                <itemgap>-300</itemgap>
+                <usecontrolcoords>true</usecontrolcoords>
+                <!-- Buttons 10-17 -->
+                <control type="group">
+                    <height>500</height>
+                    <!-- Buttons Row 1 10-13 -->
+                    <control type="group">
+                        <control type="button" id="10">
+                            <width>275</width>
+                            <height>75</height>
+                            <onleft>13</onleft>
+                            <onright>11</onright>
+                            <onup>2063</onup>
+                            <ondown>14</ondown>
+                            <label>$INFO[Window.Property(button10.label)]</label>
+                            <font>font_mini</font>
+                            <textcolor>dialog_fg_70</textcolor>
+                            <focusedcolor>$VAR[ColorSelected]</focusedcolor>
+                            <texturefocus border="30">special://profile/addon_data/script.texturemaker/ArcticHorizon/menu_h.png</texturefocus>
+                            <texturenofocus colordiffuse="dialog_bg_100" border="30">special://skin/extras/textures/menu.png</texturenofocus>
+                        </control>
+                        <control type="button" id="11">
+                            <left>300</left>
+                            <width>275</width>
+                            <height>75</height>
+                            <onleft>10</onleft>
+                            <onright>12</onright>
+                            <onup>2063</onup>
+                            <ondown>15</ondown>
+                            <label>$INFO[Window.Property(button11.label)]</label>
+                            <font>font_mini</font>
+                            <textcolor>dialog_fg_70</textcolor>
+                            <focusedcolor>$VAR[ColorSelected]</focusedcolor>
+                            <texturefocus border="30">special://profile/addon_data/script.texturemaker/ArcticHorizon/menu_h.png</texturefocus>
+                            <texturenofocus colordiffuse="dialog_bg_100" border="30">special://skin/extras/textures/menu.png</texturenofocus>
+                        </control>
+                        <control type="button" id="12">
+                            <left>600</left>
+                            <width>275</width>
+                            <height>75</height>
+                            <onleft>11</onleft>
+                            <onright>13</onright>
+                            <onup>2063</onup>
+                            <ondown>16</ondown>
+                            <label>$INFO[Window.Property(button12.label)]</label>
+                            <font>font_mini</font>
+                            <textcolor>dialog_fg_70</textcolor>
+                            <focusedcolor>$VAR[ColorSelected]</focusedcolor>
+                            <texturefocus border="30">special://profile/addon_data/script.texturemaker/ArcticHorizon/menu_h.png</texturefocus>
+                            <texturenofocus colordiffuse="dialog_bg_100" border="30">special://skin/extras/textures/menu.png</texturenofocus>
+                        </control>
+                        <control type="button" id="13">
+                            <left>900</left>
+                            <width>275</width>
+                            <height>75</height>
+                            <onleft>12</onleft>
+                            <onright>10</onright>
+                            <onup>2063</onup>
+                            <ondown>17</ondown>
+                            <label>$INFO[Window.Property(button13.label)]</label>
+                            <font>font_mini</font>
+                            <textcolor>dialog_fg_70</textcolor>
+                            <focusedcolor>$VAR[ColorSelected]</focusedcolor>
+                            <texturefocus border="30">special://profile/addon_data/script.texturemaker/ArcticHorizon/menu_h.png</texturefocus>
+                            <texturenofocus colordiffuse="dialog_bg_100" border="30">special://skin/extras/textures/menu.png</texturenofocus>
+                        </control>
+                    </control>
+                    <!-- Buttons Row 2 14-17 -->
+                    <control type="group">
+                        <top>90</top>
+                        <control type="button" id="14">
+                            <width>275</width>
+                            <height>75</height>
+                            <onleft>17</onleft>
+                            <onright>15</onright>
+                            <onup>10</onup>
+                            <ondown>50</ondown>
+                            <label>$INFO[Window.Property(button14.label)]</label>
+                            <font>font_mini</font>
+                            <textcolor>dialog_fg_70</textcolor>
+                            <focusedcolor>$VAR[ColorSelected]</focusedcolor>
+                            <texturefocus border="30">special://profile/addon_data/script.texturemaker/ArcticHorizon/menu_h.png</texturefocus>
+                            <texturenofocus colordiffuse="dialog_bg_100" border="30">special://skin/extras/textures/menu.png</texturenofocus>
+                        </control>
+                        <control type="button" id="15">
+                            <left>300</left>
+                            <width>275</width>
+                            <height>75</height>
+                            <onleft>14</onleft>
+                            <onright>16</onright>
+                            <onup>11</onup>
+                            <ondown>50</ondown>
+                            <label>$INFO[Window.Property(button15.label)]</label>
+                            <font>font_mini</font>
+                            <textcolor>dialog_fg_70</textcolor>
+                            <focusedcolor>$VAR[ColorSelected]</focusedcolor>
+                            <texturefocus border="30">special://profile/addon_data/script.texturemaker/ArcticHorizon/menu_h.png</texturefocus>
+                            <texturenofocus colordiffuse="dialog_bg_100" border="30">special://skin/extras/textures/menu.png</texturenofocus>
+                        </control>
+                        <control type="button" id="16">
+                            <left>600</left>
+                            <width>275</width>
+                            <height>75</height>
+                            <onleft>15</onleft>
+                            <onright>17</onright>
+                            <onup>12</onup>
+                            <ondown>50</ondown>
+                            <label>$INFO[Window.Property(button16.label)]</label>
+                            <font>font_mini</font>
+                            <textcolor>dialog_fg_70</textcolor>
+                            <focusedcolor>$VAR[ColorSelected]</focusedcolor>
+                            <texturefocus border="30">special://profile/addon_data/script.texturemaker/ArcticHorizon/menu_h.png</texturefocus>
+                            <texturenofocus colordiffuse="dialog_bg_100" border="30">special://skin/extras/textures/menu.png</texturenofocus>
+                        </control>
+                        <control type="button" id="17">
+                            <left>900</left>
+                            <width>275</width>
+                            <height>75</height>
+                            <onleft>16</onleft>
+                            <onup>13</onup>
+                            <onright>14</onright>
+                            <ondown>50</ondown>
+                            <label>$INFO[Window.Property(button17.label)]</label>
+                            <font>font_mini</font>
+                            <textcolor>dialog_fg_70</textcolor>
+                            <focusedcolor>$VAR[ColorSelected]</focusedcolor>
+                            <texturefocus border="30">special://profile/addon_data/script.texturemaker/ArcticHorizon/menu_h.png</texturefocus>
+                            <texturenofocus colordiffuse="dialog_bg_100" border="30">special://skin/extras/textures/menu.png</texturenofocus>
+                        </control>
+                    </control>
+                </control>
+                <!-- Plot 2000 -->
+                <control type="group">
+                    <visible>String.IsEqual(Window.Property(plot_enabled),true)</visible>
+                    <height>760</height>
+                    <control type="group">
+                        <control type="label">
+                            <width max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>bottom</aligny>
+                            <label>[B]$ADDON[plugin.video.fen 32842][/B]</label>
+                        </control>
+                        <control type="button" id="50">
+                            <top>50</top>
+                            <width>1180</width>
+                            <height>390</height>
+                            <onup>14</onup>
+                            <ondown>2050</ondown>
+                            <texturefocus border="30">special://profile/addon_data/script.texturemaker/ArcticHorizon/menu_h.png</texturefocus>
+                            <texturenofocus colordiffuse="dialog_bg_100" border="30">special://skin/extras/textures/menu.png</texturenofocus>
+                        </control>
+                        <control type="textbox">
+                            <top>65</top>
+                            <left>15</left>
+                            <width>1150</width>
+                            <height>360</height>
+                            <font>font_mini</font>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <textcolor>dialog_fg_70</textcolor>
+                            <label>$INFO[Window.Property(plot)]</label>
+                            <autoscroll>false</autoscroll>
+                            <visible>!Control.HasFocus(50)</visible>
+                        </control>
+                        <control type="textbox">
+                            <top>65</top>
+                            <left>15</left>
+                            <width>1150</width>
+                            <height>360</height>
+                            <font>font_mini</font>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <textcolor>$VAR[ColorSelected]</textcolor>
+                            <label>$INFO[Window.Property(plot)]</label>
+                            <autoscroll>false</autoscroll>
+                            <visible>Control.HasFocus(50)</visible>
+                        </control>
+                    </control>
+                </control>
+                <!-- Cast 2050 -->
+                <control type="group">
+                    <visible>Integer.IsGreater(Container(2050).NumItems,0)</visible>
+                    <height>760</height>
+                    <control type="group">
+                        <control type="label">
+                            <width min="30" max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <label>[B]$ADDON[plugin.video.fen 32664][COLOR $VAR[ColorHighlight]] $INFO[Window.Property(cast.number)][/COLOR][/B]</label>
+                            <visible>!Control.HasFocus(2050)</visible>
+                        </control>
+                        <control type="label">
+                            <width min="30" max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <label>[B]$ADDON[plugin.video.fen 32664][COLOR $VAR[ColorHighlight]] | [/COLOR][/B]$INFO[Container(2050).ListItem.Property(name)][COLOR $VAR[ColorHighlight]] • [/COLOR]$INFO[Container(2050).ListItem.Property(role)]</label>
+                            <visible>Control.HasFocus(2050)</visible>
+                        </control>
+                        <control type="fixedlist" id="2050">
+                            <animation effect="slide" end="-472,0" time="0" condition="Integer.IsEqual(Container(2050).NumItems,1) | Integer.IsEqual(Container(2050).NumItems,2)">Conditional</animation>
+                            <animation effect="slide" end="-236,0" time="0" condition="Integer.IsEqual(Container(2050).NumItems,3) | Integer.IsEqual(Container(2050).NumItems,4)">Conditional</animation>
+                            <pagecontrol>4050</pagecontrol>
+                            <top>60</top>
+                            <width>1180</width>
+                            <height>360</height>
+                            <onup>50</onup>
+                            <ondown>4050</ondown>
+                            <orientation>horizontal</orientation>
+                            <scrolltime tween="sine">500</scrolltime>
+                            <focusposition>2</focusposition>
+                            <movement>2</movement>
+                            <itemlayout height="360" width="236">
+                                <control type="image">
+                                    <left>6</left>
+                                    <top>6</top>
+                                    <height max="348">auto</height>
+                                    <width max="224">auto</width>
+                                    <aspectratio>scale</aspectratio>
+                                    <texture diffuse="diffuse/poster_w217_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                </control>
+                            </itemlayout>
+                            <focusedlayout height="360" width="236">
+                                <control type="group">
+                                    <animation effect="zoom" start="100" end="105" time="200" tween="sine" easing="inout" center="auto">Focus</animation>
+                                    <animation effect="zoom" start="105" end="100" time="200" tween="sine" easing="inout" center="auto">UnFocus</animation>
+                                    <animation effect="fade" start="100" end="60" condition="Control.HasFocus(4050)">Conditional</animation>
+                                    <control type="image">
+                                        <animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+                                        <left>0</left>
+                                        <top>0</top>
+                                        <height>360</height>
+                                        <width>236</width>
+                                        <texture>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_v.png</texture>
+                                        <visible>Control.HasFocus(2050) | Control.HasFocus(4050)</visible>
+                                    </control>
+                                    <control type="image">
+                                        <left>6</left>
+                                        <top>6</top>
+                                        <height max="348">auto</height>
+                                        <width max="224">auto</width>
+                                        <aspectratio>scale</aspectratio>
+                                        <texture diffuse="diffuse/poster_w217_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                    </control>
+                                </control>
+                            </focusedlayout>
+                        </control>
+                        <control type="scrollbar" id="4050">
+                            <left>5</left>
+                            <top>432</top>
+                            <width>1170</width>
+                            <height>15</height>
+                            <onup>2050</onup>
+                            <ondown>2051</ondown>
+                            <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                            <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                            <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                            <showonepage>false</showonepage>
+                            <orientation>Horizontal</orientation>
+                            <visible>String.IsEqual(Window.Property(enable_scrollbars),true) + [Control.HasFocus(2050) | Control.HasFocus(4050)]</visible>
+                        </control>
+                        <control type="image">
+                            <top>215</top>
+                            <left>10</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2050) | Control.HasFocus(4050)] + Container(2050).HasPrevious</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]" flipx="true">arrows/arrow-small-right.png</texture>
+                        </control>
+                        <control type="image">
+                            <top>215</top>
+                            <left>1145</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2050) | Control.HasFocus(4050)] + Container(2050).HasNext</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]">arrows/arrow-small-right.png</texture>
+                        </control>
+                    </control>
+                </control>
+                <!-- Recommended 2051 -->
+                <control type="group">
+                    <visible>Integer.IsGreater(Container(2051).NumItems,0)</visible>
+                    <height>760</height>
+                    <control type="group">
+                        <control type="label">
+                            <width min="30" max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <label>[B]$ADDON[plugin.video.fen 32503][COLOR $VAR[ColorHighlight]] $INFO[Window.Property(recommended.number)][/COLOR][/B]</label>
+                            <visible>!Control.HasFocus(2051)</visible>
+                        </control>
+                        <control type="label">
+                            <width min="30" max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <label>[B]$ADDON[plugin.video.fen 32503][COLOR $VAR[ColorHighlight]] | [/COLOR][/B]$INFO[Container(2051).ListItem.Property(name)][COLOR $VAR[ColorHighlight]] • [/COLOR]$INFO[Container(2051).ListItem.Property(release_date)][COLOR $VAR[ColorHighlight]] • [/COLOR]$INFO[Container(2051).ListItem.Property(vote_average)]</label>
+                            <visible>Control.HasFocus(2051)</visible>
+                        </control>
+                        <control type="fixedlist" id="2051">
+                            <animation effect="slide" end="-472,0" time="0" condition="Integer.IsEqual(Container(2051).NumItems,1) | Integer.IsEqual(Container(2051).NumItems,2)">Conditional</animation>
+                            <animation effect="slide" end="-236,0" time="0" condition="Integer.IsEqual(Container(2051).NumItems,3) | Integer.IsEqual(Container(2051).NumItems,4)">Conditional</animation>
+                            <pagecontrol>4051</pagecontrol>
+                            <top>60</top>
+                            <width>1180</width>
+                            <height>360</height>
+                            <onup>2050</onup>
+                            <ondown>4051</ondown>
+                            <orientation>horizontal</orientation>
+                            <scrolltime tween="sine">500</scrolltime>
+                            <focusposition>2</focusposition>
+                            <movement>2</movement>
+                            <itemlayout height="360" width="236">
+                                <control type="image">
+                                    <left>6</left>
+                                    <top>6</top>
+                                    <height max="348">auto</height>
+                                    <width max="224">auto</width>
+                                    <aspectratio>scale</aspectratio>
+                                    <texture diffuse="diffuse/poster_w217_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                </control>
+                            </itemlayout>
+                            <focusedlayout height="360" width="236">
+                                <control type="group">
+                                    <animation effect="zoom" start="100" end="105" time="200" tween="sine" easing="inout" center="auto">Focus</animation>
+                                    <animation effect="zoom" start="105" end="100" time="200" tween="sine" easing="inout" center="auto">UnFocus</animation>
+                                    <animation effect="fade" start="100" end="60" condition="Control.HasFocus(4051)">Conditional</animation>
+                                    <control type="image">
+                                        <animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+                                        <left>0</left>
+                                        <top>0</top>
+                                        <height>360</height>
+                                        <width>236</width>
+                                        <texture>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_v.png</texture>
+                                        <visible>Control.HasFocus(2051) | Control.HasFocus(4051)</visible>
+                                    </control>
+                                    <control type="image">
+                                        <left>6</left>
+                                        <top>6</top>
+                                        <height max="348">auto</height>
+                                        <width max="224">auto</width>
+                                        <aspectratio>scale</aspectratio>
+                                        <texture diffuse="diffuse/poster_w217_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                    </control>
+                                </control>
+                            </focusedlayout>
+                        </control>
+                        <control type="scrollbar" id="4051">
+                            <left>5</left>
+                            <top>432</top>
+                            <width>1170</width>
+                            <height>15</height>
+                            <onup>2051</onup>
+                            <ondown>2052</ondown>
+                            <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                            <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                            <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                            <showonepage>false</showonepage>
+                            <orientation>Horizontal</orientation>
+                            <visible>String.IsEqual(Window.Property(enable_scrollbars),true) + [Control.HasFocus(2051) | Control.HasFocus(4051)]</visible>
+                        </control>
+                        <control type="image">
+                            <top>215</top>
+                            <left>10</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2051) | Control.HasFocus(4051)] + Container(2051).HasPrevious</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]" flipx="true">arrows/arrow-small-right.png</texture>
+                        </control>
+                        <control type="image">
+                            <top>215</top>
+                            <left>1145</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2051) | Control.HasFocus(4051)] + Container(2051).HasNext</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]">arrows/arrow-small-right.png</texture>
+                        </control>
+                    </control>
+                </control>
+                <!-- IMDb Reviews 2052 -->
+                <control type="group">
+                    <visible>Integer.IsGreater(Container(2052).NumItems,0)</visible>
+                    <height>760</height>
+                    <control type="group">
+                        <control type="label">
+                            <width max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>bottom</aligny>
+                            <label>[B]$ADDON[plugin.video.fen 32607][COLOR $VAR[ColorHighlight]] $INFO[Window.Property(imdb_reviews.number)][/COLOR][/B]</label>
+                        </control>
+                        <control type="panel" id="2052">
+                            <pagecontrol>4052</pagecontrol>
+                            <top>60</top>
+                            <width>1180</width>
+                            <height>360</height>
+                            <onup>2051</onup>
+                            <ondown>4052</ondown>
+                            <orientation>horizontal</orientation>
+                            <scrolltime tween="sine">500</scrolltime>
+                            <itemlayout height="380" width="590">
+                                <control type="image">
+                                    <height>360</height>
+                                    <width>570</width>
+                                    <texture colordiffuse="dialog_bg_100" border="30">common/circle.png</texture>
+                                </control>
+                                <control type="textbox">
+                                    <top>15</top>
+                                    <left>15</left>
+                                    <width>540</width>
+                                    <height>308</height>
+                                    <font>font_mini</font>
+                                    <align>center</align>
+                                    <aligny>top</aligny>
+                                    <textcolor>dialog_fg_70</textcolor>
+                                    <label>$INFO[ListItem.Property(text)]</label>
+                                    <autoscroll>false</autoscroll>
+                                </control>
+                            </itemlayout>
+                            <focusedlayout height="380" width="590">
+                                <control type="image">
+                                    <height>360</height>
+                                    <width>570</width>
+                                    <texture border="30">special://profile/addon_data/script.texturemaker/ArcticHorizon/menu_h.png</texture>
+                                </control>
+                                <control type="textbox">
+                                    <top>15</top>
+                                    <left>15</left>
+                                    <width>540</width>
+                                    <height>308</height>
+                                    <font>font_mini</font>
+                                    <align>center</align>
+                                    <aligny>top</aligny>
+                                    <textcolor>$VAR[ColorSelected]</textcolor>
+                                    <label>$INFO[ListItem.Property(text)]</label>
+                                </control>
+                            </focusedlayout>
+                        </control>
+                        <control type="scrollbar" id="4052">
+                            <top>432</top>
+                            <width>1160</width>
+                            <height>15</height>
+                            <onup>2052</onup>
+                            <ondown>2053</ondown>
+                            <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                            <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                            <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                            <showonepage>false</showonepage>
+                            <orientation>Horizontal</orientation>
+                            <visible>String.IsEqual(Window.Property(enable_scrollbars),true) + [Control.HasFocus(2052) | Control.HasFocus(4052)]</visible>
+                        </control>
+                        <control type="image">
+                            <top>225</top>
+                            <left>10</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2052) | Control.HasFocus(4052)] + Container(2052).HasPrevious</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]" flipx="true">arrows/arrow-small-right.png</texture>
+                        </control>
+                        <control type="image">
+                            <top>225</top>
+                            <left>1125</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2052) | Control.HasFocus(4052)] + Container(2052).HasNext</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]">arrows/arrow-small-right.png</texture>
+                        </control>
+                    </control>
+                </control>
+                <!-- Trakt Comments 2053 -->
+                <control type="group">
+                    <visible>Integer.IsGreater(Container(2053).NumItems,0)</visible>
+                    <height>760</height>
+                    <control type="group">
+                        <control type="label">
+                            <width max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>bottom</aligny>
+                            <label>[B]$ADDON[plugin.video.fen 33158][COLOR $VAR[ColorHighlight]] $INFO[Window.Property(trakt_comments.number)][/COLOR][/B]</label>
+                        </control>
+                        <control type="panel" id="2053">
+                            <pagecontrol>4053</pagecontrol>
+                            <top>60</top>
+                            <width>1180</width>
+                            <height>360</height>
+                            <onup>2052</onup>
+                            <ondown>4053</ondown>
+                            <orientation>horizontal</orientation>
+                            <scrolltime tween="sine">500</scrolltime>
+                            <itemlayout height="380" width="590">
+                                <control type="image">
+                                    <height>360</height>
+                                    <width>570</width>
+                                    <texture colordiffuse="dialog_bg_100" border="30">common/circle.png</texture>
+                                </control>
+                                <control type="textbox">
+                                    <top>15</top>
+                                    <left>15</left>
+                                    <width>540</width>
+                                    <height>308</height>
+                                    <font>font_mini</font>
+                                    <align>center</align>
+                                    <aligny>top</aligny>
+                                    <textcolor>dialog_fg_70</textcolor>
+                                    <label>$INFO[ListItem.Property(text)]</label>
+                                    <autoscroll>false</autoscroll>
+                                </control>
+                            </itemlayout>
+                            <focusedlayout height="380" width="590">
+                                <control type="image">
+                                    <height>360</height>
+                                    <width>570</width>
+                                    <texture border="30">special://profile/addon_data/script.texturemaker/ArcticHorizon/menu_h.png</texture>
+                                </control>
+                                <control type="textbox">
+                                    <top>15</top>
+                                    <left>15</left>
+                                    <width>540</width>
+                                    <height>308</height>
+                                    <font>font_mini</font>
+                                    <align>center</align>
+                                    <aligny>top</aligny>
+                                    <textcolor>$VAR[ColorSelected]</textcolor>
+                                    <label>$INFO[ListItem.Property(text)]</label>
+                                </control>
+                            </focusedlayout>
+                        </control>
+                        <control type="scrollbar" id="4053">
+                            <top>432</top>
+                            <width>1160</width>
+                            <height>15</height>
+                            <onup>2053</onup>
+                            <ondown>2054</ondown>
+                            <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                            <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                            <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                            <showonepage>false</showonepage>
+                            <orientation>Horizontal</orientation>
+                            <visible>String.IsEqual(Window.Property(enable_scrollbars),true) + [Control.HasFocus(2053) | Control.HasFocus(4053)]</visible>
+                        </control>
+                        <control type="image">
+                            <top>210</top>
+                            <left>10</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2053) | Control.HasFocus(4053)] + Container(2053).HasPrevious</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]" flipx="true">arrows/arrow-small-right.png</texture>
+                        </control>
+                        <control type="image">
+                            <top>210</top>
+                            <left>1125</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2053) | Control.HasFocus(4053)] + Container(2053).HasNext</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]">arrows/arrow-small-right.png</texture>
+                        </control>
+                    </control>
+                </control>
+                <!-- IMDb Trivia 2054 -->
+                <control type="group">
+                    <visible>Integer.IsGreater(Container(2054).NumItems,0)</visible>
+                    <height>760</height>
+                    <control type="group">
+                        <control type="label">
+                            <width max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>bottom</aligny>
+                            <label>[B]$ADDON[plugin.video.fen 32984][COLOR $VAR[ColorHighlight]] $INFO[Window.Property(imdb_trivia.number)][/COLOR][/B]</label>
+                        </control>
+                        <control type="panel" id="2054">
+                            <pagecontrol>4054</pagecontrol>
+                            <top>60</top>
+                            <width>1180</width>
+                            <height>360</height>
+                            <onup>2053</onup>
+                            <ondown>4054</ondown>
+                            <orientation>horizontal</orientation>
+                            <scrolltime tween="sine">500</scrolltime>
+                            <itemlayout height="380" width="590">
+                                <control type="image">
+                                    <height>360</height>
+                                    <width>570</width>
+                                    <texture colordiffuse="dialog_bg_100" border="30">common/circle.png</texture>
+                                </control>
+                                <control type="textbox">
+                                    <top>15</top>
+                                    <left>15</left>
+                                    <width>540</width>
+                                    <height>308</height>
+                                    <font>font_mini</font>
+                                    <align>center</align>
+                                    <aligny>top</aligny>
+                                    <textcolor>dialog_fg_70</textcolor>
+                                    <label>$INFO[ListItem.Property(text)]</label>
+                                    <autoscroll>false</autoscroll>
+                                </control>
+                            </itemlayout>
+                            <focusedlayout height="380" width="590">
+                                <control type="image">
+                                    <height>360</height>
+                                    <width>570</width>
+                                    <texture border="30">special://profile/addon_data/script.texturemaker/ArcticHorizon/menu_h.png</texture>
+                                </control>
+                                <control type="textbox">
+                                    <top>15</top>
+                                    <left>15</left>
+                                    <width>540</width>
+                                    <height>308</height>
+                                    <font>font_mini</font>
+                                    <align>center</align>
+                                    <aligny>top</aligny>
+                                    <textcolor>$VAR[ColorSelected]</textcolor>
+                                    <label>$INFO[ListItem.Property(text)]</label>
+                                </control>
+                            </focusedlayout>
+                        </control>
+                        <control type="scrollbar" id="4054">
+                            <top>432</top>
+                            <width>1160</width>
+                            <height>15</height>
+                            <onup>2054</onup>
+                            <ondown>2055</ondown>
+                            <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                            <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                            <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                            <showonepage>false</showonepage>
+                            <orientation>Horizontal</orientation>
+                            <visible>String.IsEqual(Window.Property(enable_scrollbars),true) + [Control.HasFocus(2054) | Control.HasFocus(4054)]</visible>
+                        </control>
+                        <control type="image">
+                            <top>210</top>
+                            <left>10</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2054) | Control.HasFocus(4054)] + Container(2054).HasPrevious</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]" flipx="true">arrows/arrow-small-right.png</texture>
+                        </control>
+                        <control type="image">
+                            <top>210</top>
+                            <left>1125</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2054) | Control.HasFocus(4054)] + Container(2054).HasNext</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]">arrows/arrow-small-right.png</texture>
+                        </control>
+                    </control>
+                </control>
+                <!-- IMDb Blunders 2055 -->
+                <control type="group">
+                    <visible>Integer.IsGreater(Container(2055).NumItems,0)</visible>
+                    <height>760</height>
+                    <control type="group">
+                        <control type="label">
+                            <width max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>bottom</aligny>
+                            <label>[B]$ADDON[plugin.video.fen 32986][COLOR $VAR[ColorHighlight]] $INFO[Window.Property(imdb_blunders.number)][/COLOR][/B]</label>
+                        </control>
+                        <control type="panel" id="2055">
+                            <pagecontrol>4055</pagecontrol>
+                            <top>60</top>
+                            <width>1180</width>
+                            <height>360</height>
+                            <onup>2054</onup>
+                            <ondown>4055</ondown>
+                            <orientation>horizontal</orientation>
+                            <scrolltime tween="sine">500</scrolltime>
+                            <itemlayout height="380" width="590">
+                                <control type="image">
+                                    <height>360</height>
+                                    <width>570</width>
+                                    <texture colordiffuse="dialog_bg_100" border="30">common/circle.png</texture>
+                                </control>
+                                <control type="textbox">
+                                    <top>15</top>
+                                    <left>15</left>
+                                    <width>540</width>
+                                    <height>308</height>
+                                    <font>font_mini</font>
+                                    <align>center</align>
+                                    <aligny>top</aligny>
+                                    <textcolor>dialog_fg_70</textcolor>
+                                    <label>$INFO[ListItem.Property(text)]</label>
+                                    <autoscroll>false</autoscroll>
+                                </control>
+                            </itemlayout>
+                            <focusedlayout height="380" width="590">
+                                <control type="image">
+                                    <height>360</height>
+                                    <width>570</width>
+                                    <texture border="30">special://profile/addon_data/script.texturemaker/ArcticHorizon/menu_h.png</texture>
+                                </control>
+                                <control type="textbox">
+                                    <top>15</top>
+                                    <left>15</left>
+                                    <width>540</width>
+                                    <height>308</height>
+                                    <font>font_mini</font>
+                                    <align>center</align>
+                                    <aligny>top</aligny>
+                                    <textcolor>$VAR[ColorSelected]</textcolor>
+                                    <label>$INFO[ListItem.Property(text)]</label>
+                                </control>
+                            </focusedlayout>
+                        </control>
+                        <control type="scrollbar" id="4055">
+                            <top>432</top>
+                            <width>1160</width>
+                            <height>15</height>
+                            <onup>2055</onup>
+                            <ondown>2056</ondown>
+                            <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                            <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                            <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                            <showonepage>false</showonepage>
+                            <orientation>Horizontal</orientation>
+                            <visible>String.IsEqual(Window.Property(enable_scrollbars),true) + [Control.HasFocus(2055) | Control.HasFocus(4055)]</visible>
+                        </control>
+                        <control type="image">
+                            <top>210</top>
+                            <left>10</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2055) | Control.HasFocus(4055)] + Container(2055).HasPrevious</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]" flipx="true">arrows/arrow-small-right.png</texture>
+                        </control>
+                        <control type="image">
+                            <top>210</top>
+                            <left>1125</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2055) | Control.HasFocus(4055)] + Container(2055).HasNext</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]">arrows/arrow-small-right.png</texture>
+                        </control>
+                    </control>
+                </control>
+                <!-- IMDb Parents Guide 2056 -->
+                <control type="group">
+                    <visible>Integer.IsGreater(Container(2056).NumItems,0)</visible>
+                    <height>760</height>
+                    <control type="group">
+                        <control type="label">
+                            <width max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>bottom</aligny>
+                            <label>[B]$ADDON[plugin.video.fen 32989][COLOR $VAR[ColorHighlight]] $INFO[Window.Property(imdb_parentsguide.number)][/COLOR][/B]</label>
+                        </control>
+                        <control type="panel" id="2056">
+                            <top>60</top>
+                            <width>1180</width>
+                            <height>360</height>
+                            <onup>2055</onup>
+                            <ondown>2057</ondown>
+                            <orientation>horizontal</orientation>
+                            <scrolltime tween="sine">500</scrolltime>
+                            <itemlayout height="360" width="236">
+                                <control type="image">
+                                    <height>360</height>
+                                    <width>230</width>
+                                    <texture colordiffuse="dialog_bg_100" border="30">common/circle.png</texture>
+                                </control>
+                                <control type="image">
+                                    <left>6</left>
+                                    <top>40</top>
+                                    <width>224</width>
+                                    <height>320</height>
+                                    <aspectratio>scale</aspectratio>
+                                    <texture colordiffuse="dialog_fg_70">$INFO[ListItem.Property(thumbnail)]</texture>
+                                </control>
+                                <control type="textbox">
+                                    <left>6</left>
+                                    <top>6</top>
+                                    <width>224</width>
+                                    <height>75</height>
+                                    <font>font_mini</font>
+                                    <align>center</align>
+                                    <aligny>center</aligny>
+                                    <textcolor>dialog_fg_70</textcolor>
+                                    <label>$INFO[ListItem.Property(name)]</label>
+                                    <autoscroll>false</autoscroll>
+                                </control>
+                                <control type="textbox">
+                                    <left>6</left>
+                                    <top>280</top>
+                                    <width>224</width>
+                                    <height>75</height>
+                                    <font>font_mini</font>
+                                    <align>center</align>
+                                    <aligny>center</aligny>
+                                    <textcolor>dialog_fg_70</textcolor>
+                                    <label>$INFO[ListItem.Property(ranking)]</label>
+                                    <autoscroll>false</autoscroll>
+                                </control>
+                            </itemlayout>
+                            <focusedlayout height="360" width="236">
+                                <control type="image">
+                                    <width>230</width>
+                                    <height>360</height>
+                                    <texture border="30">special://profile/addon_data/script.texturemaker/ArcticHorizon/menu_v.png</texture>
+                                </control>
+                                <control type="image">
+                                    <left>6</left>
+                                    <top>40</top>
+                                    <width>224</width>
+                                    <height>320</height>
+                                    <aspectratio>scale</aspectratio>
+                                    <texture colordiffuse="$VAR[ColorSelected]">$INFO[ListItem.Property(thumbnail)]</texture>
+                                </control>
+                                <control type="textbox">
+                                    <left>6</left>
+                                    <top>6</top>
+                                    <width>224</width>
+                                    <height>75</height>
+                                    <font>font_mini</font>
+                                    <align>center</align>
+                                    <aligny>center</aligny>
+                                    <textcolor>$VAR[ColorSelected]</textcolor>
+                                    <label>$INFO[ListItem.Property(name)]</label>
+                                    <autoscroll>false</autoscroll>
+                                </control>
+                                <control type="textbox">
+                                    <left>6</left>
+                                    <top>280</top>
+                                    <width>224</width>
+                                    <height>75</height>
+                                    <font>font_mini</font>
+                                    <align>center</align>
+                                    <aligny>center</aligny>
+                                    <textcolor>$VAR[ColorSelected]</textcolor>
+                                    <label>$INFO[ListItem.Property(ranking)]</label>
+                                    <autoscroll>false</autoscroll>
+                                </control>
+                            </focusedlayout>
+                        </control>
+                    </control>
+                </control>
+                <!-- IMDb Videos 2057 -->
+                <control type="group">
+                    <visible>Integer.IsGreater(Container(2057).NumItems,0)</visible>
+                    <height>760</height>
+                    <control type="group">
+                        <control type="label">
+                            <width min="30" max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <label>[B]$ADDON[plugin.video.fen 33032][COLOR $VAR[ColorHighlight]] $INFO[Window.Property(imdb_videos.number)][/COLOR][/B]</label>
+                            <visible>!Control.HasFocus(2057)</visible>
+                        </control>
+                        <control type="label">
+                            <width min="30" max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <label>[B]$ADDON[plugin.video.fen 33032][COLOR $VAR[ColorHighlight]] | [/COLOR][/B]$INFO[Container(2057).ListItem.Property(name)]</label>
+                            <visible>Control.HasFocus(2057)</visible>
+                        </control>
+                        <control type="fixedlist" id="2057">
+                            <animation effect="slide" end="-392,0" time="0" condition="Integer.IsEqual(Container(2057).NumItems,1) | Integer.IsEqual(Container(2057).NumItems,2)">Conditional</animation>
+                            <pagecontrol>40057</pagecontrol>
+                            <top>60</top>
+                            <width>1180</width>
+                            <height>360</height>
+                            <onup>2056</onup>
+                            <ondown>40057</ondown>
+                            <orientation>horizontal</orientation>
+                            <scrolltime tween="sine">500</scrolltime>
+                            <focusposition>1</focusposition>
+                            <movement>1</movement>
+                            <itemlayout height="360" width="392">
+                                <control type="image">
+                                    <left>6</left>
+                                    <top>6</top>
+                                    <height max="348">auto</height>
+                                    <width max="380">auto</width>
+                                    <aspectratio>scale</aspectratio>
+                                    <texture diffuse="diffuse/square_w320_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                </control>
+                            </itemlayout>
+                            <focusedlayout height="360" width="392">
+                                <control type="group">
+                                    <animation effect="zoom" start="100" end="105" time="200" tween="sine" easing="inout" center="auto">Focus</animation>
+                                    <animation effect="zoom" start="105" end="100" time="200" tween="sine" easing="inout" center="auto">UnFocus</animation>
+                                    <animation effect="fade" start="100" end="60" condition="Control.HasFocus(4056)">Conditional</animation>
+                                    <control type="image">
+                                        <left>6</left>
+                                        <top>6</top>
+                                        <height max="348">auto</height>
+                                        <width max="380">auto</width>
+                                        <aspectratio>scale</aspectratio>
+                                        <texture diffuse="diffuse/square_w320_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                    </control>
+                                    <control type="image">
+                                        <animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+                                        <left>0</left>
+                                        <top>0</top>
+                                        <height>360</height>
+                                        <width>390</width>
+                                        <texture>special://profile/addon_data/script.texturemaker/ArcticHorizon/selectbox_thin_v.png</texture>
+                                        <visible>Control.HasFocus(2057) | Control.HasFocus(40057)</visible>
+                                    </control>
+                                </control>
+                            </focusedlayout>
+                        </control>
+                        <control type="scrollbar" id="40057">
+                            <left>5</left>
+                            <top>432</top>
+                            <width>1165</width>
+                            <height>15</height>
+                            <onup>2057</onup>
+                            <ondown>2058</ondown>
+                            <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                            <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                            <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                            <showonepage>false</showonepage>
+                            <orientation>Horizontal</orientation>
+                            <visible>String.IsEqual(Window.Property(enable_scrollbars),true) + [Control.HasFocus(2057) | Control.HasFocus(40057)]</visible>
+                        </control>
+                        <control type="image">
+                            <top>185</top>
+                            <left>10</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2057) | Control.HasFocus(40057)] + Container(2057).HasPrevious</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]" flipx="true">arrows/arrow-small-right.png</texture>
+                        </control>
+                        <control type="image">
+                            <top>185</top>
+                            <left>1140</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2057) | Control.HasFocus(40057)] + Container(2057).HasNext</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]">arrows/arrow-small-right.png</texture>
+                        </control>
+                    </control>
+                </control>
+                <!-- TMDb Artwork Posters 2058 -->
+                <control type="group">
+                    <visible>Integer.IsGreater(Container(2058).NumItems,0)</visible>
+                    <height>760</height>
+                    <control type="group">
+                        <control type="label">
+                            <width max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>bottom</aligny>
+                            <label>[B]$ADDON[plugin.video.fen 32616][COLOR $VAR[ColorHighlight]] $INFO[Window.Property(tmdb_artwork.poster.number)][/COLOR][/B]</label>
+                        </control>
+                        <control type="fixedlist" id="2058">
+                            <animation effect="slide" end="-472,0" time="0" condition="Integer.IsEqual(Container(2058).NumItems,1) | Integer.IsEqual(Container(2058).NumItems,2)">Conditional</animation>
+                            <animation effect="slide" end="-236,0" time="0" condition="Integer.IsEqual(Container(2058).NumItems,3) | Integer.IsEqual(Container(2058).NumItems,4)">Conditional</animation>
+                            <pagecontrol>4058</pagecontrol>
+                            <top>60</top>
+                            <width>1180</width>
+                            <height>360</height>
+                            <onup>2057</onup>
+                            <ondown>4058</ondown>
+                            <orientation>horizontal</orientation>
+                            <scrolltime tween="sine">500</scrolltime>
+                            <focusposition>2</focusposition>
+                            <movement>2</movement>
+                            <itemlayout height="360" width="236">
+                                <control type="image">
+                                    <left>6</left>
+                                    <top>6</top>
+                                    <height max="348">auto</height>
+                                    <width max="224">auto</width>
+                                    <aspectratio>scale</aspectratio>
+                                    <texture diffuse="diffuse/poster_w217_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                </control>
+                            </itemlayout>
+                            <focusedlayout height="360" width="236">
+                                <control type="group">
+                                    <animation effect="zoom" start="100" end="105" time="200" tween="sine" easing="inout" center="auto">Focus</animation>
+                                    <animation effect="zoom" start="105" end="100" time="200" tween="sine" easing="inout" center="auto">UnFocus</animation>
+                                    <animation effect="fade" start="100" end="60" condition="Control.HasFocus(4057)">Conditional</animation>
+                                    <control type="image">
+                                        <animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+                                        <left>0</left>
+                                        <top>0</top>
+                                        <height>360</height>
+                                        <width>236</width>
+                                        <texture>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_v.png</texture>
+                                        <visible>Control.HasFocus(2058) | Control.HasFocus(4058)</visible>
+                                    </control>
+                                    <control type="image">
+                                        <left>6</left>
+                                        <top>6</top>
+                                        <height max="348">auto</height>
+                                        <width max="224">auto</width>
+                                        <aspectratio>scale</aspectratio>
+                                        <texture diffuse="diffuse/poster_w217_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                    </control>
+                                </control>
+                            </focusedlayout>
+                        </control>
+                        <control type="scrollbar" id="4058">
+                            <left>5</left>
+                            <top>432</top>
+                            <width>1170</width>
+                            <height>15</height>
+                            <onup>2058</onup>
+                            <ondown>2059</ondown>
+                            <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                            <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                            <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                            <showonepage>false</showonepage>
+                            <orientation>Horizontal</orientation>
+                            <visible>String.IsEqual(Window.Property(enable_scrollbars),true) + [Control.HasFocus(2058) | Control.HasFocus(4058)]</visible>
+                        </control>
+                        <control type="image">
+                            <top>200</top>
+                            <left>10</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2058) | Control.HasFocus(4058)] + Container(2058).HasPrevious</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]" flipx="true">arrows/arrow-small-right.png</texture>
+                        </control>
+                        <control type="image">
+                            <top>200</top>
+                            <left>1145</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2058) | Control.HasFocus(4058)] + Container(2058).HasNext</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]">arrows/arrow-small-right.png</texture>
+                        </control>
+                    </control>
+                </control>
+                <!-- TMDb Artwork Fanart 2059 -->
+                <control type="group">
+                    <visible>Integer.IsGreater(Container(2059).NumItems,0)</visible>
+                    <height>760</height>
+                    <control type="group">
+                        <control type="label">
+                            <width max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>bottom</aligny>
+                            <label>[B]$ADDON[plugin.video.fen 32617][COLOR $VAR[ColorHighlight]] $INFO[Window.Property(tmdb_artwork.fanart.number)][/COLOR][/B]</label>
+                        </control>
+                        <control type="fixedlist" id="2059">
+                            <pagecontrol>4059</pagecontrol>
+                            <top>60</top>
+                            <width>1180</width>
+                            <height>360</height>
+                            <onup>2058</onup>
+                            <ondown>4059</ondown>
+                            <orientation>horizontal</orientation>
+                            <scrolltime tween="sine">500</scrolltime>
+                            <focusposition>0</focusposition>
+                            <movement>1</movement>
+                            <itemlayout height="360" width="590">
+                                <control type="image">
+                                    <left>6</left>
+                                    <top>6</top>
+                                    <height max="348">auto</height>
+                                    <width max="578">auto</width>
+                                    <aspectratio>scale</aspectratio>
+                                    <texture diffuse="diffuse/poster_w217_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                </control>
+                            </itemlayout>
+                            <focusedlayout height="360" width="590">
+                                <control type="group">
+                                    <animation effect="zoom" start="100" end="105" time="200" tween="sine" easing="inout" center="auto">Focus</animation>
+                                    <animation effect="zoom" start="105" end="100" time="200" tween="sine" easing="inout" center="auto">UnFocus</animation>
+                                    <animation effect="fade" start="100" end="60" condition="Control.HasFocus(4059)">Conditional</animation>
+                                    <control type="image">
+                                        <left>6</left>
+                                        <top>6</top>
+                                        <height max="348">auto</height>
+                                        <width max="578">auto</width>
+                                        <aspectratio>scale</aspectratio>
+                                        <texture diffuse="diffuse/poster_w217_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                    </control>
+                                    <control type="image">
+                                        <animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+                                        <left>0</left>
+                                        <top>0</top>
+                                        <height>360</height>
+                                        <width>590</width>
+                                        <texture>special://profile/addon_data/script.texturemaker/ArcticHorizon/selectbox_thin_v.png</texture>
+                                        <visible>Control.HasFocus(2059) | Control.HasFocus(4059)</visible>
+                                    </control>
+                                </control>
+                            </focusedlayout>
+                        </control>
+                        <control type="scrollbar" id="4059">
+                            <left>5</left>
+                            <top>432</top>
+                            <width>1170</width>
+                            <height>15</height>
+                            <onup>2059</onup>
+                            <ondown>2060</ondown>
+                            <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                            <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                            <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                            <showonepage>false</showonepage>
+                            <orientation>Horizontal</orientation>
+                            <visible>String.IsEqual(Window.Property(enable_scrollbars),true) + [Control.HasFocus(2059) | Control.HasFocus(4059)]</visible>
+                        </control>
+                        <control type="image">
+                            <top>200</top>
+                            <left>10</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2059) | Control.HasFocus(4059)] + Container(2059).HasPrevious</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]" flipx="true">arrows/arrow-small-right.png</texture>
+                        </control>
+                        <control type="image">
+                            <top>200</top>
+                            <left>1145</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2059) | Control.HasFocus(4059)] + Container(2059).HasNext</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]">arrows/arrow-small-right.png</texture>
+                        </control>
+                    </control>
+                </control>
+                <!-- More From Year 2060 -->
+                <control type="group">
+                    <visible>Integer.IsGreater(Container(2060).NumItems,0)</visible>
+                    <height>760</height>
+                    <control type="group">
+                        <control type="label">
+                            <width min="30" max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <label>[B]$ADDON[plugin.video.fen 32612] $ADDON[plugin.video.fen 32543][COLOR $VAR[ColorHighlight]] $INFO[Window.Property(more_from_year.number)][/COLOR][/B]</label>
+                            <visible>!Control.HasFocus(2060)</visible>
+                        </control>
+                        <control type="label">
+                            <width min="30" max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <label>[B]$ADDON[plugin.video.fen 32612] $ADDON[plugin.video.fen 32543][COLOR $VAR[ColorHighlight]] | [/COLOR][/B]$INFO[Container(2060).ListItem.Property(name)][COLOR $VAR[ColorHighlight]] • [/COLOR]$INFO[Container(2060).ListItem.Property(release_date)][COLOR $VAR[ColorHighlight]] • [/COLOR]$INFO[Container(2060).ListItem.Property(vote_average)]</label>
+                            <visible>Control.HasFocus(2060)</visible>
+                        </control>
+                        <control type="fixedlist" id="2060">
+                            <animation effect="slide" end="-472,0" time="0" condition="Integer.IsEqual(Container(2060).NumItems,1) | Integer.IsEqual(Container(2060).NumItems,2)">Conditional</animation>
+                            <animation effect="slide" end="-236,0" time="0" condition="Integer.IsEqual(Container(2060).NumItems,3) | Integer.IsEqual(Container(2060).NumItems,4)">Conditional</animation>
+                            <pagecontrol>4060</pagecontrol>
+                            <top>60</top>
+                            <width>1180</width>
+                            <height>360</height>
+                            <onup>2059</onup>
+                            <ondown>4060</ondown>
+                            <orientation>horizontal</orientation>
+                            <scrolltime tween="sine">500</scrolltime>
+                            <focusposition>2</focusposition>
+                            <movement>2</movement>
+                            <itemlayout height="360" width="236">
+                                <control type="image">
+                                    <left>6</left>
+                                    <top>6</top>
+                                    <height max="348">auto</height>
+                                    <width max="224">auto</width>
+                                    <aspectratio>scale</aspectratio>
+                                    <texture diffuse="diffuse/poster_w217_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                </control>
+                            </itemlayout>
+                            <focusedlayout height="360" width="236">
+                                <control type="group">
+                                    <animation effect="zoom" start="100" end="105" time="200" tween="sine" easing="inout" center="auto">Focus</animation>
+                                    <animation effect="zoom" start="105" end="100" time="200" tween="sine" easing="inout" center="auto">UnFocus</animation>
+                                    <animation effect="fade" start="100" end="60" condition="Control.HasFocus(4060)">Conditional</animation>
+                                    <control type="image">
+                                        <animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+                                        <left>0</left>
+                                        <top>0</top>
+                                        <height>360</height>
+                                        <width>236</width>
+                                        <texture>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_v.png</texture>
+                                        <visible>Control.HasFocus(2060) | Control.HasFocus(4060)</visible>
+                                    </control>
+                                    <control type="image">
+                                        <left>6</left>
+                                        <top>6</top>
+                                        <height max="348">auto</height>
+                                        <width max="224">auto</width>
+                                        <aspectratio>scale</aspectratio>
+                                        <texture diffuse="diffuse/poster_w217_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                    </control>
+                                </control>
+                            </focusedlayout>
+                        </control>
+                        <control type="scrollbar" id="4060">
+                            <left>5</left>
+                            <top>432</top>
+                            <width>1170</width>
+                            <height>15</height>
+                            <onup>2060</onup>
+                            <ondown>2061</ondown>
+                            <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                            <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                            <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                            <showonepage>false</showonepage>
+                            <orientation>Horizontal</orientation>
+                            <visible>String.IsEqual(Window.Property(enable_scrollbars),true) + [Control.HasFocus(2060) | Control.HasFocus(4060)]</visible>
+                        </control>
+                        <control type="image">
+                            <top>200</top>
+                            <left>10</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2060) | Control.HasFocus(4060)] + Container(2060).HasPrevious</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]" flipx="true">arrows/arrow-small-right.png</texture>
+                        </control>
+                        <control type="image">
+                            <top>200</top>
+                            <left>1145</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2060) | Control.HasFocus(4060)] + Container(2060).HasNext</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]">arrows/arrow-small-right.png</texture>
+                        </control>
+                    </control>
+                </control>
+                <!-- More From Genres 2061 -->
+                <control type="group">
+                    <visible>Integer.IsGreater(Container(2061).NumItems,0)</visible>
+                    <height>760</height>
+                    <control type="group">
+                        <control type="label">
+                            <width min="30" max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <label>[B]$ADDON[plugin.video.fen 32612] $ADDON[plugin.video.fen 32470][COLOR $VAR[ColorHighlight]] $INFO[Window.Property(more_from_genres.number)][/COLOR][/B]</label>
+                            <visible>!Control.HasFocus(2061)</visible>
+                        </control>
+                        <control type="label">
+                            <width min="30" max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <label>[B]$ADDON[plugin.video.fen 32612] $ADDON[plugin.video.fen 32470][COLOR $VAR[ColorHighlight]] | [/COLOR][/B]$INFO[Container(2060).ListItem.Property(name)][COLOR $VAR[ColorHighlight]] • [/COLOR]$INFO[Container(2060).ListItem.Property(release_date)][COLOR $VAR[ColorHighlight]] • [/COLOR]$INFO[Container(2060).ListItem.Property(vote_average)]</label>
+                            <visible>Control.HasFocus(2061)</visible>
+                        </control>
+                        <control type="fixedlist" id="2061">
+                            <animation effect="slide" end="-472,0" time="0" condition="Integer.IsEqual(Container(2061).NumItems,1) | Integer.IsEqual(Container(2061).NumItems,2)">Conditional</animation>
+                            <animation effect="slide" end="-236,0" time="0" condition="Integer.IsEqual(Container(2061).NumItems,3) | Integer.IsEqual(Container(2061).NumItems,4)">Conditional</animation>
+                            <pagecontrol>4061</pagecontrol>
+                            <top>60</top>
+                            <width>1180</width>
+                            <height>360</height>
+                            <onup>2060</onup>
+                            <ondown>4061</ondown>
+                            <orientation>horizontal</orientation>
+                            <scrolltime tween="sine">500</scrolltime>
+                            <focusposition>2</focusposition>
+                            <movement>2</movement>
+                            <itemlayout height="360" width="236">
+                                <control type="image">
+                                    <left>6</left>
+                                    <top>6</top>
+                                    <height max="348">auto</height>
+                                    <width max="224">auto</width>
+                                    <aspectratio>scale</aspectratio>
+                                    <texture diffuse="diffuse/poster_w217_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                </control>
+                            </itemlayout>
+                            <focusedlayout height="360" width="236">
+                                <control type="group">
+                                    <animation effect="zoom" start="100" end="105" time="200" tween="sine" easing="inout" center="auto">Focus</animation>
+                                    <animation effect="zoom" start="105" end="100" time="200" tween="sine" easing="inout" center="auto">UnFocus</animation>
+                                    <animation effect="fade" start="100" end="60" condition="Control.HasFocus(4061)">Conditional</animation>
+                                    <control type="image">
+                                        <animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+                                        <left>0</left>
+                                        <top>0</top>
+                                        <height>360</height>
+                                        <width>236</width>
+                                        <texture>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_v.png</texture>
+                                        <visible>Control.HasFocus(2061) | Control.HasFocus(4061)</visible>
+                                    </control>
+                                    <control type="image">
+                                        <left>6</left>
+                                        <top>6</top>
+                                        <height max="348">auto</height>
+                                        <width max="224">auto</width>
+                                        <aspectratio>scale</aspectratio>
+                                        <texture diffuse="diffuse/poster_w217_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                    </control>
+                                </control>
+                            </focusedlayout>
+                        </control>
+                        <control type="scrollbar" id="4061">
+                            <left>5</left>
+                            <top>432</top>
+                            <width>1170</width>
+                            <height>15</height>
+                            <onup>2061</onup>
+                            <ondown>2062</ondown>
+                            <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                            <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                            <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                            <showonepage>false</showonepage>
+                            <orientation>Horizontal</orientation>
+                            <visible>String.IsEqual(Window.Property(enable_scrollbars),true) + [Control.HasFocus(2061) | Control.HasFocus(4061)]</visible>
+                        </control>
+                        <control type="image">
+                            <top>200</top>
+                            <left>10</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2061) | Control.HasFocus(4061)] + Container(2061).HasPrevious</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]" flipx="true">arrows/arrow-small-right.png</texture>
+                        </control>
+                        <control type="image">
+                            <top>200</top>
+                            <left>1145</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2061) | Control.HasFocus(4061)] + Container(2061).HasNext</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]">arrows/arrow-small-right.png</texture>
+                        </control>
+                    </control>
+                </control>
+                <!-- More From Networks 2062 -->
+                <control type="group">
+                    <visible>Integer.IsGreater(Container(2062).NumItems,0)</visible>
+                    <height>760</height>
+                    <control type="group">
+                        <control type="label">
+                            <width min="30" max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <label>[B]$ADDON[plugin.video.fen 32612] $ADDON[plugin.video.fen 32480][COLOR $VAR[ColorHighlight]] $INFO[Window.Property(more_from_networks.number)][/COLOR][/B]</label>
+                            <visible>!Control.HasFocus(2062)</visible>
+                        </control>
+                        <control type="label">
+                            <width min="30" max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <label>[B]$ADDON[plugin.video.fen 32612] $ADDON[plugin.video.fen 32480][COLOR $VAR[ColorHighlight]] | [/COLOR][/B]$INFO[Container(2060).ListItem.Property(name)][COLOR $VAR[ColorHighlight]] • [/COLOR]$INFO[Container(2060).ListItem.Property(release_date)][COLOR $VAR[ColorHighlight]] • [/COLOR]$INFO[Container(2060).ListItem.Property(vote_average)]</label>
+                            <visible>Control.HasFocus(2062)</visible>
+                        </control>
+                        <control type="fixedlist" id="2062">
+                            <animation effect="slide" end="-472,0" time="0" condition="Integer.IsEqual(Container(2062).NumItems,1) | Integer.IsEqual(Container(2062).NumItems,2)">Conditional</animation>
+                            <animation effect="slide" end="-236,0" time="0" condition="Integer.IsEqual(Container(2062).NumItems,3) | Integer.IsEqual(Container(2062).NumItems,4)">Conditional</animation>
+                            <pagecontrol>4062</pagecontrol>
+                            <top>60</top>
+                            <width>1180</width>
+                            <height>360</height>
+                            <onup>2061</onup>
+                            <ondown>4062</ondown>
+                            <orientation>horizontal</orientation>
+                            <scrolltime tween="sine">500</scrolltime>
+                            <focusposition>2</focusposition>
+                            <movement>2</movement>
+                            <itemlayout height="360" width="236">
+                                <control type="image">
+                                    <left>6</left>
+                                    <top>6</top>
+                                    <height max="348">auto</height>
+                                    <width max="224">auto</width>
+                                    <aspectratio>scale</aspectratio>
+                                    <texture diffuse="diffuse/poster_w217_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                </control>
+                            </itemlayout>
+                            <focusedlayout height="360" width="236">
+                                <control type="group">
+                                    <animation effect="zoom" start="100" end="105" time="200" tween="sine" easing="inout" center="auto">Focus</animation>
+                                    <animation effect="zoom" start="105" end="100" time="200" tween="sine" easing="inout" center="auto">UnFocus</animation>
+                                    <animation effect="fade" start="100" end="60" condition="Control.HasFocus(4062)">Conditional</animation>
+                                    <control type="image">
+                                        <animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+                                        <left>0</left>
+                                        <top>0</top>
+                                        <height>360</height>
+                                        <width>236</width>
+                                        <texture>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_v.png</texture>
+                                        <visible>Control.HasFocus(2062) | Control.HasFocus(4062)</visible>
+                                    </control>
+                                    <control type="image">
+                                        <left>6</left>
+                                        <top>6</top>
+                                        <height max="348">auto</height>
+                                        <width max="224">auto</width>
+                                        <aspectratio>scale</aspectratio>
+                                        <texture diffuse="diffuse/poster_w217_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                    </control>
+                                </control>
+                            </focusedlayout>
+                        </control>
+                        <control type="scrollbar" id="4062">
+                            <left>5</left>
+                            <top>432</top>
+                            <width>1170</width>
+                            <height>15</height>
+                            <onup>2062</onup>
+                            <ondown>2063</ondown>
+                            <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                            <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                            <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                            <showonepage>false</showonepage>
+                            <orientation>Horizontal</orientation>
+                            <visible>String.IsEqual(Window.Property(enable_scrollbars),true) + [Control.HasFocus(2062) | Control.HasFocus(4062)]</visible>
+                        </control>
+                        <control type="image">
+                            <top>200</top>
+                            <left>10</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2062) | Control.HasFocus(4062)] + Container(2062).HasPrevious</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]" flipx="true">arrows/arrow-small-right.png</texture>
+                        </control>
+                        <control type="image">
+                            <top>200</top>
+                            <left>1145</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2062) | Control.HasFocus(4062)] + Container(2062).HasNext</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]">arrows/arrow-small-right.png</texture>
+                        </control>
+                    </control>
+                </control>
+                <!-- More From Collection 2063 -->
+                <control type="group">
+                    <visible>Integer.IsGreater(Container(2063).NumItems,0)</visible>
+                    <height>760</height>
+                    <control type="group">
+                        <control type="label">
+                            <width min="30" max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <label>[B]$INFO[Window.Property(more_from_collection.name)][COLOR $VAR[ColorHighlight]] $INFO[Window.Property(more_from_collection.number)][/COLOR][/B]</label>
+                            <visible>!Control.HasFocus(2063)</visible>
+                        </control>
+                        <control type="label">
+                            <width min="30" max="1160">auto</width>
+                            <height>20</height>
+                            <font>font_midi</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <label>[B]$INFO[Window.Property(more_from_collection.name)][COLOR $VAR[ColorHighlight]] | [/COLOR][/B]$INFO[Container(2060).ListItem.Property(name)][COLOR $VAR[ColorHighlight]] • [/COLOR]$INFO[Container(2060).ListItem.Property(release_date)][COLOR $VAR[ColorHighlight]] • [/COLOR]$INFO[Container(2060).ListItem.Property(vote_average)]</label>
+                            <visible>Control.HasFocus(2063)</visible>
+                        </control>
+                        <control type="group">
+                            <top>60</top>
+                            <control type="image">
+                                <height>360</height>
+                                <width>933</width>
+                                <texture colordiffuse="dialog_bg_100">common/white.png</texture>
+                                <visible>Integer.IsGreater(Container(2063).NumItems,1)</visible>
+                            </control>
+                            <control type="image">
+                                <height>360</height>
+                                <width>1169</width>
+                                <texture colordiffuse="dialog_bg_100">common/white.png</texture>
+                                <visible>Integer.IsGreater(Container(2063).NumItems,2)</visible>
+                            </control>
+                            <control type="image">
+                                <left>6</left>
+                                <top>6</top>
+                                <width>224</width>
+                                <height>348</height>
+                                <aspectratio>scale</aspectratio>
+                                <texture diffuse="diffuse/poster_w217_h320.png">$INFO[Window.Property(more_from_collection.poster)]</texture>
+                            </control>
+                            <control type="textbox">
+                                <left>235</left>
+                                <top>6</top>
+                                <width>218</width>
+                                <height>348</height>
+                                <font>font_mini</font>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <textcolor>dialog_fg_70</textcolor>
+                                <label>$INFO[Window.Property(more_from_collection.overview)]</label>
+                                <autoscroll time="1500" delay="6000" repeat="3000">true</autoscroll>
+                            </control>
+                        </control>
+                        <control type="fixedlist" id="2063">
+                            <animation effect="slide" end="-236,0" time="0" condition="Integer.IsEqual(Container(2063).NumItems,2)">Conditional</animation>
+                            <pagecontrol>4063</pagecontrol>
+                            <top>60</top>
+                            <left>460</left>
+                            <width>708</width>
+                            <height>360</height>
+                            <onup>2062</onup>
+                            <ondown>4063</ondown>
+                            <orientation>horizontal</orientation>
+                            <scrolltime tween="sine">600</scrolltime>
+                            <focusposition>1</focusposition>
+                            <movement>1</movement>
+                            <itemlayout height="360" width="236">
+                                <control type="image">
+                                    <left>6</left>
+                                    <top>6</top>
+                                    <height max="348">auto</height>
+                                    <width max="224">auto</width>
+                                    <aspectratio>scale</aspectratio>
+                                    <texture diffuse="diffuse/poster_w217_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                </control>
+                            </itemlayout>
+                            <focusedlayout height="360" width="236">
+                                <control type="group">
+                                    <animation effect="zoom" start="100" end="105" time="200" tween="sine" easing="inout" center="auto">Focus</animation>
+                                    <animation effect="zoom" start="105" end="100" time="200" tween="sine" easing="inout" center="auto">UnFocus</animation>
+                                    <animation effect="fade" start="100" end="60" condition="Control.HasFocus(4063)">Conditional</animation>
+                                    <control type="image">
+                                        <animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+                                        <left>0</left>
+                                        <top>0</top>
+                                        <height>360</height>
+                                        <width>236</width>
+                                        <texture>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_v.png</texture>
+                                        <visible>Control.HasFocus(2063) | Control.HasFocus(4063)</visible>
+                                    </control>
+                                    <control type="image">
+                                        <left>6</left>
+                                        <top>6</top>
+                                        <height max="348">auto</height>
+                                        <width max="224">auto</width>
+                                        <aspectratio>scale</aspectratio>
+                                        <texture diffuse="diffuse/poster_w217_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                    </control>
+                                </control>
+                            </focusedlayout>
+                        </control>
+                        <control type="scrollbar" id="4063">
+                            <top>432</top>
+                            <width>1170</width>
+                            <height>15</height>
+                            <onup>2063</onup>
+                            <ondown>10</ondown>
+                            <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                            <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                            <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                            <showonepage>false</showonepage>
+                            <orientation>Horizontal</orientation>
+                            <visible>String.IsEqual(Window.Property(enable_scrollbars),true) + [Control.HasFocus(2063) | Control.HasFocus(4063)]</visible>
+                        </control>
+                        <control type="image">
+                            <top>200</top>
+                            <left>470</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2063) | Control.HasFocus(4063)] + Container(2063).HasPrevious</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]" flipx="true">arrows/arrow-small-right.png</texture>
+                        </control>
+                        <control type="image">
+                            <top>200</top>
+                            <left>1135</left>
+                            <width>25</width>
+                            <height>25</height>
+                            <visible>[Control.HasFocus(2063) | Control.HasFocus(4063)] + Container(2063).HasNext</visible>
+                            <texture colordiffuse="$VAR[ColorHighlight]">arrows/arrow-small-right.png</texture>
+                        </control>
+                    </control>
+                </control>
+            </control>
+        </control>
+        <!-- Dummy Image Load -->
+        <control type="image" id="250">
+            <description>Dummy load of Original Quality Image</description>
+            <left>-1000</left>
+            <top>-1000</top>
+            <width>630</width>
+            <aspectratio aligny="top">keep</aspectratio>
+        </control>
+    </controls>
+</window>

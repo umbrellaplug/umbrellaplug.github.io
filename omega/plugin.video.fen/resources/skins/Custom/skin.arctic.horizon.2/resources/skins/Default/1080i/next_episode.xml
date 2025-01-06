@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <onload>Dialog.Close(fullscreeninfo,true)</onload>
+    <onload>Dialog.Close(videoosd,true)</onload>
+    <include>Animation_FadeIn</include>
+    <controls>
+        <control type="image">
+            <height>400</height>
+            <texture>common/dim-top-bezier.png</texture>
+        </control>
+        <control type="group">
+            <include>Dimension_UpNext</include>
+            <control type="group">
+                <width>upnext_image_w</width>
+                <control type="image">
+                    <texture diffuse="media/diffuse/landscape_w284_h160.png">$INFO[Window.Property(thumb)]</texture>
+                    <aspectratio scalediffuse="false">scale</aspectratio>
+                </control>
+                <control type="progress" id="5000">
+                    <bottom>0</bottom>
+                    <height>8</height>
+                </control>
+            </control>
+            <control type="group">
+                <left>upnext_image_w</left>
+                <control type="label">
+                    <left>40</left>
+                    <aligny>center</aligny>
+                    <height>40</height>
+                    <label>[COLOR $VAR[ColorHighlight]]$ADDON[plugin.video.fen 32811][/COLOR] $INFO[Player.TimeRemaining(m:ss)]</label>
+                    <textcolor>panel_fg_100</textcolor>
+                    <font>font_midi_bold</font>
+                </control>
+                <control type="group">
+                    <left>44</left>
+                    <top>40</top>
+                    <height>40</height>
+                    <control type="group">
+                        <centertop>50%</centertop>
+                        <height>80</height>
+                        <control type="grouplist">
+                            <left>10</left>
+                            <orientation>horizontal</orientation>
+                            <height>80</height>
+                            <itemgap>10</itemgap>
+                            <include content="Info_Line_Label">
+                                <param name="label" value="$INFO[Window.Property(next_ep_title)]" />
+                                <param name="textcolor" value="panel_fg_90" />
+                                <param name="font" value="font_mini_bold" />
+                            </include>
+                            <include content="Info_Line_Label">
+                                <param name="label" value="$INFO[Window.Property(next_ep_season)]x$INFO[Window.Property(next_ep_episode)]" />
+                                <param name="textcolor" value="panel_fg_90" />
+                                <param name="font" value="font_mini_bold" />
+                            </include>
+                            <include content="Info_Line_Label">
+                                <param name="label" value="$INFO[Window.Property(next_ep_ep_name)]" />
+                                <param name="textcolor" value="panel_fg_90" />
+                                <param name="font" value="font_mini_bold" />
+                            </include>
+                        </control>
+                    </control>
+                </control>
+                <control type="group">
+                    <height>70</height>
+                    <bottom>0</bottom>
+                    <control type="grouplist">
+                        <itemgap>-60</itemgap>
+                        <orientation>horizontal</orientation>
+                        <height>256</height>
+                        <centertop>50%</centertop>
+                        <include content="Object_Info_Button">
+                            <param name="id" value="10" />
+                            <param name="groupid" value="5012" />
+                            <param name="sliceid" value="5112" />
+                            <param name="label" value="$ADDON[plugin.video.fen 32614]" />
+                            <param name="icon" value="special://skin/extras/icons/eye2.png" />
+                        </include>
+                        <include content="Object_Info_Button">
+                            <param name="id" value="11" />
+                            <param name="groupid" value="5013" />
+                            <param name="sliceid" value="5113" />
+                            <param name="label" value="$ADDON[plugin.video.fen 32764]" />
+                            <param name="icon" value="special://skin/extras/icons/play3.png" />
+                        </include>
+                        <include content="Object_Info_Button">
+                            <param name="id" value="12" />
+                            <param name="groupid" value="5014" />
+                            <param name="sliceid" value="5114" />
+                            <param name="label" value="$ADDON[plugin.video.fen 32840]" />
+                            <param name="icon" value="special://skin/extras/icons/disabled.png" />
+                        </include>
+                    </control>
+                </control>
+            </control>
+        </control>
+        <control type="image">
+            <left>85</left>
+            <top>85</top>
+            <width>30</width>
+            <height>30</height>
+            <align>left</align>
+            <aligny>top</aligny>
+            <aspectratio aligny="top">keep</aspectratio>
+            <texture colordiffuse="B3CCCCCC">common/fen.png</texture>
+        </control>
+    </controls>
+</window>

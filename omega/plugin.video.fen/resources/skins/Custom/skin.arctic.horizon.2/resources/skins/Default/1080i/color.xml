@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <!-- Background -->
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">common/white.png</texture>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" start="0" end="80" time="120" />
+            </animation>
+        </control>
+        <!-- Colors Panel -->
+        <control type="group">
+            <left>130</left>
+            <top>70</top>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" end="100" time="200" />
+            </animation>
+            <control type="group">
+                <width>1660</width>
+                <control type="image">
+                    <height>940</height>
+                    <include>Texture_Dialog</include>
+                </control>
+                <control type="image">
+                    <left>10</left>
+                    <top>10</top>
+                    <width>45</width>
+                    <height>45</height>
+                    <align>left</align>
+                    <aligny>top</aligny>
+                    <aspectratio aligny="top">keep</aspectratio>
+                    <texture colordiffuse="dialog_fg_70">common/fen.png</texture>
+                </control>
+                <control type="label">
+                    <top>20</top>
+                    <left>5</left>
+                    <width max="1650">auto</width>
+                    <height>20</height>
+                    <font>font_midi</font>
+                    <textcolor>dialog_fg_70</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>[B]$ADDON[plugin.video.fen 33106][/B]</label>
+                </control>
+            </control>
+            <!-- Color picker panel -->
+            <control type="panel" id="2000">
+                <animation effect="slide" end="0,80" time="0" reversible="true" condition="String.IsEqual(Window.Property(current_palette),basic)">Conditional</animation>
+                <animation effect="slide" end="0,40" time="0" reversible="true" condition="String.IsEqual(Window.Property(current_palette),rainbow)">Conditional</animation>
+                <left>30</left>
+                <top>75</top>
+                <width>1365</width>
+                <height>840</height>
+                <orientation>vertical</orientation>
+                <itemlayout height="75" width="97" condition="String.IsEqual(Window.Property(current_palette),basic)">
+                    <control type="image">
+                        <left>0</left>
+                        <top>0</top>
+                        <width>93</width>
+                        <height>71</height>
+                        <texture>$INFO[ListItem.Property(image)]</texture>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="75" width="97" condition="String.IsEqual(Window.Property(current_palette),basic)">
+                    <control type="group">
+                        <animation effect="zoom" time="100" tween="sine" easing="inout" start="100" end="120" center="auto">Focus</animation>
+                        <control type="image">
+                            <left>0</left>
+                            <top>0</top>
+                            <width>97</width>
+                            <height>75</height>
+                            <texture colordiffuse="FF302F2F">common/white.png</texture>
+                        </control>
+                        <control type="image">
+                            <left>2</left>
+                            <top>2</top>
+                            <width>93</width>
+                            <height>71</height>
+                            <texture>$INFO[ListItem.Property(image)]</texture>
+                        </control>
+                    </control>
+                </focusedlayout>
+                <itemlayout height="44" width="97" condition="String.IsEqual(Window.Property(current_palette),material_design)">
+                    <control type="image">
+                        <left>0</left>
+                        <top>0</top>
+                        <width>93</width>
+                        <height>40</height>
+                        <texture>$INFO[ListItem.Property(image)]</texture>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="44" width="97" condition="String.IsEqual(Window.Property(current_palette),material_design)">
+                    <control type="group">
+                        <animation effect="zoom" time="100" tween="sine" easing="inout" start="100" end="120" center="auto">Focus</animation>
+                        <control type="image">
+                            <left>0</left>
+                            <top>0</top>
+                            <width>97</width>
+                            <height>44</height>
+                            <texture colordiffuse="FF302F2F">common/white.png</texture>
+                        </control>
+                        <control type="image">
+                            <left>2</left>
+                            <top>2</top>
+                            <width>93</width>
+                            <height>40</height>
+                            <texture>$INFO[ListItem.Property(image)]</texture>
+                        </control>
+                    </control>
+                </focusedlayout>
+                <itemlayout height="44" width="44" condition="String.IsEqual(Window.Property(current_palette),webcolors) | String.IsEqual(Window.Property(current_palette),rainbow)">
+                    <control type="image">
+                        <left>0</left>
+                        <top>0</top>
+                        <width>40</width>
+                        <height>40</height>
+                        <texture>$INFO[ListItem.Property(image)]</texture>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="44" width="44" condition="String.IsEqual(Window.Property(current_palette),webcolors) | String.IsEqual(Window.Property(current_palette),rainbow)">
+                    <control type="group">
+                        <animation effect="zoom" time="100" tween="sine" easing="inout" start="100" end="140" center="auto">Focus</animation>
+                        <control type="image">
+                            <left>0</left>
+                            <top>0</top>
+                            <width>44</width>
+                            <height>44</height>
+                            <texture colordiffuse="FF302F2F">common/white.png</texture>
+                        </control>
+                        <control type="image">
+                            <left>2</left>
+                            <top>2</top>
+                            <width>40</width>
+                            <height>40</height>
+                            <texture>$INFO[ListItem.Property(image)]</texture>
+                        </control>
+                    </control>
+                </focusedlayout>
+            </control>
+            <!-- Buttons -->
+            <control type="group">
+                <left>1405</left>
+                <top>177</top>
+                <control type="button" id="10">
+                    <description>OK</description>
+                    <width>240</width>
+                    <height>85</height>
+                    <onup>13</onup>
+                    <ondown>11</ondown>
+                    <onleft>2000</onleft>
+                    <onright>2000</onright>
+                    <label>$ADDON[plugin.video.fen 32839]</label>
+                    <font>font_mini</font>
+                    <textcolor>dialog_fg_70</textcolor>
+                    <focusedcolor>$VAR[ColorSelected]</focusedcolor>
+                    <disabledcolor>dialog_fg_30</disabledcolor>
+                    <include>Texture_Button</include>
+                    <pulseonselect>false</pulseonselect>
+                </control>
+                <control type="button" id="11">
+                    <description>Cancel</description>
+                    <top>90</top>
+                    <width>240</width>
+                    <height>85</height>
+                    <onup>10</onup>
+                    <ondown>12</ondown>
+                    <onleft>2000</onleft>
+                    <onright>2000</onright>
+                    <label>$ADDON[plugin.video.fen 32840]</label>
+                    <font>font_mini</font>
+                    <textcolor>dialog_fg_70</textcolor>
+                    <focusedcolor>$VAR[ColorSelected]</focusedcolor>
+                    <disabledcolor>dialog_fg_30</disabledcolor>
+                    <include>Texture_Button</include>
+                    <pulseonselect>false</pulseonselect>
+                </control>
+                <control type="label">
+                    <top>200</top>
+                    <width>240</width>
+                    <height>30</height>
+                    <align>center</align>
+                    <aligny>bottom</aligny>
+                    <textcolor>dialog_fg_70</textcolor>
+                    <font>font_mini</font>
+                    <label>[B]$ADDON[plugin.video.fen 33156][/B]</label>
+                </control>
+                <control type="button" id="12">
+                    <description>Input Value Choice</description>
+                    <top>240</top>
+                    <width>240</width>
+                    <height>85</height>
+                    <onup>11</onup>
+                    <ondown>13</ondown>
+                    <onleft>2000</onleft>
+                    <onright>2000</onright>
+                    <label>[B][COLOR=$INFO[Container(2000).ListItem.Property(label)]]$INFO[Container(2000).ListItem.Property(label)][/COLOR][/B]</label>
+                    <font>font_mini</font>
+                    <textcolor>dialog_fg_70</textcolor>
+                    <focusedcolor>$VAR[ColorSelected]</focusedcolor>
+                    <disabledcolor>dialog_fg_30</disabledcolor>
+                    <include>Texture_Button</include>
+                    <pulseonselect>false</pulseonselect>
+                </control>
+                <control type="image">
+                    <left>5</left>
+                    <top>350</top>
+                    <width>240</width>
+                    <height>100</height>
+                    <aspectratio>stretch</aspectratio>
+                    <texture diffuse="diffuse/landscape_w284_h160.png">$INFO[Container(2000).ListItem.Property(image)]</texture>
+                </control>
+                <control type="label">
+                    <top>490</top>
+                    <width>240</width>
+                    <height>30</height>
+                    <align>center</align>
+                    <aligny>bottom</aligny>
+                    <textcolor>dialog_fg_70</textcolor>
+                    <font>font_mini</font> <!-- FEN_26 -->
+                    <label>[B]$ADDON[plugin.video.fen 33157][/B]</label>
+                </control>
+                <control type="button" id="13">
+                    <description>Color Palette Choice</description>
+                    <top>530</top>
+                    <width>240</width>
+                    <height>85</height>
+                    <onup>12</onup>
+                    <ondown>10</ondown>
+                    <onleft>2000</onleft>
+                    <onright>2000</onright>
+                    <label>$INFO[Window.Property(current_palette_name)]</label>
+                    <font>font_mini</font>
+                    <textcolor>dialog_fg_70</textcolor>
+                    <focusedcolor>$VAR[ColorSelected]</focusedcolor>
+                    <disabledcolor>dialog_fg_30</disabledcolor>
+                    <include>Texture_Button</include>
+                    <pulseonselect>false</pulseonselect>
+                </control>
+            </control>
+        </control>
+        <control type="grouplist">
+            <top>500</top>
+            <left>130</left>
+            <width>1662</width>
+            <height>70</height>
+            <orientation>horizontal</orientation>
+            <itemgap>10</itemgap>
+            <align>center</align>
+            <visible>String.IsEqual(Window.Property(show_busy_dialog),true)</visible>
+            <control type="image">
+                <width max="70">auto</width>
+                <height max="70">auto</height>
+                <texture flipx="true" colordiffuse="dialog_fg_70">common/spinner.png</texture>
+                <animation effect="fade" time="320" delay="400">Visible</animation>
+                <animation effect="rotate" end="360" center="auto" time="1200" loop="true" reversible="false" condition="true">Conditional</animation>
+                <animation effect="fade" start="70" time="1200" condition="true" pulse="true">Conditional</animation>
+            </control>
+            <control type="label">
+                <width max="1700">auto</width>
+                <height>70</height>
+                <align>left</align>
+                <aligny>center</aligny>
+                <font>font_midi</font>
+                <textcolor>dialog_fg_70</textcolor>
+                <label>[B]$ADDON[plugin.video.fen 33110][/B]</label>
+            </control>
+        </control>
+    </controls>
+</window>

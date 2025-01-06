@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">common/white.png</texture>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" start="0" end="80" time="120" />
+            </animation>
+        </control>
+        <control type="group">
+            <left>280</left>
+            <top>50</top>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" end="100" time="200" />
+            </animation>
+            <control type="group">
+                <width>1360</width>
+                <control type="image">
+                    <height>980</height>
+                    <include>Texture_Dialog</include>
+                </control>
+                <control type="image">
+                    <left>15</left>
+                    <top>15</top>
+                    <width>70</width>
+                    <height>70</height>
+                    <align>left</align>
+                    <aligny>top</aligny>
+                    <aspectratio aligny="top">keep</aspectratio>
+                    <texture colordiffuse="dialog_fg_70">common/fen.png</texture>
+                </control>
+                <control type="label">
+                    <top>40</top>
+                    <left>105</left>
+                    <width max="1115">auto</width>
+                    <height>20</height>
+                    <font>font_midi</font>
+                    <textcolor>dialog_fg_70</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>[B]$INFO[Window.Property(heading)][/B]</label>
+                </control>
+                <control type="textbox" id="2000">
+                    <visible>String.IsEqual(Window.Property(font_size),small)</visible>
+                    <left>45</left>
+                    <top>114</top>
+                    <width>1254</width>
+                    <height>816</height>
+                    <font>font_mini</font>
+                    <textcolor>dialog_fg_70</textcolor>
+                    <label>$INFO[Window.Property(text)]</label>
+                    <pagecontrol>2060</pagecontrol>
+                </control>
+                <control type="textbox" id="2000">
+                    <visible>String.IsEqual(Window.Property(font_size),large)</visible>
+                    <left>45</left>
+                    <top>114</top>
+                    <width>1254</width>
+                    <height>826</height>
+                    <font>font_midi</font>
+                    <textcolor>dialog_fg_70</textcolor>
+                    <label>$INFO[Window.Property(text)]</label>
+                    <pagecontrol>2061</pagecontrol>
+                </control>
+                <control type="scrollbar" id="2060">
+                    <visible>String.IsEqual(Window.Property(font_size),small)</visible>
+                    <left>1335</left>
+                    <top>110</top>
+                    <width>10</width>
+                    <height>860</height>
+                    <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                    <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                    <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_v.png</texturesliderbarfocus>
+                    <onleft>2060</onleft>
+                    <onright>2060</onright>
+                    <showonepage>false</showonepage>
+                    <orientation>vertical</orientation>
+                </control>
+                <control type="scrollbar" id="2061">
+                    <visible>String.IsEqual(Window.Property(font_size),large)</visible>
+                    <left>1335</left>
+                    <top>110</top>
+                    <width>10</width>
+                    <height>860</height>
+                    <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                    <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                    <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_v.png</texturesliderbarfocus>
+                    <onleft>2061</onleft>
+                    <onright>2061</onright>
+                    <showonepage>false</showonepage>
+                    <orientation>vertical</orientation>
+                </control>
+            </control>
+        </control>
+    </controls>
+</window>

@@ -1,0 +1,16 @@
+
+Sometimes within Fen, the Debrid Cloud or Folder Scrapers do not detect the movie/tv show being searched for, even though it may be present in your Cloud or Folders. Often this has to do with the naming of the folders, but sometimes it is to do with inaccurate Metadata.
+
+You can 'Link' a Cloud Folder or Local Folder to a particular movie/tv show, essentially telling Fen what the contents of that folder are. Fen will then honor that setting when searching, and return the folder's contents as a result when that movie/tv show is searched for.
+
+e.g. If you have added a torrent pack called "Star Trek TNG S01-S07 COMPLETE" to your Real-debrid cloud, currently FEN's RD Cloud scraper won't detect that as a match, because it will be looking specifically for "Star Trek The Next Generation" being in the folder name. To fix this, navigate to the Star Trek TNG folder in your RD Cloud, bring up the context menu, and select 'Link Movie/TV Show'. Then enter the name of the tv show you want to correctly link to the files (Star Trek The Next Generation), input the year of the tv show's debut (only if you know it. It's not necessary), and choose the correct tv show from any list of shows that appear. That RD Cloud Folder will now be linked to the correct tv show, and will show up in results for Star Trek The Next Generation, regardless of what the folder's original name is.
+
+Setting a link is done by navigating to My Services. From there, if you wish to link a Debrid Cloud item, go into your correct debrid service, and enter into Cloud Storage. From there, select the cloud folder you wish to link, and bring up the context menu. If you wish to link a Local Source Folder, navigate into that menu and select Browse from the context menu of the folder source the item resies in. Then select to link from the context menu of that item.
+
+You can re-assign a link to a movie/tv show by repeating the above steps, or clear a link altogether by selecting "Clear Movie/TV Show Link" from the context menu.
+
+With this feature, you will always be assured of scraping the link for the correct movies/tv shows, no matter what the folder is called in the debrid Cloud.
+
+NOTE: This feature is not needed for Premiumize.me, as they allow all files to be returned at once, hence not needing to inspect folder names.
+
+Try it out to see...

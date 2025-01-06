@@ -1,0 +1,939 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <!-- Background -->
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">common/white.png</texture>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" start="0" end="80" time="120" />
+            </animation>
+        </control>
+        <control type="group">
+            <left>100</left>
+            <top>85</top>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" end="100" time="200" />
+            </animation>
+            <!-- Logo and Background-->
+            <control type="group">
+                <width>1720</width>
+                <control type="image">
+                    <height>910</height>
+                    <include>Texture_Dialog</include>
+                </control>
+                <control type="image">
+                    <left>12</left>
+                    <top>12</top>
+                    <width>40</width>
+                    <height>40</height>
+                    <align>left</align>
+                    <aligny>top</aligny>
+                    <aspectratio aligny="top">keep</aspectratio>
+                    <texture colordiffuse="dialog_fg_70">common/fen.png</texture>
+                </control>
+                <control type="label">
+                    <width max="1700">auto</width>
+                    <top>22</top>
+                    <left>0</left>
+                    <height>20</height>
+                    <font>font_mini</font>
+                    <textcolor>dialog_fg_70</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>[UPPERCASE][B]$ADDON[plugin.video.fen 33043][/B][/UPPERCASE]</label>
+                </control>
+            </control>
+            <!-- Body -->
+            <control type="group">
+                <left>20</left>
+                <top>85</top>
+                <control type="grouplist">
+                    <width>1680</width>
+                    <height>800</height>
+                    <orientation>vertical</orientation>
+                    <scrolltime tween="sine">500</scrolltime>
+                    <itemgap>-300</itemgap>
+                    <usecontrolcoords>true</usecontrolcoords>
+                    <!-- Posters -->
+                    <control type="group">
+                        <visible>Integer.IsGreater(Container(2020).NumItems,0)</visible>
+                        <height>750</height>
+                        <control type="group">
+                            <control type="label">
+                                <width max="1160">auto</width>
+                                <height>20</height>
+                                <font>font_mini</font>
+                                <textcolor>dialog_fg_70</textcolor>
+                                <align>left</align>
+                                <aligny>bottom</aligny>
+                                <label>[B]$ADDON[plugin.video.fen 32616][COLOR $VAR[ColorHighlight]] $INFO[Window.Property(poster.number)][/COLOR][/B]</label>
+                                <visible>!Control.HasFocus(2020)</visible>
+                            </control>
+                            <control type="label">
+                                <width max="1160">auto</width>
+                                <height>20</height>
+                                <font>font_mini</font>
+                                <textcolor>dialog_fg_70</textcolor>
+                                <align>left</align>
+                                <aligny>bottom</aligny>
+                                <label>[B]$ADDON[plugin.video.fen 32616][COLOR $VAR[ColorHighlight]] | [/COLOR][/B]$INFO[Container(2020).ListItem.Property(provider)]</label>
+                                <visible>Control.HasFocus(2020)</visible>
+                            </control>
+                            <control type="fixedlist" id="2020">
+                                <animation effect="slide" end="-720,0" time="0" condition="Integer.IsEqual(Container(2020).NumItems,1) | Integer.IsEqual(Container(2020).NumItems,2)">Conditional</animation>
+                                <animation effect="slide" end="-480,0" time="0" condition="Integer.IsEqual(Container(2020).NumItems,3) | Integer.IsEqual(Container(2020).NumItems,4)">Conditional</animation>
+                                <animation effect="slide" end="-240,0" time="0" condition="Integer.IsEqual(Container(2020).NumItems,5) | Integer.IsEqual(Container(2020).NumItems,6)">Conditional</animation>
+                                <pagecontrol>4020</pagecontrol>
+                                <top>35</top>
+                                <width>1680</width>
+                                <height>330</height>
+                                <onup>2027</onup>
+                                <ondown>4020</ondown>
+                                <orientation>horizontal</orientation>
+                                <scrolltime tween="sine">500</scrolltime>
+                                <focusposition>3</focusposition>
+                                <movement>3</movement>
+                                <itemlayout height="330" width="240">
+                                    <control type="image">
+                                        <left>6</left>
+                                        <top>6</top>
+                                        <height max="318">auto</height>
+                                        <width max="228">auto</width>
+                                        <aspectratio>scale</aspectratio>
+                                        <texture>$INFO[ListItem.Property(thumbnail)]</texture>
+                                    </control>
+                                    <control type="image">
+                                        <left>175</left>
+                                        <top>275</top>
+                                        <width>70</width>
+                                        <aligny>bottom</aligny>
+                                        <align>right</align>
+                                        <aspectratio>keep</aspectratio>
+                                        <texture>indicator/checkmark.png</texture>
+                                        <visible>!String.IsEmpty(ListItem.Property(check_status))</visible>
+                                    </control>
+                                </itemlayout>
+                                <focusedlayout height="330" width="240">
+                                    <control type="group">
+                                        <animation effect="zoom" start="100" end="105" time="200" tween="sine" easing="inout" center="auto">Focus</animation>
+                                        <animation effect="zoom" start="105" end="100" time="200" tween="sine" easing="inout" center="auto">UnFocus</animation>
+                                        <animation effect="fade" start="100" end="60" condition="Control.HasFocus(4020)">Conditional</animation>
+                                        <control type="image">
+                                            <animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+                                            <left>0</left>
+                                            <top>0</top>
+                                            <height>330</height>
+                                            <width>240</width>
+                                            <texture>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_v.png</texture>
+                                            <visible>Control.HasFocus(2020) | Control.HasFocus(4020)</visible>
+                                        </control>
+                                        <control type="image">
+                                            <left>6</left>
+                                            <top>6</top>
+                                            <height max="318">auto</height>
+                                            <width max="228">auto</width>
+                                            <aspectratio>scale</aspectratio>
+                                            <texture>$INFO[ListItem.Property(thumbnail)]</texture>
+                                        </control>
+                                        <control type="image">
+                                            <left>175</left>
+                                            <top>275</top>
+                                            <width>70</width>
+                                            <aligny>bottom</aligny>
+                                            <align>right</align>
+                                            <aspectratio>keep</aspectratio>
+                                            <texture>indicator/checkmark.png</texture>
+                                            <visible>!String.IsEmpty(ListItem.Property(check_status))</visible>
+                                        </control>
+                                    </control>
+                                </focusedlayout>
+                            </control>
+                            <control type="scrollbar" id="4020">
+                                <left>5</left>
+                                <top>375</top>
+                                <width>1670</width>
+                                <height>15</height>
+                                <onup>2020</onup>
+                                <ondown>2021</ondown>
+                                <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                                <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                                <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                                <showonepage>false</showonepage>
+                                <orientation>Horizontal</orientation>
+                                <visible>Control.IsVisible(2020)</visible>
+                            </control>
+                        </control>
+                    </control>
+                    <!-- Fanart -->
+                    <control type="group">
+                        <visible>Integer.IsGreater(Container(2021).NumItems,0)</visible>
+                        <height>750</height>
+                        <control type="group">
+                            <control type="label">
+                                <width max="1160">auto</width>
+                                <height>20</height>
+                                <font>font_mini</font>
+                                <textcolor>dialog_fg_70</textcolor>
+                                <align>left</align>
+                                <aligny>bottom</aligny>
+                                <label>[B]$ADDON[plugin.video.fen 32617][COLOR $VAR[ColorHighlight]] $INFO[Window.Property(fanart.number)][/COLOR][/B]</label>
+                                <visible>!Control.HasFocus(2021)</visible>
+                            </control>
+                            <control type="label">
+                                <width max="1160">auto</width>
+                                <height>20</height>
+                                <font>font_mini</font>
+                                <textcolor>dialog_fg_70</textcolor>
+                                <align>left</align>
+                                <aligny>bottom</aligny>
+                                <label>[B]$ADDON[plugin.video.fen 32617][COLOR $VAR[ColorHighlight]] | [/COLOR][/B]$INFO[Container(2021).ListItem.Property(provider)]</label>
+                                <visible>Control.HasFocus(2021)</visible>
+                            </control>
+                            <control type="fixedlist" id="2021">
+                                <animation effect="slide" end="-560,0" time="0" condition="Integer.IsEqual(Container(2021).NumItems,1) | Integer.IsEqual(Container(2021).NumItems,2)">Conditional</animation>
+                                <pagecontrol>4021</pagecontrol>
+                                <top>35</top>
+                                <width>1680</width>
+                                <height>330</height>
+                                <onup>2020</onup>
+                                <ondown>4021</ondown>
+                                <orientation>horizontal</orientation>
+                                <scrolltime tween="sine">500</scrolltime>
+                                <focusposition>1</focusposition>
+                                <movement>1</movement>
+                                <itemlayout height="330" width="560">
+                                    <control type="image">
+                                        <left>6</left>
+                                        <top>6</top>
+                                        <height max="318">auto</height>
+                                        <width max="548">auto</width>
+                                        <aspectratio>scale</aspectratio>
+                                        <texture diffuse="diffuse/poster_w217_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                    </control>
+                                    <control type="image">
+                                        <left>495</left>
+                                        <top>275</top>
+                                        <width>70</width>
+                                        <aligny>bottom</aligny>
+                                        <align>right</align>
+                                        <aspectratio>keep</aspectratio>
+                                        <texture>indicator/checkmark.png</texture>
+                                        <visible>!String.IsEmpty(ListItem.Property(check_status))</visible>
+                                    </control>
+                                </itemlayout>
+                                <focusedlayout height="330" width="560">
+                                    <control type="group">
+                                        <animation effect="zoom" start="100" end="105" time="200" tween="sine" easing="inout" center="auto">Focus</animation>
+                                        <animation effect="zoom" start="105" end="100" time="200" tween="sine" easing="inout" center="auto">UnFocus</animation>
+                                        <animation effect="fade" start="100" end="60" condition="Control.HasFocus(4021)">Conditional</animation>
+                                        <control type="image">
+                                            <left>6</left>
+                                            <top>6</top>
+                                            <height max="318">auto</height>
+                                            <width max="548">auto</width>
+                                            <aspectratio>scale</aspectratio>
+                                            <texture diffuse="diffuse/poster_w217_h320.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                                        </control>
+                                        <control type="image">
+                                            <left>495</left>
+                                            <top>275</top>
+                                            <width>70</width>
+                                            <aligny>bottom</aligny>
+                                            <align>right</align>
+                                            <aspectratio>keep</aspectratio>
+                                            <texture>indicator/checkmark.png</texture>
+                                            <visible>!String.IsEmpty(ListItem.Property(check_status))</visible>
+                                        </control>
+                                        <control type="image">
+                                            <animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+                                            <width>560</width>
+                                            <height>330</height>
+                                            <texture>special://profile/addon_data/script.texturemaker/ArcticHorizon/selectbox_thin_v.png</texture>
+                                            <visible>Control.HasFocus(2021) | Control.HasFocus(4021)</visible>
+                                        </control>
+                                    </control>
+                                </focusedlayout>
+                            </control>
+                            <control type="scrollbar" id="4021">
+                                <left>5</left>
+                                <top>375</top>
+                                <width>1670</width>
+                                <height>15</height>
+                                <onup>2021</onup>
+                                <ondown>2022</ondown>
+                                <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                                <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                                <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                                <showonepage>false</showonepage>
+                                <orientation>Horizontal</orientation>
+                                <visible>Control.IsVisible(2021)</visible>
+                            </control>
+                        </control>
+                    </control>
+                    <!-- Clearlogo -->
+                    <control type="group">
+                        <visible>Integer.IsGreater(Container(2022).NumItems,0)</visible>
+                        <height>750</height>
+                        <control type="group">
+                            <control type="label">
+                                <width max="1160">auto</width>
+                                <height>20</height>
+                                <font>font_mini</font>
+                                <textcolor>dialog_fg_70</textcolor>
+                                <align>left</align>
+                                <aligny>bottom</aligny>
+                                <label>[B]$ADDON[plugin.video.fen 33068][COLOR $VAR[ColorHighlight]] $INFO[Window.Property(clearlogo.number)][/COLOR][/B]</label>
+                                <visible>!Control.HasFocus(2022)</visible>
+                            </control>
+                            <control type="label">
+                                <width max="1160">auto</width>
+                                <height>20</height>
+                                <font>font_mini</font>
+                                <textcolor>dialog_fg_70</textcolor>
+                                <align>left</align>
+                                <aligny>bottom</aligny>
+                                <label>[B]$ADDON[plugin.video.fen 33068][COLOR $VAR[ColorHighlight]] | [/COLOR][/B]$INFO[Container(2022).ListItem.Property(provider)]</label>
+                                <visible>Control.HasFocus(2022)</visible>
+                            </control>
+                            <control type="fixedlist" id="2022">
+                                <animation effect="slide" end="-560,0" time="0" condition="Integer.IsEqual(Container(2022).NumItems,1) | Integer.IsEqual(Container(2022).NumItems,2)">Conditional</animation>
+                                <pagecontrol>4022</pagecontrol>
+                                <top>35</top>
+                                <width>1680</width>
+                                <height>330</height>
+                                <onup>2021</onup>
+                                <ondown>4022</ondown>
+                                <orientation>horizontal</orientation>
+                                <scrolltime tween="sine">500</scrolltime>
+                                <focusposition>1</focusposition>
+                                <movement>1</movement>
+                                <itemlayout height="330" width="560">
+                                    <control type="image">
+                                        <left>15</left>
+                                        <top>6</top>
+                                        <width max="530">auto</width>
+                                        <aspectratio>keep</aspectratio>
+                                        <texture>$INFO[ListItem.Property(thumbnail)]</texture>
+                                    </control>
+                                    <control type="image">
+                                        <left>495</left>
+                                        <top>275</top>
+                                        <width>70</width>
+                                        <aligny>bottom</aligny>
+                                        <align>right</align>
+                                        <aspectratio>keep</aspectratio>
+                                        <texture>indicator/checkmark.png</texture>
+                                        <visible>!String.IsEmpty(ListItem.Property(check_status))</visible>
+                                    </control>
+                                </itemlayout>
+                                <focusedlayout height="330" width="560">
+                                    <control type="group">
+                                        <animation effect="zoom" start="100" end="105" time="200" tween="sine" easing="inout" center="auto">Focus</animation>
+                                        <animation effect="zoom" start="105" end="100" time="200" tween="sine" easing="inout" center="auto">UnFocus</animation>
+                                        <animation effect="fade" start="100" end="60" condition="Control.HasFocus(4022)">Conditional</animation>
+                                        <control type="image">
+                                            <left>6</left>
+                                            <top>6</top>
+                                            <width>548</width>
+                                            <height>318</height>
+                                            <texture colordiffuse="dialog_bg_100">common/white.png</texture>
+                                            <visible>Control.HasFocus(2022) | Control.HasFocus(4022)</visible>
+                                        </control>
+                                        <control type="image">
+                                            <left>15</left>
+                                            <top>6</top>
+                                            <width max="530">auto</width>
+                                            <aspectratio>keep</aspectratio>
+                                            <texture>$INFO[ListItem.Property(thumbnail)]</texture>
+                                        </control>
+                                        <control type="image">
+                                            <left>495</left>
+                                            <top>275</top>
+                                            <width>70</width>
+                                            <aligny>bottom</aligny>
+                                            <align>right</align>
+                                            <aspectratio>keep</aspectratio>
+                                            <texture>indicator/checkmark.png</texture>
+                                            <visible>!String.IsEmpty(ListItem.Property(check_status))</visible>
+                                        </control>
+                                        <control type="image">
+                                            <animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+                                            <width>560</width>
+                                            <height>330</height>
+                                            <texture>special://profile/addon_data/script.texturemaker/ArcticHorizon/selectbox_thin_v.png</texture>
+                                            <visible>Control.HasFocus(2022) | Control.HasFocus(4022)</visible>
+                                        </control>
+                                    </control>
+                                </focusedlayout>
+                            </control>
+                            <control type="scrollbar" id="4022">
+                                <left>5</left>
+                                <top>375</top>
+                                <width>1670</width>
+                                <height>15</height>
+                                <onup>2022</onup>
+                                <ondown>2023</ondown>
+                                <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                                <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                                <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                                <showonepage>false</showonepage>
+                                <orientation>Horizontal</orientation>
+                                <visible>Control.IsVisible(2022)</visible>
+                            </control>
+                        </control>
+                    </control>
+                    <!-- Banner -->
+                    <control type="group">
+                        <visible>Integer.IsGreater(Container(2023).NumItems,0)</visible>
+                        <height>750</height>
+                        <control type="group">
+                            <control type="label">
+                                <width max="1160">auto</width>
+                                <height>20</height>
+                                <font>font_mini</font>
+                                <textcolor>dialog_fg_70</textcolor>
+                                <align>left</align>
+                                <aligny>bottom</aligny>
+                                <label>[B]Banner[COLOR $VAR[ColorHighlight]] $INFO[Window.Property(banner.number)][/COLOR][/B]</label>
+                                <visible>!Control.HasFocus(2023)</visible>
+                            </control>
+                            <control type="label">
+                                <width max="1160">auto</width>
+                                <height>20</height>
+                                <font>font_mini</font>
+                                <textcolor>dialog_fg_70</textcolor>
+                                <align>left</align>
+                                <aligny>bottom</aligny>
+                                <label>[B]Banner[COLOR $VAR[ColorHighlight]] | [/COLOR][/B]$INFO[Container(2023).ListItem.Property(provider)]</label>
+                                <visible>Control.HasFocus(2023)</visible>
+                            </control>
+                            <control type="fixedlist" id="2023">
+                                <pagecontrol>4023</pagecontrol>
+                                <top>35</top>
+                                <width>1680</width>
+                                <height>330</height>
+                                <onup>2022</onup>
+                                <ondown>4023</ondown>
+                                <orientation>horizontal</orientation>
+                                <scrolltime tween="sine">500</scrolltime>
+                                <focusposition>0</focusposition>
+                                <movement>1</movement>
+                                <itemlayout height="155" width="840">
+                                    <control type="image">
+                                        <left>6</left>
+                                        <top>86</top>
+                                        <height max="143">auto</height>
+                                        <width max="828">auto</width>
+                                        <aspectratio>scale</aspectratio>
+                                        <texture>$INFO[ListItem.Property(thumbnail)]</texture>
+                                    </control>
+                                    <control type="image">
+                                        <left>768</left>
+                                        <top>165</top>
+                                        <width>70</width>
+                                        <aligny>bottom</aligny>
+                                        <align>right</align>
+                                        <aspectratio>keep</aspectratio>
+                                        <texture>indicator/checkmark.png</texture>
+                                        <visible>!String.IsEmpty(ListItem.Property(check_status))</visible>
+                                    </control>
+                                </itemlayout>
+                                <focusedlayout height="155" width="840">
+                                    <control type="group">
+                                        <animation effect="zoom" start="100" end="105" time="200" tween="sine" easing="inout" center="auto">Focus</animation>
+                                        <animation effect="zoom" start="105" end="100" time="200" tween="sine" easing="inout" center="auto">UnFocus</animation>
+                                        <animation effect="fade" start="100" end="60" condition="Control.HasFocus(4023)">Conditional</animation>
+                                        <control type="image">
+                                            <animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+                                            <top>80</top>
+                                            <width>840</width>
+                                            <height>155</height>
+                                            <texture>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_v.png</texture>
+                                            <visible>Control.HasFocus(2023) | Control.HasFocus(4023)</visible>
+                                        </control>
+                                        <control type="image">
+                                            <left>6</left>
+                                            <top>86</top>
+                                            <height max="143">auto</height>
+                                            <width max="828">auto</width>
+                                            <aspectratio>scale</aspectratio>
+                                            <texture>$INFO[ListItem.Property(thumbnail)]</texture>
+                                        </control>
+                                        <control type="image">
+                                            <left>768</left>
+                                            <top>165</top>
+                                            <width>70</width>
+                                            <aligny>bottom</aligny>
+                                            <align>right</align>
+                                            <aspectratio>keep</aspectratio>
+                                            <texture>indicator/checkmark.png</texture>
+                                            <visible>!String.IsEmpty(ListItem.Property(check_status))</visible>
+                                        </control>
+                                    </control>
+                                </focusedlayout>
+                            </control>
+                            <control type="scrollbar" id="4023">
+                                <left>5</left>
+                                <top>368</top>
+                                <width>1670</width>
+                                <height>15</height>
+                                <onup>2023</onup>
+                                <ondown>2024</ondown>
+                                <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                                <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                                <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                                <showonepage>false</showonepage>
+                                <orientation>Horizontal</orientation>
+                                <visible>Control.IsVisible(2023)</visible>
+                            </control>
+                        </control>
+                    </control>
+                    <!-- Clearart -->
+                    <control type="group">
+                        <visible>Integer.IsGreater(Container(2024).NumItems,0)</visible>
+                        <height>750</height>
+                        <control type="group">
+                            <control type="label">
+                                <width max="1160">auto</width>
+                                <height>20</height>
+                                <font>font_mini</font>
+                                <textcolor>dialog_fg_70</textcolor>
+                                <align>left</align>
+                                <aligny>bottom</aligny>
+                                <label>[B]Clearart[COLOR $VAR[ColorHighlight]] $INFO[Window.Property(clearart.number)][/COLOR][/B]</label>
+                                <visible>!Control.HasFocus(2024)</visible>
+                            </control>
+                            <control type="label">
+                                <width max="1160">auto</width>
+                                <height>20</height>
+                                <font>font_mini</font>
+                                <textcolor>dialog_fg_70</textcolor>
+                                <align>left</align>
+                                <aligny>bottom</aligny>
+                                <label>[B]Clearart[COLOR $VAR[ColorHighlight]] | [/COLOR][/B]$INFO[Container(2024).ListItem.Property(provider)]</label>
+                                <visible>Control.HasFocus(2024)</visible>
+                            </control>
+                            <control type="fixedlist" id="2024">
+                                <animation effect="slide" end="-560,0" time="0" condition="Integer.IsEqual(Container(2024).NumItems,1) | Integer.IsEqual(Container(2024).NumItems,2)">Conditional</animation>
+                                <pagecontrol>4024</pagecontrol>
+                                <top>35</top>
+                                <width>1680</width>
+                                <height>330</height>
+                                <onup>2023</onup>
+                                <ondown>4024</ondown>
+                                <orientation>horizontal</orientation>
+                                <scrolltime tween="sine">350</scrolltime>
+                                <focusposition>1</focusposition>
+                                <movement>1</movement>
+                                <itemlayout height="330" width="560">
+                                    <control type="image">
+                                        <left>6</left>
+                                        <top>6</top>
+                                        <height max="318">auto</height>
+                                        <width max="548">auto</width>
+                                        <aspectratio>scale</aspectratio>
+                                        <texture>$INFO[ListItem.Property(thumbnail)]</texture>
+                                    </control>
+                                    <control type="image">
+                                        <left>495</left>
+                                        <top>275</top>
+                                        <width>70</width>
+                                        <aligny>bottom</aligny>
+                                        <align>right</align>
+                                        <aspectratio>keep</aspectratio>
+                                        <texture>indicator/checkmark.png</texture>
+                                        <visible>!String.IsEmpty(ListItem.Property(check_status))</visible>
+                                    </control>
+                                </itemlayout>
+                                <focusedlayout height="330" width="560">
+                                    <control type="group">
+                                        <animation effect="zoom" start="100" end="105" time="200" tween="sine" easing="inout" center="auto">Focus</animation>
+                                        <animation effect="zoom" start="105" end="100" time="200" tween="sine" easing="inout" center="auto">UnFocus</animation>
+                                        <animation effect="fade" start="100" end="60" condition="Control.HasFocus(4024)">Conditional</animation>
+                                        <control type="image">
+                                            <left>6</left>
+                                            <top>6</top>
+                                            <width>548</width>
+                                            <height>318</height>
+                                            <texture colordiffuse="dialog_bg_100">common/white.png</texture>
+                                            <visible>Control.HasFocus(2024) | Control.HasFocus(4024)</visible>
+                                        </control>
+                                        <control type="image">
+                                            <left>6</left>
+                                            <top>6</top>
+                                            <height max="318">auto</height>
+                                            <width max="548">auto</width>
+                                            <aspectratio>scale</aspectratio>
+                                            <texture>$INFO[ListItem.Property(thumbnail)]</texture>
+                                        </control>
+                                        <control type="image">
+                                            <left>495</left>
+                                            <top>275</top>
+                                            <width>70</width>
+                                            <aligny>bottom</aligny>
+                                            <align>right</align>
+                                            <aspectratio>keep</aspectratio>
+                                            <texture>indicator/checkmark.png</texture>
+                                            <visible>!String.IsEmpty(ListItem.Property(check_status))</visible>
+                                        </control>
+                                        <control type="image">
+                                            <animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+                                            <width>560</width>
+                                            <height>330</height>
+                                            <texture>special://profile/addon_data/script.texturemaker/ArcticHorizon/selectbox_thin_v.png</texture>
+                                            <visible>Control.HasFocus(2024) | Control.HasFocus(4024)</visible>
+                                        </control>
+                                    </control>
+                                </focusedlayout>
+                            </control>
+                            <control type="scrollbar" id="4024">
+                                <left>5</left>
+                                <top>375</top>
+                                <width>1670</width>
+                                <height>15</height>
+                                <onup>2024</onup>
+                                <ondown>2025</ondown>
+                                <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                                <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                                <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                                <showonepage>false</showonepage>
+                                <orientation>Horizontal</orientation>
+                                <visible>Control.IsVisible(2024)</visible>
+                            </control>
+                        </control>
+                    </control>
+                    <!-- Landscape -->
+                    <control type="group">
+                        <visible>Integer.IsGreater(Container(2025).NumItems,0)</visible>
+                        <height>750</height>
+                        <control type="group">
+                            <control type="label">
+                                <width max="1160">auto</width>
+                                <height>20</height>
+                                <font>font_mini</font>
+                                <textcolor>dialog_fg_70</textcolor>
+                                <align>left</align>
+                                <aligny>bottom</aligny>
+                                <label>[B]Landscape[COLOR $VAR[ColorHighlight]] $INFO[Window.Property(landscape.number)][/COLOR][/B]</label>
+                                <visible>!Control.HasFocus(2025)</visible>
+                            </control>
+                            <control type="label">
+                                <width max="1160">auto</width>
+                                <height>20</height>
+                                <font>font_mini</font>
+                                <textcolor>dialog_fg_70</textcolor>
+                                <align>left</align>
+                                <aligny>bottom</aligny>
+                                <label>[B]Landscape[COLOR $VAR[ColorHighlight]] | [/COLOR][/B]$INFO[Container(2025).ListItem.Property(provider)]</label>
+                                <visible>Control.HasFocus(2025)</visible>
+                            </control>
+                            <control type="fixedlist" id="2025">
+                                <animation effect="slide" end="-560,0" time="0" condition="Integer.IsEqual(Container(2025).NumItems,1) | Integer.IsEqual(Container(2025).NumItems,2)">Conditional</animation>
+                                <pagecontrol>4025</pagecontrol>
+                                <top>35</top>
+                                <width>1680</width>
+                                <height>330</height>
+                                <onup>2024</onup>
+                                <ondown>4025</ondown>
+                                <orientation>horizontal</orientation>
+                                <scrolltime tween="sine">350</scrolltime>
+                                <focusposition>1</focusposition>
+                                <movement>1</movement>
+                                <itemlayout height="330" width="560">
+                                    <control type="image">
+                                        <left>6</left>
+                                        <top>6</top>
+                                        <height max="318">auto</height>
+                                        <width max="548">auto</width>
+                                        <aspectratio>scale</aspectratio>
+                                        <texture>$INFO[ListItem.Property(thumbnail)]</texture>
+                                    </control>
+                                    <control type="image">
+                                        <left>495</left>
+                                        <top>275</top>
+                                        <width>70</width>
+                                        <aligny>bottom</aligny>
+                                        <align>right</align>
+                                        <aspectratio>keep</aspectratio>
+                                        <texture>indicator/checkmark.png</texture>
+                                        <visible>!String.IsEmpty(ListItem.Property(check_status))</visible>
+                                    </control>
+                                </itemlayout>
+                                <focusedlayout height="330" width="560">
+                                    <control type="group">
+                                        <animation effect="zoom" start="100" end="105" time="200" tween="sine" easing="inout" center="auto">Focus</animation>
+                                        <animation effect="zoom" start="105" end="100" time="200" tween="sine" easing="inout" center="auto">UnFocus</animation>
+                                        <animation effect="fade" start="100" end="60" condition="Control.HasFocus(4025)">Conditional</animation>
+                                        <control type="image">
+                                            <left>6</left>
+                                            <top>6</top>
+                                            <height max="318">auto</height>
+                                            <width max="548">auto</width>
+                                            <aspectratio>scale</aspectratio>
+                                            <texture>$INFO[ListItem.Property(thumbnail)]</texture>
+                                        </control>
+                                        <control type="image">
+                                            <left>495</left>
+                                            <top>275</top>
+                                            <width>70</width>
+                                            <aligny>bottom</aligny>
+                                            <align>right</align>
+                                            <aspectratio>keep</aspectratio>
+                                            <texture>indicator/checkmark.png</texture>
+                                            <visible>!String.IsEmpty(ListItem.Property(check_status))</visible>
+                                        </control>
+                                        <control type="image">
+                                            <animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+                                            <width>560</width>
+                                            <height>330</height>
+                                            <texture>special://profile/addon_data/script.texturemaker/ArcticHorizon/selectbox_thin_v.png</texture>
+                                            <visible>Control.HasFocus(2025) | Control.HasFocus(4025)</visible>
+                                        </control>
+                                    </control>
+                                </focusedlayout>
+                            </control>
+                            <control type="scrollbar" id="4025">
+                                <left>5</left>
+                                <top>375</top>
+                                <width>1670</width>
+                                <height>15</height>
+                                <onup>2025</onup>
+                                <ondown>2026</ondown>
+                                <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                                <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                                <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                                <showonepage>false</showonepage>
+                                <orientation>Horizontal</orientation>
+                                <visible>Control.IsVisible(2025)</visible>
+                            </control>
+                        </control>
+                    </control>
+                    <!-- Discart -->
+                    <control type="group">
+                        <visible>Integer.IsGreater(Container(2026).NumItems,0)</visible>
+                        <height>750</height>
+                        <control type="group">
+                            <control type="label">
+                                <width max="1160">auto</width>
+                                <height>20</height>
+                                <font>font_mini</font>
+                                <textcolor>dialog_fg_70</textcolor>
+                                <align>left</align>
+                                <aligny>bottom</aligny>
+                                <label>[B]Discart[COLOR $VAR[ColorHighlight]] $INFO[Window.Property(discart.number)][/COLOR][/B]</label>
+                                <visible>!Control.HasFocus(2026)</visible>
+                            </control>
+                            <control type="label">
+                                <width max="1160">auto</width>
+                                <height>20</height>
+                                <font>font_mini</font>
+                                <textcolor>dialog_fg_70</textcolor>
+                                <align>left</align>
+                                <aligny>bottom</aligny>
+                                <label>[B]Discart[COLOR $VAR[ColorHighlight]] | [/COLOR][/B]$INFO[Container(2026).ListItem.Property(provider)]</label>
+                                <visible>Control.HasFocus(2026)</visible>
+                            </control>
+                            <control type="fixedlist" id="2026">
+                                <animation effect="slide" end="-720,0" time="0" condition="Integer.IsEqual(Container(2026).NumItems,1) | Integer.IsEqual(Container(2026).NumItems,2)">Conditional</animation>
+                                <animation effect="slide" end="-480,0" time="0" condition="Integer.IsEqual(Container(2026).NumItems,3) | Integer.IsEqual(Container(2026).NumItems,4)">Conditional</animation>
+                                <animation effect="slide" end="-240,0" time="0" condition="Integer.IsEqual(Container(2026).NumItems,5) | Integer.IsEqual(Container(2026).NumItems,6)">Conditional</animation>
+                                <pagecontrol>4026</pagecontrol>
+                                <top>35</top>
+                                <width>1680</width>
+                                <height>330</height>
+                                <onup>2025</onup>
+                                <ondown>4026</ondown>
+                                <orientation>horizontal</orientation>
+                                <scrolltime tween="sine">350</scrolltime>
+                                <focusposition>3</focusposition>
+                                <movement>3</movement>
+                                <itemlayout height="330" width="240">
+                                    <control type="image">
+                                        <left>6</left>
+                                        <top>51</top>
+                                        <height max="228">auto</height>
+                                        <width max="228">auto</width>
+                                        <aspectratio>scale</aspectratio>
+                                        <texture>$INFO[ListItem.Property(thumbnail)]</texture>
+                                    </control>
+                                    <control type="image">
+                                        <left>172</left>
+                                        <top>192</top>
+                                        <width>70</width>
+                                        <aligny>bottom</aligny>
+                                        <align>right</align>
+                                        <aspectratio>keep</aspectratio>
+                                        <texture>indicator/checkmark.png</texture>
+                                        <visible>!String.IsEmpty(ListItem.Property(check_status))</visible>
+                                    </control>
+                                </itemlayout>
+                                <focusedlayout height="330" width="240">
+                                    <control type="group">
+                                        <animation effect="zoom" start="100" end="105" time="200" tween="sine" easing="inout" center="auto">Focus</animation>
+                                        <animation effect="zoom" start="105" end="100" time="200" tween="sine" easing="inout" center="auto">UnFocus</animation>
+                                        <animation effect="fade" start="100" end="60" condition="Control.HasFocus(4026)">Conditional</animation>
+                                        <control type="image">
+                                            <left>6</left>
+                                            <top>51</top>
+                                            <height max="228">auto</height>
+                                            <width max="228">auto</width>
+                                            <aspectratio>scale</aspectratio>
+                                            <texture>$INFO[ListItem.Property(thumbnail)]</texture>
+                                        </control>
+                                        <control type="image">
+                                            <left>172</left>
+                                            <top>192</top>
+                                            <width>70</width>
+                                            <aligny>bottom</aligny>
+                                            <align>right</align>
+                                            <aspectratio>keep</aspectratio>
+                                            <texture>indicator/checkmark.png</texture>
+                                            <visible>!String.IsEmpty(ListItem.Property(check_status))</visible>
+                                        </control>
+                                        <control type="image">
+                                            <animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+                                            <left>0</left>
+                                            <top>40</top>
+                                            <height>250</height>
+                                            <width>240</width>
+                                            <texture>special://profile/addon_data/script.texturemaker/ArcticHorizon/selectbox_thin_v.png</texture>
+                                            <visible>Control.HasFocus(2026) | Control.HasFocus(4026)</visible>
+                                        </control>
+                                    </control>
+                                </focusedlayout>
+                            </control>
+                            <control type="scrollbar" id="4026">
+                                <left>5</left>
+                                <top>368</top>
+                                <width>1670</width>
+                                <height>15</height>
+                                <onup>2026</onup>
+                                <ondown>2027</ondown>
+                                <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                                <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                                <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                                <showonepage>false</showonepage>
+                                <orientation>Horizontal</orientation>
+                                <visible>Control.IsVisible(2026)</visible>
+                            </control>
+                        </control>
+                    </control>
+                    <!-- Keyart -->
+                    <control type="group">
+                        <visible>Integer.IsGreater(Container(2027).NumItems,0)</visible>
+                        <height>750</height>
+                        <control type="group">
+                            <control type="label">
+                                <width max="1160">auto</width>
+                                <height>20</height>
+                                <font>font_mini</font>
+                                <textcolor>dialog_fg_70</textcolor>
+                                <align>left</align>
+                                <aligny>bottom</aligny>
+                                <label>[B]Keyart[COLOR $VAR[ColorHighlight]] $INFO[Window.Property(keyart.number)][/COLOR][/B]</label>
+                                <visible>!Control.HasFocus(2027)</visible>
+                            </control>
+                            <control type="label">
+                                <width max="1160">auto</width>
+                                <height>20</height>
+                                <font>font_mini</font>
+                                <textcolor>dialog_fg_70</textcolor>
+                                <align>left</align>
+                                <aligny>bottom</aligny>
+                                <label>[B]Keyart[COLOR $VAR[ColorHighlight]] | [/COLOR][/B]$INFO[Container(2027).ListItem.Property(provider)]</label>
+                                <visible>Control.HasFocus(2027)</visible>
+                            </control>
+                            <control type="fixedlist" id="2027">
+                                <animation effect="slide" end="-720,0" time="0" condition="Integer.IsEqual(Container(2027).NumItems,1) | Integer.IsEqual(Container(2027).NumItems,2)">Conditional</animation>
+                                <animation effect="slide" end="-480,0" time="0" condition="Integer.IsEqual(Container(2027).NumItems,3) | Integer.IsEqual(Container(2027).NumItems,4)">Conditional</animation>
+                                <animation effect="slide" end="-240,0" time="0" condition="Integer.IsEqual(Container(2027).NumItems,5) | Integer.IsEqual(Container(2027).NumItems,6)">Conditional</animation>
+                                <pagecontrol>4027</pagecontrol>
+                                <top>35</top>
+                                <width>1680</width>
+                                <height>330</height>
+                                <onup>2026</onup>
+                                <ondown>4027</ondown>
+                                <orientation>horizontal</orientation>
+                                <scrolltime tween="sine">350</scrolltime>
+                                <focusposition>3</focusposition>
+                                <movement>3</movement>
+                                <itemlayout height="330" width="240">
+                                    <control type="image">
+                                        <left>6</left>
+                                        <top>6</top>
+                                        <height max="318">auto</height>
+                                        <width max="228">auto</width>
+                                        <aspectratio>scale</aspectratio>
+                                        <texture>$INFO[ListItem.Property(thumbnail)]</texture>
+                                    </control>
+                                    <control type="image">
+                                        <left>175</left>
+                                        <top>275</top>
+                                        <width>70</width>
+                                        <aligny>bottom</aligny>
+                                        <align>right</align>
+                                        <aspectratio>keep</aspectratio>
+                                        <texture>indicator/checkmark.png</texture>
+                                        <visible>!String.IsEmpty(ListItem.Property(check_status))</visible>
+                                    </control>
+                                </itemlayout>
+                                <focusedlayout height="330" width="240">
+                                    <control type="group">
+                                        <animation effect="zoom" start="100" end="105" time="200" tween="sine" easing="inout" center="auto">Focus</animation>
+                                        <animation effect="zoom" start="105" end="100" time="200" tween="sine" easing="inout" center="auto">UnFocus</animation>
+                                        <animation effect="fade" start="100" end="60" condition="Control.HasFocus(4027)">Conditional</animation>
+                                        <control type="image">
+                                            <animation effect="fade" start="100" end="0" time="0">UnFocus</animation>
+                                            <left>0</left>
+                                            <top>0</top>
+                                            <height>330</height>
+                                            <width>240</width>
+                                            <texture>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_v.png</texture>
+                                            <visible>Control.HasFocus(2027) | Control.HasFocus(4027)</visible>
+                                        </control>
+                                        <control type="image">
+                                            <left>6</left>
+                                            <top>6</top>
+                                            <height max="318">auto</height>
+                                            <width max="228">auto</width>
+                                            <aspectratio>scale</aspectratio>
+                                            <texture>$INFO[ListItem.Property(thumbnail)]</texture>
+                                        </control>
+                                        <control type="image">
+                                            <left>175</left>
+                                            <top>275</top>
+                                            <width>70</width>
+                                            <aligny>bottom</aligny>
+                                            <align>right</align>
+                                            <aspectratio>keep</aspectratio>
+                                            <texture>indicator/checkmark.png</texture>
+                                            <visible>!String.IsEmpty(ListItem.Property(check_status))</visible>
+                                        </control>
+                                    </control>
+                                </focusedlayout>
+                            </control>
+                            <control type="scrollbar" id="4027">
+                                <left>5</left>
+                                <top>375</top>
+                                <width>1670</width>
+                                <height>15</height>
+                                <onup>2027</onup>
+                                <ondown>2020</ondown>
+                                <texturesliderbackground colordiffuse="FF302F2F">common/white.png</texturesliderbackground>
+                                <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                                <texturesliderbarfocus>special://profile/addon_data/script.texturemaker/ArcticHorizon/box_h.png</texturesliderbarfocus>
+                                <showonepage>false</showonepage>
+                                <orientation>Horizontal</orientation>
+                                <visible>Control.IsVisible(2027)</visible>
+                            </control>
+                        </control>
+                    </control>
+                </control>
+            </control>
+        </control>
+    </controls>
+</window>

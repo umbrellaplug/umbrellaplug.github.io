@@ -1,0 +1,22 @@
+
+Discover is a feature that allows you to browse and/or export lists that you make yourself using the filter values you provide. Only the filters you wish to use need to be assigned a value, the rest can be left blank. Once you've set your desired filters, select 'Save & Browse Results' if you want to simply start looking through the list you have made, or 'Export Search' to place your new list in one of the Fen Main Menus (Root, Movies or TV Shows). Clear your filters to start again by selecting 'CLEAR FILTERS'. Your lists can be re-viewed by navigating into 'DISCOVER: History'. There are many different lists you could make using different filters, below are 2 examples:
+
+[B]EXAMPLE 1:[/B]
+You want to search for Comedy/Action Movies made in the 1980's that are PG Rated:
+- Assign a "[B]Year Start[/B]" filter of "1980"
+- Assign a "[B]Year End[/B]" filter of "1989"
+- Assign a "[B]Include Genres[/B]" filter of "Action, Comedy"
+- Assign a "[B]Certification[/B]" filter of "PG"
+- Select "[B]Browse Results[/B]" to immediately see the results or "[B]Export List[/B]" to export the list to Fen Root Menu or Fen Movies Menu etc"
+- Only want movies with Tom Hanks in your new list? Add a 'Tom Hanks' filter for 'Includes Cast Member'.
+- [B]Enjoy your 1980's Action/Comedy Family Movie Night.[/B]
+
+[B]You can also search for Similar or Recommended Titles.[/B]
+[B]EXAMPLE 2:[/B]
+You want to search for Movies Similar to Avengers Endgame.
+    - Assign a "[B]Discover Recommended[/B]" [B]Title[/B] of "Avengers Endgame"
+    - Assign a "[B]Discover Recommended[/B]" [B]Year[/B] of "2019" (leave blank if you don't know the year)
+    - Choose from the titles presented for the correct Movie/TV Show
+    - You will notice the other filters have disappeared. Once a "Discover Recommended" value has been set, the other filters are not available.
+    - Select "[B]Browse Results[/B]" to immediately see the results or "[B]Export List[/B]" to export the list to Fen Root Menu or Fen Movies Menu etc"
+[B]You will see a list of Movies Recommended based on Avengers Endgame.[/B]

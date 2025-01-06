@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <control type="image">
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">fen_common/white.png</texture>
+        </control>
+        <control type="videowindow">
+            <width>1920</width>
+            <height>1080</height>
+        </control>
+        <control type="group">
+            <visible>Player.HasVideo</visible>
+            <left>20</left>
+            <top>20</top>
+            <control type="group">
+                <visible>String.IsEqual(Window.Property(display_fen_hint),true)</visible>
+                <control type="image">
+                    <width>60</width>
+                    <height>60</height>
+                    <aspectratio aligny="top">keep</aspectratio>
+                    <texture colordiffuse="B3CCCCCC">fen_common/fen.png</texture>
+                </control>
+                <control type="label">
+                    <left>70</left>
+                    <top>13</top>
+                    <width max="1160">auto</width>
+                    <height>20</height>
+                    <font>font10</font> <!-- FEN_21 -->
+                    <textcolor>B3CCCCCC</textcolor>
+                    <label>[UPPERCASE]$ADDON[plugin.video.fen 33138][/UPPERCASE]</label>
+                </control>
+            </control>
+            <control type="group">
+                <visible>String.IsEqual(Window.Property(display_progress),true) | Player.Paused</visible>
+                <control type="label">
+                    <top>980</top>
+                    <left>30</left>
+                    <width>1820</width>
+                    <height>20</height>
+                    <font>font10</font> <!-- FEN_21 -->
+                    <align>center</align>
+                    <label>[COLOR B3CCCCCC][B]$INFO[Player.Time(hh:mm:ss)] / $INFO[Player.Duration(hh:mm:ss)][/B][/COLOR]</label>
+                </control>
+                <control type="progress" id="5000">
+                    <description>Progressbar</description>
+                    <top>1020</top>
+                    <left>30</left>
+                    <width>1820</width>
+                    <height>20</height>
+                    <info>Player.Progress</info>
+                </control>
+            </control>
+        </control>
+    </controls>
+</window>

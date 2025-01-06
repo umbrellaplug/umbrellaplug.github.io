@@ -1,0 +1,10 @@
+
+Fen allows you to choose how colors will be used to distinguish between scraper results.
+
+Go to Settings->Results->Results Color Highlights and choose firstly your desired setting for "Highlight Results Based On".
+The 3 choices are:
+* SCRAPER TYPE - Highlight results based on the type of result i.e. one color for hoster results, one color for torrent results etc.
+* PROVIDER - Highlight results based on the provider the result is for i.e. one color for Easynews, one color for Real-debrid etc.
+* QUALITY - Highlight results based on the quality of the result i.e. one color for 4K, one color for 1080P etc.
+
+As you change the setting above, relevant color settings will be shown for you to set as desired.

@@ -1,0 +1,23 @@
+
+Fen includes 5 'Folder' scrapers: 'Folder1', 'Folder2', 'Folder3', 'Folder4' and 'Folder5'.
+Choose a Movie and TV Show directory for any of these scrapers, and Fen will scan those directories for results (including .strm files from other add-ons). There is a small amount of leeway for how folder structures must be set out, but to assure best chances of a relevant file being found, it is best to have the following structure:
+        - Movies Folder    <----Enter this into the scraper setting.
+                - Movie 1 Folder
+                        - movie1.file
+                - Movie 2 Folder
+                        - movie2.file
+        - TV Shows Folder    <----Enter this into the scraper setting.
+                - TV Show 1 Folder
+                        - Season 1 Folder
+                                - s01e01.file
+                - TV Show 2 Folder
+                        - Season 1 Folder
+                                - s01e01.file
+To Use:
+Go to Settings->Provider Accounts->'Folders1-5'. Turn ON 'Enable Folder Scrapers'. Also set any additional settings needed here.
+
+Then...
+1. Go to Tools->Manage Accounts->LOCAL:Sources Folders
+2. Enter a 'Movie Folder' and 'TV Show Folder' for each of the Folder Scrapers (1 thru 5).
+
+NOTE: You don't need to set both a Movie and TV Show folder for each of the Folder Scrapers, just leave which ever you don't want to use blank.

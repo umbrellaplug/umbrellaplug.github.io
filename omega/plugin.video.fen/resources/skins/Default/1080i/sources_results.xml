@@ -1,0 +1,2163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <!-- Background -->
+        <control type="group">
+            <control type="image">
+                <left>0</left>
+                <top>0</top>
+                <width>1920</width>
+                <height>1080</height>
+                <texture colordiffuse="FF000000">fen_common/white.png</texture>
+            </control>
+            <control type="image">
+                <left>0</left>
+                <top>0</top>
+                <width>1920</width>
+                <height>1080</height>
+                <aspectratio>scale</aspectratio>
+                <texture>$INFO[Window.Property(fanart)]</texture>
+                <animation effect="fade" start="0" end="25" time="0" tween="sine">WindowOpen</animation>
+            </control>
+        </control>
+        <control type="group">
+            <animation effect="fade" end="100" time="400">WindowOpen</animation>
+            <!-- Logo and Total Results -->
+            <control type="group">
+                <control type="image">
+                    <left>5</left>
+                    <top>5</top>
+                    <width>60</width>
+                    <height>60</height>
+                    <aspectratio aligny="top">keep</aspectratio>
+                    <texture>fen_common/fen.png</texture>
+                </control>
+                <control type="label">
+                    <left>70</left>
+                    <top>22</top>
+                    <width max="355">auto</width>
+                    <height>20</height>
+                    <font>font10</font> <!-- FEN_21 -->
+                    <textcolor>FFFFFFFF</textcolor>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <label>[B]$INFO[Window.Property(total_results)][/B] [UPPERCASE]$ADDON[plugin.video.fen 32139] [COLOR $INFO[Window(10000).Property(fen.main_highlight)]]$INFO[Window.Property(filters_ignored)][/COLOR][/UPPERCASE]</label>
+                    <animation effect="slide" start="0,0" end="0,-15" time="0" center="auto" condition="String.StartsWith(Window.Property(window_format),media) + !String.IsEmpty(Window.Property(clearlogo))">Conditional</animation>
+                </control>
+                <control type="label">
+                    <left>730</left>
+                    <top>22</top>
+                    <width max="1160">auto</width>
+                    <height>20</height>
+                    <font>font10</font> <!-- FEN_21 -->
+                    <textcolor>FFFFFFFF</textcolor>
+                    <align>right</align>
+                    <aligny>center</aligny>
+                    <label>[UPPERCASE]$ADDON[plugin.video.fen 33138][/UPPERCASE]</label>
+                    <visible>String.IsEqual(Window.Property(filter_applied),true)</visible>
+                </control>
+            </control>
+            <!-- List -->
+            <control type="group">
+                <visible>String.IsEqual(Window.Property(window_format),list)</visible>
+                <control type="image">
+                    <aspectratio align="center" aligny="center">keep</aspectratio>
+                    <top>5</top>
+                    <left>640</left>
+                    <height max="90">auto</height>
+                    <width max="600">auto</width>
+                    <align>center</align>
+                    <aligny>top</aligny>
+                    <texture background="true">$INFO[Window.Property(clearlogo)]</texture>
+                    <visible>!String.IsEmpty(Window.Property(clearlogo))</visible>
+                </control>
+                <control type="label">
+                    <top>5</top>
+                    <left>355</left>
+                    <width max="1210">auto</width>
+                    <height>30</height>
+                    <font>font60</font> <!-- FEN_60_BOLD -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>center</align>
+                    <aligny>top</aligny>
+                    <label>[B]$INFO[Window.Property(title)][/B]</label>
+                    <visible>String.IsEmpty(Window.Property(clearlogo))</visible>
+                </control>
+                <control type="image" id="200">
+                    <top>105</top>
+                    <left>1250</left>
+                    <width>650</width>
+                    <height>950</height>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <texture diffuse="fen_diffuse/poster_w217_h320.png" />
+                </control>
+                <control type="fixedlist" id="2000">
+                    <pagecontrol>2060</pagecontrol>
+                    <left>35</left>
+                    <top>95</top>
+                    <width>1180</width>
+                    <height>970</height>
+                    <onup>2000</onup>
+                    <ondown>2000</ondown>
+                    <onleft>2100</onleft>
+                    <onright>2060</onright>
+                    <scrolltime tween="cubic" easing="out">500</scrolltime>
+                    <orientation>Vertical</orientation>
+                    <focusposition>3</focusposition>
+                    <movement>4</movement>
+                    <itemlayout height="120" width="1180">
+                        <control type="image">
+                            <left>0</left>
+                            <top>15</top>
+                            <width>1180</width>
+                            <height>110</height>
+                            <texture colordiffuse="FF1F2020" border="30">fen_common/circle.png</texture>
+                        </control>
+                        <control type="group">
+                            <height max="100">auto</height>
+                            <width max="160">auto</width>
+                            <top>35</top>
+                            <left>20</left>
+                            <visible>String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                            <control type="label">
+                                <font>font14</font> <!-- FEN_33 -->
+                                <align>left</align>
+                                <aligny>bottom</aligny>
+                                <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(quality)][/B][/COLOR]</label>
+                                <scroll>false</scroll>
+                            </control>
+                            <control type="label">
+                                <top>35</top>
+                                <font>font10</font> <!-- FEN_21 -->
+                                <align>left</align>
+                                <aligny>top</aligny>
+                                <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(provider)][/B][/COLOR]</label>
+                                <scroll>false</scroll>
+                            </control>
+                        </control>
+                        <control type="group">
+                            <visible>String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                            <control type="label">
+                                <top>30</top>
+                                <left>210</left>
+                                <width max="950">auto</width>
+                                <height>12</height>
+                                <font>font10</font> <!-- FEN_21 -->
+                                <textcolor>FFCCCCCC</textcolor>
+                                <align>left</align>
+                                <aligny>center</aligny>
+                                <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32584]: [/B][/COLOR]$INFO[ListItem.Property(size_label)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 33031]: [/B][/COLOR]$INFO[ListItem.Property(source_type)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32100]: [/B][/COLOR]$INFO[ListItem.Property(source_site)][/UPPERCASE]</label>
+                                <scroll>false</scroll>
+                            </control>
+                            <control type="label">
+                                <top>62</top>
+                                <left>210</left>
+                                <width max="950">auto</width>
+                                <height>12</height>
+                                <font>font10</font> <!-- FEN_21 -->
+                                <textcolor>FFCCCCCC</textcolor>
+                                <align>left</align>
+                                <aligny>center</aligny>
+                                <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32987]: [/B][/COLOR]$INFO[ListItem.Property(extraInfo)][/UPPERCASE]</label>
+                                <scroll>false</scroll>
+                            </control>
+                            <control type="label">
+                                <top>94</top>
+                                <left>210</left>
+                                <width max="950">auto</width>
+                                <height>12</height>
+                                <font>font10</font> <!-- FEN_21 -->
+                                <textcolor>FFCCCCCC</textcolor>
+                                <align>left</align>
+                                <aligny>center</aligny>
+                                <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32228]: [/B][/COLOR]$INFO[ListItem.Property(count)] $INFO[ListItem.Property(name)][/UPPERCASE]</label>
+                                <scroll>false</scroll>
+                            </control>
+                        </control>
+                        <control type="group">
+                            <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                            <control type="image">
+                                <height>70</height>
+                                <width>70</width>
+                                <top>35</top>
+                                <left>60</left>
+                                <align>left</align>
+                                <aligny>top</aligny>
+                                <texture colordiffuse="FF9c9a9b">fen_common/info.png</texture>
+                            </control>
+                            <control type="label">
+                                <top>50</top>
+                                <left>230</left>
+                                <width max="860">auto</width>
+                                <height>40</height>
+                                <font>font14</font> <!-- FEN_33 -->
+                                <textcolor>FF9c9a9b</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$ADDON[plugin.video.fen 33023]</label>
+                                <scroll>false</scroll>
+                                <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                            </control>
+                        </control>
+                    </itemlayout>
+                    <focusedlayout condition="String.IsEqual(Window.Property(window_style),contrast)" height="120" width="1180">
+                        <control type="group">
+                            <control type="group">
+                                <top>15</top>
+                                <height>110</height>
+                                <animation effect="fade" start="100" end="60" time="0" condition="!Control.HasFocus(2000)">Conditional</animation>
+                                <control type="image">
+                                    <width>1180</width>
+                                    <texture colordiffuse="FFCCCCCC" border="30">fen_common/circle.png</texture>
+                                </control>
+                                <control type="image">
+                                    <width>200</width>
+                                    <texture colordiffuse="$INFO[ListItem.Property(highlight)]" border="30">fen_common/left-circle.png</texture>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="group">
+                                    <height max="100">auto</height>
+                                    <width max="160">auto</width>
+                                    <top>35</top>
+                                    <left>20</left>
+                                    <control type="label">
+                                        <font>font14</font> <!-- FEN_33 -->
+                                        <textcolor>FF1F2020</textcolor>
+                                        <align>left</align>
+                                        <aligny>bottom</aligny>
+                                        <label>[B]$INFO[ListItem.Property(quality)][/B]</label>
+                                    </control>
+                                    <control type="label">
+                                        <top>35</top>
+                                        <font>font10</font> <!-- FEN_21 -->
+                                        <textcolor>FF1F2020</textcolor>
+                                        <align>left</align>
+                                        <aligny>top</aligny>
+                                        <label>[B]$INFO[ListItem.Property(provider)][/B]</label>
+                                    </control>
+                                </control>
+                                <control type="label">
+                                    <top>30</top>
+                                    <left>210</left>
+                                    <width max="950">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FF1F2020</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32584]: [/B][/COLOR]$INFO[ListItem.Property(size_label)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 33031]: [/B][/COLOR]$INFO[ListItem.Property(source_type)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32100]: [/B][/COLOR]$INFO[ListItem.Property(source_site)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2000)</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>62</top>
+                                    <left>210</left>
+                                    <width max="950">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FF1F2020</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32987]: [/B][/COLOR]$INFO[ListItem.Property(extraInfo)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2000)</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>94</top>
+                                    <left>210</left>
+                                    <width max="950">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FF1F2020</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32228]: [/B][/COLOR]$INFO[ListItem.Property(count)] $INFO[ListItem.Property(name)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2000)</scroll>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="image">
+                                    <height>70</height>
+                                    <width>70</width>
+                                    <top>35</top>
+                                    <left>60</left>
+                                    <align>left</align>
+                                    <aligny>top</aligny>
+                                    <texture colordiffuse="FF1F2020">fen_common/info.png</texture>
+                                </control>
+                                <control type="label">
+                                    <top>50</top>
+                                    <left>210</left>
+                                    <width max="860">auto</width>
+                                    <height>40</height>
+                                    <font>font14</font> <!-- FEN_33 -->
+                                    <textcolor>FF1F2020</textcolor>
+                                    <align>center</align>
+                                    <aligny>center</aligny>
+                                    <label>$ADDON[plugin.video.fen 33023]</label>
+                                </control>
+                            </control>
+                        </control>
+                    </focusedlayout>
+                    <focusedlayout condition="!String.IsEqual(Window.Property(window_style),contrast)" height="120" width="1180">
+                        <control type="group">
+                            <control type="group">
+                                <left>0</left>
+                                <top>15</top>
+                                <control type="image">
+                                    <width>1180</width>
+                                    <height>110</height>
+                                    <texture colordiffuse="FF1F2020" border="30">fen_common/circle.png</texture>
+                                    <animation effect="fade" start="100" end="30" time="0" condition="!Control.HasFocus(2000)">Conditional</animation>
+                                </control>
+                                <control type="image">
+                                    <width>1180</width>
+                                    <height>110</height>
+                                    <texture colordiffuse="$INFO[ListItem.Property(highlight)]" border="30">fen_common/circle.png</texture>
+                                    <animation effect="fade" start="100" end="30" time="0" condition="true">Conditional</animation>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="group">
+                                    <height max="100">auto</height>
+                                    <width max="160">auto</width>
+                                    <top>35</top>
+                                    <left>20</left>
+                                    <control type="label">
+                                        <font>font14</font> <!-- FEN_33 -->
+                                        <align>left</align>
+                                        <aligny>bottom</aligny>
+                                        <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(quality)][/B][/COLOR]</label>
+                                    </control>
+                                    <control type="label">
+                                        <top>35</top>
+                                        <font>font10</font> <!-- FEN_21 -->
+                                        <align>left</align>
+                                        <aligny>top</aligny>
+                                        <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(provider)][/B][/COLOR]</label>
+                                    </control>
+                                </control>
+                                <control type="label">
+                                    <top>30</top>
+                                    <left>210</left>
+                                    <width max="950">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32584]: [/B][/COLOR]$INFO[ListItem.Property(size_label)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 33031]: [/B][/COLOR]$INFO[ListItem.Property(source_type)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32100]: [/B][/COLOR]$INFO[ListItem.Property(source_site)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2000)</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>62</top>
+                                    <left>210</left>
+                                    <width max="950">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32987]: [/B][/COLOR]$INFO[ListItem.Property(extraInfo)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2000)</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>94</top>
+                                    <left>210</left>
+                                    <width max="950">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32228]: [/B][/COLOR]$INFO[ListItem.Property(count)] $INFO[ListItem.Property(name)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2000)</scroll>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="image">
+                                    <height>70</height>
+                                    <width>70</width>
+                                    <top>35</top>
+                                    <left>60</left>
+                                    <align>left</align>
+                                    <aligny>top</aligny>
+                                    <texture colordiffuse="FFFFFFFF">fen_common/info.png</texture>
+                                </control>
+                                <control type="label">
+                                    <top>50</top>
+                                    <left>210</left>
+                                    <width max="860">auto</width>
+                                    <height>40</height>
+                                    <font>font14</font> <!-- FEN_33 -->
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <align>center</align>
+                                    <aligny>center</aligny>
+                                    <label>$ADDON[plugin.video.fen 33023]</label>
+                                    <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                </control>
+                            </control>
+                        </control>
+                    </focusedlayout>
+                </control>
+                <control type="image">
+                    <left>0</left>
+                    <top>0</top>
+                    <width>1920</width>
+                    <height>1080</height>
+                    <texture colordiffuse="FF000000">fen_common/white.png</texture>
+                    <visible>Control.HasFocus(2060) | Control.HasFocus(2100)</visible>
+                    <animation effect="fade" start="0" end="60" time="200" tween="sine">Visible</animation>
+                </control>
+                <control type="image">
+                    <left>565</left>
+                    <top>480</top>
+                    <width>200</width>
+                    <height>200</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <aspectratio>keep</aspectratio>
+                    <texture colordiffuse="FF9c9a9b">$INFO[Container(2000).ListItem.Property(quality_icon)]</texture>
+                    <visible>Control.HasFocus(2060)</visible>
+                    <animation effect="fade" start="0" end="100" time="200" tween="sine">Visible</animation>
+                </control>
+                <control type="scrollbar" id="2060">
+                    <top>110</top>
+                    <left>1225</left>
+                    <width>15</width>
+                    <height>945</height>
+                    <onleft>2000</onleft>
+                    <onright>2000</onright>
+                    <texturesliderbackground colordiffuse="FF302F2F">fen_common/white.png</texturesliderbackground>
+                    <texturesliderbar colordiffuse="FF555556">fen_common/white.png</texturesliderbar>
+                    <texturesliderbarfocus colordiffuse="FFB7B4BB">fen_common/white.png</texturesliderbarfocus>
+                    <showonepage>false</showonepage>
+                    <orientation>vertical</orientation>
+                    <visible>Control.IsVisible(2000)</visible>
+                </control>
+            </control>
+            <!-- Info List -->
+            <control type="group">
+                <visible>String.IsEqual(Window.Property(window_format),infolist)</visible>
+                <control type="image">
+                    <aspectratio align="center" aligny="center">keep</aspectratio>
+                    <top>20</top>
+                    <left>640</left>
+                    <height max="110">auto</height>
+                    <width max="600">auto</width>
+                    <align>center</align>
+                    <aligny>top</aligny>
+                    <texture background="true">$INFO[Window.Property(clearlogo)]</texture>
+                    <visible>!String.IsEmpty(Window.Property(clearlogo))</visible>
+                </control>
+                <control type="label">
+                    <top>60</top>
+                    <left>355</left>
+                    <width max="1210">auto</width>
+                    <height>30</height>
+                    <font>font60</font> <!-- FEN_60_BOLD -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>center</align>
+                    <aligny>bottom</aligny>
+                    <label>[B]$INFO[Window.Property(title)][/B]</label>
+                    <visible>String.IsEmpty(Window.Property(clearlogo))</visible>
+                </control>
+                <control type="group">
+                    <left>1110</left>
+                    <top>220</top>
+                    <control type="group">
+                        <control type="image">
+                            <width>770</width>
+                            <height>825</height>
+                            <texture colordiffuse="FF1F2020" border="30">fen_common/circle.png</texture>
+                        </control>
+                        <control type="image">
+                            <left>-40</left>
+                            <top>-50</top>
+                            <width>400</width>
+                            <height>400</height>
+                            <align>top</align>
+                            <aligny>left</aligny>
+                            <aspectratio>keep</aspectratio>
+                            <texture colordiffuse="$INFO[Container(2001).ListItem().Property(highlight)]">$INFO[Container(2001).ListItem().Property(provider_icon)]</texture>
+                        </control>
+                        <control type="image">
+                            <left>520</left>
+                            <top>50</top>
+                            <width>200</width>
+                            <height>200</height>
+                            <align>top</align>
+                            <aligny>right</aligny>
+                            <aspectratio>keep</aspectratio>
+                            <texture colordiffuse="$INFO[Container(2001).ListItem().Property(highlight)]">$INFO[Container(2001).ListItem().Property(quality_icon)]</texture>
+                        </control>
+                    </control>
+                    <control type="group">
+                        <visible>String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                        <left>10</left>
+                        <top>320</top>
+                        <control type="label">
+                            <width max="750">auto</width>
+                            <height>20</height>
+                            <font>font12</font> <!-- FEN_26 -->
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>center</aligny>
+                            <label>[UPPERCASE][COLOR $INFO[Container(2001).ListItem().Property(highlight)]][B]$ADDON[plugin.video.fen 32583]: [/B][/COLOR]$INFO[Container(2001).ListItem().Property(provider)][/UPPERCASE]</label>
+                            <scroll>false</scroll>
+                        </control>
+                        <control type="label">
+                            <top>50</top>
+                            <width max="750">auto</width>
+                            <height>20</height>
+                            <font>font12</font> <!-- FEN_26 -->
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>center</aligny>
+                            <label>[UPPERCASE][COLOR $INFO[Container(2001).ListItem().Property(highlight)]][B]$ADDON[plugin.video.fen 33031]: [/B][/COLOR]$INFO[Container(2001).ListItem().Property(source_type)][/UPPERCASE]</label>
+                            <scroll>false</scroll>
+                        </control>
+                        <control type="label">
+                            <top>100</top>
+                            <width max="750">auto</width>
+                            <height>20</height>
+                            <font>font12</font> <!-- FEN_26 -->
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>center</aligny>
+                            <label>[UPPERCASE][COLOR $INFO[Container(2001).ListItem().Property(highlight)]][B]$ADDON[plugin.video.fen 32100]: [/B][/COLOR]$INFO[Container(2001).ListItem().Property(source_site)][/UPPERCASE]</label>
+                            <scroll>false</scroll>
+                        </control>
+                        <control type="label">
+                            <top>150</top>
+                            <width max="750">auto</width>
+                            <height>20</height>
+                            <font>font12</font> <!-- FEN_26 -->
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>center</aligny>
+                            <label>[UPPERCASE][COLOR $INFO[Container(2001).ListItem().Property(highlight)]][B]$ADDON[plugin.video.fen 32241]: [/B][/COLOR]$INFO[Container(2001).ListItem().Property(quality)][/UPPERCASE]</label>
+                            <scroll>false</scroll>
+                        </control>
+                        <control type="label">
+                            <top>200</top>
+                            <width max="750">auto</width>
+                            <height>20</height>
+                            <font>font12</font> <!-- FEN_26 -->
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>center</aligny>
+                            <label>[UPPERCASE][COLOR $INFO[Container(2001).ListItem().Property(highlight)]][B]$ADDON[plugin.video.fen 32584]: [/B][/COLOR]$INFO[Container(2001).ListItem().Property(size_label)][/UPPERCASE]</label>
+                            <scroll>false</scroll>
+                        </control>
+                        <control type="label">
+                            <top>250</top>
+                            <width max="750">auto</width>
+                            <height>20</height>
+                            <font>font12</font> <!-- FEN_26 -->
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>center</aligny>
+                            <label>[UPPERCASE][COLOR $INFO[Container(2001).ListItem().Property(highlight)]][B]$ADDON[plugin.video.fen 32987]: [/B][/COLOR]$INFO[Container(2001).ListItem().Property(extraInfo)][/UPPERCASE]</label>
+                            <scroll>false</scroll>
+                        </control>
+                        <control type="label">
+                            <top>300</top>
+                            <width max="750">auto</width>
+                            <height>20</height>
+                            <font>font12</font> <!-- FEN_26 -->
+                            <textcolor>FFCCCCCC</textcolor>
+                            <align>left</align>
+                            <aligny>center</aligny>
+                            <label>[UPPERCASE][COLOR $INFO[Container(2001).ListItem().Property(highlight)]][B]$ADDON[plugin.video.fen 32106]: [/B][/COLOR]$INFO[Container(2001).ListItem().Property(hash)][/UPPERCASE]</label>
+                            <scroll>false</scroll>
+                        </control>
+                        <control type="textbox">
+                            <top>345</top>
+                            <left>0</left>
+                            <width>750</width>
+                            <height>97</height>
+                            <font>font12</font> <!-- FEN_26 -->
+                            <align>left</align>
+                            <aligny>top</aligny>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <label>[UPPERCASE][COLOR $INFO[Container(2001).ListItem().Property(highlight)]][B]$ADDON[plugin.video.fen 32228]: [/B][/COLOR]$INFO[Container(2001).ListItem().Property(name)][/UPPERCASE]</label>
+                        </control>
+                    </control>
+                    <control type="image">
+                        <height>250</height>
+                        <width>250</width>
+                        <top>280</top>
+                        <left>250</left>
+                        <align>left</align>
+                        <aligny>top</aligny>
+                        <texture>fen_common/info.png</texture>
+                        <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                    </control>
+                </control>
+                <control type="fixedlist" id="2001">
+                    <pagecontrol>2061</pagecontrol>
+                    <left>35</left>
+                    <top>205</top>
+                    <width>1030</width>
+                    <height>850</height>
+                    <onup>2001</onup>
+                    <ondown>2001</ondown>
+                    <onleft>2100</onleft>
+                    <onright>2061</onright>
+                    <scrolltime tween="cubic" easing="out">500</scrolltime>
+                    <orientation>Vertical</orientation>
+                    <focusposition>2</focusposition>
+                    <movement>4</movement>
+                    <itemlayout height="120" width="1030">
+                        <control type="image">
+                            <left>0</left>
+                            <top>15</top>
+                            <width>1030</width>
+                            <height>110</height>
+                            <texture colordiffuse="FF1F2020" border="30">fen_common/circle.png</texture>
+                        </control>
+                        <control type="group">
+                            <visible>String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                            <control type="group">
+                                <height max="100">auto</height>
+                                <width max="150">auto</width>
+                                <top>35</top>
+                                <left>20</left>
+                                <control type="label">
+                                    <font>font14</font> <!-- FEN_33 -->
+                                    <align>left</align>
+                                    <aligny>bottom</aligny>
+                                    <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(quality)][/B][/COLOR]</label>
+                                    <scroll>false</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>35</top>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <align>left</align>
+                                    <aligny>top</aligny>
+                                    <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(provider)][/B][/COLOR]</label>
+                                    <scroll>false</scroll>
+                                </control>
+                            </control>
+                            <control type="label">
+                                <top>30</top>
+                                <left>185</left>
+                                <width max="835">auto</width>
+                                <height>12</height>
+                                <font>font10</font> <!-- FEN_21 -->
+                                <textcolor>FFCCCCCC</textcolor>
+                                <align>left</align>
+                                <aligny>center</aligny>
+                                <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32584]: [/B][/COLOR]$INFO[ListItem.Property(size_label)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 33031]: [/B][/COLOR]$INFO[ListItem.Property(source_type)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32100]: [/B][/COLOR]$INFO[ListItem.Property(source_site)][/UPPERCASE]</label>
+                                <scroll>false</scroll>
+                            </control>
+                            <control type="label">
+                                <top>62</top>
+                                <left>185</left>
+                                <width max="835">auto</width>
+                                <height>12</height>
+                                <font>font10</font> <!-- FEN_21 -->
+                                <textcolor>FFCCCCCC</textcolor>
+                                <align>left</align>
+                                <aligny>center</aligny>
+                                <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32987]: [/B][/COLOR]$INFO[ListItem.Property(extraInfo)][/UPPERCASE]</label>
+                                <scroll>false</scroll>
+                            </control>
+                            <control type="label">
+                                <top>94</top>
+                                <left>185</left>
+                                <width max="835">auto</width>
+                                <height>12</height>
+                                <font>font10</font> <!-- FEN_21 -->
+                                <textcolor>FFCCCCCC</textcolor>
+                                <align>left</align>
+                                <aligny>center</aligny>
+                                <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32228]: [/B][/COLOR]$INFO[ListItem.Property(count)] $INFO[ListItem.Property(name)][/UPPERCASE]</label>
+                                <scroll>false</scroll>
+                            </control>
+                        </control>
+                        <control type="group">
+                            <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                            <control type="image">
+                                <height>70</height>
+                                <width>70</width>
+                                <top>35</top>
+                                <left>45</left>
+                                <align>left</align>
+                                <aligny>top</aligny>
+                                <texture colordiffuse="FF9c9a9b">fen_common/info.png</texture>
+                            </control>
+                            <control type="label">
+                                <top>50</top>
+                                <left>60</left>
+                                <width max="860">auto</width>
+                                <height>40</height>
+                                <font>font14</font> <!-- FEN_33 -->
+                                <textcolor>FF9c9a9b</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$ADDON[plugin.video.fen 33023]</label>
+                            </control>
+                        </control>
+                    </itemlayout>
+                    <focusedlayout condition="String.IsEqual(Window.Property(window_style),contrast)" height="120" width="1030">
+                        <control type="group">
+                            <control type="group">
+                                <animation effect="fade" start="100" end="60" time="0" condition="!Control.HasFocus(2001)">Conditional</animation>
+                                <top>15</top>
+                                <height>110</height>
+                                <control type="image">
+                                    <width>1030</width>
+                                    <texture colordiffuse="FFCCCCCC" border="30">fen_common/circle.png</texture>
+                                </control>
+                                <control type="image">
+                                    <width>175</width>
+                                    <texture colordiffuse="$INFO[ListItem.Property(highlight)]" border="30">fen_common/left-circle.png</texture>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="group">
+                                    <height max="100">auto</height>
+                                    <width max="150">auto</width>
+                                    <top>35</top>
+                                    <left>20</left>
+                                    <control type="label">
+                                        <font>font14</font> <!-- FEN_33 -->
+                                        <textcolor>FF1F2020</textcolor>
+                                        <align>left</align>
+                                        <aligny>bottom</aligny>
+                                        <label>[B]$INFO[ListItem.Property(quality)][/B]</label>
+                                    </control>
+                                    <control type="label">
+                                        <top>35</top>
+                                        <font>font10</font> <!-- FEN_21 -->
+                                        <textcolor>FF1F2020</textcolor>
+                                        <align>left</align>
+                                        <aligny>top</aligny>
+                                        <label>[B]$INFO[ListItem.Property(provider)][/B]</label>
+                                    </control>
+                                </control>
+                                <control type="label">
+                                    <top>30</top>
+                                    <left>185</left>
+                                    <width max="835">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FF1F2020</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32584]: [/B][/COLOR]$INFO[ListItem.Property(size_label)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 33031]: [/B][/COLOR]$INFO[ListItem.Property(source_type)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32100]: [/B][/COLOR]$INFO[ListItem.Property(source_site)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2001)</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>62</top>
+                                    <left>185</left>
+                                    <width max="835">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FF1F2020</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32987]: [/B][/COLOR]$INFO[ListItem.Property(extraInfo)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2001)</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>94</top>
+                                    <left>185</left>
+                                    <width max="835">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FF1F2020</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32228]: [/B][/COLOR]$INFO[ListItem.Property(count)] $INFO[ListItem.Property(name)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2001)</scroll>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="image">
+                                    <height>70</height>
+                                    <width>70</width>
+                                    <top>35</top>
+                                    <left>45</left>
+                                    <align>left</align>
+                                    <aligny>top</aligny>
+                                    <texture colordiffuse="FF1F2020">fen_common/info.png</texture>
+                                </control>
+                                <control type="label">
+                                    <top>50</top>
+                                    <left>60</left>
+                                    <width max="860">auto</width>
+                                    <height>40</height>
+                                    <font>font14</font> <!-- FEN_33 -->
+                                    <textcolor>FF1F2020</textcolor>
+                                    <align>center</align>
+                                    <aligny>center</aligny>
+                                    <label>$ADDON[plugin.video.fen 33023]</label>
+                                </control>
+                            </control>
+                        </control>
+                    </focusedlayout>
+                    <focusedlayout condition="!String.IsEqual(Window.Property(window_style),contrast)" height="120" width="1030">
+                        <control type="group">
+                            <control type="group">
+                                <left>0</left>
+                                <top>15</top>
+                                <control type="image">
+                                    <width>1030</width>
+                                    <height>110</height>
+                                    <texture colordiffuse="FF1F2020" border="30">fen_common/circle.png</texture>
+                                    <animation effect="fade" start="100" end="30" time="0" condition="!Control.HasFocus(2001)">Conditional</animation>
+                                </control>
+                                <control type="image">
+                                    <width>1030</width>
+                                    <height>110</height>
+                                    <texture colordiffuse="$INFO[ListItem.Property(highlight)]" border="30">fen_common/circle.png</texture>
+                                    <animation effect="fade" start="100" end="30" time="0" condition="true">Conditional</animation>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="group">
+                                    <height max="100">auto</height>
+                                    <width max="150">auto</width>
+                                    <top>35</top>
+                                    <left>20</left>
+                                    <control type="label">
+                                        <font>font14</font> <!-- FEN_33 -->
+                                        <align>left</align>
+                                        <aligny>bottom</aligny>
+                                        <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(quality)][/B][/COLOR]</label>
+                                    </control>
+                                    <control type="label">
+                                        <top>35</top>
+                                        <font>font10</font> <!-- FEN_21 -->
+                                        <align>left</align>
+                                        <aligny>top</aligny>
+                                        <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(provider)][/B][/COLOR]</label>
+                                    </control>
+                                </control>
+                                <control type="label">
+                                    <top>30</top>
+                                    <left>185</left>
+                                    <width max="820">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32584]: [/B][/COLOR]$INFO[ListItem.Property(size_label)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 33031]: [/B][/COLOR]$INFO[ListItem.Property(source_type)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32100]: [/B][/COLOR]$INFO[ListItem.Property(source_site)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2001)</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>62</top>
+                                    <left>185</left>
+                                    <width max="820">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32987]: [/B][/COLOR]$INFO[ListItem.Property(extraInfo)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2001)</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>94</top>
+                                    <left>185</left>
+                                    <width max="820">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32228]: [/B][/COLOR]$INFO[ListItem.Property(count)] $INFO[ListItem.Property(name)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2001)</scroll>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="image">
+                                    <height>70</height>
+                                    <width>70</width>
+                                    <top>35</top>
+                                    <left>45</left>
+                                    <align>left</align>
+                                    <aligny>top</aligny>
+                                    <texture colordiffuse="FFFFFFFF">fen_common/info.png</texture>
+                                </control>
+                                <control type="label">
+                                    <top>50</top>
+                                    <left>60</left>
+                                    <width max="860">auto</width>
+                                    <height>40</height>
+                                    <font>font14</font> <!-- FEN_33 -->
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <align>center</align>
+                                    <aligny>center</aligny>
+                                    <label>$ADDON[plugin.video.fen 33023]</label>
+                                </control>
+                            </control>
+                        </control>
+                    </focusedlayout>
+                </control>
+                <control type="image">
+                    <left>0</left>
+                    <top>0</top>
+                    <width>1920</width>
+                    <height>1080</height>
+                    <texture colordiffuse="FF000000">fen_common/white.png</texture>
+                    <visible>Control.HasFocus(2061) | Control.HasFocus(2100)</visible>
+                    <animation effect="fade" start="0" end="60" time="200" tween="sine">Visible</animation>
+                </control>
+                <control type="image">
+                    <left>432</left>
+                    <top>535</top>
+                    <width>200</width>
+                    <height>200</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <aspectratio>keep</aspectratio>
+                    <texture colordiffuse="FF9c9a9b">$INFO[Container(2001).ListItem.Property(quality_icon)]</texture>
+                    <visible>Control.HasFocus(2061)</visible>
+                    <animation effect="fade" start="0" end="100" time="200" tween="sine">Visible</animation>
+                </control>
+                <control type="scrollbar" id="2061">
+                    <top>220</top>
+                    <left>1080</left>
+                    <width>15</width>
+                    <height>825</height>
+                    <onleft>2001</onleft>
+                    <onright>2001</onright>
+                    <texturesliderbackground colordiffuse="FF302F2F">fen_common/white.png</texturesliderbackground>
+                    <texturesliderbar colordiffuse="FF555556">fen_common/white.png</texturesliderbar>
+                    <texturesliderbarfocus colordiffuse="FFB7B4BB">fen_common/white.png</texturesliderbarfocus>
+                    <showonepage>false</showonepage>
+                    <orientation>vertical</orientation>
+                    <visible>Control.IsVisible(2001)</visible>
+                </control>
+            </control>
+            <!-- Media List-->
+            <control type="group">
+                <visible>String.IsEqual(Window.Property(window_format),medialist)</visible>
+                <top>20</top>
+                <control type="image">
+                    <top>15</top>
+                    <left>70</left>
+                    <height max="250">auto</height>
+                    <width max="1130">auto</width>
+                    <aspectratio>keep</aspectratio>
+                    <align>bottom</align>
+                    <aligny>center</aligny>
+                    <texture background="true">$INFO[Window.Property(clearlogo)]</texture>
+                    <visible>!String.IsEmpty(Window.Property(clearlogo))</visible>
+                </control>
+                <control type="label">
+                    <top>85</top>
+                    <left>70</left>
+                    <width max="1130">auto</width>
+                    <height>30</height>
+                    <font>font60</font> <!-- FEN_60_BOLD -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>center</align>
+                    <aligny>bottom</aligny>
+                    <label>[B]$INFO[Window.Property(title)][/B]</label>
+                    <visible>String.IsEmpty(Window.Property(clearlogo))</visible>
+                </control>
+                <control type="image" id="201">
+                    <top>40</top>
+                    <left>1250</left>
+                    <width>650</width>
+                    <height>1000</height>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <texture diffuse="fen_diffuse/poster_w217_h320.png" />
+                </control>
+                <control type="fixedlist" id="2002">
+                    <pagecontrol>2062</pagecontrol>
+                    <left>35</left>
+                    <top>320</top>
+                    <width>1180</width>
+                    <height>730</height>
+                    <onup>2002</onup>
+                    <ondown>2002</ondown>
+                    <onleft>2100</onleft>
+                    <onright>2062</onright>
+                    <scrolltime tween="cubic" easing="out">500</scrolltime>
+                    <orientation>Vertical</orientation>
+                    <focusposition>1</focusposition>
+                    <movement>4</movement>
+                    <itemlayout height="120" width="1180">
+                        <control type="image">
+                            <left>0</left>
+                            <top>15</top>
+                            <width>1180</width>
+                            <height>110</height>
+                            <texture colordiffuse="FF1F2020" border="30">fen_common/circle.png</texture>
+                        </control>
+                        <control type="group">
+                            <height max="100">auto</height>
+                            <width max="160">auto</width>
+                            <top>35</top>
+                            <left>20</left>
+                            <visible>String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                            <control type="label">
+                                <font>font14</font> <!-- FEN_33 -->
+                                <align>left</align>
+                                <aligny>bottom</aligny>
+                                <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(quality)][/B][/COLOR]</label>
+                                <scroll>false</scroll>
+                            </control>
+                            <control type="label">
+                                <top>35</top>
+                                <font>font10</font> <!-- FEN_21 -->
+                                <align>left</align>
+                                <aligny>top</aligny>
+                                <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(provider)][/B][/COLOR]</label>
+                                <scroll>false</scroll>
+                            </control>
+                        </control>
+                        <control type="group">
+                            <visible>String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                            <control type="label">
+                                <top>30</top>
+                                <left>210</left>
+                                <width max="950">auto</width>
+                                <height>12</height>
+                                <font>font10</font> <!-- FEN_21 -->
+                                <textcolor>FFCCCCCC</textcolor>
+                                <align>left</align>
+                                <aligny>center</aligny>
+                                <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32584]: [/B][/COLOR]$INFO[ListItem.Property(size_label)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 33031]: [/B][/COLOR]$INFO[ListItem.Property(source_type)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32100]: [/B][/COLOR]$INFO[ListItem.Property(source_site)][/UPPERCASE]</label>
+                                <scroll>false</scroll>
+                            </control>
+                            <control type="label">
+                                <top>62</top>
+                                <left>210</left>
+                                <width max="950">auto</width>
+                                <height>12</height>
+                                <font>font10</font> <!-- FEN_21 -->
+                                <textcolor>FFCCCCCC</textcolor>
+                                <align>left</align>
+                                <aligny>center</aligny>
+                                <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32987]: [/B][/COLOR]$INFO[ListItem.Property(extraInfo)][/UPPERCASE]</label>
+                                <scroll>false</scroll>
+                            </control>
+                            <control type="label">
+                                <top>94</top>
+                                <left>210</left>
+                                <width max="950">auto</width>
+                                <height>12</height>
+                                <font>font10</font> <!-- FEN_21 -->
+                                <textcolor>FFCCCCCC</textcolor>
+                                <align>left</align>
+                                <aligny>center</aligny>
+                                <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32228]: [/B][/COLOR]$INFO[ListItem.Property(count)] $INFO[ListItem.Property(name)][/UPPERCASE]</label>
+                                <scroll>false</scroll>
+                            </control>
+                        </control>
+                        <control type="group">
+                            <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                            <control type="image">
+                                <height>70</height>
+                                <width>70</width>
+                                <top>35</top>
+                                <left>60</left>
+                                <align>left</align>
+                                <aligny>top</aligny>
+                                <texture colordiffuse="FF9c9a9b">fen_common/info.png</texture>
+                            </control>
+                            <control type="label">
+                                <top>50</top>
+                                <left>230</left>
+                                <width max="860">auto</width>
+                                <height>40</height>
+                                <font>font14</font> <!-- FEN_33 -->
+                                <textcolor>FF9c9a9b</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$ADDON[plugin.video.fen 33023]</label>
+                                <scroll>false</scroll>
+                                <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                            </control>
+                        </control>
+                    </itemlayout>
+                    <focusedlayout condition="String.IsEqual(Window.Property(window_style),contrast)" height="120" width="1180">
+                        <control type="group">
+                            <control type="group">
+                                <top>15</top>
+                                <height>110</height>
+                                <animation effect="fade" start="100" end="60" time="0" condition="!Control.HasFocus(2002)">Conditional</animation>
+                                <control type="image">
+                                    <width>1180</width>
+                                    <texture colordiffuse="FFCCCCCC" border="30">fen_common/circle.png</texture>
+                                </control>
+                                <control type="image">
+                                    <width>200</width>
+                                    <texture colordiffuse="$INFO[ListItem.Property(highlight)]" border="30">fen_common/left-circle.png</texture>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="group">
+                                    <height max="100">auto</height>
+                                    <width max="160">auto</width>
+                                    <top>35</top>
+                                    <left>20</left>
+                                    <control type="label">
+                                        <font>font14</font> <!-- FEN_33 -->
+                                        <textcolor>FF1F2020</textcolor>
+                                        <align>left</align>
+                                        <aligny>bottom</aligny>
+                                        <label>[B]$INFO[ListItem.Property(quality)][/B]</label>
+                                    </control>
+                                    <control type="label">
+                                        <top>35</top>
+                                        <font>font10</font> <!-- FEN_21 -->
+                                        <textcolor>FF1F2020</textcolor>
+                                        <align>left</align>
+                                        <aligny>top</aligny>
+                                        <label>[B]$INFO[ListItem.Property(provider)][/B]</label>
+                                    </control>
+                                </control>
+                                <control type="label">
+                                    <top>30</top>
+                                    <left>210</left>
+                                    <width max="950">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FF1F2020</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32584]: [/B][/COLOR]$INFO[ListItem.Property(size_label)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 33031]: [/B][/COLOR]$INFO[ListItem.Property(source_type)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32100]: [/B][/COLOR]$INFO[ListItem.Property(source_site)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2002)</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>62</top>
+                                    <left>210</left>
+                                    <width max="950">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FF1F2020</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32987]: [/B][/COLOR]$INFO[ListItem.Property(extraInfo)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2002)</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>94</top>
+                                    <left>210</left>
+                                    <width max="950">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FF1F2020</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32228]: [/B][/COLOR]$INFO[ListItem.Property(count)] $INFO[ListItem.Property(name)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2002)</scroll>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="image">
+                                    <height>70</height>
+                                    <width>70</width>
+                                    <top>35</top>
+                                    <left>60</left>
+                                    <align>left</align>
+                                    <aligny>top</aligny>
+                                    <texture colordiffuse="FF1F2020">fen_common/info.png</texture>
+                                </control>
+                                <control type="label">
+                                    <top>50</top>
+                                    <left>210</left>
+                                    <width max="860">auto</width>
+                                    <height>40</height>
+                                    <font>font14</font> <!-- FEN_33 -->
+                                    <textcolor>FF1F2020</textcolor>
+                                    <align>center</align>
+                                    <aligny>center</aligny>
+                                    <label>$ADDON[plugin.video.fen 33023]</label>
+                                </control>
+                            </control>
+                        </control>
+                    </focusedlayout>
+                    <focusedlayout condition="!String.IsEqual(Window.Property(window_style),contrast)" height="120" width="1180">
+                        <control type="group">
+                            <control type="group">
+                                <left>0</left>
+                                <top>15</top>
+                                <control type="image">
+                                    <width>1180</width>
+                                    <height>110</height>
+                                    <texture colordiffuse="FF1F2020" border="30">fen_common/circle.png</texture>
+                                    <animation effect="fade" start="100" end="30" time="0" condition="!Control.HasFocus(2002)">Conditional</animation>
+                                </control>
+                                <control type="image">
+                                    <width>1180</width>
+                                    <height>110</height>
+                                    <texture colordiffuse="$INFO[ListItem.Property(highlight)]" border="30">fen_common/circle.png</texture>
+                                    <animation effect="fade" start="100" end="30" time="0" condition="true">Conditional</animation>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="group">
+                                    <height max="100">auto</height>
+                                    <width max="160">auto</width>
+                                    <top>35</top>
+                                    <left>20</left>
+                                    <control type="label">
+                                        <font>font14</font> <!-- FEN_33 -->
+                                        <align>left</align>
+                                        <aligny>bottom</aligny>
+                                        <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(quality)][/B][/COLOR]</label>
+                                    </control>
+                                    <control type="label">
+                                        <top>35</top>
+                                        <font>font10</font> <!-- FEN_21 -->
+                                        <align>left</align>
+                                        <aligny>top</aligny>
+                                        <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(provider)][/B][/COLOR]</label>
+                                    </control>
+                                </control>
+                                <control type="label">
+                                    <top>30</top>
+                                    <left>210</left>
+                                    <width max="950">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32584]: [/B][/COLOR]$INFO[ListItem.Property(size_label)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 33031]: [/B][/COLOR]$INFO[ListItem.Property(source_type)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32100]: [/B][/COLOR]$INFO[ListItem.Property(source_site)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2002)</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>62</top>
+                                    <left>210</left>
+                                    <width max="950">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32987]: [/B][/COLOR]$INFO[ListItem.Property(extraInfo)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2002)</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>94</top>
+                                    <left>210</left>
+                                    <width max="950">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32228]: [/B][/COLOR]$INFO[ListItem.Property(count)] $INFO[ListItem.Property(name)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2002)</scroll>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="image">
+                                    <height>70</height>
+                                    <width>70</width>
+                                    <top>35</top>
+                                    <left>60</left>
+                                    <align>left</align>
+                                    <aligny>top</aligny>
+                                    <texture colordiffuse="FFFFFFFF">fen_common/info.png</texture>
+                                </control>
+                                <control type="label">
+                                    <top>50</top>
+                                    <left>210</left>
+                                    <width max="860">auto</width>
+                                    <height>40</height>
+                                    <font>font14</font> <!-- FEN_33 -->
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <align>center</align>
+                                    <aligny>center</aligny>
+                                    <label>$ADDON[plugin.video.fen 33023]</label>
+                                    <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                </control>
+                            </control>
+                        </control>
+                    </focusedlayout>
+                </control>
+                <control type="image">
+                    <left>0</left>
+                    <top>-20</top>
+                    <width>1920</width>
+                    <height>1080</height>
+                    <texture colordiffuse="FF000000">fen_common/white.png</texture>
+                    <visible>Control.HasFocus(2062) | Control.HasFocus(2100)</visible>
+                    <animation effect="fade" start="0" end="60" time="200" tween="sine">Visible</animation>
+                </control>
+                <control type="image">
+                    <left>502</left>
+                    <top>585</top>
+                    <width>200</width>
+                    <height>200</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <aspectratio>keep</aspectratio>
+                    <texture colordiffuse="FF9c9a9b">$INFO[Container(2002).ListItem.Property(quality_icon)]</texture>
+                    <visible>Control.HasFocus(2062)</visible>
+                    <animation effect="fade" start="0" end="100" time="200" tween="sine">Visible</animation>
+                </control>
+                <control type="scrollbar" id="2062">
+                    <top>335</top>
+                    <left>1225</left>
+                    <width>15</width>
+                    <height>705</height>
+                    <onleft>2002</onleft>
+                    <onright>2002</onright>
+                    <texturesliderbackground colordiffuse="FF302F2F">fen_common/white.png</texturesliderbackground>
+                    <texturesliderbar colordiffuse="FF555556">fen_common/white.png</texturesliderbar>
+                    <texturesliderbarfocus colordiffuse="FFB7B4BB">fen_common/white.png</texturesliderbarfocus>
+                    <showonepage>false</showonepage>
+                    <orientation>vertical</orientation>
+                    <visible>Control.IsVisible(2002)</visible>
+                </control>
+            </control>
+            <!-- Rows -->
+            <control type="group">
+                <visible>String.IsEqual(Window.Property(window_format),rows)</visible>
+                <control type="image">
+                    <aspectratio align="center" aligny="center">keep</aspectratio>
+                    <top>20</top>
+                    <left>640</left>
+                    <height max="110">auto</height>
+                    <width max="600">auto</width>
+                    <align>center</align>
+                    <aligny>top</aligny>
+                    <texture background="true">$INFO[Window.Property(clearlogo)]</texture>
+                    <visible>!String.IsEmpty(Window.Property(clearlogo))</visible>
+                </control>
+                <control type="label">
+                    <top>60</top>
+                    <left>355</left>
+                    <width max="1210">auto</width>
+                    <height>30</height>
+                    <font>font60</font> <!-- FEN_60_BOLD -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>center</align>
+                    <aligny>bottom</aligny>
+                    <label>[B]$INFO[Window.Property(title)][/B]</label>
+                    <visible>String.IsEmpty(Window.Property(clearlogo))</visible>
+                </control>
+                <control type="panel" id="2003">
+                    <pagecontrol>2063</pagecontrol>
+                    <left>15</left>
+                    <top>205</top>
+                    <width>1870</width>
+                    <height>850</height>
+                    <onup>2003</onup>
+                    <ondown>2003</ondown>
+                    <onleft>2100</onleft>
+                    <onright>2063</onright>
+                    <scrolltime tween="cubic" easing="out">500</scrolltime>
+                    <orientation>Vertical</orientation>
+                    <itemlayout height="120" width="935">
+                        <control type="image">
+                            <left>0</left>
+                            <top>15</top>
+                            <width>925</width>
+                            <height>110</height>
+                            <texture colordiffuse="FF1F2020" border="30">fen_common/circle.png</texture>
+                        </control>
+                        <control type="group">
+                            <visible>String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                            <control type="group">
+                                <height max="100">auto</height>
+                                <width max="150">auto</width>
+                                <top>35</top>
+                                <left>20</left>
+                                <control type="label">
+                                    <font>font14</font> <!-- FEN_33 -->
+                                    <align>left</align>
+                                    <aligny>bottom</aligny>
+                                    <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(quality)][/B][/COLOR]</label>
+                                    <scroll>false</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>35</top>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <align>left</align>
+                                    <aligny>top</aligny>
+                                    <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(provider)][/B][/COLOR]</label>
+                                    <scroll>false</scroll>
+                                </control>
+                            </control>
+                            <control type="label">
+                                <top>30</top>
+                                <left>185</left>
+                                <width max="725">auto</width>
+                                <height>12</height>
+                                <font>font10</font> <!-- FEN_21 -->
+                                <textcolor>FFCCCCCC</textcolor>
+                                <align>left</align>
+                                <aligny>center</aligny>
+                                <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32584]: [/B][/COLOR]$INFO[ListItem.Property(size_label)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 33031]: [/B][/COLOR]$INFO[ListItem.Property(source_type)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32100]: [/B][/COLOR]$INFO[ListItem.Property(source_site)][/UPPERCASE]</label>
+                                <scroll>false</scroll>
+                            </control>
+                            <control type="label">
+                                <top>62</top>
+                                <left>185</left>
+                                <width max="725">auto</width>
+                                <height>12</height>
+                                <font>font10</font> <!-- FEN_21 -->
+                                <textcolor>FFCCCCCC</textcolor>
+                                <align>left</align>
+                                <aligny>center</aligny>
+                                <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32987]: [/B][/COLOR]$INFO[ListItem.Property(extraInfo)][/UPPERCASE]</label>
+                                <scroll>false</scroll>
+                            </control>
+                            <control type="label">
+                                <top>94</top>
+                                <left>185</left>
+                                <width max="725">auto</width>
+                                <height>12</height>
+                                <font>font10</font> <!-- FEN_21 -->
+                                <textcolor>FFCCCCCC</textcolor>
+                                <align>left</align>
+                                <aligny>center</aligny>
+                                <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32228]: [/B][/COLOR]$INFO[ListItem.Property(count)] $INFO[ListItem.Property(name)][/UPPERCASE]</label>
+                                <scroll>false</scroll>
+                            </control>
+                        </control>
+                        <control type="group">
+                            <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                            <control type="image">
+                                <height>70</height>
+                                <width>70</width>
+                                <top>35</top>
+                                <left>45</left>
+                                <align>left</align>
+                                <aligny>top</aligny>
+                                <texture colordiffuse="FF9c9a9b">fen_common/info.png</texture>
+                            </control>
+                            <control type="label">
+                                <top>50</top>
+                                <left>40</left>
+                                <width max="860">auto</width>
+                                <height>40</height>
+                                <font>font14</font> <!-- FEN_33 -->
+                                <textcolor>FF9c9a9b</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$ADDON[plugin.video.fen 33023]</label>
+                                <scroll>false</scroll>
+                                <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                            </control>
+                        </control>
+                    </itemlayout>
+                    <focusedlayout condition="String.IsEqual(Window.Property(window_style),contrast)" height="120" width="935">
+                        <control type="group">
+                            <control type="group">
+                                <animation effect="fade" start="100" end="60" time="0" condition="!Control.HasFocus(2003)">Conditional</animation>
+                                <top>15</top>
+                                <height>110</height>
+                                <control type="image">
+                                    <width>925</width>
+                                    <texture colordiffuse="FFCCCCCC" border="30">fen_common/circle.png</texture>
+                                </control>
+                                <control type="image">
+                                    <width>175</width>
+                                    <texture colordiffuse="$INFO[ListItem.Property(highlight)]" border="30">fen_common/left-circle.png</texture>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="group">
+                                    <height max="100">auto</height>
+                                    <width max="150">auto</width>
+                                    <top>35</top>
+                                    <left>20</left>
+                                    <control type="label">
+                                        <font>font14</font> <!-- FEN_33 -->
+                                        <textcolor>FF1F2020</textcolor>
+                                        <align>left</align>
+                                        <aligny>bottom</aligny>
+                                        <label>[B]$INFO[ListItem.Property(quality)][/B]</label>
+                                    </control>
+                                    <control type="label">
+                                        <top>35</top>
+                                        <font>font10</font> <!-- FEN_21 -->
+                                        <textcolor>FF1F2020</textcolor>
+                                        <align>left</align>
+                                        <aligny>top</aligny>
+                                        <label>[B]$INFO[ListItem.Property(provider)][/B]</label>
+                                    </control>
+                                </control>
+                                <control type="label">
+                                    <top>30</top>
+                                    <left>185</left>
+                                    <width max="725">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FF1F2020</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32584]: [/B][/COLOR]$INFO[ListItem.Property(size_label)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 33031]: [/B][/COLOR]$INFO[ListItem.Property(source_type)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32100]: [/B][/COLOR]$INFO[ListItem.Property(source_site)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2003)</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>62</top>
+                                    <left>185</left>
+                                    <width max="725">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FF1F2020</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32987]: [/B][/COLOR]$INFO[ListItem.Property(extraInfo)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2003)</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>94</top>
+                                    <left>185</left>
+                                    <width max="725">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FF1F2020</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32228]: [/B][/COLOR]$INFO[ListItem.Property(count)] $INFO[ListItem.Property(name)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2003)</scroll>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="image">
+                                    <height>70</height>
+                                    <width>70</width>
+                                    <top>35</top>
+                                    <left>45</left>
+                                    <align>left</align>
+                                    <aligny>top</aligny>
+                                    <texture colordiffuse="FF1F2020">fen_common/info.png</texture>
+                                </control>
+                                <control type="label">
+                                    <top>50</top>
+                                    <left>40</left>
+                                    <width max="860">auto</width>
+                                    <height>40</height>
+                                    <font>font14</font> <!-- FEN_33 -->
+                                    <textcolor>FF1F2020</textcolor>
+                                    <align>center</align>
+                                    <aligny>center</aligny>
+                                    <label>$ADDON[plugin.video.fen 33023]</label>
+                                    <scroll>false</scroll>
+                                    <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                </control>
+                            </control>
+                        </control>
+                    </focusedlayout>
+                    <focusedlayout condition="!String.IsEqual(Window.Property(window_style),contrast)" height="120" width="935">
+                        <control type="group">
+                            <control type="group">
+                                <left>0</left>
+                                <top>15</top>
+                                <control type="image">
+                                    <width>925</width>
+                                    <height>110</height>
+                                    <texture colordiffuse="FF1F2020" border="30">fen_common/circle.png</texture>
+                                    <animation effect="fade" start="100" end="30" time="0" condition="!Control.HasFocus(2003)">Conditional</animation>
+                                </control>
+                                <control type="image">
+                                    <width>925</width>
+                                    <height>110</height>
+                                    <texture colordiffuse="$INFO[ListItem.Property(highlight)]" border="30">fen_common/circle.png</texture>
+                                    <animation effect="fade" start="100" end="30" time="0" condition="true">Conditional</animation>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="group">
+                                    <height max="100">auto</height>
+                                    <width max="150">auto</width>
+                                    <top>35</top>
+                                    <left>20</left>
+                                    <control type="label">
+                                        <font>font14</font> <!-- FEN_33 -->
+                                        <align>left</align>
+                                        <aligny>bottom</aligny>
+                                        <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(quality)][/B][/COLOR]</label>
+                                    </control>
+                                    <control type="label">
+                                        <top>35</top>
+                                        <font>font10</font> <!-- FEN_21 -->
+                                        <align>left</align>
+                                        <aligny>top</aligny>
+                                        <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(provider)][/B][/COLOR]</label>
+                                    </control>
+                                </control>
+                                <control type="label">
+                                    <top>30</top>
+                                    <left>185</left>
+                                    <width max="725">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32584]: [/B][/COLOR]$INFO[ListItem.Property(size_label)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 33031]: [/B][/COLOR]$INFO[ListItem.Property(source_type)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32100]: [/B][/COLOR]$INFO[ListItem.Property(source_site)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2003)</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>62</top>
+                                    <left>185</left>
+                                    <width max="725">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32987]: [/B][/COLOR]$INFO[ListItem.Property(extraInfo)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2003)</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>94</top>
+                                    <left>185</left>
+                                    <width max="725">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32228]: [/B][/COLOR]$INFO[ListItem.Property(count)] $INFO[ListItem.Property(name)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2003)</scroll>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="image">
+                                    <height>70</height>
+                                    <width>70</width>
+                                    <top>35</top>
+                                    <left>45</left>
+                                    <align>left</align>
+                                    <aligny>top</aligny>
+                                    <texture colordiffuse="FFFFFFFF">fen_common/info.png</texture>
+                                </control>
+                                <control type="label">
+                                    <top>50</top>
+                                    <left>40</left>
+                                    <width max="860">auto</width>
+                                    <height>40</height>
+                                    <font>font14</font> <!-- FEN_33 -->
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <align>center</align>
+                                    <aligny>center</aligny>
+                                    <label>$ADDON[plugin.video.fen 33023]</label>
+                                    <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                </control>
+                            </control>
+                        </control>
+                    </focusedlayout>
+                </control>
+                <control type="image">
+                    <left>0</left>
+                    <top>0</top>
+                    <width>1920</width>
+                    <height>1080</height>
+                    <texture colordiffuse="FF000000">fen_common/white.png</texture>
+                    <visible>Control.HasFocus(2063) | Control.HasFocus(2100)</visible>
+                    <animation effect="fade" start="0" end="60" time="200" tween="sine">Visible</animation>
+                </control>
+                <control type="image">
+                    <left>845</left>
+                    <top>535</top>
+                    <width>200</width>
+                    <height>200</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <aspectratio>keep</aspectratio>
+                    <texture colordiffuse="FF9c9a9b">$INFO[Container(2003).ListItem.Property(quality_icon)]</texture>
+                    <visible>Control.HasFocus(2063)</visible>
+                    <animation effect="fade" start="0" end="100" time="200" tween="sine">Visible</animation>
+                </control>
+                <control type="scrollbar" id="2063">
+                    <top>220</top>
+                    <left>1890</left>
+                    <width>15</width>
+                    <height>825</height>
+                    <onleft>2003</onleft>
+                    <onright>2003</onright>
+                    <texturesliderbackground colordiffuse="FF302F2F">fen_common/white.png</texturesliderbackground>
+                    <texturesliderbar colordiffuse="FF555556">fen_common/white.png</texturesliderbar>
+                    <texturesliderbarfocus colordiffuse="FFB7B4BB">fen_common/white.png</texturesliderbarfocus>
+                    <showonepage>false</showonepage>
+                    <orientation>vertical</orientation>
+                    <visible>Control.IsVisible(2003)</visible>
+                </control>
+            </control>
+            <!-- WideList -->
+            <control type="group">
+                <visible>String.IsEqual(Window.Property(window_format),widelist)</visible>
+                <control type="image">
+                    <aspectratio align="center" aligny="center">keep</aspectratio>
+                    <top>5</top>
+                    <left>640</left>
+                    <height max="90">auto</height>
+                    <width max="600">auto</width>
+                    <align>center</align>
+                    <aligny>top</aligny>
+                    <texture background="true">$INFO[Window.Property(clearlogo)]</texture>
+                    <visible>!String.IsEmpty(Window.Property(clearlogo))</visible>
+                </control>
+                <control type="label">
+                    <top>5</top>
+                    <left>355</left>
+                    <width max="1210">auto</width>
+                    <height>30</height>
+                    <font>font60</font> <!-- FEN_60_BOLD -->
+                    <textcolor>FFCCCCCC</textcolor>
+                    <align>center</align>
+                    <aligny>top</aligny>
+                    <label>[B]$INFO[Window.Property(title)][/B]</label>
+                    <visible>String.IsEmpty(Window.Property(clearlogo))</visible>
+                </control>
+                <control type="fixedlist" id="2004">
+                    <pagecontrol>2064</pagecontrol>
+                    <left>110</left>
+                    <top>95</top>
+                    <width>1700</width>
+                    <height>970</height>
+                    <onup>2004</onup>
+                    <ondown>2004</ondown>
+                    <onleft>2100</onleft>
+                    <onright>2064</onright>
+                    <scrolltime tween="cubic" easing="out">500</scrolltime>
+                    <orientation>Vertical</orientation>
+                    <focusposition>3</focusposition>
+                    <movement>4</movement>
+                    <itemlayout height="120" width="1700">
+                        <control type="image">
+                            <left>0</left>
+                            <top>15</top>
+                            <width>1700</width>
+                            <height>110</height>
+                            <texture colordiffuse="FF1F2020" border="30">fen_common/circle.png</texture>
+                        </control>
+                        <control type="group">
+                            <visible>String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                            <control type="group">
+                                <height max="100">auto</height>
+                                <width max="160">auto</width>
+                                <top>35</top>
+                                <left>20</left>
+                                <control type="label">
+                                    <font>font14</font> <!-- FEN_33 -->
+                                    <align>left</align>
+                                    <aligny>bottom</aligny>
+                                    <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(quality)][/B][/COLOR]</label>
+                                    <scroll>false</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>35</top>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <align>left</align>
+                                    <aligny>top</aligny>
+                                    <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(provider)][/B][/COLOR]</label>
+                                    <scroll>false</scroll>
+                                </control>
+                            </control>
+                            <control type="label">
+                                <top>30</top>
+                                <left>210</left>
+                                <width max="1460">auto</width>
+                                <height>12</height>
+                                <font>font10</font> <!-- FEN_21 -->
+                                <textcolor>FFCCCCCC</textcolor>
+                                <align>left</align>
+                                <aligny>center</aligny>
+                                <scroll>false</scroll>
+                                <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32584]: [/B][/COLOR]$INFO[ListItem.Property(size_label)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 33031]: [/B][/COLOR]$INFO[ListItem.Property(source_type)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32100]: [/B][/COLOR]$INFO[ListItem.Property(source_site)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32987]: [/B][/COLOR]$INFO[ListItem.Property(extraInfo)][/UPPERCASE]</label>
+                            </control>
+                            <control type="label">
+                                <top>80</top>
+                                <left>210</left>
+                                <width max="1460">auto</width>
+                                <height>12</height>
+                                <font>font12</font> <!-- FEN_26 -->
+                                <textcolor>FFCCCCCC</textcolor>
+                                <align>left</align>
+                                <aligny>center</aligny>
+                                <label>[UPPERCASE][B]$INFO[ListItem.Property(count)] $INFO[ListItem.Property(name)][/B][/UPPERCASE]</label>
+                                <scroll>false</scroll>
+                            </control>
+                        </control>
+                        <control type="group">
+                            <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                            <control type="image">
+                                <height>70</height>
+                                <width>70</width>
+                                <top>35</top>
+                                <left>55</left>
+                                <align>left</align>
+                                <aligny>top</aligny>
+                                <texture colordiffuse="FF9c9a9b">fen_common/info.png</texture>
+                            </control>
+                            <control type="label">
+                                <top>50</top>
+                                <left>210</left>
+                                <width max="1460">auto</width>
+                                <height>40</height>
+                                <font>font14</font> <!-- FEN_33 -->
+                                <textcolor>FF9c9a9b</textcolor>
+                                <align>left</align>
+                                <aligny>center</aligny>
+                                <label>$ADDON[plugin.video.fen 33023]</label>
+                                <scroll>false</scroll>
+                            </control>
+                        </control>
+                    </itemlayout>
+                    <focusedlayout condition="String.IsEqual(Window.Property(window_style),contrast)" height="120" width="1700">
+                        <control type="group">
+                            <control type="group">
+                                <animation effect="fade" start="100" end="60" time="0" condition="!Control.HasFocus(2004)">Conditional</animation>
+                                <top>15</top>
+                                <height>110</height>
+                                <control type="image">
+                                    <width>1700</width>
+                                    <texture colordiffuse="FFCCCCCC" border="30">fen_common/circle.png</texture>
+                                </control>
+                                <control type="image">
+                                    <width>200</width>
+                                    <texture colordiffuse="$INFO[ListItem.Property(highlight)]" border="30">fen_common/left-circle.png</texture>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="group">
+                                    <height max="100">auto</height>
+                                    <width max="160">auto</width>
+                                    <top>35</top>
+                                    <left>20</left>
+                                    <control type="label">
+                                        <font>font14</font> <!-- FEN_33 -->
+                                        <textcolor>FF1F2020</textcolor>
+                                        <align>left</align>
+                                        <aligny>bottom</aligny>
+                                        <label>[B]$INFO[ListItem.Property(quality)][/B]</label>
+                                    </control>
+                                    <control type="label">
+                                        <top>35</top>
+                                        <font>font10</font> <!-- FEN_21 -->
+                                        <textcolor>FF1F2020</textcolor>
+                                        <align>left</align>
+                                        <aligny>top</aligny>
+                                        <label>[B]$INFO[ListItem.Property(provider)][/B]</label>
+                                    </control>
+                                </control>
+                                <control type="label">
+                                    <top>30</top>
+                                    <left>210</left>
+                                    <width max="1460">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FF1F2020</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32584]: [/B][/COLOR]$INFO[ListItem.Property(size_label)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 33031]: [/B][/COLOR]$INFO[ListItem.Property(source_type)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32100]: [/B][/COLOR]$INFO[ListItem.Property(source_site)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32987]: [/B][/COLOR]$INFO[ListItem.Property(extraInfo)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2004)</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>80</top>
+                                    <left>210</left>
+                                    <width max="1460">auto</width>
+                                    <height>12</height>
+                                    <font>font12</font> <!-- FEN_26 -->
+                                    <textcolor>FF1F2020</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][B]$INFO[ListItem.Property(count)] $INFO[ListItem.Property(name)][/B][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2003)</scroll>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="image">
+                                    <height>70</height>
+                                    <width>70</width>
+                                    <top>35</top>
+                                    <left>55</left>
+                                    <align>left</align>
+                                    <aligny>top</aligny>
+                                    <texture colordiffuse="FF1F2020">fen_common/info.png</texture>
+                                </control>
+                                <control type="label">
+                                    <top>50</top>
+                                    <left>210</left>
+                                    <width max="1460">auto</width>
+                                    <height>40</height>
+                                    <font>font14</font> <!-- FEN_33 -->
+                                    <textcolor>FF1F2020</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>$ADDON[plugin.video.fen 33023]</label>
+                                </control>
+                            </control>
+                        </control>
+                    </focusedlayout>
+                    <focusedlayout condition="!String.IsEqual(Window.Property(window_style),contrast)" height="120" width="1700">
+                        <control type="group">
+                            <control type="group">
+                                <left>0</left>
+                                <top>15</top>
+                                <control type="image">
+                                    <width>1700</width>
+                                    <height>110</height>
+                                    <texture colordiffuse="FF1F2020" border="30">fen_common/circle.png</texture>
+                                    <animation effect="fade" start="100" end="30" time="0" condition="!Control.HasFocus(2004)">Conditional</animation>
+                                </control>
+                                <control type="image">
+                                    <width>1700</width>
+                                    <height>110</height>
+                                    <texture colordiffuse="$INFO[ListItem.Property(highlight)]" border="30">fen_common/circle.png</texture>
+                                    <animation effect="fade" start="100" end="30" time="0" condition="true">Conditional</animation>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="group">
+                                    <height max="100">auto</height>
+                                    <width max="160">auto</width>
+                                    <top>35</top>
+                                    <left>20</left>
+                                    <control type="label">
+                                        <font>font14</font> <!-- FEN_33 -->
+                                        <align>left</align>
+                                        <aligny>bottom</aligny>
+                                        <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(quality)][/B][/COLOR]</label>
+                                    </control>
+                                    <control type="label">
+                                        <top>35</top>
+                                        <font>font10</font> <!-- FEN_21 -->
+                                        <align>left</align>
+                                        <aligny>top</aligny>
+                                        <label>[COLOR $INFO[ListItem.Property(highlight)]][B]$INFO[ListItem.Property(provider)][/B][/COLOR]</label>
+                                    </control>
+                                </control>
+                                <control type="label">
+                                    <top>30</top>
+                                    <left>210</left>
+                                    <width max="1460">auto</width>
+                                    <height>12</height>
+                                    <font>font10</font> <!-- FEN_21 -->
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32584]: [/B][/COLOR]$INFO[ListItem.Property(size_label)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 33031]: [/B][/COLOR]$INFO[ListItem.Property(source_type)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32100]: [/B][/COLOR]$INFO[ListItem.Property(source_site)]     [COLOR $INFO[ListItem.Property(highlight)]][B]$ADDON[plugin.video.fen 32987]: [/B][/COLOR]$INFO[ListItem.Property(extraInfo)][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2003)</scroll>
+                                </control>
+                                <control type="label">
+                                    <top>80</top>
+                                    <left>210</left>
+                                    <width max="1460">auto</width>
+                                    <height>12</height>
+                                    <font>font12</font> <!-- FEN_26 -->
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>[UPPERCASE][B]$INFO[ListItem.Property(count)] $INFO[ListItem.Property(name)][/B][/UPPERCASE]</label>
+                                    <scroll>Control.HasFocus(2003)</scroll>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>!String.IsEmpty(ListItem.Property(perform_full_search))</visible>
+                                <control type="image">
+                                    <height>70</height>
+                                    <width>70</width>
+                                    <top>35</top>
+                                    <left>55</left>
+                                    <align>left</align>
+                                    <aligny>top</aligny>
+                                    <texture colordiffuse="FFFFFFFF">fen_common/info.png</texture>
+                                </control>
+                                <control type="label">
+                                    <top>50</top>
+                                    <left>210</left>
+                                    <width max="1460">auto</width>
+                                    <height>40</height>
+                                    <font>font14</font> <!-- FEN_33 -->
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <label>$ADDON[plugin.video.fen 33023]</label>
+                                </control>
+                            </control>
+                        </control>
+                    </focusedlayout>
+                </control>
+                <control type="image">
+                    <left>0</left>
+                    <top>0</top>
+                    <width>1920</width>
+                    <height>1080</height>
+                    <texture colordiffuse="FF000000">fen_common/white.png</texture>
+                    <visible>Control.HasFocus(2064) | Control.HasFocus(2100)</visible>
+                    <animation effect="fade" start="0" end="60" time="200" tween="sine">Visible</animation>
+                </control>
+                <control type="image">
+                    <left>860</left>
+                    <top>480</top>
+                    <width>200</width>
+                    <height>200</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <aspectratio>keep</aspectratio>
+                    <texture colordiffuse="FF9c9a9b">$INFO[Container(2004).ListItem.Property(quality_icon)]</texture>
+                    <visible>Control.HasFocus(2064)</visible>
+                    <animation effect="fade" start="0" end="100" time="200" tween="sine">Visible</animation>
+                </control>
+                <control type="scrollbar" id="2064">
+                    <top>110</top>
+                    <left>1890</left>
+                    <width>15</width>
+                    <height>945</height>
+                    <onleft>2004</onleft>
+                    <onright>2004</onright>
+                    <texturesliderbackground colordiffuse="FF302F2F">fen_common/white.png</texturesliderbackground>
+                    <texturesliderbar colordiffuse="FF555556">fen_common/white.png</texturesliderbar>
+                    <texturesliderbarfocus colordiffuse="FFB7B4BB">fen_common/white.png</texturesliderbarfocus>
+                    <showonepage>false</showonepage>
+                    <orientation>vertical</orientation>
+                    <visible>Control.IsVisible(2004)</visible>
+                </control>
+            </control>
+        </control>
+        <!-- Dummy Image Load -->
+        <control type="image" id="210">
+            <description>Dummy load of Original Quality Image</description>
+            <left>-2000</left>
+            <top>-2000</top>
+            <width>630</width>
+            <aspectratio aligny="top">keep</aspectratio>
+        </control>
+        <!-- Filter Window -->
+        <control type="group">
+            <visible>!String.IsEqual(Window.Property(filter_applied),true)</visible>
+            <animation effect="slide" end="-782,0" time="300" reversible="true" condition="!Control.HasFocus(2100)">Conditional</animation>
+            <animation effect="slide" start="-800,0" end="0,0" time="600" delay="200" tween="sine">WindowOpen</animation>
+            <top>159</top>
+            <left>5</left>
+            <control type="image">
+                <left>761</left>
+                <top>321</top>
+                <width>54</width>
+                <height>160</height>
+                <texture colordiffuse="FFCCCCCC" border="30" flipx="true">fen_common/left-circle.png</texture>
+            </control>
+            <control type="image">
+                <left>-2</left>
+                <top>-2</top>
+                <width>782</width>
+                <height>807</height>
+                <texture colordiffuse="FFCCCCCC" border="30">fen_common/circle.png</texture>
+            </control>
+            <control type="image">
+                <width>778</width>
+                <height>803</height>
+                <texture colordiffuse="FF1F2020" border="30">fen_common/circle.png</texture>
+            </control>
+            <control type="image">
+                <left>10</left>
+                <top>10</top>
+                <width>45</width>
+                <height>45</height>
+                <align>left</align>
+                <aligny>top</aligny>
+                <aspectratio aligny="top">keep</aspectratio>
+                <texture colordiffuse="FFCCCCCC">fen_common/fen.png</texture>
+            </control>
+            <control type="label">
+                <width max="580">auto</width>
+                <top>10</top>
+                <left>110</left>
+                <height>20</height>
+                <font>font12</font> <!-- FEN_26 -->
+                <textcolor>FFCCCCCC</textcolor>
+                <shadowcolor>FF000000</shadowcolor>
+                <align>center</align>
+                <label>[UPPERCASE][B]filters[/B][/UPPERCASE]</label>
+            </control>
+            <control type="image">
+                <top>322</top>
+                <left>760</left>
+                <width>54</width>
+                <height>158</height>
+                <texture colordiffuse="FF1F2020" border="30" flipx="true">fen_common/left-circle.png</texture>
+            </control>
+            <control type="image">
+                <visible>!Control.HasFocus(2100)</visible>
+                <top>385</top>
+                <left>788</left>
+                <width>15</width>
+                <height>30</height>
+                <texture colordiffuse="FFCCCCCC">fen_common/arrow_left.png</texture>
+            </control>
+            <control type="image">
+                <visible>Control.HasFocus(2100)</visible>
+                <top>385</top>
+                <left>788</left>
+                <width>15</width>
+                <height>30</height>
+                <texture colordiffuse="FFCCCCCC" flipx="true">fen_common/arrow_left.png</texture>
+            </control>
+            <!-- Filter List -->
+            <control type="fixedlist" id="2100">
+                <animation effect="slide" end="0,-270" time="0" condition="Integer.IsEqual(Container(2100).NumItems,1) | Integer.IsEqual(Container(2100).NumItems,2)">Conditional</animation>
+                <animation effect="slide" end="0,-180" time="0" condition="Integer.IsEqual(Container(2100).NumItems,3) | Integer.IsEqual(Container(2100).NumItems,4)">Conditional</animation>
+                <animation effect="slide" end="0,-90" time="0" condition="Integer.IsEqual(Container(2100).NumItems,5) | Integer.IsEqual(Container(2100).NumItems,6)">Conditional</animation>
+                <left>15</left>
+                <top>65</top>
+                <width>750</width>
+                <height>720</height>
+                <onup>2100</onup>
+                <ondown>2100</ondown>
+                <scrolltime tween="sine">350</scrolltime>
+                <orientation>Vertical</orientation>
+                <focusposition>3</focusposition>
+                <movement>4</movement>
+                <scrolltime tween="sine">200</scrolltime>
+                <itemlayout height="90" width="700">
+                    <control type="label">
+                        <width max="610">auto</width>
+                        <left>70</left>
+                        <top>45</top>
+                        <height>5</height>
+                        <font>font12</font> <!-- FEN_26 -->
+                        <textcolor>FFCCCCCC</textcolor>
+                        <aligny>center</aligny>
+                        <label>[UPPERCASE]$INFO[ListItem.Property(label)][/UPPERCASE]</label>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="90" width="750">
+                    <control type="image">
+                        <animation effect="fade" start="100" end="50" time="0" condition="!Control.HasFocus(2100)">Conditional</animation>
+                        <width>750</width>
+                        <texture colordiffuse="FFCCCCCC" border="30">fen_common/circle.png</texture>
+                    </control>
+                    <control type="label">
+                        <left>70</left>
+                        <top>45</top>
+                        <height>5</height>
+                        <width max="610">auto</width>
+                        <font>font12</font> <!-- FEN_26 -->
+                        <textcolor>FF1F2020</textcolor>
+                        <aligny>center</aligny>
+                        <label>[UPPERCASE]$INFO[ListItem.Property(label)][/UPPERCASE]</label>
+                    </control>
+                </focusedlayout>
+            </control>
+        </control>
+    </controls>
+</window>
