@@ -95,6 +95,8 @@ class SourceResultsXML(BaseDialog):
 				cm_list = [('[B]Additional Link Info[/B]', 'sourceInfo')]
 				if 'cached (pack)' in source_dict:
 					cm_list += [('[B]Browse Debrid Pack[/B]', 'showDebridPack')]
+				if 'unchecked (pack)' in source_dict:
+					cm_list += [('[B]Browse Debrid Pack[/B]', 'showDebridPack')]
 				source = chosen_source.getProperty('umbrella.source')
 				if not 'UNCACHED' in source and self.dnlds_enabled:
 					cm_list += [('[B]Download[/B]', 'download')]

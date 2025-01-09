@@ -1,7 +1,13 @@
+[B]Update - v6.7.34 - Jan 9th, 2024[/B]
+--[Fix] Changes for TorBox pack browsing.
+--[Fix] Changes for Real-Debrid to allow pack browsing files are still unchecked and may not work.
+--[Fix] Changes to scraping window to fix errors for updating control 5000 when not being used.
+
 [B]Update - v6.7.33 - Jan 3rd, 2024[/B]
 --[Fix] Changes in title searching format for plex.
 --[Fix] Changes in sources to support composite.
 --[Change] Added prompt for cloud delete from Torbox and added usenet files also.
+--[Credit] Thanks to user zenhuw for his plex fix contributions.
 
 [B]Update - v6.7.32 - December 27th, 2024[/B]
 --[Fix] Used changes from kodifitzwell for TorBox cloud scraping and playing from cloud.

@@ -45,7 +45,8 @@ class TorBox:
 		full_path = '%s%s' % (base_url, path)
 		response = session.request(method, full_path, params=params, json=json, data=data, timeout=self.timeout)
 		try: response.raise_for_status()
-		except Exception as e: log_utils.log('torbox error', f"{e}\n{response.text}")
+		except Exception as e: 
+			log_utils.log('torbox error', f"{e}\n{response.text}")
 		try: result = response.json()
 		except: result = {}
 		return result
@@ -154,7 +155,7 @@ class TorBox:
 				{'link': '%d,%d' % (torrent_id, item['id']), 'filename': item['short_name'], 'size': item['size'] / 1073741824}
 				for item in torrent_files['data']['files'] if item['short_name'].lower().endswith(tuple(extensions))
 			]
-			self.delete_torrent(torrent_id)
+			#self.delete_torrent(torrent_id)
 			return torrent_files
 		except Exception:
 			if torrent_id: self.delete_torrent(torrent_id)

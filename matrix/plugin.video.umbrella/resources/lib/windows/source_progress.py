@@ -63,7 +63,7 @@ class WindowProgress(BaseDialog):
 		try:
 			self.getControl(2001).setText(content)
 			self.setProperty('percent', str(percent))
-			self.getControl(5000).setPercent(percent)
+			#self.getControl(5000).setPercent(percent)
 		except: pass
 
 	def checkLocalMeta(self):

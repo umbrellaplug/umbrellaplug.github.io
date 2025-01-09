@@ -45,7 +45,7 @@
         </assets>
         <news>INFO: For latest changes see Changelog within Tools of add-on.</news>
     </extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.33">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.34">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -226,10 +226,12 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.33 - Jan 3rd, 2024[/B]
---[Fix] Changes in title searching format for plex.
---[Fix] Changes in sources to support composite.
---[Change] Added prompt for cloud delete from Torbox and added usenet files also.
+[B]Update - v6.7.34 - Jan 9th, 2024[/B]
+--[Fix] Changes for TorBox pack browsing.
+--[Fix] Adjusted where files were deleted from cloud if save to cloud is not set for TorBox and pack browsing.
+--[Fix] Changes for Real-Debrid to allow pack browsing files are still unchecked and may not work.
+--[Fix] Changes to scraping window to fix errors for updating control 5000 when not being used.
+--[Change] Removed uncached EasyDebrid results.
 		</news>
 	</extension>
 
