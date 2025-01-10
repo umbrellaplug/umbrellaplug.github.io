@@ -4,11 +4,13 @@ from caches.main_cache import cache_object
 from modules.dom_parser import parseDOM
 from modules.kodi_utils import requests, json, get_setting, local_string as ls, sleep
 from modules.utils import imdb_sort_list, remove_accents, replace_html_codes, string_alphanum_to_num
-from modules.kodi_utils import logger
+# from modules.kodi_utils import logger
 
 # headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36'}
-headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36'}
+# headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36'}
 # headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 7.0; Win64; IA64; rv:86.0.4240.193) Gecko/20100101 Firefox/86.0.4240.193'}
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36 Edge/101.0.1210.53',
+			'Accept-Language':'en-us,en;q=0.5'}
 base_url = 'https://www.imdb.com/%s'
 watchlist_url = 'user/ur%s/watchlist/?sort=date_added,desc&title_type=feature'
 user_list_movies_url = 'list/%s/?view=detail&sort=%s&title_type=movie,short,video,tvShort,tvMovie,tvSpecial&start=1&page=%s'
@@ -16,7 +18,7 @@ user_list_tvshows_url = 'list/%s/?view=detail&sort=%s&title_type=tvSeries,tvMini
 keywords_movies_url = 'search/keyword/?keywords=%s&sort=moviemeter,asc&title_type=movie&page=%s'
 keywords_tvshows_url = 'search/keyword/?keywords=%s&sort=moviemeter,asc&title_type=tvSeries&page=%s'
 lists_link = 'user/ur%s/lists?tab=all&sort=mdfd&order=desc&filter=titles'
-reviews_url = 'title/%s/reviews/_ajax?paginationKey=%s'
+reviews_url = 'title/%s/reviews/?sort=num_votes,desc'
 trivia_url = 'title/%s/trivia'
 blunders_url = 'title/%s/goofs'
 parentsguide_url = 'title/%s/parentalguide'
@@ -45,9 +47,7 @@ def imdb_watchlist(media_type, foo_var, page_no):
 	url = base_url % watchlist_url % imdb_user
 	params = {'url': url, 'action': 'imdb_watchlist', 'imdb_user': imdb_user, 'media_type': media_type, 'sort': sort, 'page_no': page_no}
 	test = get_imdb(params)
-	# logger('test', test)
-	return test
-	# return cache_object(get_imdb, string, params, False, 2)
+	return cache_object(get_imdb, string, params, False, 2)
 
 def imdb_user_lists(media_type):
 	imdb_user = string_alphanum_to_num(get_setting('fen.imdb_user'))
@@ -72,9 +72,9 @@ def imdb_keywords_list_contents(media_type, keywords, page_no):
 	return cache_object(get_imdb, string, params, False, 168)
 
 def imdb_reviews(imdb_id):
-	url = base_url % reviews_url % (imdb_id, '')
+	url = base_url % reviews_url % imdb_id
 	string = 'imdb_reviews_%s' % imdb_id
-	params = {'url': url, 'action': 'imdb_reviews', 'imdb_id': imdb_id}
+	params = {'url': url, 'action': 'imdb_reviews'}
 	return cache_object(get_imdb, string, params, False, 168)[0]
 
 def imdb_parentsguide(imdb_id):
@@ -159,7 +159,6 @@ def get_imdb(params):
 					return parseDOM(remove_accents(requests.get(url, timeout=timeout, headers=headers)), 'meta', ret='content', attrs = {'property': 'pageId'})[0]
 				# url = cache_object(_get_watchlist_id, 'imdb_watchlist_id_%s' % params['imdb_user'], 'dummy', False, 672)
 				url = _get_watchlist_id('dummy')
-				logger('url', url)
 				# logger('test1', test)
 				# test = remove_accents(test.text)
 				# logger('test2', test)
@@ -174,7 +173,6 @@ def get_imdb(params):
 		# items += parseDOM(result, 'div', attrs={'class': 'list_item.+?'})
 		# items += parseDOM(result, 'div', attrs={'class': 'list_item .+?'})
 		items = parseDOM(result, 'div', attrs = {'class': 'ipc-metadata-list-summary-item__tc'})
-		logger('items', item[0:5])
 		imdb_list = list(_process())
 		try:
 			result = result.replace('"class="lister-page-next', '" class="lister-page-next')
@@ -234,50 +232,37 @@ def get_imdb(params):
 		imdb_list = list(_process())
 	elif action == 'imdb_reviews':
 		def _process():
-			for count, listing in enumerate(all_reviews, 1):
+			count = 1
+			for item in all_reviews:
 				try:
-					try: spoiler = listing['spoiler']
-					except: spoiler = False
-					try: listing = listing['content']
-					except: continue
 					try:
-						content = parseDOM(listing, 'div', attrs={'class': 'text show-more__control'})[0]
-						content = replace_html_codes(content)
+						content = re.findall(r'plaidHtml":"(.*)","__typename":"Markdown', item)[0]
+						try: content = content.encode('ascii').decode('unicode-escape')
+						except: pass
+						content = replace_html_codes(content.replace('</a>', '').replace('<p> ', '').replace('<br />', '').replace('  ', ''))
 					except: continue
-					try: title = parseDOM(listing, 'a', attrs={'class': 'title'})[0]
-					except: title = ''
-					try: date = parseDOM(listing, 'span', attrs={'class': 'review-date'})[0]
-					except: date = ''
+					try: spoiler = re.findall(r'"spoiler":(.*),"reportingLink', item)[0]
+					except: spoiler = 'false'
+					try: rating = re.findall(r'"authorRating":(.*),"submissionDate', item)[0]
+					except: rating = '-'
 					try:
-						rating = parseDOM(listing, 'span', attrs={'class': 'rating-other-user-rating'})
-						rating = parseDOM(rating, 'span')
-						rating = rating[0] + rating[1]
-					except: rating = ''
-					review = '[B]%02d. [I]%s - %s - %s[/I][/B][CR][CR]%s' % (count, rating, date, title, content)
-					if spoiler: review = '[B][COLOR red][%s][/COLOR][CR][/B]' % spoiler_str + review
+						title = re.findall(r'"summary":{"originalText":"(.*)","__typename":"ReviewSummary', item)[0]
+						title = replace_html_codes(title.replace('</a>', '').replace('<p> ', '').replace('<br />', '').replace('  ', ''))
+					except: title = '-----'
+					try: date = re.findall(r'"submissionDate":"(.*)","helpfulness', item)[0]
+					except: date = '-----'
+					try: review = '[B]%02d. [I]%s/10 - %s - %s[/I][/B][CR][CR]%s' % (count, rating, date, title, content)
+					except: continue
+					if spoiler == 'true': review = '[B][COLOR red][%s][/COLOR][CR][/B]' % spoiler_str + review
+					count += 1
 					yield review
 				except: pass
-		spoiler_str = ls(32985).upper()
-		imdb_id = params['imdb_id']
-		paginationKey = ''
-		non_spoiler_list = []
-		spoiler_list = []
-		count = 0
-		result = requests.get(url, timeout=timeout)
-		while count < 3:
-			if count > 0:
-				url = base_url % reviews_url % (imdb_id, paginationKey)
-				result = requests.get(url, timeout=timeout)
-			result = remove_accents(result.text)
-			result = result.replace('\n', ' ')
-			non_spoilers = parseDOM(result, 'div', attrs={'class': 'lister-item mode-detail imdb-user-review  collapsable'})
-			spoilers = parseDOM(result, 'div', attrs={'class': 'lister-item mode-detail imdb-user-review  with-spoiler'})
-			non_spoiler_list.extend([{'spoiler': False, 'content': i} for i in non_spoilers])
-			spoiler_list.extend([{'spoiler': True, 'content': i} for i in spoilers])
-			try: paginationKey = re.search(r'data-key="(.+?)"', result, re.DOTALL).group(1)
-			except: break
-			count += 1
-		all_reviews = non_spoiler_list + spoiler_list
+		spoiler_str = 'CONTAINS SPOILERS'
+		result = requests.get(url, timeout=timeout, headers=headers)
+		result = remove_accents(result.text)
+		result = result.replace('\n', ' ')
+		body = re.findall(r'{"node":{"id":(.*)"__typename":"ReviewEdge"', result)[0]
+		all_reviews = body.split('"__typename":"ReviewEdge"}')
 		imdb_list = list(_process())
 	elif action == 'imdb_images':
 		def _process():
@@ -353,72 +338,34 @@ def get_imdb(params):
 			imdb_list = [str(i['y']) for i in result if i['id'] == imdb_id][0]
 		except: pass
 	elif action == 'imdb_parentsguide':
-		spoiler_results = None
-		spoiler_list, final_list = [], []
-		spoiler_append, final_list_append, imdb_append = spoiler_list.append, final_list.append, imdb_list.append
-		result = requests.get(url, timeout=timeout)
+		imdb_list = []
+		imdb_append = imdb_list.append
+		result = requests.get(url, timeout=timeout, headers=headers)
 		result = remove_accents(result.text)
 		result = result.replace('\n', ' ')
-		results = parseDOM(result, 'section', attrs={'id': r'advisory-(.+?)'})
-		try: spoiler_results = parseDOM(result, 'section', attrs={'id': 'advisory-spoilers'})[0]
-		except: pass
-		if spoiler_results:
-			results = [i for i in results if not i in spoiler_results]
-			spoiler_results = spoiler_results.split('<h4 class="ipl-list-title">')[1:]
-			for item in spoiler_results:
-				item_dict = {}
-				try:
-					title = replace_html_codes(re.search(r'(.+?)</h4>', item, re.DOTALL).group(1))
-					item_dict['title'] = title
-				except: continue
-				try:
-					listings = parseDOM(item, 'li', attrs={'class': 'ipl-zebra-list__item'})
-					item_dict['listings'] = []
-				except: continue
-				dict_listings_append = item_dict['listings'].append
-				for item in listings:
-					try:
-						listing = replace_html_codes(re.search(r'(.+?)     <div class="', item, re.DOTALL).group(1))
-						if not listing in item_dict['listings']: dict_listings_append(listing)
-					except: pass
-				if not item_dict in spoiler_list: spoiler_append(item_dict)
+		results = parseDOM(result, 'section', attrs={'class': 'ipc-page-section ipc-page-section--base'})
 		for item in results:
+			if 'contentRating' in item: continue
+			if 'Certifications' in item: continue
 			item_dict = {}
 			try:
-				title = replace_html_codes(parseDOM(item, 'h4', attrs={'class': 'ipl-list-title'})[0])
+				title_data = re.search(r'<span id="(.+?)">(.+?)</span>', item, re.DOTALL).group(0)
+				title = replace_html_codes(re.search(r'">(.+?)</span>', title_data, re.DOTALL).group(1))
 				item_dict['title'] = title
 			except: continue
 			try:
-				ranking = replace_html_codes(parseDOM(item, 'span', attrs={'class': 'ipl-status-pill ipl-status-pill--(.+?)'})[0])
+				ranking = replace_html_codes(re.search(r'<div class="ipc-signpost__text" role="presentation">(.+?)</div>', item, re.DOTALL).group(1))
 				item_dict['ranking'] = ranking
 			except: item_dict['ranking'] = 'none'
 			try:
-				listings = parseDOM(item, 'li', attrs={'class': 'ipl-zebra-list__item'})
-				item_dict['listings'] = []
-			except: pass
+				listings = re.findall(r'<div class="ipc-html-content-inner-div" role="presentation">(.+?)</div>', item)
+				listings = [replace_html_codes(i) for i in listings]
+			except: listings = []
 			if listings:
-				dict_listings_append = item_dict['listings'].append
-				for item in listings:
-					try:
-						listing = replace_html_codes(re.search(r'(.+?)     <div class="', item, re.DOTALL).group(1))
-						if not listing in item_dict['listings']: dict_listings_append(listing)
-					except: pass
+				item_dict['content'] = '\n\n'.join(['%02d. %s' % (count, i) for count, i in enumerate(listings, 1)])
 			elif item_dict['ranking'] == 'none': continue
-			if item_dict: final_list_append(item_dict)
-		if spoiler_list:
-			for imdb in imdb_list:
-				for spo in spoiler_list:
-					if spo['title'] == imdb['title']:
-						imdb['listings'].extend(spo['listings'])
-		for item in final_list:
-			new_dict = {}
-			listings = list(set(item['listings']))
-			item['listings'] = list(set(item['listings']))
-			new_dict['title'] = item['title']
-			new_dict['ranking'] = item['ranking']
-			new_dict['content'] = '\n\n'.join(['%02d. %s' % (count, i) for count, i in enumerate(listings, 1)])
-			new_dict['total_count'] = len(listings)
-			imdb_append(new_dict)
+			item_dict['total_count'] = len(listings)
+			if item_dict: imdb_append(item_dict)
 	elif action == 'imdb_keyword_search':
 		def _process():
 			for item in items:

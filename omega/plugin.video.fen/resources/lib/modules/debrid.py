@@ -66,24 +66,4 @@ def PM_check(hash_list, cached_hashes):
 	return cached_hashes
 
 def AD_check(hash_list, cached_hashes):
-	cached_hashes, unchecked_hashes = cached_check(hash_list, cached_hashes, 'ad')
-	if unchecked_hashes:
-		results = AllDebridAPI().check_cache(unchecked_hashes)
-		if results:
-			cached_append = cached_hashes.append
-			process_list = []
-			process_append = process_list.append
-			try:
-				results = results['magnets']
-				for i in results:
-					cached = 'False'
-					try:
-						if i['instant'] == True:
-							cached_append(i['hash'])
-							cached = 'True'
-					except: pass
-					process_append((i['hash'], cached))
-			except:
-				for i in unchecked_hashes: process_append((i, 'False'))
-			add_to_local_cache(process_list, 'ad')
-	return cached_hashes
+	return hash_list

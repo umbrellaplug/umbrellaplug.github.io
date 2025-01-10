@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.34">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.35">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -180,12 +180,10 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.34 - Jan 9th, 2024[/B]
---[Fix] Changes for TorBox pack browsing.
---[Fix] Adjusted where files were deleted from cloud if save to cloud is not set for TorBox and pack browsing.
---[Fix] Changes for Real-Debrid to allow pack browsing files are still unchecked and may not work.
---[Fix] Changes to scraping window to fix errors for updating control 5000 when not being used.
---[Change] Removed uncached EasyDebrid results.
+[B]Update - v6.7.35 - Jan 10th, 2024[/B]
+--[Fix] Made changes to amount of time to try each RD magnet file to reduce wait with dead real debrid files.
+--[Fix] Made changes to allow for unchecked items to show save to cloud in context menu.
+--[Fix] Made changes for AllDebrid for show packs.
 		</news>
 	</extension>
 

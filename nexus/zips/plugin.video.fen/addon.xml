@@ -1,4 +1,4 @@
-<addon id="plugin.video.fen" name="Fen" provider-name="Tikipeter" version="3.5.01">
+<addon id="plugin.video.fen" name="Fen" provider-name="Tikipeter" version="3.5.02">
     <requires>
         <import addon="xbmc.python" version="3.0.0"/>
         <import addon="script.module.requests" version="2.19.1"/>

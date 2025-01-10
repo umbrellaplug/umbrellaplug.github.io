@@ -48,9 +48,8 @@ text_list_ids = (reviews_id, trivia_id, blunders_id, parentsguide_id, comments_i
 art_ids = (posters_id, fanarts_id)
 finished_tvshow = ('', 'Ended', 'Canceled')
 parentsguide_levels = {'mild': ls(32996), 'moderate': ls(32997), 'severe': ls(32998), 'none': ls(33070)}
-parentsguide_inputs = {'Sex & Nudity': (ls(32990), get_icon('sex_nudity')), 'Violence & Gore': (ls(32991), get_icon('genre_war')),
-						'Profanity': (ls(32992),get_icon('bad_language')), 'Alcohol, Drugs & Smoking': (ls(32993), get_icon('drugs_alcohol')),
-						'Frightening & Intense Scenes': (ls(32994), get_icon('genre_horror'))}
+parentsguide_icons = {'Sex & Nudity': get_icon('sex_nudity'), 'Violence & Gore': get_icon('genre_war'), 'Profanity': get_icon('bad_language'),
+						'Alcohol, Drugs & Smoking': get_icon('drugs_alcohol'), 'Frightening & Intense Scenes': get_icon('genre_horror')}
 meta_ratings_values = (('Meta', 'metascore', 1), ('Tom/Critic', 'tomatometer', 2), ('Tom/User', 'tomatousermeter', 3), ('IMDb', 'imdb', 4), ('TMDb', 'tmdb', 5))
 ratings_null = ('', '%')
 _images = Images().run
@@ -275,10 +274,11 @@ class Extras(BaseDialog):
 			for item in data:
 				try:
 					listitem = self.make_listitem()
-					name = parentsguide_inputs[item['title']][0]
-					ranking = parentsguide_levels[item['ranking'].lower()].upper()
+					name = item['title']
+					ranking = item['ranking'].upper()
+					if ranking == 'NONE': ranking = 'NO RANK'
 					if item['content']: ranking += ' (x%02d)' % item['total_count']
-					icon = parentsguide_inputs[item['title']][1]
+					icon = parentsguide_icons[name]
 					listitem.setProperty('name', name)
 					listitem.setProperty('ranking', ranking)
 					listitem.setProperty('thumbnail', icon)

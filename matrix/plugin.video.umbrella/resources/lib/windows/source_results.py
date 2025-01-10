@@ -102,7 +102,7 @@ class SourceResultsXML(BaseDialog):
 					cm_list += [('[B]Download[/B]', 'download')]
 					cm_list += [('[B]Create Strm File[/B]', 'strmFile')]
 				debrid = chosen_source.getProperty('umbrella.debrid')
-				if re_match(r'^CACHED.*TORRENT', source) and debrid != 'EasyDebrid':
+				if (re_match(r'^CACHED.*TORRENT', source) or 'unchecked' in source_dict) and debrid != 'EasyDebrid':
 					cm_list += [('[B]Save to %s Cloud[/B]' % debrid, 'saveToCloud')]
 				chosen_cm_item = dialog.contextmenu([i[0] for i in cm_list])
 				if chosen_cm_item == -1: return

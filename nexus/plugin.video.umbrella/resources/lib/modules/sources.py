@@ -1680,6 +1680,8 @@ class Sources:
 			# cached = cached['magnets']
 			count = 0
 			for i in torrent_List:
+				if 'package' in i: i.update({'source': 'unchecked (pack) torrent'})
+				else: i.update({'source': 'unchecked'})
 				# if 'error' in cached[count]: # list index out of range
 				# 	count += 1
 				# 	continue
@@ -1689,7 +1691,6 @@ class Sources:
 				# else:
 				# 	if 'package' in i: i.update({'source': 'cached (pack) torrent'})
 				# 	else: i.update({'source': 'cached torrent'})
-				i.update({'source': 'unchecked'})
 				count += 1
 			return torrent_List
 		except: log_utils.error()

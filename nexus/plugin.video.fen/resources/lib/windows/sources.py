@@ -155,7 +155,7 @@ class SourcesResults(BaseDialog):
 								else: set_property('source_type', 'UNCACHED')
 								set_property('highlight', 'FF7C7C7C')
 							else:
-								cache_flag = 'UNCHECKED' if provider == 'REAL-DEBRID' else 'CACHED'
+								cache_flag = '[B]CACHED[/B]' if provider == 'PREMIUMIZE' else 'UNCHECKED'
 								if highlight_type == 0: key = 'torrent_highlight'
 								elif highlight_type == 1: key = provider_lower
 								else: key = basic_quality

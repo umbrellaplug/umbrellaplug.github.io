@@ -1,5 +1,11 @@
 [COLOR darkgoldenrod]GOD BLESS HIM AND KEEP HIM SAFE.[/COLOR]
 
+[COLOR dodgerblue][B]Version 3.5.02[/B][/COLOR]
+Fixes taken from Fen Light 2.0.02: Big thanks to Twilight for porting these fixes.
+- Fix for browsing/downloading pack results through RD.
+- Quick fix to correct sequential playback.
+- Fix Parental Guide and Reviews in Fen Extras window.
+
 [COLOR dodgerblue][B]Version 3.5.01[/B][/COLOR]
 - Fixed RD compatibility.
 - Removed uupdate service.

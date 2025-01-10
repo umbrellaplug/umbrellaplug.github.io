@@ -119,8 +119,7 @@ class AllDebridAPI:
 		url = 'magnet/delete'
 		url_append = '&id=%s' % transfer_id
 		result = self._get(url, url_append)
-		if result.get('success', False):
-			return True
+		return result.get('message', '') == 'Magnet was successfully deleted'
 
 	def resolve_magnet(self, magnet_url, info_hash, store_to_cloud, title, season, episode):
 		from modules.source_utils import supported_video_extensions, seas_ep_filter, EXTRAS
@@ -130,7 +129,19 @@ class AllDebridAPI:
 			correct_files = []
 			correct_files_append = correct_files.append
 			transfer_id = self.create_transfer(magnet_url)
-			transfer_info = self.list_transfer(transfer_id)
+			elapsed_time, transfer_finished = 0, False
+			sleep(1000)
+			while elapsed_time <= 4 and not transfer_finished:
+				transfer_info = self.list_transfer(transfer_id)
+				if not transfer_info: break
+				status_code = transfer_info['statusCode']
+				if status_code > 4: break
+				elapsed_time += 1
+				if status_code == 4: transfer_finished = True
+				elif status_code < 4: sleep(1000)
+			if not transfer_finished:
+				self.delete_transfer(transfer_id)
+				return None
 			valid_results = [i for i in transfer_info['links'] if any(i.get('filename').lower().endswith(x) for x in extensions) and not i.get('link', '') == '']
 			if valid_results:
 				if season:
@@ -158,7 +169,19 @@ class AllDebridAPI:
 		try:
 			extensions = supported_video_extensions()
 			transfer_id = self.create_transfer(magnet_url)
-			transfer_info = self.list_transfer(transfer_id)
+			elapsed_time, transfer_finished = 0, False
+			sleep(1000)
+			while elapsed_time <= 4 and not transfer_finished:
+				transfer_info = self.list_transfer(transfer_id)
+				if not transfer_info: break
+				status_code = transfer_info['statusCode']
+				if status_code > 4: break
+				elapsed_time += 1
+				if status_code == 4: transfer_finished = True
+				elif status_code < 4: sleep(1000)
+			if not transfer_finished:
+				self.delete_transfer(transfer_id)
+				return None
 			end_results = []
 			append = end_results.append
 			for item in transfer_info.get('links'):

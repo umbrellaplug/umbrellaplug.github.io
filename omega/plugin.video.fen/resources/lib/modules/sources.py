@@ -594,7 +594,7 @@ class Sources():
 				leading_index = max(source_index-3, 0)
 				items_prev = results[leading_index:source_index]
 				trailing_index = 7 - len(items_prev)
-				items_next = results[source_index+1:source_index+trailing_index]
+				items_next = results[source_index:source_index+trailing_index]
 				items = items + items_next + items_prev
 			processed_items = []
 			processed_items_append = processed_items.append
