@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.35">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.36">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -180,10 +180,9 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.35 - Jan 10th, 2024[/B]
---[Fix] Made changes to amount of time to try each RD magnet file to reduce wait with dead real debrid files.
---[Fix] Made changes to allow for unchecked items to show save to cloud in context menu.
---[Fix] Made changes for AllDebrid for show packs.
+[B]Update - v6.7.36 - Jan 24th, 2025[/B]
+--[Fix] Increased number of results available from real-debrid for cloud scraping.
+--[Fix] Changed criteria for TorBox links.
 		</news>
 	</extension>
 

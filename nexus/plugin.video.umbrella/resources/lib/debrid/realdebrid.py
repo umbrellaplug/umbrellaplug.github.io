@@ -193,13 +193,13 @@ class RealDebrid:
 
 	def user_torrents(self):
 		try:
-			url = 'torrents'
+			url = 'torrents?limit=1000'
 			return self._get(url)
 		except: log_utils.error()
 
 	def user_downloads(self):
 		try:
-			url = 'downloads'
+			url = 'downloads?limit=1000'
 			return self._get(url)
 		except: log_utils.error()
 
