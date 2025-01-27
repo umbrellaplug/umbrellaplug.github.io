@@ -9,21 +9,18 @@
 """
 
 
-class AbstractPlayer(object):
+class AbstractPlaylistPlayer(object):
     def __init__(self):
         pass
 
-    def play(self, playlist_index=-1):
+    def clear(self):
         raise NotImplementedError()
 
-    @staticmethod
-    def stop():
+    def add(self, base_item):
         raise NotImplementedError()
 
-    @staticmethod
-    def pause():
+    def shuffle(self):
         raise NotImplementedError()
 
-    @staticmethod
-    def is_playing():
+    def unshuffle(self):
         raise NotImplementedError()

@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <settings version="1">
     <section id="plugin.video.youtube">
-        <category id="general" label="30000" help="">
-            <group id="1">
+        <category id="general" label="128" help="">
+            <group id="setup_wizard">
                 <setting id="kodion.setup_wizard" type="boolean" label="30025" help="">
                     <level>0</level>
                     <default>true</default>
@@ -16,7 +16,7 @@
                     </control>
                 </setting>
             </group>
-            <group id="2">
+            <group id="player_settings">
                 <setting id="kodion.mpd.videos" type="boolean" label="30688" help="30723">
                     <level>0</level>
                     <default>true</default>
@@ -32,7 +32,7 @@
                     <default>3</default>  <!-- auto+list -->
                     <constraints>
                         <options>
-                            <option label="30583">1</option>  <!-- auto -->
+                            <option label="36588">1</option>  <!-- auto -->
                             <option label="30759">2</option>  <!-- list -->
                             <option label="30760">3</option>  <!-- auto+list -->
                             <option label="30776">4</option>  <!-- ask+auto+list -->
@@ -47,19 +47,6 @@
                         </dependency>
                     </dependencies>
                     <control format="string" type="spinner"/>
-                </setting>
-                <setting id="kodion.video.quality.ask" type="boolean" label="30009" help="">
-                    <level>0</level>
-                    <default>false</default>
-                    <dependencies>
-                        <dependency type="visible">
-                            <or>
-                                <condition setting="kodion.video.quality.isa" operator="is">false</condition>
-                                <condition setting="kodion.mpd.videos" operator="is">false</condition>
-                            </or>
-                        </dependency>
-                    </dependencies>
-                    <control type="toggle"/>
                 </setting>
                 <setting id="kodion.mpd.quality.selection" type="integer" label="30010" help="">
                     <level>0</level>
@@ -85,6 +72,38 @@
                         </dependency>
                     </dependencies>
                     <control format="string" type="spinner"/>
+                </setting>
+                <setting id="kodion.video.stream.select" type="integer" label="30758" help="">
+                    <level>0</level>
+                    <default>2</default>  <!-- auto+list -->
+                    <constraints>
+                        <options>
+                            <option label="36588">1</option>  <!-- auto -->
+                            <option label="30759">2</option>  <!-- list -->
+                        </options>
+                    </constraints>
+                    <dependencies>
+                        <dependency type="visible">
+                            <and>
+                                <condition setting="kodion.video.quality.isa" operator="is">true</condition>
+                                <condition setting="kodion.mpd.videos" operator="is">false</condition>
+                            </and>
+                        </dependency>
+                    </dependencies>
+                    <control format="string" type="spinner"/>
+                </setting>
+                <setting id="kodion.video.quality.ask" type="boolean" label="30009" help="">
+                    <level>0</level>
+                    <default>false</default>
+                    <dependencies>
+                        <dependency type="visible">
+                            <or>
+                                <condition setting="kodion.video.quality.isa" operator="is">false</condition>
+                                <condition setting="kodion.mpd.videos" operator="is">false</condition>
+                            </or>
+                        </dependency>
+                    </dependencies>
+                    <control type="toggle"/>
                 </setting>
                 <setting id="kodion.video.quality" type="integer" label="30010" help="">
                     <level>0</level>
@@ -119,6 +138,7 @@
                         - no HFR at max quality
                         - no fractional framerate hinting
                         - no framerate hinting
+                        - alternate sorting of unselected codecs
                     -->
                     <default>avc1,vp9,av01,hdr,hfr,vorbis,mp4a,ssa,ac-3,ec-3,dts,filter</default>
                     <constraints>
@@ -139,6 +159,7 @@
                             <option label="30755">ec-3</option>
                             <option label="30756">dts</option>
                             <option label="30757">filter</option>
+                            <option label="30729">alt_sort</option>
                         </options>
                         <delimiter>,</delimiter>
                         <minimumitems>1</minimumitems>
@@ -179,7 +200,7 @@
                     </dependencies>
                     <control type="toggle"/>
                 </setting>
-                <setting id="kodion.subtitle.configure" type="action" label="30600" help="">
+                <setting id="kodion.subtitle.configure" type="action" label="287" help="">
                     <level>0</level>
                     <constraints>
                         <allowempty>true</allowempty>
@@ -202,7 +223,7 @@
                     <control type="toggle"/>
                 </setting>
             </group>
-            <group id="3">
+            <group id="list_views">
                 <setting id="kodion.content.max_per_page" type="integer" label="30022" help="">
                     <level>0</level>
                     <default>50</default>
@@ -215,13 +236,28 @@
                         <popup>false</popup>
                     </control>
                 </setting>
-                <setting id="youtube.hide_shorts" type="boolean" label="30736" help="">
+                <setting id="youtube.view.hide_videos" type="list[string]" label="30808" help="">
                     <level>0</level>
-                    <default>false</default>
-                    <control type="toggle"/>
+                    <default/>
+                    <constraints>
+                        <options>
+                            <option label="30736">shorts</option>
+                            <option label="30809">upcoming</option>
+                            <option label="30646">upcoming_live</option>
+                            <option label="19664">live</option>
+                            <option label="30766">premieres</option>
+                            <option label="30810">completed</option>
+                            <option label="30811">live_folder</option>
+                        </options>
+                        <delimiter>,</delimiter>
+                    </constraints>
+                    <control type="list" format="string">
+                        <multiselect>true</multiselect>
+                        <hidevalue>true</hidevalue>
+                    </control>
                 </setting>
             </group>
-            <group id="4">
+            <group id="post_play">
                 <setting id="youtube.suggested_videos" type="boolean" label="30582" help="">
                     <level>0</level>
                     <default>false</default>
@@ -243,14 +279,14 @@
                     <control type="toggle"/>
                 </setting>
             </group>
-            <group id="5">
+            <group id="content_restrictions">
                 <setting id="kodion.safe.search" type="integer" label="30594" help="">
                     <level>0</level>
                     <default>0</default>
                     <constraints>
                         <options>
                             <option label="30595">0</option>
-                            <option label="30561">1</option>
+                            <option label="231">1</option>
                             <option label="30596">2</option>
                         </options>
                     </constraints>
@@ -326,7 +362,7 @@
                     <default>false</default>
                     <control type="toggle"/>
                 </setting>
-                <setting id="youtube.filter.my_subscriptions_filtered.blacklist" type="boolean" parent="youtube.folder.my_subscriptions_filtered.show" label="30586" help="">
+                <setting id="youtube.filter.my_subscriptions_filtered.blacklist" type="boolean" parent="youtube.folder.my_subscriptions_filtered.show" label="30586" help="30585">
                     <level>0</level>
                     <default>false</default>
                     <dependencies>
@@ -339,7 +375,7 @@
                     </dependencies>
                     <control type="toggle"/>
                 </setting>
-                <setting id="youtube.filter.my_subscriptions_filtered.list" type="string" parent="youtube.filter.my_subscriptions_filtered.blacklist" label="30585" help="">
+                <setting id="youtube.filter.my_subscriptions_filtered.list" type="string" parent="youtube.folder.my_subscriptions_filtered.show" label="587" help="30583">
                     <level>0</level>
                     <default/>
                     <constraints>
@@ -354,7 +390,7 @@
                         </dependency>
                     </dependencies>
                     <control format="string" type="edit">
-                        <heading>30585</heading>
+                        <heading>587</heading>
                     </control>
                 </setting>
                 <setting id="youtube.folder.recommendations.show" type="boolean" label="30551" help="">
@@ -372,7 +408,7 @@
                     <default>true</default>
                     <control type="toggle"/>
                 </setting>
-                <setting id="youtube.folder.search.show" type="boolean" label="30102" help="">
+                <setting id="youtube.folder.search.show" type="boolean" label="137" help="">
                     <level>0</level>
                     <default>true</default>
                     <control type="toggle"/>
@@ -459,7 +495,7 @@
                         <heading>30038</heading>
                     </control>
                 </setting>
-                <setting id="youtube.folder.playlists.show" type="boolean" label="30501" help="">
+                <setting id="youtube.folder.playlists.show" type="boolean" label="136" help="">
                     <level>0</level>
                     <default>true</default>
                     <control type="toggle"/>
@@ -471,6 +507,11 @@
                     <control type="toggle"/>
                 </setting>
                 <setting id="youtube.folder.subscriptions.show" type="boolean" label="30504" help="">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="youtube.folder.bookmarks.show" type="boolean" label="30100" help="">
                     <level>0</level>
                     <default>true</default>
                     <control type="toggle"/>
@@ -490,7 +531,7 @@
                     <default>true</default>
                     <control type="toggle"/>
                 </setting>
-                <setting id="youtube.folder.live.show" type="boolean" label="30539" help="">
+                <setting id="youtube.folder.live.show" type="boolean" label="19664" help="">
                     <level>0</level>
                     <default>true</default>
                     <control type="toggle"/>
@@ -510,7 +551,7 @@
                     <default>true</default>
                     <control type="toggle"/>
                 </setting>
-                <setting id="youtube.folder.settings.advanced.show" type="boolean" label="30577" help="">
+                <setting id="youtube.folder.settings.advanced.show" type="boolean" label="10004" help="">
                     <level>0</level>
                     <default>false</default>
                     <control type="toggle"/>
@@ -553,37 +594,62 @@
                 </setting>
             </group>
         </category>
-        <category id="advanced" label="30031" help="">
-            <group id="1">
-                <setting id="youtube.client.selection" type="integer" label="30737" help="">
-                    <level>0</level>
-                    <default>0</default>
-                    <constraints>
-                        <options>
-                            <option label="30532">0</option>
-                            <option label="30738">1</option>
-                            <option label="30739">2</option>
-                        </options>
-                    </constraints>
-                    <control format="string" type="spinner"/>
-                </setting>
+        <category id="advanced" label="10038" help="">
+            <group id="player_settings" label="14201">
                 <setting id="kodion.support.alternative_player" type="boolean" label="30036" help="">
-                    <level>0</level>
-                    <default>false</default>
-                    <control type="toggle"/>
-                </setting>
-                <setting id="kodion.alternative_player.web.urls" type="boolean" parent="kodion.support.alternative_player" label="30704" help="">
                     <level>0</level>
                     <default>false</default>
                     <dependencies>
                         <dependency type="enable">
-                            <condition setting="kodion.support.alternative_player" operator="is">true</condition>
+                            <or>
+                                <condition setting="kodion.support.alternative_player" operator="is">true</condition>
+                                <condition setting="kodion.default_player.web_urls" operator="is">false</condition>
+                            </or>
+                        </dependency>
+                    </dependencies>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="kodion.alternative_player.web_urls" type="boolean" parent="kodion.support.alternative_player" label="30804" help="">
+                    <level>0</level>
+                    <default>false</default>
+                    <dependencies>
+                        <dependency type="enable">
+                            <and>
+                                <condition setting="kodion.support.alternative_player" operator="is">true</condition>
+                                <condition setting="kodion.alternative_player.mpd" operator="is">false</condition>
+                            </and>
+                        </dependency>
+                    </dependencies>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="kodion.alternative_player.mpd" type="boolean" parent="kodion.support.alternative_player" label="30805" help="">
+                    <level>0</level>
+                    <default>false</default>
+                    <dependencies>
+                        <dependency type="enable">
+                            <and>
+                                <condition setting="kodion.support.alternative_player" operator="is">true</condition>
+                                <or>
+                                    <condition setting="kodion.alternative_player.mpd" operator="is">true</condition>
+                                    <condition setting="kodion.alternative_player.web_urls" operator="is">false</condition>
+                                </or>
+                            </and>
+                        </dependency>
+                    </dependencies>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="kodion.default_player.web_urls" type="boolean" label="30704" help="">
+                    <level>0</level>
+                    <default>false</default>
+                    <dependencies>
+                        <dependency type="enable">
+                            <condition setting="kodion.support.alternative_player" operator="is">false</condition>
                         </dependency>
                     </dependencies>
                     <control type="toggle"/>
                 </setting>
             </group>
-            <group id="2" label="30617">
+            <group id="inputstream_adaptive" label="30617">
                 <setting id="kodion.video.quality.isa" type="boolean" label="30007" help="">
                     <level>0</level>
                     <default>true</default>
@@ -624,7 +690,7 @@
                 </setting>
                 <setting id="kodion.live_stream.selection.1" type="integer" label="30689" help="30690">
                     <level>0</level>
-                    <default>2</default>  <!-- isa_hls -->
+                    <default>3</default>  <!-- isa_mpd -->
                     <constraints>
                         <options>
                             <option label="30740">0</option>  <!-- mpegts -->
@@ -642,7 +708,7 @@
                 </setting>
                 <setting id="kodion.live_stream.selection.2" type="integer" label="30689" help="">
                     <level>0</level>
-                    <default>0</default>  <!-- mpegts -->
+                    <default>1</default>  <!-- hls -->
                     <constraints>
                         <options>
                             <option label="30740">0</option>  <!-- mpegts -->
@@ -657,7 +723,7 @@
                     <control format="string" type="spinner"/>
                 </setting>
             </group>
-            <group id="3" label="30509">
+            <group id="history" label="30509">
                 <setting id="kodion.history.local" type="boolean" label="30675" help="">
                     <level>0</level>
                     <default>true</default>
@@ -693,7 +759,7 @@
                     </control>
                 </setting>
             </group>
-            <group id="4" label="30767">
+            <group id="lists_views" label="14240">
                 <setting id="youtube.view.description.details" type="boolean" label="30541" help="">
                     <level>0</level>
                     <default>true</default>
@@ -703,6 +769,43 @@
                     <level>0</level>
                     <default>true</default>
                     <control type="toggle"/>
+                </setting>
+                <setting id="youtube.view.shorts.duration" type="integer" label="30737" help="">
+                    <level>0</level>
+                    <default>60</default>
+                    <constraints>
+                        <minimum>30</minimum>
+                        <step>30</step>
+                        <maximum>180</maximum>
+                    </constraints>
+                    <control format="integer" type="slider">
+                        <popup>false</popup>
+                    </control>
+                </setting>
+                <setting id="youtube.view.filter.list" type="string" label="587" help="30583">
+                    <level>0</level>
+                    <default/>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control format="string" type="edit">
+                        <heading>587</heading>
+                    </control>
+                </setting>
+                <setting id="youtube.view.channel_name.aliases" type="list[string]" label="30807" help="">
+                    <level>0</level>
+                    <default>cast</default>
+                    <constraints>
+                        <options>
+                            <option label="206">cast</option>
+                            <option label="572">studio</option>
+                        </options>
+                        <delimiter>,</delimiter>
+                    </constraints>
+                    <control type="list" format="string">
+                        <multiselect>true</multiselect>
+                        <hidevalue>true</hidevalue>
+                    </control>
                 </setting>
                 <setting id="youtube.view.label.color.viewCount" type="string" parent="youtube.view.label.details" label="30793" help="">
                     <level>0</level>
@@ -754,29 +857,28 @@
                 </setting>
                 <setting id="kodion.thumbnail.size" type="integer" label="30591" help="">
                     <level>0</level>
-                    <default>1</default>
+                    <default>1</default>  <!-- High (4:3) -->
                     <constraints>
                         <options>
-                            <option label="30592">0</option>
-                            <option label="30593">1</option>
+                            <option label="30592">0</option>  <!-- Medium (16:9) -->
+                            <option label="30593">1</option>  <!-- High (4:3) -->
+                            <option label="20049">2</option>  <!-- Best available -->
                         </options>
                     </constraints>
                     <control format="string" type="spinner"/>
                 </setting>
-                <setting id="kodion.fanart.show" type="boolean" label="30021" help="">
+                <setting id="kodion.fanart.selection" type="integer" label="30021" help="">
                     <level>0</level>
-                    <default>true</default>
-                    <control type="toggle"/>
-                </setting>
-                <setting id="youtube.channel.fanart.show" type="boolean" parent="kodion.fanart.show" label="30503" help="">
-                    <level>0</level>
-                    <default>true</default>
-                    <dependencies>
-                        <dependency type="enable">
-                            <condition setting="kodion.fanart.show" operator="is">true</condition>
-                        </dependency>
-                    </dependencies>
-                    <control type="toggle"/>
+                    <default>2</default>  <!-- channel fanart -->
+                    <constraints>
+                        <options>
+                            <option label="20439">0</option>  <!-- no fanart -->
+                            <option label="571">1</option>    <!-- default -->
+                            <option label="30503">2</option>  <!-- channel fanart -->
+                            <option label="21371">3</option>  <!-- thumbnail -->
+                        </options>
+                    </constraints>
+                    <control format="string" type="spinner"/>
                 </setting>
                 <setting id="kodion.view.override" type="boolean" label="30026" help="">
                     <level>0</level>
@@ -808,21 +910,41 @@
                     </control>
                 </setting>
             </group>
-            <group id="5" label="30527">
-                <setting id="youtube.language" type="string" label="30523" help="">
+            <group id="regional" label="14222">
+                <setting id="youtube.language_region.configure" type="action" label="30527" help="">
+                    <level>0</level>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <data>RunScript($ID,config/language_region)</data>
+                    <control format="action" type="button">
+                        <close>true</close>
+                    </control>
+                </setting>
+                <setting id="youtube.language" type="string" label="248" help="">
                     <level>0</level>
                     <default>en-US</default>
                     <enable>false</enable>
                     <control format="string" type="edit">
-                        <heading>30523</heading>
+                        <heading>248</heading>
                     </control>
                 </setting>
-                <setting id="youtube.region" type="string" label="30550" help="">
+                <setting id="youtube.region" type="string" label="20026" help="">
                     <level>0</level>
                     <default>US</default>
                     <enable>false</enable>
                     <control format="string" type="edit">
-                        <heading>30550</heading>
+                        <heading>20026</heading>
+                    </control>
+                </setting>
+                <setting id="youtube.location.configure" type="action" label="30653" help="">
+                    <level>0</level>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <data>RunScript($ID,config/geo_location)</data>
+                    <control format="action" type="button">
+                        <close>true</close>
                     </control>
                 </setting>
                 <setting id="youtube.location" type="string" label="30651" help="">
@@ -848,10 +970,10 @@
                     </control>
                 </setting>
             </group>
-            <group id="6" label="16103">
+            <group id="post_play" label="16103">
                 <setting id="kodion.play_count.percent" type="integer" label="30668" help="">
                     <level>0</level>
-                    <default>85</default>
+                    <default>90</default>
                     <constraints>
                         <minimum>1</minimum>
                         <step>1</step>
@@ -872,7 +994,7 @@
                     <control type="toggle"/>
                 </setting>
             </group>
-            <group id="8" label="443">
+            <group id="internet" label="443">
                 <setting id="requests.ssl.verify" type="boolean" label="30578" help="">
                     <level>0</level>
                     <default>true</default>
@@ -904,11 +1026,94 @@
                         <formatlabel>14045</formatlabel>
                     </control>
                 </setting>
+                <setting id="requests.proxy.source" type="integer" label="713" help="36380">
+                    <level>0</level>
+                    <default>1</default>  <!-- Kodi proxy -->
+                    <constraints>
+                        <options>
+                            <option label="20009">1</option>  <!-- Kodi proxy -->
+                            <option label="20190">2</option>  <!-- Custom proxy -->
+                            <option label="13106">0</option>  <!-- Disabled -->
+                        </options>
+                    </constraints>
+                    <control format="string" type="spinner"/>
+                </setting>
+                <setting id="requests.proxy.enabled" type="boolean" parent="requests.proxy.source" label="708">
+                    <level>4</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="requests.proxy.type" type="integer" parent="requests.proxy.source" label="1180" help="36381">
+                    <level>0</level>
+                    <default>0</default>
+                    <constraints>
+                        <options>
+                            <option label="1181">0</option> <!-- PROXY_HTTP -->
+                            <option label="1186">5</option> <!-- PROXY_HTTPS -->
+                            <option label="1182">1</option> <!-- PROXY_SOCKS4 -->
+                            <option label="1183">2</option> <!-- PROXY_SOCKS4A -->
+                            <option label="1184">3</option> <!-- PROXY_SOCKS5 -->
+                            <option label="1185">4</option> <!-- PROXY_SOCKS5_REMOTE -->
+                        </options>
+                    </constraints>
+                    <dependencies>
+                        <dependency type="visible" setting="requests.proxy.source">2</dependency>
+                    </dependencies>
+                    <control type="list" format="string"/>
+                </setting>
+                <setting id="requests.proxy.server" type="string" parent="requests.proxy.source" label="706" help="36382">
+                    <level>0</level>
+                    <default/>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <dependencies>
+                        <dependency type="visible" setting="requests.proxy.source">2</dependency>
+                    </dependencies>
+                    <control type="edit" format="string"/>
+                </setting>
+                <setting id="requests.proxy.port" type="integer" parent="requests.proxy.source" label="730" help="36383">
+                    <level>0</level>
+                    <default>8080</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <step>1</step>
+                        <maximum>65535</maximum>
+                    </constraints>
+                    <dependencies>
+                        <dependency type="visible" setting="requests.proxy.source">2</dependency>
+                    </dependencies>
+                    <control type="edit" format="integer"/>
+                </setting>
+                <setting id="requests.proxy.username" type="string" parent="requests.proxy.source" label="1048" help="36384">
+                    <level>0</level>
+                    <default/>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <dependencies>
+                        <dependency type="visible" setting="requests.proxy.source">2</dependency>
+                    </dependencies>
+                    <control type="edit" format="string"/>
+                </setting>
+                <setting id="requests.proxy.password" type="string" parent="requests.proxy.source" label="733" help="36385">
+                    <level>0</level>
+                    <default/>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <dependencies>
+                        <dependency type="visible" setting="requests.proxy.source">2</dependency>
+                    </dependencies>
+                    <control type="edit" format="string">
+                        <hidden>true</hidden>
+                    </control>
+                </setting>
             </group>
-            <group id="9" label="30628">
+            <group id="http_server" label="30628">
                 <setting id="kodion.http.listen" type="string" label="30643" help="">
                     <level>0</level>
-                    <default>0.0.0.0</default>
+                    <default>127.0.0.1</default>
                     <control format="ip" type="edit">
                         <heading>30643</heading>
                     </control>
@@ -923,7 +1128,7 @@
                         <close>true</close>
                     </control>
                 </setting>
-                <setting id="kodion.http.port" type="integer" label="30619" help="">
+                <setting id="kodion.http.port" type="integer" label="730" help="">
                     <level>0</level>
                     <default>50152</default>
                     <constraints>
@@ -931,7 +1136,7 @@
                         <maximum>65535</maximum>
                     </constraints>
                     <control format="integer" type="edit">
-                        <heading>30619</heading>
+                        <heading>730</heading>
                     </control>
                 </setting>
                 <setting id="kodion.http.ip.whitelist" type="string" label="30629" help="">
@@ -951,6 +1156,23 @@
                     </constraints>
                     <data>RunScript($ID,config/show_client_ip)</data>
                     <control format="action" type="button"/>
+                </setting>
+                <setting id="youtube.http.idle_sleep" type="boolean" label="13018" help="">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="youtube.http.stream_redirect" type="boolean" label="30618" help="30619">
+                    <level>0</level>
+                    <default>False</default>
+                    <control type="toggle"/>
+                </setting>
+            </group>
+            <group id="logging" label="14092">
+                <setting id="kodion.logging.enabled" type="boolean" label="20191" help="36392">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"/>
                 </setting>
             </group>
         </category>
@@ -996,6 +1218,22 @@
                     <data>RunScript($ID,maintenance/clear?target=watch_later)</data>
                     <control format="action" type="button"/>
                 </setting>
+                <setting id="kodion.maintain.clear.bookmarks" type="action" label="30798" help="">
+                    <level>0</level>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <data>RunScript($ID,maintenance/clear?target=bookmarks)</data>
+                    <control format="action" type="button"/>
+                </setting>
+                <setting id="kodion.maintain.clear.feed_history" type="action" label="30812" help="">
+                    <level>0</level>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <data>RunScript($ID,maintenance/clear?target=feed_history)</data>
+                    <control format="action" type="button"/>
+                </setting>
             </group>
             <group id="2">
                 <setting id="kodion.maintain.delete.function_cache" type="action" label="30553" help="">
@@ -1038,6 +1276,22 @@
                     <data>RunScript($ID,maintenance/delete?target=watch_later)</data>
                     <control format="action" type="button"/>
                 </setting>
+                <setting id="kodion.maintain.delete.bookmarks" type="action" label="30799" help="">
+                    <level>0</level>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <data>RunScript($ID,maintenance/delete?target=bookmarks)</data>
+                    <control format="action" type="button"/>
+                </setting>
+                <setting id="kodion.maintain.delete.feed_history" type="action" label="30813" help="">
+                    <level>0</level>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <data>RunScript($ID,maintenance/delete?target=feed_history)</data>
+                    <control format="action" type="button"/>
+                </setting>
             </group>
             <group id="3">
                 <setting id="kodion.maintain.reset.accessmanager" type="action" label="30580" help="">
@@ -1046,6 +1300,16 @@
                         <allowempty>true</allowempty>
                     </constraints>
                     <data>RunPlugin(plugin://$ID/maintenance/reset/access_manager/)</data>
+                    <control format="action" type="button">
+                        <close>true</close>
+                    </control>
+                </setting>
+                <setting id="kodion.maintain.refresh.settings" type="action" label="30817" help="">
+                    <level>0</level>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <data>RunScript($ID,maintenance/refresh?target=settings_xml)</data>
                     <control format="action" type="button">
                         <close>true</close>
                     </control>
@@ -1085,6 +1349,15 @@
                     </constraints>
                     <data>RunScript($ID,maintenance/delete?target=temp_dir)</data>
                     <control format="action" type="button"/>
+                </setting>
+            </group>
+        </category>
+        <category id="end">
+            <group id="1">
+                <setting id="|end_settings_marker|" type="boolean" help="">
+                    <level>4</level>
+                    <default>false</default>
+                    <control type="toggle"/>
                 </setting>
             </group>
         </category>

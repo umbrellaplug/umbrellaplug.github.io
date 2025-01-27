@@ -11,7 +11,7 @@
 from __future__ import absolute_import, division, unicode_literals
 
 from ...compatibility import xbmc
-from ...constants import content
+from ...constants import CONTENT
 
 
 class ViewManager(object):
@@ -22,8 +22,8 @@ class ViewManager(object):
     }
 
     SUPPORTED_TYPES_MAP = {
-        content.LIST_CONTENT: 'default',
-        content.VIDEO_CONTENT: 'episodes',
+        CONTENT.LIST_CONTENT: 'default',
+        CONTENT.VIDEO_CONTENT: 'episodes',
     }
 
     STRING_MAP = {
@@ -168,7 +168,7 @@ class ViewManager(object):
     def get_wizard_steps(self):
         return (self.run,)
 
-    def run(self, _provider, context, step, steps):
+    def run(self, context, step, steps, **_kwargs):
         localize = context.localize
 
         skin_id = xbmc.getSkinDir()
@@ -180,8 +180,8 @@ class ViewManager(object):
 
         step += 1
         if context.get_ui().on_yes_no_input(
-            localize('setup_wizard') + ' ({0}/{1})'.format(step, steps),
-            localize('setup_wizard.prompt') % prompt_text,
+                localize('setup_wizard') + ' ({0}/{1})'.format(step, steps),
+                localize('setup_wizard.prompt') % prompt_text,
         ):
             for view_type in self.SUPPORTED_TYPES_MAP:
                 self.update_view_mode(skin_id, view_type)

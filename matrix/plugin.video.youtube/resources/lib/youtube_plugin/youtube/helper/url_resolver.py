@@ -10,7 +10,7 @@
 
 from __future__ import absolute_import, division, unicode_literals
 
-import re
+from re import compile as re_compile
 
 from ...kodion.compatibility import parse_qsl, unescape, urlencode, urlsplit
 from ...kodion.network import BaseRequestsClass
@@ -43,7 +43,7 @@ class AbstractResolver(BaseRequestsClass):
 
     def __init__(self, context):
         self._context = context
-        super(AbstractResolver, self).__init__()
+        super(AbstractResolver, self).__init__(context=context)
 
     def supports_url(self, url, url_components):
         raise NotImplementedError()
@@ -53,10 +53,10 @@ class AbstractResolver(BaseRequestsClass):
 
 
 class YouTubeResolver(AbstractResolver):
-    _RE_CHANNEL_URL = re.compile(r'<meta property="og:url" content="'
+    _RE_CHANNEL_URL = re_compile(r'<meta property="og:url" content="'
                                  r'(?P<channel_url>[^"]+)'
                                  r'">')
-    _RE_CLIP_DETAILS = re.compile(r'(<meta property="og:video:url" content="'
+    _RE_CLIP_DETAILS = re_compile(r'(<meta property="og:video:url" content="'
                                   r'(?P<video_url>[^"]+)'
                                   r'">)'
                                   r'|("startTimeMs":"(?P<start_time>\d+)")'
@@ -66,11 +66,11 @@ class YouTubeResolver(AbstractResolver):
         super(YouTubeResolver, self).__init__(*args, **kwargs)
 
     def supports_url(self, url, url_components):
-        if url_components.hostname not in (
-                'www.youtube.com',
-                'youtube.com',
-                'm.youtube.com',
-        ):
+        if url_components.hostname not in {
+            'www.youtube.com',
+            'youtube.com',
+            'm.youtube.com',
+        }:
             return False
 
         path = url_components.path.lower()
@@ -169,6 +169,17 @@ class YouTubeResolver(AbstractResolver):
                 })
                 return url_components._replace(query=urlencode(params)).geturl()
 
+        elif path == '/watch_videos':
+            params = dict(parse_qsl(url_components.query))
+            new_components = urlsplit(response.url)
+            new_params = dict(parse_qsl(new_components.query))
+            # add/overwrite all other params from original query string
+            new_params.update(params)
+            # build new URL from these components
+            return new_components._replace(
+                query=urlencode(new_params)
+            ).geturl()
+
         # we try to extract the channel id from the html content
         # With the channel id we can construct a URL we already work with
         # https://www.youtube.com/channel/<CHANNEL_ID>
@@ -193,11 +204,11 @@ class CommonResolver(AbstractResolver):
         super(CommonResolver, self).__init__(*args, **kwargs)
 
     def supports_url(self, url, url_components):
-        if url_components.hostname in (
-                'www.youtube.com',
-                'youtube.com',
-                'm.youtube.com',
-        ):
+        if url_components.hostname in {
+            'www.youtube.com',
+            'youtube.com',
+            'm.youtube.com',
+        }:
             return False
         return 'HEAD'
 
@@ -214,7 +225,6 @@ class CommonResolver(AbstractResolver):
 class UrlResolver(object):
     def __init__(self, context):
         self._context = context
-        self._function_cache = context.get_function_cache()
         self._resolvers = (
             ('common_resolver', CommonResolver(context)),
             ('youtube_resolver', YouTubeResolver(context)),
@@ -240,9 +250,10 @@ class UrlResolver(object):
         return resolved_url
 
     def resolve(self, url):
-        resolved_url = self._function_cache.run(
+        function_cache = self._context.get_function_cache()
+        resolved_url = function_cache.run(
             self._resolve,
-            self._function_cache.ONE_DAY,
+            function_cache.ONE_DAY,
             _refresh=self._context.get_param('refresh'),
             url=url
         )

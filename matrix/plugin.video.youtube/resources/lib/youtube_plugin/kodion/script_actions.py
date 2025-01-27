@@ -10,13 +10,26 @@
 from __future__ import absolute_import, division, unicode_literals
 
 import os
-import socket
 
 from .compatibility import parse_qsl, urlsplit, xbmc, xbmcaddon, xbmcvfs
-from .constants import DATA_PATH, TEMP_PATH, WAIT_FLAG
+from .constants import (
+    DATA_PATH,
+    DEFAULT_LANGUAGES,
+    DEFAULT_REGIONS,
+    RELOAD_ACCESS_MANAGER,
+    SERVER_WAKEUP,
+    TEMP_PATH,
+    WAIT_END_FLAG,
+)
 from .context import XbmcContext
-from .network import get_client_ip_address, httpd_status
-from .utils import rm_dir, validate_ip_address
+from .network import (
+    Locator,
+    get_client_ip_address,
+    get_listen_addresses,
+    httpd_status,
+)
+from .utils import rm_dir
+from ..youtube import Provider
 
 
 def _config_actions(context, action, *_args):
@@ -28,10 +41,10 @@ def _config_actions(context, action, *_args):
         xbmcaddon.Addon().openSettings()
 
     elif action == 'isa':
-        if context.use_inputstream_adaptive():
-            xbmcaddon.Addon(id='inputstream.adaptive').openSettings()
+        if context.use_inputstream_adaptive(prompt=True):
+            xbmcaddon.Addon('inputstream.adaptive').openSettings()
         else:
-            settings.set_bool('kodion.video.quality.isa', False)
+            settings.use_isa(False)
 
     elif action == 'inputstreamhelper':
         try:
@@ -41,27 +54,28 @@ def _config_actions(context, action, *_args):
             xbmc.executebuiltin('InstallAddon(script.module.inputstreamhelper)')
 
     elif action == 'subtitles':
-        sub_lang = context.get_subtitle_language()
+        kodi_sub_lang = context.get_subtitle_language()
         plugin_lang = settings.get_language()
         sub_selection = settings.get_subtitle_selection()
 
-        if not sub_lang:
+        if not kodi_sub_lang:
             preferred = (plugin_lang,)
-        elif sub_lang.partition('-')[0] != plugin_lang.partition('-')[0]:
-            preferred = (sub_lang, plugin_lang)
+        elif kodi_sub_lang.partition('-')[0] != plugin_lang.partition('-')[0]:
+            preferred = (kodi_sub_lang, plugin_lang)
         else:
-            preferred = (sub_lang,)
+            preferred = (kodi_sub_lang,)
 
         fallback = ('ASR' if preferred[0].startswith('en') else
                     context.get_language_name('en'))
         preferred = '/'.join(map(context.get_language_name, preferred))
+        preferred_no_asr = '%s (%s)' % (preferred, localize('subtitles.no_asr'))
 
         sub_opts = [
             localize('none'),
-            localize('prompt'),
+            localize('select'),
             localize('subtitles.with_fallback') % (preferred, fallback),
-            preferred,
-            '%s (%s)' % (preferred, localize('subtitles.no_asr')),
+            localize('subtitles.with_fallback') % (preferred_no_asr, fallback),
+            preferred_no_asr,
         ]
 
         if settings.use_mpd_videos():
@@ -90,29 +104,15 @@ def _config_actions(context, action, *_args):
                 settings.set_subtitle_download(result == 1)
 
     elif action == 'listen_ip':
-        local_ranges = (
-            ((10, 0, 0, 0), (10, 255, 255, 255)),
-            ((172, 16, 0, 0), (172, 31, 255, 255)),
-            ((192, 168, 0, 0), (192, 168, 255, 255)),
-        )
-        addresses = [xbmc.getIPAddress()]
-        for interface in socket.getaddrinfo(socket.gethostname(), None):
-            address = interface[4][0]
-            if interface[0] != socket.AF_INET or address in addresses:
-                continue
-            octets = validate_ip_address(address)
-            if not any(octets):
-                continue
-            if any(lo <= octets <= hi for lo, hi in local_ranges):
-                addresses.append(address)
-        addresses += ['127.0.0.1', '0.0.0.0']
+        addresses = get_listen_addresses()
         selected_address = ui.on_select(localize('select.listen.ip'), addresses)
         if selected_address != -1:
             settings.httpd_listen(addresses[selected_address])
 
     elif action == 'show_client_ip':
-        if httpd_status():
-            client_ip = get_client_ip_address()
+        context.wakeup(SERVER_WAKEUP, timeout=5)
+        if httpd_status(context):
+            client_ip = get_client_ip_address(context)
             if client_ip:
                 ui.on_ok(context.get_name(),
                          context.localize('client.ip') % client_ip)
@@ -120,6 +120,98 @@ def _config_actions(context, action, *_args):
                 ui.show_notification(context.localize('client.ip.failed'))
         else:
             ui.show_notification(context.localize('httpd.not.running'))
+
+    elif action == 'geo_location':
+        locator = Locator(context)
+        locator.locate_requester()
+        coords = locator.coordinates()
+        if coords:
+            context.get_settings().set_location(
+                '{0[lat]},{0[lon]}'.format(coords)
+            )
+
+    elif action == 'language_region':
+        client = Provider().get_client(context)
+        settings = context.get_settings()
+
+        plugin_language = settings.get_language()
+        plugin_region = settings.get_region()
+
+        kodi_language = context.get_language()
+        base_kodi_language = kodi_language.partition('-')[0]
+
+        json_data = client.get_supported_languages(kodi_language)
+        items = json_data.get('items') or DEFAULT_LANGUAGES['items']
+
+        selected_language = [None]
+
+        def _get_selected_language(item):
+            item_lang = item[1]
+            base_item_lang = item_lang.partition('-')[0]
+            if item_lang == kodi_language or item_lang == plugin_language:
+                selected_language[0] = item
+            elif (not selected_language[0]
+                  and base_item_lang == base_kodi_language):
+                selected_language.append(item)
+            return item
+
+        # Ignore es-419 as it causes hl not a valid language error
+        # https://github.com/jdf76/plugin.video.youtube/issues/418
+        invalid_ids = ('es-419',)
+        language_list = sorted([
+            (item['snippet']['name'], item['snippet']['hl'])
+            for item in items
+            if item['id'] not in invalid_ids
+        ], key=_get_selected_language)
+
+        if selected_language[0]:
+            selected_language = language_list.index(selected_language[0])
+        elif len(selected_language) > 1:
+            selected_language = language_list.index(selected_language[1])
+        else:
+            selected_language = None
+
+        language_id = ui.on_select(
+            localize('setup_wizard.locale.language'),
+            language_list,
+            preselect=selected_language
+        )
+        if language_id == -1:
+            return
+
+        json_data = client.get_supported_regions(language=language_id)
+        items = json_data.get('items') or DEFAULT_REGIONS['items']
+
+        selected_region = [None]
+
+        def _get_selected_region(item):
+            item_region = item[1]
+            if item_region == plugin_region:
+                selected_region[0] = item
+            return item
+
+        region_list = sorted([
+            (item['snippet']['name'], item['snippet']['gl'])
+            for item in items
+        ], key=_get_selected_region)
+
+        if selected_region[0]:
+            selected_region = region_list.index(selected_region[0])
+        else:
+            selected_region = None
+
+        region_id = ui.on_select(
+            localize('setup_wizard.locale.region'),
+            region_list,
+            preselect=selected_region
+        )
+        if region_id == -1:
+            return
+
+        # set new language id and region id
+        settings = context.get_settings()
+        settings.set_language(language_id)
+        settings.set_region(region_id)
 
 
 def _maintenance_actions(context, action, params):
@@ -130,7 +222,9 @@ def _maintenance_actions(context, action, params):
 
     if action == 'clear':
         targets = {
+            'bookmarks': context.get_bookmarks_list,
             'data_cache': context.get_data_cache,
+            'feed_history': context.get_feed_history,
             'function_cache': context.get_function_cache,
             'playback_history': context.get_playback_history,
             'search_history': context.get_search_history,
@@ -139,16 +233,58 @@ def _maintenance_actions(context, action, params):
         if target not in targets:
             return
 
-        if ui.on_clear_content(
-            localize('maintenance.{0}'.format(target))
-        ):
+        if ui.on_clear_content(localize('maintenance.{0}'.format(target))):
             targets[target]().clear()
+            ui.show_notification(localize('completed'))
+
+    elif action == 'refresh':
+        targets = {
+            'settings_xml': 'settings.xml',
+        }
+        path = targets.get(target)
+        if not path:
+            return
+
+        if target == 'settings_xml' and ui.on_yes_no_input(
+                context.get_name(), localize('refresh.settings.check')
+        ):
+            if not context.get_system_version().compatible(20):
+                ui.show_notification(localize('failed'))
+                return
+
+            import xml.etree.ElementTree as ET
+
+            path = xbmcvfs.translatePath(os.path.join(DATA_PATH, path))
+            xml = ET.parse(path)
+            settings = xml.getroot()
+
+            marker = settings.find('setting[@id="|end_settings_marker|"]')
+            if marker is None:
+                ui.show_notification(localize('failed'))
+                return
+
+            removed = 0
+            for setting in reversed(settings.findall('setting')):
+                if setting == marker:
+                    break
+                settings.remove(setting)
+                removed += 1
+            else:
+                ui.show_notification(localize('failed'))
+                return
+
+            if removed:
+                xml.write(path)
             ui.show_notification(localize('succeeded'))
+        else:
+            return
 
     elif action == 'delete':
         path = params.get('path')
         targets = {
+            'bookmarks': 'bookmarks.sqlite',
             'data_cache': 'data_cache.sqlite',
+            'feed_history': 'feeds.sqlite',
             'function_cache': 'cache.sqlite',
             'playback_history': 'history.sqlite',
             'search_history': 'search.sqlite',
@@ -203,6 +339,7 @@ def _user_actions(context, action, params):
     localize = context.localize
     access_manager = context.get_access_manager()
     ui = context.get_ui()
+    reload = False
 
     def select_user(reason, new_user=False):
         current_users = access_manager.get_users()
@@ -237,8 +374,6 @@ def _user_actions(context, action, params):
             localize('user.changed') % access_manager.get_username(user),
             localize('user.switch')
         )
-        if context.get_param('refresh') is not False:
-            ui.refresh_container()
 
     if action == 'switch':
         result, user_index_map = select_user(localize('user.switch'),
@@ -252,6 +387,7 @@ def _user_actions(context, action, params):
 
         if user is not None and user != access_manager.get_current_user():
             switch_to_user(user)
+            reload = True
 
     elif action == 'add':
         user, details = add_user()
@@ -262,6 +398,7 @@ def _user_actions(context, action, params):
             )
             if result:
                 switch_to_user(user)
+                reload = True
 
     elif action == 'remove':
         result, user_index_map = select_user(localize('user.remove'))
@@ -272,13 +409,14 @@ def _user_actions(context, action, params):
         username = access_manager.get_username(user)
         if ui.on_remove_content(username):
             access_manager.remove_user(user)
+            ui.show_notification(localize('removed') % username,
+                                 localize('remove'))
             if user == 0:
                 access_manager.add_user(username=localize('user.default'),
                                         user=0)
             if user == access_manager.get_current_user():
-                access_manager.set_user(0, switch_to=True)
-            ui.show_notification(localize('removed') % username,
-                                 localize('remove'))
+                switch_to_user(0)
+            reload = True
 
     elif action == 'rename':
         result, user_index_map = select_user(localize('user.rename'))
@@ -302,21 +440,24 @@ def _user_actions(context, action, params):
                 localize('renamed') % (old_username, new_username),
                 localize('rename')
             )
+        reload = True
 
+    if reload:
+        ui.set_property(RELOAD_ACCESS_MANAGER)
+        context.send_notification(RELOAD_ACCESS_MANAGER)
     return True
 
 
 def run(argv):
     context = XbmcContext()
     ui = context.get_ui()
-    ui.set_property(WAIT_FLAG, 'true')
     try:
         category = action = params = None
         args = argv[1:]
         if args:
             args = urlsplit(args[0])
 
-            path = args.path
+            path = args.path.rstrip('/')
             if path:
                 path = path.split('/')
                 category = path[0]
@@ -327,12 +468,22 @@ def run(argv):
             if params:
                 params = dict(parse_qsl(args.query))
 
+        system_version = context.get_system_version()
+        context.log_notice('Script: Running v{version}'
+                           '\n\tKodi:     v{kodi}'
+                           '\n\tPython:   v{python}'
+                           '\n\tCategory: |{category}|'
+                           '\n\tAction:   |{action}|'
+                           '\n\tParams:   |{params}|'
+                           .format(version=context.get_version(),
+                                   kodi=str(system_version),
+                                   python=system_version.get_python_version(),
+                                   category=category,
+                                   action=action,
+                                   params=params))
+
         if not category:
             xbmcaddon.Addon().openSettings()
-            return
-
-        if action == 'refresh':
-            xbmc.executebuiltin('Container.Refresh')
             return
 
         if category == 'config':
@@ -347,5 +498,4 @@ def run(argv):
             _user_actions(context, action, params)
             return
     finally:
-        context.tear_down()
-        ui.clear_property(WAIT_FLAG)
+        ui.set_property(WAIT_END_FLAG)

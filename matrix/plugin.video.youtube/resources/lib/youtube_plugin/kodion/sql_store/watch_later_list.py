@@ -16,7 +16,6 @@ from ..items import from_json
 
 class WatchLaterList(Storage):
     _table_name = 'storage_v2'
-    _table_created = False
     _table_updated = False
     _sql = {}
 
@@ -27,8 +26,8 @@ class WatchLaterList(Storage):
         result = self._get_by_ids(process=from_json, as_dict=True)
         return result
 
-    def add(self, video_id, item):
+    def add_item(self, video_id, item):
         self._set(video_id, item)
 
-    def remove(self, video_id):
+    def del_item(self, video_id):
         self._remove(video_id)

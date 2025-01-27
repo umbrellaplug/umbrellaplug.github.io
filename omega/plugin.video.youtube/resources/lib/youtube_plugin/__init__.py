@@ -13,15 +13,15 @@ from __future__ import absolute_import, division, unicode_literals
 
 key_sets = {
     'youtube-tv': {
-        'id': 'ODYxNTU2NzA4NDU0LWQ2ZGxtM2xoMDVpZGQ4bnBlazE4azZiZThiYTNvYzY4',
-        'key': 'QUl6YVN5QzZmdlpTSkhBN1Z6NWo4akNpS1J0N3RVSU9xakUyTjNn',
-        'secret': 'U2JvVmhvRzlzMHJOYWZpeENTR0dLWEFU'
+        'api_key': 'QUl6YVN5QzZmdlpTSkhBN1Z6NWo4akNpS1J0N3RVSU9xakUyTjNn',
+        'client_id': 'ODYxNTU2NzA4NDU0LWQ2ZGxtM2xoMDVpZGQ4bnBlazE4azZiZThiYTNvYzY4',
+        'client_secret': 'U2JvVmhvRzlzMHJOYWZpeENTR0dLWEFU',
     },
     'provided': {
         '0': {
-            'id': '',
-            'key': '',
-            'secret': ''
+            'api_key': '',
+            'client_id': '',
+            'client_secret': '',
         }
     }
 }

@@ -14,7 +14,6 @@ from .storage import Storage, fromtimestamp
 
 class PlaybackHistory(Storage):
     _table_name = 'storage_v2'
-    _table_created = False
     _table_updated = False
     _sql = {}
 
@@ -40,11 +39,14 @@ class PlaybackHistory(Storage):
         result = self._get(key, process=self._add_last_played)
         return result
 
-    def remove(self, video_id):
+    def set_item(self, video_id, play_data, timestamp=None):
+        self._set(video_id, play_data, timestamp)
+
+    def del_item(self, video_id):
         self._remove(video_id)
 
-    def update(self, video_id, play_data, timestamp=None):
-        self._set(video_id, play_data, timestamp)
+    def update_item(self, video_id, play_data, timestamp=None):
+        self._update(video_id, play_data, timestamp)
 
     def _optimize_item_count(self, limit=-1, defer=False):
         return False
