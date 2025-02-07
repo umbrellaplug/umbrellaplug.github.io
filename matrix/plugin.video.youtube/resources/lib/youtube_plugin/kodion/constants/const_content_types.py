@@ -10,8 +10,8 @@
 
 from __future__ import absolute_import, division, unicode_literals
 
-VIDEO_CONTENT = 'episodes'
-LIST_CONTENT = ''
+VIDEO_CONTENT = 'videos'
+LIST_CONTENT = 'files'
 
 AUDIO_TYPE = 'music'
 VIDEO_TYPE = 'video'
