@@ -7,6 +7,7 @@ from sys import exit as sysexit
 from urllib.parse import quote_plus
 from resources.lib.modules import control
 from resources.lib.modules.trakt import getTraktCredentialsInfo, getTraktIndicatorsInfo
+from resources.lib.modules import simkl
 from resources.lib.modules import favourites
 from json import loads as jsloads
 
@@ -22,7 +23,9 @@ class Navigator:
 		self.iconLogos = getSetting('icon.logos') != 'Traditional'
 		self.indexLabels = getSetting('index.labels') == 'true'
 		self.traktCredentials = getTraktCredentialsInfo()
+		self.simklCredentials = simkl.getSimKLCredentialsInfo()
 		self.traktIndicators = getTraktIndicatorsInfo()
+		self.simklIndicators = simkl.getSimKLIndicatorsInfo()
 		self.imdbCredentials = getSetting('imdbuser') != ''
 		self.simkltoken = getSetting('simkltoken') != ''
 		self.tmdbSessionID = getSetting('tmdb.sessionid') != ''
@@ -156,6 +159,11 @@ class Navigator:
 			self.addDirectoryItem(getLS(40465), 'getFavouritesMovies&url=favourites_movies&folderName=%s' % (quote_plus(getLS(40465))), 'movies.png', 'DefaultMovies.png')
 		if getMenuEnabled('navi.movie.mdblist.userList') and getSetting('mdblist.api') != '':
 			self.addDirectoryItem(40087, 'mdbUserListMovies&folderName=%s' % quote_plus(getLS(40087)), 'mdblist.png' if self.iconLogos else 'movies.png', 'DefaultMovies.png')
+		if self.simkltoken:
+			self.addDirectoryItem('Simkl Completed', 'movies&url=simklhistory&folderName=%s' % quote_plus('Simkl Completed'), 'simkl.png' ,'simkl.png')
+				#self.addDirectoryItem(40549, 'movies&url=https://api.simkl.com/sync/all-items/movies/plantowatch?&folderName=%s' % quote_plus(getLS(40549)), 'simkl.png' ,'simkl.png')
+			self.addDirectoryItem('Simkl Plan to Watch', 'movies&url=simklwatchlist&folderName=%s' % 'Simkl Plan to Watch', 'simkl.png', 'simkl.png')
+			self.addDirectoryItem('Simkl Dropped', 'movies&url=simkldropped&folderName=%s' % 'Simkl Dropped', 'simkl.png', 'simkl.png')
 		if self.traktCredentials:
 			if self.traktIndicators:
 				self.addDirectoryItem(35308, 'moviesUnfinished&url=traktunfinished&folderName=%s' % quote_plus(getLS(35308)), 'trakt.png', 'trakt.png', queue=True)
@@ -251,6 +259,16 @@ class Navigator:
 		if self.favoriteEpisodes: self.addDirectoryItem(getLS(40467), 'getFavouritesEpisodes&folderName=%s' % (quote_plus(getLS(40467))), 'tvshows.png', 'DefaultTVShows.png')
 		if getMenuEnabled('navi.tv.mdblist.userList') and getSetting('mdblist.api') != '':
 			self.addDirectoryItem(40087, 'mdbUserListTV&folderName=%s' % quote_plus(getLS(40087)), 'mdblist.png' if self.iconLogos else 'tvshows.png', 'DefaultMovies.png')
+		if self.simklCredentials:
+			if self.simklIndicators:
+				self.addDirectoryItem('Simkl Progress Episodes', 'simkl_calendar&url=/sync/all-items/shows/watching&folderName=%s' % quote_plus("Simkl Progress Episodes"), 'simkl.png', 'simkl.png', queue=True)
+			#self.addDirectoryItem('Simkl Progress Shows', 'simkl_shows_progress&url=/sync/all-items/sync/movies/watching?extended=full&folderName=%s' % quote_plus("Simkl Progress Shows"), 'simkl.png', 'simkl.png', queue=True)
+			self.addDirectoryItem('Simkl Watching', 'tvshows&url=simklwatching&folderName=%s' % quote_plus("Simkl Watching"), 'simkl.png', 'simkl.png', queue=True)
+			self.addDirectoryItem('Simkl Plan to Watch', 'tvshows&url=simklwatchlist&folderName=%s' % quote_plus('Simkl Plan to Watch'), 'simkl.png', 'simkl.png')
+			self.addDirectoryItem('Simkl On Hold', 'tvshows&url=simklonhold&folderName=%s' % quote_plus('Simkl On Hold'), 'simkl.png', 'simkl.png')
+			self.addDirectoryItem('Simkl Completed', 'tvshows&url=simklhistory&folderName=%s' % quote_plus('Simkl Completed'), 'simkl.png' ,'simkl.png')
+			self.addDirectoryItem('Simkl Dropped', 'tvshows&url=simkldropped&folderName=%s' % quote_plus('Simkl Dropped'), 'simkl.png', 'simkl.png')
+			
 		if self.traktCredentials:
 			if self.traktIndicators:
 				self.addDirectoryItem(35308, 'episodesUnfinished&url=traktunfinished&folderName=%s' % quote_plus(getLS(35308)), 'trakt.png', 'trakt.png', queue=True)
@@ -369,7 +387,9 @@ class Navigator:
 		self.addDirectoryItem(32044, 'tools_openSettings&query=10.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(40452, 'tools_openSettings&query=11.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(40124, 'tools_openSettings&query=12.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(40559, 'tools_openSettings&query=9.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(40123, 'tools_openSettings&query=8.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		if self.simklCredentials: self.addDirectoryItem(40551, 'tools_simklToolsNavigator&folderName=%s' % quote_plus(getLS(40552)), 'tools.png', 'DefaultAddonService.png', isFolder=True)
 		if self.traktCredentials: self.addDirectoryItem(35057, 'tools_traktToolsNavigator&folderName=%s' % quote_plus(getLS(40461)), 'tools.png', 'DefaultAddonService.png', isFolder=True)
 		#-- Navigation - 1
 		self.addDirectoryItem(32362, 'tools_openSettings&query=1.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
@@ -404,6 +424,11 @@ class Navigator:
 		self.addDirectoryItem(35065, 'tools_traktLikedListManager', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#self.addDirectoryItem(40217, 'tools_traktImportListManager', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(35066, 'tools_forceTraktSync', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.endDirectory()
+
+	def simklTools(self, folderName=''):
+		if self.useContainerTitles: control.setContainerName(folderName)
+		self.addDirectoryItem(40553, 'tools_forceSimklSync', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 
 	def loggingNavigator(self, folderName=''):
@@ -579,7 +604,7 @@ class Navigator:
 			return
 
 	def accountCheck(self):
-		if not self.traktCredentials and not self.imdbCredentials:
+		if not self.traktCredentials and not self.imdbCredentials and not self.simklCredentials:
 			control.hide()
 			control.notification(message=32042, icon='WARNING')
 			sysexit()

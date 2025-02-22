@@ -16,6 +16,7 @@ from resources.lib.modules.client import parseDOM, replaceHTMLCodes
 from resources.lib.modules import workers
 from resources.lib.modules import control
 from resources.lib.modules import plex as plexShare
+from concurrent.futures import ThreadPoolExecutor
 
 PLEX_AUDIO = {'dca': 'dts', 'dca-ma': 'hdma'}
 
@@ -32,19 +33,22 @@ class source:
 
 	def sources(self, data, hostDict):
 		self.sources = []
-		if not data: return self.sources
+		if not data:
+			return self.sources
+
 		self.sources_append = self.sources.append
 		try:
 			shares = plexShare.Plex().plex_get_all()
-			########################################################
-			threads = []
-			append = threads.append
-			for share in shares:
-				append(workers.Thread(self.get_sources, share[0], share[1], share[2], data))
-			[i.start() for i in threads]
-			[i.join() for i in threads]
+			
+			# Use ThreadPoolExecutor to manage threads
+			def get_sources_wrapper(share):
+				self.get_sources(share[0], share[1], share[2], data)
+
+			with ThreadPoolExecutor() as executor:
+				executor.map(get_sources_wrapper, shares)
+
 			return self.sources
-		except:
+		except Exception as e:
 			source_utils.scraper_error('PLEXSHARE')
 			return self.sources
 

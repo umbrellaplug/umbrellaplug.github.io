@@ -5,7 +5,7 @@ Welcome to the umbrellaplug.github.io
 Compatible with Kodi 19, 20, and 21.
 
 ## Current Versions:
-Umbrella - 6.7.36
+Umbrella - 6.7.37
 Umbrella Repo - 2.2.6
 
 ## Installation Instructions:

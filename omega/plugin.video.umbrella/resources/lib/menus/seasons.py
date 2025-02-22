@@ -13,8 +13,9 @@ from resources.lib.indexers.fanarttv import FanartTv
 from resources.lib.modules import cleangenre
 from resources.lib.modules import control
 from resources.lib.modules.playcount import getSeasonIndicators, getSeasonOverlay, getSeasonCount
-from resources.lib.modules import trakt
+from resources.lib.modules import trakt, simkl
 from resources.lib.modules import views
+from resources.lib.database import artwork as customArtwork
 
 getLS = control.lang
 getSetting = control.setting
@@ -38,6 +39,7 @@ class Seasons:
 		self.hide_watched_in_widget = getSetting('enable.umbrellahidewatched') == 'true'
 		self.useFullContext = getSetting('enable.umbrellawidgetcontext') == 'true'
 		self.highlight_color = getSetting('highlight.color')
+		self.prefer_fanArt = getSetting('prefer.fanarttv') == 'true'
 
 	def get(self, tvshowtitle, year, imdb, tmdb, tvdb, art, idx=True, create_directory=True): # may need to add a cache duration over-ride param to pass
 		self.list = []
@@ -141,8 +143,12 @@ class Seasons:
 		is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
 		settingFanart = getSetting('fanart') == 'true'
 		addonPoster, addonFanart, addonBanner = control.addonPoster(), control.addonFanart(), control.addonBanner()
-		if trakt.getTraktIndicatorsInfo():
+		if trakt.getTraktCredentialsInfo() and simkl.getSimKLCredentialsInfo():
+			watchedMenu, unwatchedMenu = getLS(40564), getLS(40565)
+		elif trakt.getTraktCredentialsInfo():
 			watchedMenu, unwatchedMenu = getLS(32068), getLS(32069)
+		elif simkl.getSimKLCredentialsInfo():
+			watchedMenu, unwatchedMenu = getLS(40554), getLS(40555)
 		else:
 			watchedMenu, unwatchedMenu = getLS(32066), getLS(32067)
 		traktManagerMenu, queueMenu = getLS(32070), getLS(32065)
@@ -179,12 +185,35 @@ class Seasons:
 				if settingFanart: fanart = meta.get('fanart') or addonFanart
 				if settingFanart: landscape = meta.get('landscape2')
 				else: landscape = meta.get('landscape')
+				if self.prefer_fanArt:
+					if fanart: thumb = fanart or season_poster
+					else:
+						thumb = meta.get('fanart') or season_poster
+				else:
+					thumb = season_poster
 				thumb = season_poster
 				icon = meta.get('icon') or poster
 				banner = meta.get('banner') or addonBanner
 				art = {}
+				useCustomArtwork = customArtwork.fetch_season(imdb, tmdb, tvdb, season) #new custom artwork database check
+				clearart = meta.get('clearart', '')
+				clearlogo = meta.get('clearlogo','')
+				if useCustomArtwork:
+					allowed_keys = {"poster", "fanart", "landscape", "banner", "clearart", "clearlogo"}
+					for key in allowed_keys:
+						value = useCustomArtwork[0].get(key)
+						if value not in (None, "", " "):  # Ignore empty values. ugly but local() will not change values
+							if key == 'poster': poster = value
+							if key == 'fanart': fanart = value
+							if key == 'landscape': landscape = value
+							if key == 'banner': banner = value
+							if key == 'clearart': clearart = value
+							if key == 'clearlogo': clearlogo = value
+					if "poster" in useCustomArtwork[0] and useCustomArtwork[0].get("poster") not in (None, "", " "):
+						thumb = useCustomArtwork[0].get("poster")
+						season_poster = useCustomArtwork[0].get("poster")
 				art.update({'poster': season_poster, 'tvshow.poster': poster, 'season.poster': season_poster, 'fanart': fanart, 'icon': icon, 'thumb': thumb, 'banner': banner,
-						'tvshow.clearlogo': meta.get('clearlogo', ''), 'clearart': meta.get('clearart', ''), 'tvshow.clearart': meta.get('clearart', ''), 'landscape': landscape})
+						'tvshow.clearlogo': clearlogo, 'clearart': clearart, 'tvshow.clearart': clearart, 'landscape': landscape})
 				# for k in ('poster2', 'poster3', 'fanart2', 'fanart3', 'banner2', 'banner3'): meta.pop(k, None)
 				meta.update({'poster': poster, 'fanart': fanart, 'banner': banner, 'thumb': thumb, 'season_poster': season_poster, 'icon': icon, 'title': label})
 				sysmeta = quote_plus(jsdumps(meta))
@@ -202,6 +231,7 @@ class Seasons:
 						meta.update({'playcount': 0, 'overlay': 4})
 						cm.append((watchedMenu, 'RunPlugin(%s?action=playcount_TVShow&name=%s&imdb=%s&tvdb=%s&season=%s&query=5)' % (sysaddon, systitle, imdb, tvdb, season)))
 				except: pass
+				cm.append(('Customize Artwork', 'RunPlugin(%s?action=customizeArt&mediatype=%s&imdb=%s&tmdb=%s&tvdb=%s&poster=%s&fanart=%s&landscape=%s&banner=%s&clearart=%s&clearlogo=%s&season=%s)' % (sysaddon, 'season', imdb, tmdb, tvdb, poster, fanart, landscape, banner, clearart, clearlogo, season)))
 				cm.append((playRandom, 'RunPlugin(%s?action=play_Random&rtype=episode&tvshowtitle=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&meta=%s&season=%s)' % (sysaddon, systitle, year, imdb, tmdb, tvdb, sysmeta, season)))
 				# cm.append((queueMenu, 'RunPlugin(%s?action=playlist_QueueItem&name=%s)' % (sysaddon, systitle)))
 				# cm.append((showPlaylistMenu, 'RunPlugin(%s?action=playlist_Show)' % sysaddon))
@@ -216,13 +246,7 @@ class Seasons:
 				try:
 					count = getSeasonCount(imdb, tvdb, season)
 					if count:
-						if control.getKodiVersion() >= 20:
-							if int(count['watched']) > 0:
-								item.setProperties({'WatchedEpisodes': str(count['watched']), 'UnWatchedEpisodes': str(count['unwatched'])})
-							else:
-								item.setProperties({'UnWatchedEpisodes': str(count['unwatched'])})
-						else:
-							item.setProperties({'WatchedEpisodes': str(count['watched']), 'UnWatchedEpisodes': str(count['unwatched'])})
+						item.setProperties({'WatchedEpisodes': str(count['watched']), 'UnWatchedEpisodes': str(count['unwatched'])})
 						item.setProperties({'TotalSeasons': str(meta.get('total_seasons', '')), 'TotalEpisodes': str(count['total'])})
 						item.setProperty('WatchedProgress', str(int(float(count['watched']) / float(count['total']) * 100)))
 					else:
@@ -234,16 +258,10 @@ class Seasons:
 							item.setProperties({'TotalSeasons': str(meta.get('total_seasons', '')), 'TotalEpisodes': str(meta.get('total_episodes', ''))})
 						else:
 							if meta.get('last_episode_to_air', {}).get('season_number') == int(season):
-								if control.getKodiVersion() >= 20:
-									item.setProperties({'UnWatchedEpisodes': str(meta.get('last_episode_to_air', {}).get('episode_number'))})
-								else:
-									item.setProperties({'WatchedEpisodes': '0', 'UnWatchedEpisodes': str(meta.get('last_episode_to_air', {}).get('episode_number'))})
+								item.setProperties({'WatchedEpisodes': '0', 'UnWatchedEpisodes': str(meta.get('last_episode_to_air', {}).get('episode_number'))})
 								item.setProperties({'TotalSeasons': str(meta.get('total_seasons', '')), 'TotalEpisodes': str(meta.get('last_episode_to_air', {}).get('episode_number'))})
 							else:
-								if control.getKodiVersion() >= 20:
-									item.setProperties({'UnWatchedEpisodes': '0'})
-								else:
-									item.setProperties({'WatchedEpisodes': '0', 'UnWatchedEpisodes': '0'})
+								item.setProperties({'WatchedEpisodes': '0', 'UnWatchedEpisodes': '0'})
 								item.setProperties({'TotalSeasons': str(meta.get('total_seasons', '')), 'TotalEpisodes': '0'})
 				except: pass
 

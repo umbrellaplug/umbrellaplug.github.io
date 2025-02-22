@@ -162,6 +162,9 @@ def router(argv2):
 	elif action == 'traktAccountInfo':
 		from resources.lib.modules import trakt as Trakt
 		Trakt.getTraktAccountInfo()
+	elif action == 'simklAccountInfo':
+		from resources.lib.modules import simkl
+		simkl.SIMKL().acount_info_dialog()
 	elif action == 'movies_PublicLists':
 		from resources.lib.menus import movies
 		movies.Movies().getTraktPublicLists(url, folderName=folderName)
@@ -357,6 +360,9 @@ def router(argv2):
 	elif action == 'shows_watched':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().tvshow_watched(url, folderName=folderName)
+	elif action == 'simkl_shows_progress':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().simkl_progress(url, folderName=folderName)
 
 	####################################################
 	#---Plex
@@ -432,6 +438,9 @@ def router(argv2):
 	elif action == 'episodes_traktUnfinishedManager':
 		from resources.lib.menus import episodes
 		episodes.Episodes().unfinishedManager()
+	elif action == 'simkl_calendar':
+		from resources.lib.menus import episodes
+		episodes.Episodes().simkl_calendar(url, folderName=folderName)
 
 	####################################################
 	#---Premium Services
@@ -812,6 +821,9 @@ def router(argv2):
 	elif action == 'resetCustomBG':
 		from resources.lib.modules import tools
 		tools.resetCustomBG()
+	elif action == 'customizeArt':
+		from resources.lib.database import artwork
+		artwork.manager(mediatype=mediatype, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, poster=params.get('poster'), fanart=params.get('fanart'), landscape=params.get('landscape'), banner=params.get('banner'), clearart=params.get('clearart'), clearlogo=params.get('clearlogo'), discart=params.get('discart'), keyart=params.get('keyart'))
 	####################################################
 	#---Tools
 	####################################################
@@ -837,12 +849,18 @@ def router(argv2):
 		elif action == 'tools_iconPack':
 			from resources.lib.modules import skin_packs
 			skin_packs.iconPackHandler().show_skin_packs()
+		elif action == 'tools_indicators':
+			from resources.lib.modules import tools
+			tools.setIndicatorService()
 		elif action == 'tools_toolNavigator':
 			from resources.lib.menus import navigator
 			navigator.Navigator().tools(folderName=folderName)
 		elif action == 'tools_traktToolsNavigator':
 			from resources.lib.menus import navigator
 			navigator.Navigator().traktTools(folderName=folderName)
+		elif action == 'tools_simklToolsNavigator':
+			from resources.lib.menus import navigator
+			navigator.Navigator().simklTools(folderName=folderName)
 		elif action == 'tools_searchNavigator':
 			from resources.lib.menus import navigator
 			navigator.Navigator().search(folderName=folderName)
@@ -877,6 +895,12 @@ def router(argv2):
 			unfinished = (params.get('unfinished') == 'True') if params.get('unfinished') else False
 			tvshow = (params.get('tvshow') == 'tvshow')
 			trakt.manager(name, imdb, tvdb, season, episode, watched=watched, unfinished=unfinished,tvshow=tvshow)
+		elif action == 'tools_simklManager':
+			watched = (params.get('watched') == 'True') if params.get('watched') else None
+			unfinished = (params.get('unfinished') == 'True') if params.get('unfinished') else False
+			tvshow = (params.get('tvshow') == 'tvshow')
+			from resources.lib.modules import simkl
+			simkl.manager(name, imdb, tvdb, season, episode, watched=watched, unfinished=unfinished,tvshow=tvshow)
 		elif action == 'tools_likeList':
 			from resources.lib.modules import trakt
 			trakt.like_list(params.get('list_owner'), params.get('list_name'), params.get('list_id'))
@@ -886,6 +910,9 @@ def router(argv2):
 		elif action == 'tools_forceTraktSync':
 			from resources.lib.modules import trakt
 			trakt.force_traktSync()
+		elif action == 'tools_forceSimklSync':
+			from resources.lib.modules import simkl
+			simkl.force_simklSync(silent=False)
 		elif action == 'tools_clearLogFile':
 			from resources.lib.modules import log_utils
 			cleared = log_utils.clear_logFile()

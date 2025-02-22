@@ -786,8 +786,8 @@ class libmovies:
 				control.sleep(10000)
 				control.execute('UpdateLibrary(video)')
 			elif service_notification: control.notification(message=32103)
-		if self.movie_cache == 'true':
-			lib_tools().cacheLibraryforSimilar()
+		# if self.movie_cache == 'true':
+		# 	lib_tools().cacheLibraryforSimilar()
 
 	def checkListDB(self, items, url):
 		if not items: return
@@ -905,8 +905,8 @@ class libmovies:
 					control.sleep(10000)
 					control.execute('UpdateLibrary(video)')
 				elif general_notification: control.notification(title=name, message=32104)
-			if self.movie_cache == 'true':
-				lib_tools().cacheLibraryforSimilar()
+			# if self.movie_cache == 'true':
+			# 	lib_tools().cacheLibraryforSimilar()
 		except: pass
 
 	def silent(self, url):
@@ -931,8 +931,8 @@ class libmovies:
 				control.execute('UpdateLibrary(video)')
 			elif general_notification: control.notification(message=32103)
 		if service_notification: control.notification(message=32105)
-		if self.movie_cache == 'true':
-			lib_tools().cacheLibraryforSimilar()
+		# if self.movie_cache == 'true':
+		# 	lib_tools().cacheLibraryforSimilar()
 
 	def range(self, url, list_name, silent=None):
 		#control.hide()
@@ -1005,8 +1005,8 @@ class libmovies:
 				control.notification(message=32103)
 				control.notification(title='Import Complete', message='[B]%s[/B] items imported from [B]%s[/B] with some strm errors.' % (total_added, list_name))
 		#libuserlist().set_update_dateTime()
-		if self.movie_cache == 'true':
-			lib_tools().cacheLibraryforSimilar()
+		# if self.movie_cache == 'true':
+		# 	lib_tools().cacheLibraryforSimilar()
 
 	def strmFile(self, i):
 		try:

@@ -6,7 +6,8 @@
 from datetime import datetime, timedelta
 from json import dumps as jsdumps
 import re
-from threading import Thread
+#from threading import Thread
+from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import quote_plus, parse_qsl, urlparse
 from resources.lib.database import cache, metacache, fanarttv_cache
 from resources.lib.indexers.tmdb import Movies as tmdb_indexer
@@ -15,7 +16,7 @@ from resources.lib.modules import cleangenre
 from resources.lib.modules import client
 from resources.lib.modules import control
 from resources.lib.modules.playcount import getMovieIndicators, getMovieOverlay
-from resources.lib.modules import trakt
+from resources.lib.modules import trakt, simkl
 from resources.lib.modules import views
 
 getLS = control.lang
@@ -52,6 +53,7 @@ class Collections:
 		self.hide_watched_in_widget = getSetting('enable.umbrellahidewatched') == 'true'
 		self.useFullContext = getSetting('enable.umbrellawidgetcontext') == 'true'
 		self.useContainerTitles = getSetting('enable.containerTitles') == 'true'
+		self.prefer_fanArt = getSetting('prefer.fanarttv') == 'true'
 
 	def collections_Navigator(self, lite=False, folderName=''):
 		self.addDirectoryItem('Movies', 'collections_Boxset&folderName=%s' % getLS(32001), 'boxsets.png', 'DefaultVideoPlaylists.png')
@@ -556,23 +558,25 @@ class Collections:
 
 	def worker(self):
 		try:
-			if not self.list: return
+			if not self.list:
+				return
 			self.meta = []
 			total = len(self.list)
-			for i in range(0, total): self.list[i].update({'metacache': False})
+			for item in self.list:
+				item.update({'metacache': False})
 			self.list = metacache.fetch(self.list, self.lang, self.user)
-			for r in range(0, total, 40):
-				threads = []
-				append = threads.append
-				for i in range(r, r + 40):
-					if i < total: append(Thread(target=self.super_imdb_info, args=(i,)))
-				[i.start() for i in threads]
-				[i.join() for i in threads]
-			if self.meta: metacache.insert(self.meta)
-			self.list = [i for i in self.list if i.get('tmdb')]
-		except:
+			def process_item(index):
+				self.super_imdb_info(index)
+
+			with ThreadPoolExecutor(max_workers=40) as executor:
+				executor.map(process_item, range(total))
+			if self.meta:
+				metacache.insert(self.meta)
+			self.list = [item for item in self.list if item.get('tmdb')]
+		except Exception as e:
 			from resources.lib.modules import log_utils
 			log_utils.error()
+
 
 	def super_imdb_info(self, i):
 		try:
@@ -641,8 +645,14 @@ class Collections:
 		indicators = getMovieIndicators() # refresh not needed now due to service sync
 		if play_mode == '1': playbackMenu = getLS(32063)
 		else: playbackMenu = getLS(32064)
-		if trakt.getTraktIndicatorsInfo(): watchedMenu, unwatchedMenu = getLS(32068), getLS(32069)
-		else: watchedMenu, unwatchedMenu = getLS(32066), getLS(32067)
+		if trakt.getTraktCredentialsInfo() and simkl.getSimKLCredentialsInfo():
+			watchedMenu, unwatchedMenu = getLS(40564), getLS(40565)
+		elif trakt.getTraktCredentialsInfo():
+			watchedMenu, unwatchedMenu = getLS(32068), getLS(32069)
+		elif simkl.getSimKLCredentialsInfo():
+			watchedMenu, unwatchedMenu = getLS(40554), getLS(40555)
+		else:
+			watchedMenu, unwatchedMenu = getLS(32066), getLS(32067)
 		playlistManagerMenu, queueMenu = getLS(35522), getLS(32065)
 		traktManagerMenu, addToLibrary = getLS(32070), getLS(32551)
 		nextMenu, clearSourcesMenu = getLS(32053), getLS(32611)
@@ -668,7 +678,10 @@ class Collections:
 					if self.prefer_tmdbArt: fanart = meta.get('fanart3') or meta.get('fanart') or meta.get('fanart2') or addonFanart
 					else: fanart = meta.get('fanart2') or meta.get('fanart3') or meta.get('fanart') or addonFanart
 				landscape = meta.get('landscape') or fanart
-				thumb = meta.get('thumb') or poster or landscape
+				if self.prefer_fanArt:
+					thumb = meta.get('fanart') or meta.get('thumb') or landscape
+				else:
+					thumb = meta.get('thumb') or poster or landscape
 				icon = meta.get('icon') or poster
 				banner = meta.get('banner3') or meta.get('banner2') or meta.get('banner') or addonBanner
 				art = {}

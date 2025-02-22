@@ -1,7 +1,8 @@
 import re
 import requests
 from sys import argv, exit as sysexit
-from threading import Thread
+#from threading import Thread
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from resources.lib.modules import control
 from resources.lib.modules import log_utils
 from resources.lib.modules import string_tools
@@ -204,26 +205,64 @@ class Offcloud:
 		url = self.history
 		return self._GET(url)
 
-	def user_cloud_clear(self):
-		if not control.yesnoDialog(getLS(32056), '', ''): return
+	# def user_cloud_clear(self):
+	# 	if not control.yesnoDialog(getLS(32056), '', ''): return
+	# 	files = self.user_cloud()
+	# 	if not files: return
+	# 	threads = []
+	# 	append = threads.append
+	# 	len_files = len(files)
+	# 	progressBG = control.progressDialogBG
+	# 	progressBG.create('Offcloud', 'Clearing cloud files')
+	# 	for count, req in enumerate(files, 1):
+	# 		try:
+	# 			i = Thread(target=self.delete_torrent, args=(req['requestId'],))
+	# 			append(i)
+	# 			i.start()
+	# 			progressBG.update(int(count / len_files * 100), 'Deleting %s...' % req['fileName'])
+	# 			control.sleep(200)
+	# 		except: pass
+	# 	[i.join() for i in threads]
+	# 	try: progressBG.close()
+	# 	except: pass
+	def user_cloud(self):
+		if not control.yesnoDialog(getLS(32056), '', ''):
+			return
+
 		files = self.user_cloud()
-		if not files: return
-		threads = []
-		append = threads.append
+		if not files:
+			return
+
 		len_files = len(files)
 		progressBG = control.progressDialogBG
 		progressBG.create('Offcloud', 'Clearing cloud files')
-		for count, req in enumerate(files, 1):
+		try:
+			with ThreadPoolExecutor(max_workers=10) as executor:  # max-workers likely needs to be a setting.
+				futures = {
+					executor.submit(self.delete_torrent, req['requestId']): req
+					for req in files
+				}
+
+				for count, future in enumerate(as_completed(futures), 1):
+					req = futures[future]
+					try:
+						future.result()  # Ensures exceptions in threads are raised here
+						progressBG.update(
+							int(count / len_files * 100),
+							'Deleting %s...' % req['fileName']
+						)
+						control.sleep(200)
+					except Exception as e:
+						from resources.lib.modules import log_utils
+						log_utils.error(f"Error deleting file {req['fileName']}: {str(e)}")
+		except Exception as e:
+			from resources.lib.modules import log_utils
+			log_utils.error(f"Error clearing cloud files: {str(e)}")
+		finally:
 			try:
-				i = Thread(target=self.delete_torrent, args=(req['requestId'],))
-				append(i)
-				i.start()
-				progressBG.update(int(count / len_files * 100), 'Deleting %s...' % req['fileName'])
-				control.sleep(200)
-			except: pass
-		[i.join() for i in threads]
-		try: progressBG.close()
-		except: pass
+				progressBG.close()
+			except:
+				pass
 
 	def user_cloud_to_listItem(self, folder_id=None):
 		sysaddon, syshandle = 'plugin://plugin.video.umbrella/', int(argv[1])

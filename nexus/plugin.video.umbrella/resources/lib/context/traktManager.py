@@ -26,7 +26,8 @@ if __name__ == '__main__':
 
 	playcount = getInfoLabel('ListItem.Playcount')
 	watched = (int(playcount) >= 1) if playcount else False
+	unfinished = item.getProperty('unfinished') == 'true'
 
-	path = 'RunPlugin(%s?action=tools_traktManager&name=%s&imdb=%s&tvdb=%s&season=%s&episode=%s&watched=%s)' % (
-				plugin, sysname, imdb, tvdb, season, episode, watched)
+	path = 'RunPlugin(%s?action=tools_traktManager&name=%s&imdb=%s&tvdb=%s&season=%s&episode=%s&watched=%s&unfinished=%s)' % (
+				plugin, sysname, imdb, tvdb, season, episode, watched, unfinished)
 	executebuiltin(path)
