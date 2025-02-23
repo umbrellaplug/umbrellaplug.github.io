@@ -514,45 +514,6 @@ class Movies(TMDb):
 			log_utils.error()
 		return self.list
 
-	def get_all_movie_art(self, **kwargs):
-		tmdb = kwargs.get('tmdb', '')
-		if not tmdb:
-			return None
-
-		url = self.art_link % tmdb
-		tmdbart = self.all_artwork_movie(url=url)
-		if tmdbart is None:
-			return
-
-		artworkType = kwargs.get('artwork_type', '')
-		artworkList = []
-		tmdbart_items = []
-		if artworkType == 'poster':
-			tmdbart_items = [item for item in tmdbart.get('posters', []) if (item.get('iso_639_1') == self.lang or item.get('iso_639_1') == None)]
-		elif artworkType == 'fanart':
-			tmdbart_items = [item for item in tmdbart.get('backdrops', []) if (item.get('iso_639_1') == self.lang or item.get('iso_639_1') == None)]
-		elif artworkType == 'landscape':
-			tmdbart_items = [item for item in tmdbart.get('backdrops', []) if (item.get('iso_639_1') == self.lang or item.get('iso_639_1') == None)]
-		elif artworkType == 'clearlogo':
-			tmdbart_items = [item for item in tmdbart.get('logos', []) if (item.get('iso_639_1') == self.lang or item.get('iso_639_1') == None)]
-		else:
-			return artworkList
-
-		for index, item in enumerate(tmdbart_items, start=1):
-			filepath = item.get('file_path')
-			itemurl = '%s%s' % (self.profile_path, filepath) if filepath else ''
-			artworkList.append({'artworkType': artworkType, 'source': 'Tmdb %s' % index, 'url': itemurl})
-		
-		return artworkList
-
-	def all_artwork_movie(self, **kwargs):
-		try:
-			url = kwargs.get('url')
-			from resources.lib.database import cache
-			art = cache.get(self.get_request, 10000, url)
-			return art
-		except:
-			return None
 
 class TVshows(TMDb):
 	def __init__(self):
@@ -1198,46 +1159,6 @@ class TVshows(TMDb):
 			from resources.lib.modules import log_utils
 			log_utils.error()
 		return self.list
-
-	def get_all_show_art(self, **kwargs):
-		tmdb = kwargs.get('tmdb', '')
-		if not tmdb:
-			return None
-
-		url = self.art_link % tmdb
-		tmdbart = self.all_artwork_show(url=url)
-		if tmdbart is None:
-			return
-
-		artworkType = kwargs.get('artwork_type', '')
-		artworkList = []
-		tmdbart_items = []
-		if artworkType == 'poster':
-			tmdbart_items = [item for item in tmdbart.get('posters', []) if (item.get('iso_639_1') == self.lang or item.get('iso_639_1') == None)]
-		elif artworkType == 'fanart':
-			tmdbart_items = [item for item in tmdbart.get('backdrops', []) if (item.get('iso_639_1') == self.lang or item.get('iso_639_1') == None)]
-		elif artworkType == 'landscape':
-			tmdbart_items = [item for item in tmdbart.get('backdrops', []) if (item.get('iso_639_1') == self.lang or item.get('iso_639_1') == None)]
-		elif artworkType == 'clearlogo':
-			tmdbart_items = [item for item in tmdbart.get('logos', []) if (item.get('iso_639_1') == self.lang or item.get('iso_639_1') == None)]
-		else:
-			return artworkList
-
-		for index, item in enumerate(tmdbart_items, start=1):
-			filepath = item.get('file_path')
-			itemurl = '%s%s' % (self.profile_path, filepath) if filepath else ''
-			artworkList.append({'artworkType': artworkType, 'source': 'Tmdb %s' % index, 'url': itemurl})
-		
-		return artworkList
-
-	def all_artwork_show(self, **kwargs):
-		try:
-			url = kwargs.get('url')
-			from resources.lib.database import cache
-			art = cache.get(self.get_request, 10000, url)
-			return art
-		except:
-			return None
 
 
 class Auth:

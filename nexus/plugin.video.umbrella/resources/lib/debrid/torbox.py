@@ -1,7 +1,6 @@
 import requests
 from sys import argv, exit as sysexit
 from threading import Thread
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import urlencode
 from resources.lib.modules import control
 from resources.lib.modules import log_utils
@@ -376,59 +375,45 @@ class TorBox:
 		return self._GET(url)
 
 	def delete_all_user_torrents(self):
-		if not control.yesnoDialog(getLS(40546), '', ''):
-			return
-
+		if not control.yesnoDialog(getLS(40546), '', ''): return
 		files = self.user_cloud().get('data', [])
 		que_files = self.queued_torrents().get('data', [])
 		usenet_files = self.user_cloud_usenet().get('data', [])
-		all_files = [
-			{'type': 'torrent', 'id': req['id'], 'name': req['name']}
-			for req in files
-		] + [
-			{'type': 'queue', 'id': req['id'], 'name': req['name']}
-			for req in que_files
-		] + [
-			{'type': 'usenet', 'id': req['id'], 'name': req['name']}
-			for req in usenet_files
-		]
-
-		total_files = len(all_files)
-		if total_files < 1:
-			return control.notification(title='Torbox', message='No Files found to remove.', icon=tb_icon)
-
+		list_len = int(len(files)) + int(len(que_files) + int(len(usenet_files)))
+		if list_len < 1: return control.notification(title='Torbox', message='No Files found to remove.', icon=tb_icon)
+		threads = []
+		append = threads.append
+		len_files = len(files)
+		len_que_files = len(que_files)
 		progressBG = control.progressDialogBG
 		progressBG.create('TorBox', 'Clearing cloud files')
-
-		try:
-			with ThreadPoolExecutor(max_workers=10) as executor:  # max-workers likely needs to be a setting.
-				futures = {}
-				for count, req in enumerate(all_files, 1):
-					if req['type'] == 'torrent' or req['type'] == 'queue':
-						futures[executor.submit(self.delete_torrent, req['id'])] = req
-					elif req['type'] == 'usenet':
-						futures[executor.submit(self.delete_usenet, req['id'])] = req
-
-				for completed_count, future in enumerate(as_completed(futures), 1):
-					req = futures[future]
-					try:
-						future.result()  # Ensure thread execution errors are handled
-						progressBG.update(
-							int(completed_count / total_files * 100),
-							f"Deleting {req['name']}..."
-						)
-						control.sleep(200)
-					except Exception as e:
-						from resources.lib.modules import log_utils
-						log_utils.error(f"Error deleting file {req['name']}: {str(e)}")
-		except Exception as e:
-			from resources.lib.modules import log_utils
-			log_utils.error(f"Error deleting all user torrents: {str(e)}")
-		finally:
+		for count, req in enumerate(files, 1):
 			try:
-				progressBG.close()
-			except:
-				pass
+				i = Thread(target=self.delete_torrent, args=(req['id'],))
+				append(i)
+				i.start()
+				progressBG.update(int(count / len_files * 100), 'Deleting %s...' % req['name'])
+				control.sleep(200)
+			except: pass
+		for count, req in enumerate(que_files, 1):
+			try:
+				i = Thread(target=self.delete_torrent, args=(req['id'],))
+				append(i)
+				i.start()
+				progressBG.update(int(count / len_que_files * 100), 'Deleting %s...' % req['name'])
+				control.sleep(200)
+			except: pass
+		for count, req in enumerate(usenet_files, 1):
+			try:
+				i = Thread(target=self.delete_usenet, args=(req['id'],))
+				append(i)
+				i.start()
+				progressBG.update(int(count / len_que_files * 100), 'Deleting %s...' % req['name'])
+				control.sleep(200)
+			except: pass
+		[i.join() for i in threads]
+		try: progressBG.close()
+		except: pass
 
 	def delete_active_torrents(self, data):
 		if not control.yesnoDialog(getLS(40543), '', ''): return

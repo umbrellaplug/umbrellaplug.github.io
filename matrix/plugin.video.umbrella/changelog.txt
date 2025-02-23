@@ -1,29 +1,8 @@
+[B]Update - v6.7.38 - Feb 23rd, 2025[/B]
+--[Change] This is the previous version of Umbrella bumped up to a higher version to revert the most recent update.
+
 [B]Update - v6.7.37 - Feb 22nd, 2025[/B]
---[Change] Added custom art for seasons.
---[Change] Added cache for custom art.
---[Change] Added Context Menu Items for Simkl and Customize Artwork
---[Change] Added language filter to artwork.
---[Change] Made artwork changes only refresh widgets if done from a widget.
---[Change] Added TV Shows custom art.
---[Change] Added reset all for movie artwork.
---[Change] Added 0 count in for unwatched content. 
---[Change] Added use Fanart for thumb.
---[Change] Trakt and Simkl can now be used simultaneously. You will need to select 1 of the 2 services for indicators, but both will mark watched or unwatched when authenticated.
---[Change] Marking a movie or show watched now removes it from the plan to watch or hold list on Simkl.
---[Change] TV Shows Simkl added Watching, Completed, Plan to Watch, Dropped, and Hold.
---[Change] Movies Simkl added Completed, Plan to Watch, Dropped
---[Change] Added confirmation windows when authorizing services to use for indicators if available.
---[Change] Moved Trakt sync interval setting to new setting in General settings. It is now Background Services Sync Interval.
---[Change] Added Simkl as option for indicators. Make a selection for local, trakt or simkl.
---[Change] Added watched/ unwatched from Simkl.
---[Change] Added Progress Episode from Simkl to My TV Shows section.
---[Change] Added Watching Shows from Simkl to My TV Shows section.
---[Change] Modifed similar from library function for speed.
---[Change] Removed function to cache list of movies in library.
---[Change] Added Settings Simkl to Tools menu.
---[Change] Added Simkl Management Tools to Tools menu.
---[Change] Made indicators option in Settings General dynamic based on the services you have authorized.
---[Fix] Changes to using ThreadPool.
+--[Info] All the changes in this version were removed and reverted back to the code at 
 
 [B]Update - v6.7.36 - Jan 23rd, 2025[/B]
 --[Fix] Increased number of results available from real-debrid for cloud scraping.

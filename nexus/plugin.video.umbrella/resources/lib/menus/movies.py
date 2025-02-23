@@ -9,13 +9,12 @@ import calendar
 from json import dumps as jsdumps, loads as jsloads
 import re
 import xbmc
-#from threading import Thread
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from threading import Thread
 from urllib.parse import quote_plus, urlencode, parse_qsl, urlparse, urlsplit
-from resources.lib.database import cache, metacache, fanarttv_cache, traktsync, simklsync
+from resources.lib.database import cache, metacache, fanarttv_cache, traktsync
 from resources.lib.indexers.tmdb import Movies as tmdb_indexer
 from resources.lib.indexers.fanarttv import FanartTv
-from resources.lib.modules import simkl
+from resources.lib.modules.simkl import SIMKL as simkl
 from resources.lib.modules import cleangenre
 from resources.lib.modules import client
 from resources.lib.modules import control
@@ -24,7 +23,6 @@ from resources.lib.modules import tools, log_utils
 from resources.lib.modules import trakt
 from resources.lib.modules import views
 from resources.lib.modules import mdblist
-from resources.lib.database import artwork as customArtwork
 from sqlite3 import dbapi2 as database
 from json import loads as jsloads
 from operator import itemgetter
@@ -131,9 +129,6 @@ class Movies:
 		self.traktlists_link = 'https://api.trakt.tv/users/me/lists'
 		self.traktlikedlists_link = 'https://api.trakt.tv/users/likes/lists?limit=1000000' # used by library import only
 		self.traktwatchlist_link = 'https://api.trakt.tv/users/me/watchlist/movies?limit=%s&page=1' % self.page_limit # this is now a dummy link for pagination to work
-		self.simklwatchlist_link = 'https://api.simkl.com/watchlist/movies?limit=%s&page=1' % self.page_limit # this is now a dummy link for pagination to work
-		self.simkldropped_link = 'https://api.simkl.com/dropped/movies?limit=%s&page=1' % self.page_limit # this is now a dummy link for pagination to work
-		self.simklhistory_link = 'https://api.simkl.com/history/movies?limit=%s&page=1' % self.page_limit # this is now a dummy link for pagination to work
 		self.traktcollection_link = 'https://api.trakt.tv/users/me/collection/movies?limit=%s&page=1' % self.page_limit # this is now a dummy link for pagination to work
 		self.trakthistory_link = 'https://api.trakt.tv/users/me/history/movies?limit=%s&page=1' % self.page_limit
 		self.traktlist_link = 'https://api.trakt.tv/users/%s/lists/%s/items/movies?limit=%s&page=1' % ('%s', '%s', self.page_limit) # local pagination, limit and page used to advance, pulled from request
@@ -168,8 +163,6 @@ class Movies:
 		self.simkltrendingtoday_link = 'https://api.simkl.com/movies/trending/today?client_id=%s&extended=tmdb' % '%s'
 		self.simkltrendingweek_link = 'https://api.simkl.com/movies/trending/week?client_id=%s&extended=tmdb' % '%s'
 		self.simkltrendingmonth_link = 'https://api.simkl.com/movies/trending/month?client_id=%s&extended=tmdb'% '%s'
-		self.simklplantowatch_link = 'https://api.simkl.com/sync/all-items/movies/plantowatch?'
-		self.simklcompleted_link = 'https://api.simkl.com/sync/all-items/movies/completed?'
 		self.imdblist_hours = int(getSetting('cache.imdblist'))
 		self.trakt_hours = int(getSetting('cache.traktother'))
 		self.traktpopular_hours = int(getSetting('cache.traktpopular'))
@@ -185,8 +178,6 @@ class Movies:
 		self.useContainerTitles = getSetting('enable.containerTitles') == 'true'
 		self.useReleaseYear = getSetting('movies.showyear') == 'true'
 		self.lang = control.apiLanguage()['trakt']
-		self.prefer_fanArt = getSetting('prefer.fanarttv') == 'true'
-		self.simklCredentials = simkl.getSimKLCredentialsInfo()
 
 	def get(self, url, idx=True, create_directory=True, folderName=''):
 		self.list = []
@@ -208,11 +199,7 @@ class Movies:
 			elif u in self.search_tmdb_link and url != 'tmdbrecentday' and url != 'tmdbrecentweek' and url != 'favourites_movies':
 				return self.getTMDb(url, folderName=folderName)
 			elif u in self.simkltrendingweek_link or u in self.simkltrendingmonth_link or u in self.simkltrendingtoday_link:
-				if 'history' in url: return self.simklCompleted(url, folderName=folderName)
-				if 'watchlist' in url: return self.simklPlantowatch(url, folderName=folderName)
-				if 'dropped' in url: return self.simklDropped(url, folderName=folderName)
-				else:
-					return self.getSimkl(url, folderName=folderName)
+				return self.getSimkl(url, folderName=folderName)
 			elif u in self.trakt_link and '/users/' in url:
 				try:
 					isTraktHistory = (url.split('&page=')[0] in self.trakthistory_link)
@@ -552,7 +539,7 @@ class Movies:
 			try: u = urlparse(url).netloc.lower()
 			except: pass
 			if u in self.simkltrendingweek_link or u in self.simkltrendingmonth_link or u in self.simkltrendingtoday_link:
-				self.list = cache.get(simkl.simkl_list, self.simkl_hours, url)
+				self.list = cache.get(simkl().simkl_list, self.simkl_hours, url)
 			if self.list is None: self.list = []
 			next = ''
 			for i in range(len(self.list)): self.list[i]['next'] = next
@@ -566,53 +553,6 @@ class Movies:
 				control.hide()
 				is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
 				if self.notifications and is_widget != True: control.notification(title=32001, message=33049)
-
-	def getSimklCompleted(self, url, create_directory=True, folderName=''):
-		
-		self.list = []
-		try:
-			try: url = getattr(self, url + '_link')
-			except: pass
-			try: u = urlparse(url).netloc.lower()
-			except: pass
-			if u in self.simklcompleted_link:
-				self.list = cache.get(simkl.simklCompleted, self.simkl_hours, url)
-			if self.list is None: self.list = []
-			next = ''
-			for i in range(len(self.list)): self.list[i]['next'] = next
-			self.worker()
-			if create_directory: self.movieDirectory(self.list, folderName=folderName)
-			return self.list
-		except:
-			from resources.lib.modules import log_utils
-			log_utils.error()
-			if not self.list:
-				control.hide()
-				is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
-				if self.notifications and is_widget != True: control.notification(title=32001, message=33049)
-
-	# def getSimklPlantowatch(self, url, create_directory=True, folderName=''):
-	# 	self.list = []
-	# 	try:
-	# 		try: url = getattr(self, url + '_link')
-	# 		except: pass
-	# 		try: u = urlparse(url).netloc.lower()
-	# 		except: pass
-	# 		if u in self.simklplantowatch_link:
-	# 			self.list = cache.get(simkl.simklPlantowatch, self.simkl_hours, url)
-	# 		if self.list is None: self.list = []
-	# 		next = ''
-	# 		for i in range(len(self.list)): self.list[i]['next'] = next
-	# 		self.worker()
-	# 		if create_directory: self.movieDirectory(self.list, folderName=folderName)
-	# 		return self.list
-	# 	except:
-	# 		from resources.lib.modules import log_utils
-	# 		log_utils.error()
-	# 		if not self.list:
-	# 			control.hide()
-	# 			is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
-	# 			if self.notifications and is_widget != True: control.notification(title=32001, message=33049)
 
 	def unfinished(self, url, idx=True, create_directory=True, folderName=''):
 		self.list = []
@@ -1158,108 +1098,6 @@ class Movies:
 			from resources.lib.modules import log_utils
 			log_utils.error()
 
-	def simklPlantowatch(self, url, create_directory=True, folderName=''):
-		self.list = []
-		try:
-			try:
-				q = dict(parse_qsl(urlsplit(url).query))
-				index = int(q['page']) - 1
-			except:
-				q = dict(parse_qsl(urlsplit(url).query))
-			self.list = simklsync.fetch_plantowatch('movies_plantowatch')
-			useNext = True
-			if create_directory:
-				self.sort(type='movies.plantowatch') # sort before local pagination
-				if getSetting('simkl.paginate.lists') == 'true' and self.list:
-					if len(self.list) == int(self.page_limit):
-						useNext = False
-					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
-					self.list = paginated_ids[index]
-			try:
-				if useNext == False: raise Exception()
-				if int(q['limit']) != len(self.list): raise Exception()
-				q.update({'page': str(int(q['page']) + 1)})
-				q = (urlencode(q)).replace('%2C', ',')
-				next = url.replace('?' + urlparse(url).query, '') + '?' + q
-				next = next + '&folderName=%s' % quote_plus(folderName)
-			except: next = ''
-			for i in range(len(self.list)): self.list[i]['next'] = next
-			self.worker()
-			if self.list is None: self.list = []
-			if create_directory: self.movieDirectory(self.list, folderName=folderName)
-			return self.list
-		except:
-			
-			log_utils.error()
-
-	def simklCompleted(self, url, create_directory=True, folderName=''):
-		self.list = []
-		try:
-			try:
-				q = dict(parse_qsl(urlsplit(url).query))
-				index = int(q['page']) - 1
-			except:
-				q = dict(parse_qsl(urlsplit(url).query))
-			self.list = simklsync.fetch_completed('movies_completed')
-			useNext = True
-			if create_directory:
-				self.sort(type='movies.history') # sort before local pagination
-				if getSetting('simkl.paginate.lists') == 'true' and self.list:
-					if len(self.list) == int(self.page_limit):
-						useNext = False
-					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
-					self.list = paginated_ids[index]
-			try:
-				if useNext == False: raise Exception()
-				if int(q['limit']) != len(self.list): raise Exception()
-				q.update({'page': str(int(q['page']) + 1)})
-				q = (urlencode(q)).replace('%2C', ',')
-				next = url.replace('?' + urlparse(url).query, '') + '?' + q
-				next = next + '&folderName=%s' % quote_plus(folderName)
-			except: next = ''
-			for i in range(len(self.list)): self.list[i]['next'] = next
-			self.worker()
-			if self.list is None: self.list = []
-			if create_directory: self.movieDirectory(self.list, folderName=folderName)
-			return self.list
-		except:
-			
-			log_utils.error()
-
-	def simklDropped(self, url, create_directory=True, folderName=''):
-		self.list = []
-		try:
-			try:
-				q = dict(parse_qsl(urlsplit(url).query))
-				index = int(q['page']) - 1
-			except:
-				q = dict(parse_qsl(urlsplit(url).query))
-			self.list = simklsync.fetch_dropped('movies_dropped')
-			useNext = True
-			if create_directory:
-				self.sort() # sort before local pagination
-				if getSetting('simkl.paginate.lists') == 'true' and self.list:
-					if len(self.list) == int(self.page_limit):
-						useNext = False
-					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
-					self.list = paginated_ids[index]
-			try:
-				if useNext == False: raise Exception()
-				if int(q['limit']) != len(self.list): raise Exception()
-				q.update({'page': str(int(q['page']) + 1)})
-				q = (urlencode(q)).replace('%2C', ',')
-				next = url.replace('?' + urlparse(url).query, '') + '?' + q
-				next = next + '&folderName=%s' % quote_plus(folderName)
-			except: next = ''
-			for i in range(len(self.list)): self.list[i]['next'] = next
-			self.worker()
-			if self.list is None: self.list = []
-			if create_directory: self.movieDirectory(self.list, folderName=folderName)
-			return self.list
-		except:
-			
-			log_utils.error()
-
 	def traktLlikedlists(self, create_directory=True, folderName=''):
 		items = traktsync.fetch_liked_list('', True)
 		for item in items:
@@ -1751,296 +1589,354 @@ class Movies:
 		self.movieDirectory(self.list, folderName=folderName)
 		return self.list
 
+
 	def similarFromLibrary(self, tmdb=None, create_directory=True, folderName=''):
+		#from resources.lib.modules import log_utils
+		#log_utils.log('Similiar List From Library', 1)
 		try:
-			# Fetch random item from history or library
-			random_items = self._get_random_items(tmdb, folderName)
-			if not random_items:
-				control.notification('No History', 'No watch history found to use.')
-				return []
-
-			# Select a random movie
-			item = random.choice(random_items)
-			original_movie = tmdb_indexer().get_movie_meta(item.get('tmdb'))
-
-			if not original_movie:
-				return []
+			historyurl = 'https://api.trakt.tv/users/me/history/movies?limit=50&page=1'
+			if tmdb == None:
+				if self.traktCredentials:
+					randomItems = self.trakt_list(historyurl, self.trakt_user, folderName)
+				else:
+					randomItems = None
 			else:
-				control.setHomeWindowProperty('umbrella.moviesimilarlibrary', str(getLS(40257)+' '+original_movie["title"]))
+				randomItems = {"tmdb": tmdb}
+			if not randomItems:
+				#no random item found from trakt history check library history
+				randomMovies = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": { "filter": {"field": "playcount", "operator": "is", "value": "0"}, "properties" : ["art", "rating", "thumbnail", "playcount", "file", "uniqueid"], "sort": { "order": "ascending", "method": "label", "ignorearticle": true } }, "id": "libMovies"}')
+				randomMovies = jsloads(randomMovies)['result']['movies']
+				randomItems = [({"tmdb": x.get('uniqueid').get('tmdb')}) for x in randomMovies]
+			if not randomItems:
+				originalMovie = None
+				control.notification('No History', 'No watch history found to use.')
+			else:
+				item = randomItems[random.randint(0, len(randomItems) - 1)]
+				originalMovie = tmdb_indexer().get_movie_meta(item.get('tmdb'))
+			self.list = []
+			all_titles = list()
+			if originalMovie:
+				#log_utils.log('[plugin.video.umbrella] Original Movie properties %s.'% str(originalMovie),1)
+				# get all movies for the genres in the movie
+				neOriginal = originalMovie['genre'].split('/')
+				genres = [x.strip() for x in neOriginal]
+				similar_title = originalMovie["title"]
+				
+				########################################## more than 1 genre
+				if len(genres) > 1:
+					#contruct a batch for jsonrpc instead of a bunch of calls.
+					orFilterGenre = ''
+					localCache = ''
+					for genre in genres:
+						if genre == genres[0]:
+							orFilterGenre += '{"operator": "is", "field": "genre", "value": "%s"},' % genre
+							localCache += 'genre like "%' + genre + '%"' #localCache += 'genre like "%' + genre + '%"'
+						elif genre == genres[-1]:
+							orFilterGenre += '{"operator": "is", "field": "genre", "value": "%s"}' % genre
+							#localCache += 'OR genre like %%s%' % genre
+							localCache += 'OR genre like "%' + genre + '%"'
+						else:
+							orFilterGenre += '{"operator": "is", "field": "genre", "value": "%s"},' % genre
+							#localCache += 'OR genre like %%s% ' % genre
+							localCache += 'OR genre like "%' + genre + '%"'
+					if control.setting('library.cachesimilar') == 'false':
+						genreResults = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter": {"or": [%s]}, "properties" : ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file", "director", "writer", "year", "mpaa", "set", "studio", "cast"] }, "id": "1"}'% orFilterGenre)
+					#without watched
+					#genreResults = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": { "filter": {"and": [{"or": [%s]},{"operator": "lessthan", "field": "playcount", "value": "1"}]},  "properties": ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file", "director", "writer", "year", "mpaa"]}, "id": "libGenresUnwatched"}'% orFilterGenre)
+						sameGenreMovies = jsloads(genreResults)['result']['movies']
+					else:
+						try:
+							if not control.existsPath(control.dataPath): control.makeFile(control.dataPath)
+							dbcon = database.connect(control.libCacheSimilar)
+							dbcur = dbcon.cursor()
+							dbcur.execute('''CREATE TABLE IF NOT EXISTS movies (title TEXT, genre TEXT, uniqueid TEXT UNIQUE, rating TEXT, thumbnail TEXT, playcount TEXT, file TEXT, director TEXT, writer TEXT, year TEXT, mpaa TEXT, "set" TEXT, studio TEXT, cast TEXT);''')
+							dbcur.connection.commit()
+						except: 
+							from resources.lib.modules import log_utils
+							log_utils.error()
+						try:
+							sameGenreMoviesSelect = dbcur.execute('''SELECT * FROM movies WHERE %s;'''% localCache).fetchall()
+							if not sameGenreMoviesSelect: 
+								return
+							sameGenreMoviesStr = ''
+							sameGenreMovies = []
+							for dick in sameGenreMoviesSelect:
+								sameGenreMoviesStr = ''
+								sameGenreMoviesStr += '{"title":"'+ dick[0] +'",'
+								batman = dick[1].split(",")
+								batman = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, batman)))
+								sameGenreMoviesStr += '"genre":['+ batman +'],'
+								robin = dick[2].replace("'",'"').replace("{","").replace("}","")
+								sameGenreMoviesStr += '"uniqueid":{'+ robin +'},'
+								sameGenreMoviesStr += '"rating":'+ dick[3] +','
+								alfred = dick[7].split(",")
+								alfred = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, alfred)))
+								sameGenreMoviesStr += '"director":['+ alfred +'],'
+								penguin = dick[8].split(",")
+								penguin = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, penguin)))
+								sameGenreMoviesStr += '"writer":['+ penguin +'],'
+								sameGenreMoviesStr += '"year":"'+ dick[9] +'",'
+								sameGenreMoviesStr += '"mpaa":"'+ dick[10] +'",'
+								sameGenreMoviesStr += '"set":"'+ dick[11] +'",'
+								joker = dick[12].split(",")
+								mrfreeze = []
+								for x in joker: x = mrfreeze.append(x.replace('"',""))
+								mrfreeze = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, mrfreeze)))
+								sameGenreMoviesStr += '"studio":['+ mrfreeze +'],'
+								castor = dick[13].split(",")
+								for count, dicks in enumerate(castor):
+									castor[count] = {"name": str(dicks).replace("'",'').replace('"','')}
+								castor = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, castor)))
+								castor = castor.replace("'",'"')
+								sameGenreMoviesStr += '"cast":['+ castor +']}'
+								try:
+									#trying to append value
+									sameGenreMovies.append(jsloads(sameGenreMoviesStr))
+								except:
+									from resources.lib.modules import log_utils
+									if control.setting('debug.level') == '1':
+										log_utils.log('sameGenreMoviesStr: %s' % sameGenreMoviesStr, level=log_utils.LOGDEBUG)
+									log_utils.error()
+						except: 
+							from resources.lib.modules import log_utils
+							log_utils.error()
+						finally:
+							dbcur.close() ; dbcon.close()
+				########################################## 1 genre
+				else:
+					if control.setting('library.cachesimilar') == 'false':
+						genreResults = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter": %s, "properties" : ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file", "director", "writer", "year", "mpaa", "set", "studio", "cast"] }, "id": "1"}'% genre)
+					#without watched
+					#genreResults = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": { "filter": {"and": [{"or": [%s]},{"operator": "lessthan", "field": "playcount", "value": "1"}]},  "properties": ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file", "director", "writer", "year", "mpaa"]}, "id": "libGenresUnwatched"}'% orFilterGenre)
+						sameGenreMovies = jsloads(genreResults)['result']['movies']
+					else:
+						try:
+							if not control.existsPath(control.dataPath): control.makeFile(control.dataPath)
+							dbcon = database.connect(control.libCacheSimilar)
+							dbcur = dbcon.cursor()
+							dbcur.execute('''CREATE TABLE IF NOT EXISTS movies (title TEXT, genre TEXT, uniqueid TEXT UNIQUE, rating TEXT, thumbnail TEXT, playcount TEXT, file TEXT, director TEXT, writer TEXT, year TEXT, mpaa TEXT, "set" TEXT, studio TEXT, cast TEXT);''')
+							dbcur.connection.commit()
+						except: 
+							from resources.lib.modules import log_utils
+							log_utils.error()
+						try:
+							localGenre = 'genre like "%' + genres[0] + '%"'
+							sameGenreMoviesSelect = dbcur.execute('''SELECT * FROM movies WHERE %s;'''% localGenre).fetchall()
+							if not sameGenreMoviesSelect: 
+								return
+							sameGenreMoviesStr = ''
+							sameGenreMovies = []
+							for dick in sameGenreMoviesSelect:
+								sameGenreMoviesStr = ''
+								sameGenreMoviesStr += '{"title":"'+ dick[0] +'",'
+								batman = dick[1].split(",")
+								batman = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, batman)))
+								sameGenreMoviesStr += '"genre":['+ batman +'],'
+								robin = dick[2].replace("'",'"').replace("{","").replace("}","")
+								sameGenreMoviesStr += '"uniqueid":{'+ robin +'},'
+								sameGenreMoviesStr += '"rating":'+ dick[3] +','
+								alfred = dick[7].split(",")
+								alfred = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, alfred)))
+								sameGenreMoviesStr += '"director":['+ alfred +'],'
+								penguin = dick[8].split(",")
+								penguin = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, penguin)))
+								sameGenreMoviesStr += '"writer":['+ penguin +'],'
+								sameGenreMoviesStr += '"year":"'+ dick[9] +'",'
+								sameGenreMoviesStr += '"mpaa":"'+ dick[10] +'",'
+								sameGenreMoviesStr += '"set":"'+ dick[11] +'",'
+								joker = dick[12].split(",")
+								mrfreeze = []
+								for x in joker: x = mrfreeze.append(x.replace('"',""))
+								mrfreeze = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, mrfreeze)))
+								sameGenreMoviesStr += '"studio":['+ mrfreeze +'],'
+								castor = dick[13].split(",")
+								for count, dicks in enumerate(castor):
+									castor[count] = {"name": str(dicks).replace("'",'').replace('"','')}
+								castor = ', '.join(map(str, map(lambda x: f'"{x}"' if isinstance(x, str) else x, castor)))
+								castor = castor.replace("'",'"')
+								sameGenreMoviesStr += '"cast":['+ castor +']}'
+								try:
+									#trying to append value
+									sameGenreMovies.append(jsloads(sameGenreMoviesStr))
+								except:
+									from resources.lib.modules import log_utils
+									if control.setting('debug.level') == '1':
+										log_utils.log('sameGenreMoviesStr: %s' % sameGenreMoviesStr, level=log_utils.LOGDEBUG)
+									log_utils.error()
+						except: 
+							from resources.lib.modules import log_utils
+							log_utils.error()
+						finally:
+							dbcur.close() ; dbcon.close()
+				set_genres = set(genres)
+				set_directors = set([originalMovie["director"]])
+				set_writers = set([originalMovie["writer"]])
+				castList = [x["name"] for x in originalMovie["castandart"]]
+				set_cast = set(castList)
+				for item in sameGenreMovies:
+					# prevent duplicates so skip reference movie and titles already in the list
+					if not item["title"] in all_titles and not item["title"] == similar_title:
+						item['tmdb'] = item.get('uniqueid').get('tmdb')
+						item['imdb'] = item.get('uniqueid').get('imdb')
+						itemcastList = [x["name"] for x in item["cast"]]
+						genre_score = 0 if not set_genres else (float(len(set_genres.intersection(item["genre"])) / len(set_genres.union(item["genre"])))) * 1
+						director_score = 0 if not set_directors else float(len(set_directors.intersection(item["director"]))) / len(set_directors.union(item["director"]))
+						writer_score = 0 if not set_writers else float(len(set_writers.intersection(item["writer"]))) / len(set_writers.union(item["writer"]))
+						if originalMovie["rating"] and item["rating"] and abs(float(originalMovie["rating"])-item["rating"]) < 3:
+							rating_score = 1 - abs(float(originalMovie["rating"])-item["rating"])//3
+						else:
+							rating_score = 0
+						#studio
+						try:
+							studio_score = 1 if originalMovie["studio"] and originalMovie["studio"] == str(item.get("studio")[0]) else 0
+							#log_utils.log('item similar scores item:%s studio score: %s original studio: %s compare studio: %s'% (item["title"], studio_score,originalMovie["studio"], item.get("studio")[0]))
+						except:
+							studio_score = 0
+							#log_utils.log('EXCEPTION: item similar scores item:%s studio score: %s original studio: %s compare studio: %s'% (item["title"], studio_score,originalMovie["studio"], item.get("studio")))
+						
+						#cast score
+						try:
+							cast_score = 0 if not set_cast else (float(len(set_cast.intersection(set(itemcastList)))) / len(set_cast.union(set(itemcastList)))) *1
+						except:
+							cast_score = 0
+						#log_utils.log('item similar scores item:%s cast score: %s'% (item["title"], cast_score))
+						try:
+							set_score = 1 if originalMovie["belongs_to_collection"] and originalMovie["belongs_to_collection"]["name"] == item["set"] else 0
+						except:
+							set_score = 0
+						# year_score is "closeness" in release year, scaled to 1 (0 if not from same decade)
+						if int(originalMovie["year"]) and int(item["year"]) and abs(float(originalMovie["rating"])-int(item["year"])) < 10:
+							year_score = 1 - abs(originalMovie["year"]-int(item["year"]))//10
+						else:
+							year_score = 0
+						# mpaa_score gets 1 if same mpaa rating, otherwise 0
+						mpaa_score = 1 if originalMovie["mpaa"] and ('Rated '+str(originalMovie["mpaa"])) == item["mpaa"] else 0
+						# calculate overall score using weighted average
+						similarscore = .75*set_score+.5*genre_score + .15*director_score + .1*writer_score +.1*cast_score+.025*studio_score+ .05*rating_score + .075*year_score + .025*mpaa_score
+						item["similarscore"] = similarscore
+						item["cast"] = None
+						self.list.append(item) 
+						all_titles.append(item["title"])
+			# return the list sorted by number of matching genres then rating
+			similar_score_dict = {}
+			self.list = sorted(self.list, key=itemgetter("similarscore"), reverse=True)
+			for item in self.list:
+				similar_score = item['similarscore']
+				if not similar_score in similar_score_dict:
+					matches = [i for i in self.list if i['similarscore'] == similar_score]
+					similar_score_dict[similar_score] = matches
+			similar_list = []
+			if len(similar_score_dict)>1:
+				#for x in similar_score_dict:
+				for count, x in enumerate(similar_score_dict):
+					if len(similar_list) > 200 and count > 0: break
+					for z in similar_score_dict[x]:
+						similar_list.append(z)
+				self.list = similar_list
+			else:
+				if control.setting('debug.level') == '1':
+					from resources.lib.modules import log_utils
+					log_utils.log('Only one similar score found.',level=log_utils.LOGDEBUG)
 
-			genres = set(original_movie['genre'].split('/'))
-			genres = [genre.strip() for genre in genres]
-			similar_movies = self._fetch_movies_by_genres(genres)
-
-			# Score and filter movies
-			self.list = self._calculate_similarity_scores(original_movie, similar_movies)
-			self.list = sorted(self.list, key=lambda x: x['similarscore'], reverse=True)[:50]
+			random.shuffle(self.list)
+			self.list = self.list[:50]
+			self.list = sorted(self.list, key=itemgetter("similarscore"), reverse=True)
+			next = ''
+			for i in range(len(self.list)): 
+				self.list[i]['next'] = next
+				#log_utils.log('item similar scores item:%s score: %s'% (self.list[i]["title"], self.list[i]["similarscore"]))
+			#self.list = [x for x in self.list if x.get('playcount') == 0]
 			self.worker()
+			if originalMovie:
+				try: 
+					folderName = getLS(40257)+' '+originalMovie["title"]
+					control.setHomeWindowProperty('umbrella.moviesimilarlibrary', str(getLS(40257)+' '+originalMovie["title"]))
+				except: pass
+			if self.list is None: self.list = []
+			is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
 			if create_directory: self.movieDirectory(self.list, folderName=folderName)
 			return self.list
-
-		except Exception as e:
+		except:
 			from resources.lib.modules import log_utils
-			log_utils.error(str(e))
-			return []
+			log_utils.error()
+			return
 
-	def _get_random_items(self, tmdb, folderName):
-		"""
-		Retrieve random items from Trakt or the library.
-		"""
-		if tmdb:
-			return [{"tmdb": tmdb}]
-		
-		if self.traktCredentials:
-			return self.trakt_list('https://api.trakt.tv/users/me/history/movies?limit=50&page=1', self.trakt_user, folderName)
-
-		library_movies = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter": {"field": "playcount", "operator": "is", "value": "0"}, "properties": ["uniqueid"]}, "id": "libMovies"}')
-		return [{"tmdb": movie.get('uniqueid').get('tmdb')} for movie in jsloads(library_movies).get('result', {}).get('movies', [])]
-
-	def _fetch_movies_by_genres(self, genres):
-		"""
-		Fetch movies from the library matching the given genres.
-		"""
-		if not genres:
-			return []
-
-		genre_filter = [{"operator": "is", "field": "genre", "value": genre} for genre in genres]
-		genre_query = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter": {"or": %s}, "properties": ["title", "genre", "uniqueid", "rating", "studio", "cast", "year", "mpaa"]}, "id": "1"}' % jsdumps(genre_filter)
-		
-		results = control.jsonrpc(genre_query)
-		return jsloads(results).get('result', {}).get('movies', [])
-
-	def _calculate_similarity_scores(self, original_movie, movies):
-		"""
-		Calculate similarity scores for a list of movies.
-		"""
-		def calculate_score(movie):
-			# Intersection and union calculations for genres
-			genre_score = len(set(movie['genre']).intersection(original_movie['genre'])) / len(set(movie['genre']).union(original_movie['genre']))
-
-			# Match on director, writer, studio, etc.
-			director_score = 1 if original_movie['director'] in movie.get('director', []) else 0
-			writer_score = 1 if original_movie['writer'] in movie.get('writer', []) else 0
-			studio_score = 1 if original_movie.get('studio') == movie.get('studio') else 0
-
-			# Year proximity
-			year_diff = abs(int(original_movie.get('year', 0)) - int(movie.get('year', 0)))
-			year_score = 1 - min(year_diff / 10, 1)
-
-			# Weighted similarity score
-			return 0.5 * genre_score + 0.2 * director_score + 0.1 * writer_score + 0.1 * studio_score + 0.1 * year_score
-
-		for movie in movies:
-			movie['similarscore'] = calculate_score(movie)
-		return [movie for movie in movies if movie['similarscore'] > 0]
-
-# 	def worker(self):
-		
-# 		try:
-# 			if not self.list: return
-# 			self.meta = []
-# 			total = len(self.list)
-# 			for i in range(0, total): self.list[i].update({'metacache': False})
-# 			self.list = metacache.fetch(self.list, self.lang, self.user)
-# 			for r in range(0, total, 40):
-# 				threads = []
-# 				append = threads.append
-# 				for i in range(r, r + 40):
-# 					if i < total: append(Thread(target=self.super_info, args=(i,)))
-# 				[i.start() for i in threads]
-# 				[i.join() for i in threads]
-# 			if self.meta: metacache.insert(self.meta)
-# 			self.list = [i for i in self.list if i.get('tmdb')]
-# 		except:
-# 			from resources.lib.modules import log_utils
-# 			log_utils.error()
-
-# 	def super_info(self, i):
-# 		try:
-# 			if self.list[i]['metacache']: return
-# 			imdb, tmdb = self.list[i].get('imdb', ''), self.list[i].get('tmdb', '')
-# #### -- Missing id's lookup -- ####
-# 			if not tmdb and imdb:
-# 				try:
-# 					# result = cache.get(tmdb_indexer.Movies().IdLookup, 96, imdb)
-# 					result = cache.get(tmdb_indexer().IdLookup, 96, imdb)
-# 					tmdb = str(result.get('id', '')) if result.get('id') else ''
-# 				except: tmdb = ''
-# 			if not tmdb and imdb:
-# 				trakt_ids = trakt.IdLookup('imdb', imdb, 'movie') # "trakt.IDLookup()" caches item
-# 				if trakt_ids: tmdb = str(trakt_ids.get('tmdb', '')) if trakt_ids.get('tmdb') else ''
-# 			if not tmdb and not imdb:
-# 				try:
-# 					results = trakt.SearchMovie(title=quote_plus(self.list[i]['title']), year=self.list[i]['year'], fields='title', full=False) # "trakt.SearchMovie()" caches item
-# 					if results[0]['movie']['title'] != self.list[i]['title'] or results[0]['movie']['year'] != self.list[i]['year']: return
-# 					ids = results[0].get('movie', {}).get('ids', {})
-# 					if not tmdb: tmdb = str(ids.get('tmdb', '')) if ids.get('tmdb') else ''
-# 					if not imdb: imdb = str(ids.get('imdb', '')) if ids.get('imdb') else ''
-# 				except: pass
-# #################################
-# 			if not tmdb: return
-# 			# movie_meta = tmdb_indexer.Movies().get_movie_meta(tmdb)
-# 			movie_meta = tmdb_indexer().get_movie_meta(tmdb)
-# 			if not movie_meta or '404:NOT FOUND' in movie_meta: return # trakt search turns up alot of junk with wrong tmdb_id's causing 404's
-# 			values = {}
-# 			values.update(movie_meta)
-# 			if 'rating' in self.list[i] and self.list[i]['rating']: values['rating'] = self.list[i]['rating'] # prefer imdb,trakt rating and votes if set
-# 			if 'votes' in self.list[i] and self.list[i]['votes']: values['votes'] = self.list[i]['votes']
-# 			if 'year' in self.list[i] and self.list[i]['year'] != values.get('year'): values['year'] = self.list[i]['year']
-# 			if not imdb: imdb = values.get('imdb', '')
-# 			if not values.get('imdb'): values['imdb'] = imdb
-# 			if not values.get('tmdb'): values['tmdb'] = tmdb
-# 			if self.lang != 'en':
-# 				try:
-# 					if 'available_translations' in self.list[i] and self.lang not in self.list[i]['available_translations']: raise Exception()
-# 					trans_item = trakt.getMovieTranslation(imdb, self.lang, full=True)
-# 					if trans_item:
-# 						if trans_item.get('title'): values['title'] = trans_item.get('title')
-# 						if trans_item.get('overview'): values['plot'] =trans_item.get('overview')
-# 				except:
-# 					from resources.lib.modules import log_utils
-# 					log_utils.error()
-# 			if self.enable_fanarttv:
-# 				extended_art = fanarttv_cache.get(FanartTv().get_movie_art, 336, imdb, tmdb)
-# 				if extended_art: values.update(extended_art)
-# 			values = dict((k, v) for k, v in iter(values.items()) if v is not None and v != '') # remove empty keys so .update() doesn't over-write good meta with empty values.
-# 			self.list[i].update(values)
-# 			meta = {'imdb': imdb, 'tmdb': tmdb, 'tvdb': '', 'lang': self.lang, 'user': self.user, 'item': values}
-# 			self.meta.append(meta)
-# 		except:
-# 			from resources.lib.modules import log_utils
-# 			log_utils.error()
 	def worker(self):
+		
 		try:
-			if not self.list:
-				return
-
+			if not self.list: return
 			self.meta = []
 			total = len(self.list)
-
-			# Initialize metacache in a single loop
-			for item in self.list:
-				item.update({'metacache': False})
-
-			# Fetch metacache data
+			for i in range(0, total): self.list[i].update({'metacache': False})
 			self.list = metacache.fetch(self.list, self.lang, self.user)
-
-			# Use ThreadPoolExecutor to process super_info concurrently
-			with ThreadPoolExecutor(max_workers=40) as executor:
-				futures = [executor.submit(self.super_info, i) for i in range(total)]
-				for future in as_completed(futures):
-					try:
-						future.result()  # Ensure exceptions are raised if any
-					except Exception as e:
-						from resources.lib.modules import log_utils
-						log_utils.error(f"Error processing item: {e}")
-
-			# Insert meta data into the cache if available
-			if self.meta:
-				metacache.insert(self.meta)
-
-			# Filter the list for valid tmdb entries
-			self.list = [item for item in self.list if item.get('tmdb')]
-
-		except Exception as e:
+			for r in range(0, total, 40):
+				threads = []
+				append = threads.append
+				for i in range(r, r + 40):
+					if i < total: append(Thread(target=self.super_info, args=(i,)))
+				[i.start() for i in threads]
+				[i.join() for i in threads]
+			if self.meta: metacache.insert(self.meta)
+			self.list = [i for i in self.list if i.get('tmdb')]
+		except:
 			from resources.lib.modules import log_utils
-			log_utils.error(f"Error in worker: {e}")
+			log_utils.error()
 
 	def super_info(self, i):
 		try:
-			if self.list[i]['metacache']:
-				return
-
+			if self.list[i]['metacache']: return
 			imdb, tmdb = self.list[i].get('imdb', ''), self.list[i].get('tmdb', '')
-
-			# Missing ID lookup
+#### -- Missing id's lookup -- ####
 			if not tmdb and imdb:
 				try:
+					# result = cache.get(tmdb_indexer.Movies().IdLookup, 96, imdb)
 					result = cache.get(tmdb_indexer().IdLookup, 96, imdb)
 					tmdb = str(result.get('id', '')) if result.get('id') else ''
-				except:
-					tmdb = ''
+				except: tmdb = ''
 			if not tmdb and imdb:
-				trakt_ids = trakt.IdLookup('imdb', imdb, 'movie')
-				if trakt_ids:
-					tmdb = str(trakt_ids.get('tmdb', '')) if trakt_ids.get('tmdb') else ''
+				trakt_ids = trakt.IdLookup('imdb', imdb, 'movie') # "trakt.IDLookup()" caches item
+				if trakt_ids: tmdb = str(trakt_ids.get('tmdb', '')) if trakt_ids.get('tmdb') else ''
 			if not tmdb and not imdb:
 				try:
-					results = trakt.SearchMovie(
-						title=quote_plus(self.list[i]['title']),
-						year=self.list[i]['year'],
-						fields='title',
-						full=False
-					)
-					if (
-						results[0]['movie']['title'] != self.list[i]['title'] or
-						results[0]['movie']['year'] != self.list[i]['year']
-					):
-						return
+					results = trakt.SearchMovie(title=quote_plus(self.list[i]['title']), year=self.list[i]['year'], fields='title', full=False) # "trakt.SearchMovie()" caches item
+					if results[0]['movie']['title'] != self.list[i]['title'] or results[0]['movie']['year'] != self.list[i]['year']: return
 					ids = results[0].get('movie', {}).get('ids', {})
-					if not tmdb:
-						tmdb = str(ids.get('tmdb', '')) if ids.get('tmdb') else ''
-					if not imdb:
-						imdb = str(ids.get('imdb', '')) if ids.get('imdb') else ''
-				except:
-					pass
-
-			if not tmdb:
-				return
-
-			# Fetch movie metadata
+					if not tmdb: tmdb = str(ids.get('tmdb', '')) if ids.get('tmdb') else ''
+					if not imdb: imdb = str(ids.get('imdb', '')) if ids.get('imdb') else ''
+				except: pass
+#################################
+			if not tmdb: return
+			# movie_meta = tmdb_indexer.Movies().get_movie_meta(tmdb)
 			movie_meta = tmdb_indexer().get_movie_meta(tmdb)
-			if not movie_meta or '404:NOT FOUND' in movie_meta:
-				return  # Skip invalid metadata
-
-			# Prepare metadata values
-			values = movie_meta.copy()
-			if 'rating' in self.list[i] and self.list[i]['rating']:
-				values['rating'] = self.list[i]['rating']
-			if 'votes' in self.list[i] and self.list[i]['votes']:
-				values['votes'] = self.list[i]['votes']
-			if 'year' in self.list[i] and self.list[i]['year'] != values.get('year'):
-				values['year'] = self.list[i]['year']
-			if not imdb:
-				imdb = values.get('imdb', '')
-			values.setdefault('imdb', imdb)
-			values.setdefault('tmdb', tmdb)
-
-			# Handle translations
+			if not movie_meta or '404:NOT FOUND' in movie_meta: return # trakt search turns up alot of junk with wrong tmdb_id's causing 404's
+			values = {}
+			values.update(movie_meta)
+			if 'rating' in self.list[i] and self.list[i]['rating']: values['rating'] = self.list[i]['rating'] # prefer imdb,trakt rating and votes if set
+			if 'votes' in self.list[i] and self.list[i]['votes']: values['votes'] = self.list[i]['votes']
+			if 'year' in self.list[i] and self.list[i]['year'] != values.get('year'): values['year'] = self.list[i]['year']
+			if not imdb: imdb = values.get('imdb', '')
+			if not values.get('imdb'): values['imdb'] = imdb
+			if not values.get('tmdb'): values['tmdb'] = tmdb
 			if self.lang != 'en':
 				try:
-					if (
-						'available_translations' in self.list[i] and
-						self.lang not in self.list[i]['available_translations']
-					):
-						raise Exception()
+					if 'available_translations' in self.list[i] and self.lang not in self.list[i]['available_translations']: raise Exception()
 					trans_item = trakt.getMovieTranslation(imdb, self.lang, full=True)
 					if trans_item:
-						if trans_item.get('title'):
-							values['title'] = trans_item.get('title')
-						if trans_item.get('overview'):
-							values['plot'] = trans_item.get('overview')
+						if trans_item.get('title'): values['title'] = trans_item.get('title')
+						if trans_item.get('overview'): values['plot'] =trans_item.get('overview')
 				except:
 					from resources.lib.modules import log_utils
 					log_utils.error()
-
-			# Handle FanartTV metadata
 			if self.enable_fanarttv:
 				extended_art = fanarttv_cache.get(FanartTv().get_movie_art, 336, imdb, tmdb)
-				if extended_art:
-					values.update(extended_art)
-
-			# Remove empty keys
-			values = {k: v for k, v in values.items() if v is not None and v != ''}
-
-			# Update item and meta
+				if extended_art: values.update(extended_art)
+			values = dict((k, v) for k, v in iter(values.items()) if v is not None and v != '') # remove empty keys so .update() doesn't over-write good meta with empty values.
 			self.list[i].update(values)
 			meta = {'imdb': imdb, 'tmdb': tmdb, 'tvdb': '', 'lang': self.lang, 'user': self.user, 'item': values}
 			self.meta.append(meta)
-
-		except Exception as e:
+		except:
 			from resources.lib.modules import log_utils
-			log_utils.error(f"Error in super_info for index {i}: {e}")
+			log_utils.error()
 
 	def movieDirectory(self, items, unfinished=False, next=True, folderName=''):
 		from sys import argv # some functions like ActivateWindow() throw invalid handle less this is imported here.
@@ -2060,19 +1956,12 @@ class Movies:
 		indicators = getMovieIndicators() # refresh not needed now due to service sync
 		if play_mode == '1': playbackMenu = getLS(32063)
 		else: playbackMenu = getLS(32064)
-		if trakt.getTraktCredentialsInfo() and simkl.getSimKLCredentialsInfo():
-			watchedMenu, unwatchedMenu = getLS(40564), getLS(40565)
-		elif trakt.getTraktCredentialsInfo():
-			watchedMenu, unwatchedMenu = getLS(32068), getLS(32069)
-		elif simkl.getSimKLCredentialsInfo():
-			watchedMenu, unwatchedMenu = getLS(40554), getLS(40555)
-		else:
-			watchedMenu, unwatchedMenu = getLS(32066), getLS(32067)
+		if trakt.getTraktIndicatorsInfo(): watchedMenu, unwatchedMenu = getLS(32068), getLS(32069)
+		else: watchedMenu, unwatchedMenu = getLS(32066), getLS(32067)
 		playlistManagerMenu, queueMenu, trailerMenu = getLS(35522), getLS(32065), getLS(40431)
 		traktManagerMenu, addToLibrary, addToFavourites, removeFromFavourites = getLS(32070), getLS(32551), getLS(40463), getLS(40468)
 		nextMenu, clearSourcesMenu = getLS(32053), getLS(32611)
 		rescrapeMenu, findSimilarMenu = getLS(32185), getLS(32184)
-		simklManagerMenu = getLS(40577) % self.highlight_color
 		from resources.lib.modules import favourites
 		favoriteItems = favourites.getFavourites(content='movies')
 		favoriteItems = [x[1].get('imdb') for x in favoriteItems]
@@ -2125,37 +2014,12 @@ class Movies:
 					if self.prefer_tmdbArt: fanart = meta.get('fanart3') or meta.get('fanart') or meta.get('fanart2') or addonFanart
 					else: fanart = meta.get('fanart2') or meta.get('fanart3') or meta.get('fanart') or addonFanart
 				landscape = meta.get('landscape') or fanart
-				#thumb = meta.get('thumb') or poster or landscape
-				if self.prefer_fanArt:
-					if fanart: thumb = fanart or meta.get('thumb') or poster or landscape
-					else:
-						meta.get('fanart') or poster or landscape
-				else:
-					thumb = meta.get('thumb') or poster or landscape
+				thumb = meta.get('thumb') or poster or landscape
 				icon = meta.get('icon') or poster
 				banner = meta.get('banner3') or meta.get('banner2') or meta.get('banner') or addonBanner
 				art = {}
-				useCustomArtwork = customArtwork.fetch_movie(imdb, tmdb) #new custom artwork database check
-				clearart = meta.get('clearart', '')
-				discart = meta.get('discart', '')
-				keyart = meta.get('keyart', '')
-				if useCustomArtwork:
-					allowed_keys = {"poster", "fanart", "landscape", "banner", "clearart", "clearlogo", "discart", "keyart"}
-					for key in allowed_keys:
-						value = useCustomArtwork[0].get(key)
-						if value not in (None, "", " "):  # Ignore empty values. ugly but local() will not change values
-							if key == 'poster': poster = value
-							if key == 'fanart': fanart = value
-							if key == 'landscape': landscape = value
-							if key == 'banner': banner = value
-							if key == 'clearart': clearart = value
-							if key == 'clearlogo': clearlogo = value
-							if key == 'discart': discart = value
-							if key == 'keyart': keyart = value
-					if "poster" in useCustomArtwork[0] and useCustomArtwork[0].get("poster") not in (None, "", " "):
-						thumb = useCustomArtwork[0].get("poster")
-				art.update({'icon': icon, 'thumb': thumb, 'banner': banner, 'poster': poster, 'fanart': fanart, 'landscape': landscape, 'clearlogo': clearlogo,
-								'clearart': clearart, 'discart': discart, 'keyart': keyart})
+				art.update({'icon': icon, 'thumb': thumb, 'banner': banner, 'poster': poster, 'fanart': fanart, 'landscape': landscape, 'clearlogo': meta.get('clearlogo', ''),
+								'clearart': meta.get('clearart', ''), 'discart': meta.get('discart', ''), 'keyart': meta.get('keyart', '')})
 				for k in ('metacache', 'poster2', 'poster3', 'fanart2', 'fanart3', 'banner2', 'banner3', 'trailer'): meta.pop(k, None)
 				meta.update({'poster': poster, 'fanart': fanart, 'banner': banner})
 				sysmeta, sysart = quote_plus(jsdumps(meta)), quote_plus(jsdumps(art))
@@ -2170,8 +2034,6 @@ class Movies:
 					watched = getMovieOverlay(indicators, imdb) == '5'
 					if self.traktCredentials:
 						cm.append((traktManagerMenu, 'RunPlugin(%s?action=tools_traktManager&name=%s&imdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, watched, unfinished)))
-					if self.simklCredentials:
-						cm.append((simklManagerMenu, 'RunPlugin(%s?action=tools_simklManager&name=%s&imdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, watched, unfinished)))
 					if watched:
 						cm.append((unwatchedMenu, 'RunPlugin(%s?action=playcount_Movie&name=%s&imdb=%s&query=4)' % (sysaddon, sysname, imdb)))
 						meta.update({'playcount': 1, 'overlay': 5})
@@ -2180,7 +2042,6 @@ class Movies:
 						cm.append((watchedMenu, 'RunPlugin(%s?action=playcount_Movie&name=%s&imdb=%s&query=5)' % (sysaddon, sysname, imdb)))
 						meta.update({'playcount': 0, 'overlay': 4})
 				except: pass
-				cm.append(('Customize Artwork', 'RunPlugin(%s?action=customizeArt&mediatype=%s&imdb=%s&tmdb=%s&poster=%s&fanart=%s&landscape=%s&banner=%s&clearart=%s&clearlogo=%s&discart=%s&keyart=%s)' % (sysaddon, 'movie', imdb, tmdb, poster, fanart, landscape, banner, clearart, clearlogo, discart, keyart)))
 				cm.append((playlistManagerMenu, 'RunPlugin(%s?action=playlist_Manager&name=%s&url=%s&meta=%s&art=%s)' % (sysaddon, sysname, sysurl, sysmeta, sysart)))
 				cm.append((queueMenu, 'RunPlugin(%s?action=playlist_QueueItem&name=%s)' % (sysaddon, sysname)))
 				cm.append((addToLibrary, 'RunPlugin(%s?action=library_movieToLibrary&name=%s&title=%s&year=%s&imdb=%s&tmdb=%s)' % (sysaddon, sysname, systitle, year, imdb, tmdb)))
@@ -2238,7 +2099,6 @@ class Movies:
 					try: item.setProperty('WatchedProgress', str(int(float(resumetime) / float(runtime) * 100)))
 					except: pass
 				#item.setInfo(type='video', infoLabels=control.metadataClean(meta))
-				if unfinished: item.setProperty('unfinished', 'true') 
 				try: 
 					resumetime = resumetime
 				except:
@@ -2257,7 +2117,7 @@ class Movies:
 		if next:
 			try:
 				if not items: raise Exception()
-				url = items[0].get('next', None)
+				url = items[0]['next']
 				if not url: raise Exception()
 				url_params = dict(parse_qsl(urlsplit(url).query))
 				if 'imdb.com' in url and 'start' in url_params: page = '  [I](%s)[/I]' % str(int(((int(url_params.get('start')) - 1) / int(self.page_limit)) + 1))
@@ -2322,7 +2182,7 @@ class Movies:
 				try: url += '&folderName=%s' % quote_plus(name)
 				except: pass
 				cm = []
-				if (i.get('list_type', '') == 'traktPublicList') and self.traktCredentials:
+				if (i.get('list_type', '') == 'traktPulicList') and self.traktCredentials:
 					liked = traktsync.fetch_liked_list(i['list_id'])
 					if not liked:
 						cm.append((likeMenu, 'RunPlugin(%s?action=tools_likeList&list_owner=%s&list_name=%s&list_id=%s)' % (sysaddon, quote_plus(i['list_owner']), quote_plus(i['list_name']), i['list_id'])))

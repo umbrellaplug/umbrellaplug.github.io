@@ -18,11 +18,9 @@ properties = [
 	'context.umbrella.settings',
 	'context.umbrella.addtoLibrary',
 	'context.umbrella.addtoFavourite',
-	'context.umbrella.artworkCustomize',
 	'context.umbrella.playTrailer',
 	'context.umbrella.playTrailerSelect',
 	'context.umbrella.traktManager',
-	'context.umbrella.simklManager',
 	'context.umbrella.clearProviders',
 	'context.umbrella.clearBookmark',
 	'context.umbrella.rescrape',
@@ -187,7 +185,7 @@ class AddonCheckUpdate:
 			import requests
 			local_version = control.getUmbrellaVersion() # 5 char max so pre-releases do try to compare more chars than github version 6.5.941
 			if len(local_version) > 6: #test version
-				repo_xml = requests.get('https://raw.githubusercontent.com/umbrellakodi/umbrellakodi.github.io/master/matrix/plugin.video.umbrella/addon.xml')
+				repo_xml = requests.get('https://raw.githubusercontent.com/umbrellakodi/umbrellakodi/master/matrix/plugin.video.umbrella/addon.xml')
 			else:
 				repo_xml = requests.get('https://raw.githubusercontent.com/umbrellaplug/umbrellaplug.github.io/master/matrix/plugin.video.umbrella/addon.xml')
 			if not repo_xml.status_code == 200:
@@ -219,7 +217,6 @@ class VersionIsUpdateCheck:
 			from resources.lib.database import cache
 			isUpdate = False
 			oldVersion, isUpdate = cache.update_cache_version()
-
 			if isUpdate:
 				window.setProperty('umbrella.updated', 'true')
 				curVersion = control.getUmbrellaVersion()
@@ -232,15 +229,9 @@ class VersionIsUpdateCheck:
 					clr_traktSync = {'bookmarks': False, 'hiddenProgress': False, 'liked_lists': False, 'movies_collection': False, 'movies_watchlist': False, 'popular_lists': False,
 											'public_lists': False, 'shows_collection': False, 'shows_watchlist': False, 'trending_lists': False, 'user_lists': False, 'watched': False}
 					cleared = traktsync.delete_tables(clr_traktSync)
-					from resources.lib.database import simklsync
-					clr_simklsync = {'movies_plantowatch': True, 'shows_plantowatch': True, 'shows_watching': True, 'shows_hold': True, 'movies_dropped': True, 'shows_dropped': True, 'watched': True, 'movies_completed': True, 'shows_completed': True}
-					cleared2 = simklsync.delete_tables(clr_simklsync)
 					if cleared:
 						control.notification(message='Forced traktsync clear for version update complete.')
 						control.log('[ plugin.video.umbrella ]  Forced traktsync clear for version update complete.', LOGINFO)
-					if cleared2:
-						control.notification(message='Forced simklsync clear for version update complete.')
-						control.log('[ plugin.video.umbrella ]  Forced simklsync clear for version update complete.', LOGINFO)
 					if clr_fanarttv:
 						from resources.lib.database import fanarttv_cache
 						cleared = fanarttv_cache.cache_clear()
@@ -272,24 +263,20 @@ class LibraryService:
 		from resources.lib.modules import library
 		library.lib_tools().service() # method contains control.monitor().waitForAbort() while loop every 6hrs
 
-class SyncServices:
+class SyncTraktService:
 	def run(self):
-		service_syncInterval = control.setting('background.service.syncInterval') or '15'
-		control.log('[ plugin.video.umbrella ]  Account Sync Service Starting (sync check every %s minutes)...' % service_syncInterval, LOGINFO)
-		#from resources.lib.modules import trakt
-		#trakt.trakt_service_sync() # method contains "control.monitor().waitForAbort()" while loop every "service_syncInterval" minutes
-		from resources.lib.modules import tools
-		tools.services_syncs()
+		service_syncInterval = control.setting('trakt.service.syncInterval') or '15'
+		control.log('[ plugin.video.umbrella ]  Trakt Sync Service Starting (sync check every %s minutes)...' % service_syncInterval, LOGINFO)
+		from resources.lib.modules import trakt
+		trakt.trakt_service_sync() # method contains "control.monitor().waitForAbort()" while loop every "service_syncInterval" minutes
 
 try:
 	testUmbrella = False
-	if control.setting('indicators') == '0':
-		control.setSetting('indicators', 'Local') #fix for making this setting a string.
 	kodiVersion = control.getKodiVersion(full=True)
 	addonVersion = control.addon('plugin.video.umbrella').getAddonInfo('version')
 	if len(str(control.getUmbrellaVersion())) > 6:
-		repoVersion = control.addon('repository.umbrellakodi').getAddonInfo('version')
-		repoName = 'repository.umbrellakodi'
+		repoVersion = control.addon('repository.umbrellatest').getAddonInfo('version')
+		repoName = 'repository.umbrellatest'
 		testUmbrella = True
 	else:
 		try:
@@ -398,7 +385,7 @@ def main():
 		SyncMyAccounts().run()
 		PremAccntNotification().run()
 		ReuseLanguageInvokerCheck().run()
-		#SyncMovieLibrary().run()
+		SyncMovieLibrary().run()
 		#control.checkPlayNextEpisodes()
 		if control.setting('library.service.update') == 'true':
 			libraryService = Thread(target=LibraryService().run)
@@ -408,8 +395,8 @@ def main():
 		VersionIsUpdateCheck().run()
 		checkAutoStart().run()
 
-		syncServices = Thread(target=SyncServices().run) # run service in case user auth's trakt later, sync will loop and do nothing without valid auth'd account
-		syncServices.start()
+		syncTraktService = Thread(target=SyncTraktService().run) # run service in case user auth's trakt later, sync will loop and do nothing without valid auth'd account
+		syncTraktService.start()
 
 		# if getTraktCredentialsInfo():
 		# 	if control.setting('autoTraktOnStart') == 'true':
@@ -425,8 +412,8 @@ def main():
 	SettingsMonitor().waitForAbort()
 	# start monitoring settings changes events
 	control.log('[ plugin.video.umbrella ]  Settings Monitor Service Stopping...', LOGINFO)
-	del syncServices # prob does not kill a running thread
-	control.log('[ plugin.video.umbrella ]  Account Sync Service Stopping...', LOGINFO)
+	del syncTraktService # prob does not kill a running thread
+	control.log('[ plugin.video.umbrella ]  Trakt Sync Service Stopping...', LOGINFO)
 	if libraryService:
 		del libraryService # prob does not kill a running thread
 		control.log('[ plugin.video.umbrella ]  Library Update Service Stopping...', LOGINFO)

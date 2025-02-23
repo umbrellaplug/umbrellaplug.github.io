@@ -96,37 +96,29 @@
 						<options>
 							<option label="32314">0</option>
 							<option label="32315">1</option>
-							<option label="40342">2</option>
 						</options>
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
+							<condition operator="is" setting="trakt.isauthed">true</condition>
 						</dependency>
 					</dependencies>
 					<control type="spinner" format="string"/>
 				</setting>
-				<setting id="indicators" type="string" label="32313" help="">
+				<setting id="indicators" type="integer" label="32313" help="">
 					<level>0</level>
-					<default>Local</default>
+					<default>0</default>
 					<constraints>
-						<allowempty>true</allowempty>
+						<options>
+							<option label="32314">0</option>
+						</options>
 					</constraints>
-					<control type="button" format="action">
-						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_indicators)</data>
-						<close>true</close>
-					</control>
-				</setting>
-				<setting id="background.service.syncInterval" type="integer" label="40556" help="">
-					<level>0</level>
-					<default>15</default>
-					<constraints>
-						<minimum>5</minimum>
-						<maximum>60</maximum>
-					</constraints>
-					<control type="slider" format="integer">
-						<popup>false</popup>
-					</control>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="trakt.isauthed"></condition>
+						</dependency>
+					</dependencies>
+					<control type="spinner" format="string"/>
 				</setting>
 				<setting id="highlight.color.display" type="string" label="40039" help="">
 					<level>0</level>
@@ -369,11 +361,6 @@
 					</constraints>
 					<control type="spinner" format="string"/>
 				</setting>
-				<setting id="prefer.fanarttv" type="boolean" label="40566" help="">
-					<level>0</level>
-					<default>false</default>
-					<control type="toggle"/>
-				</setting>
 				<setting id="hidecinema" type="boolean" label="32571" help="">
 					<level>0</level>
 					<default>false</default>
@@ -578,40 +565,6 @@
 					</dependencies>
 					<control type="spinner" format="string"/>
 				</setting>
-				<setting id="sort.movies.plantowatch.type" type="integer" label="40569" help="">
-					<level>0</level>
-					<default>5</default>
-					<constraints>
-						<options>
-							<option label="33564">0</option>
-							<option label="33039">1</option>
-							<option label="35187">2</option>
-							<option label="35188">3</option>
-							<option label="35391">4</option>
-							<option label="35392">5</option>
-							<option label="35393">6</option>
-						</options>
-					</constraints>
-					<control type="list" format="string">
-						<heading>40569</heading>
-					</control>
-				</setting>
-				<setting id="sort.movies.plantowatch.order" type="integer" label="33679" help="" parent="sort.movies.plantowatch.type">
-					<level>0</level>
-					<default>1</default>
-					<constraints>
-						<options>
-							<option label="33649">0</option>
-							<option label="33650">1</option>
-						</options>
-					</constraints>
-					<dependencies>
-						<dependency type="enable">
-							<condition operator="!is" setting="sort.movies.plantowatch.type">0</condition>
-						</dependency>
-					</dependencies>
-					<control type="spinner" format="string"/>
-				</setting>
 				<setting id="sort.movies.watchlist.type" type="integer" label="35574" help="">
 					<level>0</level>
 					<default>5</default>
@@ -665,40 +618,6 @@
 					</control>
 				</setting>
 				<setting id="sort.movies.favourites.order" type="integer" label="33679" help="" parent="sort.movies.favourites.type">
-					<level>0</level>
-					<default>1</default>
-					<constraints>
-						<options>
-							<option label="33649">0</option>
-							<option label="33650">1</option>
-						</options>
-					</constraints>
-					<dependencies>
-						<dependency type="enable">
-							<condition operator="!is" setting="sort.movies.favourites.type">0</condition>
-						</dependency>
-					</dependencies>
-					<control type="spinner" format="string"/>
-				</setting>
-				<setting id="sort.movies.history.type" type="integer" label="40435" help="">
-					<level>0</level>
-					<default>6</default>
-					<constraints>
-						<options>
-							<option label="33564">0</option>
-							<option label="33039">1</option>
-							<option label="35187">2</option>
-							<option label="35188">3</option>
-							<option label="35391">4</option>
-							<option label="35392">5</option>
-							<option label="35393">6</option>
-						</options>
-					</constraints>
-					<control type="list" format="string">
-						<heading>40435</heading>
-					</control>
-				</setting>
-				<setting id="sort.movies.history.order" type="integer" label="33679" help="" parent="sort.movies.history.type">
 					<level>0</level>
 					<default>1</default>
 					<constraints>
@@ -1138,16 +1057,6 @@
 				<setting id="navi.movie.simkl.trendingmonth" type="boolean" label="40354" help="">
 					<level>0</level>
 					<default>false</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="navi.movie.simkl.completed" type="boolean" label="40548" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="navi.movie.simkl.plantowatch" type="boolean" label="40550" help="">
-					<level>0</level>
-					<default>true</default>
 					<control type="toggle"/>
 				</setting>
 				<setting id="navi.movie.tmdb.trendingday" type="boolean" label="40330" help="">
@@ -1843,40 +1752,6 @@
 					<dependencies>
 						<dependency type="enable">
 							<condition operator="!is" setting="sort.shows.type">0</condition>
-						</dependency>
-					</dependencies>
-					<control type="spinner" format="string"/>
-				</setting>
-				<setting id="sort.shows.plantowatch.type" type="integer" label="40569" help="">
-					<level>0</level>
-					<default>5</default>
-					<constraints>
-						<options>
-							<option label="33564">0</option>
-							<option label="33039">1</option>
-							<option label="35187">2</option>
-							<option label="35188">3</option>
-							<option label="35391">4</option>
-							<option label="35392">5</option>
-							<option label="35393">6</option>
-						</options>
-					</constraints>
-					<control type="list" format="string">
-						<heading>40569</heading>
-					</control>
-				</setting>
-				<setting id="sort.shows.plantowatch.order" type="integer" label="33679" help="" parent="sort.shows.plantowatch.type">
-					<level>0</level>
-					<default>1</default>
-					<constraints>
-						<options>
-							<option label="33649">0</option>
-							<option label="33650">1</option>
-						</options>
-					</constraints>
-					<dependencies>
-						<dependency type="enable">
-							<condition operator="!is" setting="sort.shows.plantowatch.type">0</condition>
 						</dependency>
 					</dependencies>
 					<control type="spinner" format="string"/>
@@ -3401,7 +3276,7 @@
 						<heading/>
 					</control>
 				</setting>
-				<!-- <setting id="trakt.service.syncInterval" type="integer" label="40232" help="">
+				<setting id="trakt.service.syncInterval" type="integer" label="40232" help="">
 					<level>0</level>
 					<default>15</default>
 					<constraints>
@@ -3416,7 +3291,7 @@
 					<control type="slider" format="integer">
 						<popup>false</popup>
 					</control>
-				</setting> -->
+				</setting>
 				<setting id="trakt.server.notifications" type="boolean" label="33051" help="">
 					<level>0</level>
 					<default>true</default>
@@ -3687,6 +3562,21 @@
 						<close>true</close>
 					</control>
 				</setting>
+				<setting id="revokeSIMKLbutton" type="action" label="40110" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=simkl_Revoke)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="simkltoken"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
+					</control>
+				</setting>
 				<setting id="simkltoken" type="string" label="40345" help="">
 					<level>0</level>
 					<default/>
@@ -3702,19 +3592,6 @@
 						<heading>40345</heading>
 					</control>
 				</setting>
-				<setting id="showSimKLAccountInfo" type="action" label="32153" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=simklAccountInfo)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="simkltoken"/>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action"/>
-				</setting>
 				<setting id="simklusername" type="string" label="40006" help="">
 					<level>0</level>
 					<default/>
@@ -3726,133 +3603,12 @@
 							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 						<dependency type="visible">
+								<!--<condition operator="!is" setting="simkltoken"/> -->
 								<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 					</dependencies>
 					<control type="edit" format="string">
 						<heading>40006</heading>
-					</control>
-				</setting>
-				<setting id="simkljoindate" type="string" label="40006" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="enable">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-						<dependency type="visible">
-								<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>40006</heading>
-					</control>
-				</setting>
-				<setting id="simkl.general.notifications" type="boolean" label="33052" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="simkltoken"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="simkl.directProgress.scrape" type="boolean" label="35492" help="">
-					<level>0</level>
-					<default>false</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="simkltoken"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="simkldirectprogress" type="action" label="32137" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=directProgressSimkl)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="simkltoken"/>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action"/>
-				</setting>
-				<setting id="simkl.progressFlatten" type="boolean" label="32017" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="enable">
-							<condition operator="!is" setting="simkltoken"/>
-						</dependency>
-						<dependency type="visible">
-							<condition operator="!is" setting="simkltoken"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="simkl.progress.showunaired" type="boolean" label="40557" help="">
-					<level>0</level>
-					<default>false</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="simkltoken"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="simkl.UpcomingProgress.prependDate" type="boolean" label="40558" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="simkltoken"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="showHelpupcomingProgressPrependDateSimkl" type="action" label="32137" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=UpcomingProgressPrependDate)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="simkltoken"/>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action"/>
-				</setting>
-				<setting id="simkl.paginate.lists" type="boolean" label="32188" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="simkltoken"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="revokeSIMKLbutton" type="action" label="40110" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=simkl_Revoke)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="simkltoken"/>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action">
-						<close>true</close>
 					</control>
 				</setting>
 			</group>
@@ -5627,11 +5383,11 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<!-- <setting id="library.cachesimilar" type="boolean" label="40399" help="">
+				<setting id="library.cachesimilar" type="boolean" label="40399" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
-				</setting> -->
+				</setting>
 			</group>
 		</category>
 		<category id="downloads" label="32347" help="40193">
@@ -6225,11 +5981,6 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="context.umbrella.artworkCustomize" type="boolean" label="40568" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
 				<setting id="context.umbrella.addLibtoFavourite" type="boolean" label="40471" help="">
 					<level>0</level>
 					<default>true</default>
@@ -6247,11 +5998,6 @@
 					<control type="toggle"/>
 				</setting>
 				<setting id="context.umbrella.traktManager" type="boolean" label="32515" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="context.umbrella.simklManager" type="boolean" label="40576" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
@@ -6536,14 +6282,6 @@
 				<setting id="forceTraktSyncButton" type="action" label="35066" help="">
 					<level>0</level>
 					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_forceTraktSync)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<control type="button" format="action"/>
-				</setting>
-				<setting id="forceSimklSyncButton" type="action" label="40567" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_forceSimklSync)</data>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>

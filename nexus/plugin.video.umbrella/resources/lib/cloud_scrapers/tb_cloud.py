@@ -4,8 +4,7 @@
 """
 
 import re
-#from threading import Thread
-from concurrent.futures import ThreadPoolExecutor
+from threading import Thread
 from resources.lib.cloud_scrapers import cloud_utils
 from resources.lib.database import cache
 from resources.lib.debrid.torbox import TorBox
@@ -37,22 +36,12 @@ class source:
 			query_list = self.episode_query_list() if 'tvshowtitle' in data else self.year_query_list()
 			# log_utils.log('query_list = %s' % query_list)
 			folders = []
-			#testing using threadpool instead of threads.
-			# threads = (
-			# 	Thread(target=self._scraper, args=(TorBox().user_cloud, folders, 'torent')),
-			# 	Thread(target=self._scraper, args=(TorBox().user_cloud_usenet, folders, 'usenet'))
-			# )
-			# [i.start() for i in threads]
-			# [i.join() for i in threads]
-			with ThreadPoolExecutor(max_workers=2) as executor: #max-workers likely needs to be a setting.
-				futures = [
-					executor.submit(self._scraper, TorBox().user_cloud, folders, 'torent'),
-					executor.submit(self._scraper, TorBox().user_cloud_usenet, folders, 'usenet'),
-				]
-
-				# Wait for all tasks to complete
-				for future in futures:
-					future.result()
+			threads = (
+				Thread(target=self._scraper, args=(TorBox().user_cloud, folders, 'torent')),
+				Thread(target=self._scraper, args=(TorBox().user_cloud_usenet, folders, 'usenet'))
+			)
+			[i.start() for i in threads]
+			[i.join() for i in threads]
 			if not folders: return sources
 			extras_filter = cloud_utils.extras_filter()
 		except:
