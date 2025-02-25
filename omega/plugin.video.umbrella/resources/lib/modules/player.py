@@ -713,7 +713,7 @@ class PlayNext(xbmc.Player):
 			next_meta = self.getNext_meta()
 			if not next_meta: raise Exception()
 			if self.debuglog:
-				log_utils.log('Show Playnext Still Watching. Meta is: %s' % str(next_meta), level=log_utils.LOGDEBUG)
+				log_utils.log('Show Playnext Still Watching.', level=log_utils.LOGDEBUG)
 			from resources.lib.windows.playnext_stillwatching import StillWatchingXML
 			if self.playnext_theme == '2'and control.skin in ('skin.auramod'):
 				window = StillWatchingXML('auraplaynext_stillwatching.xml', control.addonPath(control.addonId()), meta=next_meta)

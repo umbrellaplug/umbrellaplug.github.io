@@ -5321,3 +5321,179 @@ msgstr ""
 msgctxt "#40546"
 msgid "[B]Delete all cloud files from TorBox?[/B]"
 msgstr ""
+
+msgctxt "#40547"
+msgid "Completed"
+msgstr ""
+
+msgctxt "#40548"
+msgid "Completed (SimKl)"
+msgstr ""
+
+msgctxt "#40549"
+msgid "Plan to Watch"
+msgstr ""
+
+msgctxt "#40550"
+msgid "Plan to Watch (SimKl)"
+msgstr ""
+
+msgctxt "#40551"
+msgid "[B]Simkl Management Tools[/B]"
+msgstr ""
+
+msgctxt "#40552"
+msgid "Simkl Management Tools"
+msgstr ""
+
+msgctxt "#40553"
+msgid "[COLOR %s][B]Force Simkl Sync to local database[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40554"
+msgid "Watched in Simkl"
+msgstr ""
+
+msgctxt "#40555"
+msgid "Unwatched in Simkl"
+msgstr ""
+
+msgctxt "#40556"
+msgid "Background Services Sync Interval"
+msgstr ""
+
+msgctxt "#40557"
+msgid "Simkl Progress Show unaired episodes"
+msgstr ""
+
+msgctxt "#40558"
+msgid "Simkl Upcoming Progress prepend date"
+msgstr ""
+
+msgctxt "#40559"
+msgid "[B]SETTINGS[/B] : Simkl"
+msgstr ""
+
+msgctxt "#40560"
+msgid "%s Failed to Mark As Watched On Simkl"
+msgstr ""
+
+msgctxt "#40561"
+msgid "%s Marked As Watched On Simkl"
+msgstr ""
+
+msgctxt "#40562"
+msgid "%s Failed to Mark As Unwatched On Simkl"
+msgstr ""
+
+msgctxt "#40563"
+msgid "%s Marked As Unwatched On Simkl"
+msgstr ""
+
+msgctxt "#40564"
+msgid "Watched in Online Services"
+msgstr ""
+
+msgctxt "#40565"
+msgid "Unwatched in Online Services"
+msgstr ""
+
+msgctxt "#40566"
+msgid "Use Fanart for Thumbs"
+msgstr ""
+
+msgctxt "#40567"
+msgid "[COLOR %s][B]Force Simkl Sync to local database[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40568"
+msgid "Customize Artwork"
+msgstr ""
+
+msgctxt "#40569"
+msgid "Plan to Watch Sorting"
+msgstr ""
+
+msgctxt "#40570"
+msgid "Add Show to [COLOR %s][B]Plan to Watch[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40571"
+msgid "Remove Show from [COLOR %s][B]Plan to Watch[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40572"
+msgid "Add movie to [COLOR %s][B]Dropped[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40573"
+msgid "Remove movie from [COLOR %s][B]Dropped[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40574"
+msgid "Add movie to [COLOR %s][B]Plan to Watch[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40575"
+msgid "Remove movie from [COLOR %s][B]Plan to Watch[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40576"
+msgid "Simkl Manager"
+msgstr ""
+
+msgctxt "#40577"
+msgid "[COLOR %s]Simkl Manager[/COLOR]"
+msgstr ""
+
+msgctxt "#40578"
+msgid "Add movie to [COLOR %s][B]On-Hold[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40579"
+msgid "Remove movie from [COLOR %s][B]On-Hold[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40580"
+msgid "Add Show to [COLOR %s][B]Dropped[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40581"
+msgid "Remove Show from [COLOR %s][B]Dropped[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40582"
+msgid "Add Show to [COLOR %s][B]On-Hold[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40583"
+msgid "Remove Show from [COLOR %s][B]On-Hold[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40584"
+msgid "Item Added To Simkl"
+msgstr ""
+
+msgctxt "#40585"
+msgid "Item Removed From Simkl"
+msgstr ""
+
+msgctxt "#40586"
+msgid "TMDB Lists Origin Countries"
+msgstr ""
+
+msgctxt "#40587"
+msgid "Use api language for original language in requests"
+msgstr ""
+
+msgctxt "#40588"
+msgid "Use origin countries in requests"
+msgstr ""
+
+msgctxt "#40589"
+msgid "Full Change Log!!"
+msgstr ""
+
+msgctxt "#40590"
+msgid "Show [COLOR yellow]Full Changelog[/COLOR]..."
+msgstr ""

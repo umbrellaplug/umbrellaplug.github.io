@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <!-- background -->
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">common/white.png</texture>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" start="0" end="80" time="120" />
+            </animation>
+        </control>
+        <control type="group">
+            <left>310</left>
+            <top>100</top>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" end="100" time="200" />
+            </animation>
+            <control type="group">
+                <top>40</top>
+                <control type="group">
+                    <control type="image">
+                        <width>1400</width>
+                        <height>803</height>
+                        <texture colordiffuse="FF302F2F" border="30">common/umbrellacircle.png</texture>
+                    </control>
+                </control>
+                <control type="image">
+                    <left>10</left>
+                    <top>10</top>
+                    <width>45</width>
+                    <height>45</height>
+                    <align>left</align>
+                    <aligny>top</aligny>
+                    <aspectratio aligny="top">keep</aspectratio>
+                    <texture colordiffuse="FFCCCCCC">common/icon.png</texture>
+                </control>
+                <control type="label">
+                    <width max="1400">auto</width>
+                    <top>10</top>
+                    <left>20</left>
+                    <height>20</height>
+                    <font>font12</font>
+                    <textcolor>FFCCCCCC</textcolor>
+                    <shadowcolor>FF000000</shadowcolor>
+                    <align>center</align>
+                    <label>[UPPERCASE][B]$INFO[Window().Property(heading)][/B][/UPPERCASE]</label>
+                </control>
+                <control type="group">
+                    <control type="image">
+                        <left>830</left>
+                        <top>65</top>
+                        <height>720</height>
+                        <width>500</width>
+                        <aspectratio aligny="bottom">keep</aspectratio>
+                        <texture background="true">$INFO[ListItem.Property(poster)]</texture>
+                        <fadetime>100</fadetime>
+                        <visible>String.IsEqual(Window().Property(artworktype),poster)</visible>
+                    </control>
+                </control>
+                <control type="group">
+                    <control type="image">
+                        <left>830</left>
+                        <top>40</top>
+                        <height>720</height>
+                        <width>500</width>
+                        <aspectratio aligny="bottom">keep</aspectratio>
+                        <texture background="true">$INFO[ListItem.Property(poster)]</texture>
+                        <fadetime>100</fadetime>
+                        <visible>String.IsEqual(ListItem.Property(artworktype),poster)</visible>
+                    </control>
+                </control>
+                <control type="group">
+                    <control type="image">
+                        <left>830</left>
+                        <top>265</top>
+                        <height>281</height>
+                        <width>500</width>
+                        <aspectratio aligny="bottom">keep</aspectratio>
+                        <texture background="true">$INFO[ListItem.Property(poster)]</texture>
+                        <fadetime>100</fadetime>
+                        <visible>String.IsEqual(ListItem.Property(artworktype),fanart)</visible>
+                    </control>
+                </control>
+                <control type="group">
+                    <control type="image">
+                        <left>830</left>
+                        <top>265</top>
+                        <height>281</height>
+                        <width>500</width>
+                        <aspectratio aligny="bottom">keep</aspectratio>
+                        <texture background="true">$INFO[ListItem.Property(poster)]</texture>
+                        <fadetime>100</fadetime>
+                        <visible>String.IsEqual(ListItem.Property(artworktype),landscape)</visible>
+                    </control>
+                </control>
+                <control type="group">
+                    <control type="image">
+                        <left>830</left>
+                        <top>365</top>
+                        <height>93</height>
+                        <width>500</width>
+                        <aspectratio aligny="bottom">keep</aspectratio>
+                        <texture background="true">$INFO[ListItem.Property(poster)]</texture>
+                        <fadetime>100</fadetime>
+                        <visible>String.IsEqual(ListItem.Property(artworktype),banner)</visible>
+                    </control>
+                </control>
+                <control type="group">
+                    <control type="image">
+                        <left>830</left>
+                        <top>265</top>
+                        <height>281</height>
+                        <width>500</width>
+                        <aspectratio aligny="bottom">keep</aspectratio>
+                        <texture background="true">$INFO[ListItem.Property(poster)]</texture>
+                        <fadetime>100</fadetime>
+                        <visible>String.IsEqual(ListItem.Property(artworktype),clearart)</visible>
+                    </control>
+                </control>
+                <control type="group">
+                    <control type="image">
+                        <left>830</left>
+                        <top>265</top>
+                        <height>194</height>
+                        <width>500</width>
+                        <aspectratio aligny="bottom">keep</aspectratio>
+                        <texture background="true">$INFO[ListItem.Property(poster)]</texture>
+                        <fadetime>100</fadetime>
+                        <visible>String.IsEqual(ListItem.Property(artworktype),clearlogo)</visible>
+                    </control>
+                </control>
+                <control type="group">
+                    <control type="image">
+                        <left>830</left>
+                        <top>165</top>
+                        <height>450</height>
+                        <width>450</width>
+                        <aspectratio aligny="bottom">keep</aspectratio>
+                        <texture background="true">$INFO[ListItem.Property(poster)]</texture>
+                        <fadetime>100</fadetime>
+                        <visible>String.IsEqual(ListItem.Property(artworktype),discart)</visible>
+                    </control>
+                </control>
+                <control type="group">
+                    <control type="image">
+                        <left>800</left>
+                        <top>265</top>
+                        <height>333</height>
+                        <width>500</width>
+                        <aspectratio aligny="bottom">keep</aspectratio>
+                        <texture background="true">$INFO[ListItem.Property(poster)]</texture>
+                        <fadetime>100</fadetime>
+                        <visible>String.IsEqual(ListItem.Property(artworktype),keyart)</visible>
+                    </control>
+                </control>
+            </control>
+            <control type="fixedlist" id="2025">
+                <pagecontrol>2065</pagecontrol>
+                <left>15</left>
+                <top>105</top>
+                <width>700</width>
+                <height>720</height>
+                <onup>2025</onup>
+                <ondown>2025</ondown>
+                <onright>2065</onright>
+                <orientation>Vertical</orientation>
+                <focusposition>3</focusposition>
+                <movement>4</movement>
+                <scrolltime tween="sine">200</scrolltime>
+                <itemlayout height="90" width="700">
+                    <control type="group">
+                        <description>Line1 and Line2</description>
+                        <width max="632">auto</width>
+                        <left>34</left>
+                        <control type="label">
+                            <top>25</top>
+                            <height>5</height>
+                            <font>font12</font>
+                            <textcolor>FFCCCCCC</textcolor>
+                            <aligny>center</aligny>
+                            <label>[UPPERCASE][B]$INFO[ListItem.Property(line1)][/B][/UPPERCASE]</label>
+                        </control>
+                        <control type="label">
+                            <top>60</top>
+                            <height>5</height>
+                            <font>font12</font>
+                            <textcolor>FFA9A8A8</textcolor>
+                            <aligny>center</aligny>
+                            <label>[UPPERCASE][I]$INFO[ListItem.Property(line2)][/I][/UPPERCASE]</label>
+                        </control>
+                    </control>
+                </itemlayout>
+                <focusedlayout height="90" width="700">
+                    <control type="image">
+                        <animation effect="fade" start="100" end="50" time="0" condition="!Control.HasFocus(2025)">Conditional</animation>
+                        <width>700</width>
+                        <texture colordiffuse="FFCCCCCC" border="30">common/umbrellacircle.png</texture>
+                    </control>
+                    <control type="group">
+                        <description>Line1 and Line2</description>
+                        <width max="632">auto</width>
+                        <left>34</left>
+                        <control type="label">
+                            <top>25</top>
+                            <height>5</height>
+                            <font>font12</font>
+                            <textcolor>FF1F2020</textcolor>
+                            <aligny>center</aligny>
+                            <label>[UPPERCASE][B]$INFO[ListItem.Property(line1)][/B][/UPPERCASE]</label>
+                        </control>
+                        <control type="label">
+                            <top>60</top>
+                            <height>5</height>
+                            <font>font12</font>
+                            <textcolor>FF4a4347</textcolor>
+                            <aligny>center</aligny>
+                            <label>[UPPERCASE][I]$INFO[ListItem.Property(line2)][/I][/UPPERCASE]</label>
+                        </control>
+                    </control>
+                </focusedlayout>
+            </control>
+            <control type="scrollbar" id="2065">
+                <top>105</top>
+                <left>740</left>
+                <width>10</width>
+                <height>720</height>
+                <texturesliderbackground colordiffuse="FF1F2020">common/white.png</texturesliderbackground>
+                <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                <texturesliderbarfocus colordiffuse="FFCCCCCC">common/white.png</texturesliderbarfocus>
+                <onleft>2025</onleft>
+                <onright>10</onright>
+                <showonepage>false</showonepage>
+                <orientation>vertical</orientation>
+                <visible>Control.IsVisible(2025)</visible>
+            </control>
+        </control>
+    </controls>
+</window>

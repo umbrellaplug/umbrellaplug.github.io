@@ -80,6 +80,7 @@ try: dataPath = transPath(addonInfo('profile')).decode('utf-8')
 except: dataPath = transPath(addonInfo('profile'))
 settingsFile = joinPath(dataPath, 'settings.xml')
 viewsFile = joinPath(dataPath, 'views.db')
+artworkFile = joinPath(dataPath, 'artwork.db')
 bookmarksFile = joinPath(dataPath, 'bookmarks.db')
 providercacheFile = joinPath(dataPath, 'providers.db')
 metacacheFile = joinPath(dataPath, 'metadata.db')
@@ -318,8 +319,10 @@ def yesnocustomDialog(line1, line2, line3, heading=addonInfo('name'), customlabe
 	message = '%s[CR]%s[CR]%s' % (line1, line2, line3)
 	return dialog.yesnocustom(heading, message, customlabel, nolabel, yeslabel)
 
-def selectDialog(list, heading=addonInfo('name')):
-	return dialog.select(heading, list)
+def selectDialog(list, heading=addonInfo('name'),useDetails=False):
+	if useDetails:
+		return dialog.select(heading, list, useDetails=True)
+	else: return dialog.select(heading, list)
 
 def okDialog(title=None, message=None, icon=None):
 	if title == 'default' or title is None: title = addonName()
@@ -514,9 +517,11 @@ def refresh_contextProperties():
 	for prop in (
 		'context.umbrella.addtoLibrary',
 		'context.umbrella.addtoFavourite',
+		'context.umbrella.artworkCustomize',
 		'context.umbrella.playTrailer',
 		'context.umbrella.playTrailerSelect',
 		'context.umbrella.traktManager',
+		'context.umbrella.simklManager',
 		'context.umbrella.clearProviders',
 		'context.umbrella.clearBookmark',
 		'context.umbrella.rescrape',
@@ -674,6 +679,7 @@ def syncAccounts():
 	try:
 		if setting('umbrella.colorSecond') == 'false':
 			homeWindow.setProperty('umbrella.updateSettings', 'false')
+			setSetting('simkltoken', '')
 			setSetting('highlight.color', 'FFFFFF33')
 			setSetting('highlight.color.display', '[COLOR=FFFFFF33]FFFFFF33[/COLOR]')
 			setSetting('movie.unaired.identify', 'FF5CFF34')

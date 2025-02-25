@@ -144,7 +144,8 @@ def upload_LogFile(name):
 		f = open(log_file, 'r', encoding='utf-8', errors='ignore')
 		text = f.read()
 		f.close()
-		UserAgent = 'Umbrella %s' % addonVersion('plugin.video.umbrella')
+		#UserAgent = 'Umbrella %s' % addonVersion('plugin.video.umbrella')
+		UserAgent = 'script.kodi.loguploader: 1.0' # your mom is a ho for blocking my user agent.
 		response = requests.post(url + 'documents', data=text.encode('utf-8', errors='ignore'), headers={'User-Agent': UserAgent})
 		if 'key' in response.json():
 			result = url + response.json()['key']

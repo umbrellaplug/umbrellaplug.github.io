@@ -6,6 +6,7 @@
 from time import time
 from sqlite3 import dbapi2 as db
 from resources.lib.modules.control import existsPath, dataPath, makeFile, metacacheFile
+from resources.lib.modules import trakt, simkl
 
 
 def fetch(items, lang='en', user=''):
@@ -55,13 +56,21 @@ def fetch(items, lang='en', user=''):
 							if update: continue
 						else:
 							if next_episode_to_air+(18*3600) <= t2 and (abs(t2 - t1) / 3600) >= 1: # refresh meta when next_episode_to_air is less than or equal to system date, every 1hr starting at 6pm till it flips
-								from resources.lib.database.traktsync import cache_existing
-								from resources.lib.modules.trakt import syncTVShows
+								if trakt.getTraktIndicatorsInfo():
+									from resources.lib.database.traktsync import cache_existing
+									from resources.lib.modules.trakt import syncTVShows
+								elif simkl.getSimKLIndicatorsInfo():
+									from resources.lib.database.simklsync import cache_existing
+									from resources.lib.modules.simkl import syncTVShows
 								imdb = item.get('imdb', '')
 								indicators = cache_existing(syncTVShows)
 								watching = [i[0] for i in indicators if i[0] == imdb]
 								if watching:
-									from resources.lib.modules.trakt import cachesyncSeasons
+									if trakt.getTraktIndicatorsInfo():
+										from resources.lib.modules.trakt import cachesyncSeasons
+									elif simkl.getSimKLIndicatorsInfo():
+										from resources.lib.modules.simkl import cachesyncSeasons
+
 									cachesyncSeasons(imdb) # refreshes only shows you are "watching"
 								continue
 				item = dict((k, v) for k, v in iter(item.items()) if v is not None and v != '')

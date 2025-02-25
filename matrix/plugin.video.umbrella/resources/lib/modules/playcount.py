@@ -5,10 +5,14 @@
 
 from resources.lib.modules.control import setting as getSetting, refresh as containerRefresh, addonInfo, progressDialogBG, monitor, condVisibility, execute
 from resources.lib.modules import trakt
+from resources.lib.modules import simkl
 tmdb_api_key = 'edde6b5e41246ab79a2697cd125e1781'
 omdb_api_key = 'd4daa2b'
 tvdb_api_key = '06cff30690f9b9622957044f2159ffae'
 traktIndicators = trakt.getTraktIndicatorsInfo()
+simklIndicators = simkl.getSimKLIndicatorsInfo()
+traktCredentials = trakt.getTraktCredentialsInfo()
+simklCredentials = simkl.getSimKLCredentialsInfo()
 #if not traktIndicators:
 #	try:
 #		if not condVisibility('System.HasAddon(script.module.metahandler)'): execute('InstallAddon(script.module.metahandler)', wait=True)
@@ -22,6 +26,12 @@ def getMovieIndicators(refresh=False):
 			elif trakt.getMoviesWatchedActivity() < trakt.timeoutsyncMovies(): timeout = 720
 			else: timeout = 0
 			indicators = trakt.cachesyncMovies(timeout=timeout)
+			return indicators
+		elif simklIndicators:
+			if not refresh: timeout = 720
+			elif simkl.getMoviesWatchedActivity() < simkl.timeoutsyncMovies(): timeout = 720
+			else: timeout = 0
+			indicators = simkl.cachesyncMovies(timeout=timeout)
 			return indicators
 		else:
 #			from metahandler import metahandlers
@@ -40,6 +50,12 @@ def getTVShowIndicators(refresh=False):
 			elif trakt.getEpisodesWatchedActivity() < trakt.timeoutsyncTVShows(): timeout = 720
 			else: timeout = 0
 			indicators = trakt.cachesyncTVShows(timeout=timeout)
+			return indicators
+		elif simklIndicators:
+			if not refresh: timeout = 720
+			elif simkl.getEpisodesWatchedActivity() < simkl.timeoutsyncTVShows(): timeout = 720
+			else: timeout = 0
+			indicators = simkl.cachesyncTVShows(timeout=timeout)
 			return indicators
 		else:
 #			from metahandler import metahandlers
@@ -61,6 +77,14 @@ def getSeasonIndicators(imdb, tvdb, refresh=False):
 			else: timeout = 0
 			indicators = trakt.cachesyncSeasons(imdb, tvdb, timeout=timeout)
 			return indicators
+		elif simklIndicators:
+			timeoutsyncSeasons = simkl.timeoutsyncSeasons(imdb, tvdb)
+			if timeoutsyncSeasons is None: return # if no entry means no completed season watched so do not make needless requests 
+			if not refresh: timeout = 720
+			elif simkl.getEpisodesWatchedActivity() < timeoutsyncSeasons: timeout = 720
+			else: timeout = 0
+			indicators = simkl.cachesyncSeasons(imdb, tvdb, timeout=timeout)
+			return indicators
 		else:
 #			from metahandler import metahandlers
 #			indicators = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
@@ -75,6 +99,10 @@ def getMovieOverlay(indicators, imdb):
 	if not indicators: return '4'
 	try:
 		if traktIndicators:
+			playcount = [i for i in indicators if i == imdb]
+			playcount = '5' if len(playcount) > 0 else '4'
+			return playcount
+		elif simklIndicators:
 			playcount = [i for i in indicators if i == imdb]
 			playcount = '5' if len(playcount) > 0 else '4'
 			return playcount
@@ -96,6 +124,13 @@ def getTVShowOverlay(indicators, imdb, tvdb): # tvdb no longer used
 				playcount['watched'] += value['watched']
 			playcount = '5' if playcount['total'] == playcount['watched'] else '4'
 			return playcount
+		elif simklIndicators:
+			playcount = {'total': 0, 'watched': 0}
+			for key, value in iter(indicators.items()):
+				playcount['total'] += value['total']
+				playcount['watched'] += value['watched']
+			playcount = '5' if playcount['total'] == playcount['watched'] else '4'
+			return playcount
 		else: # indicators will be metahandler object
 			playcount = indicators._get_watched('tvshow', imdb, '', '')
 			return str(playcount)
@@ -108,6 +143,10 @@ def getSeasonOverlay(indicators, imdb, tvdb, season): # tvdb no longer used
 	if not indicators: return '4'
 	try:
 		if traktIndicators:
+			playcount = [i for i in indicators if int(season) == int(i)]
+			playcount = '5' if len(playcount) > 0 else '4'
+			return playcount
+		elif simklIndicators:
 			playcount = [i for i in indicators if int(season) == int(i)]
 			playcount = '5' if len(playcount) > 0 else '4'
 			return playcount
@@ -128,6 +167,12 @@ def getEpisodeOverlay(indicators, imdb, tvdb, season, episode):
 			playcount = [i for i in playcount if int(season) == int(i[0]) and int(episode) == int(i[1])]
 			playcount = '5' if len(playcount) > 0 else '4'
 			return playcount
+		elif simklIndicators:
+			playcount = [i[2] for i in indicators if (i[0].get('imdb') == imdb or str(i[0].get('tvdb')) == tvdb)]
+			playcount = playcount[0] if len(playcount) > 0 else []
+			playcount = [i for i in playcount if int(season) == int(i[0]) and int(episode) == int(i[1])]
+			playcount = '5' if len(playcount) > 0 else '4'
+			return playcount
 		else: # indicators will be metahandler object
 			playcount = indicators.get_watched_episode('episode', imdb, '', season=season, episode=episode)
 			return str(playcount)
@@ -139,7 +184,14 @@ def getEpisodeOverlay(indicators, imdb, tvdb, season, episode):
 def getShowCount(indicators, imdb, tvdb): # ID's currently not used. totals from indicators
 	try:
 		if traktIndicators:
-			
+			if not indicators: return None
+			result = {'total': 0, 'watched': 0, 'unwatched': 0}
+			for key, value in iter(indicators.items()):
+				result['total'] += value['total']
+				result['watched'] += value['watched']
+				result['unwatched'] += value['unwatched']
+			return result
+		elif simklIndicators:
 			if not indicators: return None
 			result = {'total': 0, 'watched': 0, 'unwatched': 0}
 			for key, value in iter(indicators.items()):
@@ -156,8 +208,9 @@ def getShowCount(indicators, imdb, tvdb): # ID's currently not used. totals from
 def getSeasonCount(imdb, tvdb, season=None):
 	try:
 		if all(not value for value in (imdb, tvdb)): return
-		if not traktIndicators: return None # metahandler does not currently provide counts
-		result = trakt.seasonCount(imdb, tvdb)
+		if not traktIndicators or not simklIndicators: return None # metahandler does not currently provide counts
+		if traktIndicators: result = trakt.seasonCount(imdb, tvdb)
+		elif simklIndicators: result = simkl.seasonCount(imdb, tvdb)
 		if not result: return None
 		if not season: return result
 		else: return result.get(int(season))
@@ -168,10 +221,14 @@ def getSeasonCount(imdb, tvdb, season=None):
 
 def markMovieDuringPlayback(imdb, watched):
 	try:
-		if traktIndicators:
+		if traktCredentials:
 			if int(watched) == 5: trakt.markMovieAsWatched(imdb)
 			else: trakt.markMovieAsNotWatched(imdb)
-			trakt.cachesyncMovies()
+			if traktIndicators:trakt.cachesyncMovies()
+		if simklCredentials:
+			if int(watched) == 5: simkl.markMovieAsWatched(imdb)
+			else: simkl.markMovieAsNotWatched(imdb)
+			if simklIndicators: simkl.cachesyncMovies()
 		else:
 #			from metahandler import metahandlers
 #			metaget = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
@@ -185,10 +242,14 @@ def markMovieDuringPlayback(imdb, watched):
 
 def markEpisodeDuringPlayback(imdb, tvdb, season, episode, watched):
 	try:
-		if traktIndicators:
+		if traktCredentials:
 			if int(watched) == 5: trakt.markEpisodeAsWatched(imdb, tvdb, season, episode)
 			else: trakt.markEpisodeAsNotWatched(imdb, tvdb, season, episode)
-			trakt.cachesyncTV(imdb, tvdb) # updates all watched shows, as well as season indicators and counts for given ID of show
+			if traktIndicators: trakt.cachesyncTV(imdb, tvdb) # updates all watched shows, as well as season indicators and counts for given ID of show
+		if simklCredentials:
+			if int(watched) == 5: simkl.markEpisodeAsWatched(imdb, tvdb, season, episode)
+			else: simkl.markEpisodeAsNotWatched(imdb, tvdb, season, episode)
+			if simklIndicators: simkl.cachesyncTV(imdb, tvdb)
 		else:
 #			from metahandler import metahandlers
 #			metaget = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
@@ -203,9 +264,12 @@ def markEpisodeDuringPlayback(imdb, tvdb, season, episode, watched):
 
 def movies(name, imdb, watched):
 	try:
-		if traktIndicators:
+		if traktCredentials:
 			if int(watched) == 5: trakt.watch(content_type='movie', name=name, imdb=imdb, refresh=True)
 			else: trakt.unwatch(content_type='movie', name=name, imdb=imdb, refresh=True)
+		if simklCredentials:
+			if int(watched) == 5: simkl.watch(content_type='movie', name=name, imdb=imdb, refresh=True)
+			else: simkl.unwatch(content_type='movie', name=name, imdb=imdb, refresh=True)
 		else:
 #			from metahandler import metahandlers
 #			metaget = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
@@ -220,10 +284,14 @@ def movies(name, imdb, watched):
 
 def tvshows(tvshowtitle, imdb, tvdb, season, watched):
 	try:
-		if traktIndicators:
+		if traktCredentials:
 			content_type='season' if season else 'tvshow'
 			if int(watched) == 5: trakt.watch(content_type=content_type, name=tvshowtitle, imdb=imdb, tvdb=tvdb, season=season, refresh=True)
 			else: trakt.unwatch(content_type=content_type, name=tvshowtitle, imdb=imdb, tvdb=tvdb, season=season, refresh=True)
+		if simklCredentials:
+			content_type='season' if season else 'tvshow'
+			if int(watched) == 5: simkl.watch(content_type=content_type, name=tvshowtitle, imdb=imdb, tvdb=tvdb, season=season, refresh=True)
+			else: simkl.unwatch(content_type=content_type, name=tvshowtitle, imdb=imdb, tvdb=tvdb, season=season, refresh=True)
 		else:
 			from metahandler import metahandlers
 			from resources.lib.menus import episodes
@@ -266,9 +334,12 @@ def seasons(tvshowtitle, imdb, tvdb, season, watched):
 
 def episodes(name, imdb, tvdb, season, episode, watched):
 	try:
-		if traktIndicators:
+		if traktCredentials:
 			if int(watched) == 5: trakt.watch(content_type='episode', name=name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=True)
 			else: trakt.unwatch(content_type='episode', name=name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=True)
+		if simklCredentials:
+			if int(watched) == 5: simkl.watch(content_type='episode', name=name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=True)
+			else: simkl.unwatch(content_type='episode', name=name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=True)
 		else:
 #			from metahandler import metahandlers
 #			metaget = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
@@ -288,7 +359,8 @@ def episodes(name, imdb, tvdb, season, episode, watched):
 
 def tvshowsUpdate(imdb, tvdb):
 	try:
-		if traktIndicators: return
+		if traktCredentials: return
+		if simklCredentials: return
 		from metahandler import metahandlers
 		from resources.lib.menus import seasons, episodes
 		from resources.lib.indexers import tmdb as tmdb_indexer

@@ -7,11 +7,13 @@ from resources.lib.modules.control import addonPath, addonVersion, joinPath, exi
 from resources.lib.windows.textviewer import TextViewerXML
 
 
-def get(name):
+def get(name, full=False):
 	nameDict = {'Umbrella': 'plugin.video.umbrella'}
 	addon_path = addonPath(nameDict[name])
 	addon_version = addonVersion(nameDict[name])
-	changelog_file = joinPath(addon_path, 'changelog.txt')
+	if not full: changelog_file = joinPath(addon_path, 'changelog.txt')
+	else:
+		changelog_file = joinPath(addon_path, 'fullchangelog.txt')
 	if not existsPath(changelog_file):
 		from resources.lib.modules.control import notification
 		return notification(message='ChangeLog File not found.')

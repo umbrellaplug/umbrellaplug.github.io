@@ -19,6 +19,7 @@ from resources.lib.modules.source_utils import supported_video_extensions
 getLS = control.lang
 getSetting = control.setting
 base_url = 'https://api.alldebrid.com/v4/'
+base_url_2 = 'https://api.alldebrid.com/v4.1/'
 user_agent = 'Umbrella'
 ad_icon = control.joinPath(control.artPath(), 'alldebrid.png')
 ad_qr = control.joinPath(control.artPath(), 'alldebridqr.png')
@@ -46,7 +47,10 @@ class AllDebrid:
 			if self.token == '':
 				log_utils.log('No All-Debrid Token Found')
 				return None
-			url = base_url + url + '?agent=%s&apikey=%s' % (user_agent, self.token) + url_append
+			if url == 'magnet/status':
+				url = base_url_2 + url + '?agent=%s&apikey=%s' % (user_agent, self.token) + url_append
+			else:
+				url = base_url + url + '?agent=%s&apikey=%s' % (user_agent, self.token) + url_append
 			response = session.get(url, timeout=self.timeout)
 			if 'Response [500]' in str(response):
 				log_utils.log('AllDebrid: Status code 500 – Internal Server Error', __name__, log_utils.LOGWARNING)
@@ -100,8 +104,10 @@ class AllDebrid:
 
 	def auth_loop(self):
 		control.sleep(5000)
-		response = session.get(self.check_url, timeout=self.timeout).json()
-		response = response['data']
+		data = {'check': self.check, 'pin': self.pin}
+		url = base_url + 'pin/check'
+		response = session.post(url, data).json()
+		response = response.get('data')
 		if 'error' in response:
 			self.token = 'failed'
 			control.notification(message=40021, icon=ad_icon)
@@ -121,7 +127,7 @@ class AllDebrid:
 
 	def auth(self, fromSettings=0):
 		self.token = ''
-		url = base_url + 'pin/get?agent=%s' % user_agent
+		url = base_url_2 + 'pin/get?agent=%s' % user_agent
 		response = session.get(url, timeout=self.timeout).json()
 		response = response['data']
 		line = '%s\n%s'
@@ -132,7 +138,8 @@ class AllDebrid:
 			self.progressDialog = control.progressDialog
 			self.progressDialog.create(getLS(40056))
 		self.progressDialog.update(-1, line % (getLS(32513) % (self.highlight_color,'https://alldebrid.com/pin/'), getLS(32514) % (self.highlight_color,response['pin'])))
-		self.check_url = response.get('check_url')
+		self.check = response.get('check')
+		self.pin = response.get('pin')
 		control.sleep(2000)
 		while not self.token:
 			if self.progressDialog.iscanceled():

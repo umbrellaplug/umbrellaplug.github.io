@@ -27,7 +27,7 @@ retries = Retry(total=4, backoff_factor=0.3, status_forcelist=[429, 500, 502, 50
 session.mount('https://api.trakt.tv', HTTPAdapter(max_retries=retries, pool_maxsize=100))
 highlight_color = getSetting('highlight.color')
 server_notification = getSetting('trakt.server.notifications') == 'true'
-service_syncInterval = int(getSetting('trakt.service.syncInterval')) if getSetting('trakt.service.syncInterval') else 15
+service_syncInterval = int(getSetting('background.service.syncInterval')) if getSetting('background.service.syncInterval') else 15
 trakt_icon = control.joinPath(control.artPath(), 'trakt.png')
 trakt_qr = control.joinPath(control.artPath(), 'traktqr.png')
 
@@ -105,7 +105,8 @@ def re_auth(headers):
 				control.notification(title=32315, message=33677)
 				return False
 			token, refresh = response['access_token'], response['refresh_token']
-			expires = str(time() + 7776000)
+			#expires = str(time() + 7776000)
+			expires = str(time() + 86400) #new 24 hour token
 			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 			setSetting('trakt.isauthed', 'true')
 			setSetting('trakt.user.token', token)
@@ -129,14 +130,14 @@ def traktAuth(fromSettings=0):
 		deviceCode = getTraktDeviceToken(traktDeviceCode)
 		if deviceCode:
 			deviceCode = deviceCode.json()
-			expires_at = time.time() + 7776000
+			#expires_at = time.time() + 7776000
+			expires_at = time.time() + 86400 #new value for 24 hours.
 			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 			control.setSetting('trakt.token.expires', str(expires_at))
 			control.setSetting('trakt.user.token', deviceCode["access_token"])
 			control.setSetting('trakt.scrobble', 'true')
 			control.setSetting('resume.source', '1')
 			control.setSetting('trakt.isauthed', 'true')
-			control.setSetting('trakt.indicators.alt', '1')
 			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 			control.setSetting('trakt.refreshtoken', deviceCode["refresh_token"])
 			control.sleep(1000)
@@ -149,6 +150,11 @@ def traktAuth(fromSettings=0):
 			control.notification(message=40107, icon=trakt_icon)
 			if fromSettings == 1:
 				control.openSettings('8.0', 'plugin.video.umbrella')
+			if not control.yesnoDialog('Do you want to set Trakt as your service for your watched and unwatched indicators?','','','Indicators', 'No', 'Yes'): return True
+			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
+			control.setSetting('indicators.alt', '1')
+			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
+			control.setSetting('indicators', 'Trakt')
 			return True
 		if fromSettings == 1:
 				control.openSettings('8.0', 'plugin.video.umbrella')
@@ -178,6 +184,9 @@ def traktRevoke(fromSettings=0):
 			cleared = traktsync.delete_tables(clr_traktSync)
 			if cleared:
 				log_utils.log('Trakt tables cleared after revoke.', level=log_utils.LOGINFO)
+			if getSetting('indicators.alt') == '1':
+				control.setSetting('indicators.alt', '0')
+				control.setSetting('indicators', 'Local')
 			if fromSettings == 1:
 				control.openSettings('8.0', 'plugin.video.umbrella')
 				control.dialog.ok(control.lang(32315), control.lang(40109))
@@ -298,7 +307,7 @@ def getTraktCredentialsInfo():
 	return True
 
 def getTraktIndicatorsInfo():
-	indicators = getSetting('indicators') if not getTraktCredentialsInfo() else getSetting('indicators.alt')
+	indicators = getSetting('indicators.alt')
 	indicators = True if indicators == '1' else False
 	return indicators
 

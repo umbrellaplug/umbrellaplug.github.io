@@ -177,13 +177,14 @@
 
 <!-- Sources List -->
 			<control type="list" id="2000">
+				<pagecontrol>5060</pagecontrol>
 				<description>Source Select List</description>
 				<viewtype>list</viewtype>
 				<left>0</left>
 				<top>150</top>
 				<width>1350</width>
 				<height>800</height>
-				<onright>2001</onright>
+				<onright>5060</onright>
 				<onleft>2000</onleft>
 				<onup>2000</onup>
 				<ondown>2000</ondown>
@@ -633,7 +634,7 @@
 					<control type="button" id="2001">
 						<description>View Uncached Torrents button</description>
 						<onright>2000</onright>
-						<onleft>2000</onleft>
+						<onleft>5060</onleft>
 						<width>350</width>
 						<height>100</height>
 						<textoffsetx>0</textoffsetx>
@@ -1033,6 +1034,20 @@
 						<visible>String.Contains(Container(2000).ListItem.Property(umbrella.extra_info),8CH)</visible>
 					</control>
 			</control>
+			<control type="scrollbar" id="5060">
+                <top>150</top>
+                <left>1370</left>
+                <width>10</width>
+                <height>800</height>
+                <onleft>2000</onleft>
+                <onright>2001</onright>
+                <texturesliderbackground colordiffuse="FF1F2020">common/white.png</texturesliderbackground>
+                <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
+                <texturesliderbarfocus colordiffuse="FFCCCCCC">common/white.png</texturesliderbarfocus>
+                <showonepage>false</showonepage>
+                <orientation>vertical</orientation>
+                <visible>Control.IsVisible(2000)</visible>
+            </control>
 		</control>
 	</controls>
 </window>
