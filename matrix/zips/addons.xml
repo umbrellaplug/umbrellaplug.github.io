@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.39">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.40">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -190,23 +190,9 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.39 - Feb 25th, 2025[/B]
---[Change] Changed changelog to now only be the latest changes.
---[Fix] Updated All-Debrid to use latest API changes for auth and magnet status.
---[Fix] User Agent adjustment for logs.
---[Change] Added scrollbar for source select screen.
---[Change] Added Play Trailer Select to context menu inside addon for movies and tv shows.
---[Change] Removed all Simkl integration.
---[Change] Added custom art for seasons.
---[Change] Added Context Menu Items for Customize Artwork
---[Change] Added TV Shows custom art.
---[Change] Added 0 count in for unwatched content. 
---[Change] Added use Fanart for thumb.
---[Change] Added confirmation windows when authorizing services to use for indicators if available.
---[Change] Modifed similar from library function for speed.
---[Change] Removed function to cache list of movies in library.
---[Change] Made indicators option in Settings General dynamic based on the services you have authorized.
---[Fix] Changes to using ThreadPool.
+[B]Update - v6.7.40 - Feb 26th, 2025[/B]
+--[Info] If you are using Trakt you may need to set your indicators to Trakt in Settings: General for items to be shown watched or unwatched correctly.
+--[Fix] Quick fix for all debrid issue caused by changing API to v4.1
 		</news>
 	</extension>
 

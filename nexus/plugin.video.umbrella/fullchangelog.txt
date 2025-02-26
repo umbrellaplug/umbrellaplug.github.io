@@ -1,5 +1,8 @@
-[B]Update - v6.7.419 - Feb 24th, 2025[/B]
---[Change] MORE simkl removal.
+[B]Update - v6.7.40 - Feb 26th, 2025[/B]
+--[Info] If you are using Trakt you may need to set your indicators to Trakt in Settings: General for items to be shown watched or unwatched correctly.
+--[Fix] Quick fix for all debrid issue caused by changing API to v4.1
+
+[B]Update - v6.7.39 - Feb 24th, 2025[/B]
 --[Change] Changed changelog to now only be the latest changes.
 --[Change] Reverted to using original reuselanguage invoker code using element tree.
 --[Fix] Updated All-Debrid to use latest API changes for auth and magnet status.

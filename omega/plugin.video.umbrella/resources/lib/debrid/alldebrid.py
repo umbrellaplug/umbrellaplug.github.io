@@ -47,10 +47,7 @@ class AllDebrid:
 			if self.token == '':
 				log_utils.log('No All-Debrid Token Found')
 				return None
-			if url == 'magnet/status':
-				url = base_url_2 + url + '?agent=%s&apikey=%s' % (user_agent, self.token) + url_append
-			else:
-				url = base_url + url + '?agent=%s&apikey=%s' % (user_agent, self.token) + url_append
+			url = base_url + url + '?agent=%s&apikey=%s' % (user_agent, self.token) + url_append
 			response = session.get(url, timeout=self.timeout)
 			if 'Response [500]' in str(response):
 				log_utils.log('AllDebrid: Status code 500 – Internal Server Error', __name__, log_utils.LOGWARNING)
