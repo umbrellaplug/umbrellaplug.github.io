@@ -253,10 +253,10 @@ class TorBox:
 			control.setSetting('torboxtoken', api_key)
 			control.setSetting('torbox.username', customer)
 			control.notification(message='TorBox succesfully authorized', icon=tb_icon)
-			control.openSettings('10.4', 'plugin.video.umbrella')
+			control.openSettings('9.6', 'plugin.video.umbrella')
 			return True
 		except:
-			control.openSettings('10.4', 'plugin.video.umbrella')
+			control.openSettings('9.6', 'plugin.video.umbrella')
 			return control.notification(message='Error Authorizing TorBox', icon=tb_icon)
 
 	def remove_auth(self):
@@ -265,7 +265,7 @@ class TorBox:
 			control.setSetting('torboxtoken', '')
 			control.setSetting('torbox.username', '')
 			control.notification(title='TorBox', message=40009, icon=tb_icon)
-			control.openSettings('10.4', 'plugin.video.umbrella')
+			control.openSettings('9.6', 'plugin.video.umbrella')
 		except: log_utils.error()
 
 	def account_info_to_dialog(self):

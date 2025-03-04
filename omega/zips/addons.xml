@@ -45,7 +45,7 @@
         </assets>
         <news>INFO: For latest changes see Changelog within Tools of add-on.</news>
     </extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.40">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.41">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -236,9 +236,9 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.40 - Feb 26th, 2025[/B]
---[Info] If you are using Trakt you may need to set your indicators to Trakt in Settings: General for items to be shown watched or unwatched correctly.
---[Fix] Quick fix for all debrid issue caused by changing API to v4.1
+[B]Update - v6.7.41 - Mar 4th, 2025[/B]
+--[Fix] Fixed shortcuts not opening settings to correct tabs.
+--[Fix] Changed viewtypes selection to no longer use a popup to avoid an error causing crashes.
 		</news>
 	</extension>
 

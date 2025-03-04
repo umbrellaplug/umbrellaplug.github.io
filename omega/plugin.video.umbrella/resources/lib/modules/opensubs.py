@@ -134,7 +134,7 @@ class Opensubs():
 			username = self.username
 			a_downloads = responseUser.get('allowed_downloads')
 			control.setSetting('opensubstoken', responseToken)
-			control.openSettings('15.0', 'plugin.video.umbrella')
+			control.openSettings('14.0', 'plugin.video.umbrella')
 			return control.okDialog(title=40503, message=control.getLangString(40508) % (username, a_downloads))
 		except:
 			from resources.lib.modules import log_utils
@@ -149,7 +149,7 @@ class Opensubs():
 			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 			control.setSetting('opensubstoken','')
 			self.jwt_token = ''
-			control.openSettings('15.0', 'plugin.video.umbrella')
+			control.openSettings('14.0', 'plugin.video.umbrella')
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()

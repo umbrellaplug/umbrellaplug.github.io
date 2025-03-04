@@ -592,7 +592,7 @@
 					</dependencies>
 					<control type="spinner" format="string"/>
 				</setting>
-				<setting id="sort.movies.plantowatch.type" type="integer" label="40569" help="">
+				<!-- <setting id="sort.movies.plantowatch.type" type="integer" label="40569" help="">
 					<level>0</level>
 					<default>5</default>
 					<constraints>
@@ -625,7 +625,7 @@
 						</dependency>
 					</dependencies>
 					<control type="spinner" format="string"/>
-				</setting>
+				</setting> -->
 				<setting id="sort.movies.watchlist.type" type="integer" label="35574" help="">
 					<level>0</level>
 					<default>5</default>
@@ -1866,7 +1866,7 @@
 					</dependencies>
 					<control type="spinner" format="string"/>
 				</setting>
-				<setting id="sort.shows.plantowatch.type" type="integer" label="40569" help="">
+				<!-- <setting id="sort.shows.plantowatch.type" type="integer" label="40569" help="">
 					<level>0</level>
 					<default>5</default>
 					<constraints>
@@ -1899,7 +1899,7 @@
 						</dependency>
 					</dependencies>
 					<control type="spinner" format="string"/>
-				</setting>
+				</setting> -->
 				<setting id="sort.shows.watchlist.type" type="integer" label="35574" help="">
 					<level>0</level>
 					<default>5</default>
@@ -6099,11 +6099,11 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="context.umbrella.simklManager" type="boolean" label="40576" help="">
+				<!-- <setting id="context.umbrella.simklManager" type="boolean" label="40576" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
-				</setting>
+				</setting> -->
 				<setting id="context.umbrella.clearProviders" type="boolean" label="30004" help="">
 					<level>0</level>
 					<default>true</default>

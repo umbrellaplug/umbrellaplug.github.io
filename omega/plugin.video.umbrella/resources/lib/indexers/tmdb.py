@@ -1251,7 +1251,7 @@ class Auth:
 			from resources.lib.modules.control import setSetting
 			if getSetting('tmdbusername') == '' or getSetting('tmdbpassword') == '':
 				if fromSettings == 1:
-						openSettings('9.1', 'plugin.video.umbrella')
+						openSettings('11.1', 'plugin.video.umbrella')
 				return notification(message='TMDb Account info missing', icon='ERROR')
 			url = self.auth_base_link + '/token/new?api_key=%s' % self.API_key
 			result = requests.get(url).json()
@@ -1274,14 +1274,14 @@ class Auth:
 						setSetting('tmdb.sessionid', session_id)
 						notification(message='TMDb Successfully Authorized')
 						if fromSettings == 1:
-							openSettings('9.1', 'plugin.video.umbrella')
+							openSettings('11.1', 'plugin.video.umbrella')
 					else: 
 						notification(message='TMDb Authorization Cancelled')
 						if fromSettings == 1:
-							openSettings('9.1', 'plugin.video.umbrella')
+							openSettings('11.1', 'plugin.video.umbrella')
 			else:
 				if fromSettings == 1:
-						openSettings('9.1', 'plugin.video.umbrella')
+						openSettings('11.1', 'plugin.video.umbrella')
 				return notification(message='Please check TMDB Account Info and Password.', icon='ERROR')
 		except:
 			from resources.lib.modules import log_utils
@@ -1298,7 +1298,7 @@ class Auth:
 				setSetting('tmdb.sessionid', '')
 				notification(message='TMDb session_id successfully deleted')
 				if fromSettings == 1:
-					openSettings('9.1', 'plugin.video.umbrella')
+					openSettings('11.1', 'plugin.video.umbrella')
 			else:
 				from resources.lib.modules import log_utils
 				log_utils.log('TMDb Revoke session_id FAILED: %s' % result.get('status_message', ''), __name__, log_utils.LOGWARNING)
@@ -1306,10 +1306,10 @@ class Auth:
 					setSetting('tmdb.sessionid', '')
 					notification(message=result.get('status_message', ''), icon='ERROR')
 					if fromSettings == 1:
-						openSettings('9.1', 'plugin.video.umbrella')
+						openSettings('11.1', 'plugin.video.umbrella')
 				else:
 					if fromSettings == 1:
-						openSettings('9.1', 'plugin.video.umbrella')
+						openSettings('11.1', 'plugin.video.umbrella')
 					notification(message='TMDb session_id deletion FAILED', icon='ERROR')
 		except:
 			from resources.lib.modules import log_utils

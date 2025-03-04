@@ -867,9 +867,13 @@ def router(argv2):
 		elif action == 'tools_searchNavigator':
 			from resources.lib.menus import navigator
 			navigator.Navigator().search(folderName=folderName)
+		elif action == 'tools_viewTypesNavigator':
+			from resources.lib.menus import navigator
+			navigator.Navigator().viewTypeNavigator(folderName=folderName)
 		elif action == 'tools_viewsNavigator':
 			from resources.lib.menus import navigator
-			navigator.Navigator().views()
+			url = params.get('url')
+			navigator.Navigator().views(content=url)
 		elif action == 'tools_loggingNavigator':
 			from resources.lib.menus import navigator
 			navigator.Navigator().loggingNavigator(folderName=folderName)
@@ -890,7 +894,7 @@ def router(argv2):
 		elif action == 'tools_openSettings':
 			control.openSettings(query)
 		elif action == 'tools_contextUmbrellaSettings':
-			control.openSettings('0.0', 'context.umbrella')
+			control.openSettings('16.0', 'context.umbrella')
 			control.trigger_widget_refresh()
 		elif action == 'tools_traktManager':
 			from resources.lib.modules import trakt

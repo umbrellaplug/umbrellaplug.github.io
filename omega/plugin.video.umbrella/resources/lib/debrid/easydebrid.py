@@ -114,7 +114,7 @@ class EasyDebrid:
 		customer = r['id']
 		control.setSetting('easydebridtoken', api_key)
 		control.notification(title='EasyDebrid',message=40539, icon=ed_icon)
-		control.openSettings('10.2', 'plugin.video.umbrella')
+		control.openSettings('9.2', 'plugin.video.umbrella')
 		return True
 
 	def remove_auth(self):
@@ -122,7 +122,7 @@ class EasyDebrid:
 			self.api_key = ''
 			control.setSetting('easydebridtoken', '')
 			control.okDialog(title='EasyDebrid', message=40009)
-			control.openSettings('10.2', 'plugin.video.umbrella')
+			control.openSettings('9.2', 'plugin.video.umbrella')
 		except: log_utils.error()
 
 	def account_info_to_dialog(self):

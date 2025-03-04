@@ -6611,3 +6611,19 @@ msgstr ""
 msgctxt "#40590"
 msgid "Show [COLOR yellow]Full Changelog[/COLOR]..."
 msgstr ""
+
+msgctxt "#40591"
+msgid "Movies Viewtype"
+msgstr ""
+
+msgctxt "#40592"
+msgid "TV Shows Viewtype"
+msgstr ""
+
+msgctxt "#40593"
+msgid "Seasons Viewtype"
+msgstr ""
+
+msgctxt "#40594"
+msgid "Episodes Viewtype"
+msgstr ""
