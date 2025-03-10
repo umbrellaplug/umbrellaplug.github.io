@@ -208,7 +208,8 @@ def getShowCount(indicators, imdb, tvdb): # ID's currently not used. totals from
 def getSeasonCount(imdb, tvdb, season=None):
 	try:
 		if all(not value for value in (imdb, tvdb)): return
-		if not traktIndicators or not simklIndicators: return None # metahandler does not currently provide counts
+		#if not traktIndicators or not simklIndicators: return None # metahandler does not currently provide counts
+		if not traktIndicators: return None
 		if traktIndicators: result = trakt.seasonCount(imdb, tvdb)
 		elif simklIndicators: result = simkl.seasonCount(imdb, tvdb)
 		if not result: return None

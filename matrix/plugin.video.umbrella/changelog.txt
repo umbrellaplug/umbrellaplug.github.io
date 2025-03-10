@@ -1,3 +1,2 @@
-[B]Update - v6.7.41 - Mar 4th, 2025[/B]
---[Fix] Fixed shortcuts not opening settings to correct tabs.
---[Fix] Changed viewtypes selection to no longer use a popup to avoid an error causing crashes.
+[B]Update - v6.7.42 - Mar 10th, 2025[/B]
+--[Fix] Quick fix for counts not showing correctly in season views.
