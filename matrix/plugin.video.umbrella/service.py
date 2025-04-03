@@ -22,6 +22,7 @@ properties = [
 	'context.umbrella.playTrailer',
 	'context.umbrella.playTrailerSelect',
 	'context.umbrella.traktManager',
+	'context.umbrella.mdblistManager',
 	# 'context.umbrella.simklManager',
 	'context.umbrella.clearProviders',
 	'context.umbrella.clearBookmark',

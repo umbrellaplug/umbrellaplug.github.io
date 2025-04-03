@@ -31,3 +31,9 @@ class BaseDialog(WindowXMLDialog):
 		if not isinstance(control, ControlProgress):
 			raise AttributeError("Control with Id {} should be of type ControlProgress".format(control_id))
 		return control
+
+	def reset_window(self, _control):
+		self.get_control(_control).reset()
+
+	def get_control(self, control_id):
+		return self.getControl(control_id)

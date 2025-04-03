@@ -201,6 +201,12 @@ def router(argv2):
 	elif action == 'mdbUserListMovies':
 		from resources.lib.menus import movies
 		movies.Movies().getMDBUserList(folderName=folderName)
+	elif action == 'mdbUserWatchListMovies':
+		from resources.lib.menus import movies
+		movies.Movies().get_mdbuser_watchlist(folderName=folderName)
+	elif action == 'mdbUserWatchListTVShows':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().get_mdbuser_watchlist(folderName=folderName)
 	elif action == 'moviesimilarFromLibrary':
 		from resources.lib.menus import movies
 		movies.Movies().similarFromLibrary(tmdb=tmdb)
@@ -861,6 +867,7 @@ def router(argv2):
 		elif action == 'tools_traktToolsNavigator':
 			from resources.lib.menus import navigator
 			navigator.Navigator().traktTools(folderName=folderName)
+		
 		elif action == 'tools_simklToolsNavigator':
 			from resources.lib.menus import navigator
 			navigator.Navigator().simklTools(folderName=folderName)
@@ -902,6 +909,9 @@ def router(argv2):
 			unfinished = (params.get('unfinished') == 'True') if params.get('unfinished') else False
 			tvshow = (params.get('tvshow') == 'tvshow')
 			trakt.manager(name, imdb, tvdb, season, episode, watched=watched, unfinished=unfinished,tvshow=tvshow)
+		elif action == 'tools_mdbWatchlist':
+			from resources.lib.modules import mdblist
+			mdblist.manager(name, imdb, tvdb, tmdb)
 		elif action == 'tools_simklManager':
 			watched = (params.get('watched') == 'True') if params.get('watched') else None
 			unfinished = (params.get('unfinished') == 'True') if params.get('unfinished') else False

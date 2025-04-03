@@ -6099,6 +6099,11 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="context.umbrella.mdblistManager" type="boolean" label="40595" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
 				<!-- <setting id="context.umbrella.simklManager" type="boolean" label="40576" help="">
 					<level>0</level>
 					<default>true</default>

@@ -192,6 +192,7 @@ class Movies:
 		self.lang = control.apiLanguage()['trakt']
 		self.prefer_fanArt = getSetting('prefer.fanarttv') == 'true'
 		self.simklCredentials = simkl.getSimKLCredentialsInfo()
+		self.mdblist_authed = getSetting('mdblist.api') != ''
 
 	def get(self, url, idx=True, create_directory=True, folderName=''):
 		self.list = []
@@ -325,7 +326,7 @@ class Movies:
 				from resources.lib.modules import log_utils
 				log_utils.error()
 		return self.list
-	def getMDBUserList(self, create_directory=True, folderName=''): 
+	def getMDBUserList(self, create_directory=True, folderName=''):
 		self.list = []
 		try:
 			self.list = cache.get(self.mbd_user_lists, self.mdblist_hours)
@@ -356,6 +357,21 @@ class Movies:
 				from resources.lib.modules import log_utils
 				log_utils.error()
 		return self.list
+	def get_mdbuser_watchlist(self, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			#self.list = cache.get(self.mbd_user_watchlist, self.mdblist_hours)
+			listType = 'movie'
+			self.list = cache.get(mdblist.get_user_watchlist, 0, listType)
+			if self.list is None: self.list = []
+			self.worker()
+			self.sort(type='movies.watchlist')
+			return self.movieDirectory(self.list, folderName=folderName)
+
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
 	def getTraktPublicLists(self, url, create_directory=True, folderName=''):
 		self.list = []
 		try:
@@ -2176,6 +2192,8 @@ class Movies:
 					watched = getMovieOverlay(indicators, imdb) == '5'
 					if self.traktCredentials:
 						cm.append((traktManagerMenu, 'RunPlugin(%s?action=tools_traktManager&name=%s&imdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, watched, unfinished)))
+					if self.mdblist_authed:
+						cm.append(('MDBList Watchlist', 'RunPlugin(%s?action=tools_mdbWatchlist&name=%s&imdb=%s)' % (sysaddon, sysname, imdb)))
 					if self.simklCredentials:
 						cm.append((simklManagerMenu, 'RunPlugin(%s?action=tools_simklManager&name=%s&imdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, watched, unfinished)))
 					if watched:

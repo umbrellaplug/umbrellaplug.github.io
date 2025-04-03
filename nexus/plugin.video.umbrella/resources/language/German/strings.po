@@ -6415,3 +6415,15 @@ msgstr ""
 msgctxt "#40594"
 msgid "Episodes Viewtype"
 msgstr ""
+
+msgctxt "#40595"
+msgid "MDBList Watchlist"
+msgstr ""
+
+msgctxt "#40596"
+msgid "Add item to your [COLOR %s][B]MDBList Watchlist[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40597"
+msgid "Remove item from your [COLOR %s][B]MDBList Watchlist[/B][/COLOR]"
+msgstr ""

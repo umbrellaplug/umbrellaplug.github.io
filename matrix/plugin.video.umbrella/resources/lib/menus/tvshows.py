@@ -168,6 +168,7 @@ class TVshows:
 		self.is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
 		self.simkl_link = 'https://api.simkl.com'
 		self.prefer_fanArt = getSetting('prefer.fanarttv') == 'true'
+		self.mdblist_authed = getSetting('mdblist.api') != ''
 
 	def get(self, url, idx=True, create_directory=True, folderName=''):
 		self.list = []
@@ -1483,6 +1484,21 @@ class TVshows:
 				log_utils.error()
 		return self.list
 
+	def get_mdbuser_watchlist(self, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			#self.list = cache.get(self.mbd_user_watchlist, self.mdblist_hours)
+			listType = 'tvshow'
+			self.list = cache.get(mdblist.get_user_watchlist, 0, listType)
+			if self.list is None: self.list = []
+			self.worker()
+			self.sort(type='shows.watchlist')
+			return self.tvshowDirectory(self.list, folderName=folderName)
+
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
 	def imdb_list(self, url, isRatinglink=False, folderName=''):
 		list = [] ; items = [] ; dupes = []
 		try:
@@ -2016,6 +2032,8 @@ class TVshows:
 						meta.update({'playcount': 0, 'overlay': 4})
 						cm.append((watchedMenu, 'RunPlugin(%s?action=playcount_TVShow&name=%s&imdb=%s&tvdb=%s&query=5)' % (sysaddon, systitle, imdb, tvdb)))
 				except: pass
+				if self.mdblist_authed:
+					cm.append(('MDBList Watchlist', 'RunPlugin(%s?action=tools_mdbWatchlist&name=%s&tvdb=%s&tmdb=%s)' % (sysaddon,systitle, tvdb, tmdb)))
 				cm.append(('Customize Artwork', 'RunPlugin(%s?action=customizeArt&mediatype=%s&imdb=%s&tmdb=%s&tvdb=%s&poster=%s&fanart=%s&landscape=%s&banner=%s&clearart=%s&clearlogo=%s)' % (sysaddon, 'show', imdb, tmdb, tvdb, poster, fanart, landscape, banner, clearart, clearlogo)))
 				cm.append((findSimilarMenu, 'Container.Update(%s?action=tvshows&url=%s)' % (sysaddon, quote_plus('https://api.trakt.tv/shows/%s/related?limit=20&page=1,return' % imdb))))
 				cm.append((playRandom, 'RunPlugin(%s?action=play_Random&rtype=season&tvshowtitle=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&art=%s)' % (sysaddon, systitle, year, imdb, tmdb, tvdb, sysart)))

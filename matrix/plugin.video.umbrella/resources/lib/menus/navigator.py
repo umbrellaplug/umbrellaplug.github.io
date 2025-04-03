@@ -160,6 +160,7 @@ class Navigator:
 			self.addDirectoryItem(getLS(40465), 'getFavouritesMovies&url=favourites_movies&folderName=%s' % (quote_plus(getLS(40465))), 'movies.png', 'DefaultMovies.png')
 		if getMenuEnabled('navi.movie.mdblist.userList') and getSetting('mdblist.api') != '':
 			self.addDirectoryItem(40087, 'mdbUserListMovies&folderName=%s' % quote_plus(getLS(40087)), 'mdblist.png' if self.iconLogos else 'movies.png', 'DefaultMovies.png')
+			self.addDirectoryItem(40595,'mdbUserWatchListMovies&folderName=%s' % quote_plus(getLS(40595)), 'mdblist.png' if self.iconLogos else 'movies.png', 'DefaultMovies.png')
 		# if self.simkltoken:
 		# 	self.addDirectoryItem('Simkl Completed', 'movies&url=simklhistory&folderName=%s' % quote_plus('Simkl Completed'), 'simkl.png' ,'simkl.png')
 		# 		#self.addDirectoryItem(40549, 'movies&url=https://api.simkl.com/sync/all-items/movies/plantowatch?&folderName=%s' % quote_plus(getLS(40549)), 'simkl.png' ,'simkl.png')
@@ -260,6 +261,7 @@ class Navigator:
 		if self.favoriteEpisodes: self.addDirectoryItem(getLS(40467), 'getFavouritesEpisodes&folderName=%s' % (quote_plus(getLS(40467))), 'tvshows.png', 'DefaultTVShows.png')
 		if getMenuEnabled('navi.tv.mdblist.userList') and getSetting('mdblist.api') != '':
 			self.addDirectoryItem(40087, 'mdbUserListTV&folderName=%s' % quote_plus(getLS(40087)), 'mdblist.png' if self.iconLogos else 'tvshows.png', 'DefaultMovies.png')
+			self.addDirectoryItem(40595,'mdbUserWatchListTVShows&folderName=%s' % quote_plus(getLS(40595)), 'mdblist.png' if self.iconLogos else 'movies.png', 'DefaultMovies.png')
 		# if self.simklCredentials:
 		# 	if self.simklIndicators:
 		# 		self.addDirectoryItem('Simkl Progress Episodes', 'simkl_calendar&url=/sync/all-items/shows/watching&folderName=%s' % quote_plus("Simkl Progress Episodes"), 'simkl.png', 'simkl.png', queue=True)

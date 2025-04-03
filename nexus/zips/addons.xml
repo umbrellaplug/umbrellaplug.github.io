@@ -45,7 +45,7 @@
         </assets>
         <news>INFO: For latest changes see Changelog within Tools of add-on.</news>
     </extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.42">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.43">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -101,7 +101,6 @@
 					[String.IsEqual(ListItem.dbtype,tvshow) | String.IsEqual(ListItem.dbtype,movie)]
 				</visible>
 			</item>
-			
 			<item library="resources\lib\context\traktManager.py">
 				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Trakt Manager</label>
 				<visible>
@@ -109,6 +108,15 @@
 					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
 					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
 					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,tvshow) | String.IsEqual(ListItem.dbtype,season) | String.IsEqual(ListItem.dbtype,movie)]
+				</visible>
+			</item>
+			<item library="resources\lib\context\mdblistManager.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]MDBList Watchlist</label>
+				<visible>
+					!String.IsEmpty(Window(home).Property(context.umbrella.mdblistManager)) +
+					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
+					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
+					[String.IsEqual(ListItem.dbtype,tvshow) | String.IsEqual(ListItem.dbtype,movie)]
 				</visible>
 			</item>
 			<item library="resources\lib\context\clearProviders.py">
@@ -236,8 +244,10 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.42 - Mar 10th, 2025[/B]
---[Fix] Quick fix for counts not showing correctly in season views.
+[B]Update - v6.7.43 - April 3rd, 2025[/B]
+--[Change] Added support for MDblist Watchlist.
+--[Fix] Change in colorpick code.
+--[Info] MDBList will be changed to use local cache in a future update.
 		</news>
 	</extension>
 
