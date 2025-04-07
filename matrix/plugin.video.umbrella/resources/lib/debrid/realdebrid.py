@@ -36,7 +36,7 @@ hosts_domains_url = 'hosts/domains'
 hosts_regex_url = 'hosts/regex'
 torrents_url = 'torrents/'
 rd_icon = control.joinPath(control.artPath(), 'realdebrid.png')
-rd_qr = control.joinPath(control.artPath(), 'realdebridqr.png')
+
 addonFanart = control.addonFanart()
 
 session = requests.Session()
@@ -154,6 +154,8 @@ class RealDebrid:
 		response = session.get(url).json()
 		line = '%s\n%s\n%s'
 		if control.setting('dialogs.useumbrelladialog') == 'true':
+			from resources.lib.modules import tools
+			rd_qr = tools.make_qr(response.get('direct_verification_url'))
 			self.progressDialog = control.getProgressWindow(getLS(40055), rd_qr, 1)
 			self.progressDialog.set_controls()
 		else:

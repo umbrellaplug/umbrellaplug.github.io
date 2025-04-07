@@ -22,7 +22,7 @@ base_url = 'https://api.alldebrid.com/v4/'
 base_url_2 = 'https://api.alldebrid.com/v4.1/'
 user_agent = 'Umbrella'
 ad_icon = control.joinPath(control.artPath(), 'alldebrid.png')
-ad_qr = control.joinPath(control.artPath(), 'alldebridqr.png')
+#ad_qr = control.joinPath(control.artPath(), 'alldebridqr.png')
 addonFanart = control.addonFanart()
 invalid_extensions = ('.bmp', '.exe', '.gif', '.jpg', '.nfo', '.part', '.png', '.rar', '.sample.', '.srt', '.txt', '.zip', '.clpi', '.mpls', '.bdmv', '.xml', '.crt', 'crl', 'sig')
 
@@ -129,6 +129,8 @@ class AllDebrid:
 		response = response['data']
 		line = '%s\n%s'
 		if control.setting('dialogs.useumbrelladialog') == 'true':
+			from resources.lib.modules import tools
+			ad_qr = tools.make_qr(f"https://alldebrid.com/pin?pin={response['pin']}")
 			self.progressDialog = control.getProgressWindow(getLS(40056), ad_qr, 1)
 			self.progressDialog.set_controls()
 		else:

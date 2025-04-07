@@ -266,4 +266,16 @@ def originCountry_Select():
 		selected = [countryDict[list(countryDict.keys())[i]] for i in multiselected]
 		control.setSetting('originCountry', '|'.join(selected))
 
-    
+def make_qr(url):
+    #import segno and make a qr code using the url passed in. save the image. return the path.
+	if url == None: return
+	try:
+		from resources.lib.externals import segno
+		qrcode = segno.make(url, micro=False)
+		qrcode.save(control.joinPath(control.artPath(), "qr.png"), scale=20)
+		image = control.joinPath(control.artPath(), 'qr.png')
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+		return
+	return image

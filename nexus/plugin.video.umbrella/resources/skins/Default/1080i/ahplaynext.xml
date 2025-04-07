@@ -7,7 +7,7 @@
     <controls>
         <control type="image">
             <height>400</height>
-            <texture>common/dim-top.png</texture>
+            <texture>common/umbdim-top.png</texture>
         </control>
         <control type="group">
             <include>Dimension_UpNext</include>
@@ -80,7 +80,7 @@
 								<width>26</width>
 								<height>26</height>
 								<aspect>keep</aspect>
-								<texture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/star.png</texture>
+								<texture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/umbstar.png</texture>
 								<animation effect="slide" end="0,8" time="0" condition="true">Conditional</animation>
 								<visible>!String.IsEmpty(Window().Property(umbrella.rating))</visible>
 							</control>

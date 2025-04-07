@@ -6,7 +6,7 @@
             <top>0</top>
             <width>1920</width>
             <height>1080</height>
-            <texture colordiffuse="FF000000">common/white.png</texture>
+            <texture colordiffuse="FF000000">common/umbwhite.png</texture>
             <animation type="WindowOpen" reversible="false">
                 <effect type="fade" start="0" end="80" time="200" tween="sine" easing="in" />
             </animation>
@@ -21,12 +21,12 @@
             <control type="image">
                 <height>430</height>
                 <width>920</width>
-                <texture border="16" colordiffuse="$INFO[Window.Property(umbrella.backgroundColor)]">common/dialog.png</texture>
+                <texture border="16" colordiffuse="$INFO[Window.Property(umbrella.backgroundColor)]">common/umbdialog.png</texture>
             </control>
             <control type="image">
                 <height>60</height>
                 <width>920</width>
-                <texture border="16" colordiffuse="$INFO[Window.Property(umbrella.titleBarColor)]">common/dialogtop.png</texture>
+                <texture border="16" colordiffuse="$INFO[Window.Property(umbrella.titleBarColor)]">common/umbdialogtop.png</texture>
             </control>
             <control type="image">
                 <left>5</left>
@@ -65,7 +65,7 @@
                     <top>85</top>
                     <width>250</width>
                     <height>250</height>
-                    <texture>common/spinner.gif</texture>
+                    <texture>common/umbspinner.gif</texture>
                     <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
                     <aspectratio aligny="top">stretch</aspectratio>
                     <visible>Integer.IsGreater(Window().Property(percent),0)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>

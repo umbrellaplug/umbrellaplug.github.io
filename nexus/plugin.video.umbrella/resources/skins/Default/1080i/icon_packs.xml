@@ -37,8 +37,8 @@
 						<width>120</width>
 						<height>70</height>
 						<textoffsetx>0</textoffsetx>
-						<texturefocus colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/button5.png</texturefocus>
-						<texturenofocus>common/button5.png</texturenofocus>
+						<texturefocus colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/umbbutton5.png</texturefocus>
+						<texturenofocus>common/umbbutton5.png</texturenofocus>
 						<label>Back</label>
 						<font>font12</font>
 						<align>center</align>
@@ -129,14 +129,14 @@
 						<top>0</top>
 						<width>1920</width>
 						<height>100</height>
-						<texture colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/white.png</texture>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/umbwhite.png</texture>
 					</control>
 					<control type="image">
 						<left>0</left>
 						<top>0</top>
 						<width>1920</width>
 						<height>100</height>
-						<texture colordiffuse="gainsboro">common/white.png</texture>
+						<texture colordiffuse="gainsboro">common/umbwhite.png</texture>
 						<visible>!Control.HasFocus(2050)</visible>
 					</control>
 					<control type="image">

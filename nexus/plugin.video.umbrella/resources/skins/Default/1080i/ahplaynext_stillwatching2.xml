@@ -12,7 +12,7 @@
     <controls>
         <control type="image">
             <height>400</height>
-            <texture>common/dim-top.png</texture>
+            <texture>common/umbdim-top.png</texture>
         </control>
         <control type="group">
             <left>80</left>
@@ -57,8 +57,8 @@
                 <control type="progress" id="3014">
                     <bottom>0</bottom>
                     <height>8</height>
-                    <texturebg colordiffuse="FF00000">common/progresswhitesmall.png</texturebg>
-                    <midtexture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/progresswhitesmall.png</midtexture>
+                    <texturebg colordiffuse="FF00000">common/umbprogresswhitesmall.png</texturebg>
+                    <midtexture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/umbprogresswhitesmall.png</midtexture>
                 </control>
             </control>
             <control type="group">
@@ -129,7 +129,7 @@
                                     <width>26</width>
                                     <height>26</height>
                                     <aspect>keep</aspect>
-                                    <texture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/star.png</texture>
+                                    <texture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/umbstar.png</texture>
                                     <animation effect="slide" end="0,8" time="0" condition="true">Conditional</animation>
                                     <visible>!String.IsEmpty(Window().Property(umbrella.rating))</visible>
                                 </control>
@@ -160,7 +160,7 @@
                                     <centertop>50%</centertop>
                                     <width>64</width>
                                     <height>64</height>
-                                    <texture colordiffuse="b3dedede">common/eye2.png</texture>
+                                    <texture colordiffuse="b3dedede">common/umbeye2.png</texture>
                                 </control>
                             </control>
                             <control type="group">
@@ -173,7 +173,7 @@
                                     <centertop>50%</centertop>
                                     <width>64</width>
                                     <height>64</height>
-                                    <texture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/eye2.png</texture>
+                                    <texture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/umbeye2.png</texture>
                                 </control>
                             </control>
                         </control>
@@ -221,7 +221,7 @@
                                     <centertop>50%</centertop>
                                     <width>64</width>
                                     <height>64</height>
-                                    <texture colordiffuse="b3dedede">common/play3.png</texture>
+                                    <texture colordiffuse="b3dedede">common/umbplay3.png</texture>
                                 </control>
                             </control>
                             <control type="group">
@@ -234,7 +234,7 @@
                                     <centertop>50%</centertop>
                                     <width>64</width>
                                     <height>64</height>
-                                    <texture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/play3.png</texture>
+                                    <texture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/umbplay3.png</texture>
                                 </control>
                             </control>
                         </control>
@@ -282,7 +282,7 @@
                                     <centertop>50%</centertop>
                                     <width>64</width>
                                     <height>64</height>
-                                    <texture colordiffuse="b3dedede">common/disabled.png</texture>
+                                    <texture colordiffuse="b3dedede">common/umbdisabled.png</texture>
                                 </control>
                             </control>
                             <control type="group">
@@ -295,7 +295,7 @@
                                     <centertop>50%</centertop>
                                     <width>64</width>
                                     <height>64</height>
-                                    <texture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/disabled.png</texture>
+                                    <texture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/umbdisabled.png</texture>
                                 </control>
                             </control>
                         </control>

@@ -35,7 +35,7 @@ class Plex():
 			'X-Plex-Provides': 'player',
 			'X-Plex-Client-Identifier': str(hex(uuid.getnode()))}
 		self.highlight_color = control.setting('highlight.color')
-		self.plex_qr = control.joinPath(control.artPath(), 'plex.png')
+		#self.plex_qr = control.joinPath(control.artPath(), 'plex.png')
 		#log_utils.log('Plex Headers: X-Plex-Platform-Version: %s X-Plex-Device: %s X-Plex-Model: %s X-Plex-Client-Identifier: %s' % (str(kodiVersion), str(platform_machine()), str(platform_system()), str(hex(uuid.getnode()))), __name__, log_utils.LOGWARNING)
 
 	def auth_loop(self):
@@ -65,7 +65,9 @@ class Plex():
 		code = re.search(r'<code>(.*?)</code>', code_data, re.I).group(1)
 		self.device_id = re.search(r'<id.+?>(.*?)</id>', code_data, re.I).group(1)
 		if control.setting('dialogs.useumbrelladialog') == 'true':
-			self.progressDialog = control.getProgressWindow('Plex Auth', self.plex_qr, 1)
+			from resources.lib.modules import tools
+			plex_qr = tools.make_qr("https://www.plex.tv/link/")
+			self.progressDialog = control.getProgressWindow('Plex Auth', plex_qr, 1)
 			self.progressDialog.set_controls()
 		else:
 			self.progressDialog = control.progressDialog

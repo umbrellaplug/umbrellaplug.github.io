@@ -27,8 +27,8 @@
 				<width>1350</width>
 				<height>7</height>
 				<reveal>true</reveal>
-				<texturebg colordiffuse="FF302F2F">common/white.png</texturebg>
-				<midtexture colordiffuse="FFFF4081">common/white.png</midtexture>
+				<texturebg colordiffuse="FF302F2F">common/umbwhite.png</texturebg>
+				<midtexture colordiffuse="FFFF4081">common/umbwhite.png</midtexture>
 			</control>
 			<control type="button" id="2045">
 				<description>Stop Trailer playback Button</description>
@@ -39,8 +39,8 @@
 				<width>120</width>
 				<height>70</height>
 				<textoffsetx>0</textoffsetx>
-				<texturefocus colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/button5.png</texturefocus>
-				<texturenofocus>common/button5.png</texturenofocus>
+				<texturefocus colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/umbbutton5.png</texturefocus>
+				<texturenofocus>common/umbbutton5.png</texturenofocus>
 				<label>$ADDON[plugin.video.umbrella 32170]</label>
 				<font>font12</font>
 				<align>center</align>
@@ -174,14 +174,14 @@
 						<top>0</top>
 						<width>1350</width>
 						<height>100</height>
-						<texture colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/white.png</texture>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/umbwhite.png</texture>
 					</control>
 					<control type="image">
 						<left>0</left>
 						<top>0</top>
 						<width>1350</width>
 						<height>100</height>
-						<texture colordiffuse="gainsboro">common/white.png</texture>
+						<texture colordiffuse="gainsboro">common/umbwhite.png</texture>
 						<visible>!Control.HasFocus(2050)</visible>
 					</control>
 					<control type="image">
@@ -267,8 +267,8 @@
 						<width>120</width>
 						<height>70</height>
 						<textoffsetx>0</textoffsetx>
-						<texturefocus colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/button5.png</texturefocus>
-						<texturenofocus>common/button5.png</texturenofocus>
+						<texturefocus colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/umbbutton5.png</texturefocus>
+						<texturenofocus>common/umbbutton5.png</texturenofocus>
 						<label>$ADDON[plugin.video.umbrella 32179]</label>
 						<font>font12</font>
 						<align>center</align>
@@ -284,8 +284,8 @@
 						<width>120</width>
 						<height>70</height>
 						<textoffsetx>0</textoffsetx>
-						<texturefocus colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/button5.png</texturefocus>
-						<texturenofocus>common/button5.png</texturenofocus>
+						<texturefocus colordiffuse="$INFO[Window().Property(umbrella.highlight.color)]">common/umbbutton5.png</texturefocus>
+						<texturenofocus>common/umbbutton5.png</texturenofocus>
 						<label>$ADDON[plugin.video.umbrella 32180]</label>
 						<font>font12</font>
 						<align>center</align>

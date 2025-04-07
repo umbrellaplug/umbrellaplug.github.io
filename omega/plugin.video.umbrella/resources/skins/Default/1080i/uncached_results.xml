@@ -305,7 +305,7 @@
 						<top>0</top>
 						<width>1350</width>
 						<height>100</height>
-						<texture colordiffuse="$INFO[ListItem.Property(umbrella.providerhighlight)]">common/white.png</texture>
+						<texture colordiffuse="$INFO[ListItem.Property(umbrella.providerhighlight)]">common/umbwhite.png</texture>
 					</control>
 					<control type="image">
 						<description>Quality Icon</description>

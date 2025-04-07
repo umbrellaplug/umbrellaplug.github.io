@@ -23,7 +23,7 @@
             <top>15</top>
             <width>50</width>
             <height>50</height>
-            <texture>common/spinner.gif</texture>
+            <texture>common/umbspinner.gif</texture>
             <animation effect="fade" start="80" end="80" time="0">WindowOpen</animation>
             <visible>String.IsEqual(Window.Property(umbrella.icononly),true)+!String.IsEqual(Window.Property(umbrella.isHidden),true)</visible>
         </control>
@@ -56,7 +56,7 @@
             <width>75</width>
             <height>75</height>
             <aspectratio>keep</aspectratio>
-            <texture>common/spinner.gif</texture>
+            <texture>common/umbspinner.gif</texture>
             <animation effect="fade" start="20" end="20" time="0">WindowOpen</animation>
             <aspectratio>keep</aspectratio>
             <visible>Integer.IsGreater(Window().Property(percent),0)+!String.IsEqual(Window.Property(umbrella.icononly),true)+!String.IsEqual(Window.Property(umbrella.isHidden),true)</visible>

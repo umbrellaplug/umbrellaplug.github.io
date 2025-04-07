@@ -53,7 +53,7 @@
                 <height>64</height>
                 <bottom>0</bottom>
                 <aspectratio scalediffuse="false">scale</aspectratio>
-                <texture colordiffuse="b3181818">common/white.png</texture>
+                <texture colordiffuse="b3181818">common/umbwhite.png</texture>
             </control>
 
             <control type="image" description="blackline">
@@ -62,7 +62,7 @@
                 <centertop>52%</centertop>
                 <centerleft>50%</centerleft>
                 <aspectratio scalediffuse="false">keep</aspectratio>
-                <texture colordiffuse="b3181818">common/circle.png</texture>
+                <texture colordiffuse="b3181818">common/umbrellacircle.png</texture>
                 <visible>Integer.IsGreater(Player.TimeRemaining,59)</visible>
             </control>
             <control type="image" description="blackline">
@@ -71,7 +71,7 @@
                 <centertop>52%</centertop>
                 <centerleft>50%</centerleft>
                 <aspectratio scalediffuse="false">keep</aspectratio>
-                <texture colordiffuse="b3181818">common/circle.png</texture>
+                <texture colordiffuse="b3181818">common/umbrellacircle.png</texture>
                 <visible>!Integer.IsGreater(Player.TimeRemaining,60)</visible>
             </control>
             <control type="label">
@@ -133,7 +133,7 @@
                 <font>font_tiny_bold</font>
                 <textcolor>ffcccccc</textcolor>
                 <focusedcolor>Selected</focusedcolor>
-                <texturefocus colordiffuse="$INFO[Window().Property(skin.selectColor)]" border="5">common/white.png</texturefocus>
+                <texturefocus colordiffuse="$INFO[Window().Property(skin.selectColor)]" border="5">common/umbwhite.png</texturefocus>
                 <texturenofocus colordiffuse="00ffffff" border="5">noop</texturenofocus>
             </control>
             <control type="image">
@@ -142,7 +142,7 @@
                 <bottom>16</bottom>
                 <width>32</width>
                 <height>32</height>
-                <texture>common/playwhite.png</texture>
+                <texture>common/umbplaywhite.png</texture>
                 <aspectratio>keep</aspectratio>
                 <animation effect="fade" start="100" end="50" time="0" condition="!Control.HasFocus(3011)">Conditional</animation>
             </control>
@@ -161,7 +161,7 @@
                 <font>font_tiny_bold</font>
                 <textcolor>ffcccccc</textcolor>
                 <focusedcolor>Selected</focusedcolor>
-                <texturefocus colordiffuse="$INFO[Window().Property(skin.selectColor)]" border="5">common/white.png</texturefocus>
+                <texturefocus colordiffuse="$INFO[Window().Property(skin.selectColor)]" border="5">common/umbwhite.png</texturefocus>
                 <texturenofocus colordiffuse="00ffffff" border="5">noop</texturenofocus>
             </control>
         </control>

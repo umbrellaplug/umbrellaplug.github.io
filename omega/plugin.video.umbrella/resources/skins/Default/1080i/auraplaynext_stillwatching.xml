@@ -35,7 +35,7 @@
                 <height>64</height>
                 <bottom>0</bottom>
                 <aspectratio scalediffuse="false">scale</aspectratio>
-                <texture colordiffuse="main_bg_70">common/white.png</texture>
+                <texture colordiffuse="main_bg_70">common/umbwhite.png</texture>
             </control>
 
             <control type="image" description="blackline">
@@ -44,7 +44,7 @@
                 <centertop>50%</centertop>
                 <centerleft>50%</centerleft>
                 <aspectratio scalediffuse="false">keep</aspectratio>
-                <texture colordiffuse="main_bg_70">common/circle.png</texture>
+                <texture colordiffuse="main_bg_70">common/umbrellacircle.png</texture>
                 <visible>Integer.IsGreater(Player.TimeRemaining,60)</visible>
             </control>
             <control type="image" description="blackline">
@@ -52,7 +52,7 @@
                 <height>64</height>
                 <centertop>25%</centertop>
                 <aspectratio scalediffuse="false">scale</aspectratio>
-                <texture colordiffuse="main_bg_70">common/white.png</texture>
+                <texture colordiffuse="main_bg_70">common/umbwhite.png</texture>
             </control>
             <control type="label">
                 <description>StillWatching</description>
@@ -70,7 +70,7 @@
                 <centertop>50%</centertop>
                 <centerleft>50%</centerleft>
                 <aspectratio scalediffuse="false">keep</aspectratio>
-                <texture colordiffuse="main_bg_70">common/circle.png</texture>
+                <texture colordiffuse="main_bg_70">common/umbrellacircle.png</texture>
                 <visible>!Integer.IsGreater(Player.TimeRemaining,61)</visible>
             </control>
             <control type="label">
@@ -121,7 +121,7 @@
                 <font>font_tiny_bold</font>
                 <textcolor>main_fg_100</textcolor>
                 <focusedcolor>Selected</focusedcolor>
-                <texturefocus colordiffuse="$VAR[ColorHighlight]" border="5">common/white.png</texturefocus>
+                <texturefocus colordiffuse="$VAR[ColorHighlight]" border="5">common/umbwhite.png</texturefocus>
                 <texturenofocus colordiffuse="00ffffff" border="5">noop</texturenofocus>
             </control>
             <control type="image">
@@ -130,7 +130,7 @@
                 <bottom>16</bottom>
                 <width>32</width>
                 <height>32</height>
-                <texture>common/playwhite.png</texture>
+                <texture>common/umbplaywhite.png</texture>
                 <aspectratio>keep</aspectratio>
                 <animation effect="fade" start="100" end="50" time="0" condition="!Control.HasFocus(3011)">Conditional</animation>
             </control>
@@ -149,7 +149,7 @@
                 <font>font_tiny_bold</font>
                 <textcolor>main_fg_100</textcolor>
                 <focusedcolor>Selected</focusedcolor>
-                <texturefocus colordiffuse="$VAR[ColorHighlight]" border="5">common/white.png</texturefocus>
+                <texturefocus colordiffuse="$VAR[ColorHighlight]" border="5">common/umbwhite.png</texturefocus>
                 <texturenofocus colordiffuse="00ffffff" border="5">noop</texturenofocus>
             </control>
         </control>

@@ -7,7 +7,7 @@
             <top>0</top>
             <width>1920</width>
             <height>1080</height>
-            <texture colordiffuse="FF000000">common/white.png</texture>
+            <texture colordiffuse="FF000000">common/umbwhite.png</texture>
             <animation type="WindowOpen" reversible="false">
                 <effect type="fade" start="0" end="80" time="120" />
             </animation>
@@ -23,12 +23,12 @@
                 <control type="image">
                     <width>1660</width>
                     <height>940</height>
-                    <texture border="16" colordiffuse="$INFO[Window.Property(umbrella.backgroundColor)]">common/dialog.png</texture>
+                    <texture border="16" colordiffuse="$INFO[Window.Property(umbrella.backgroundColor)]">common/umbdialog.png</texture>
                 </control>
                 <control type="image">
                     <height>50</height>
                     <width>1660</width>
-                    <texture border="16" colordiffuse="$INFO[Window.Property(umbrella.titleBarColor)]">common/dialogtop.png</texture>
+                    <texture border="16" colordiffuse="$INFO[Window.Property(umbrella.titleBarColor)]">common/umbdialogtop.png</texture>
                 </control>
                 <control type="image">
                     <left>4</left>
@@ -77,7 +77,7 @@
                             <top>0</top>
                             <width>44</width>
                             <height>44</height>
-                            <texture colordiffuse="$INFO[Window.Property(umbrella.backgroundColor)]">common/white.png</texture>
+                            <texture colordiffuse="$INFO[Window.Property(umbrella.backgroundColor)]">common/umbwhite.png</texture>
                         </control>
                         <control type="image">
                             <left>2</left>
@@ -105,8 +105,8 @@
                     <font>font12</font>
                     <textcolor>$INFO[Window.Property(umbrella.buttonTextColorNS)]</textcolor>
                     <focusedcolor>$INFO[Window.Property(umbrella.buttonTextColor)]</focusedcolor>
-                    <texturefocus colordiffuse="$INFO[Window.Property(umbrella.buttonColor)]" border="30">common/circle.png</texturefocus>
-                    <texturenofocus colordiffuse="$INFO[Window.Property(umbrella.buttonnofocus)]" border="30">common/circle.png</texturenofocus>
+                    <texturefocus colordiffuse="$INFO[Window.Property(umbrella.buttonColor)]" border="30">common/umbrellacircle.png</texturefocus>
+                    <texturenofocus colordiffuse="$INFO[Window.Property(umbrella.buttonnofocus)]" border="30">common/umbrellacircle.png</texturenofocus>
                     <align>center</align>
                 </control>
                 <control type="button" id="11">
@@ -122,8 +122,8 @@
                     <font>font12</font>
                     <textcolor>$INFO[Window.Property(umbrella.buttonTextColorNS)]</textcolor>
                     <focusedcolor>$INFO[Window.Property(umbrella.buttonTextColor)]</focusedcolor>
-                    <texturefocus colordiffuse="$INFO[Window.Property(umbrella.buttonColor)]" border="30">common/circle.png</texturefocus>
-                    <texturenofocus colordiffuse="$INFO[Window.Property(umbrella.buttonnofocus)]" border="30">common/circle.png</texturenofocus>
+                    <texturefocus colordiffuse="$INFO[Window.Property(umbrella.buttonColor)]" border="30">common/umbrellacircle.png</texturefocus>
+                    <texturenofocus colordiffuse="$INFO[Window.Property(umbrella.buttonnofocus)]" border="30">common/umbrellacircle.png</texturenofocus>
                     <align>center</align>
                 </control>
                 <control type="label">
@@ -150,8 +150,8 @@
                     <font>font12</font> 
                     <textcolor>$INFO[Window.Property(umbrella.buttonTextColorNS)]</textcolor>
                     <focusedcolor>$INFO[Window.Property(umbrella.buttonTextColor)]</focusedcolor>
-                    <texturefocus colordiffuse="$INFO[Window.Property(umbrella.buttonColor)]" border="30">common/circle.png</texturefocus>
-                    <texturenofocus colordiffuse="$INFO[Window.Property(umbrella.buttonnofocus)]" border="30">common/circle.png</texturenofocus>
+                    <texturefocus colordiffuse="$INFO[Window.Property(umbrella.buttonColor)]" border="30">common/umbrellacircle.png</texturefocus>
+                    <texturenofocus colordiffuse="$INFO[Window.Property(umbrella.buttonnofocus)]" border="30">common/umbrellacircle.png</texturenofocus>
                     <align>center</align>
                 </control>
                 <control type="image">

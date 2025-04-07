@@ -27,7 +27,7 @@ simklclientid = 'cecec23773dff71d940876860a316a4b74666c4c31ad719fe0af8bb3064a34a
 session = requests.Session()
 retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
 session.mount('https://api.simkl.com', HTTPAdapter(max_retries=retries, pool_maxsize=100))
-sim_qr = control.joinPath(control.artPath(), 'simklqr.png')
+#sim_qr = control.joinPath(control.artPath(), 'simklqr.png')
 highlightColor = control.setting('highlight.color')
 headers = {}
 
@@ -77,6 +77,8 @@ class SIMKL:
 		response = session.get(url).json()
 		line = '%s\n%s\n%s'
 		if control.setting('dialogs.useumbrelladialog') == 'true':
+			from resources.lib.modules import tools
+			sim_qr = tools.make_qr(f"https://simkl.com/pin/{response['user_code']}")
 			self.progressDialog = control.getProgressWindow(getLS(40346), sim_qr, 1)
 			self.progressDialog.set_controls()
 		else:

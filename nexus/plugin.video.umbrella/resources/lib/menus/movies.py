@@ -331,7 +331,8 @@ class Movies:
 		try:
 			self.list = cache.get(self.mbd_user_lists, self.mdblist_hours)
 			if self.list is None: self.list = []
-			return self.addDirectory(self.list, folderName=folderName)
+			if create_directory: self.addDirectory(self.list, folderName=folderName)
+			return self.list
 
 		except:
 			from resources.lib.modules import log_utils
@@ -930,6 +931,8 @@ class Movies:
 		for i in range(int(year)-0, 1900, -1):
 			if url == 'traktyears':
 				self.list.append({'content': 'years', 'name': str(i), 'url': url % (str(i), str(i)), 'image': 'years.png', 'icon': 'DefaultYear.png', 'action': 'traktYear&folderName=%s'% quote_plus(str(i))})
+			from resources.lib.modules import log_utils
+			log_utils.log('years url: %s' % (url % (str(i), str(i))) )
 			if self.imdb_link in url: self.list.append({'content': 'years', 'name': str(i), 'url': url % (str(i), str(i)), 'image': 'years.png', 'icon': 'DefaultYear.png', 'action': 'movies&folderName=%s'% quote_plus(str(i))})
 			if self.tmdb_link in url: self.list.append({'content': 'years', 'name': str(i), 'url': url % ('%s', str(i)), 'image': 'years.png', 'icon': 'DefaultYear.png', 'action': 'tmdbmovies&folderName=%s' % quote_plus(str(i))})
 		self.addDirectory(self.list, folderName=folderName)
@@ -2193,7 +2196,7 @@ class Movies:
 					if self.traktCredentials:
 						cm.append((traktManagerMenu, 'RunPlugin(%s?action=tools_traktManager&name=%s&imdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, watched, unfinished)))
 					if self.mdblist_authed:
-						cm.append(('MDBList Watchlist', 'RunPlugin(%s?action=tools_mdbWatchlist&name=%s&imdb=%s)' % (sysaddon, sysname, imdb)))
+						cm.append(('MDBList Manager', 'RunPlugin(%s?action=tools_mdbWatchlist&name=%s&imdb=%s)' % (sysaddon, sysname, imdb)))
 					if self.simklCredentials:
 						cm.append((simklManagerMenu, 'RunPlugin(%s?action=tools_simklManager&name=%s&imdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, watched, unfinished)))
 					if watched:

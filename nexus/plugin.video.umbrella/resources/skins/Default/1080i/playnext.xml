@@ -41,7 +41,7 @@
 					<control type="image">
 						<width>250</width>
 						<height>141</height>
-						<texture colordiffuse="$INFO[Window().Property(umbrella.playnext.background.color)]">common/white.png</texture>
+						<texture colordiffuse="$INFO[Window().Property(umbrella.playnext.background.color)]">common/umbwhite.png</texture>
 						<visible>String.IsEmpty(Window().Property(umbrella.thumb)) + String.IsEmpty(Window().Property(umbrella.landscape)) + String.IsEmpty(Window().Property(umbrella.fanart))</visible>
 					</control>
 					<control type="textbox">
@@ -121,7 +121,7 @@
 						<righttexture></righttexture>
 						<overlaytexture></overlaytexture>
 						<lefttexture></lefttexture>
-						<texturebg colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/white.png</texturebg>
+						<texturebg colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/umbwhite.png</texturebg>
 					</control>
 				</control>
 
@@ -183,7 +183,7 @@
 							<width>19</width>
 							<height>19</height>
 							<aspect>keep</aspect>
-							<texture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/star.png</texture>
+							<texture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/umbstar.png</texture>
 							<animation effect="slide" end="0,8" time="0" condition="true">Conditional</animation>
 							<visible>!String.IsEmpty(Window().Property(umbrella.rating))</visible>
 						</control>
@@ -220,8 +220,8 @@
 							<selectedcolor>ddffffff</selectedcolor>
 							<aligny>center</aligny>
 							<align>right</align>
-							<texturefocus border="10" colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/button3.png</texturefocus>
-							<texturenofocus border="10" colordiffuse="1fdedede">common/button3.png</texturenofocus>
+							<texturefocus border="10" colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/umbbutton3.png</texturefocus>
+							<texturenofocus border="10" colordiffuse="1fdedede">common/umbbutton3.png</texturenofocus>
 							<pulseonselect>no</pulseonselect>
 						</control>
 						<control type="button" id="3012">
@@ -237,8 +237,8 @@
 							<selectedcolor>ddffffff</selectedcolor>
 							<aligny>center</aligny>
 							<align>right</align>
-							<texturefocus border="10" colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/button3.png</texturefocus>
-							<texturenofocus border="10" colordiffuse="1fdedede">common/button3.png</texturenofocus>
+							<texturefocus border="10" colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/umbbutton3.png</texturefocus>
+							<texturenofocus border="10" colordiffuse="1fdedede">common/umbbutton3.png</texturenofocus>
 							<pulseonselect>no</pulseonselect>
 						</control>
 						<control type="button" id="3013">
@@ -254,8 +254,8 @@
 							<selectedcolor>ddffffff</selectedcolor>
 							<aligny>center</aligny>
 							<align>right</align>
-							<texturefocus border="10" colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/button3.png</texturefocus>
-							<texturenofocus border="10" colordiffuse="1fdedede">common/button3.png</texturenofocus>
+							<texturefocus border="10" colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/umbbutton3.png</texturefocus>
+							<texturenofocus border="10" colordiffuse="1fdedede">common/umbbutton3.png</texturenofocus>
 							<pulseonselect>no</pulseonselect>
 							<visible>String.IsEmpty(Window().Property(umbrella.hidebutton))</visible>
 						</control>
@@ -267,7 +267,7 @@
 						<width>40</width>
 						<height>40</height>
 						<aspect>keep</aspect>
-						<texture colordiffuse="ddffffff">common/play.png</texture>
+						<texture colordiffuse="ddffffff">common/umbplay.png</texture>
 					</control>
 					<control type="image">
 						<description>stop icon on button</description>
@@ -276,7 +276,7 @@
 						<width>36</width>
 						<height>36</height>
 						<aspect>keep</aspect>
-						<texture colordiffuse="ddffffff">common/stop.png</texture>
+						<texture colordiffuse="ddffffff">common/umbstop.png</texture>
 					</control>
 					<control type="image">
 						<description>close icon on button</description>
@@ -285,7 +285,7 @@
 						<width>45</width>
 						<height>45</height>
 						<aspect>keep</aspect>
-						<texture colordiffuse="ddffffff">common/close.png</texture>
+						<texture colordiffuse="ddffffff">common/umbclose.png</texture>
 						<visible>String.IsEmpty(Window().Property(umbrella.hidebutton))</visible>
 					</control>
 

@@ -12,7 +12,7 @@
     <controls>
         <control type="image">
             <height>400</height>
-            <texture>common/dim-top.png</texture>
+            <texture>common/umbdim-top.png</texture>
         </control>
         <control type="grouplist">
             <left>15</left>
@@ -29,8 +29,8 @@
                 <onup>3012</onup>
                 <ondown>3011</ondown>
                 <font>font10</font>
-                <texturefocus colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/hideround.png</texturefocus>
-                <texturenofocus colordiffuse="59ffffff">common/hideround2.png</texturenofocus>
+                <texturefocus colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/umbhideround.png</texturefocus>
+                <texturenofocus colordiffuse="59ffffff">common/umbhideround2.png</texturenofocus>
                 <align>center</align>
             </control>
             <control type="button" id="3011">
@@ -41,8 +41,8 @@
                 <onup>3013</onup>
                 <ondown>3012</ondown>
                 <font>font10</font>
-                <texturefocus colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/playround.png</texturefocus>
-                <texturenofocus colordiffuse="59ffffff">common/playround2.png</texturenofocus>
+                <texturefocus colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/umbplayround.png</texturefocus>
+                <texturenofocus colordiffuse="59ffffff">common/umbplayround2.png</texturenofocus>
                 <align>center</align>
             </control>
             <control type="button" id="3012">
@@ -53,8 +53,8 @@
                 <onup>3011</onup>
                 <ondown>3013</ondown>
                 <font>font10</font>
-                <texturefocus colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/stopround.png</texturefocus>
-                <texturenofocus colordiffuse="59ffffff">common/stopround2.png</texturenofocus>
+                <texturefocus colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/umbstopround.png</texturefocus>
+                <texturenofocus colordiffuse="59ffffff">common/umbstopround2.png</texturenofocus>
                 <align>center</align>
             </control>
         </control>
@@ -73,8 +73,8 @@
                 <onup>3012</onup>
                 <ondown>3012</ondown>
                 <font>font10</font>
-                <texturefocus colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/playround.png</texturefocus>
-                <texturenofocus colordiffuse="59ffffff">common/playround2.png</texturenofocus>
+                <texturefocus colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/umbplayround.png</texturefocus>
+                <texturenofocus colordiffuse="59ffffff">common/umbplayround2.png</texturenofocus>
                 <align>center</align>
             </control>
             <control type="button" id="3012">
@@ -85,8 +85,8 @@
                 <onup>3011</onup>
                 <ondown>3011</ondown>
                 <font>font10</font>
-                <texturefocus colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/stopround.png</texturefocus>
-                <texturenofocus colordiffuse="59ffffff">common/stopround2.png</texturenofocus>
+                <texturefocus colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/umbstopround.png</texturefocus>
+                <texturenofocus colordiffuse="59ffffff">common/umbstopround2.png</texturenofocus>
                 <align>center</align>
             </control>
         </control>
@@ -133,8 +133,8 @@
                 <control type="progress" id="3014">
                     <bottom>0</bottom>
                     <height>8</height>
-                    <texturebg colordiffuse="FF00000">common/progresswhitesmall.png</texturebg>
-                    <midtexture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/progresswhitesmall.png</midtexture>
+                    <texturebg colordiffuse="FF00000">common/umbprogresswhitesmall.png</texturebg>
+                    <midtexture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/umbprogresswhitesmall.png</midtexture>
                     <visible>false</visible>
                 </control>
             </control>
@@ -206,7 +206,7 @@
                                     <width>26</width>
                                     <height>26</height>
                                     <aspect>keep</aspect>
-                                    <texture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/star.png</texture>
+                                    <texture colordiffuse="$INFO[Window().Property(skin.selectColor)]">common/umbstar.png</texture>
                                     <animation effect="slide" end="0,8" time="0" condition="true">Conditional</animation>
                                     <visible>!String.IsEmpty(Window().Property(umbrella.rating))</visible>
                                 </control>

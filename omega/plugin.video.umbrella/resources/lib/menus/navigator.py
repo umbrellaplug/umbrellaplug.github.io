@@ -413,7 +413,7 @@ class Navigator:
 			self.addDirectoryItem(40180, 'tools_LanguageInvoker&name=False', 'settings.png', 'DefaultAddonProgram.png', isFolder=False)
 		self.addDirectoryItem(32083, 'tools_cleanSettings', 'settings.png', 'DefaultAddonProgram.png', isFolder=False)
 		self.addDirectoryItem(40334, 'tools_deleteSettings', 'settings.png', 'DefaultAddonProgram.png', isFolder=False)
-		self.addDirectoryItem(32523, 'tools_loggingNavigator&folderName=%s' % quote_plus(getLS(40460)), 'tools.png', 'DefaultAddonService.png')
+		self.addDirectoryItem(32523, 'tools_loggingNavigator&folderName=%s' % quote_plus(getLS(40460)), 'tools.png', 'DefaultAddonService.png')		
 		self.endDirectory()
 
 	def traktTools(self, folderName=''):

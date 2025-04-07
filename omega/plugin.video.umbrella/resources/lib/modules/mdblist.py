@@ -160,15 +160,31 @@ def _map_user_watchlist_items(response, listType):
     return items
 
 def manager(name, imdb=None, tvdb=None, tmdb=None):
+    lists = []
     try:
         items = []
         items += [(getLS(40596) % highlight_color, 'add')]
         items += [(getLS(40597) % highlight_color, 'remove')]
+        if not tvdb or tvdb == 'None':
+            from resources.lib.menus import movies
+            result = movies.Movies().getMDBUserList(create_directory=False)
+        else:
+            from resources.lib.menus import tvshows
+            result = tvshows.TVShows().getMDBUserList(create_directory=False)
+        lists = [(i['name'], i['list_id']) for i in result]
+        lists2 = [(i['name'], i['list_id']) for i in result]
+        lists = [lists[i//2] for i in range(len(lists)*2)]
+
+        for i in range(0, len(lists), 2):
+            lists[i] = ((getLS(33580) % (highlight_color, lists[i][0])), '/lists/%s/items/add' % lists[i][1])
+        for i in range(1, len(lists), 2):
+            lists[i] = ((getLS(33581) % (highlight_color, lists[i][0])), '/lists/%s/items/remove' % lists[i][1])
+        items += lists
         control.hide()
         select = control.selectDialog([i[0] for i in items], heading=control.addonInfo('name') + ' - ' + getLS(32515))
         if select == -1: return
         if select >= 0:
-                if not tvdb: post = {"movies": [{"imdb": imdb}]}
+                if not tvdb or tvdb == 'None': post = {"movies": [{"imdb": imdb}]}
                 else:
                     post = {"shows": [{"tmdb": tmdb}]}
                 if type(post) == dict or type(post) == list: 
@@ -177,25 +193,38 @@ def manager(name, imdb=None, tvdb=None, tmdb=None):
                 if items[select][1] == 'add':
                     response = session.post(f"{mdblist_baseurl}/watchlist/items/add?apikey={mdblist_api}",data=post, headers=headers, timeout=20)
                     action = 'add'
+                    listid = 'MDBList Watchlist'
                 if items[select][1] == 'remove':
                     response = session.post(f"{mdblist_baseurl}/watchlist/items/remove?apikey={mdblist_api}",data=post, headers=headers, timeout=20)
                     action = 'remove'
+                    listid = 'MDBList Watchlist'
+                for count in range(len(lists)):
+                    i = lists[count]
+                    if i[1] == '%s' % items[select][1]:
+                        response = session.post(mdblist_baseurl + items[select][1] + '?apikey=' + mdblist_api, data=post, headers=headers, timeout=20)
+                        match = re.search(r'/lists/(\d+)/', i[1])
+                        list_id_num = int(match.group(1)) if match else None
+                        listid = next((name for name, id in lists2 if id == list_id_num), 'Unknown List')
+                        if 'add' in i[1]:
+                            action = 'add'
+                        if 'remove' in i[1]:    
+                            action = 'remove'
                 if response.status_code == 200:
                     response = response.json()
                     if action == 'add':
                         if int(response.get('added').get('movies')) > 0:
-                            control.notification("Movie Added", "%s added to MDBList Watchlist" % name, icon=mdblist_icon)
+                            control.notification("Movie Added", "%s added to %s" % (name, listid), icon=mdblist_icon)
                         if int(response.get('added').get('shows')) > 0:
-                            control.notification("Show Added", "%s added to MDBList Watchlist" % name, icon=mdblist_icon)
-                        if int(response.get('existing').get('movies')) > 1 and int(response.get('added').get('movies')) == 0:
-                            control.notification("Error", "%s already on MDBList Watchlist" % name, icon=mdblist_icon)
-                        if int(response.get('existing').get('shows')) > 1 and int(response.get('added').get('shows')) == 0:
-                            control.notification("Error", "%s already on MDBList Watchlist" % name, icon=mdblist_icon)
+                            control.notification("Show Added", "%s added to %s" % (name, listid), icon=mdblist_icon)
+                        if int(response.get('existing').get('movies')) > 0 and int(response.get('added').get('movies')) == 0:
+                            control.notification("Error", "%s already on %s" % (name, listid), icon=mdblist_icon)
+                        if int(response.get('existing').get('shows')) > 0 and int(response.get('added').get('shows')) == 0:
+                            control.notification("Error", "%s already on %s" % (name, listid), icon=mdblist_icon)
                     if action == 'remove':
                         if int(response.get('removed').get('movies')) > 0:
-                            control.notification("Movie Removed", "%s removed from MDBList Watchlist" % name, icon=mdblist_icon)
+                            control.notification("Movie Removed", "%s removed from %s" % (name, listid), icon=mdblist_icon)
                         if int(response.get('removed').get('shows')) > 0:
-                            control.notification("Show Removed", "%s removed from MDBList Watchlist" % name, icon=mdblist_icon)
+                            control.notification("Show Removed", "%s removed from %s" % (name, listid), icon=mdblist_icon)
                 elif response.status_code == 403:
                     response = response.json()
                     control.notification("Error", response.get('detail'), icon=mdblist_icon)

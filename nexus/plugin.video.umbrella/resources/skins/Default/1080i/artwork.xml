@@ -7,7 +7,7 @@
             <top>0</top>
             <width>1920</width>
             <height>1080</height>
-            <texture colordiffuse="FF000000">common/white.png</texture>
+            <texture colordiffuse="FF000000">common/umbwhite.png</texture>
             <animation type="WindowOpen" reversible="false">
                 <effect type="fade" start="0" end="80" time="120" />
             </animation>
@@ -227,9 +227,9 @@
                 <left>740</left>
                 <width>10</width>
                 <height>720</height>
-                <texturesliderbackground colordiffuse="FF1F2020">common/white.png</texturesliderbackground>
-                <texturesliderbar colordiffuse="FF555556">common/white.png</texturesliderbar>
-                <texturesliderbarfocus colordiffuse="FFCCCCCC">common/white.png</texturesliderbarfocus>
+                <texturesliderbackground colordiffuse="FF1F2020">common/umbwhite.png</texturesliderbackground>
+                <texturesliderbar colordiffuse="FF555556">common/umbwhite.png</texturesliderbar>
+                <texturesliderbarfocus colordiffuse="FFCCCCCC">common/umbwhite.png</texturesliderbarfocus>
                 <onleft>2025</onleft>
                 <onright>10</onright>
                 <showonepage>false</showonepage>

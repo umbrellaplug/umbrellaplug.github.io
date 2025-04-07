@@ -29,7 +29,7 @@ highlight_color = getSetting('highlight.color')
 server_notification = getSetting('trakt.server.notifications') == 'true'
 service_syncInterval = int(getSetting('background.service.syncInterval')) if getSetting('background.service.syncInterval') else 15
 trakt_icon = control.joinPath(control.artPath(), 'trakt.png')
-trakt_qr = control.joinPath(control.artPath(), 'traktqr.png')
+#trakt_qr = control.joinPath(control.artPath(), 'traktqr.png')
 
 def getTrakt(url, post=None, extended=False, silent=False):
 	try:
@@ -216,6 +216,8 @@ def getTraktDeviceToken(traktDeviceCode):
 		user_code = control.lang(32514) % (highlight_color, str(traktDeviceCode['user_code']))
 		line = '%s\n%s\n%s'
 		if control.setting('dialogs.useumbrelladialog') == 'true':
+			from resources.lib.modules import tools
+			trakt_qr = tools.make_qr(f"https://trakt.tv/activate?code={str(traktDeviceCode['user_code'])}")
 			progressDialog = control.getProgressWindow(getLS(32073), trakt_qr, 1)
 			progressDialog.set_controls()
 			progressDialog.update(0, control.progress_line % (verification_url, user_code))

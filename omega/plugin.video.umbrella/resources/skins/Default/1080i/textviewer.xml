@@ -8,11 +8,11 @@
 				<width>1360</width>
 				<control type="image">
 					<height>980</height>
-					<texture border="16" colordiffuse="$INFO[Window.Property(umbrella.backgroundColor)]">common/dialog.png</texture>
+					<texture border="16" colordiffuse="$INFO[Window.Property(umbrella.backgroundColor)]">common/umbdialog.png</texture>
 				</control>
 				<control type="image">
 					<height>50</height>
-					<texture border="16" colordiffuse="$INFO[Window.Property(umbrella.titleBarColor)]">common/dialogtop.png</texture>
+					<texture border="16" colordiffuse="$INFO[Window.Property(umbrella.titleBarColor)]">common/umbdialogtop.png</texture>
 				</control>
 				<control type="image">
 					<left>4</left>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.43">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.44">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -65,7 +65,7 @@
 				</visible>
 			</item>
 			<item library="resources\lib\context\mdblistManager.py">
-				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]MDBList Watchlist</label>
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]MDBList Manager</label>
 				<visible>
 					!String.IsEmpty(Window(home).Property(context.umbrella.mdblistManager)) +
 					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
@@ -102,6 +102,14 @@
 					String.StartsWith(ListItem.FolderPath,plugin://plugin.video.umbrella/?action=play) +
 					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
 					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]]
+				</visible>
+			</item>
+			<item library="resources\lib\context\libMdblistManager.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]MDBList Watchlist Lib</label>
+				<visible>
+					[String.Contains(Container.FolderPath,videodb://) | String.Contains(Container.ListItem.FolderPath,videodb://)] +
+					[String.Contains(Container.ListItem.Path,Window(home).Property(umbrella.movieLib.path)) | String.Contains(Container.ListItem.Path,Window(home).Property(umbrella.tvLib.path))] +
+					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]
 				</visible>
 			</item>
 			<item library="resources\lib\context\addLibtoFavourite.py">
@@ -198,10 +206,11 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.43 - April 3rd, 2025[/B]
---[Change] Added support for MDblist Watchlist.
---[Fix] Change in colorpick code.
---[Info] MDBList will be changed to use local cache in a future update.
+[B]Update - v6.7.44 - April 7th, 2025[/B]
+--[Change] Added support for adding/ removing from MDBList Static Lists.
+--[Change] Changed qr generation on rd codes to use direct verification url.
+--[Change] Added dynamic qr_code creation for all prompts.
+--[Change] Renamed all artwork in common folder to use custom names to avoid conflicts with skins.
 		</news>
 	</extension>
 
