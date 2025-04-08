@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.44">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.45">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -205,7 +205,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.44 - April 7th, 2025[/B]
+[B]Update - v6.7.45 - April 7th, 2025[/B]
+--[Fix] Fixed issue with mdblists and tv shows.
 --[Change] Added support for adding/ removing from MDBList Static Lists.
 --[Change] Changed qr generation on rd codes to use direct verification url.
 --[Change] Added dynamic qr_code creation for all prompts.

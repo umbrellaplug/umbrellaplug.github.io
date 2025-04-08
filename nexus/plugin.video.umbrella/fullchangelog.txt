@@ -1,3 +1,6 @@
+[B]Update - v6.7.45 - April 7th, 2025[/B]
+--[Fix] Fixed issue with mdblists and tv shows.
+
 [B]Update - v6.7.44 - April 7th, 2025[/B]
 --[Change] Added support for adding/ removing from MDBList Static Lists.
 --[Change] Changed qr generation on rd codes to use direct verification url.

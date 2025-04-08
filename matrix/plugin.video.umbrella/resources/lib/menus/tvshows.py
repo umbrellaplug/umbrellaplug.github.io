@@ -1451,12 +1451,12 @@ class TVshows:
 		if create_directory: self.tvshowDirectory(self.list, folderName=folderName)
 		return self.list
 	def getMDBUserList(self, create_directory=True, folderName=''):
-		
 		self.list = []
 		try:
-			self.list = cache.get(self.mbd_user_lists, self.mdblist_hours)
+			self.list = cache.get(self.mbd_user_lists, 0)
 			if self.list is None: self.list = []
-			return self.addDirectory(self.list, folderName=folderName)
+			if create_directory: self.addDirectory(self.list, folderName=folderName)
+			return self.list
 
 		except:
 			
