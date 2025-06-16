@@ -169,7 +169,7 @@ class Movies:
 		self.trakt_genres = 'https://api.trakt.tv/genres/movies/'
 		self.trakt_popularLists_link = 'https://api.trakt.tv/lists/popular?limit=%s&page=1' % self.page_limit
 		self.trakt_trendingLists_link = 'https://api.trakt.tv/lists/trending?limit=%s&page=1' % self.page_limit
-		self.mbdlist_list_items = 'https://mdblist.com/api/lists/%s/items?apikey=%s&page=1' % ('%s', mdblist.mdblist_api)
+		self.mbdlist_list_items = 'https://api.mdblist.com/lists/%s/items?apikey=%s&page=1' % ('%s', mdblist.mdblist_api)
 		self.simkltrendingtoday_link = 'https://api.simkl.com/movies/trending/today?client_id=%s&extended=tmdb' % '%s'
 		self.simkltrendingweek_link = 'https://api.simkl.com/movies/trending/week?client_id=%s&extended=tmdb' % '%s'
 		self.simkltrendingmonth_link = 'https://api.simkl.com/movies/trending/month?client_id=%s&extended=tmdb'% '%s'
@@ -326,10 +326,10 @@ class Movies:
 				from resources.lib.modules import log_utils
 				log_utils.error()
 		return self.list
-	def getMDBUserList(self, create_directory=True, folderName=''):
+	def getMDBUserList(self, create_directory=True, folderName='', addremove=False):
 		self.list = []
 		try:
-			self.list = cache.get(self.mbd_user_lists, 0)
+			self.list = cache.get(self.mbd_user_lists, 0, addremove)
 			if self.list is None: self.list = []
 			if create_directory: self.addDirectory(self.list, folderName=folderName)
 			return self.list
@@ -337,10 +337,10 @@ class Movies:
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()
-	def mbd_user_lists(self):
+	def mbd_user_lists(self, addremove):
 		try:
 			listType = 'movie'
-			items = mdblist.getMDBUserList(self, listType)
+			items = mdblist.getMDBUserList(self, listType, addremove)
 			next = ''
 		except:
 			from resources.lib.modules import log_utils

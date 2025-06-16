@@ -194,7 +194,9 @@ class lib_tools:
 				t2 = cleandate.datetime_from_string(str(last_service), '%Y-%m-%d %H:%M:%S.%f', False)
 				t3 = datetime.now()
 				check = abs(t3 - t2) >= t1
-				if not check: continue
+				if not check: 
+					if control.monitor.waitForAbort(10): break
+					continue
 				if (control.player.isPlaying() or control.condVisibility('Library.IsScanningVideo')): continue
 				last_service = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
 				last_service_setting = datetime.now().strftime('%Y-%m-%d %H:%M')

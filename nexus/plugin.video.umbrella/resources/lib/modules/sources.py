@@ -1529,7 +1529,6 @@ class Sources:
 				self.removeSubs(selected_items)
 			del window
 		except:
-			from resources.lib.modules import log_utils
 			log_utils.error()
 
 	def addNewSub(self):

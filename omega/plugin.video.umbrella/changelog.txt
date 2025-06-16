@@ -1,6 +1,5 @@
-[B]Update - v6.7.45 - April 7th, 2025[/B]
+[B]Update - v6.7.46 - June 16th, 2025[/B]
+--[Change] Modified MDBList add and remove to only use watchlist and static lists.
+--[Change] Suggested library change from PR request.
 --[Fix] Fixed issue with mdblists and tv shows.
---[Change] Added support for adding/ removing from MDBList Static Lists.
---[Change] Changed qr generation on rd codes to use direct verification url.
---[Change] Added dynamic qr_code creation for all prompts.
---[Change] Renamed all artwork in common folder to use custom names to avoid conflicts with skins.
+--[Fix] Made changes to mdblist api url used for lists and fixed ai generated lists not working.

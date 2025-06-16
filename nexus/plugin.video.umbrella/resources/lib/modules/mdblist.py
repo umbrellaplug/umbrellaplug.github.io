@@ -11,7 +11,8 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from resources.lib.modules import control
 from resources.lib.modules import log_utils
-
+from resources.lib.database import mdbsync
+from resources.lib.modules import cleandate
 
 #mdblist use your own key
 #trakt limiting users lists now. lets see if we can start using some other list providers.
@@ -81,29 +82,38 @@ def _map_list_items(response):
     items_append = items.append
     icon = 'userlists.png' if iconLogos else 'mdblist.png'
     iconPath = control.joinPath(artPath, icon)
+
     jsonResponse = response.json()
-    for i in jsonResponse:
-        item = {}
-        item['label'] = i.get('title')
-        item['rank'] = i.get('rank')
-        item['adult'] = i.get('adult')
-        item['title'] = i.get('title')
-        item['id'] = i.get('id')
-        item['imdb'] = i.get('imdb_id')
-        item['release_year'] = i.get('release_year')
+
+    # fix to collect all media from shows or movies.
+    media_list = jsonResponse.get('movies', []) + jsonResponse.get('shows', [])
+    for i in media_list:
+        item = {
+            'label': i.get('title'),
+            'rank': i.get('rank'),
+            'adult': i.get('adult'),
+            'title': i.get('title'),
+            'id': i.get('id'),
+            'imdb': i.get('imdb_id'),
+            'release_year': i.get('release_year')
+        }
         items_append(item)
+
     return items
-def getMDBUserList(self, listType):
+
+def getMDBUserList(self, listType, addremove=False):
+    
     try:
         response = session.get(mdblist_baseurl + mdblist_user_list + mdblist_api + mdblist_page_limit, timeout=20)
         if isinstance(response, dict): 
             log_utils.log(response.error, level=log_utils.LOGDEBUG)
             return None
-        items = _map_user_list_items(response, listType)
+        items = _map_user_list_items(response, listType, addremove=addremove)
         return items
     except: log_utils.error('get MDBList Error: ')
     return None
-def _map_user_list_items(response, listType):
+def _map_user_list_items(response, listType, addremove=False):
+
     items = []
     items_append = items.append
     icon = 'userlists.png' if iconLogos else 'mdblist.png'
@@ -123,7 +133,11 @@ def _map_user_list_items(response, listType):
             item['unique_ids'] = {
                 'mdblist': i.get('id'),
                 'slug': i.get('slug')}
-            items_append(item)
+            if addremove:
+                if i.get('dynamic') == False:
+                    items_append(item)
+            else:
+                items_append(item)
     return items
 
 def get_user_watchlist(listType):
@@ -167,10 +181,10 @@ def manager(name, imdb=None, tvdb=None, tmdb=None):
         items += [(getLS(40597) % highlight_color, 'remove')]
         if not tvdb or tvdb == 'None':
             from resources.lib.menus import movies
-            result = movies.Movies().getMDBUserList(create_directory=False)
+            result = movies.Movies().getMDBUserList(create_directory=False, addremove=True)
         else:
             from resources.lib.menus import tvshows
-            result = tvshows.TVShows().getMDBUserList(create_directory=False)
+            result = tvshows.TVshows().getMDBUserList(create_directory=False, addremove=True)
         lists = [(i['name'], i['list_id']) for i in result]
         lists2 = [(i['name'], i['list_id']) for i in result]
         lists = [lists[i//2] for i in range(len(lists)*2)]
@@ -235,3 +249,64 @@ def manager(name, imdb=None, tvdb=None, tmdb=None):
     except:
         log_utils.error()
         control.hide()
+        
+def sync_watch_list(activities=None, forced=False):
+    try:
+        link = f"{mdblist_baseurl}/watchlist/items?apikey={mdblist_api}"
+        if forced:
+            items = get_mdb_list_as_json(link,'movie')
+            mdbsync.insert_watch_list(items, 'movies_watchlist')
+            items = get_mdb_list_as_json(link, 'tvshow')
+            mdbsync.insert_watch_list(items, 'shows_watchlist')
+            #log_utils.log('Forced - Trakt Watch List Sync Complete', __name__, log_utils.LOGDEBUG)
+        else:
+            db_last_watchList = mdbsync.last_sync('last_watchlisted_at')
+            watchListActivity = getWatchListedActivity(activities)
+            if watchListActivity - db_last_watchList >= 60: # do not sync unless 1 min difference or more
+                log_utils.log('Mdb Watch List Sync Update...(local db latest "watchlist_at" = %s, trakt api latest "watchlisted_at" = %s)' % \
+                                    (str(db_last_watchList), str(watchListActivity)), __name__, log_utils.LOGINFO)
+                clr_mdblist = {'movies_watchlist': True,'shows_watchlist': True,}
+                mdbsync.delete_tables(clr_mdblist)
+                items = get_mdb_list_as_json(link,'movie')
+                mdbsync.insert_watch_list(items, 'movies_watchlist')
+                items = get_mdb_list_as_json(link, 'tvshow')
+                mdbsync.insert_watch_list(items, 'shows_watchlist')
+    except: log_utils.error()
+
+def get_mdb_list_as_json(url, listKind):
+    response = session.get(url, timeout=20)
+    if isinstance(response, dict): 
+        log_utils.log(response.error, level=log_utils.LOGDEBUG)
+        return None
+    items = []
+    items_append = items.append
+    jsonResponse = response.json()
+    if listKind == 'movie': jsonResponse = jsonResponse.get('movies')
+    elif listKind == 'tvshow': jsonResponse = jsonResponse.get('shows')
+    for i in jsonResponse:
+        item = {}
+        item['label'] = i.get('title')
+        item['rank'] = i.get('rank')
+        item['adult'] = i.get('adult')
+        item['title'] = i.get('title')
+        item['id'] = i.get('id')
+        item['imdb'] = i.get('imdb_id')
+        item['release_year'] = i.get('release_year')
+        watchlist_at = i.get('watchlist_at')
+        watchlist_fixed = watchlist_at.replace(" ", "T")[:-3] + "Z"
+        item['added'] = watchlist_fixed
+        items_append(item)
+    return items
+
+def getWatchListedActivity(activities=None):
+    try:
+        link = f"{mdblist_baseurl}/sync/last_activities?apikey={mdblist_api}"
+        if activities: i = activities
+        else: i = session.get(link, timeout=20)
+        if not i: return 0
+        activity = []
+        activity.append(i['watchlisted_at'])
+        activity = [int(cleandate.iso_2_utc(i)) for i in activity]
+        activity = sorted(activity, key=int)[-1]
+        return activity
+    except: log_utils.error()
