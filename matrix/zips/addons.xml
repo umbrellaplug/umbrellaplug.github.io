@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.46">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.47">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -206,11 +206,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.46 - June 16th, 2025[/B]
---[Change] Modified MDBList add and remove to only use watchlist and static lists.
---[Change] Suggested library change from PR request.
---[Fix] Fixed issue with mdblists and tv shows.
---[Fix] Made changes to mdblist api url used for lists and fixed ai generated lists not working.
+[B]Update - v6.7.47 - July 1st, 2025[/B]
+--[Change] Made changes to Trakt code for time. Thanks kodifitzwell
 		</news>
 	</extension>
 

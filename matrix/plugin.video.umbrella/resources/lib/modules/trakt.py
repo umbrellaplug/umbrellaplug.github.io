@@ -15,6 +15,7 @@ from resources.lib.database import cache, traktsync
 from resources.lib.modules import cleandate
 from resources.lib.modules import control
 from resources.lib.modules import log_utils
+import time
 
 getLS = control.lang
 getSetting = control.setting
@@ -94,7 +95,6 @@ def re_auth(headers):
 		status_code = str(response.status_code)
 
 		error_handler(oauth, response, status_code)
-		import time as time
 		if status_code not in ('401', '403', '405'):
 			try: response = response.json()
 			except:
@@ -106,7 +106,7 @@ def re_auth(headers):
 				return False
 			token, refresh = response['access_token'], response['refresh_token']
 			#expires = str(time() + 7776000)
-			expires = str(time() + 86400) #new 24 hour token
+			expires = str(time.time() + 86400) #new 24 hour token
 			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 			setSetting('trakt.isauthed', 'true')
 			setSetting('trakt.user.token', token)
@@ -124,7 +124,6 @@ def re_auth(headers):
 	except: log_utils.error()
 
 def traktAuth(fromSettings=0):
-	import time as time
 	try:
 		traktDeviceCode = getTraktDeviceCode()
 		deviceCode = getTraktDeviceToken(traktDeviceCode)
@@ -205,7 +204,6 @@ def getTraktDeviceCode():
 		return ''
 
 def getTraktDeviceToken(traktDeviceCode):
-	import time as time 
 	try:
 		data = {"code": traktDeviceCode["device_code"],
 				"client_id": traktClientID(),

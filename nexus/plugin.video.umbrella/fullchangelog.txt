@@ -1,3 +1,6 @@
+[B]Update - v6.7.47 - July 1st, 2025[/B]
+--[Change] Made changes to Trakt code for time. Thanks kodifitzwell
+
 [B]Update - v6.7.46 - June 16th, 2025[/B]
 --[Change] Modified MDBList add and remove to only use watchlist and static lists.
 --[Change] Suggested library change from PR request.
