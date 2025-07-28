@@ -1,2 +1,5 @@
-[B]Update - v6.7.47 - July 1st, 2025[/B]
---[Change] Made changes to Trakt code for time. Thanks kodifitzwell
+[B]Update - v6.7.48 - July 28th, 2025[/B]
+--[Info] You may need to re-authorize Trakt due to changes to the authorization code in the addon. Go to Settings: General then Indicators and make sure it is set to Trakt after re-authorizing.
+--[Change] Multiple changes to Trakt module and handling of tokens.
+--[Change] Made changes to playnext code to address issue with last episode in season.
+--[Change] Made changes to the cloud scraper code to avoid sending None or empty titles.

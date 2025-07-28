@@ -41,7 +41,19 @@ def cloud_check_title(title, aliases, release_title):
 		release_title = release_title.replace('&', 'and')
 		release_title = re.split(r'(?:19|20)[0-9]{2}', release_title)[0] # split by 4 digit year
 
-		if all(cleantitle.get(i) not in cleantitle.get(release_title) for i in title_list): match = False
+		clean_release_title = cleantitle.get(release_title)
+		if not clean_release_title:
+			match = False
+		else:
+			for i in title_list:
+				clean_i = cleantitle.get(i)
+				if not clean_i:
+					match = False
+					break
+				if clean_i in clean_release_title:
+					break
+			else:
+				match = False
 		return match
 	except:
 		from resources.lib.modules import log_utils

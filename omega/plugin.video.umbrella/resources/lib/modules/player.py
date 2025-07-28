@@ -155,22 +155,63 @@ class Player(xbmc.Player):
 	def addEpisodetoPlaylist(self):
 		try:
 			from resources.lib.menus import seasons, episodes
-			seasons = seasons.Seasons().tmdb_list(tvshowtitle='', imdb='', tmdb=self.tmdb, tvdb='', art=None)
-			seasons = [int(i['season']) for i in seasons]
+			seasons_list = seasons.Seasons().tmdb_list(tvshowtitle='', imdb='', tmdb=self.tmdb, tvdb='', art=None)
+			seasons = []
+			for s in seasons_list:
+				if isinstance(s, dict):
+					val = s.get('season')
+					try:
+						if val is not None:
+							seasons.append(int(val))
+					except (TypeError, ValueError):
+						continue
 			ep_data = [episodes.Episodes().get(self.meta.get('tvshowtitle'), self.meta.get('year'), self.imdb, self.tmdb, self.tvdb, self.meta, season=i, create_directory=False) for i in seasons]
-			items = [i for e in ep_data for i in e if i.get('unaired') != 'true']
-			index = next((idx for idx, i in enumerate(items) if i['season'] == int(self.season) and i['episode'] == int(self.episode)), None)
-			if index is None: return
-			try: item = items[index+1]
-			except: return
-			if item.get('season') and item.get('season') > int(self.season) and not self.multi_season: return
+			items = [i for e in ep_data for i in e if isinstance(i, dict) and i.get('unaired') != 'true']
+			if self.season is None or self.episode is None:
+				return
+			try:
+				season_int = int(self.season)
+				episode_int = int(self.episode)
+			except (TypeError, ValueError):
+				return
+			def safe_int(val):
+				try:
+					return int(val)
+				except (TypeError, ValueError):
+					return None
+			index = None
+			for idx, i in enumerate(items):
+				if not isinstance(i, dict):
+					continue
+				s_val = i.get('season') if isinstance(i, dict) else None
+				e_val = i.get('episode') if isinstance(i, dict) else None
+				s_int = safe_int(s_val)
+				e_int = safe_int(e_val)
+				if s_int is not None and e_int is not None and s_int == season_int and e_int == episode_int:
+					index = idx
+					break
+			if index is None:
+				return
+			if index + 1 >= len(items):
+				return
+			item = items[index+1]
+			if not isinstance(item, dict):
+				return
+			item_season = safe_int(item.get('season')) if isinstance(item, dict) else None
+			if item_season is None:
+				return
+			if item_season > season_int and not self.multi_season:
+				return
 			items = episodes.Episodes().episodeDirectory([item], next=False, playlist=True)
-			for url, li, folder in items: control.playlist.add(url=url, listitem=li)
-		except: log_utils.error()
+			for url, li, folder in items:
+				if url and li:
+					control.playlist.add(url=url, listitem=li)
+		except Exception:
+			log_utils.error()
 
 	def getMeta(self, meta):
 		try:
-			if not meta or ('videodb' in control.infoLabel('ListItem.FolderPath')): raise Exception()
+			if not meta or not isinstance(meta, dict) or ('videodb' in control.infoLabel('ListItem.FolderPath')): raise Exception()
 			#
 			def getDBID(meta):
 				try:
@@ -178,7 +219,7 @@ class Player(xbmc.Player):
 						meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties" : ["title", "originaltitle", "uniqueid", "year", "premiered", "genre", "studio", "country", "runtime", "rating", "votes", "mpaa", "director", "writer", "cast", "plot", "plotoutline", "tagline", "thumbnail", "art", "file"]}, "id": 1}' % (self.year, str(int(self.year) + 1), str(int(self.year) - 1)))
 						meta = jsloads(meta)['result']['movies']
 						try:
-							meta = [i for i in meta if (i.get('uniqueid', []).get('imdb', '') == self.imdb) or (i.get('uniqueid', []).get('unknown', '') == self.imdb)] # scraper now using "unknown"
+							meta = [i for i in meta if (isinstance(i, dict) and ((i.get('uniqueid', {}).get('imdb', '') == self.imdb) or (i.get('uniqueid', {}).get('unknown', '') == self.imdb)))] # scraper now using "unknown"
 						except:
 							if self.debuglog:
 								log_utils.log('Get Meta Failed in getMeta: %s' % str(meta), level=log_utils.LOGDEBUG)
@@ -189,8 +230,7 @@ class Player(xbmc.Player):
 					if self.media_type == 'episode':
 						show_meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties" : ["title", "originaltitle", "uniqueid", "mpaa", "year", "genre", "runtime", "thumbnail", "file"]}, "id": 1}' % (self.year, str(int(self.year)+1), str(int(self.year)-1)))
 						show_meta = jsloads(show_meta)['result']['tvshows']
-						show_meta = [i for i in show_meta if i['uniqueid']['imdb'] == self.imdb]
-						show_meta = [i for i in show_meta if (i.get('uniqueid', []).get('imdb', '') == self.imdb) or (i.get('uniqueid', []).get('unknown', '') == self.imdb)] # scraper now using "unknown"
+						show_meta = [i for i in show_meta if isinstance(i, dict) and ((i.get('uniqueid', {}).get('imdb', '') == self.imdb) or (i.get('uniqueid', {}).get('unknown', '') == self.imdb))]
 						if show_meta: show_meta = show_meta[0]
 						else: raise Exception()
 						tvshowid = show_meta['tvshowid']
@@ -217,7 +257,8 @@ class Player(xbmc.Player):
 				if self.episode: meta.update({'tvshowtitle': self.title, 'season': self.season, 'episode': self.episode})
 			self.DBID = getDBID(meta)
 			return (poster, thumb, season_poster, fanart, banner, clearart, clearlogo, discart, meta)
-		except: log_utils.error()
+		except Exception:
+			log_utils.error()
 		try:
 			def cleanLibArt(art):
 				if not art: return ''
@@ -614,7 +655,9 @@ class PlayNext(xbmc.Player):
 		except:
 			log_utils.error("Kodi did not return a playing file, killing playnext xml's")
 			return
-		if control.playlist.size() > 0 and control.playlist.getposition() != (control.playlist.size() - 1):
+		# Only show playnext if next episode meta is valid
+		next_meta = self.getNext_meta() if control.playlist.size() > 0 and control.playlist.getposition() != (control.playlist.size() - 1) else None
+		if next_meta:
 			if self.isStill_watching(): target = self.show_stillwatching_xml
 			elif self.enable_playnext: target = self.show_playnext_xml
 			else: return
@@ -1181,6 +1224,9 @@ class Bookmarks:
 			log_utils.error()
 
 	def set_scrobble(self, current_time, media_length, media_type, imdb='', tmdb='', tvdb='', season='', episode=''):
+		# Ensure season and episode are not None
+		season = season if season is not None else ''
+		episode = episode if episode is not None else ''
 		try:
 			markwatched_percentage = int(getSetting('markwatched.percent')) or 85
 			if media_length == 0: return
