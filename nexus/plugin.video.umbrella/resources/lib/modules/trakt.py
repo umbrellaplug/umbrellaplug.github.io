@@ -180,7 +180,7 @@ def traktAuth(fromSettings=0):
 			control.setSetting('trakt.refreshtoken', deviceCode["refresh_token"])
 			control.sleep(1000)
 			try:
-				headers['Authorization'] = 'Bearer %s' % trakt_token
+				headers['Authorization'] = 'Bearer %s' % deviceCode["access_token"]
 				user = getTrakt('users/me', post=None)
 				username = user.json()
 				control.setSetting('trakt.user.name', str(username['username']))

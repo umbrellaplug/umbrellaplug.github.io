@@ -45,7 +45,7 @@
         </assets>
         <news>INFO: For latest changes see Changelog within Tools of add-on.</news>
     </extension>
-</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.48">
+</addon><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.49">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -252,11 +252,9 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.48 - July 28th, 2025[/B]
+[B]Update - v6.7.49 - July 29th, 2025[/B]
 --[Info] You may need to re-authorize Trakt due to changes to the authorization code in the addon. Go to Settings: General then Indicators and make sure it is set to Trakt after re-authorizing.
---[Change] Multiple changes to Trakt module and handling of tokens.
---[Change] Made changes to playnext code to address issue with last episode in season.
---[Change] Made changes to the cloud scraper code to avoid sending None or empty titles.
+--[Fix] Quick fix for Trakt authorization issue.
 		</news>
 	</extension>
 
