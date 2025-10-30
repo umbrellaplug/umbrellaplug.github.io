@@ -978,13 +978,6 @@ msgctxt "#32238"
 msgid ""
 msgstr ""
 
-
-
-
-
-
-
-
 msgctxt "#32301"
 msgid "Enabled"
 msgstr "Włączone"
@@ -2505,13 +2498,6 @@ msgctxt "#32686"
 msgid ""
 msgstr ""
 
-
-
-
-
-
-
-
 msgctxt "#33000"
 msgid ""
 msgstr ""
@@ -2590,7 +2576,7 @@ msgstr "[B]Ponowne użycie języka wywołującego .[/B] jest obecnie ustawiony n
 
 msgctxt "#33019"
 msgid "Enabling this setting may cause instability issues.\nTest at your own free will.\nContinue?"
-msgstr "Włączenie tego ustawienia może spowodować problemy z niestabilnością.\nCertyfikować z własnej woli.\Kontynuować?"
+msgstr "Włączenie tego ustawienia może spowodować problemy z niestabilnością.\nCertyfikować z własnej woli.\nKontynuować?"
 
 msgctxt "#33020"
 msgid "Umbrella will reload your profile to refresh the addon.xml"
@@ -2756,13 +2742,6 @@ msgctxt "#33059"
 msgid ""
 msgstr ""
 
-
-
-
-
-
-
-
 msgctxt "#33486"
 msgid "Close"
 msgstr "Blisko"
@@ -2822,13 +2801,6 @@ msgstr ""
 msgctxt "#33500"
 msgid ""
 msgstr ""
-
-
-
-
-
-
-
 
 msgctxt "#33564"
 msgid "Default"
@@ -2978,13 +2950,6 @@ msgctxt "#33600"
 msgid ""
 msgstr ""
 
-
-
-
-
-
-
-
 msgctxt "#33648"
 msgid ""
 msgstr ""
@@ -3113,13 +3078,6 @@ msgctxt "#33679"
 msgid "Sorting Order"
 msgstr "Porządek sortowania"
 
-
-
-
-
-
-
-
 msgctxt "#33786"
 msgid "No Trakt Result"
 msgstr "Brak wyników Trakt"
@@ -3127,13 +3085,6 @@ msgstr "Brak wyników Trakt"
 msgctxt "#33787"
 msgid "Trakt Rate Limit Reached"
 msgstr "Osiągnięto limit szybkości transmisji"
-
-
-
-
-
-
-
 
 msgctxt "#33890"
 msgid "Season Count"
@@ -3147,23 +3098,9 @@ msgctxt "#33892"
 msgid ""
 msgstr ""
 
-
-
-
-
-
-
-
 msgctxt "#33942"
 msgid "The Umbrella library path does not appear in the Kodi file sources and automatic library updates are therefore not possible. Please manually add the library path from Umbrella's settings to the Kodi file sources. If the path in the settings were not changed, Umbrella will use a directory in the addon profile to store library data."
 msgstr "Ścieżka biblioteki Umbrella nie pojawia się w źródłach plików Kodi, dlatego automatyczne aktualizacje bibliotek nie są możliwe. Proszę ręcznie dodać ścieżkę biblioteki z ustawień Umbrella do źródeł plików Kodi. Jeśli ścieżka w ustawieniach nie została zmieniona, Umbrella użyje katalogu w profilu dodatku do przechowywania danych biblioteki."
-
-
-
-
-
-
-
 
 msgctxt "#35017"
 msgid "Air Information"
@@ -3381,13 +3318,6 @@ msgctxt "#35070"
 msgid ""
 msgstr ""
 
-
-
-
-
-
-
-
 msgctxt "#35187"
 msgid "Rating"
 msgstr "Beoordeling"
@@ -3428,23 +3358,9 @@ msgctxt "#35196"
 msgid "Failed To Add To Local Library"
 msgstr "Nie udało się dodać do lokalnej biblioteki"
 
-
-
-
-
-
-
-
 msgctxt "#35308"
 msgid "Finish Watching"
 msgstr "Zakończ oglądanie"
-
-
-
-
-
-
-
 
 msgctxt "#35391"
 msgid "Date Premiered"
@@ -3485,13 +3401,6 @@ msgstr ""
 msgctxt "#35400"
 msgid ""
 msgstr ""
-
-
-
-
-
-
-
 
 msgctxt "#35485"
 msgid "Note"
@@ -4370,23 +4279,23 @@ msgstr ""
 
 msgctxt "#40098"
 msgid "Next Episode in"
-msgstr 
+msgstr ""
 
 msgctxt "#40099"
 msgid "Watch Now"
-msgstr 
+msgstr ""
 
 msgctxt "#40100"
 msgid "Hide"
-msgstr
+msgstr ""
 
 msgctxt "#40101"
 msgid "Show Close/Hide Button"
-msgstr
+msgstr ""
 
 msgctxt "#40102"
 msgid "Use Skin Theme for PlayNext"
-msgstr
+msgstr ""
 
 msgctxt "#40103"
 msgid "Trakt Client ID"
@@ -4482,7 +4391,7 @@ msgstr ""
 
 msgctxt "#40126"
 msgid "Clear API Key"
-msgstr 
+msgstr ""
 
 msgctxt "#40127"
 msgid "Error retrieving Furk Account Info"
