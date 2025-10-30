@@ -142,7 +142,8 @@ class Sources:
 					if 'duration' not in meta: meta.update({'duration': meta.get('runtime')}) # Trakt scrobble resume needs this for lib playback
 					if 'castandrole' not in meta: meta.update({'castandrole': [(i['name'], i['role']) for i in meta.get('cast')]})
 					poster = cleanLibArt(meta.get('art').get('poster', '')) or self.poster
-					fanart = cleanLibArt(meta.get('art').get('fanart', '')) or self.fanart
+					#fanart = cleanLibArt(meta.get('art').get('fanart', '')) or self.fanart
+					fanart = cleanLibArt(meta.get('art').get('fanart', '')) or getattr(self, 'fanart', '') #fix for blank tmdb fanart being passed in self.fanart was crashing this.
 					clearart = cleanLibArt(meta.get('art').get('clearart', ''))
 					clearlogo = cleanLibArt(meta.get('art').get('clearlogo', ''))
 					discart = cleanLibArt(meta.get('art').get('discart'))
@@ -316,7 +317,8 @@ class Sources:
 				if 'duration' not in meta: meta.update({'duration': meta.get('runtime')}) # Trakt scrobble resume needs this for lib playback
 				if 'castandrole' not in meta: meta.update({'castandrole': [(i['name'], i['role']) for i in meta.get('cast')]})
 				poster = cleanLibArt(meta.get('art').get('poster', '')) or self.poster
-				fanart = cleanLibArt(meta.get('art').get('fanart', '')) or self.fanart
+				#fanart = cleanLibArt(meta.get('art').get('fanart', '')) or self.fanart
+				fanart = cleanLibArt(meta.get('art').get('fanart', '')) or getattr(self, 'fanart', '')
 				clearart = cleanLibArt(meta.get('art').get('clearart', ''))
 				clearlogo = cleanLibArt(meta.get('art').get('clearlogo', ''))
 				discart = cleanLibArt(meta.get('art').get('discart'))
