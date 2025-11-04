@@ -4266,6 +4266,11 @@
 				</setting>
 			</group>
 			<group id="5" label="40058">
+				<setting id="realdebrid.alternateapi" type="boolean" label="40599" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
 				<setting id="rdAuthorizeButton" type="action" label="40121" help="">
 					<level>0</level>
 					<data>RunPlugin(plugin://plugin.video.umbrella/?action=rd_Authorize)</data>
