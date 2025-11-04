@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.51">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.52">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -205,9 +205,9 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.51 - Nov 4th, 2025[/B]
---[Fix] Fixed alldebrid cloud browsing and debrid packs.
---[Change] Added new option to use alternate Real-Debrid API endpoint (app.real-debrid.com) in settings.
+[B]Update - v6.7.52 - Nov 4th, 2025[/B]
+--[Fix] Fixed alldebrid cloud scraper not working.
+--[Fix] Fixed issue with items found in one cloud scraper showing as duplicates for every provider enabled.
 		</news>
 	</extension>
 

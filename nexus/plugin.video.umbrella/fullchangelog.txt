@@ -1,3 +1,7 @@
+[B]Update - v6.7.52 - Nov 4th, 2025[/B]
+--[Fix] Fixed alldebrid cloud scraper not working.
+--[Fix] Fixed issue with items found in one cloud scraper showing as duplicates for every provider enabled.
+
 [B]Update - v6.7.51 - Nov 4th, 2025[/B]
 --[Fix] Fixed alldebrid cloud browsing and debrid packs.
 --[Change] Added new option to use alternate Real-Debrid API endpoint (app.real-debrid.com) in settings.

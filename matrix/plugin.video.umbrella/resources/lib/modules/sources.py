@@ -1049,27 +1049,75 @@ class Sources:
 		local = [i for i in self.sources if 'local' in i and i['local'] is True] # for library and videoscraper (skips cache check)
 		self.sources = [i for i in self.sources if not i in local]
 		direct = [i for i in self.sources if i['direct'] == True] # acct scrapers (skips cache check)
-		directstart = [] # blank start for enabled only
+		# gather enabled direct/cloud providers into directstart
+		directstart = []
+
 		if getSetting('easynews.enable') == 'true':
-			easynewsList = [i for i in direct if i['provider'] == 'easynews']
-			directstart.extend(easynewsList)
+			directstart.extend([i for i in direct if i['provider'] == 'easynews'])
 		if getSetting('plexshare.enable') == 'true':
-			plexList = [i for i in direct if i['provider'] == 'plexshare']
-			directstart.extend(plexList)
+			directstart.extend([i for i in direct if i['provider'] == 'plexshare'])
 		if getSetting('gdrive.enable') == 'true':
-			gDriveList = [i for i in direct if i['provider'] == 'gdrive']
-			directstart.extend(gDriveList)
+			directstart.extend([i for i in direct if i['provider'] == 'gdrive'])
 		if getSetting('filepursuit.enable') == 'true':
-			fPursuitList = [i for i in direct if i['provider'] == 'filepursuit']
-			directstart.extend(fPursuitList)
+			directstart.extend([i for i in direct if i['provider'] == 'filepursuit'])
+		if getSetting('rd_cloud.enabled') == 'true':
+			directstart.extend([i for i in direct if i['provider'] == 'rd_cloud'])
+		if getSetting('pm_cloud.enabled') == 'true':
+			directstart.extend([i for i in direct if i['provider'] == 'pm_cloud'])
+		if getSetting('ad_cloud.enabled') == 'true':
+			directstart.extend([i for i in direct if i['provider'] == 'ad_cloud'])
 		if getSetting('tb_cloud.enabled') == 'true':
-			tbCloudList = [i for i in direct if i['provider'] == 'tb_cloud']
-			directstart.extend(tbCloudList)
+			directstart.extend([i for i in direct if i['provider'] == 'tb_cloud'])
 		if getSetting('oc_cloud.enabled') == 'true':
-			ocCloudList = [i for i in direct if i['provider'] == 'oc_cloud']
-			directstart.extend(ocCloudList)
-		#direct = directstart
-		self.sources = [i for i in self.sources if not i in directstart]
+			directstart.extend([i for i in direct if i['provider'] == 'oc_cloud'])
+
+		# de-dupe cloud/direct entries across providers (keep best one)
+		def _key(it):
+			if it.get('hash'):
+				return ('hash', it['hash'].lower())
+			# fallback: (normalized name, rounded size)
+			return ('ns', str(it.get('name','')).strip().lower(), round(float(it.get('size', 0.0)), 3))
+
+		try:
+			_pp = list(self.prem_providers)  # list of (name, priority)
+			_pp.sort(key=lambda k: k[1])
+			_prio = {name: idx for idx, (name, _) in enumerate(_pp)}
+		except:
+			_prio = {}
+
+		# map provider -> debrid name used in prem_providers
+		_cloud_to_debrid = {
+			'rd_cloud': 'Real-Debrid',
+			'pm_cloud': 'Premiumize.me',
+			'ad_cloud': 'AllDebrid',
+			'tb_cloud': 'TorBox',
+			'oc_cloud': 'Offcloud',
+			'easynews': 'easynews',
+			'gdrive': 'gdrive',
+			'plexshare': 'plexshare',
+			'filepursuit': 'filepursuit',
+		}
+
+		def _rank(item):
+			prov = item.get('provider', '')
+			key = _cloud_to_debrid.get(prov, prov)
+			return _prio.get(key, 10**6)
+
+		directstart.sort(key=_rank)
+
+		seen, unique_direct = set(), []
+		for it in directstart:
+			k = _key(it)
+			if k in seen:
+				continue
+			seen.add(k)
+			unique_direct.append(it)
+
+		directstart = unique_direct
+
+		# remove ALL direct entries (from every provider) before we re-add the deduped set
+		self.sources = [i for i in self.sources if not i.get('direct', False)]
+
 		from copy import deepcopy
 		deepcopy_sources = deepcopy(self.sources)
 		deepcopy_sources = [i for i in deepcopy_sources if 'magnet:' in i['url']]
