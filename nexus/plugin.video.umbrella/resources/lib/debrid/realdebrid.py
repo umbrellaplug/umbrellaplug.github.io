@@ -18,8 +18,14 @@ from resources.lib.modules.source_utils import supported_video_extensions
 getLS = control.lang
 getSetting = control.setting
 FormatDateTime = "%Y-%m-%dT%H:%M:%S.%fZ"
-rest_base_url = 'https://api.real-debrid.com/rest/1.0/'
-oauth_base_url = 'https://api.real-debrid.com/oauth/v2/'
+# alternate endpoint app.real-debrid.com
+use_alt = control.setting('realdebrid.alternateapi') == 'true'
+if use_alt:
+    rest_base_url  = 'https://app.real-debrid.com/rest/1.0/'
+    oauth_base_url = 'https://app.real-debrid.com/oauth/v2/'
+else:
+    rest_base_url  = 'https://api.real-debrid.com/rest/1.0/'
+    oauth_base_url = 'https://api.real-debrid.com/oauth/v2/'
 unrestrict_link_url = 'unrestrict/link'
 device_code_url = 'device/code?%s'
 credentials_url = 'device/credentials?%s'

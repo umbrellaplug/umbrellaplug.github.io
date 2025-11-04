@@ -1,3 +1,7 @@
+[B]Update - v6.7.51 - Nov 4th, 2025[/B]
+--[Fix] Fixed alldebrid cloud browsing and debrid packs.
+--[Change] Added new option to use alternate Real-Debrid API endpoint (app.real-debrid.com) in settings.
+
 [B]Update - v6.7.50 - Oct 29th, 2025[/B]
 --[Fix] Fixed custom artwork to pull fanart correctly from tmdb. Thanks Adam!
 --[Fix] Fixed where library items would crash on scraping due to blank fanart from library scraper.

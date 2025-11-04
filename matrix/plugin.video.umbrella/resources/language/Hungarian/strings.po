@@ -5529,3 +5529,7 @@ msgstr ""
 msgctxt "#40598"
 msgid "MDBList Watchlist Lib"
 msgstr ""
+
+msgctxt "#40599"
+msgid "Use alternate API address. (app.real-debrid.com)"
+msgstr ""

@@ -349,55 +349,77 @@ class AllDebrid:
 	def browse_user_cloud(self, folder):
 		sysaddon, syshandle = 'plugin://plugin.video.umbrella/', int(argv[1])
 		extensions = supported_video_extensions()
-		torrent_folder = jsloads(folder)
-		links = torrent_folder['links']
-		# links = [i for i in links if i['filename'].lower().endswith(tuple(extensions))]
-		status_code = torrent_folder['statusCode'] 
+
+		try:
+			torrent_folder = jsloads(folder)
+		except:
+			log_utils.error('AllDebrid: invalid folder JSON')
+			return
+
+		status_code = torrent_folder.get('statusCode', 0)
+		transfer_id = torrent_folder.get('id')
+
 		file_str, downloadMenu, deleteMenu = getLS(40047).upper(), getLS(40048), getLS(40050)
-		for count, item in enumerate(links, 1):
+
+		# New API: pull the file tree via /magnet/files, then flatten to leaf files
+		files_tree = self._get_magnet_files(transfer_id)
+		leaf_files = list(self._iter_leaf_files(files_tree))
+
+		count = 0
+		for f in leaf_files:
 			try:
-				cm = []
-				url_link = item['link']
-				name = string_tools.strip_non_ascii_and_unprintable(item['filename'])
-				if name.lower().endswith(invalid_extensions): continue
+				name = string_tools.strip_non_ascii_and_unprintable(f.get('n', '') or '')
+				if not name:
+					continue
+				low = name.lower().strip()
 
-				if not name.lower().endswith(tuple(extensions)):
-					files = item['files']
-					if not files:
-						link = cache.get(self.unrestrict_link, 168, item.get('link'), True)
-						name = string_tools.strip_non_ascii_and_unprintable(link['filename'])
-						if name.lower().endswith(invalid_extensions): continue
-						item.update({'filename': name})
-						item.update({'size': link['filesize']})
-					else:
-						entry = files[0].get('e')
-						name = entry[0].get('n') if isinstance(entry, list) else entry.get('n')
-						def entry_loop(entry):
-							entry = entry.get('e')
-							name = entry[0].get('n') if isinstance(entry, list) else entry.get('n')
-							if not name.lower().endswith(tuple(extensions)):
-								return entry_loop(entry)
-							else: return string_tools.strip_non_ascii_and_unprintable(name)
-						if not name.lower().endswith(tuple(extensions)):
-							name = entry_loop(entry)
+				if low.endswith(invalid_extensions):
+					continue
 
-				size = item['size']
-				display_size = float(int(size)) / 1073741824
+				if not low.endswith(tuple(extensions)):
+					# try unlock to get accurate filename (sometimes container name differs)
+					try:
+						link_info = cache.get(self.unrestrict_link, 168, f.get('l', ''), True)
+						name2 = string_tools.strip_non_ascii_and_unprintable(link_info.get('filename', name))
+						if name2.lower().endswith(invalid_extensions) or not name2.lower().endswith(tuple(extensions)):
+							continue
+						name = name2
+						if 'filesize' in link_info:
+							f['s'] = link_info['filesize']
+					except:
+						continue
+
+				size = int(f.get('s') or 0)
+				display_size = float(size) / 1073741824 if size else 0.0
+				url_link = f.get('l', '') or ''
+				count += 1
+
 				label = '%02d | [B]%s[/B] | %.2f GB | [I]%s [/I]' % (count, file_str, display_size, name)
-				if status_code == 4: url = '%s?action=play_URL&url=%s&caller=alldebrid&type=unrestrict' % (sysaddon, url_link)
-				else: url = ''
-				cm.append((downloadMenu, 'RunPlugin(%s?action=download&name=%s&image=%s&url=%s&caller=alldebrid)' %
-								(sysaddon, quote_plus(name), quote_plus(ad_icon), url_link)))
-				item = control.item(label=label, offscreen=True)
-				item.addContextMenuItems(cm)
-				item.setArt({'icon': ad_icon, 'poster': ad_icon, 'thumb': ad_icon, 'fanart': addonFanart, 'banner': ad_icon})
-				#item.setInfo(type='video', infoLabels='')
-				meta = {}
-				control.set_info(item, meta)
-				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
-			except: log_utils.error()
+
+				if status_code == 4 and url_link:
+					url = '%s?action=play_URL&url=%s&caller=alldebrid&type=unrestrict' % (sysaddon, url_link)
+				else:
+					url = ''
+
+				cm = []
+				cm.append((
+					downloadMenu,
+					'RunPlugin(%s?action=download&name=%s&image=%s&url=%s&caller=alldebrid)' %
+					( sysaddon, quote_plus(name), quote_plus(ad_icon), url_link )
+				))
+
+				li = control.item(label=label, offscreen=True)
+				li.addContextMenuItems(cm)
+				li.setArt({'icon': ad_icon, 'poster': ad_icon, 'thumb': ad_icon, 'fanart': addonFanart, 'banner': ad_icon})
+				control.set_info(li, {})
+				control.addItem(handle=syshandle, url=url, listitem=li, isFolder=False)
+			except:
+				log_utils.error()
+
 		control.content(syshandle, 'files')
 		control.directory(syshandle, cacheToDisc=True)
+
+
 
 	def resolve_magnet(self, magnet_url, info_hash, season, episode, ep_title):
 		from resources.lib.modules.source_utils import seas_ep_filter, extras_filter
@@ -493,21 +515,51 @@ class AllDebrid:
 			extensions = supported_video_extensions()
 			transfer_id = self.create_transfer(magnet_url)
 			transfer_info = self.list_transfer(transfer_id)
+			if not transfer_info:
+				if transfer_id and not self.store_to_cloud:
+					self.delete_transfer(transfer_id)
+				return None
+
+			files_tree = self._get_magnet_files(transfer_id)
+			leaf_files = list(self._iter_leaf_files(files_tree))
+
 			end_results = []
 			append = end_results.append
-			for item in transfer_info.get('links'):
-				if any(item.get('filename').lower().endswith(x) for x in extensions) and not item.get('link', '') == '':
-					append({'link': item['link'], 'filename': item['filename'], 'size': float(item['size']) / 1073741824})
+
+			for f in leaf_files:
+				name = f.get('n', '') or ''
+				link = f.get('l', '') or ''
+				size_b = int(f.get('s') or 0)
+				if not link:
+					continue
+
+				if any(name.lower().endswith(x) for x in extensions):
+					append({'link': link, 'filename': name, 'size': float(size_b) / 1073741824})
 				else:
-					link = cache.get(self.unrestrict_link, 168, item.get('link'), True)
-					if any(link.get('filename').lower().endswith(x) for x in extensions) and not link.get('link', '') == '':
-						append({'link': item['link'], 'filename': link['filename'], 'size': float(link['filesize']) / 1073741824})
-			if not self.store_to_cloud: self.delete_transfer(transfer_id) # this will keep all browsed items, should add check to see if item was already in cloud and keep it.
+					# try unlock to get final filename/size
+					try:
+						link_info = cache.get(self.unrestrict_link, 168, link, True)
+						lname = link_info.get('filename', name)
+						lsize = int(link_info.get('filesize') or size_b)
+						if any(lname.lower().endswith(x) for x in extensions):
+							append({'link': link, 'filename': lname, 'size': float(lsize) / 1073741824})
+					except:
+						pass
+
+			if not self.store_to_cloud:
+				self.delete_transfer(transfer_id)
+
 			return end_results
 		except:
 			log_utils.error()
-			if transfer_id: self.delete_transfer(transfer_id)
+			try:
+				if transfer_id and not self.store_to_cloud:
+					self.delete_transfer(transfer_id)
+			except:
+				pass
 			return None
+
+
 
 	def add_uncached_torrent(self, magnet_url, pack=False):
 		def _return_failed(message=getLS(33586)):
@@ -595,3 +647,29 @@ class AllDebrid:
 			hosts_dict['AllDebrid'] = list(set(hosts))
 		except: log_utils.error()
 		return hosts_dict
+	
+	#new helper classes for all debrid api changes.
+	def _get_magnet_files(self, transfer_id):
+		try:
+			resp = self._post('magnet/files', {'id[]': [transfer_id]})
+			if not resp:
+				return []
+			for m in resp.get('magnets', []):
+				if str(m.get('id')) == str(transfer_id):
+					return m.get('files', []) or []
+		except:
+			log_utils.error()
+		return []
+
+	def _iter_leaf_files(self, tree):
+		try:
+			for node in tree or []:
+				if 'e' in node:  # folder
+					for child in self._iter_leaf_files(node.get('e', [])):
+						yield child
+				else:            # file (leaf)
+					if node.get('n') and node.get('l'):
+						yield node
+		except:
+			log_utils.error()
+			return

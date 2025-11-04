@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.50">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.51">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -206,10 +206,9 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.50 - Oct 29th, 2025[/B]
---[Fix] Fixed custom artwork to pull fanart correctly from tmdb. Thanks Adam!
---[Fix] Fixed where library items would crash on scraping due to blank fanart from library scraper.
---[Fix] Updated for All-Debrid API changes.
+[B]Update - v6.7.51 - Nov 4th, 2025[/B]
+--[Fix] Fixed alldebrid cloud browsing and debrid packs.
+--[Change] Added new option to use alternate Real-Debrid API endpoint (app.real-debrid.com) in settings.
 		</news>
 	</extension>
 
