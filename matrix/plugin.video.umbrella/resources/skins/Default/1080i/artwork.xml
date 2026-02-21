@@ -93,6 +93,18 @@
                         <aspectratio aligny="bottom">keep</aspectratio>
                         <texture background="true">$INFO[ListItem.Property(poster)]</texture>
                         <fadetime>100</fadetime>
+                        <visible>String.IsEqual(ListItem.Property(artworktype),thumb)</visible>
+                    </control>
+                </control>
+                <control type="group">
+                    <control type="image">
+                        <left>830</left>
+                        <top>265</top>
+                        <height>281</height>
+                        <width>500</width>
+                        <aspectratio aligny="bottom">keep</aspectratio>
+                        <texture background="true">$INFO[ListItem.Property(poster)]</texture>
+                        <fadetime>100</fadetime>
                         <visible>String.IsEqual(ListItem.Property(artworktype),landscape)</visible>
                     </control>
                 </control>

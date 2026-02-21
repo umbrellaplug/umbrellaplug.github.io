@@ -298,6 +298,34 @@ def get_mdb_list_as_json(url, listKind):
         items_append(item)
     return items
 
+def get_list_items_for_library(url):
+    """Fetch all items from an MDBList list URL with mediatype (movie/tvshow) preserved."""
+    try:
+        response = session.get(url, timeout=20)
+        if isinstance(response, dict):
+            log_utils.log(str(response), level=log_utils.LOGDEBUG)
+            return None
+        items = []
+        jsonResponse = response.json()
+        for i in jsonResponse.get('movies', []):
+            items.append({
+                'title': i.get('title', ''),
+                'year': str(i.get('release_year', '')) if i.get('release_year') else '',
+                'imdb': str(i.get('imdb_id', '')) if i.get('imdb_id') else '',
+                'mediatype': 'movie',
+            })
+        for i in jsonResponse.get('shows', []):
+            items.append({
+                'title': i.get('title', ''),
+                'year': str(i.get('release_year', '')) if i.get('release_year') else '',
+                'imdb': str(i.get('imdb_id', '')) if i.get('imdb_id') else '',
+                'mediatype': 'tvshow',
+            })
+        return items
+    except:
+        log_utils.error('get_list_items_for_library Error: ')
+    return None
+
 def getWatchListedActivity(activities=None):
     try:
         link = f"{mdblist_baseurl}/sync/last_activities?apikey={mdblist_api}"

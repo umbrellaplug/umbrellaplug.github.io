@@ -52,7 +52,6 @@ class Movies:
 		self.trakt_user = getSetting('trakt.user.name').strip()
 		self.traktCredentials = trakt.getTraktCredentialsInfo()
 		self.lang = control.apiLanguage()['trakt']
-		self.imdb_user = getSetting('imdbuser').replace('ur', '')
 		self.tmdb_key = getSetting('tmdb.apikey')
 		if not self.tmdb_key: self.tmdb_key = 'edde6b5e41246ab79a2697cd125e1781'
 		self.tmdb_session_id = getSetting('tmdb.sessionid')
@@ -122,11 +121,7 @@ class Movies:
 			self.language_link = 'https://www.imdb.com/search/title/?title_type=feature,tv_movie&num_votes=100,&production_status=released&primary_language=%s&sort=%s&count=%s&start=1' % ('%s', self.imdb_sort(type='imdbmovies'), self.genre_limit)
 			self.certification_link = 'https://www.imdb.com/search/title/?title_type=feature,tv_movie&num_votes=100,&production_status=released&certificates=%s&sort=%s&count=%s&start=1' % ('%s', self.imdb_sort(type='imdbmovies'), self.genre_limit)
 			self.imdbboxoffice_link = 'https://www.imdb.com/search/title/?title_type=feature,tv_movie&production_status=released&sort=boxoffice_gross_us,desc&count=%s&start=1' % self.genre_limit
-		self.imdbwatchlist_link = 'https://www.imdb.com/user/ur%s/watchlist/?sort=date_added,desc&title_type=feature' % self.imdb_user # only used to get users watchlist ID
-		self.imdbwatchlist2_link = 'https://www.imdb.com/list/%s/?view=detail&sort=%s&title_type=movie&start=1' % ('%s', self.imdb_sort(type='movies.watchlist'))
-		self.imdblists_link = 'https://www.imdb.com/user/ur%s/lists?tab=all&sort=mdfd&order=desc&filter=titles' % self.imdb_user
 		self.imdblist_link = 'https://www.imdb.com/list/%s/?view=detail&sort=%s&title_type=movie,short,video,tvShort,tvMovie,tvSpecial&start=1' % ('%s', self.imdb_sort())
-		self.imdbratings_link = 'https://www.imdb.com/user/ur%s/ratings?sort=your_rating,desc&mode=detail&start=1' % self.imdb_user # IMDb ratings does not take title_type so filter is in imdb_list() function
 		self.anime_link = 'https://www.imdb.com/search/title/?title_type=feature,tv_movie&keywords=anime-animation,anime'
 
 
@@ -193,6 +188,8 @@ class Movies:
 		self.prefer_fanArt = getSetting('prefer.fanarttv') == 'true'
 		self.simklCredentials = simkl.getSimKLCredentialsInfo()
 		self.mdblist_authed = getSetting('mdblist.api') != ''
+		from resources.lib.modules import tmdb4
+		self.tmdbv4Credentials = tmdb4.getTMDbV4CredentialsInfo()
 
 	def get(self, url, idx=True, create_directory=True, folderName=''):
 		self.list = []
@@ -244,7 +241,7 @@ class Movies:
 				self.list = cache.get(self.trakt_list,self.trakt_hours, url, self.trakt_user, folderName) #trakt other
 				if idx: self.worker()
 			elif u in self.imdb_link and ('/user/' in url or '/list/' in url):
-				isRatinglink = True if self.imdbratings_link in url else False
+				isRatinglink = False
 				self.list = cache.get(self.imdb_list, 0, url, isRatinglink, folderName)
 				if idx: self.worker()
 				# self.sort() # switched to request sorting for imdb
@@ -358,6 +355,21 @@ class Movies:
 				from resources.lib.modules import log_utils
 				log_utils.error()
 		return self.list
+	def tmdb_v4_userlists(self, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			from resources.lib.modules import tmdb4
+			v4_lists = tmdb4.get_user_lists()
+			for lst in v4_lists:
+				url = self.tmdb_link + '/4/list/%s?page=1' % lst.get('id')
+				self.list.append({'name': lst.get('name', ''), 'url': url, 'image': 'tmdb.png', 'icon': 'DefaultVideoPlaylists.png', 'action': 'tmdbmovies&folderName=%s' % quote_plus(lst.get('name', ''))})
+			if self.list is None: self.list = []
+			if create_directory: self.addDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
 	def get_mdbuser_watchlist(self, create_directory=True, folderName=''):
 		self.list = []
 		try:
@@ -438,6 +450,32 @@ class Movies:
 		if self.list is None: self.list = []
 		if create_directory: self.movieDirectory(self.list, folderName=folderName)
 		return self.list
+
+	def mdb_list_for_library(self, url, media_type='movie'):
+		"""Fetch all items from an MDBList list URL and enrich with TMDB metadata for library import."""
+		self.list = []
+		try:
+			from resources.lib.modules import mdblist
+			items = mdblist.get_list_items_for_library(url)
+			if not items: return []
+			for item in items:
+				itype = item.get('mediatype', 'movie')
+				if media_type != 'mixed' and itype != 'movie':
+					continue
+				values = {
+					'title': item.get('title', ''),
+					'originaltitle': item.get('title', ''),
+					'year': item.get('year', ''),
+					'imdb': item.get('imdb', ''),
+					'mediatype': itype,
+				}
+				self.list.append(values)
+			if self.list:
+				self.worker()
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+		return self.list if self.list else []
 
 	def favouriteMovies(self, create_directory=True, folderName=''):
 		self.list = []
@@ -1020,7 +1058,7 @@ class Movies:
 		elif decade == '2010-2019':
 			decades = '2010-2019'
 		elif decade == '2020-2029':
-			decades = '2020-2024'
+			decades = '2020-2026'
 		if listType == 'trending':
 			url = self.trakttrending_link +'&genres=%s&years=%s&languages=%s'% (genreslug, decades, filterLang)
 			self.list = cache.get(self.trakt_list,self.trakt_hours, url, self.trakt_user, folderName) #trakt trending with genre
@@ -1078,12 +1116,6 @@ class Movies:
 			userlists += lists
 		except: pass
 		try:
-			if not self.imdb_user: raise Exception()
-			self.list = []
-			lists = cache.get(self.imdb_user_list, 0, self.imdblists_link)
-			userlists += lists
-		except: pass
-		try:
 			if self.tmdb_session_id == '': raise Exception()
 			self.list = []
 			url = self.tmdb_link + '/3/account/{account_id}/lists?api_key=%s&language=en-US&session_id=%s&page=1' % ('%s', self.tmdb_session_id)
@@ -1091,6 +1123,14 @@ class Movies:
 			lists = cache.get(tmdb_indexer().userlists, 0, url)
 			for i in range(len(lists)): lists[i].update({'image': 'tmdb.png', 'icon': 'DefaultVideoPlaylists.png', 'action': 'tmdbmovies&folderName=%s' % quote_plus(lists[i]['name'])})
 			userlists += lists
+		except: pass
+		try:
+			if not self.tmdbv4Credentials: raise Exception()
+			from resources.lib.modules import tmdb4
+			v4_lists = tmdb4.get_user_lists()
+			for lst in v4_lists:
+				url = self.tmdb_link + '/4/list/%s?page=1' % lst.get('id')
+				userlists.append({'name': lst.get('name', ''), 'url': url, 'image': 'tmdb.png', 'icon': 'DefaultVideoPlaylists.png', 'action': 'tmdbmovies&folderName=%s' % quote_plus(lst.get('name', ''))})
 		except: pass
 		self.list = []
 		for i in range(len(userlists)): # Filter the user's own lists that were
@@ -1107,10 +1147,6 @@ class Movies:
 		if self.tmdb_session_id != '': # TMDb Watchlist
 			url = self.tmdb_link + '/3/account/{account_id}/watchlist/movies?api_key=%s&session_id=%s&sort_by=created_at.asc&page=1' % ('%s', self.tmdb_session_id)
 			self.list.insert(0, {'name': getLS(32033), 'url': url, 'image': 'tmdb.png', 'icon': 'DefaultVideoPlaylists.png', 'action': 'tmdbmovies'})
-		if self.imdb_user != '': # imdb Watchlist
-			self.list.insert(0, {'name': getLS(32033), 'url': self.imdbwatchlist_link, 'image': 'imdb.png', 'icon': 'DefaultVideoPlaylists.png', 'action': 'movies&folderName=%s' % quote_plus(getLS(32033))})
-		if self.imdb_user != '': # imdb My Ratings
-			self.list.insert(0, {'name': getLS(32025), 'url': self.imdbratings_link, 'image': 'imdb.png', 'icon': 'DefaultVideoPlaylists.png', 'action': 'movies&folderName=%s' % quote_plus(getLS(32025))})
 		if create_directory: self.addDirectory(self.list, queue=True, folderName=folderName)
 		return self.list
 
@@ -1624,11 +1660,6 @@ class Movies:
 			try:
 				for i in re.findall(r'date\[(\d+)\]', url):
 					url = url.replace('date[%s]' % i, (self.date_time - timedelta(days=int(i))).strftime('%Y-%m-%d'))
-				def imdb_watchlist_id(url):
-					return client.parseDOM(client.request(url), 'meta', ret='content', attrs = {'property': 'pageId'})[0]
-				if url == self.imdbwatchlist_link:
-					url = cache.get(imdb_watchlist_id, 8640, url)
-					url = self.imdbwatchlist2_link % url
 				result = client.request(url).replace('\n', ' ')
 				items = client.parseDOM(result, 'div', attrs = {'class': 'ipc-metadata-list-summary-item__tc'})
 			except:
@@ -1681,30 +1712,6 @@ class Movies:
 				from resources.lib.modules import log_utils
 				log_utils.error()
 		return self.list
-
-	def imdb_user_list(self, url):
-		list = []
-		try:
-			result = client.request(url)
-			items = client.parseDOM(result, 'li', attrs={'class': 'ipc-metadata-list-summary-item'})
-		except:
-			from resources.lib.modules import log_utils
-			log_utils.error()
-		for item in items:
-			try:
-				#name = client.parseDOM(item, 'a')[0]
-				#name = client.replaceHTMLCodes(name)
-				name = client.parseDOM(item, 'a', attrs={'class': 'ipc-metadata-list-summary-item__t'})[0]
-				url = client.parseDOM(item, 'a', ret='href')[0]
-				url = url.split('/list/', 1)[-1].strip('/')
-				url = self.imdblist_link % url
-				url = client.replaceHTMLCodes(url)
-				list.append({'name': name, 'url': url, 'context': url, 'image': 'imdb.png', 'icon': 'DefaultVideoPlaylists.png', 'action': 'movies&folderName=%s' % quote_plus(name)})
-			except:
-				from resources.lib.modules import log_utils
-				log_utils.error()
-		list = sorted(list, key=lambda k: re.sub(r'(^the |^a |^an )', '', k['name'].lower()))
-		return list
 
 	def dvdReleaseList(self, create_directory=True, folderName=''):
 		self.list = cache.get(Movies().getDvdReleaseList, 96)
@@ -2197,6 +2204,8 @@ class Movies:
 						cm.append((traktManagerMenu, 'RunPlugin(%s?action=tools_traktManager&name=%s&imdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, watched, unfinished)))
 					if self.mdblist_authed:
 						cm.append(('MDBList Manager', 'RunPlugin(%s?action=tools_mdbWatchlist&name=%s&imdb=%s)' % (sysaddon, sysname, imdb)))
+					if self.tmdbv4Credentials:
+						cm.append((getLS(40606) if getLS(40606) else 'TMDB List Manager', 'RunPlugin(%s?action=tools_tmdbListManager&name=%s&tmdb=%s&mediatype=movie)' % (sysaddon, sysname, tmdb)))
 					if self.simklCredentials:
 						cm.append((simklManagerMenu, 'RunPlugin(%s?action=tools_simklManager&name=%s&imdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, watched, unfinished)))
 					if watched:

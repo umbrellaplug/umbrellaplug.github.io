@@ -9,6 +9,7 @@ import re
 from threading import Thread
 from urllib.parse import quote_plus, urlencode, parse_qsl, urlparse, urlsplit
 from resources.lib.database import cache, fanarttv_cache, traktsync
+from resources.lib.database import artwork as customArtwork
 from resources.lib.indexers.tmdb import TVshows as tmdb_indexer
 from resources.lib.indexers.fanarttv import FanartTv
 from resources.lib.modules import cleangenre
@@ -1164,9 +1165,24 @@ class Episodes:
 					else: thumb = landscape or fanart or season_poster
 				icon = season_poster or poster
 				banner = meta.get('banner') or addonBanner
+				clearart = meta.get('clearart', '')
+				clearlogo = meta.get('clearlogo', '')
+				useCustomArtwork = customArtwork.fetch_episode(imdb, tmdb, tvdb, season, episode)
+				if useCustomArtwork:
+					allowed_keys = {"thumb", "poster", "fanart", "landscape", "banner", "clearart", "clearlogo"}
+					for key in allowed_keys:
+						value = useCustomArtwork[0].get(key)
+						if value not in (None, "", " "):
+							if key == 'thumb': thumb = value
+							if key == 'poster': season_poster = value
+							if key == 'fanart': fanart = value
+							if key == 'landscape': landscape = value
+							if key == 'banner': banner = value
+							if key == 'clearart': clearart = value
+							if key == 'clearlogo': clearlogo = value
 				art = {}
 				art.update({'poster': season_poster, 'tvshow.poster': poster, 'season.poster': season_poster, 'fanart': fanart, 'icon': icon, 'thumb': thumb, 'banner': banner,
-						'tvshow.clearlogo': meta.get('clearlogo', ''), 'clearart': meta.get('clearart', ''), 'tvshow.clearart': meta.get('clearart', ''), 'landscape': thumb})
+						'tvshow.clearlogo': clearlogo, 'clearart': clearart, 'tvshow.clearart': clearart, 'landscape': thumb})
 				for k in ('metacache', 'poster2', 'poster3', 'fanart2', 'fanart3', 'banner2', 'banner3', 'trailer'): meta.pop(k, None)
 				meta.update({'poster': poster, 'fanart': fanart, 'banner': banner, 'thumb': thumb, 'icon': icon})
 				sysmeta, sysart, syslabelProgress = quote_plus(jsdumps(meta)), quote_plus(jsdumps(art)), quote_plus(labelProgress)
@@ -1228,6 +1244,7 @@ class Episodes:
 						if rescrape_method == '3':
 							cm.append((rescrapeMenu, 'PlayMedia(%s?action=play_Item&title=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&tvshowtitle=%s&premiered=%s&meta=%s&rescrape=true&all_providers=true&select=0)' % (
 											sysaddon, systitle, year, imdb, tmdb, tvdb, season, episode, systvshowtitle, syspremiered, sysmeta)))
+				cm.append(('Customize Artwork', 'RunPlugin(%s?action=customizeArt&mediatype=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&thumb=%s&poster=%s&fanart=%s&landscape=%s&banner=%s&clearart=%s&clearlogo=%s)' % (sysaddon, 'episode', imdb, tmdb, tvdb, season, episode, thumb, season_poster, fanart, landscape, banner, clearart, clearlogo)))
 				cm.append((clearSourcesMenu, 'RunPlugin(%s?action=cache_clearSources)' % sysaddon))
 				cm.append(('[COLOR %s]Umbrella Settings[/COLOR]' % self.highlight_color, 'RunPlugin(%s?action=tools_openSettings)' % sysaddon))
 ####################################

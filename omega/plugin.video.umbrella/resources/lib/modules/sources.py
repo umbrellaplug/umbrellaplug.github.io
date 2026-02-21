@@ -120,6 +120,7 @@ class Sources:
 				meta = metacache.fetch([{'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb}], self.lang, self.user)[0]
 				if meta != self.ids: meta = dict((k, v) for k, v in iter(meta.items()) if v is not None and v != '')
 			def checkLibMeta(): # check Kodi db for meta for library playback.
+				
 				def cleanLibArt(art):
 					if not art: return ''
 					art = unquote(art.replace('image://', ''))

@@ -153,6 +153,9 @@ def router(argv2):
 	elif action == 'movieUserlists':
 		from resources.lib.menus import movies
 		movies.Movies().userlists(folderName=folderName, create_directory=True)
+	elif action == 'tmdbUserListsMovies':
+		from resources.lib.menus import movies
+		movies.Movies().tmdb_v4_userlists(folderName=folderName)
 	elif action == 'traktAuth':
 		from resources.lib.modules import trakt as Trakt
 		Trakt.traktAuth(fromSettings=1)
@@ -336,6 +339,9 @@ def router(argv2):
 	elif action == 'tvUserlists':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().userlists(folderName=folderName, create_directory=True)
+	elif action == 'tmdbUserListsTV':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().tmdb_v4_userlists(folderName=folderName)
 	elif action == 'tvOriginals':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().originals(folderName)
@@ -819,6 +825,18 @@ def router(argv2):
 					traceback.print_exc()
 
 	####################################################
+	#---tmdbbv4
+	####################################################
+	elif action == 'tmdb_v4_authenticate':
+		from resources.lib.modules import tmdb4
+		tmdb4.authenticate(fromSettings=1)
+	elif action == 'tmdb_v4_revoke':
+		from resources.lib.modules import tmdb4
+		tmdb4.revoke(fromSettings=1)
+	elif action == 'tmdb_v4_createList':
+		from resources.lib.modules import tmdb4
+		tmdb4.create_list_dialog()
+	####################################################
 	#---Color Picker
 	####################################################
 	elif action == 'colorpicker':
@@ -829,7 +847,7 @@ def router(argv2):
 		tools.resetCustomBG()
 	elif action == 'customizeArt':
 		from resources.lib.database import artwork
-		artwork.manager(mediatype=mediatype, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, poster=params.get('poster'), fanart=params.get('fanart'), landscape=params.get('landscape'), banner=params.get('banner'), clearart=params.get('clearart'), clearlogo=params.get('clearlogo'), discart=params.get('discart'), keyart=params.get('keyart'))
+		artwork.manager(mediatype=mediatype, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, thumb=params.get('thumb'), poster=params.get('poster'), fanart=params.get('fanart'), landscape=params.get('landscape'), banner=params.get('banner'), clearart=params.get('clearart'), clearlogo=params.get('clearlogo'), discart=params.get('discart'), keyart=params.get('keyart'))
 	####################################################
 	#---Tools
 	####################################################
@@ -909,6 +927,10 @@ def router(argv2):
 			unfinished = (params.get('unfinished') == 'True') if params.get('unfinished') else False
 			tvshow = (params.get('tvshow') == 'tvshow')
 			trakt.manager(name, imdb, tvdb, season, episode, watched=watched, unfinished=unfinished,tvshow=tvshow)
+		elif action == 'tools_tmdbListManager':
+			from resources.lib.modules import tmdb4
+			mediatype = params.get('mediatype', 'movie')
+			tmdb4.manager(name, tmdb, mediatype)
 		elif action == 'tools_mdbWatchlist':
 			from resources.lib.modules import mdblist
 			mdblist.manager(name, imdb, tvdb, tmdb)
@@ -951,18 +973,43 @@ def router(argv2):
 				isFromSettings=True
 			from resources.lib.modules import library
 			library.lib_tools().importListsManager(isFromSettings)
+		elif action == 'tools_importListManagerMulti':
+			isFromSettings=False
+			if query == 'settings':
+				isFromSettings=True
+			from resources.lib.modules import library
+			library.lib_tools().importListsManagerMulti(isFromSettings)
 		elif action == 'tools_traktImportListsNow':
 			isFromSettings=False
 			if query == 'settings':
 				isFromSettings=True
 			from resources.lib.modules import library
-			library.lib_tools().importListsNow(isFromSettings)
+			#library.lib_tools().importListsNow(isFromSettings)
+			library.lib_tools().importListsNowMulti(isFromSettings)
 		elif action == 'tools_traktImportListsNowNoSelect':
 			isFromSettings=False
 			if query == 'settings':
 				isFromSettings=True
 			from resources.lib.modules import library
 			library.lib_tools().importListsNowNoSelect(isFromSettings)
+		elif action == 'tools_mdblistImportListsNow':
+			isFromSettings=False
+			if query == 'settings':
+				isFromSettings=True
+			from resources.lib.modules import library
+			library.lib_tools().importListsNowMdbList(isFromSettings)
+		elif action == 'tools_tmdbV4ImportListsNow':
+			isFromSettings=False
+			if query == 'settings':
+				isFromSettings=True
+			from resources.lib.modules import library
+			library.lib_tools().importListsNowTMDbV4(isFromSettings)
+		elif action == 'tools_tmdbV4ImportListManager':
+			isFromSettings=False
+			if query == 'settings':
+				isFromSettings=True
+			from resources.lib.modules import library
+			library.lib_tools().importListsManagerTMDbV4(isFromSettings)
 		elif action == 'tools_umbrellaProper':
 			from resources.lib.modules import tools
 			tools.nonsense()

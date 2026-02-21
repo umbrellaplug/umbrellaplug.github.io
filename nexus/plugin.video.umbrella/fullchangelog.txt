@@ -1,15 +1,34 @@
+[B]Update - v6.7.53 - Feb 21st, 2026[/B]
+--[Removed] imdb user id in settings and lists from imdb user removed.
+--[New] Episode level art customization added.
+--[New] TMDdb v4 List Support Added.
+--[New] TMDdb v4 lists can be imported into the Kodi library using the existing list import functionality, alongside Trakt lists and MDBList lists.
+--[Fix] Changed method for Trakt lists to use page numbers.
+--[Fix] Resolved issue with genres by decade ending in 2024.
+--[Fix] Removed IMDd Lists that were restricted to 25 results.
+--[Fix] Trakt Pagination API changes to comply with Trakt's new requirements.
+--[Fix] Corrected auto-import list manager not remembering which lists were previously selected when reopening.
+--[Fix] Fixed typo in tvshows worker causing some items to not have tvdb populated.
+--[New] Added ability to import MDBList user lists into the Kodi library (one-time and automatic)
+--[New] "Select Lists to Auto-Import" now lets you choose between Trakt and MDBList and TMDb lists, with the total count of all lists shown in the settings.
+--[New] The auto-import list count shown in settings now reflects the total across both Trakt and MDBList and TMDb combined
+--[Fix] Cleaned up and removed some unused or no longer needed settings.
+--[Change] Added support for Trakt dropped instead of hidden.
+--[Fix] Real-Debrid Authorization: Fixed the QR code randomly not appearing on the authorization prompt. 
+
 [B]Update - v6.7.52 - Nov 4th, 2025[/B]
 --[Fix] Fixed alldebrid cloud scraper not working.
 --[Fix] Fixed issue with items found in one cloud scraper showing as duplicates for every provider enabled.
-
-[B]Update - v6.7.51 - Nov 4th, 2025[/B]
 --[Fix] Fixed alldebrid cloud browsing and debrid packs.
 --[Change] Added new option to use alternate Real-Debrid API endpoint (app.real-debrid.com) in settings.
 
-[B]Update - v6.7.50 - Oct 29th, 2025[/B]
+[B]Update - v6.7.51 - Oct 29th, 2025[/B]
 --[Fix] Fixed custom artwork to pull fanart correctly from tmdb. Thanks Adam!
 --[Fix] Fixed where library items would crash on scraping due to blank fanart from library scraper.
 --[Fix] Updated for All-Debrid API changes.
+
+[B]Update - v6.7.50 - July 29th, 2025[/B]
+--[Fix] Made some changes to exception handling code in service.py to show exceptions better.
 
 [B]Update - v6.7.49 - July 29th, 2025[/B]
 --[Info] You may need to re-authorize Trakt due to changes to the authorization code in the addon. Go to Settings: General then Indicators and make sure it is set to Trakt after re-authorizing.

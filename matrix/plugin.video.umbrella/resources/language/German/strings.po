@@ -6432,6 +6432,50 @@ msgctxt "#40598"
 msgid "MDBList Watchlist Lib"
 msgstr ""
 
+msgctxt "#40598"
+msgid "MDBList Watchlist Lib"
+msgstr ""
+
 msgctxt "#40599"
 msgid "Use alternate API address. (app.real-debrid.com)"
+msgstr ""
+
+msgctxt "#40600"
+msgid "Auto-update library from list(s)"
+msgstr ""
+
+msgctxt "#40601"
+msgid "TMDB v4 Read Access Token"
+msgstr ""
+
+msgctxt "#40602"
+msgid "TMDB v4 Access Token (stored)"
+msgstr ""
+
+msgctxt "#40603"
+msgid "TMDB v4 Account ID (stored)"
+msgstr ""
+
+msgctxt "#40604"
+msgid "Authenticate TMDB v4"
+msgstr ""
+
+msgctxt "#40605"
+msgid "Revoke TMDB v4"
+msgstr ""
+
+msgctxt "#40606"
+msgid "TMDB List Manager"
+msgstr ""
+
+msgctxt "#40607"
+msgid "Not authenticated with TMDB v4. Check Settings."
+msgstr ""
+
+msgctxt "#40608"
+msgid "New List Name"
+msgstr ""
+
+msgctxt "#40609"
+msgid "TMDB v4"
 msgstr ""

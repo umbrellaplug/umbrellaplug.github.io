@@ -1039,17 +1039,7 @@
 		</category>
 		<category id="navigation(movies)" label="40364" help="40366">
 			<group id="1" label="32001">
-				<setting id="navi.movie.imdb.intheater" type="boolean" label="32421" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
 				<setting id="navi.movie.tmdb.nowplaying" type="boolean" label="32423" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="navi.movie.imdb.comingsoon" type="boolean" label="32215" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
@@ -1060,11 +1050,6 @@
 					<control type="toggle"/>
 				</setting>
 				<setting id="navi.movie.tmdb.upcoming" type="boolean" label="32427" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="navi.movie.imdb.popular" type="boolean" label="32429" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
@@ -1099,22 +1084,12 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="navi.movie.imdb.boxoffice" type="boolean" label="32435" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
 				<setting id="navi.movie.tmdb.boxoffice" type="boolean" label="32436" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
 				<setting id="navi.movie.trakt.boxoffice" type="boolean" label="32437" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="navi.movie.imdb.mostvoted" type="boolean" label="32439" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
@@ -1194,16 +1169,6 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="navi.movie.imdb.featured" type="boolean" label="32447" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="navi.movie.imdb.oscarnominees" type="boolean" label="32454" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
 				<setting id="navi.movie.trakt.genres" type="boolean" label="40493" help="">
 					<level>0</level>
 					<default>true</default>
@@ -1215,21 +1180,6 @@
 					<control type="toggle"/>
 				</setting>
 				<setting id="navi.movie.tmdb.years" type="boolean" label="32485" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="navi.movie.imdb.people" type="boolean" label="32460" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="navi.movie.imdb.languages" type="boolean" label="32462" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="navi.movie.tmdb.certificates" type="boolean" label="32487" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
@@ -1283,22 +1233,12 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="navi.tv.imdb.popular" type="boolean" label="32429" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
 				<setting id="navi.tv.tmdb.popular" type="boolean" label="32431" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
 				<setting id="navi.tv.trakt.popular" type="boolean" label="32433" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="navi.tv.imdb.mostvoted" type="boolean" label="32439" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
@@ -1353,11 +1293,6 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="navi.tv.imdb.highlyrated" type="boolean" label="32449" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
 				<setting id="navi.tv.trakt.recommended" type="boolean" label="32445" help="">
 					<level>0</level>
 					<default>true</default>
@@ -1383,22 +1318,12 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="navi.movie.imdb.years" type="boolean" label="32458" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
 				<setting id="navi.tv.tmdb.airingtoday" type="boolean" label="32467" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
 				<setting id="navi.tv.tmdb.ontv" type="boolean" label="32472" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="navi.tv.imdb.newtvshows" type="boolean" label="32476" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
@@ -5224,15 +5149,75 @@
 					</control>
 				</setting>
 			</group>
-			<group id="3" label="32034">
-				<setting id="imdbuser" type="string" label="40171" help="">
+			<group id="3" label="40609">
+				<setting id="tmdb.v4.readtoken" type="string" label="40601" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
 					<control type="edit" format="string">
-						<heading>40171</heading>
+						<heading>40601</heading>
+					</control>
+				</setting>
+				<setting id="tmdb.v4.accesstoken" type="string" label="40602" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40602</heading>
+					</control>
+				</setting>
+				<setting id="tmdb.v4.accountid" type="string" label="40603" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40603</heading>
+					</control>
+				</setting>
+				<setting id="tmdbv4AuthButton" type="action" label="40604" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tmdb_v4_authenticate)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="tmdb.v4.accesstoken"></condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="tmdbv4RevokeButton" type="action" label="40605" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tmdb_v4_revoke)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="tmdb.v4.accesstoken"></condition>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
 					</control>
 				</setting>
 			</group>
@@ -5325,7 +5310,7 @@
 				</setting>
 			</group>
 			<group id="3">
-				<setting id="library.autoimportlists" type="boolean" label="40209" help="">
+				<setting id="library.autoimportlists" type="boolean" label="40600" help="">
 					<level>0</level>
 					<default>false</default>
 					<dependencies>
@@ -5333,7 +5318,11 @@
 							<condition operator="is" setting="library.service.update">true</condition>
 						</dependency>
 						<dependency type="visible">
-							<condition operator="is" setting="trakt.isauthed">true</condition>
+							<or>
+								<condition operator="is" setting="trakt.isauthed">true</condition>
+								<condition operator="!is" setting="mdblist.api"></condition>
+								<condition operator="!is" setting="tmdb.v4.accesstoken"></condition>
+							</or>
 						</dependency>
 					</dependencies>
 					<control type="toggle"/>
@@ -5352,7 +5341,11 @@
 							<condition operator="is" setting="library.autoimportlists">true</condition>
 						</dependency>
 						<dependency type="visible">
-							<condition operator="is" setting="trakt.isauthed">true</condition>
+							<or>
+								<condition operator="is" setting="trakt.isauthed">true</condition>
+								<condition operator="!is" setting="mdblist.api"></condition>
+								<condition operator="!is" setting="tmdb.v4.accesstoken"></condition>
+							</or>
 						</dependency>
 					</dependencies>
 					<control type="button" format="action">
@@ -5374,7 +5367,11 @@
 							<condition on="property" name="infoBool">false</condition>
 						</dependency>
 						<dependency type="visible">
-							<condition operator="is" setting="trakt.isauthed">true</condition>
+							<or>
+								<condition operator="is" setting="trakt.isauthed">true</condition>
+								<condition operator="!is" setting="mdblist.api"></condition>
+								<condition operator="!is" setting="tmdb.v4.accesstoken"></condition>
+							</or>
 						</dependency>
 					</dependencies>
 					<control type="button" format="action">
@@ -5392,12 +5389,16 @@
 						<dependency type="visible">
 							<and>
 								<condition operator="is" setting="library.autoimportlists">true</condition>
-								<condition operator="is" setting="trakt.isauthed">true</condition>
+								<or>
+									<condition operator="is" setting="trakt.isauthed">true</condition>
+									<condition operator="!is" setting="mdblist.api"></condition>
+									<condition operator="!is" setting="tmdb.v4.accesstoken"></condition>
+								</or>
 							</and>
 						</dependency>
 					</dependencies>
 					<control type="button" format="action">
-						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_traktImportListManager&amp;query=settings)</data>
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_importListManagerMulti&amp;query=settings)</data>
 						<close>true</close>
 					</control>
 				</setting>
@@ -5411,7 +5412,11 @@
 						<dependency type="visible">
 							<and>
 								<condition operator="is" setting="library.autoimportlists">true</condition>
-								<condition operator="is" setting="trakt.isauthed">true</condition>
+								<or>
+									<condition operator="is" setting="trakt.isauthed">true</condition>
+									<condition operator="!is" setting="mdblist.api"></condition>
+									<condition operator="!is" setting="tmdb.v4.accesstoken"></condition>
+								</or>
 							</and>
 						</dependency>
 					</dependencies>
@@ -5428,7 +5433,11 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="is" setting="trakt.isauthed">true</condition>
+							<or>
+								<condition operator="is" setting="trakt.isauthed">true</condition>
+								<condition operator="!is" setting="mdblist.api"></condition>
+								<condition operator="!is" setting="tmdb.v4.accesstoken"></condition>
+							</or>
 						</dependency>
 					</dependencies>
 					<control type="button" format="action">

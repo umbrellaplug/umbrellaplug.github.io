@@ -50,7 +50,7 @@ class CheckSettingsFile:
 				control.log('%s : created successfully' % settings_xml, LOGINFO)
 			else: control.log('%s : already exists' % settings_xml, LOGINFO)
 			return control.log('[ plugin.video.umbrella ]  Finished CheckSettingsFile Service', LOGINFO)
-		except:
+		except Exception:
 			log_utils.error()
 
 class SettingsMonitor(control.monitor_class):
@@ -73,16 +73,16 @@ class SettingsMonitor(control.monitor_class):
 
 		try:
 			window.clearProperty('umbrella_settings') # Kodi callback when the addon settings are changed
-		except:
+		except Exception:
 			control.log('[ plugin.video.umbrella ]  Exception clearing settings property...', LOGDEBUG)
 
 		try:
 			control.refresh_playAction()
-		except:
+		except Exception:
 			control.log('[ plugin.video.umbrella ]  Exception making refreshing playAction...', LOGDEBUG)
 		try:
 			control.refresh_libPath()
-		except:
+		except Exception:
 			control.log('[ plugin.video.umbrella ]  Exception refreshing libpath...', LOGDEBUG)
 		#try:
 			#control.checkPlayNextEpisodes()
@@ -90,21 +90,21 @@ class SettingsMonitor(control.monitor_class):
 			#control.log('[ plugin.video.umbrella ]  Exception checking playnext episodes...', LOGDEBUG)
 		try:
 			control.refresh_debugReversed()
-		except:
+		except Exception:
 			control.log('[ plugin.video.umbrella ]  Exception checking debug reversed', LOGDEBUG)
 		try:
 			control.setContextColors()
-		except:
+		except Exception:
 			control.log('[ plugin.video.umbrella ]  Exception setting context colors...', LOGDEBUG)
 		try:
 			control.checkModules()
-		except:
+		except Exception:
 			control.log('[ plugin.video.umbrella ]  Exception checking modules...', LOGDEBUG)
 		try:
 			control.sleep(50)
 			control.make_settings_dict()
 			window.setProperty('umbrella.updateSettings','true')
-		except:
+		except Exception:
 			control.log('[ plugin.video.umbrella ]  Exception making settings dict...', LOGDEBUG)
 		try:
 			for id in properties:
@@ -113,7 +113,7 @@ class SettingsMonitor(control.monitor_class):
 				else:
 					window.clearProperty(id)
 					#xbmc.log('[ plugin.video.umbrella.context ]  menu item disabled: {0}'.format(id), LOGINFO)
-		except:
+		except Exception:
 			log_utils.error()
 
 class SyncMyAccounts:
@@ -151,7 +151,7 @@ class ReuseLanguageInvokerCheck:
 			root = tree.getroot()
 			current_addon_setting = control.addon('plugin.video.umbrella').getSetting('reuse.languageinvoker')
 			try: current_xml_setting = [str(i.text) for i in root.iter('reuselanguageinvoker')][0]
-			except: return control.log('[ plugin.video.umbrella ]  ReuseLanguageInvokerCheck failed to get settings.xml value', LOGINFO)
+			except Exception: return control.log('[ plugin.video.umbrella ]  ReuseLanguageInvokerCheck failed to get settings.xml value', LOGINFO)
 			if current_addon_setting == '':
 				current_addon_setting = 'true'
 				control.setSetting('reuse.languageinvoker', current_addon_setting)
@@ -169,7 +169,7 @@ class ReuseLanguageInvokerCheck:
 					control.execute('LoadProfile(%s)' % current_profile)
 				else: control.okDialog(title='default', message=33022)
 			return
-		except:
+		except Exception:
 			log_utils.error()
 
 class AddonCheckUpdate:
@@ -203,7 +203,7 @@ class AddonCheckUpdate:
 				control.log('[ plugin.video.umbrella ]  A newer version is available. Installed Version: v%s, Repo Version: v%s' % (local_version, repo_version), LOGINFO)
 				control.notification(message=control.lang(35523) % repo_version)
 			return control.log('[ plugin.video.umbrella ]  Addon update check complete', LOGINFO)
-		except:
+		except Exception:
 			log_utils.error()
 
 class VersionIsUpdateCheck:
@@ -242,7 +242,7 @@ class VersionIsUpdateCheck:
 				control.setSetting('trakt.message2', '') # force a settings write for any added settings that may have been added in new version
 				control.log('[ plugin.video.umbrella ]  Forced new User Data settings.xml saved', LOGINFO)
 				control.log('[ plugin.video.umbrella ]  Plugin updated to v%s' % curVersion, LOGINFO)
-		except:
+		except Exception:
 			log_utils.error()
 
 class SyncTraktCollection:
@@ -259,7 +259,7 @@ class LibraryService:
 	def run(self):
 		try:
 			library_hours = float(control.setting('library.import.hours'))
-		except:
+		except Exception:
 			library_hours = int(6)
 		control.log('[ plugin.video.umbrella ]  Library Update Service Starting (Runs Every %s Hours)...' % library_hours,  LOGINFO)
 		from resources.lib.modules import library
@@ -288,7 +288,7 @@ try:
 		try:
 			repoVersion = control.addon('repository.umbrella').getAddonInfo('version')
 			repoName = 'repository.umbrella'
-		except:
+		except Exception:
 			repoVersion = 'unknown'
 			repoName = 'Unknown Repo'
 
@@ -301,7 +301,7 @@ try:
 	log_utils.log('##   plugin.video.umbrella Version: %s' % str(addonVersion), level=LOGINFO)
 	log_utils.log('##   %s Version: %s' % (str(repoName), str(repoVersion)), level=LOGINFO)
 	log_utils.log('######   UMBRELLA SERVICE ENTERING KEEP ALIVE   #####', level=LOGINFO)
-except:
+except Exception:
 	log_utils.log('## ERROR GETTING Umbrella VERSION - Missing Repo or failed Install ', level=LOGINFO)
 
 def getTraktCredentialsInfo():
@@ -322,7 +322,7 @@ class PremAccntNotification:
 		if control.setting('alldebridusername') != '' and control.setting('alldebridexpirynotice') == 'true':
 			try:
 				account_info = alldebrid.AllDebrid().account_info()['user']
-			except:
+			except Exception:
 				account_info = None
 				from resources.lib.modules import log_utils
 				log_utils.error()
@@ -331,7 +331,7 @@ class PremAccntNotification:
 					# log_utils.log('AD account_info = %s' % account_info, log_utils.LOGINFO)
 					try:
 						expires = datetime.fromtimestamp(account_info['premiumUntil'])
-					except:
+					except Exception:
 						expires = datetime.today()-timedelta(days=1)
 						control.notification(message='AllDebrid Account has no expiration. Invalid or free account.', icon=control.joinPath(control.artPath(), 'alldebrid.png'))
 					days_remaining = (expires - datetime.today()).days # int
@@ -345,7 +345,7 @@ class PremAccntNotification:
 				# log_utils.log('PM account_info = %s' % account_info, log_utils.LOGINFO)
 				try: 
 					expires = datetime.fromtimestamp(account_info['premium_until'])
-				except:
+				except Exception:
 					expires = datetime.today()-timedelta(days=1)
 					control.notification(message='Premiumize.me Account has no expiration. Invalid or free account.', icon=control.joinPath(control.artPath(), 'premiumize.png'))
 				days_remaining = (expires - datetime.today()).days # int
@@ -359,9 +359,9 @@ class PremAccntNotification:
 				# log_utils.log('RD account_info = %s' % account_info, log_utils.LOGINFO)
 				FormatDateTime = "%Y-%m-%dT%H:%M:%S.%fZ"
 				try: expires = datetime.strptime(account_info['expiration'], FormatDateTime)
-				except: 
+				except Exception: 
 					try: expires = datetime(*(time.strptime(account_info['expiration'], FormatDateTime)[0:6]))
-					except: 
+					except Exception: 
 						expires = datetime.today()-timedelta(days=1)
 						control.notification(message='Real-Debrid Account has no expiration. Invalid or free account.', icon=control.joinPath(control.artPath(), 'realdebrid.png'))
 				days_remaining = (expires - datetime.today()).days # int
@@ -372,7 +372,7 @@ class PremAccntNotification:
 	def withinRangeCheck(self, debrid_provider, days_remaining):
 		if days_remaining < 15:
 			try: current_notification_range = int(control.setting('%s.notification.range' % debrid_provider))
-			except: current_notification_range = 5
+			except Exception: current_notification_range = 5
 			for index, day_range in enumerate(self.duration):
 				if day_range[0] > days_remaining > day_range[1] and current_notification_range != index:
 					control.setSetting('%s.notification.range' % debrid_provider, str(index))

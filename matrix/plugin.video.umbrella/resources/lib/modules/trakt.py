@@ -46,7 +46,6 @@ def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0):
 		else:
 			response = session.get(url, headers=headers, timeout=20)
 		status_code = str(response.status_code)
-
 		error_handler(url, response, status_code, silent=silent)
 		if response and status_code in ('200', '201'):
 			if extended: return response, response.headers
@@ -70,7 +69,9 @@ def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0):
 				control.sleep((int(throttleTime) + 1) * 1000)
 				return getTrakt(url, extended=extended, silent=silent, reauth_attempts=reauth_attempts)
 		else: return None
-	except: log_utils.error('getTrakt Error: ')
+	except:
+		try: log_utils.error('getTrakt Error: ')
+		except: pass
 	return None
 
 def error_handler(url, response, status_code, silent=False):
@@ -96,8 +97,88 @@ def getTraktAsJson(url, post=None, silent=False):
 		if 'X-Sort-By' in res_headers and 'X-Sort-How' in res_headers:
 			r = sort_list(res_headers['X-Sort-By'], res_headers['X-Sort-How'], r)
 		return r
-	except Exception as e: 
+	except Exception as e:
 		log_utils.log('TRAKT: Error in getTraktAsJson: %s' % str(e), level=log_utils.LOGWARNING)
+		return None
+
+def get_all_pages(url, silent=False):
+	"""Fetch all pages from a paginated Trakt endpoint and return combined results."""
+	try:
+		# Clean URL to ensure no existing pagination params
+		if '&page=' in url:
+			url = url.split('&page=')[0]
+		if '?page=' in url:
+			url = url.split('?page=')[0]
+		if '&limit=' in url:
+			url = url.split('&limit=')[0]
+		if '?limit=' in url:
+			url = url.split('?limit=')[0]
+		
+		sep = '&' if '?' in url else '?'
+		limit = 1000
+		page = 1
+		results = []
+		
+		while True:
+			page_url = url + sep + 'page=%d&limit=%d' % (page, limit)
+			response = getTrakt(page_url, silent=silent)
+			if not response:
+				if page == 1:
+					log_utils.log('TRAKT: get_all_pages - No response on first page for URL: %s' % url, level=log_utils.LOGWARNING)
+					return None
+				break
+			
+			try:
+				page_results = response.json()
+			except Exception as e:
+				log_utils.log('TRAKT: get_all_pages - JSON decode error on page %d: %s' % (page, str(e)), level=log_utils.LOGWARNING)
+				if page == 1: return None
+				break
+			
+			if not page_results:
+				if page == 1: return page_results if page_results is not None else []
+				break
+			
+			try:
+				items_count = len(page_results)
+				results.extend(page_results)
+				items_this_page = items_count
+			except (TypeError, AttributeError) as e:
+				log_utils.log('TRAKT: get_all_pages - Cannot process as list on page %d: %s' % (page, str(e)), level=log_utils.LOGWARNING)
+				if page == 1: return page_results
+				break
+			except Exception as e:
+				log_utils.log('TRAKT: get_all_pages - Error processing page %d: %s' % (page, str(e)), level=log_utils.LOGWARNING)
+				if page == 1: return None
+				break
+			
+			# If we got fewer items than the limit, we've reached the last page
+			if items_this_page < limit:
+				break
+			
+			# Check pagination headers if available
+			total_pages = response.headers.get('X-Pagination-Page-Count') if hasattr(response, 'headers') else None
+			if total_pages:
+				try:
+					total_pages = int(total_pages)
+					if page >= total_pages:
+						break
+				except (ValueError, TypeError):
+					pass
+			
+			page += 1
+			
+			# Safety limit to prevent infinite loops (max 100 pages = 100,000 items)
+			if page > 100:
+				log_utils.log('TRAKT: get_all_pages reached safety limit of 100 pages for URL: %s' % url, level=log_utils.LOGWARNING)
+				break
+		
+		if page > 1:
+			log_utils.log('TRAKT: get_all_pages - Fetched %d items across %d pages' % (len(results), page), level=log_utils.LOGINFO)
+		
+		return results
+	except Exception as e:
+		log_utils.log('TRAKT: Error in get_all_pages: %s' % str(e), level=log_utils.LOGWARNING)
 		return None
 
 def re_auth(headers):
@@ -519,13 +600,10 @@ def unHideItems(tvdb_ids):
 	if not tvdb_ids: return
 	success = None
 	try:
-		sections = ['progress_watched', 'calendar']
 		ids = []
 		for id in tvdb_ids: ids.append({"ids": {"tvdb": int(id)}})
 		post = {"shows": ids}
-		for section in sections:
-			success = getTrakt('users/hidden/%s/remove' % section, post=post)
-			control.sleep(1000)
+		success = getTrakt('users/hidden/dropped/remove', post=post)
 		if success:
 			if 'plugin.video.umbrella' in control.infoLabel('Container.PluginName'): control.refresh()
 			traktsync.delete_hidden_progress(tvdb_ids)
@@ -539,13 +617,10 @@ def hideItems(tvdb_ids):
 	if not tvdb_ids: return
 	success = None
 	try:
-		sections = ['progress_watched', 'calendar']
 		ids = []
 		for id in tvdb_ids: ids.append({"ids": {"tvdb": int(id)}})
 		post = {"shows": ids}
-		for section in sections:
-			success = getTrakt('users/hidden/%s' % section, post=post)
-			control.sleep(1000)
+		success = getTrakt('users/hidden/dropped', post=post)
 		if success:
 			if 'plugin.video.umbrella' in control.infoLabel('Container.PluginName'): control.refresh()
 			sync_hidden_progress(forced=True)
@@ -558,28 +633,18 @@ def hideItems(tvdb_ids):
 def hideItem(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, tvshow=None):
 	success = None
 	try:
-		sections = ['progress_watched', 'calendar']
-		sections_display = [getLS(40072), getLS(40073), getLS(32181)]
-		selection = control.selectDialog([i for i in sections_display], heading=control.addonInfo('name') + ' - ' + getLS(40074))
-		if selection == -1: return
 		control.busy()
 		if episode: post = {"shows": [{"ids": {"tvdb": tvdb}}]}
 		elif tvshow: post = {"shows": [{"ids": {"tvdb": tvdb}}]}
 		else: post = {"movies": [{"ids": {"imdb": imdb}}]}
-		if selection in (0, 1):
-			section = sections[selection]
-			success = getTrakt('users/hidden/%s' % section, post=post)
-		else:
-			for section in sections:
-				success = getTrakt('users/hidden/%s' % section, post=post)
-				control.sleep(1000)
+		success = getTrakt('users/hidden/dropped', post=post)
 		if success:
 			control.hide()
 			sync_hidden_progress(forced=True)
 			if refresh: control.refresh()
 			control.trigger_widget_refresh()
 			if getSetting('trakt.general.notifications') == 'true':
-				control.notification(title=32315, message=getLS(33053) % (name, sections_display[selection]))
+				control.notification(title=32315, message=getLS(33053) % name)
 	except: log_utils.error()
 
 def removeCollectionItems(type, id_list):
@@ -1664,7 +1729,7 @@ def sync_watched(activities=None, forced=False): # writes to traktsync.db as of 
 def sync_user_lists(activities=None, forced=False):
 	try:
 		link = '/users/me/lists'
-		list_link = '/users/me/lists/%s/items/%s'
+		list_link = '/users/me/lists/%s/items/%s?page=1&limit=1'
 		if forced:
 			items = getTraktAsJson(link, silent=True)
 			if not items: return
@@ -1707,7 +1772,7 @@ def sync_user_lists(activities=None, forced=False):
 def sync_liked_lists(activities=None, forced=False):
 	try:
 		link = '/users/likes/lists?limit=1000000'
-		list_link = '/users/%s/lists/%s/items/%s'
+		list_link = '/users/%s/lists/%s/items/%s?page=1&limit=1'
 		db_last_liked = traktsync.last_sync('last_liked_at')
 		listActivity = getListActivity(activities)
 		if (listActivity > db_last_liked) or forced:
@@ -1747,16 +1812,16 @@ def sync_liked_lists(activities=None, forced=False):
 
 def sync_hidden_progress(activities=None, forced=False):
 	try:
-		link = '/users/hidden/progress_watched?limit=2000&type=show'
+		link = '/users/hidden/dropped?limit=1000&page=1&type=show'
 		if forced:
 			items = getTraktAsJson(link, silent=True)
 			traktsync.insert_hidden_progress(items)
-			log_utils.log('Forced - Trakt Hidden Progress Sync Complete', __name__, log_utils.LOGDEBUG)
+			log_utils.log('Forced - Trakt Dropped Progress Sync Complete', __name__, log_utils.LOGDEBUG)
 		else:
 			db_last_hidden = traktsync.last_sync('last_hiddenProgress_at')
 			hiddenActivity = getHiddenActivity(activities)
 			if hiddenActivity > db_last_hidden:
-				log_utils.log('Trakt Hidden Progress Sync Update...(local db latest "hidden_at" = %s, trakt api latest "hidden_at" = %s)' % \
+				log_utils.log('Trakt Dropped Progress Sync Update...(local db latest "hidden_at" = %s, trakt api latest "hidden_at" = %s)' % \
 									(str(db_last_hidden), str(hiddenActivity)), __name__, log_utils.LOGDEBUG)
 				items = getTraktAsJson(link, silent=True)
 				traktsync.insert_hidden_progress(items)
@@ -1766,10 +1831,10 @@ def sync_collection(activities=None, forced=False):
 	try:
 		link = '/users/me/collection/%s?extended=full'
 		if forced:
-			items = getTraktAsJson(link % 'movies', silent=True)
-			traktsync.insert_collection(items, 'movies_collection')
-			items = getTraktAsJson(link % 'shows', silent=True)
-			traktsync.insert_collection(items, 'shows_collection')
+			items = get_all_pages(link % 'movies', silent=True)
+			if items is not None: traktsync.insert_collection(items, 'movies_collection')
+			items = get_all_pages(link % 'shows', silent=True)
+			if items is not None: traktsync.insert_collection(items, 'shows_collection')
 			#log_utils.log('Forced - Trakt Collection Sync Complete', __name__, log_utils.LOGDEBUG)
 		else:
 			db_last_collected = traktsync.last_sync('last_collected_at')
@@ -1781,11 +1846,11 @@ def sync_collection(activities=None, forced=False):
 							'public_lists': False, 'shows_collection': True, 'shows_watchlist': False, 'user_lists': False, 'watched': False}
 				traktsync.delete_tables(clr_traktSync)
 				# indicators = cachesyncMovies() # could maybe check watched status here to satisfy sort method
-				items = getTraktAsJson(link % 'movies', silent=True)
-				traktsync.insert_collection(items, 'movies_collection')
+				items = get_all_pages(link % 'movies', silent=True)
+				if items is not None: traktsync.insert_collection(items, 'movies_collection')
 				# indicators = cachesyncTVShows() # could maybe check watched status here to satisfy sort method
-				items = getTraktAsJson(link % 'shows', silent=True)
-				traktsync.insert_collection(items, 'shows_collection')
+				items = get_all_pages(link % 'shows', silent=True)
+				if items is not None: traktsync.insert_collection(items, 'shows_collection')
 	except: log_utils.error()
 
 def sync_watch_list(activities=None, forced=False):
@@ -1816,8 +1881,8 @@ def sync_popular_lists(forced=False):
 	try:
 		from datetime import timedelta
 		link = '/lists/popular?limit=300'
-		list_link = '/users/%s/lists/%s/items/movie,show'
-		official_link = '/lists/%s/items/movie,show'
+		list_link = '/users/%s/lists/%s/items/movie,show?page=1&limit=1000'
+		official_link = '/lists/%s/items/movie,show?page=1&limit=1000'
 		db_last_popularList = traktsync.last_sync('last_popularlist_at')
 		cache_expiry = (datetime.utcnow() - timedelta(hours=168)).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 		cache_expiry = int(cleandate.iso_2_utc(cache_expiry))
@@ -1865,8 +1930,8 @@ def sync_trending_lists(forced=False):
 	try:
 		from datetime import timedelta
 		link = '/lists/trending?limit=300'
-		list_link = '/users/%s/lists/%s/items/movie,show'
-		official_link = '/lists/%s/items/movie,show'
+		list_link = '/users/%s/lists/%s/items/movie,show?page=1&limit=1000'
+		official_link = '/lists/%s/items/movie,show?page=1&limit=1000'
 
 		db_last_trendingList = traktsync.last_sync('last_trendinglist_at')
 		cache_expiry = (datetime.utcnow() - timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%S.000Z")

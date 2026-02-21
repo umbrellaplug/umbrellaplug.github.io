@@ -194,5 +194,5 @@ class ProgressUmbrella(BaseDialog):
 				if self.artwork == '1':
 					self.getControl(201).setImage(icon)
 				else:
-					self.geControl(200).setImage(icon)
+					self.getControl(200).setImage(icon)
 		except: pass

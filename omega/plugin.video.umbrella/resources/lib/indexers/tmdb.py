@@ -40,6 +40,26 @@ class TMDb:
 		self.enable_fanarttv = getSetting('enable.fanarttv') == 'true'
 		self.tmdbcollection_hours = getSetting('cache.tmdbcollection') == 'true'
 
+	def get_v4_request(self, url):
+		"""Make a TMDB v4 API request using the stored user access token as Bearer auth."""
+		try:
+			access_token = getSetting('tmdb.v4.accesstoken')
+			if not access_token:
+				import xbmcaddon
+				access_token = xbmcaddon.Addon().getSetting('tmdb.v4.accesstoken')
+			if not access_token:
+				return self.get_request(url)
+			headers = {'Authorization': 'Bearer %s' % access_token, 'Content-Type': 'application/json'}
+			try: response = session.get(url, headers=headers, timeout=20)
+			except requests.exceptions.SSLError:
+				response = session.get(url, headers=headers, verify=False)
+			if response.status_code in (200, 201): return response.json()
+			return None
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			return None
+
 	def get_request(self, url):
 		try:
 			try: response = session.get(url, timeout=20)
@@ -216,12 +236,15 @@ class Movies(TMDb):
 
 	def tmdb_collections_list(self, url):
 		try:
-			result = cache.get(self.get_request, self.tmdbcollection_hours, url)
+			if '/4/list/' in url:
+				result = self.get_v4_request(url)
+			else:
+				result = cache.get(self.get_request, self.tmdbcollection_hours, url)
 			if result is None: return
-			if '404:NOT FOUND' in result: return result
+			if isinstance(result, str) and '404:NOT FOUND' in result: return result
 			if '/collection/' in url: items = result['parts']
 			elif '/3/' in url: items = result['items']
-			else: items = result['results']
+			else: items = result.get('results', result.get('items', []))
 		except: return
 		self.list = []
 		try:
@@ -650,12 +673,15 @@ class TVshows(TMDb):
 	def tmdb_collections_list(self, url):
 		if not url: return
 		try:
-			result = self.get_request(url)
+			if '/4/list/' in url:
+				result = self.get_v4_request(url)
+			else:
+				result = self.get_request(url)
 			if result is None: return
-			if '404:NOT FOUND' in result: return result
+			if isinstance(result, str) and '404:NOT FOUND' in result: return result
 			if '/collection/' in url: items = result['parts']
 			elif '/3/' in url: items = result['items']
-			else: items = result['results']
+			else: items = result.get('results', result.get('items', []))
 		except: return
 		self.list = []
 		try:
@@ -1241,6 +1267,30 @@ class TVshows(TMDb):
 			return art
 		except:
 			return None
+
+	def get_all_episode_art(self, **kwargs):
+		tmdb = kwargs.get('tmdb', '')
+		season = kwargs.get('season', '')
+		episode = kwargs.get('episode', '')
+		if not tmdb or season == '' or episode == '':
+			return None
+		url = base_link + 'tv/%s/season/%s/episode/%s/images?api_key=%s' % (tmdb, season, episode, self.API_key)
+		try:
+			from resources.lib.database import cache
+			tmdbart = cache.get(self.get_request, 10000, url)
+		except:
+			return None
+		if not tmdbart:
+			return None
+		artworkType = kwargs.get('artwork_type', '')
+		artworkList = []
+		if artworkType == 'thumb':
+			tmdbart_items = tmdbart.get('stills', [])
+			for index, item in enumerate(tmdbart_items, start=1):
+				filepath = item.get('file_path')
+				itemurl = '%s%s' % (self.profile_path, filepath) if filepath else ''
+				artworkList.append({'artworkType': artworkType, 'source': 'Tmdb %s' % index, 'url': itemurl})
+		return artworkList
 
 
 class Auth:

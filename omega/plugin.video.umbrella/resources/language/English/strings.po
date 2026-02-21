@@ -191,7 +191,7 @@ msgid "Episode Lists"
 msgstr ""
 
 msgctxt "#32042"
-msgid "No Trakt or IMDb account found."
+msgid "No Trakt, MDbList, or TMDb account found."
 msgstr ""
 
 msgctxt "#32043"
@@ -2360,7 +2360,7 @@ msgid "General Notifications"
 msgstr ""
 
 msgctxt "#33053"
-msgid "%s has been hidden from your %s"
+msgid "%s has been dropped"
 msgstr ""
 
 msgctxt "#33486"
@@ -2640,7 +2640,7 @@ msgid "[B]Trakt Management Tools[/B]"
 msgstr ""
 
 msgctxt "#35058"
-msgid "[COLOR %s][B]Hidden Progress Manager[/B][/COLOR]"
+msgid "[COLOR %s][B]Drop Manager[/B][/COLOR]"
 msgstr ""
 
 msgctxt "#35059"
@@ -3176,7 +3176,7 @@ msgid "Select Menu type to hide from"
 msgstr ""
 
 msgctxt "#40075"
-msgid "[COLOR %s][B]Hide[/B][/COLOR] %s"
+msgid "[COLOR %s][B]Drop[/B][/COLOR] %s"
 msgstr ""
 
 msgctxt "#40076"
@@ -5341,4 +5341,44 @@ msgstr ""
 
 msgctxt "#40599"
 msgid "Use alternate API address. (app.real-debrid.com)"
+msgstr ""
+
+msgctxt "#40600"
+msgid "Auto-update library from list(s)"
+msgstr ""
+
+msgctxt "#40601"
+msgid "TMDB v4 Read Access Token"
+msgstr ""
+
+msgctxt "#40602"
+msgid "TMDB v4 Access Token (stored)"
+msgstr ""
+
+msgctxt "#40603"
+msgid "TMDB v4 Account ID (stored)"
+msgstr ""
+
+msgctxt "#40604"
+msgid "Authenticate TMDB v4"
+msgstr ""
+
+msgctxt "#40605"
+msgid "Revoke TMDB v4"
+msgstr ""
+
+msgctxt "#40606"
+msgid "TMDB List Manager"
+msgstr ""
+
+msgctxt "#40607"
+msgid "Not authenticated with TMDB v4. Check Settings."
+msgstr ""
+
+msgctxt "#40608"
+msgid "New List Name"
+msgstr ""
+
+msgctxt "#40609"
+msgid "TMDB v4"
 msgstr ""
