@@ -13,6 +13,7 @@ from resources.lib.modules.control import lang as getLS, setting as getSetting
 import json
 from resources.lib.modules import trakt
 from resources.lib.modules import simkl
+from resources.lib.modules import mdblist
 
 ZoneUtc = 'utc'
 ZoneLocal = 'local'
@@ -21,6 +22,8 @@ FormatDate = '%Y-%m-%d'
 FormatTime = '%H:%M:%S'
 FormatTimeShort = '%H:%M'
 service_syncInterval = int(getSetting('background.service.syncInterval')) if getSetting('background.service.syncInterval') else 15
+simkl_syncInterval = int(getSetting('simkl.service.syncInterval')) if getSetting('simkl.service.syncInterval') else 30
+mdblist_syncInterval = int(getSetting('mdblist.service.syncInterval')) if getSetting('mdblist.service.syncInterval') else 30
 
 # def datetime_from_string(self, string, format=FormatDateTime):
 	# try:
@@ -202,6 +205,8 @@ def setIndicatorService():
 		log_utils.error()
 
 def services_syncs():
+	last_simkl_sync = 0
+	last_mdblist_sync = 0
 	while not control.monitor.abortRequested():
 		control.sleep(5000) # wait 5sec in case of device wake from sleep
 		try:
@@ -216,7 +221,7 @@ def services_syncs():
 			from resources.lib.modules import log_utils
 			log_utils.log('Trakt Sync Service is running.', 1)
 			activities = trakt.getTraktAsJson('/sync/last_activities', silent=True)
-			if getSetting('bookmarks') == 'true' and getSetting('resume.source') == '1':
+			if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '1':
 				trakt.sync_playbackProgress(activities)
 			trakt.sync_watchedProgress(activities)
 			if getSetting('indicators.alt') == '1':
@@ -229,20 +234,31 @@ def services_syncs():
 			trakt.sync_popular_lists()
 			trakt.sync_trending_lists()
 		if internets and simkl.getSimKLCredentialsInfo():
-			activities = simkl.get_request('/sync/activities')
-			activities = json.dumps(activities)
-			from resources.lib.modules import log_utils
-			log_utils.log('SimKl Sync Service is running.', 1)
-			#if getSetting('bookmarks') == 'true' and getSetting('resume.source') == '2': simkl does not have playback progress currently
-			#	simkl.sync_playbackProgress(activities)
-			simkl.sync_watchedProgress(activities)
-			if getSetting('indicators.alt') == '2':
-				simkl.sync_watched(activities) #
-			simkl.sync_plantowatch(activities)
-			simkl.sync_watching(activities)
-			simkl.sync_completed(activities)
-			simkl.sync_dropped(activities)
-			simkl.sync_hold(activities)
+			current_time = time.time()
+			if (current_time - last_simkl_sync) >= (60 * simkl_syncInterval):
+				activities = simkl.get_request('/sync/activities')
+				activities = json.dumps(activities)
+				from resources.lib.modules import log_utils
+				log_utils.log('SimKl Sync Service is running.', 1)
+				if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '2':
+					simkl.sync_playbackProgress(forced=True)
+				simkl.sync_watchedProgress(activities)
+				if getSetting('indicators.alt') == '2':
+					simkl.sync_watched(activities) #
+				simkl.sync_all_watchlists(activities)
+				last_simkl_sync = current_time
+		if internets and mdblist.getMDBListCredentialsInfo():
+			current_time = time.time()
+			if (current_time - last_mdblist_sync) >= (60 * mdblist_syncInterval):
+				activities = mdblist.getActivities()
+				from resources.lib.modules import log_utils
+				log_utils.log('MDBList Sync Service is running.', 1)
+				if getSetting('indicators.alt') == '3':
+					mdblist.sync_watchedProgress(activities)
+				mdblist.sync_watch_list(activities)
+				if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '3':
+					mdblist.sync_playbackProgress()
+				last_mdblist_sync = current_time
 		if control.monitor.waitForAbort(60*service_syncInterval): break
 
 def originCountry_Select():
@@ -266,14 +282,15 @@ def originCountry_Select():
 		selected = [countryDict[list(countryDict.keys())[i]] for i in multiselected]
 		control.setSetting('originCountry', '|'.join(selected))
 
-def make_qr(url):
+def make_qr(url, filename='qr.png'):
     #import segno and make a qr code using the url passed in. save the image. return the path.
 	if url == None: return
 	try:
 		from resources.lib.externals import segno
 		qrcode = segno.make(url, micro=False)
-		qrcode.save(control.joinPath(control.artPath(), "qr.png"), scale=20)
-		image = control.joinPath(control.artPath(), 'qr.png')
+		dest = control.joinPath(control.dataPath, filename)
+		qrcode.save(dest, scale=20)
+		image = dest
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()

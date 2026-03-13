@@ -7,6 +7,7 @@ from time import time
 from sqlite3 import dbapi2 as db
 from resources.lib.modules.control import existsPath, dataPath, makeFile, metacacheFile
 from resources.lib.modules import trakt, simkl
+from resources.lib.modules.control import setting as getSetting
 
 
 def fetch(items, lang='en', user=''):
@@ -62,16 +63,24 @@ def fetch(items, lang='en', user=''):
 								elif simkl.getSimKLIndicatorsInfo():
 									from resources.lib.database.simklsync import cache_existing
 									from resources.lib.modules.simkl import syncTVShows
+								elif getSetting('indicators.alt') == '3':
+									from resources.lib.database.mdbsync import cache_existing
+									from resources.lib.modules.mdblist import syncTVShows
+								else:
+									continue
 								imdb = item.get('imdb', '')
-								indicators = cache_existing(syncTVShows)
+								indicators = cache_existing(syncTVShows) or []
 								watching = [i[0] for i in indicators if i[0] == imdb]
 								if watching:
 									if trakt.getTraktIndicatorsInfo():
 										from resources.lib.modules.trakt import cachesyncSeasons
+										cachesyncSeasons(imdb, timeout=int(getSetting('background.service.syncInterval') or 15) / 60)
 									elif simkl.getSimKLIndicatorsInfo():
 										from resources.lib.modules.simkl import cachesyncSeasons
-
-									cachesyncSeasons(imdb) # refreshes only shows you are "watching"
+										cachesyncSeasons(imdb, timeout=int(getSetting('simkl.service.syncInterval') or 30) / 60)
+									elif getSetting('indicators.alt') == '3':
+										from resources.lib.modules.mdblist import cachesyncSeasons
+										cachesyncSeasons(imdb, timeout=int(getSetting('mdblist.service.syncInterval') or 30) / 60)
 								continue
 				item = dict((k, v) for k, v in iter(item.items()) if v is not None and v != '')
 				items[i].update(item)

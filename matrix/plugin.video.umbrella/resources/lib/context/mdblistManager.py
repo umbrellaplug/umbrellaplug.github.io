@@ -24,7 +24,8 @@ if __name__ == '__main__':
 	tmdb = params.get('tmdb', '')
 
 	playcount = getInfoLabel('ListItem.Playcount')
+	watched = (int(playcount) >= 1) if playcount else False
 
-	path = 'RunPlugin(%s?action=tools_mdbWatchlist&name=%s&imdb=%s&tvdb=%s&tmdb=%s)' % (
-				plugin, sysname, imdb, tvdb, tmdb)
+	path = 'RunPlugin(%s?action=tools_mdbWatchlist&name=%s&imdb=%s&tvdb=%s&tmdb=%s&watched=%s)' % (
+				plugin, sysname, imdb, tvdb, tmdb, watched)
 	executebuiltin(path)

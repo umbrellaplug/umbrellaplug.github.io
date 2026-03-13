@@ -41,8 +41,11 @@ class iconPackHandler:
 
 	def get_skin_packs(self):
 		self.list1 = []
-		directory = control.iconFolders()
-		subfolders = [ f.name for f in os.scandir(directory) if f.is_dir() ]
+		addon_dir = control.iconFolders()
+		user_dir = control.userIconFolders()
+		addon_subfolders = [f.name for f in os.scandir(addon_dir) if f.is_dir()] if os.path.isdir(addon_dir) else []
+		user_subfolders = [f.name for f in os.scandir(user_dir) if f.is_dir()] if os.path.isdir(user_dir) else []
+		subfolders = set(f.lower() for f in addon_subfolders + user_subfolders)
 		#we need to walk the directory now and get all the pre-installed skin packs
 		try:
 			import requests
@@ -85,7 +88,9 @@ class iconPackHandler:
 				http_response = urlopen(url)
 				control.notification(title='Downloading', message='Downloading icon package.', icon=imageurl, time=3000)
 				zipfile = ZipFile(BytesIO(http_response.read()))
-				dest = control.joinPath(control.iconFolders())
+				dest = control.userIconFolders()
+				if not os.path.isdir(dest):
+					xbmcvfs.mkdirs(dest)
 				zipfile.extractall(path=dest)
 			except:
 				return control.notification(title='Download Issue', message='There was an issue downloading skin package.', icon=imageurl, time=3000)
@@ -103,7 +108,7 @@ class iconPackHandler:
 				''' Delete objects and folder
 				'''
 				delete_path = path is not None
-				path = path or control.joinPath(control.iconFolders(),skinpack)
+				path = path or control.joinPath(control.userIconFolders(), skinpack)
 				dirs, files = xbmcvfs.listdir(path)
 				delete_recursive(path, dirs)
 				for file in files:
@@ -122,7 +127,7 @@ class iconPackHandler:
 
 					delete_recursive(os.path.join(path, directory), dirs2)
 					xbmcvfs.rmdir(os.path.join(path, directory))
-			delete_folder(path=control.joinPath(control.iconFolders(),skinpack))
+			delete_folder(path=control.joinPath(control.userIconFolders(), skinpack))
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()

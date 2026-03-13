@@ -66,7 +66,7 @@ class Plex():
 		self.device_id = re.search(r'<id.+?>(.*?)</id>', code_data, re.I).group(1)
 		if control.setting('dialogs.useumbrelladialog') == 'true':
 			from resources.lib.modules import tools
-			plex_qr = tools.make_qr("https://www.plex.tv/link/")
+			plex_qr = tools.make_qr("https://www.plex.tv/link/", 'plex_qr.png')
 			self.progressDialog = control.getProgressWindow('Plex Auth', plex_qr, 1)
 			self.progressDialog.set_controls()
 		else:

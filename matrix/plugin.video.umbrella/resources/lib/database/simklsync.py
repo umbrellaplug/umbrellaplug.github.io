@@ -47,87 +47,111 @@ def fetch_bookmarks(imdb, tmdb='', tvdb='', season=None, episode=None, ret_all=N
 						else: progress = match[12]
 					except: pass
 			else:
-				try: # Lookup both IMDb and TVDb first for more accurate episode match.
-					match = dbcur.execute('''SELECT * FROM bookmarks WHERE (imdb=? AND tvdb=? AND season=? AND episode=? AND NOT imdb='' AND NOT tvdb='')''', (imdb, tvdb, season, episode)).fetchone()
-					if ret_type == 'resume_info': 
+				# Normalize all IDs to strings — insert_bookmarks stores TEXT, but meta may pass integers
+				_imdb = str(imdb or '')
+				_tmdb = str(tmdb or '')
+				_tvdb = str(tvdb or '')
+				_season = str(season or '')
+				_episode = str(episode or '')
+				try: # Priority 1 — imdb + tvdb
+					match = dbcur.execute('''SELECT * FROM bookmarks WHERE (imdb=? AND tvdb=? AND season=? AND episode=? AND NOT imdb='' AND NOT tvdb='')''', (_imdb, _tvdb, _season, _episode)).fetchone()
+					if ret_type == 'resume_info':
 						progress = (match[0], match[2])
-						log_utils.log('Getting resume from database imdb. Match: %s' % (str(match)),1)
+						log_utils.log('Getting resume from database imdb+tvdb. Match: %s' % (str(match)),1)
 					else: progress = match[12]
 				except:
-					try:
-						match = dbcur.execute('''SELECT * FROM bookmarks WHERE (tvdb=? AND season=? AND episode=? AND NOT tvdb='')''', (tvdb, season, episode)).fetchone()
-						if ret_type == 'resume_info': 
+					try: # Priority 2 — tvdb only
+						match = dbcur.execute('''SELECT * FROM bookmarks WHERE (tvdb=? AND season=? AND episode=? AND NOT tvdb='')''', (_tvdb, _season, _episode)).fetchone()
+						if ret_type == 'resume_info':
 							progress = (match[0], match[2])
 							log_utils.log('Getting resume from database tvdb. Match: %s' % (str(match)),1)
 						else: progress = match[12]
-					except: pass
+					except:
+						try: # Priority 3 — imdb + tmdb (Simkl does not store tvdb)
+							match = dbcur.execute('''SELECT * FROM bookmarks WHERE (imdb=? AND tmdb=? AND season=? AND episode=? AND NOT imdb='' AND NOT tmdb='')''', (_imdb, _tmdb, _season, _episode)).fetchone()
+							if ret_type == 'resume_info':
+								progress = (match[0], match[2])
+								log_utils.log('Getting resume from database imdb+tmdb. Match: %s' % (str(match)), 1)
+							else: progress = match[12]
+						except:
+							try: # Priority 4 — imdb only
+								match = dbcur.execute('''SELECT * FROM bookmarks WHERE (imdb=? AND season=? AND episode=? AND NOT imdb='')''', (_imdb, _season, _episode)).fetchone()
+								if ret_type == 'resume_info':
+									progress = (match[0], match[2])
+									log_utils.log('Getting resume from database imdb+season+episode. Match: %s' % (str(match)), 1)
+								else: progress = match[12]
+							except:
+								try: # Priority 5 — tmdb only (imdb may be absent from Simkl /sync/playback response)
+									match = dbcur.execute('''SELECT * FROM bookmarks WHERE (tmdb=? AND season=? AND episode=? AND NOT tmdb='')''', (_tmdb, _season, _episode)).fetchone()
+									if ret_type == 'resume_info':
+										progress = (match[0], match[2])
+										log_utils.log('Getting resume from database tmdb+season+episode. Match: %s' % (str(match)), 1)
+									else: progress = match[12]
+								except:
+									try: # Priority 6 — season+episode only, no ID guard (all IDs may be absent from Simkl /sync/playback; table has at most 1 active episode)
+										match = dbcur.execute('''SELECT * FROM bookmarks WHERE (season=? AND episode=? AND NOT percent_played='0' AND NOT percent_played='')''', (_season, _episode)).fetchone()
+										if ret_type == 'resume_info':
+											progress = (match[0], match[2])
+											log_utils.log('Getting resume from database season+episode only. Match: %s' % (str(match)), 1)
+										else: progress = match[12]
+									except: pass
 	except:
-		
+
 		log_utils.error()
 	finally:
 		dbcur.close() ; dbcon.close()
 	return progress
 
-def insert_bookmarks(items, new_scrobble=False):
+def insert_bookmarks(items):
+	# items = list from GET /sync/playback — Simkl API format
 	try:
 		dbcon = get_connection()
 		dbcur = get_connection_cursor(dbcon)
-		dbcur.execute('''CREATE TABLE IF NOT EXISTS bookmarks (tvshowtitle TEXT, title TEXT, resume_id TEXT, imdb TEXT, tmdb TEXT, tvdb TEXT, season TEXT, episode TEXT, genre TEXT, mpaa TEXT, 
+		dbcur.execute('''CREATE TABLE IF NOT EXISTS bookmarks (tvshowtitle TEXT, title TEXT, resume_id TEXT, imdb TEXT, tmdb TEXT, tvdb TEXT, season TEXT, episode TEXT, genre TEXT, mpaa TEXT,
 								studio TEXT, duration TEXT, percent_played TEXT, paused_at TEXT, UNIQUE(resume_id, imdb, tmdb, tvdb, season, episode));''')
 		dbcur.execute('''CREATE TABLE IF NOT EXISTS service (setting TEXT, value TEXT, UNIQUE(setting));''')
-		if not new_scrobble:
-			dbcur.execute('''DELETE FROM bookmarks''') # this just wipes the data but if table is corrupt this won't allow write to work
-			dbcur.connection.commit() # added this for what looks like a 19 bug not found in 18, normal commit is at end
-			dbcur.execute('''VACUUM''')
+		dbcur.execute('''DELETE FROM bookmarks''')
+		dbcur.connection.commit()
+		dbcur.execute('''VACUUM''')
 		for i in items:
-			tvshowtitle, tvdb, season, episode = '', '', '', ''
+			tvshowtitle, tvdb, season, episode, genre, mpaa, studio, duration = '', '', '', '', 'NA', 'NR', '', ''
+			resume_id = str(i.get('id', ''))
+			percent_played = str(i.get('progress', '0'))
+			paused_at = i.get('paused_at', '')
 			if i.get('type') == 'episode':
-				ids = i.get('show').get('ids')
-				tvshowtitle, title, imdb, tmdb, tvdb, season, episode, mpaa, studio, duration = i.get('show').get('title'), i.get('episode').get('title'), str(ids.get('imdb', '')), str(ids.get('tmdb', '')), str(ids.get('tvdb', '')), \
-				str(i.get('episode').get('season')), str(i.get('episode').get('number')), i.get('show').get('certification') or 'NR', i.get('show').get('network'), i.get('show').get('runtime')
-				try: genre = ' / '.join([x.title() for x in i.get('show', {}).get('genres')]) or 'NA'
-				except: genre = 'NA'
+				show_ids = i.get('show', {}).get('ids', {})
+				ep = i.get('episode', {})
+				tvshowtitle = i.get('show', {}).get('title', '')
+				title = ep.get('title', '')
+				imdb = str(show_ids.get('imdb', ''))
+				tmdb = str(show_ids.get('tmdb', ''))
+				season = str(ep.get('season', ''))
+				episode = str(ep.get('number', ep.get('episode', '')))  # Simkl GET /sync/playback uses "number" key
 			else:
-				ids = i.get('movie').get('ids')
-				title, imdb, tmdb, mpaa, studio, duration = i.get('movie').get('title'), str(ids.get('imdb', '')), str(ids.get('tmdb', '')), i.get('movie').get('certification') or 'NR', '', i.get('movie').get('runtime')
-				try: genre = ' / '.join([x.title() for x in i.get('movie', {}).get('genres')]) or 'NA'
-				except: genre = 'NA'
-			dbcur.execute('''INSERT OR REPLACE INTO bookmarks Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (tvshowtitle, title, i.get('id', ''), imdb, tmdb, tvdb, season, episode, genre, mpaa, studio, duration, i.get('progress', ''), i.get('paused_at', '')))
+				movie_ids = i.get('movie', {}).get('ids', {})
+				title = i.get('movie', {}).get('title', '')
+				imdb = str(movie_ids.get('imdb', ''))
+				tmdb = str(movie_ids.get('tmdb', ''))
+			dbcur.execute('''INSERT OR REPLACE INTO bookmarks Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (tvshowtitle, title, resume_id, imdb, tmdb, tvdb, season, episode, genre, mpaa, studio, duration, percent_played, paused_at))
 		timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
 		dbcur.execute('''INSERT OR REPLACE INTO service Values (?, ?)''', ('last_paused_at', timestamp))
 		dbcur.connection.commit()
 	except:
-		
 		log_utils.error()
 	finally:
 		dbcur.close() ; dbcon.close()
 
-def delete_bookmark(items):
+def delete_bookmark(resume_id):
+	# resume_id is the Simkl playback session id (string)
 	try:
 		dbcon = get_connection()
 		dbcur = get_connection_cursor(dbcon)
 		ck_table = dbcur.execute('''SELECT * FROM sqlite_master WHERE type='table' AND name='bookmarks';''').fetchone()
 		if not ck_table:
-			dbcur.execute('''CREATE TABLE IF NOT EXISTS bookmarks (tvshowtitle TEXT, title TEXT, resume_id TEXT, imdb TEXT, tmdb TEXT, tvdb TEXT, season TEXT, episode TEXT, genre TEXT, mpaa TEXT, 
-									studio TEXT, duration TEXT, percent_played TEXT, paused_at TEXT, UNIQUE(resume_id, imdb, tmdb, tvdb, season, episode));''')
-			dbcur.execute('''CREATE TABLE IF NOT EXISTS service (setting TEXT, value TEXT, UNIQUE(setting));''')
-			dbcur.connection.commit()
 			return
-		for i in items:
-			if i.get('type') == 'episode':
-				ids = i.get('show').get('ids')
-				imdb, tvdb, season, episode, = str(ids.get('imdb', '')), str(ids.get('tvdb', '')), str(i.get('episode').get('season')), str(i.get('episode').get('number'))
-			else:
-				tvdb, season, episode = '', '', ''
-				ids = i.get('movie').get('ids')
-				imdb = str(ids.get('imdb', ''))
-			try:
-				dbcur.execute('''DELETE FROM bookmarks WHERE (imdb=? AND tvdb=? AND season=? AND episode=?)''', (imdb, tvdb, season, episode))
-				dbcur.execute('''INSERT OR REPLACE INTO service Values (?, ?)''', ('last_paused_at', i.get('paused_at', '')))
-				dbcur.connection.commit()
-			except: pass
+		dbcur.execute('''DELETE FROM bookmarks WHERE resume_id=?''', (str(resume_id),))
+		dbcur.connection.commit()
 	except:
-		
 		log_utils.error()
 	finally:
 		dbcur.close() ; dbcon.close()
@@ -212,7 +236,7 @@ def fetch_watching(table):
 		dbcur = get_connection_cursor(dbcon)
 		ck_table = dbcur.execute('''SELECT * FROM sqlite_master WHERE type='table' AND name=?;''', (table,)).fetchone()
 		if not ck_table:
-			dbcur.execute('''CREATE TABLE IF NOT EXISTS %s (title TEXT, year TEXT, premiered TEXT, imdb TEXT, tmdb TEXT, tvdb TEXT, simkl TEXT, rating FLOAT, votes INTEGER, listed_at TEXT, last_watch_at TEXT, UNIQUE(imdb, tmdb, tvdb, simkl));''' % table)
+			dbcur.execute('''CREATE TABLE IF NOT EXISTS %s (title TEXT, year TEXT, premiered TEXT, imdb TEXT, tmdb TEXT, tvdb TEXT, simkl TEXT, rating FLOAT, votes INTEGER, listed_at TEXT, last_watched_at TEXT, UNIQUE(imdb, tmdb, tvdb, simkl));''' % table)
 			dbcur.connection.commit()
 			return list
 		try:
@@ -662,7 +686,7 @@ def last_sync(type):
 		if ck_table:
 			match = dbcur.execute('''SELECT * FROM service WHERE setting=?;''', (type,)).fetchone()
 			if match: last_sync_at = int(cleandate.iso_2_utc(match[1]))
-			else: dbcur.execute('''INSERT OR REPLACE INTO service Values (?, ?)''', (type, '1970-01-01T20:00:00.000Z'))
+			else: dbcur.execute('''INSERT OR REPLACE INTO service Values (?, ?)''', (type, '1970-01-01T00:00:00.000Z'))
 		else: dbcur.execute('''CREATE TABLE IF NOT EXISTS service (setting TEXT, value TEXT, UNIQUE(setting));''')
 		dbcur.connection.commit()
 	except:
@@ -671,6 +695,18 @@ def last_sync(type):
 	finally:
 		dbcur.close() ; dbcon.close()
 	return last_sync_at
+
+def set_sync_time(service_key):
+	try:
+		dbcon = get_connection()
+		dbcur = get_connection_cursor(dbcon)
+		timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
+		dbcur.execute('''INSERT OR REPLACE INTO service Values (?, ?)''', (service_key, timestamp))
+		dbcur.connection.commit()
+	except:
+		log_utils.error()
+	finally:
+		dbcur.close() ; dbcon.close()
 
 def delete_tables(tables):
 	cleared = False
@@ -693,7 +729,7 @@ def delete_tables(tables):
 			if v is True:
 				dbcur.execute('''DROP TABLE IF EXISTS {}'''.format(table))
 				dbcur.execute('''VACUUM''')
-				dbcur.execute('''INSERT OR REPLACE INTO service Values (?, ?)''', (service_dict[table], '1970-01-01T20:00:00.000Z'))
+				dbcur.execute('''INSERT OR REPLACE INTO service Values (?, ?)''', (service_dict[table], '1970-01-01T00:00:00.000Z'))
 				dbcur.connection.commit()
 				cleared = True
 	except:
@@ -704,6 +740,69 @@ def delete_tables(tables):
 		dbcur.close() ; dbcon.close()
 	return cleared
 
+def upsert_items(items, table, service_key, table_type='plantowatch'):
+	"""Delete each item by ID from ALL status tables, then insert into target table.
+	Per Simkl dev recommendation for date_from delta syncing — avoids full table wipes."""
+	all_status_tables = [
+		'movies_plantowatch', 'shows_plantowatch', 'shows_watching',
+		'shows_hold', 'movies_dropped', 'shows_dropped',
+		'movies_completed', 'shows_completed'
+	]
+	try:
+		dbcon = get_connection()
+		dbcur = get_connection_cursor(dbcon)
+		dbcur.execute('''CREATE TABLE IF NOT EXISTS service (setting TEXT, value TEXT, UNIQUE(setting));''')
+		needs_last_watched = table.startswith('shows_') or table == 'movies_completed'
+		if needs_last_watched:
+			dbcur.execute('''CREATE TABLE IF NOT EXISTS %s (title TEXT, year TEXT, premiered TEXT, imdb TEXT, tmdb TEXT, tvdb TEXT, simkl TEXT, rating FLOAT, votes INTEGER, listed_at TEXT, last_watched_at TEXT, UNIQUE(imdb, tmdb, tvdb, simkl));''' % table)
+			try:
+				dbcur.execute('ALTER TABLE %s ADD COLUMN last_watched_at TEXT' % table)
+				dbcur.connection.commit()
+			except: pass
+		else:
+			dbcur.execute('''CREATE TABLE IF NOT EXISTS %s (title TEXT, year TEXT, premiered TEXT, imdb TEXT, tmdb TEXT, tvdb TEXT, simkl TEXT, rating FLOAT, votes INTEGER, listed_at TEXT, UNIQUE(imdb, tmdb, tvdb, simkl));''' % table)
+		for i in items:
+			item = i.get('show') or i.get('movie')
+			if not item: continue
+			ids = item.get('ids', {})
+			simkl_id = str(ids.get('simkl', ''))
+			imdb = ids.get('imdb', '')
+			for t in all_status_tables:
+				try:
+					if simkl_id:
+						dbcur.execute('DELETE FROM %s WHERE simkl=?' % t, (simkl_id,))
+					elif imdb:
+						dbcur.execute('DELETE FROM %s WHERE imdb=?' % t, (imdb,))
+				except: pass
+			title = item.get('title', '')
+			year = str(item.get('year', '') or '')
+			try: premiered = item.get('first_aired', '').split('T')[0] if 'show' in i else ''
+			except: premiered = ''
+			tmdb = str(ids.get('tmdb', ''))
+			tvdb = str(ids.get('tvdb', ''))
+			simkl = str(ids.get('simkl', ''))
+			rating = item.get('rating', '')
+			votes = item.get('votes', '')
+			dstr = i.get('added_to_watchlist_at') or datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
+			listed_at = dstr
+			try:
+				if needs_last_watched:
+					last_watched_at = i.get('last_watched_at', '')
+					dbcur.execute('''INSERT OR REPLACE INTO %s Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''' % table,
+						(title, year, premiered, imdb, tmdb, tvdb, simkl, rating, votes, listed_at, last_watched_at))
+				else:
+					dbcur.execute('''INSERT OR REPLACE INTO %s Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''' % table,
+						(title, year, premiered, imdb, tmdb, tvdb, simkl, rating, votes, listed_at))
+			except Exception as e:
+				log_utils.log("upsert_items error on item: %s. Exception: %s" % (str(i), str(e)), 1)
+		timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
+		dbcur.execute('''INSERT OR REPLACE INTO service Values (?, ?)''', (service_key, timestamp))
+		dbcur.connection.commit()
+	except:
+		log_utils.error()
+	finally:
+		dbcur.close(); dbcon.close()
+
 def get_connection(setRowFactory=False):
 	if not existsPath(dataPath): makeFile(dataPath)
 	dbcon = db.connect(simKLSyncFile, timeout=60)
@@ -712,14 +811,14 @@ def get_connection(setRowFactory=False):
 	dbcon.execute('''PRAGMA synchronous = OFF''')
 	dbcon.execute('''PRAGMA temp_store = memory''')
 	dbcon.execute('''PRAGMA mmap_size = 30000000000''')
-	if setRowFactory: dbcon.row_factory = _dict_factory
+	if setRowFactory: dbcon.row_factory = dict_factory
 	return dbcon
 
 def get_connection_cursor(dbcon):
 	dbcur = dbcon.cursor()
 	return dbcur
 
-def _dict_factory(cursor, row):
+def dict_factory(cursor, row):
 	d = {}
 	for idx, col in enumerate(cursor.description): d[col[0]] = row[idx]
 	return d
@@ -735,12 +834,12 @@ def get(function, duration, *args, simkl_id=None, data=None):
 	:named var data: needs to be ignored for cache
 	"""
 	try:
-		key = _hash_function(function, args)
+		key = hash_function(function, args)
 		cache_result = cache_get(key)
 		if cache_result:
 			try: result = literal_eval(cache_result['value'])
 			except: result = None
-			if _is_cache_valid(cache_result['date'], duration): return result
+			if is_cache_valid(cache_result['date'], duration): return result
 		if simkl_id: fresh_result = repr(function(*args, simkl_id=simkl_id)) # may need a try-except block for server timeouts
 		else: fresh_result = repr(function(*args))
 
@@ -770,14 +869,14 @@ def get(function, duration, *args, simkl_id=None, data=None):
 		log_utils.error()
 		return None
 
-def _is_cache_valid(cached_time, cache_timeout):
+def is_cache_valid(cached_time, cache_timeout):
 	now = int(time())
 	diff = now - cached_time
 	return (cache_timeout * 3600) > diff
 
 def timeout(function, *args, returnNone=False):
 	try:
-		key = _hash_function(function, args)
+		key = hash_function(function, args)
 		result = cache_get(key)
 		if not result and returnNone: return None
 		else: return int(result['date']) if result else 0
@@ -788,7 +887,7 @@ def timeout(function, *args, returnNone=False):
 
 def cache_existing(function, *args):
 	try:
-		cache_result = cache_get(_hash_function(function, args))
+		cache_result = cache_get(hash_function(function, args))
 		if cache_result: return literal_eval(cache_result['value'])
 		else: return None
 	except:
@@ -827,7 +926,7 @@ def cache_insert(key, value):
 
 def remove(function, *args):
 	try:
-		key = _hash_function(function, args)
+		key = hash_function(function, args)
 		key_exists = cache_get(key)
 		if key_exists:
 			dbcon = get_connection(setRowFactory=True)
@@ -840,13 +939,13 @@ def remove(function, *args):
 	try: dbcur.close() ; dbcon.close()
 	except: pass
 
-def _hash_function(function_instance, *args):
-	return _get_function_name(function_instance) + _generate_md5(args)
+def hash_function(function_instance, *args):
+	return get_function_name(function_instance) + generate_md5(args)
 
-def _get_function_name(function_instance):
+def get_function_name(function_instance):
 	return re_sub(r'.+\smethod\s|.+function\s|\sat\s.+|\sof\s.+', '', repr(function_instance))
 
-def _generate_md5(*args):
+def generate_md5(*args):
 	try:
 		md5_hash = md5()
 		if len(args[0][0]) > 2: args = ((args[0][0][:2],),) #change made to make sure the hash matches when only two arguments are passed on getCache

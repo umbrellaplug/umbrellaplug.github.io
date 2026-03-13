@@ -286,7 +286,7 @@ class lib_tools:
 				dbcon = database.connect(control.libcacheFile)
 				dbcur = dbcon.cursor()
 				dbcur.execute('''CREATE TABLE IF NOT EXISTS lists (type TEXT, list_name TEXT, url TEXT, UNIQUE(type, list_name, url));''')
-				selected_urls = set(row[2] for row in dbcur.execute('''SELECT * FROM lists WHERE url NOT LIKE '%api.mdblist.com%';''').fetchall())
+				selected_urls = set(row[2] for row in dbcur.execute('''SELECT * FROM lists WHERE url LIKE '%api.trakt.tv%';''').fetchall())
 				dbcur.close() ; dbcon.close()
 			except:
 				selected_urls = set()
@@ -757,7 +757,7 @@ class lib_tools:
 			dbcon = database.connect(control.libcacheFile)
 			dbcur = dbcon.cursor()
 			dbcur.execute('''CREATE TABLE IF NOT EXISTS lists (type TEXT, list_name TEXT, url TEXT, UNIQUE(type, list_name, url));''')
-			dbcur.execute('''DELETE FROM lists WHERE url NOT LIKE '%api.mdblist.com%';''')
+			dbcur.execute('''DELETE FROM lists WHERE url LIKE '%api.trakt.tv%';''')
 			lengthItm = len(items)
 			for l in range(lengthItm):
 				dbcur.execute('''INSERT OR REPLACE INTO lists Values (?, ?, ?)''', (items[l]['type'], items[l]['list_name'], items[l]['url']))
@@ -871,6 +871,13 @@ class lib_tools:
 		try:
 			allV4Items = self.getAllTMDbV4Lists()
 			if not allV4Items:
+				try:
+					dbcon = database.connect(control.libcacheFile)
+					dbcur = dbcon.cursor()
+					dbcur.execute('''DELETE FROM lists WHERE url LIKE '%api.themoviedb.org/4/list%';''')
+					dbcur.connection.commit()
+					dbcur.close() ; dbcon.close()
+				except: pass
 				control.notification(message='No TMDb v4 lists found. Check your authentication in settings.')
 				if fromSettings:
 					control.openSettings(id='plugin.video.umbrella')
@@ -1223,8 +1230,8 @@ class libmovies:
 				length = len(items)
 				for i in range(length):
 					dateImported = datetime.now()
-					query = '''INSERT OR REPLACE INTO %s Values ("%s", "%s", "%s", "%s")''' % (listId, items[i].get('title'), items[i].get('tmdb'), items[i].get('imdb'), dateImported)
-					dbcur.execute(query)
+					query = '''INSERT OR REPLACE INTO %s Values (?, ?, ?, ?)''' % listId
+					dbcur.execute(query, (items[i].get('title'), items[i].get('tmdb'), items[i].get('imdb'), dateImported))
 				dbcur.connection.commit()
 				return items
 			else:
@@ -1246,8 +1253,8 @@ class libmovies:
 					query4 = '''CREATE TABLE IF NOT EXISTS %s (item_title TEXT, tmdb TEXT, imdb TEXT, last_import DATE, UNIQUE(imdb));''' % listId
 					dbcur.execute(query4)
 					for i in range(length):
-						query = '''INSERT OR REPLACE INTO %s Values ("%s", "%s", "%s", "%s")''' % (listId, items[i].get('title'), items[i].get('tmdb'), items[i].get('imdb'), dateImported)
-						dbcur.execute(query)
+						query = '''INSERT OR REPLACE INTO %s Values (?, ?, ?, ?)''' % listId
+						dbcur.execute(query, (items[i].get('title'), items[i].get('tmdb'), items[i].get('imdb'), dateImported))
 				else:
 					dateImported = datetime.now()
 					query5 = '''UPDATE %s SET last_import = "%s"''' % (listId, dateImported)

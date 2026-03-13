@@ -653,7 +653,7 @@ class Collections:
 		else:
 			watchedMenu, unwatchedMenu = getLS(32066), getLS(32067)
 		playlistManagerMenu, queueMenu = getLS(35522), getLS(32065)
-		traktManagerMenu, addToLibrary = getLS(32070), getLS(32551)
+		traktManagerMenu, addToLibrary = '[COLOR %s]Trakt Manager[/COLOR]' % self.highlight_color, getLS(32551)
 		nextMenu, clearSourcesMenu = getLS(32053), getLS(32611)
 		rescrapeMenu, rescrapeAllMenu, findSimilarMenu = getLS(32185), getLS(32193), getLS(32184)
 		for i in items:

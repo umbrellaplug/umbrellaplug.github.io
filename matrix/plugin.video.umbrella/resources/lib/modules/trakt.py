@@ -36,7 +36,7 @@ trakt_token = getSetting('trakt.user.token')
 def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0):
 	try:
 		if not url.startswith(BASE_URL): url = urljoin(BASE_URL, url)
-		if headers['trakt-api-key'] == '': headers['trakt-api-key']=traktClientID()
+		headers['trakt-api-key'] = traktClientID()
 		if post: post = jsdumps(post)
 		if getTraktCredentialsInfo(): 
 			current_token = getSetting('trakt.user.token')
@@ -58,7 +58,7 @@ def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0):
 			if reauth_attempts >= 2:
 				log_utils.log('TRAKT: Too many re-auth attempts, stopping to prevent infinite loop', level=log_utils.LOGWARNING)
 				return None
-			log_utils.log('TRAKT: %s Status Code Returned on call to url: %s. Token Used: %s (attempt %d)' % (status_code, url, current_token, reauth_attempts + 1), level=log_utils.LOGINFO)
+			log_utils.log('TRAKT: %s Status Code Returned on call to url: %s (attempt %d)' % (status_code, url, reauth_attempts + 1), level=log_utils.LOGINFO)
 			success = re_auth(headers)
 			if success: return getTrakt(url, extended=extended, silent=silent, reauth_attempts=reauth_attempts + 1)
 		elif status_code == '429':
@@ -183,9 +183,21 @@ def get_all_pages(url, silent=False):
 
 def re_auth(headers):
 	try:
+		authed_clientid = getSetting('trakt.authed.clientid')
+		current_clientid = traktClientID()
+		if authed_clientid and authed_clientid != current_clientid:
+			log_utils.log('TRAKT: Client ID mismatch detected in re_auth. Token was issued by a different client app. Re-authentication required.', level=log_utils.LOGWARNING)
+			control.notification(title=32315, message=40617)
+			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
+			setSetting('trakt.isauthed', 'false')
+			setSetting('trakt.user.token', '')
+			setSetting('trakt.refreshtoken', '')
+			setSetting('trakt.token.expires', '')
+			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
+			return False
 		oauth = urljoin(BASE_URL, '/oauth/token')
 		opost = {'client_id': traktClientID(), 'client_secret': traktClientSecret(), 'redirect_uri': REDIRECT_URI, 'grant_type': 'refresh_token', 'refresh_token': getSetting('trakt.refreshtoken')}
-		log_utils.log('TRAKT: Re-Authenticating Refresh Token: %s Trakt Token: %s' % (getSetting('trakt.refreshtoken'),getSetting('trakt.user.token')), level=log_utils.LOGINFO)
+		log_utils.log('TRAKT: Re-Authenticating with refresh token', level=log_utils.LOGINFO)
 		response = session.post(url=oauth, data=jsdumps(opost), headers=headers, timeout=20)
 		status_code = str(response.status_code)
 
@@ -210,7 +222,7 @@ def re_auth(headers):
 				return False
 			
 			token, refresh = response_json['access_token'], response_json['refresh_token']
-			log_utils.log('TRAKT: Response Token: %s Response Refresh Token: %s ' % (token, refresh), level=log_utils.LOGINFO)
+			log_utils.log('TRAKT: Re-authentication successful, new tokens received', level=log_utils.LOGINFO)
 			# Use Trakt's provided expiration time instead of hardcoded 24 hours
 			expires_from_trakt = response_json['expires_in']
 			expires = str(time.time() + expires_from_trakt)
@@ -257,6 +269,7 @@ def traktAuth(fromSettings=0):
 			control.setSetting('trakt.scrobble', 'true')
 			control.setSetting('resume.source', '1')
 			control.setSetting('trakt.isauthed', 'true')
+			control.setSetting('trakt.authed.clientid', traktClientID())
 			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 			control.setSetting('trakt.refreshtoken', deviceCode["refresh_token"])
 			control.sleep(1000)
@@ -268,7 +281,7 @@ def traktAuth(fromSettings=0):
 			except: pass
 			control.notification(message=40107, icon=trakt_icon)
 			if fromSettings == 1:
-				control.openSettings('8.0', 'plugin.video.umbrella')
+				control.openSettings('8.3', 'plugin.video.umbrella')
 			if not control.yesnoDialog('Do you want to set Trakt as your service for your watched and unwatched indicators?','','','Indicators', 'No', 'Yes'): return True
 			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 			control.setSetting('indicators.alt', '1')
@@ -276,7 +289,7 @@ def traktAuth(fromSettings=0):
 			control.setSetting('indicators', 'Trakt')
 			return True
 		if fromSettings == 1:
-				control.openSettings('8.0', 'plugin.video.umbrella')
+				control.openSettings('8.3', 'plugin.video.umbrella')
 		control.notification(message=40108, icon=trakt_icon)
 		return False
 	except:
@@ -291,6 +304,7 @@ def traktRevoke(fromSettings=0):
 		control.setSetting('trakt.user.name', '')
 		control.setSetting('trakt.token.expires', '')
 		control.setSetting('trakt.user.token', '')
+		control.setSetting('trakt.authed.clientid', '')
 		control.setSetting('trakt.scrobble', 'false')
 		control.setSetting('resume.source', '0')
 		control.setSetting('trakt.isauthed','')
@@ -307,7 +321,7 @@ def traktRevoke(fromSettings=0):
 				control.setSetting('indicators.alt', '0')
 				control.setSetting('indicators', 'Local')
 			if fromSettings == 1:
-				control.openSettings('8.0', 'plugin.video.umbrella')
+				control.openSettings('8.3', 'plugin.video.umbrella')
 				control.dialog.ok(control.lang(32315), control.lang(40109))
 		except:
 			log_utils.error()
@@ -335,7 +349,7 @@ def getTraktDeviceToken(traktDeviceCode):
 		line = '%s\n%s\n%s'
 		if control.setting('dialogs.useumbrelladialog') == 'true':
 			from resources.lib.modules import tools
-			trakt_qr = tools.make_qr(f"https://trakt.tv/activate?code={str(traktDeviceCode['user_code'])}")
+			trakt_qr = tools.make_qr(f"https://trakt.tv/activate?code={str(traktDeviceCode['user_code'])}", 'trakt_qr.png')
 			progressDialog = control.getProgressWindow(getLS(32073), trakt_qr, 1)
 			progressDialog.set_controls()
 			progressDialog.update(0, control.progress_line % (verification_url, user_code))
@@ -706,7 +720,7 @@ def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True,
 		if unfinished is True:
 			if media_type == 'Movie': items += [(getLS(35059) % highlight_color, 'unfinishedMovieManager')]
 			elif episode: items += [(getLS(35060) % highlight_color, 'unfinishedEpisodeManager')]
-		if getSetting('trakt.scrobble') == 'true' and getSetting('resume.source') == '1':
+		if getSetting('scrobble.source') == '1' or getSetting('trakt.markwatched') == 'true':
 			if media_type == 'Movie' or episode:
 				items += [(getLS(40076) % highlight_color, 'scrobbleReset')]
 		if season or episode:
@@ -750,7 +764,7 @@ def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True,
 			elif items[select][1] == 'unfinishedMovieManager':
 				control.execute('RunPlugin(plugin://plugin.video.umbrella/?action=movies_traktUnfinishedManager)')
 			elif items[select][1] == 'scrobbleReset':
-				scrobbleReset(imdb=imdb, tmdb='', tvdb=tvdb, season=season, episode=episode, widgetRefresh=True)
+				scrobbleReset(imdb=imdb, tmdb='', tvdb=tvdb, season=season, episode=episode, widgetRefresh=True, clear_local=getSetting('indicators.alt') == '1')
 			else:
 				if not tvdb: post = {"movies": [{"ids": {"imdb": imdb}}]}
 				else:
@@ -1190,7 +1204,7 @@ def syncSeasons(imdb, tvdb, trakt=None): # season indicators and counts for watc
 		indicators = [(i['number'], [x['completed'] for x in i['episodes']]) for i in seasons]
 		indicators = ['%01d' % int(i[0]) for i in indicators if False not in i[1]]
 		indicators_and_counts.append(indicators)
-		counts = {season['number']: {'total': season['aired'], 'watched': season['completed'], 'unwatched': season['aired'] - season['completed']} for season in seasons}
+		counts = {season['number']: {'total': season['aired'], 'watched': season['completed'], 'unwatched': max(0, season['aired'] - season['completed'])} for season in seasons}
 		indicators_and_counts.append(counts)
 		return indicators_and_counts
 	except:
@@ -1505,7 +1519,7 @@ def scrobbleMovie(imdb, tmdb, watched_percent):
 		success = getTrakt('/scrobble/pause', {"movie": {"ids": {"imdb": imdb}}, "progress": watched_percent})
 		if success:
 			log_utils.log('Trakt Scrobble Movie Success: imdb: %s s' % (imdb), level=log_utils.LOGDEBUG)
-			if getSetting('trakt.scrobble.notify') == 'true': control.notification(message=32088)
+			if getSetting('scrobble.notify') == 'true': control.notification(message=32088)
 			control.sleep(1000)
 			sync_playbackProgress(forced=True)
 			control.trigger_widget_refresh()
@@ -1519,23 +1533,38 @@ def scrobbleEpisode(imdb, tmdb, tvdb, season, episode, watched_percent):
 		success = getTrakt('/scrobble/pause', {"show": {"ids": {"tvdb": tvdb}}, "episode": {"season": season, "number": episode}, "progress": watched_percent})
 		if success:
 			log_utils.log('Trakt Scrobble Episode Success: imdb: %s s' % (imdb), level=log_utils.LOGDEBUG)
-			if getSetting('trakt.scrobble.notify') == 'true': control.notification(message=32088)
+			if getSetting('scrobble.notify') == 'true': control.notification(message=32088)
 			control.sleep(1000)
 			sync_playbackProgress(forced=True)
 			control.trigger_widget_refresh()
 		else: control.notification(message=32130)
 	except: log_utils.error()
 
-def scrobbleReset(imdb, tmdb=None, tvdb=None, season=None, episode=None, refresh=True, widgetRefresh=False):
+def scrobbleStart(media_type, title='', tvshowtitle='', year='0', imdb='', tmdb='', tvdb='', season='', episode='', watched_percent=0):
+	try:
+		if media_type == 'movie':
+			post = {'movie': {'title': title, 'year': int(year) if year else 0,
+			                  'ids': {'imdb': imdb, 'tmdb': int(tmdb) if tmdb else None}},
+			        'progress': float(watched_percent)}
+		else:
+			post = {'show': {'title': tvshowtitle or title, 'year': int(year) if year else 0,
+			                 'ids': {'tvdb': int(tvdb) if tvdb else None, 'imdb': imdb}},
+			        'episode': {'season': int(season) if season else 1,
+			                    'number': int(episode) if episode else 1},
+			        'progress': float(watched_percent)}
+		getTrakt('/scrobble/start', post)
+	except: log_utils.error()
+
+def scrobbleReset(imdb, tmdb=None, tvdb=None, season=None, episode=None, refresh=True, widgetRefresh=False, clear_local=True):
 	if not getTraktCredentialsInfo(): return
 	if not control.player.isPlaying(): control.busy()
 	success = False
 	try:
 		content_type = 'movie' if not episode else 'episode'
 		resume_info = traktsync.fetch_bookmarks(imdb, tmdb, tvdb, season, episode, ret_type='resume_info')
-		if resume_info == '0': return control.hide() # returns string "0" if no data in db 
+		if resume_info == '0': return control.hide() # returns string "0" if no data in db
 		headers['Authorization'] = 'Bearer %s' % trakt_token
-		if headers['trakt-api-key'] == '': headers['trakt-api-key']=traktClientID()
+		headers['trakt-api-key'] = traktClientID()
 		success = session.delete('https://api.trakt.tv/sync/playback/%s' % resume_info[1], headers=headers).status_code == 204
 		if content_type == 'movie':
 			items = [{'type': 'movie', 'movie': {'ids': {'imdb': imdb}}}]
@@ -1547,13 +1576,13 @@ def scrobbleReset(imdb, tmdb=None, tvdb=None, season=None, episode=None, refresh
 		if success:
 			timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
 			items[0].update({'paused_at': timestamp})
-			traktsync.delete_bookmark(items)
+			if clear_local: traktsync.delete_bookmark(items)
 			if refresh: control.refresh()
 			if widgetRefresh: control.trigger_widget_refresh() # skinshortcuts handles the widget_refresh when plyback ends, but not a manual clear from Trakt Manager
-			if getSetting('trakt.scrobble.notify') == 'true': control.notification(title=32315, message='Successfuly Removed playback progress:  [COLOR %s]%s[/COLOR]' % (highlight_color, label_string))
+			if getSetting('scrobble.notify') == 'true': control.notification(title=32315, message='Successfuly Removed playback progress:  [COLOR %s]%s[/COLOR]' % (highlight_color, label_string))
 			log_utils.log('Successfuly Removed Trakt Playback Progress:  %s  with resume_id=%s' % (label_string, str(resume_info[1])), __name__, level=log_utils.LOGDEBUG)
 		else:
-			#if getSetting('trakt.scrobble.notify') == 'true': control.notification(title=32315, message='Failed to Remove playback progress:  [COLOR %s]%s[/COLOR]' % (highlight_color, label_string))
+			#if getSetting('scrobble.notify') == 'true': control.notification(title=32315, message='Failed to Remove playback progress:  [COLOR %s]%s[/COLOR]' % (highlight_color, label_string))
 			log_utils.log('Failed to Remove Trakt Playback Progress:  %s  with resume_id=%s' % (label_string, str(resume_info[1])), __name__, level=log_utils.LOGDEBUG)
 	except: log_utils.error()
 
@@ -1689,12 +1718,13 @@ def sync_watchedProgress(activities=None, forced=False):
 		url = 'https://api.trakt.tv/users/me/watched/shows'
 		progressActivity = getProgressActivity(activities)
 		local_listCache = cache.timeout(episodes.Episodes().trakt_progress_list, url, trakt_user, lang, direct)
-		if forced or (progressActivity > local_listCache):
+		if forced or (progressActivity > local_listCache) or (int(time.time()) - local_listCache > 21600):
 			cache.get(episodes.Episodes().trakt_progress_list, 0, url, trakt_user, lang, direct)
 			if forced: log_utils.log('Forced - Trakt Progress List Sync Complete', __name__, log_utils.LOGDEBUG)
 			else:
 				log_utils.log('Trakt Progress List Sync Update...(local db latest "list_cached_at" = %s, trakt api latest "progress_activity" = %s)' % \
 									(str(local_listCache), str(progressActivity)), __name__, log_utils.LOGDEBUG)
+			control.trigger_widget_refresh()
 	except: log_utils.error()
 
 def sync_watched(activities=None, forced=False): # writes to traktsync.db as of 1-19-2022

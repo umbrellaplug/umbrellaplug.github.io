@@ -117,6 +117,24 @@ def get_episodes_watched(media_type, imdb_id, tmdb_id):
 	else: return []
 
 
+def _get_watched(media_type, imdb_id, tmdb_id, season=''):
+	try:
+		if media_type == 'tvshow':
+			sql_select = "SELECT overlay FROM watched WHERE media_type = 'tvshow' AND imdb_id = ?"
+			matchedrow = watched_cache.select_all(sql_select, (imdb_id,))
+			if matchedrow:
+				return '5' if any(dict(r).get('overlay') == 5 for r in matchedrow) else '4'
+		elif media_type == 'season':
+			sql_select = "SELECT overlay FROM watched WHERE media_type = 'season' AND imdb_id = ? AND season = ?"
+			matchedrow = watched_cache.select_all(sql_select, (imdb_id, season))
+			if matchedrow:
+				return '5' if any(dict(r).get('overlay') == 5 for r in matchedrow) else '4'
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+	return '4'
+
+
 def change_watched(media_type, imdb_id, tmdb_id, season='', episode='', title='', watched=''):
 	def _update_watched(media_type, imdb_id, tmdb_id, season='', episode='', title='', watched=''):
 		last_played = get_current_time()
@@ -145,6 +163,43 @@ def change_watched(media_type, imdb_id, tmdb_id, season='', episode='', title=''
 			if watched == 4: watched = 5
 			else: watched = 4
 		_update_watched(media_type, imdb_id, tmdb_id, season=season, episode=episode, title=title, watched=watched)
+	elif media_type == 'tvshow':
+		_update_watched(media_type, imdb_id, tmdb_id, season=0, episode=0, title=title, watched=int(watched) if watched else 5)
+	elif media_type == 'season':
+		_update_watched(media_type, imdb_id, tmdb_id, season=season, episode=0, title=title, watched=int(watched) if watched else 5)
+
+
+def get_in_progress_show_imdb_ids():
+	try:
+		sql_select = "SELECT imdb_id, MAX(last_played) as last_played FROM watched WHERE media_type = 'episode' AND overlay = 5 GROUP BY imdb_id ORDER BY last_played DESC"
+		rows = watched_cache.select_all(sql_select)
+		if rows: return [(dict(r)['imdb_id'], dict(r)['last_played']) for r in rows]
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+	return []
+
+
+def get_watched_episode_ids(imdb_id):
+	try:
+		sql_select = "SELECT season, episode, last_played FROM watched WHERE media_type = 'episode' AND imdb_id = ? AND overlay = 5 ORDER BY season DESC, episode DESC"
+		rows = watched_cache.select_all(sql_select, (imdb_id,))
+		if rows: return [(dict(r)['season'], dict(r)['episode'], dict(r)['last_played']) for r in rows]
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+	return []
+
+
+def get_watched_count_for_show(imdb_id):
+	try:
+		sql_select = "SELECT COUNT(*) as cnt FROM watched WHERE media_type = 'episode' AND imdb_id = ? AND overlay = 5"
+		row = watched_cache.select_all(sql_select, (imdb_id,))
+		if row: return dict(row[0]).get('cnt', 0)
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+	return 0
 
 
 watched_cache = WatchedCache()

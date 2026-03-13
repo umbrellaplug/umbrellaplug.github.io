@@ -82,7 +82,7 @@ class Movies:
 		if useLanguage: link_addon = '&with_original_language=%s' % self.lang
 		if useorigincountries: link_addon = link_addon + '&with_origin_country=%s' % (getSetting('originCountry', 'US'))
 		self.tmdb_genre_link = tmdb_base+'/3/discover/movie?api_key=%s&language=en-US&region=US&primary_release_date.lte=%s&with_genres=%s&sort_by=%s&page=1' % ('%s', self.today_date, '%s', self.tmdb_DiscoverSort()) + link_addon
-		self.tmdb_year_link = tmdb_base+'/3/discover/movie?api_key=%s&language=en-US&region=US&primary_release_date.lte=%s&certification_country=US&primary_release_year=%s&sort_by=%s&page=1' % ('%s', self.today_date, '%s', self.tmdb_DiscoverSort()) + link_addon
+		self.tmdb_year_link = tmdb_base+'/3/discover/movie?api_key=%s&language=en-US&region=US&primary_release_date.lte=%s&certification_country=US&primary_release_year=%s&sort_by=popularity.desc&vote_count.gte=100&page=1' % ('%s', self.today_date, '%s') + link_addon
 		self.tmdb_certification_link = tmdb_base+'/3/discover/movie?api_key=%s&language=en-US&region=US&primary_release_date.lte=%s&certification_country=US&certification=%s&sort_by=%s&page=1' % ('%s', self.today_date, '%s', self.tmdb_DiscoverSort())
 		self.tmdb_recommendations = tmdb_base+'/3/movie/%s/recommendations?api_key=%s&language=en-US&region=US&page=1'
 		self.tmdb_similar = tmdb_base+'/3/movie/%s/similar?api_key=%s&language=en-US&region=US&page=1'
@@ -181,6 +181,7 @@ class Movies:
 		self.mdblist_hours = int(getSetting('cache.mdblist'))
 		self.showwatchedlib = getSetting('showwatchedlib')
 		self.hide_watched_in_widget = getSetting('enable.umbrellahidewatched') == 'true'
+		self.collection_hideWatched = getSetting('trakt.collection.hideWatched') == 'true'
 		self.useFullContext = getSetting('enable.umbrellawidgetcontext') == 'true'
 		self.useContainerTitles = getSetting('enable.containerTitles') == 'true'
 		self.useReleaseYear = getSetting('movies.showyear') == 'true'
@@ -274,13 +275,14 @@ class Movies:
 			except: pass
 			try: u = urlparse(url).netloc.lower()
 			except: pass
-			if u in self.tmdb_link and '/list/' in url:
+			is_collection_url = '/list/' in url or '/account/' in url
+			if u in self.tmdb_link and is_collection_url:
 				self.list = tmdb_indexer().tmdb_collections_list(url) # caching handled in list indexer
-				self.sort()
+				self.sort(type='movies.tmdblist')
 			elif u in self.tmdb_link and '/list/' not in url:
 				self.list = tmdb_indexer().tmdb_list(url) # caching handled in list indexer
 			if self.list is None: self.list = []
-			if create_directory: self.movieDirectory(self.list, folderName=folderName)
+			if create_directory: self.movieDirectory(self.list, isCollection=is_collection_url, folderName=folderName)
 			return self.list
 		except:
 			from resources.lib.modules import log_utils
@@ -362,9 +364,23 @@ class Movies:
 			v4_lists = tmdb4.get_user_lists()
 			for lst in v4_lists:
 				url = self.tmdb_link + '/4/list/%s?page=1' % lst.get('id')
-				self.list.append({'name': lst.get('name', ''), 'url': url, 'image': 'tmdb.png', 'icon': 'DefaultVideoPlaylists.png', 'action': 'tmdbmovies&folderName=%s' % quote_plus(lst.get('name', ''))})
+				art_path = lst.get('poster_path') or lst.get('backdrop_path', '')
+				image = ('https://image.tmdb.org/t/p/w500' + art_path) if art_path else 'tmdb.png'
+				self.list.append({'name': lst.get('name', ''), 'url': url, 'image': image, 'icon': 'DefaultVideoPlaylists.png', 'action': 'tmdbmovies&folderName=%s' % quote_plus(lst.get('name', ''))})
 			if self.list is None: self.list = []
 			if create_directory: self.addDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def tmdb_v4_watchlist(self, url, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			self.list = tmdb_indexer().tmdb_collections_list(url)
+			if self.list is None: self.list = []
+			if create_directory: self.sort(type='movies.watchlist')
+			if create_directory: self.movieDirectory(self.list, folderName=folderName)
 			return self.list
 		except:
 			from resources.lib.modules import log_utils
@@ -743,6 +759,29 @@ class Movies:
 			log_utils.error()
 			control.hide()
 
+	def mdblistWatchlistManager(self):
+		try:
+			from resources.lib.modules import mdblist
+			from resources.lib.database import mdbsync as _mdbsync
+			control.busy()
+			self.list = _mdbsync.fetch_watch_list('movies_watchlist')
+			# TraktBasicManagerXML uses the 'trakt' field as the selection ID; map imdb so we get imdb IDs back
+			for item in self.list:
+				item['trakt'] = item.get('imdb', '')
+			self.worker()
+			self.sort(type='movies.watchlist')
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				mdblist.removeWatchlistItems('movies', selected_items)
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
 	def likedListsManager(self):
 		try:
 			items = traktsync.fetch_liked_list('', True)
@@ -788,14 +827,14 @@ class Movies:
 			log_utils.error()
 
 	def imdb_sort(self, type='movies'):
-		sort = int(getSetting('sort.%s.type' % type))
+		sort = int(getSetting('sort.%s.type' % type) or '0')
 		imdb_sort = 'list_order' if type == 'movies.watchlist' else 'moviemeter'
 		if sort == 1: imdb_sort = 'alpha'
 		elif sort == 2: imdb_sort = 'user_rating'
 		elif sort == 3: imdb_sort = 'num_votes'
 		elif sort == 4: imdb_sort = 'release_date'
 		elif sort in (5, 6): imdb_sort = 'date_added'
-		imdb_sort_order = ',asc' if (int(getSetting('sort.%s.order' % type)) == 0 or sort == 0) else ',desc'
+		imdb_sort_order = ',asc' if (int(getSetting('sort.%s.order' % type) or '0') == 0 or sort == 0) else ',desc'
 		sort_string = imdb_sort + imdb_sort_order
 		return sort_string
 
@@ -1130,7 +1169,9 @@ class Movies:
 			v4_lists = tmdb4.get_user_lists()
 			for lst in v4_lists:
 				url = self.tmdb_link + '/4/list/%s?page=1' % lst.get('id')
-				userlists.append({'name': lst.get('name', ''), 'url': url, 'image': 'tmdb.png', 'icon': 'DefaultVideoPlaylists.png', 'action': 'tmdbmovies&folderName=%s' % quote_plus(lst.get('name', ''))})
+				art_path = lst.get('poster_path') or lst.get('backdrop_path', '')
+				image = ('https://image.tmdb.org/t/p/w500' + art_path) if art_path else 'tmdb.png'
+				userlists.append({'name': lst.get('name', ''), 'url': url, 'image': image, 'icon': 'DefaultVideoPlaylists.png', 'action': 'tmdbmovies&folderName=%s' % quote_plus(lst.get('name', ''))})
 		except: pass
 		self.list = []
 		for i in range(len(userlists)): # Filter the user's own lists that were
@@ -1178,7 +1219,7 @@ class Movies:
 			for i in range(len(self.list)): self.list[i]['next'] = next
 			self.worker()
 			if self.list is None: self.list = []
-			if create_directory: self.movieDirectory(self.list, folderName=folderName)
+			if create_directory: self.movieDirectory(self.list, isCollection=True, folderName=folderName)
 			return self.list
 		except:
 			from resources.lib.modules import log_utils
@@ -2073,7 +2114,7 @@ class Movies:
 			from resources.lib.modules import log_utils
 			log_utils.error(f"Error in super_info for index {i}: {e}")
 
-	def movieDirectory(self, items, unfinished=False, next=True, folderName=''):
+	def movieDirectory(self, items, unfinished=False, next=True, isCollection=False, folderName=''):
 		from sys import argv # some functions like ActivateWindow() throw invalid handle less this is imported here.
 		is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
 		if not items: # with reuselanguageinvoker on an empty directory must be loaded, do not use sys.exit()
@@ -2091,19 +2132,26 @@ class Movies:
 		indicators = getMovieIndicators() # refresh not needed now due to service sync
 		if play_mode == '1': playbackMenu = getLS(32063)
 		else: playbackMenu = getLS(32064)
-		if trakt.getTraktCredentialsInfo() and simkl.getSimKLCredentialsInfo():
+		_indicators_alt = getSetting('indicators.alt')
+		_trakt_marks = self.traktCredentials and (_indicators_alt == '1' or getSetting('trakt.markwatched') == 'true')
+		_simkl_marks = self.simklCredentials and (_indicators_alt == '2' or getSetting('simkl.markwatched') == 'true')
+		_mdblist_marks = self.mdblist_authed and (_indicators_alt == '3' or getSetting('mdblist.markwatched') == 'true')
+		if sum([bool(_trakt_marks), bool(_simkl_marks), bool(_mdblist_marks)]) > 1:
 			watchedMenu, unwatchedMenu = getLS(40564), getLS(40565)
-		elif trakt.getTraktCredentialsInfo():
+		elif _trakt_marks:
 			watchedMenu, unwatchedMenu = getLS(32068), getLS(32069)
-		elif simkl.getSimKLCredentialsInfo():
+		elif _simkl_marks:
 			watchedMenu, unwatchedMenu = getLS(40554), getLS(40555)
+		elif _mdblist_marks:
+			watchedMenu, unwatchedMenu = getLS(40631), getLS(40632)
 		else:
 			watchedMenu, unwatchedMenu = getLS(32066), getLS(32067)
 		playlistManagerMenu, queueMenu, trailerMenu = getLS(35522), getLS(32065), getLS(40431)
-		traktManagerMenu, addToLibrary, addToFavourites, removeFromFavourites = getLS(32070), getLS(32551), getLS(40463), getLS(40468)
+		traktManagerMenu, addToLibrary, addToFavourites, removeFromFavourites = '[COLOR %s]Trakt Manager[/COLOR]' % self.highlight_color, getLS(32551), getLS(40463), getLS(40468)
 		nextMenu, clearSourcesMenu = getLS(32053), getLS(32611)
 		rescrapeMenu, findSimilarMenu = getLS(32185), getLS(32184)
 		simklManagerMenu = getLS(40577) % self.highlight_color
+		mdblistManagerMenu = '[COLOR %s]MDBList Manager[/COLOR]' % self.highlight_color
 		from resources.lib.modules import favourites
 		favoriteItems = favourites.getFavourites(content='movies')
 		favoriteItems = [x[1].get('imdb') for x in favoriteItems]
@@ -2115,9 +2163,14 @@ class Movies:
 			else: page = int(url_params.get('page'))
 		except:
 			page = 1
+		tmdb_v4_watchlist_ids = set()
+		if self.tmdbv4Credentials:
+			from resources.lib.modules import tmdb4 as _tmdb4
+			tmdb_v4_watchlist_ids = _tmdb4.get_watchlist_ids('movie')
 		for i in items:
 			try:
 				imdb, tmdb, title, year = i.get('imdb', ''), i.get('tmdb', ''), i['title'], i.get('year', '')
+				if isCollection and self.collection_hideWatched and getMovieOverlay(indicators, imdb) == '5': continue
 				trailer, runtime = i.get('trailer'), i.get('duration')
 				if self.useReleaseYear:
 					label = '%s (%s)' % (title, year)
@@ -2202,12 +2255,17 @@ class Movies:
 					watched = getMovieOverlay(indicators, imdb) == '5'
 					if self.traktCredentials:
 						cm.append((traktManagerMenu, 'RunPlugin(%s?action=tools_traktManager&name=%s&imdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, watched, unfinished)))
-					if self.mdblist_authed:
-						cm.append(('MDBList Manager', 'RunPlugin(%s?action=tools_mdbWatchlist&name=%s&imdb=%s)' % (sysaddon, sysname, imdb)))
-					if self.tmdbv4Credentials:
-						cm.append((getLS(40606) if getLS(40606) else 'TMDB List Manager', 'RunPlugin(%s?action=tools_tmdbListManager&name=%s&tmdb=%s&mediatype=movie)' % (sysaddon, sysname, tmdb)))
 					if self.simklCredentials:
 						cm.append((simklManagerMenu, 'RunPlugin(%s?action=tools_simklManager&name=%s&imdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, watched, unfinished)))
+					if self.mdblist_authed:
+						cm.append((mdblistManagerMenu, 'RunPlugin(%s?action=tools_mdbWatchlist&name=%s&imdb=%s&watched=%s)' % (sysaddon, sysname, imdb, watched)))
+					if self.tmdbv4Credentials:
+						cm.append((getLS(40606) if getLS(40606) else 'TMDB List Manager', 'RunPlugin(%s?action=tools_tmdbListManager&name=%s&tmdb=%s&mediatype=movie)' % (sysaddon, sysname, tmdb)))
+						if tmdb:
+							if str(tmdb) in tmdb_v4_watchlist_ids:
+								cm.append((getLS(40614), 'RunPlugin(%s?action=tmdb_v4_watchlist_remove&tmdb=%s&mediatype=movie)' % (sysaddon, tmdb)))
+							else:
+								cm.append((getLS(40613), 'RunPlugin(%s?action=tmdb_v4_watchlist_add&tmdb=%s&mediatype=movie)' % (sysaddon, tmdb)))
 					if watched:
 						cm.append((unwatchedMenu, 'RunPlugin(%s?action=playcount_Movie&name=%s&imdb=%s&query=4)' % (sysaddon, sysname, imdb)))
 						meta.update({'playcount': 1, 'overlay': 5})

@@ -133,7 +133,7 @@ class AllDebrid:
 		line = '%s\n%s'
 		if control.setting('dialogs.useumbrelladialog') == 'true':
 			from resources.lib.modules import tools
-			ad_qr = tools.make_qr(f"https://alldebrid.com/pin?pin={response['pin']}")
+			ad_qr = tools.make_qr(f"https://alldebrid.com/pin?pin={response['pin']}", 'ad_qr.png')
 			self.progressDialog = control.getProgressWindow(getLS(40056), ad_qr, 1)
 			self.progressDialog.set_controls()
 		else:
@@ -584,13 +584,15 @@ class AllDebrid:
 		line1 = '%s...' % (getLS(40017) % getLS(40059))
 		line2 = transfer_info['filename']
 		line3 = transfer_info['status']
-		if control.setting('dialogs.useumbrelladialog') == 'true':
-			self.progressDialog = control.getProgressWindow(getLS(40018), None, 0)
-			self.progressDialog.set_controls()
-			self.progressDialog.update(0, line % (line1, line2, line3))
-		else:
-			self.progressDialog = control.progressDialog
-			self.progressDialog.create(getLS(40018), line % (line1, line2, line3))
+		show_popup = control.setting('torrent.cacheprogress.dialog') != 'false'
+		if show_popup:
+			if control.setting('dialogs.useumbrelladialog') == 'true':
+				self.progressDialog = control.getProgressWindow(getLS(40018), None, 0)
+				self.progressDialog.set_controls()
+				self.progressDialog.update(0, line % (line1, line2, line3))
+			else:
+				self.progressDialog = control.progressDialog
+				self.progressDialog.create(getLS(40018), line % (line1, line2, line3))
 		while not transfer_info['statusCode'] == 4:
 			control.sleep(1000 * interval)
 			transfer_info = self.list_transfer(transfer_id)
@@ -607,21 +609,24 @@ class AllDebrid:
 			else:
 				line3 = transfer_info['status']
 				progress = 0
-			self.progressDialog.update(progress, line % (line1, line2, line3))
+			if show_popup:
+				self.progressDialog.update(progress, line % (line1, line2, line3))
 			if control.monitor.abortRequested(): return sysexit()
-			try:
-				if self.progressDialog.iscanceled():
-					if control.yesnoDialog('Delete AD download also?', 'No will continue the download', 'but close dialog','AllDebrid', 'No', 'Yes'):
-						return _return_failed(getLS(40014))
-					else:
-						self.progressDialog.close()
-						control.hide()
-						return False
-			except: pass
+			if show_popup:
+				try:
+					if self.progressDialog.iscanceled():
+						if control.yesnoDialog('Delete AD download also?', 'No will continue the download', 'but close dialog','AllDebrid', 'No', 'Yes'):
+							return _return_failed(getLS(40014))
+						else:
+							self.progressDialog.close()
+							control.hide()
+							return False
+				except: pass
 			if 5 <= transfer_info['statusCode'] <= 10: return _return_failed()
 		control.sleep(1000 * interval)
-		try: self.progressDialog.close()
-		except: pass
+		if show_popup:
+			try: self.progressDialog.close()
+			except: pass
 		control.hide()
 		return True
 

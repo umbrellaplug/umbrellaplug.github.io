@@ -23,7 +23,9 @@ properties = [
 	'context.umbrella.playTrailerSelect',
 	'context.umbrella.traktManager',
 	'context.umbrella.mdblistManager',
-	# 'context.umbrella.simklManager',
+	'context.umbrella.simklManager',
+	'context.umbrella.tmdbListManager',
+	'context.umbrella.tmdbWatchlist',
 	'context.umbrella.clearProviders',
 	'context.umbrella.clearBookmark',
 	'context.umbrella.rescrape',
@@ -32,7 +34,9 @@ properties = [
 	'context.umbrella.sourceSelect',
 	'context.umbrella.findSimilar',
 	'context.umbrella.browseSeries',
-	'context.umbrella.browseEpisodes']
+	'context.umbrella.browseEpisodes',
+	'context.umbrella.libMdblistManager',
+	'context.umbrella.addLibtoFavourite']
 
 class CheckSettingsFile:
 	def run(self):

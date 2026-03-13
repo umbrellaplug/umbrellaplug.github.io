@@ -1,3 +1,28 @@
+[B]Update - v6.7.54 - Mar 13th, 2026[/B]
+--[Changes] Changes made to logging to make sure no keys or tokens are logged.
+--[Fixes] Bug fixes.
+--[Change] Made changes to the way tmdb years worked to pull most popular shows and movies for each year.
+--[Fix] Changed local tracking for for tv shows to work. Added option for progress episode and progress shows from local tracking.
+--[Change] Added scrobble reset options to mdblist manager, simkl manager, and modified scrobble reset to only affect the interface if being done from service set as primary.
+--[Change] Made change to how cache was handled for simkl to avoid multiple calls to /sync/watched/
+--[New] Enabled source select with continuous playback. No longer overwrites setting and auto-plays when set to source select.
+--[Change] Any service set to mark as watched will now also simulataneously scrobble.
+--[Change] Added scrobble start for "Now Watching" on dashboard.
+--[Change] Made control detect and store what skin is being used. All calls made to refresh widget now check the skin first to determine refresh method.
+--[Change] Added options to hide "In-Progress" lists in TV Shows for services not being used for watch history/ scrobbling.
+--[Fix] Changes made to check more window properties when playing a pre-scraped item to resolve issue where previously pre-scraped shows were playing when selecting an entirely different show.
+--[Change] YOU WILL NEED TO SET YOUR WATCH COUNT INDICATORS SETTING in the online services tab.
+--[Change] Modified settings to combine all services to one online-services tab. This is a very early beta and I expect issues.
+--[New] Added MDBList watch history and scrobble.
+--[New] Added Simkl scrobble ability. (Stop and Resume Points from Simkl)
+--[Fix] Changed Trakt Episodes Progress to respect pagination setting and page limit correctly.
+--[Change] Made tmdb watchlist respect watchlist sorting from settings.
+--[New] Added sorting options for tmdb lists in Settings: General for movies and TV Shows for shows.
+--[Fix] Fixed custom trakt token not being saved correctly for reuse when using a custom trakt client id and secret.
+--[New] Added TMDb Watchlist.
+--[Change] Changed art locations so icons would not need to be reloaded on each update.
+--[Change] Added tinyurl as a fallback for long tmdb v4 authorization urls.
+
 [B]Update - v6.7.53 - Feb 21st, 2026[/B]
 --[Removed] imdb user id in settings and lists from imdb user removed.
 --[New] Episode level art customization added.
@@ -881,6 +906,7 @@
 
 [B]Update - v6.5.13 - June 15, 2022[/B]
 -- Modifed Umbrella to use trakt information provided by my accounts module instead of hard coded client id and secret.
+
 
 [B]Update - v6.5.12 - June 7, 2022[/B]
 -- Requires Umbrella Scrapers now. You can delete fenomscrapers.

@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.53">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.54">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -72,10 +72,28 @@
 					[String.IsEqual(ListItem.dbtype,tvshow) | String.IsEqual(ListItem.dbtype,movie)]
 				</visible>
 			</item>
+			<item library="resources\lib\context\simklManager.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]SimKL Manager</label>
+				<visible>
+					!String.IsEmpty(Window(home).Property(context.umbrella.simklManager)) +
+					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
+					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
+					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,tvshow) | String.IsEqual(ListItem.dbtype,season) | String.IsEqual(ListItem.dbtype,movie)]
+				</visible>
+			</item>
 			<item library="resources\lib\context\tmdbListManager.py">
 				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]TMDB List Manager</label>
 				<visible>
 					!String.IsEmpty(Window(home).Property(context.umbrella.tmdbListManager)) +
+					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
+					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
+					[String.IsEqual(ListItem.dbtype,tvshow) | String.IsEqual(ListItem.dbtype,movie)]
+				</visible>
+			</item>
+			<item library="resources\lib\context\tmdbWatchlist.py">
+				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]TMDb Watchlist</label>
+				<visible>
+					!String.IsEmpty(Window(home).Property(context.umbrella.tmdbWatchlist)) +
 					String.StartsWith(ListItem.path,plugin://plugin.video.umbrella/) +
 					String.IsEqual(ListItem.Property(isUmbrella_widget),true) +
 					[String.IsEqual(ListItem.dbtype,tvshow) | String.IsEqual(ListItem.dbtype,movie)]
@@ -115,6 +133,7 @@
 			<item library="resources\lib\context\libMdblistManager.py">
 				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]MDBList Watchlist Lib</label>
 				<visible>
+					!String.IsEmpty(Window(home).Property(context.umbrella.libMdblistManager)) +
 					[String.Contains(Container.FolderPath,videodb://) | String.Contains(Container.ListItem.FolderPath,videodb://)] +
 					[String.Contains(Container.ListItem.Path,Window(home).Property(umbrella.movieLib.path)) | String.Contains(Container.ListItem.Path,Window(home).Property(umbrella.tvLib.path))] +
 					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]
@@ -123,6 +142,7 @@
 			<item library="resources\lib\context\addLibtoFavourite.py">
 				<label>$INFO[Window(home).Property(context.umbrella.showUmbrella)]Add/Remove Favourite</label>
 				<visible>
+					!String.IsEmpty(Window(home).Property(context.umbrella.addLibtoFavourite)) +
 					[String.Contains(Container.FolderPath,videodb://) | String.Contains(Container.ListItem.FolderPath,videodb://)] +
 					[String.Contains(Container.ListItem.Path,Window(home).Property(umbrella.movieLib.path)) | String.Contains(Container.ListItem.Path,Window(home).Property(umbrella.tvLib.path))] +
 					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]
@@ -214,24 +234,31 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.53 - Feb 21st, 2026[/B]
---[Removed] imdb user id in settings and lists from imdb user removed.
---[New] Episode level art customization added.
---[New] TMDdb v4 List Support Added.
---[New] TMDdb v4 lists can be imported into the Kodi library using the existing list import functionality, alongside Trakt lists and MDBList lists.
---[Fix] Changed method for Trakt lists to use page numbers.
---[Fix] Resolved issue with genres by decade ending in 2024.
---[Fix] Removed IMDd Lists that were restricted to 25 results.
---[Fix] Trakt Pagination API changes to comply with Trakt's new requirements.
---[Fix] Corrected auto-import list manager not remembering which lists were previously selected when reopening.
---[Fix] Fixed typo in tvshows worker causing some items to not have tvdb populated.
---[New] Added ability to import MDBList user lists into the Kodi library (one-time and automatic)
---[New] "Select Lists to Auto-Import" now lets you choose between Trakt and MDBList and TMDb lists, with the total count of all lists shown in the settings.
---[New] The auto-import list count shown in settings now reflects the total across both Trakt and MDBList and TMDb combined
---[Fix] Cleaned up and removed some unused or no longer needed settings.
---[Change] Added support for Trakt dropped instead of hidden.
---[Fix] Real-Debrid Authorization: Fixed the QR code randomly not appearing on the authorization prompt. 
- 		</news>
+[B]Update - v6.7.54 - Mar 13th, 2026[/B]
+--[Changes] Changes made to logging to make sure no keys or tokens are logged.
+--[Fixes] Bug fixes.
+--[Change] Made changes to the way tmdb years worked to pull most popular shows and movies for each year.
+--[Fix] Changed local tracking for for tv shows to work. Added option for progress episode and progress shows from local tracking.
+--[Change] Added scrobble reset options to mdblist manager, simkl manager, and modified scrobble reset to only affect the interface if being done from service set as primary.
+--[Change] Made change to how cache was handled for simkl to avoid multiple calls to /sync/watched/
+--[New] Enabled source select with continuous playback. No longer overwrites setting and auto-plays when set to source select.
+--[Change] Any service set to mark as watched will now also simulataneously scrobble.
+--[Change] Added scrobble start for "Now Watching" on dashboard.
+--[Change] Made control detect and store what skin is being used. All calls made to refresh widget now check the skin first to determine refresh method.
+--[Change] Added options to hide "In-Progress" lists in TV Shows for services not being used for watch history/ scrobbling.
+--[Fix] Changes made to check more window properties when playing a pre-scraped item to resolve issue where previously pre-scraped shows were playing when selecting an entirely different show.
+--[Change] YOU WILL NEED TO SET YOUR WATCH COUNT INDICATORS SETTING in the online services tab.
+--[Change] Modified settings to combine all services to one online-services tab. This is a very early beta and I expect issues.
+--[New] Added MDBList watch history and scrobble.
+--[New] Added Simkl scrobble ability. (Stop and Resume Points from Simkl)
+--[Fix] Changed Trakt Episodes Progress to respect pagination setting and page limit correctly.
+--[Change] Made tmdb watchlist respect watchlist sorting from settings.
+--[New] Added sorting options for tmdb lists in Settings: General for movies and TV Shows for shows.
+--[Fix] Fixed custom trakt token not being saved correctly for reuse when using a custom trakt client id and secret.
+--[New] Added TMDb Watchlist.
+--[Change] Changed art locations so icons would not need to be reloaded on each update.
+--[Change] Added tinyurl as a fallback for long tmdb v4 authorization urls.
+		</news>
 	</extension>
 
 </addon>

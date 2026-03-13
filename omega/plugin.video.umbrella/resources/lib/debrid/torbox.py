@@ -186,13 +186,15 @@ class TorBox:
 			line3 = 'Downloading torrent metadata from TorBox'
 		else:
 			line3 = transfer_info['download_state']
-		if control.setting('dialogs.useumbrelladialog') == 'true':
-			self.progressDialog = control.getProgressWindow(getLS(40018), None, 0)
-			self.progressDialog.set_controls()
-			self.progressDialog.update(0, line % (line1, line2, line3))
-		else:
-			self.progressDialog = control.progressDialog
-			self.progressDialog.create(getLS(40018), line % (line1, line2, line3))
+		show_popup = control.setting('torrent.cacheprogress.dialog') != 'false'
+		if show_popup:
+			if control.setting('dialogs.useumbrelladialog') == 'true':
+				self.progressDialog = control.getProgressWindow(getLS(40018), None, 0)
+				self.progressDialog.set_controls()
+				self.progressDialog.update(0, line % (line1, line2, line3))
+			else:
+				self.progressDialog = control.progressDialog
+				self.progressDialog.create(getLS(40018), line % (line1, line2, line3))
 		while not transfer_info['download_state'] == 'completed':
 			control.sleep(1000 * interval)
 			transfer_info = self.list_transfer(transfer_id)
@@ -215,20 +217,23 @@ class TorBox:
 				else:
 					line3 = transfer_info['download_state']
 				progress = 0
-			self.progressDialog.update(progress, line % (line1, line2, line3))
+			if show_popup:
+				self.progressDialog.update(progress, line % (line1, line2, line3))
 			if control.monitor.abortRequested(): return sysexit()
-			try:
-				if self.progressDialog.iscanceled():
-					if control.yesnoDialog('Delete TorBox download also?', 'No will continue the download', 'but close dialog','TorBox','No','Yes'):
-						return _return_failed(getLS(40014))
-					else:
-						self.progressDialog.close()
-						control.hide()
-						return False
-			except: pass
+			if show_popup:
+				try:
+					if self.progressDialog.iscanceled():
+						if control.yesnoDialog('Delete TorBox download also?', 'No will continue the download', 'but close dialog','TorBox','No','Yes'):
+							return _return_failed(getLS(40014))
+						else:
+							self.progressDialog.close()
+							control.hide()
+							return False
+				except: pass
 		control.sleep(1000 * interval)
-		try: self.progressDialog.close()
-		except: pass
+		if show_popup:
+			try: self.progressDialog.close()
+			except: pass
 		control.hide()
 		return True
 

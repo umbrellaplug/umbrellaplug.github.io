@@ -68,6 +68,17 @@ def getTMDbV4(url, post=None, delete=False):
 		log_utils.error()
 		return None
 
+def _shorten_url(long_url):
+	"""Try to shorten a URL via TinyURL. Returns None on failure."""
+	try:
+		r = session.get('https://tinyurl.com/api-create.php', params={'url': long_url}, timeout=5)
+		if r.status_code == 200 and r.text.strip().startswith('https://'):
+			return r.text.strip()
+	except:
+		pass
+	return None
+
+
 def authenticate(fromSettings=0):
 	import time
 	import traceback
@@ -80,7 +91,7 @@ def authenticate(fromSettings=0):
 		if not read_token:
 			control.notification(title='TMDB v4', message='Please enter your TMDB v4 Read Access Token in Settings first.', icon='ERROR', time=5000)
 			if fromSettings:
-				control.openSettings(id='plugin.video.umbrella')
+				control.openSettings('11.3', 'plugin.video.umbrella')
 			return
 
 		read_headers = {
@@ -103,26 +114,32 @@ def authenticate(fromSettings=0):
 			return
 
 		approval_url = 'https://www.themoviedb.org/auth/access?request_token=%s' % request_token
-		message = 'Scan QR or visit URL to authorize:[CR][CR]%s' % approval_url
+		short_url = _shorten_url(approval_url)
+		display_url = short_url if short_url else approval_url
+		message = 'Scan QR or visit:[CR]%s' % display_url
 
 		dialog_shown = False
 		approved = False
 
+		# Always try the umbrella dialog for auth — QR is essential for TV use.
+		# Fall back to standard Kodi dialog only if the umbrella dialog fails.
 		try:
-			if control.setting('dialogs.useumbrelladialog') == 'true':
-				from resources.lib.modules import tools
-				tmdb_qr = tools.make_qr(approval_url)
-				progressDialog = control.getProgressWindow('TMDB v4 Authentication', tmdb_qr, 1)
-				progressDialog.set_controls()
-				progressDialog.update(0, message)
-			else:
-				progressDialog = control.progressDialog
-				progressDialog.create('TMDB v4 Authentication', message)
+			from resources.lib.modules import tools
+			tmdb_qr = tools.make_qr(approval_url, 'tmdb_qr.png')
+			if not tmdb_qr:
+				raise ValueError('QR generation failed')
+			progressDialog = control.getProgressWindow('TMDB v4 Authentication', tmdb_qr, 1)
+			progressDialog.set_controls()
+			progressDialog.update(0, message)
+		except:
+			progressDialog = control.progressDialog
+			progressDialog.create('TMDB v4 Authentication', message)
 
-			dialog_shown = True
-			start = time.time()
+		dialog_shown = True
+		start = time.time()
 
-			# Step 2: Poll for approval
+		# Step 2: Poll for approval
+		try:
 			while not progressDialog.iscanceled() and (time.time() - start) < 600:
 				control.sleep(2000)
 
@@ -140,11 +157,9 @@ def authenticate(fromSettings=0):
 						setSetting('tmdb.v4.accountid', account_id)
 						approved = True
 						break
-
 		except Exception as e:
-			log_utils.log('TMDB v4: Dialog exception: %s' % str(e), level=log_utils.LOGWARNING)
+			log_utils.log('TMDB v4: Poll exception: %s' % str(e), level=log_utils.LOGWARNING)
 			log_utils.log(traceback.format_exc(), level=log_utils.LOGWARNING)
-
 		finally:
 			if dialog_shown:
 				try:
@@ -159,7 +174,7 @@ def authenticate(fromSettings=0):
 			control.notification(title='TMDB v4', message='Authorization cancelled or timed out.', icon='ERROR', time=5000)
 
 		if fromSettings:
-			control.openSettings(id='plugin.video.umbrella')
+			control.openSettings('11.3', 'plugin.video.umbrella')
 
 	except Exception as e:
 		log_utils.log('TMDB v4: authenticate() exception: %s' % str(e), level=log_utils.LOGWARNING)
@@ -172,7 +187,7 @@ def revoke(fromSettings=0):
 		access_token = getSetting('tmdb.v4.accesstoken')
 		if not access_token:
 			if fromSettings:
-				control.openSettings(id='plugin.video.umbrella')
+				control.openSettings('11.3', 'plugin.video.umbrella')
 			return
 
 		url = TMDB_V4_BASE + '/auth/access_token'
@@ -185,13 +200,13 @@ def revoke(fromSettings=0):
 		else:
 			control.notification(title='TMDB v4', message='Credentials cleared (server response: %s).' % response.status_code)
 		if fromSettings:
-			control.openSettings(id='plugin.video.umbrella')
+			control.openSettings('11.3', 'plugin.video.umbrella')
 	except:
 		log_utils.error()
 		setSetting('tmdb.v4.accesstoken', '')
 		setSetting('tmdb.v4.accountid', '')
 		if fromSettings:
-			control.openSettings(id='plugin.video.umbrella')
+			control.openSettings('11.3', 'plugin.video.umbrella')
 
 
 def get_user_lists():
@@ -217,6 +232,108 @@ def get_user_lists():
 	except:
 		log_utils.error()
 		return []
+
+
+def get_watchlist_ids(mediatype='movie'):
+	"""Fetch all pages of the watchlist and return a set of TMDb IDs (as strings).
+	Used by movieDirectory/tvDirectory to show only the relevant Add/Remove context item."""
+	try:
+		account_id = getSetting('tmdb.v4.accountid')
+		if not account_id: return set()
+		ids = set()
+		page, total = 1, 1
+		endpoint = 'movie/watchlist' if mediatype == 'movie' else 'tv/watchlist'
+		while page <= total:
+			result = getTMDbV4(TMDB_V4_BASE + '/account/%s/%s?page=%s' % (account_id, endpoint, page))
+			if not result: break
+			for item in result.get('results', []):
+				if item.get('id'): ids.add(str(item['id']))
+			total = result.get('total_pages', 1)
+			page += 1
+		return ids
+	except:
+		log_utils.error()
+		return set()
+
+
+def get_watchlist_sort_by(mediatype='movie'):
+	"""Return sort_by query param value for TMDb v4 watchlist based on user settings.
+	Returns None if sort type is Default (0), otherwise returns e.g. 'created_at.desc'."""
+	try:
+		import xbmcaddon
+		_addon = xbmcaddon.Addon('plugin.video.umbrella')
+		setting_key = 'sort.movies.watchlist' if mediatype == 'movie' else 'sort.shows.watchlist'
+		sort_type = int(_addon.getSetting('%s.type' % setting_key) or '5')
+		sort_order = int(_addon.getSetting('%s.order' % setting_key) or '1')
+		if sort_type == 0:
+			return None
+		suffix = '.asc' if sort_order == 0 else '.desc'
+		sort_map = {
+			1: 'title',
+			2: 'vote_average',
+			3: 'vote_count',
+			4: 'primary_release_date' if mediatype == 'movie' else 'first_air_date',
+			5: 'created_at',
+		}
+		sort_field = sort_map.get(sort_type, 'created_at')
+		return sort_field + suffix
+	except:
+		log_utils.error()
+		return None
+
+
+def get_watchlist_movies(page=1):
+	"""Fetch one page of movies from the TMDb v4 account watchlist."""
+	try:
+		account_id = getSetting('tmdb.v4.accountid')
+		if not account_id: return None
+		return getTMDbV4(TMDB_V4_BASE + '/account/%s/movie/watchlist?page=%s' % (account_id, page))
+	except:
+		log_utils.error()
+		return None
+
+
+def get_watchlist_tv(page=1):
+	"""Fetch one page of TV shows from the TMDb v4 account watchlist."""
+	try:
+		account_id = getSetting('tmdb.v4.accountid')
+		if not account_id: return None
+		return getTMDbV4(TMDB_V4_BASE + '/account/%s/tv/watchlist?page=%s' % (account_id, page))
+	except:
+		log_utils.error()
+		return None
+
+
+def watchlist_add(tmdb_id, mediatype='movie'):
+	"""Add an item to the TMDb watchlist (v3 endpoint, accepts v4 Bearer token)."""
+	try:
+		account_id = getSetting('tmdb.v4.accountid')
+		if not account_id: return False
+		url = 'https://api.themoviedb.org/3/account/%s/watchlist' % account_id
+		result = getTMDbV4(url, post={'media_type': mediatype, 'media_id': int(tmdb_id), 'watchlist': True})
+		if result and result.get('success'):
+			control.notification(title='TMDB', message='Added to Watchlist.', icon=tmdb4_icon)
+			return True
+		return False
+	except:
+		log_utils.error()
+		return False
+
+
+def watchlist_remove(tmdb_id, mediatype='movie'):
+	"""Remove an item from the TMDb watchlist (v3 endpoint, accepts v4 Bearer token)."""
+	try:
+		account_id = getSetting('tmdb.v4.accountid')
+		if not account_id: return False
+		url = 'https://api.themoviedb.org/3/account/%s/watchlist' % account_id
+		result = getTMDbV4(url, post={'media_type': mediatype, 'media_id': int(tmdb_id), 'watchlist': False})
+		if result and result.get('success'):
+			control.notification(title='TMDB', message='Removed from Watchlist.', icon=tmdb4_icon)
+			return True
+		return False
+	except:
+		log_utils.error()
+		return False
 
 
 def add_to_list(list_id, tmdb_id, mediatype='movie'):
@@ -277,7 +394,7 @@ def create_list_dialog():
 		if not getTMDbV4CredentialsInfo():
 			control.notification(title='TMDB v4', message=getLS(40607) if _has_string(40607) else 'Not authenticated with TMDB v4. Check Settings.', icon='ERROR')
 			return
-		list_name = control.inputDialog(getLS(40608) if _has_string(40608) else 'New List Name')
+		list_name = control.dialog.input(getLS(40608) if _has_string(40608) else 'New List Name')
 		if not list_name:
 			return
 		create_list(list_name)
@@ -310,7 +427,7 @@ def manager(name, tmdb, mediatype='movie'):
 		action, list_id = items[select][1]
 
 		if action == 'create':
-			list_name = control.inputDialog(getLS(40608) if _has_string(40608) else 'New List Name')
+			list_name = control.dialog.input(getLS(40608) if _has_string(40608) else 'New List Name')
 			if list_name:
 				new_id = create_list(list_name)
 				if new_id and tmdb:

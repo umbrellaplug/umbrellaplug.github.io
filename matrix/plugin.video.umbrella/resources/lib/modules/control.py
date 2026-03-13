@@ -221,14 +221,23 @@ def addonInstalled(addon_id):
 
 def artPath():
 	theme = appearance()
+	user_path = joinPath(userIconFolders(), theme)
+	if os.path.isdir(user_path):
+		return user_path
 	return joinPath(xbmcaddon.Addon('plugin.video.umbrella').getAddonInfo('path'), 'resources', 'artwork', theme)
 
 def genreIconPath():
 	theme = appearance()
+	user_path = joinPath(userIconFolders(), theme, 'genre_media', 'icons')
+	if os.path.isdir(user_path):
+		return user_path
 	return joinPath(xbmcaddon.Addon('plugin.video.umbrella').getAddonInfo('path'), 'resources', 'artwork', theme, 'genre_media', 'icons')
 
 def genrePosterPath():
 	theme = appearance()
+	user_path = joinPath(userIconFolders(), theme, 'genre_media', 'posters')
+	if os.path.isdir(user_path):
+		return user_path
 	return joinPath(xbmcaddon.Addon('plugin.video.umbrella').getAddonInfo('path'), 'resources', 'artwork', theme, 'genre_media', 'posters')
 
 def appearance():
@@ -237,6 +246,9 @@ def appearance():
 
 def iconFolders():
 	return joinPath(xbmcaddon.Addon('plugin.video.umbrella').getAddonInfo('path'), 'resources', 'artwork')
+
+def userIconFolders():
+	return joinPath(dataPath, 'icon_packs')
 
 def addonIcon():
 	theme = appearance()
@@ -491,13 +503,37 @@ def getMenuEnabled(menu_title):
 	if (is_enabled == '' or is_enabled == 'false'): return False
 	return True
 
+_skin_uses_widgetreload = None  # None = not yet detected; True/False cached after first call
+
+def _detect_skin_widgetreload():
+	try:
+		import os
+		skin_path = xbmc.translatePath('special://skin/')
+		for root, _dirs, files in os.walk(skin_path):
+			for fname in files:
+				if not fname.endswith('.xml'):
+					continue
+				try:
+					with open(os.path.join(root, fname), 'r', encoding='utf-8', errors='ignore') as f:
+						if 'widgetreload' in f.read():
+							return True
+				except Exception:
+					pass
+		return False
+	except Exception:
+		return False
+
 def trigger_widget_refresh():
-	# import time
-	# timestr = time.strftime("%Y%m%d%H%M%S", time.gmtime())
-	# homeWindow.setProperty("widgetreload", timestr)
-	# homeWindow.setProperty('widgetreload-episodes', timestr)
-	# homeWindow.setProperty('widgetreload-movies', timestr)
-	execute('UpdateLibrary(video,/fake/path/to/force/refresh/on/home)') # make sure this is ok coupled with above
+	global _skin_uses_widgetreload
+	import time
+	timestr = time.strftime("%Y%m%d%H%M%S", time.gmtime())
+	homeWindow.setProperty('widgetreload', timestr)
+	homeWindow.setProperty('widgetreload-episodes', timestr)
+	homeWindow.setProperty('widgetreload-movies', timestr)
+	if _skin_uses_widgetreload is None:
+		_skin_uses_widgetreload = _detect_skin_widgetreload()
+	if not _skin_uses_widgetreload:
+		execute('UpdateLibrary(video,/fake/path/to/force/refresh/on/home)')
 
 def refresh_playAction(): # for umbrella global CM play actions
 	autoPlayTV = 'true' if setting('play.mode.tv') == '1' else '0'
@@ -524,6 +560,8 @@ def refresh_contextProperties():
 		'context.umbrella.traktManager',
 		'context.umbrella.mdblistManager',
 		'context.umbrella.simklManager',
+		'context.umbrella.tmdbListManager',
+		'context.umbrella.tmdbWatchlist',
 		'context.umbrella.clearProviders',
 		'context.umbrella.clearBookmark',
 		'context.umbrella.rescrape',
@@ -598,7 +636,7 @@ def set_info(item, meta, setUniqueIDs=None, resumetime='', fileNameandPath=None)
 			info_tag.setDirectors(to_list(meta_get('director', [])))
 			if setUniqueIDs:
 				info_tag.setIMDBNumber(setUniqueIDs.get('imdb'))
-			if resumetime: info_tag.setResumePoint(float(resumetime))
+			if resumetime: info_tag.setResumePoint(float(resumetime), float(meta.get('duration') or 2700))
 			if meta_get('mediatype') in ['tvshow', 'season']:
 				info_tag.setTvShowTitle(meta_get('tvshowtitle'))
 				info_tag.setTvShowStatus(meta_get('status'))

@@ -32,6 +32,8 @@ class Seasons:
 		self.tmdb_poster_path = 'https://image.tmdb.org/t/p/w342'
 		self.trakt_user = getSetting('trakt.user.name').strip()
 		self.traktCredentials = trakt.getTraktCredentialsInfo()
+		self.simklCredentials = simkl.getSimKLCredentialsInfo()
+		self.mdblist_authed = getSetting('mdblist.api') != ''
 		self.showunaired = getSetting('showunaired') == 'true'
 		self.unairedcolor = getSetting('unaired.identify')
 		self.showspecials = getSetting('tv.specials') == 'true'
@@ -143,15 +145,25 @@ class Seasons:
 		is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
 		settingFanart = getSetting('fanart') == 'true'
 		addonPoster, addonFanart, addonBanner = control.addonPoster(), control.addonFanart(), control.addonBanner()
-		if trakt.getTraktCredentialsInfo() and simkl.getSimKLCredentialsInfo():
+		_indicators_alt = getSetting('indicators.alt')
+		_trakt_marks = self.traktCredentials and (_indicators_alt == '1' or getSetting('trakt.markwatched') == 'true')
+		_simkl_marks = self.simklCredentials and (_indicators_alt == '2' or getSetting('simkl.markwatched') == 'true')
+		_mdblist_marks = self.mdblist_authed and (_indicators_alt == '3' or getSetting('mdblist.markwatched') == 'true')
+		if _indicators_alt == '0':
+			watchedMenu, unwatchedMenu = getLS(32066), getLS(32067)
+		elif sum([bool(_trakt_marks), bool(_simkl_marks), bool(_mdblist_marks)]) > 1:
 			watchedMenu, unwatchedMenu = getLS(40564), getLS(40565)
-		elif trakt.getTraktCredentialsInfo():
+		elif _trakt_marks:
 			watchedMenu, unwatchedMenu = getLS(32068), getLS(32069)
-		elif simkl.getSimKLCredentialsInfo():
+		elif _simkl_marks:
 			watchedMenu, unwatchedMenu = getLS(40554), getLS(40555)
+		elif _mdblist_marks:
+			watchedMenu, unwatchedMenu = getLS(40631), getLS(40632)
 		else:
 			watchedMenu, unwatchedMenu = getLS(32066), getLS(32067)
-		traktManagerMenu, queueMenu = getLS(32070), getLS(32065)
+		traktManagerMenu, queueMenu = '[COLOR %s]Trakt Manager[/COLOR]' % self.highlight_color, getLS(32065)
+		simklManagerMenu = '[COLOR %s]Simkl Manager[/COLOR]' % self.highlight_color
+		mdblistManagerMenu = '[COLOR %s]MDBList Manager[/COLOR]' % self.highlight_color
 		showPlaylistMenu, clearPlaylistMenu = getLS(35517), getLS(35516)
 		labelMenu, playRandom = getLS(32055), getLS(32535)
 		addToLibrary = getLS(32551)
@@ -224,6 +236,10 @@ class Seasons:
 					watched = getSeasonOverlay(indicators[0], imdb, tvdb, season) == '5' if indicators else False
 					if self.traktCredentials:
 						cm.append((traktManagerMenu, 'RunPlugin(%s?action=tools_traktManager&name=%s&imdb=%s&tvdb=%s&season=%s&watched=%s)' % (sysaddon, systitle, imdb, tvdb, season, watched)))
+					if self.simklCredentials:
+						cm.append((simklManagerMenu, 'RunPlugin(%s?action=tools_simklManager&name=%s&imdb=%s&tvdb=%s&season=%s&watched=%s)' % (sysaddon, systitle, imdb, tvdb, season, watched)))
+					if self.mdblist_authed:
+						cm.append((mdblistManagerMenu, 'RunPlugin(%s?action=tools_mdbWatchlist&name=%s&imdb=%s&tvdb=%s&tmdb=%s&watched=%s)' % (sysaddon, systitle, imdb, tvdb, tmdb, watched)))
 					if watched:
 						meta.update({'playcount': 1, 'overlay': 5})
 						cm.append((unwatchedMenu, 'RunPlugin(%s?action=playcount_TVShow&name=%s&imdb=%s&tvdb=%s&season=%s&query=4)' % (sysaddon, systitle, imdb, tvdb, season)))

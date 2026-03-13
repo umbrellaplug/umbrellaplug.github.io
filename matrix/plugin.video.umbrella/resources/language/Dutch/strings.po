@@ -5581,3 +5581,199 @@ msgstr ""
 msgctxt "#40609"
 msgid "TMDB v4"
 msgstr ""
+
+msgctxt "#40610"
+msgid "Simkl service sync interval (in minutes)"
+msgstr ""
+
+msgctxt "#40611"
+msgid "[B]SETTINGS[/B] : SIMKL"
+msgstr ""
+
+msgctxt "#40612"
+msgid "TMDb Watchlist"
+msgstr ""
+
+msgctxt "#40613"
+msgid "Add to TMDb Watchlist"
+msgstr ""
+
+msgctxt "#40614"
+msgid "Remove from TMDb Watchlist"
+msgstr ""
+
+msgctxt "#40615"
+msgid "TMDb Watchlist Add/Remove"
+msgstr ""
+
+msgctxt "#40616"
+msgid "TMDb List Sort"
+msgstr ""
+
+msgctxt "#40617"
+msgid "Trakt: Re-authorize required. Your token was issued with different client credentials. Please re-authorize Trakt in settings."
+msgstr ""
+
+msgctxt "#40618"
+msgid "Enable scrobbling"
+msgstr ""
+
+msgctxt "#40619"
+msgid "Show notification on scrobble"
+msgstr ""
+
+msgctxt "#40620"
+msgid "Simkl scrobbles"
+msgstr ""
+
+msgctxt "#40621"
+msgid "MDBList"
+msgstr ""
+
+msgctxt "#40622"
+msgid "Online Services"
+msgstr ""
+
+msgctxt "#40623"
+msgid "Scrobble & Resume Points"
+msgstr ""
+
+msgctxt "#40624"
+msgid "Local"
+msgstr ""
+
+msgctxt "#40625"
+msgid "Also mark watched on Trakt"
+msgstr ""
+
+msgctxt "#40626"
+msgid "Also mark watched on Simkl"
+msgstr ""
+
+msgctxt "#40627"
+msgid "Also mark watched on MDBList"
+msgstr ""
+
+msgctxt "#40628"
+msgid "Show Scrobble Notification"
+msgstr ""
+
+msgctxt "#40629"
+msgid "Also mark watched on:"
+msgstr ""
+
+msgctxt "#40630"
+msgid "MDBList sync interval (in minutes)"
+msgstr ""
+
+msgctxt "#40631"
+msgid "MDBList Mark as Watched"
+msgstr ""
+
+msgctxt "#40632"
+msgid "MDBList Mark as Unwatched"
+msgstr ""
+
+msgctxt "#40633"
+msgid "Service Selection"
+msgstr ""
+
+msgctxt "#40634"
+msgid "Watch History & Indicators"
+msgstr ""
+
+msgctxt "#40635"
+msgid "[B]MDBList Management Tools[/B]"
+msgstr ""
+
+msgctxt "#40636"
+msgid "MDBList Management Tools"
+msgstr ""
+
+msgctxt "#40637"
+msgid "[COLOR %s][B]Force MDBList Sync to local database[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40638"
+msgid "[COLOR %s][B]Watchlist Manager - Movies[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40639"
+msgid "[COLOR %s][B]Watchlist Manager - Shows[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40640"
+msgid "%s Failed to Mark As Watched On MDBList"
+msgstr ""
+
+msgctxt "#40641"
+msgid "%s Marked As Watched On MDBList"
+msgstr ""
+
+msgctxt "#40642"
+msgid "%s Failed to Mark As Unwatched On MDBList"
+msgstr ""
+
+msgctxt "#40643"
+msgid "%s Marked As Unwatched On MDBList"
+msgstr ""
+
+msgctxt "#40644"
+msgid "Mark Watched/Unwatched Notifications"
+msgstr ""
+
+msgctxt "#40645"
+msgid "MDBList Progress Shows"
+msgstr ""
+
+msgctxt "#40646"
+msgid "MDBList Progress Episodes"
+msgstr ""
+
+msgctxt "#40649"
+msgid "MDBList Manager"
+msgstr ""
+
+msgctxt "#40650"
+msgid "Caching Progress Dialog"
+msgstr ""
+
+msgctxt "#40651"
+msgid "MDBList Progress Show unaired episodes"
+msgstr ""
+
+msgctxt "#40652"
+msgid "MDBList Upcoming Progress prepend date"
+msgstr ""
+
+msgctxt "#40653"
+msgid "Show In-Progress Episodes"
+msgstr ""
+
+msgctxt "#40654"
+msgid "Show In-Progress Shows"
+msgstr ""
+
+msgctxt "#40655"
+msgid "Hide Watched in Collection"
+msgstr ""
+
+msgctxt "#40656"
+msgid "Simkl: Scrobbled"
+msgstr ""
+
+msgctxt "#40657"
+msgid "MDBList: Scrobbled"
+msgstr ""
+
+msgctxt "#40658"
+msgid "Local: In-Progress Shows"
+msgstr ""
+
+msgctxt "#40659"
+msgid "Local: In-Progress Episodes"
+msgstr ""
+
+msgctxt "#40660"
+msgid "[COLOR %s][B]Force MDBList Sync to local database[/B][/COLOR]"
+msgstr ""

@@ -189,6 +189,9 @@ def router(argv2):
 	elif action == 'movies_traktWatchListManager':
 		from resources.lib.menus import movies
 		movies.Movies().watchlistManager()
+	elif action == 'movies_mdblistWatchlistManager':
+		from resources.lib.menus import movies
+		movies.Movies().mdblistWatchlistManager()
 	elif action == 'movies_favorites':
 		from resources.lib.modules import favourites
 		favourites.getFavouritesMoviesfromXML()
@@ -209,7 +212,7 @@ def router(argv2):
 		movies.Movies().get_mdbuser_watchlist(folderName=folderName)
 	elif action == 'mdbUserWatchListTVShows':
 		from resources.lib.menus import tvshows
-		tvshows.TVshows().get_mdbuser_watchlist(folderName=folderName)
+		tvshows.TVshows().get_mdbuser_watchlist(url, folderName=folderName)
 	elif action == 'moviesimilarFromLibrary':
 		from resources.lib.menus import movies
 		movies.Movies().similarFromLibrary(tmdb=tmdb)
@@ -363,6 +366,9 @@ def router(argv2):
 	elif action == 'shows_traktWatchListManager':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().watchlistManager()
+	elif action == 'shows_mdblistWatchlistManager':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().mdblistWatchlistManager()
 	elif action == 'mdbUserListTV':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().getMDBUserList(folderName=folderName)
@@ -375,6 +381,12 @@ def router(argv2):
 	elif action == 'simkl_shows_progress':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().simkl_progress(url, folderName=folderName)
+	elif action == 'mdblist_shows_progress':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().mdblist_progress(url, folderName=folderName)
+	elif action == 'local_shows_progress':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().local_progress(url, folderName=folderName)
 
 	####################################################
 	#---Plex
@@ -453,6 +465,12 @@ def router(argv2):
 	elif action == 'simkl_calendar':
 		from resources.lib.menus import episodes
 		episodes.Episodes().simkl_calendar(url, folderName=folderName)
+	elif action == 'mdblist_calendar':
+		from resources.lib.menus import episodes
+		episodes.Episodes().mdblist_calendar(url, folderName=folderName)
+	elif action == 'local_calendar':
+		from resources.lib.menus import episodes
+		episodes.Episodes().local_calendar(url, folderName=folderName)
 
 	####################################################
 	#---Premium Services
@@ -836,6 +854,35 @@ def router(argv2):
 	elif action == 'tmdb_v4_createList':
 		from resources.lib.modules import tmdb4
 		tmdb4.create_list_dialog()
+	elif action == 'tmdbV4WatchlistMovies':
+		from resources.lib.menus import movies
+		from resources.lib.modules import tmdb4
+		import xbmcaddon
+		account_id = xbmcaddon.Addon('plugin.video.umbrella').getSetting('tmdb.v4.accountid')
+		sort_by = tmdb4.get_watchlist_sort_by('movie')
+		sort_param = ('&sort_by=%s' % sort_by) if sort_by else ''
+		movies.Movies().tmdb_v4_watchlist('https://api.themoviedb.org/4/account/%s/movie/watchlist?page=1%s' % (account_id, sort_param), folderName=folderName)
+	elif action == 'tmdbV4WatchlistTV':
+		from resources.lib.menus import tvshows
+		from resources.lib.modules import tmdb4
+		import xbmcaddon
+		account_id = xbmcaddon.Addon('plugin.video.umbrella').getSetting('tmdb.v4.accountid')
+		sort_by = tmdb4.get_watchlist_sort_by('tv')
+		sort_param = ('&sort_by=%s' % sort_by) if sort_by else ''
+		tvshows.TVshows().tmdb_v4_watchlist('https://api.themoviedb.org/4/account/%s/tv/watchlist?page=1%s' % (account_id, sort_param), folderName=folderName)
+	elif action == 'tmdb_v4_watchlist_add':
+		from resources.lib.modules import tmdb4
+		tmdb4.watchlist_add(tmdb, params.get('mediatype', 'movie'))
+	elif action == 'tmdb_v4_watchlist_remove':
+		from resources.lib.modules import tmdb4
+		tmdb4.watchlist_remove(tmdb, params.get('mediatype', 'movie'))
+	elif action == 'tmdb_v4_watchlist_toggle':
+		from resources.lib.modules import tmdb4
+		mediatype = params.get('mediatype', 'movie')
+		if str(tmdb) in tmdb4.get_watchlist_ids(mediatype):
+			tmdb4.watchlist_remove(tmdb, mediatype)
+		else:
+			tmdb4.watchlist_add(tmdb, mediatype)
 	####################################################
 	#---Color Picker
 	####################################################
@@ -889,6 +936,9 @@ def router(argv2):
 		elif action == 'tools_simklToolsNavigator':
 			from resources.lib.menus import navigator
 			navigator.Navigator().simklTools(folderName=folderName)
+		elif action == 'tools_mdblistToolsNavigator':
+			from resources.lib.menus import navigator
+			navigator.Navigator().mdblistTools(folderName=folderName)
 		elif action == 'tools_searchNavigator':
 			from resources.lib.menus import navigator
 			navigator.Navigator().search(folderName=folderName)
@@ -932,8 +982,9 @@ def router(argv2):
 			mediatype = params.get('mediatype', 'movie')
 			tmdb4.manager(name, tmdb, mediatype)
 		elif action == 'tools_mdbWatchlist':
+			watched = (params.get('watched') == 'True') if params.get('watched') else None
 			from resources.lib.modules import mdblist
-			mdblist.manager(name, imdb, tvdb, tmdb)
+			mdblist.manager(name, imdb, tvdb, tmdb, watched=watched, season=season, episode=episode)
 		elif action == 'tools_simklManager':
 			watched = (params.get('watched') == 'True') if params.get('watched') else None
 			unfinished = (params.get('unfinished') == 'True') if params.get('unfinished') else False
@@ -952,6 +1003,9 @@ def router(argv2):
 		elif action == 'tools_forceSimklSync':
 			from resources.lib.modules import simkl
 			simkl.force_simklSync(silent=False)
+		elif action == 'tools_forceMDBListSync':
+			from resources.lib.modules import mdblist
+			mdblist.force_mdblistSync()
 		elif action == 'tools_clearLogFile':
 			from resources.lib.modules import log_utils
 			cleared = log_utils.clear_logFile()
@@ -1245,9 +1299,9 @@ def router(argv2):
 		items = [
 			control.lang(32207),
 			control.lang(32208),
-			control.lang(32209) % highlight_color, 
-			control.lang(32210) % highlight_color, 
-			control.lang(32216) % highlight_color, 
+			control.lang(32209) % highlight_color,
+			control.lang(32210) % highlight_color,
+			control.lang(32216) % highlight_color,
 			control.lang(32217) % highlight_color,
 			control.lang(32232) % (highlight_color, highlight_color)]
 		select = control.selectDialog(items, heading=control.addonInfo('name') + ' - ' + 'Rescrape Options Menu')

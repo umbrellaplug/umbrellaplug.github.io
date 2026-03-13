@@ -99,7 +99,7 @@ class Premiumize:
 		#progressDialog.create(getLS(40054))
 		if control.setting('dialogs.useumbrelladialog') == 'true':
 			from resources.lib.modules import tools
-			pm_qr = tools.make_qr("https://www.premiumize.me/device")
+			pm_qr = tools.make_qr("https://www.premiumize.me/device", 'pm_qr.png')
 			self.progressDialog = control.getProgressWindow(getLS(40054), pm_qr, 1)
 			self.progressDialog.set_controls()
 		else:
@@ -293,34 +293,39 @@ class Premiumize:
 		line2 = transfer_info['name']
 		line3 = transfer_info['message']
 		#####################################
-		if control.setting('dialogs.useumbrelladialog') == 'true':
-			self.progressDialog = control.getProgressWindow(getLS(40018), None, 0)
-			self.progressDialog.set_controls()
-			self.progressDialog.update(0, line % (line1, line2, line3))
-		else:
-			self.progressDialog = control.progressDialog
-			self.progressDialog.create(getLS(40018), line % (line1, line2, line3))
+		show_popup = control.setting('torrent.cacheprogress.dialog') != 'false'
+		if show_popup:
+			if control.setting('dialogs.useumbrelladialog') == 'true':
+				self.progressDialog = control.getProgressWindow(getLS(40018), None, 0)
+				self.progressDialog.set_controls()
+				self.progressDialog.update(0, line % (line1, line2, line3))
+			else:
+				self.progressDialog = control.progressDialog
+				self.progressDialog.create(getLS(40018), line % (line1, line2, line3))
 		while not transfer_info['status'] == 'seeding':
 			control.sleep(1000 * interval)
 			transfer_info = _transfer_info(transfer_id)
 			line3 = transfer_info['message']
-			self.progressDialog.update(int(float(transfer_info['progress']) * 100), line % (line1, line2, line3))
+			if show_popup:
+				self.progressDialog.update(int(float(transfer_info['progress']) * 100), line % (line1, line2, line3))
 			if control.monitor.abortRequested(): return sysexit()
-			try:
-				if self.progressDialog.iscanceled():
-					if control.yesnoDialog('Delete PM download also?', 'No will continue the download', 'but close dialog','Premiumize','No','Yes'):
-						return _return_failed(getLS(40014))
-					else:
-						self.progressDialog.close()
-						control.hide()
-						return False
-			except: pass
+			if show_popup:
+				try:
+					if self.progressDialog.iscanceled():
+						if control.yesnoDialog('Delete PM download also?', 'No will continue the download', 'but close dialog','Premiumize','No','Yes'):
+							return _return_failed(getLS(40014))
+						else:
+							self.progressDialog.close()
+							control.hide()
+							return False
+				except: pass
 			if transfer_info.get('status') == 'stalled':
 				return _return_failed()
 		control.sleep(1000 * interval)
-		try:
-			self.progressDialog.close()
-		except: log_utils.error()
+		if show_popup:
+			try:
+				self.progressDialog.close()
+			except: log_utils.error()
 		control.hide()
 		return True
 

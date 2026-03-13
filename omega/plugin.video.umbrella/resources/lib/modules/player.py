@@ -12,10 +12,13 @@ import xbmc
 from resources.lib.database.cache import clear_local_bookmarks
 from resources.lib.database.metacache import fetch as fetch_metacache
 from resources.lib.database.traktsync import fetch_bookmarks
+from resources.lib.database import simklsync
 from resources.lib.modules import control
 from resources.lib.modules import log_utils
 from resources.lib.modules import playcount
 from resources.lib.modules import trakt
+from resources.lib.modules import simkl
+from resources.lib.modules import mdblist
 from resources.lib.modules import opensubs
 from difflib import SequenceMatcher
 from resources.lib.modules.source_utils import seas_ep_filter
@@ -48,7 +51,10 @@ class Player(xbmc.Player):
 		self.playnext_time = int(getSetting('playnext.time')) or 60
 		self.playnext_percentage = int(getSetting('playnext.percent')) or 80
 		self.markwatched_percentage = int(getSetting('markwatched.percent')) or 85
+		self.watched_during_playback = False
 		self.traktCredentials = trakt.getTraktCredentialsInfo()
+		self.simklCredentials = simkl.getSimKLCredentialsInfo()
+		self.mdblistCredentials = mdblist.getMDBListCredentialsInfo()
 		self.prefer_tmdbArt = getSetting('prefer.tmdbArt') == 'true'
 		self.subtitletime = None
 		self.debuglog = getSetting('debug.level') == '1'
@@ -341,6 +347,19 @@ class Player(xbmc.Player):
 			if control.playlist.getposition() == -1 and self.media_type == 'episode':
 				control.player.stop()
 				control.playlist.clear()
+				if getSetting('play.mode.tv') == '0' and self.enable_playnext:
+					# Source select + playnext: add directly without cancelPlayback() to avoid
+					# resolve(False) on a stale handle triggering onPlayBackStopped and clearing the playlist
+					try:
+						episodelabel = '%sx%02d %s' % (int(self.season), int(self.episode), self.meta.get('title', ''))
+						if self.meta.get('title'):
+							item.setLabel(episodelabel)
+						newurl = item.getVideoInfoTag().getFilenameAndPath()
+						if newurl:
+							control.playlist.add(url=newurl, listitem=item)
+							return True
+					except: pass
+					return False
 				return self.singleItemPlaylist(item)
 			else:
 				return False
@@ -436,6 +455,7 @@ class Player(xbmc.Player):
 							if self.debuglog:
 								log_utils.log('Sending Movie to be marked as watched. IMDB: %s Title: %s Watch Percentage Used: %s Current Percentage: %s' % (self.imdb, self.title, self.markwatched_percentage, self.getWatchedPercent()), level=log_utils.LOGDEBUG)
 							playcount.markMovieDuringPlayback(self.imdb, '5')
+							self.watched_during_playback = True
 					except: pass
 					xbmc.sleep(2000)
 				elif self.media_type == 'episode':
@@ -445,6 +465,7 @@ class Player(xbmc.Player):
 							if self.debuglog:
 								log_utils.log('Sending Episode to be marked as watched. IMDB: %s TVDB: %s Season: %s Episode: %s Title: %s Watch Percentage Used: %s Current Percentage: %s' % (self.imdb, self.tvdb, self.season, self.episode, self.title, self.markwatched_percentage, self.getWatchedPercent()), level=log_utils.LOGDEBUG)
 							playcount.markEpisodeDuringPlayback(self.imdb, self.tvdb, self.season, self.episode, '5')
+							self.watched_during_playback = True
 						if self.enable_playnext and not self.play_next_triggered:
 							if int(control.playlist.size()) > 1:
 								if self.preScrape_triggered == False:
@@ -554,10 +575,29 @@ class Player(xbmc.Player):
 		homeWindow.clearProperty('umbrella.window_keep_alive')
 		if self.offset != '0' and self.playback_resumed is False:
 			control.sleep(200)
-			if self.traktCredentials and getSetting('resume.source') == '1': # re-adjust the resume point since dialog is based on meta runtime vs. getTotalTime() and inaccurate
+			_resume_source = getSetting('scrobble.source')
+			if _resume_source == '0':
+				_indicators_alt = getSetting('indicators.alt')
+				if _indicators_alt == '2' and self.simklCredentials: _resume_source = '2'
+				elif _indicators_alt == '1' and self.traktCredentials: _resume_source = '1'
+				elif _indicators_alt == '3' and self.mdblistCredentials: _resume_source = '3'
+			if self.traktCredentials and _resume_source == '1': # re-adjust the resume point since dialog is based on meta runtime vs. getTotalTime() and inaccurate
 				try:
 					total_time = self.getTotalTime()
 					progress = float(fetch_bookmarks(self.imdb, self.tmdb, self.tvdb, self.season, self.episode))
+					self.offset = (progress / 100) * total_time
+				except: pass
+			elif self.simklCredentials and _resume_source == '2':
+				try:
+					total_time = self.getTotalTime()
+					progress = float(simklsync.fetch_bookmarks(self.imdb, self.tmdb, self.tvdb, self.season, self.episode))
+					self.offset = (progress / 100) * total_time
+				except: pass
+			elif self.mdblistCredentials and _resume_source == '3':
+				try:
+					from resources.lib.database import mdbsync
+					total_time = self.getTotalTime()
+					progress = float(mdbsync.fetch_bookmarks(self.imdb, self.tmdb, self.tvdb, self.season, self.episode))
 					self.offset = (progress / 100) * total_time
 				except: pass
 			try:
@@ -566,8 +606,15 @@ class Player(xbmc.Player):
 				log_utils.log('Exception trying to seekTime() offset: %s'% self.offset, level=log_utils.LOGDEBUG)
 			self.playback_resumed = True
 		if getSetting('subtitles') == 'true': Subtitles().get(self.title, self.year, self.imdb, self.season, self.episode)
-		if self.traktCredentials:
+		scrobble_source = getSetting('scrobble.source')
+		if self.traktCredentials and (scrobble_source == '1' or getSetting('trakt.markwatched') == 'true'):
 			trakt.scrobbleReset(imdb=self.imdb, tmdb=self.tmdb, tvdb=self.tvdb, season=self.season, episode=self.episode, refresh=False) # refresh issues container.refresh()
+			trakt.scrobbleStart(media_type=self.media_type, title=self.title, tvshowtitle=self.title, year=self.year, imdb=self.imdb, tmdb=self.tmdb, tvdb=self.tvdb, season=self.season, episode=self.episode, watched_percent=0)
+		if self.simklCredentials and (scrobble_source == '2' or getSetting('simkl.markwatched') == 'true'):
+			simkl.scrobbleReset(imdb=self.imdb, tmdb=self.tmdb, tvdb=self.tvdb, season=self.season, episode=self.episode, refresh=False)
+			simkl.scrobbleStart(media_type=self.media_type, title=self.title, tvshowtitle=self.title, year=self.year, imdb=self.imdb, tmdb=self.tmdb, tvdb=self.tvdb, season=self.season, episode=self.episode, watched_percent=0)
+		if self.mdblistCredentials and (scrobble_source == '3' or getSetting('mdblist.markwatched') == 'true'):
+			mdblist.scrobbleStart(media_type=self.media_type, title=self.title, tvshowtitle=self.title, year=self.year, imdb=self.imdb, tmdb=self.tmdb, tvdb=self.tvdb, season=self.season, episode=self.episode, watched_percent=0)
 		log_utils.log('onAVStarted callback', level=log_utils.LOGDEBUG)
 
 	def onPlayBackStarted(self):
@@ -585,6 +632,9 @@ class Player(xbmc.Player):
 	def onPlayBackStopped(self):
 		try:
 			playerWindow.clearProperty('umbrella.preResolved_nextUrl')
+			playerWindow.clearProperty('umbrella.preResolved_season')
+			playerWindow.clearProperty('umbrella.preResolved_episode')
+			playerWindow.clearProperty('umbrella.preResolved_imdb')
 			playerWindow.clearProperty('umbrella.playlistStart_position')
 			homeWindow.clearProperty('umbrella.window_keep_alive')
 			clear_local_bookmarks() # clear all umbrella bookmarks from kodi database
@@ -593,8 +643,13 @@ class Player(xbmc.Player):
 				self.onPlayBackStopped_ran = True
 				self.playbackStopped_triggered = False
 				Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
-				if self.traktCredentials and (getSetting('trakt.scrobble') == 'true'):
-					Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode)
+				_scrobble_source = getSetting('scrobble.source')
+				if self.traktCredentials and (_scrobble_source == '1' or getSetting('trakt.markwatched') == 'true'):
+					Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, already_watched=self.watched_during_playback)
+				if self.simklCredentials and (_scrobble_source == '2' or getSetting('simkl.markwatched') == 'true'):
+					Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, service='simkl', title=self.title, year=self.year, already_watched=self.watched_during_playback)
+				if self.mdblistCredentials and (_scrobble_source == '3' or getSetting('mdblist.markwatched') == 'true'):
+					Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, service='mdblist', title=self.title, tvshowtitle=self.title, year=self.year, already_watched=self.watched_during_playback)
 				watcher = self.getWatchedPercent()
 				seekable = (int(self.current_time) > 180 and (watcher < int(self.markwatched_percentage)))
 				if watcher >= int(self.markwatched_percentage): self.libForPlayback() # only write playcount to local lib
@@ -614,6 +669,13 @@ class Player(xbmc.Player):
 	def onPlayBackEnded(self):
 		Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
 		self.libForPlayback()
+		_scrobble_source = getSetting('scrobble.source')
+		if self.traktCredentials and (_scrobble_source == '1' or getSetting('trakt.markwatched') == 'true'):
+			Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, already_watched=self.watched_during_playback)
+		if self.simklCredentials and (_scrobble_source == '2' or getSetting('simkl.markwatched') == 'true'):
+			Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, service='simkl', title=self.title, year=self.year, already_watched=self.watched_during_playback)
+		if self.mdblistCredentials and (_scrobble_source == '3' or getSetting('mdblist.markwatched') == 'true'):
+			Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, service='mdblist', title=self.title, tvshowtitle=self.title, year=self.year, already_watched=self.watched_during_playback)
 		try:
 			playingfile = Player.isPlaying()
 		except:
@@ -781,6 +843,7 @@ class PlayNext(xbmc.Player):
 
 	def prescrapeNext(self):
 		try:
+			if getSetting('play.mode.tv') == '0': return
 			if control.playlist.size() > 0 and control.playlist.getposition() != (control.playlist.size() - 1):
 				from resources.lib.modules import sources
 				from resources.lib.database import providerscache
@@ -1146,17 +1209,54 @@ class Bookmarks:
 	def __init__(self):
 		self.debuglog = control.setting('debug.level') == '1'
 		self.traktCredentials = trakt.getTraktCredentialsInfo()
+		self.simklCredentials = simkl.getSimKLCredentialsInfo()
+		self.mdblistCredentials = mdblist.getMDBListCredentialsInfo()
 	def get(self, name, imdb=None, tmdb=None, tvdb=None, season=None, episode=None, year='0', runtime=None, ck=False):
 		markwatched_percentage = int(getSetting('markwatched.percent')) or 85
 		offset = '0'
 		scrobbble = 'Local Bookmark'
 		if getSetting('bookmarks') != 'true': return offset
-		if self.traktCredentials and getSetting('resume.source') == '1':
-			scrobbble = 'Trakt Scrobble'
+		resume_source = getSetting('scrobble.source')
+		# If resume source is Local/default (0), derive from indicators service so users who switch
+		# indicators don't need to also manually update the scrobble source setting.
+		if resume_source == '0':
+			indicators_alt = getSetting('indicators.alt')
+			if indicators_alt == '2' and self.simklCredentials:
+				resume_source = '2'
+			elif indicators_alt == '1' and self.traktCredentials:
+				resume_source = '1'
+			elif indicators_alt == '3' and self.mdblistCredentials:
+				resume_source = '3'
+		if self.traktCredentials and resume_source == '1':
+			scrobbble = 'Trakt Resume Point'
 			try:
 				if not runtime or runtime == 'None': return offset # TMDB sometimes return None as string. duration pulled from kodi library if missing from meta
 				progress = float(fetch_bookmarks(imdb, tmdb, tvdb, season, episode))
 				offset = (progress / 100) * runtime # runtime vs. media_length can differ resulting in 10-30sec difference using Trakt scrobble, meta providers report runtime in full minutes
+				seekable = (2 <= progress <= int(markwatched_percentage))
+				if not seekable: return '0'
+			except:
+				log_utils.error()
+				return '0'
+		elif self.simklCredentials and resume_source == '2':
+			scrobbble = 'Simkl Resume Point'
+			try:
+				if not runtime or runtime == 'None': return offset
+				progress = float(simklsync.fetch_bookmarks(imdb, tmdb, tvdb, season, episode))
+				offset = (progress / 100) * runtime
+				seekable = (2 <= progress <= int(markwatched_percentage))
+				log_utils.log('Simkl Bookmarks.get: imdb=%s tmdb=%s tvdb=%s S%sE%s progress=%s offset=%s seekable=%s' % (imdb, tmdb, tvdb, season, episode, progress, offset, seekable), level=log_utils.LOGDEBUG)
+				if not seekable: return '0'
+			except:
+				log_utils.error()
+				return '0'
+		elif self.mdblistCredentials and resume_source == '3':
+			scrobbble = 'MDBList Resume Point'
+			try:
+				if not runtime or runtime == 'None': return offset
+				from resources.lib.database import mdbsync
+				progress = float(mdbsync.fetch_bookmarks(imdb, tmdb, tvdb, season, episode))
+				offset = (progress / 100) * runtime
 				seekable = (2 <= progress <= int(markwatched_percentage))
 				if not seekable: return '0'
 			except:
@@ -1169,7 +1269,8 @@ class Bookmarks:
 				dbcur.execute('''CREATE TABLE IF NOT EXISTS bookmark (idFile TEXT, timeInSeconds TEXT, Name TEXT, year TEXT, UNIQUE(idFile));''')
 				if not year or year == 'None': return offset
 				years = [str(year), str(int(year)+1), str(int(year)-1)]
-				match = dbcur.execute('''SELECT * FROM bookmark WHERE Name="%s" AND year IN (%s)''' % (name, ','.join(i for i in years))).fetchone() # helps fix random cases where trakt and imdb, or tvdb, differ by a year for eps
+				_ph = ','.join('?' * len(years))
+				match = dbcur.execute('SELECT * FROM bookmark WHERE Name=? AND year IN (%s)' % _ph, [name] + years).fetchone() # helps fix random cases where trakt and imdb, or tvdb, differ by a year for eps
 			except:
 				log_utils.error()
 				return offset
@@ -1208,7 +1309,8 @@ class Bookmarks:
 			dbcur = dbcon.cursor()
 			dbcur.execute('''CREATE TABLE IF NOT EXISTS bookmark (idFile TEXT, timeInSeconds TEXT, Name TEXT, year TEXT, UNIQUE(idFile));''')
 			years = [str(year), str(int(year) + 1), str(int(year) - 1)]
-			dbcur.execute('''DELETE FROM bookmark WHERE Name="%s" AND year IN (%s)''' % (name, ','.join(i for i in years))) #helps fix random cases where trakt and imdb, or tvdb, differ by a year for eps
+			_ph = ','.join('?' * len(years))
+			dbcur.execute('DELETE FROM bookmark WHERE Name=? AND year IN (%s)' % _ph, [name] + years) #helps fix random cases where trakt and imdb, or tvdb, differ by a year for eps
 			if seekable:
 				dbcur.execute('''INSERT INTO bookmark Values (?, ?, ?, ?)''', (idFile, timeInSeconds, name, year))
 				minutes, seconds = divmod(float(timeInSeconds), 60)
@@ -1223,7 +1325,7 @@ class Bookmarks:
 		except:
 			log_utils.error()
 
-	def set_scrobble(self, current_time, media_length, media_type, imdb='', tmdb='', tvdb='', season='', episode=''):
+	def set_scrobble(self, current_time, media_length, media_type, imdb='', tmdb='', tvdb='', season='', episode='', service='trakt', title='', tvshowtitle='', year='0', already_watched=False):
 		# Ensure season and episode are not None
 		season = season if season is not None else ''
 		episode = episode if episode is not None else ''
@@ -1232,7 +1334,19 @@ class Bookmarks:
 			if media_length == 0: return
 			percent = float((current_time / media_length)) * 100
 			seekable = (int(current_time) > 180 and (percent < int(markwatched_percentage)))
-			if seekable: trakt.scrobbleMovie(imdb, tmdb, percent) if media_type == 'movie' else trakt.scrobbleEpisode(imdb, tmdb, tvdb, season, episode, percent)
-			if percent >= int(markwatched_percentage): trakt.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False)
+			# Skip scrobble API call if item was already marked watched during playback (avoids duplicate submission)
+			skip_scrobble = already_watched and percent >= int(markwatched_percentage)
+			if service == 'simkl':
+				if not skip_scrobble and (seekable or percent >= int(markwatched_percentage)):
+					simkl.scrobbleMovie(title, year, imdb, tmdb, percent) if media_type == 'movie' else simkl.scrobbleEpisode(tvshowtitle or title, year, imdb, tmdb, tvdb, season, episode, percent)
+				if percent >= int(markwatched_percentage): simkl.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False)
+			elif service == 'mdblist':
+				if not skip_scrobble and (seekable or percent >= int(markwatched_percentage)):
+					mdblist.scrobbleMovie(title, year, imdb, tmdb, percent) if media_type == 'movie' else mdblist.scrobbleEpisode(tvshowtitle or title, year, imdb, tmdb, tvdb, season, episode, percent)
+				if percent >= int(markwatched_percentage): mdblist.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False)
+			else:
+				if not skip_scrobble and (seekable or percent >= int(markwatched_percentage)):
+					trakt.scrobbleMovie(imdb, tmdb, percent) if media_type == 'movie' else trakt.scrobbleEpisode(imdb, tmdb, tvdb, season, episode, percent)
+				if percent >= int(markwatched_percentage): trakt.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False)
 		except:
 			log_utils.error()

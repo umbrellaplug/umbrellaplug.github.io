@@ -162,7 +162,7 @@ class RealDebrid:
 		if control.setting('dialogs.useumbrelladialog') == 'true':
 			from resources.lib.modules import tools
 			direct_url = response.get('direct_verification_url') or ('%s?user_code=%s' % (response.get('verification_url', 'https://real-debrid.com/device'), response.get('user_code', '')))
-			rd_qr = tools.make_qr(direct_url)
+			rd_qr = tools.make_qr(direct_url, 'rd_qr.png')
 			self.progressDialog = control.getProgressWindow(getLS(40055), rd_qr, 1 if rd_qr else 0)
 			self.progressDialog.set_controls()
 		else:
@@ -519,33 +519,38 @@ class RealDebrid:
 		if 'error_code' in torrent_info: return _return_failed()
 		status = torrent_info['status']
 		line = '%s\n%s\n%s'
+		show_popup = control.setting('torrent.cacheprogress.dialog') != 'false'
 		if status == 'magnet_conversion':
 			line1 = getLS(40013)
 			line2 = torrent_info['filename']
 			line3 = getLS(40012) % str(torrent_info['seeders'])
 			timeout = 100
 			###################
-			if control.setting('dialogs.useumbrelladialog') == 'true':
-				self.progressDialog = control.getProgressWindow(getLS(40018), None, 0)
-				self.progressDialog.set_controls()
-				self.progressDialog.update(0, line % (line1, line2, line3))
-			else:
-				self.progressDialog = control.progressDialog
-				self.progressDialog.create(getLS(40018), line % (line1, line2, line3))
+			if show_popup:
+				if control.setting('dialogs.useumbrelladialog') == 'true':
+					self.progressDialog = control.getProgressWindow(getLS(40018), None, 0)
+					self.progressDialog.set_controls()
+					self.progressDialog.update(0, line % (line1, line2, line3))
+				else:
+					self.progressDialog = control.progressDialog
+					self.progressDialog.create(getLS(40018), line % (line1, line2, line3))
 			while status == 'magnet_conversion' and timeout > 0:
-				self.progressDialog.update(timeout, line % (line1, line2, line3))
+				if show_popup:
+					self.progressDialog.update(timeout, line % (line1, line2, line3))
 				if control.monitor.abortRequested(): return sysexit()
-				try:
-					if self.progressDialog.iscanceled(): return _return_failed(getLS(40014))
-				except: pass
+				if show_popup:
+					try:
+						if self.progressDialog.iscanceled(): return _return_failed(getLS(40014))
+					except: pass
 				timeout -= interval
 				control.sleep(1000 * interval)
 				torrent_info = self.torrent_info(torrent_id)
 				status = torrent_info['status']
 				if any(x in status for x in stalled): return _return_failed()
 				line3 = getLS(40012) % str(torrent_info['seeders'])
-			try: self.progressDialog.close()
-			except: pass
+			if show_popup:
+				try: self.progressDialog.close()
+				except: pass
 		if status == 'downloaded':
 			control.busy()
 			return True
@@ -586,13 +591,14 @@ class RealDebrid:
 			line1 = '%s...' % (getLS(40017) % getLS(40058))
 			line2 = torrent_info['filename']
 			line3 = status
-			if control.setting('dialogs.useumbrelladialog') == 'true':
-				self.progressDialog = control.getProgressWindow(getLS(40018), None, 0)
-				self.progressDialog.set_controls()
-				self.progressDialog.update(0, line % (line1, line2, line3))
-			else:
-				self.progressDialog = control.progressDialog
-				self.progressDialog.create(getLS(40018), line % (line1, line2, line3))
+			if show_popup:
+				if control.setting('dialogs.useumbrelladialog') == 'true':
+					self.progressDialog = control.getProgressWindow(getLS(40018), None, 0)
+					self.progressDialog.set_controls()
+					self.progressDialog.update(0, line % (line1, line2, line3))
+				else:
+					self.progressDialog = control.progressDialog
+					self.progressDialog.create(getLS(40018), line % (line1, line2, line3))
 			while not status == 'downloaded':
 				control.sleep(1000 * interval)
 				torrent_info = self.torrent_info(torrent_id)
@@ -601,20 +607,23 @@ class RealDebrid:
 					line3 = getLS(40011) % (file_size, round(float(torrent_info['speed']) / (1000**2), 2), torrent_info['seeders'], torrent_info['progress'])
 				else:
 					line3 = status
-				self.progressDialog.update(int(float(torrent_info['progress'])), line % (line1, line2, line3))
+				if show_popup:
+					self.progressDialog.update(int(float(torrent_info['progress'])), line % (line1, line2, line3))
 				if control.monitor.abortRequested(): return sysexit()
-				try:
-					if self.progressDialog.iscanceled():
-						if control.yesnoDialog('Delete RD download also?', 'No will continue the download', 'but close dialog','Real-Debrid','No','Yes'):
-							return _return_failed(getLS(40014))
-						else:
-							self.progressDialog.close()
-							control.hide()
-							return False
-				except: pass
+				if show_popup:
+					try:
+						if self.progressDialog.iscanceled():
+							if control.yesnoDialog('Delete RD download also?', 'No will continue the download', 'but close dialog','Real-Debrid','No','Yes'):
+								return _return_failed(getLS(40014))
+							else:
+								self.progressDialog.close()
+								control.hide()
+								return False
+					except: pass
 				if any(x in status for x in stalled): return _return_failed()
-			try: self.progressDialog.close()
-			except: pass
+			if show_popup:
+				try: self.progressDialog.close()
+				except: pass
 			control.hide()
 			return True
 		control.hide()

@@ -68,18 +68,32 @@ class Sources:
 			return control.notification(message=33034)
 		try:
 			control.sleep(200)
-			if control.playlist.getposition() == 0 or control.playlist.size() <= 1 or rescrape == 'true': 
+			if control.playlist.getposition() == 0 or control.playlist.size() <= 1 or rescrape == 'true':
 				playerWindow.clearProperty('umbrella.preResolved_nextUrl')
+				playerWindow.clearProperty('umbrella.preResolved_season')
+				playerWindow.clearProperty('umbrella.preResolved_episode')
+				playerWindow.clearProperty('umbrella.preResolved_imdb')
 			preResolved_nextUrl = playerWindow.getProperty('umbrella.preResolved_nextUrl')
-			if preResolved_nextUrl != '':
-				control.sleep(500)
+			if preResolved_nextUrl != '' and (episode is None or getSetting('play.mode.tv') != '0'):
+				preResolved_season = playerWindow.getProperty('umbrella.preResolved_season')
+				preResolved_episode = playerWindow.getProperty('umbrella.preResolved_episode')
+				preResolved_imdb = playerWindow.getProperty('umbrella.preResolved_imdb')
+				_match = preResolved_imdb == str(imdb) and preResolved_season == str(season) and preResolved_episode == str(episode)
 				playerWindow.clearProperty('umbrella.preResolved_nextUrl')
-				try: meta = jsloads(unquote(meta.replace('%22', '\\"')))
-				except: pass
-				if self.debuglog:
-					log_utils.log('Playing preResolved_nextUrl = %s' % preResolved_nextUrl, level=log_utils.LOGDEBUG)
-				from resources.lib.modules import player
-				return player.Player().play_source(title, year, season, episode, imdb, tmdb, tvdb, preResolved_nextUrl, meta)
+				playerWindow.clearProperty('umbrella.preResolved_season')
+				playerWindow.clearProperty('umbrella.preResolved_episode')
+				playerWindow.clearProperty('umbrella.preResolved_imdb')
+				if _match:
+					control.sleep(500)
+					try: meta = jsloads(unquote(meta.replace('%22', '\\"')))
+					except: pass
+					if self.debuglog:
+						log_utils.log('Playing preResolved_nextUrl = %s' % preResolved_nextUrl, level=log_utils.LOGDEBUG)
+					from resources.lib.modules import player
+					return player.Player().play_source(title, year, season, episode, imdb, tmdb, tvdb, preResolved_nextUrl, meta)
+				else:
+					if self.debuglog:
+						log_utils.log('preResolved_nextUrl mismatch (wanted S%sE%s imdb=%s, got S%sE%s imdb=%s) - discarding' % (season, episode, imdb, preResolved_season, preResolved_episode, preResolved_imdb), level=log_utils.LOGWARNING)
 			if title: title = self.getTitle(title)
 			if tvshowtitle: tvshowtitle = self.getTitle(tvshowtitle)
 			homeWindow.clearProperty(self.metaProperty)
@@ -229,7 +243,7 @@ class Sources:
 					return self.errorForSources(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered)
 			else: uncached_items += [i for i in items if re.match(r'^uncached.*torrent', i['source'])]
 			if select is None:
-				if episode is not None and self.enable_playnext: select = '1'
+				if episode is not None and self.enable_playnext and getSetting('play.mode.tv') != '0': select = '1'
 				elif episode == None:
 					select = getSetting('play.mode.movie')
 				else: select = getSetting('play.mode.tv')
@@ -267,7 +281,8 @@ class Sources:
 	def sourceSelect(self, title, items, uncached_items, meta):
 		try:
 			control.hide()
-			control.playlist.clear()
+			if not self.enable_playnext:
+				control.playlist.clear()
 			if not items:
 				control.sleep(200) ; control.hide() ; sysexit()
 ## - compare meta received to database and use largest(eventually switch to a request to fetch missing db meta for item)
@@ -803,6 +818,9 @@ class Sources:
 						player_hasVideo = control.condVisibility('Player.HasVideo')
 						if player_hasVideo: # do not setPropery if user stops playback quickly because "onPlayBackStopped" is already called and won't be able to clear it.
 							playerWindow.setProperty('umbrella.preResolved_nextUrl', url)
+							playerWindow.setProperty('umbrella.preResolved_season', str(next_meta.get('season', '')))
+							playerWindow.setProperty('umbrella.preResolved_episode', str(next_meta.get('episode', '')))
+							playerWindow.setProperty('umbrella.preResolved_imdb', str(next_meta.get('imdb', '')))
 							if self.debuglog:
 								log_utils.log('preResolved_nextUrl : %s' % url, level=log_utils.LOGDEBUG)
 						else:
