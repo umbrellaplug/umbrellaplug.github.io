@@ -1,7 +1,3 @@
-[B]Update - v6.7.55 - Mar 15th, 2026[/B]
---[Info] You may need to go to Tools > Trakt Management and Force Sync with Local database
---[Info] You may need to go to Tools > Simkl Management and Force Sync with Local database
---[Change] Added Academy Award Winners movies and New TV Shows (TMDb).
---[Fix] Changes for Trakt API updates limiting to 10.
---[Change] Setting for Watched and Indicators changed to only show available serrvices.
---[Fix] MDBList pagination settings corrected.
+[B]Update - v6.7.56 - Mar 16th, 2026[/B]
+--[Fix] Threading change for Trakt sync to stop crashes.
+--[Fix] Changes for skin detection to avoid heavy processing when checking for skin.

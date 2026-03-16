@@ -4362,23 +4362,23 @@ msgstr ""
 
 msgctxt "#40098"
 msgid "Next Episode in"
-msgstr 
+msgstr ""
 
 msgctxt "#40099"
 msgid "Watch Now"
-msgstr 
+msgstr ""
 
 msgctxt "#40100"
 msgid "Hide"
-msgstr
+msgstr ""
 
 msgctxt "#40101"
 msgid "Show Close/Hide Button"
-msgstr
+msgstr ""
 
 msgctxt "#40102"
 msgid "Use Skin Theme for PlayNext"
-msgstr
+msgstr ""
 
 msgctxt "#40103"
 msgid "Trakt Client ID"

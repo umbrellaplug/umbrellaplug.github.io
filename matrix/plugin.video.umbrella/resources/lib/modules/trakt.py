@@ -1248,8 +1248,10 @@ def service_syncSeasons(): # season indicators and counts for watched shows ex. 
 			tvdb = str(indicator[0].get('tvdb', '')) if indicator[0].get('tvdb') else ''
 			trakt = str(indicator[0].get('trakt', '')) if indicator[0].get('trakt') else ''
 			threads.append(Thread(target=cachesyncSeasons, args=(imdb, tvdb, trakt))) # season indicators and counts for an entire show
-		[i.start() for i in threads]
-		[i.join() for i in threads]
+		for i in range(0, len(threads), 10): # process in batches of 10 to avoid thread explosion on low-RAM devices
+			batch = threads[i:i + 10]
+			[t.start() for t in batch]
+			[t.join() for t in batch]
 	except: log_utils.error()
 
 def markMovieAsWatched(imdb):
@@ -1689,8 +1691,9 @@ def force_traktSync():
 	sync_trending_lists(forced=True)
 	sync_user_lists(forced=True)
 	sync_watched(forced=True) # writes to traktsync.db as of 1-19-2022
-	sync_watchedProgress(forced=True) # Trakt progress sync
+	sync_watchedProgress(forced=True, trigger_refresh=False) # Trakt progress sync
 	control.hide()
+	control.trigger_widget_refresh() # single refresh after full sync completes
 	control.notification(message='Forced Trakt Sync Complete')
 
 def sync_playbackProgress(activities=None, forced=False):
@@ -1709,7 +1712,7 @@ def sync_playbackProgress(activities=None, forced=False):
 				if items: traktsync.insert_bookmarks(items)
 	except: log_utils.error()
 
-def sync_watchedProgress(activities=None, forced=False):
+def sync_watchedProgress(activities=None, forced=False, trigger_refresh=True):
 	try:
 		from resources.lib.menus import episodes
 		trakt_user = getSetting('trakt.user.name').strip()
@@ -1724,7 +1727,7 @@ def sync_watchedProgress(activities=None, forced=False):
 			else:
 				log_utils.log('Trakt Progress List Sync Update...(local db latest "list_cached_at" = %s, trakt api latest "progress_activity" = %s)' % \
 									(str(local_listCache), str(progressActivity)), __name__, log_utils.LOGDEBUG)
-			control.trigger_widget_refresh()
+			if trigger_refresh: control.trigger_widget_refresh()
 	except: log_utils.error()
 
 def sync_watched(activities=None, forced=False): # writes to traktsync.db as of 1-19-2022

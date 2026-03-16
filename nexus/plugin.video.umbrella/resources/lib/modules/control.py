@@ -506,19 +506,26 @@ def getMenuEnabled(menu_title):
 _skin_uses_widgetreload = None  # None = not yet detected; True/False cached after first call
 
 def _detect_skin_widgetreload():
+	# widgetreload is a home-screen property some skins support
 	try:
 		import os
 		skin_path = xbmc.translatePath('special://skin/')
-		for root, _dirs, files in os.walk(skin_path):
-			for fname in files:
-				if not fname.endswith('.xml'):
-					continue
-				try:
-					with open(os.path.join(root, fname), 'r', encoding='utf-8', errors='ignore') as f:
-						if 'widgetreload' in f.read():
-							return True
-				except Exception:
-					pass
+		# find the resolution subfolder (e.g. 1080i, 1080p, 720p)
+		res_dir = None
+		for entry in os.listdir(skin_path):
+			if os.path.isdir(os.path.join(skin_path, entry)) and entry[0].isdigit():
+				res_dir = os.path.join(skin_path, entry)
+				break
+		if not res_dir:
+			res_dir = skin_path
+		for fname in ('Home.xml', 'Includes.xml', 'Variables.xml'):
+			fpath = os.path.join(res_dir, fname)
+			try:
+				with open(fpath, 'r', encoding='utf-8', errors='ignore') as f:
+					if 'widgetreload' in f.read():
+						return True
+			except Exception:
+				pass
 		return False
 	except Exception:
 		return False

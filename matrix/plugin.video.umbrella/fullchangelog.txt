@@ -1,3 +1,7 @@
+[B]Update - v6.7.56 - Mar 16th, 2026[/B]
+--[Fix] Threading change for Trakt sync to stop crashes.
+--[Fix] Changes for skin detection to avoid heavy processing when checking for skin.
+
 [B]Update - v6.7.55 - Mar 15th, 2026[/B]
 --[Info] You may need to go to Tools > Trakt Management and Force Sync with Local database
 --[Info] You may need to go to Tools > Simkl Management and Force Sync with Local database
