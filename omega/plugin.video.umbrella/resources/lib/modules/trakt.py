@@ -155,19 +155,27 @@ def get_all_pages(url, silent=False):
 			# If we got fewer items than the limit, we've reached the last page
 			if items_this_page < limit:
 				break
-			
+
 			# Check pagination headers if available
-			total_pages = response.headers.get('X-Pagination-Page-Count') if hasattr(response, 'headers') else None
-			if total_pages:
-				try:
-					total_pages = int(total_pages)
-					if page >= total_pages:
-						break
-				except (ValueError, TypeError):
-					pass
-			
+			if hasattr(response, 'headers'):
+				total_pages = response.headers.get('X-Pagination-Page-Count')
+				if total_pages:
+					try:
+						total_pages = int(total_pages)
+						if page >= total_pages:
+							break
+					except (ValueError, TypeError):
+						pass
+				total_items = response.headers.get('X-Pagination-Item-Count')
+				if total_items:
+					try:
+						if len(results) >= int(total_items):
+							break
+					except (ValueError, TypeError):
+						pass
+
 			page += 1
-			
+
 			# Safety limit to prevent infinite loops (max 100 pages = 100,000 items)
 			if page > 100:
 				log_utils.log('TRAKT: get_all_pages reached safety limit of 100 pages for URL: %s' % url, level=log_utils.LOGWARNING)
@@ -1098,6 +1106,15 @@ def syncTVShows(): # sync all watched shows ex. [({'imdb': 'tt12571834', 'tvdb':
 		if not getTraktCredentialsInfo(): return
 		indicators = get_all_pages('/users/me/watched/shows?extended=full')
 		if not indicators: return None
+		# Deduplicate by trakt ID — guards against API pagination loops returning duplicate shows
+		seen_ids = set()
+		unique = []
+		for i in indicators:
+			tid = i['show']['ids']['trakt']
+			if tid not in seen_ids:
+				seen_ids.add(tid)
+				unique.append(i)
+		indicators = unique
 # /shows/ID/progress/watched  endpoint only accepts imdb or trakt ID so write all ID's
 		indicators = [({'imdb': i['show']['ids']['imdb'], 'tvdb': str(i['show']['ids']['tvdb']), 'tmdb': str(i['show']['ids']['tmdb']), 'trakt': str(i['show']['ids']['trakt'])}, \
 											i['show']['aired_episodes'], sum([[(s['number'], e['number']) for e in s['episodes'] if i['reset_at'] is None or e['last_watched_at'] > i['reset_at']] for s in i['seasons']], [])) for i in indicators]
@@ -1681,7 +1698,6 @@ def force_traktSync():
 	clr_traktSync = {'bookmarks': True, 'hiddenProgress': True, 'liked_lists': True, 'movies_collection': True, 'movies_watchlist': True,
 							'public_lists': True, 'shows_collection': True, 'shows_watchlist': True, 'user_lists': True, 'watched': True}
 	traktsync.delete_tables(clr_traktSync)
-
 	sync_playbackProgress(forced=True)
 	sync_hidden_progress(forced=True)
 	sync_liked_lists(forced=True)
@@ -1734,12 +1750,10 @@ def sync_watched(activities=None, forced=False): # writes to traktsync.db as of 
 	try:
 		if forced:
 			cachesyncMovies()
-			#log_utils.log('Forced - Trakt Watched Movie Sync Complete', __name__, log_utils.LOGDEBUG)
 			cachesyncTVShows()
+			log_utils.log('Forced - Trakt Watched Sync Complete (movies + shows)', __name__, log_utils.LOGINFO)
 			control.sleep(5000)
-			service_syncSeasons() # syncs all watched shows season indicators and counts
-			#log_utils.log('Forced - Trakt Watched Shows Sync Complete', __name__, log_utils.LOGDEBUG)
-			traktsync.insert_syncSeasons_at()
+			# service_syncSeasons() is intentionally skipped here — it makes one API call per show
 		else:
 			moviesWatchedActivity = getMoviesWatchedActivity(activities)
 			db_movies_last_watched = timeoutsyncMovies()
@@ -1837,8 +1851,10 @@ def sync_liked_lists(activities=None, forced=False):
 			threads = []
 			for i in items:
 				threads.append(Thread(target=items_list, args=(i,)))
-			[i.start() for i in threads]
-			[i.join() for i in threads]
+			for i in range(0, len(threads), 10):
+				batch = threads[i:i + 10]
+				[t.start() for t in batch]
+				[t.join() for t in batch]
 			traktsync.insert_liked_lists(thrd_items)
 			if forced: log_utils.log('Forced - Trakt Liked Lists Sync Complete', __name__, log_utils.LOGDEBUG)
 	except: log_utils.error()
@@ -1868,7 +1884,7 @@ def sync_collection(activities=None, forced=False):
 			if items is not None: traktsync.insert_collection(items, 'movies_collection')
 			items = get_all_pages(link % 'shows', silent=True)
 			if items is not None: traktsync.insert_collection(items, 'shows_collection')
-			#log_utils.log('Forced - Trakt Collection Sync Complete', __name__, log_utils.LOGDEBUG)
+			log_utils.log('Forced - Trakt Collection Sync Complete', __name__, log_utils.LOGINFO)
 		else:
 			db_last_collected = traktsync.last_sync('last_collected_at')
 			collectedActivity = getCollectedActivity(activities)
@@ -1894,7 +1910,7 @@ def sync_watch_list(activities=None, forced=False):
 			traktsync.insert_watch_list(items, 'movies_watchlist')
 			items = getTraktAsJson(link % 'shows', silent=True)
 			traktsync.insert_watch_list(items, 'shows_watchlist')
-			#log_utils.log('Forced - Trakt Watch List Sync Complete', __name__, log_utils.LOGDEBUG)
+			log_utils.log('Forced - Trakt Watch List Sync Complete', __name__, log_utils.LOGINFO)
 		else:
 			db_last_watchList = traktsync.last_sync('last_watchlisted_at')
 			watchListActivity = getWatchListedActivity(activities)
@@ -1914,8 +1930,8 @@ def sync_popular_lists(forced=False):
 	try:
 		from datetime import timedelta
 		link = '/lists/popular?limit=300'
-		list_link = '/users/%s/lists/%s/items/movie,show?page=1&limit=1000'
-		official_link = '/lists/%s/items/movie,show?page=1&limit=1000'
+		list_link = '/users/%s/lists/%s/items/%s?page=1&limit=1'
+		official_link = '/lists/%s/items/%s?page=1&limit=1'
 		db_last_popularList = traktsync.last_sync('last_popularlist_at')
 		cache_expiry = (datetime.utcnow() - timedelta(hours=168)).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 		cache_expiry = int(cleandate.iso_2_utc(cache_expiry))
@@ -1924,6 +1940,7 @@ def sync_popular_lists(forced=False):
 								(str(db_last_popularList), str(cache_expiry)), __name__, log_utils.LOGDEBUG)
 			items = getTraktAsJson(link, silent=True)
 			if not items: return
+			log_utils.log('Forced - Trakt Popular Lists: processing %s lists in batches of 10' % len(items), __name__, log_utils.LOGINFO)
 			thrd_items = []
 			def items_list(i):
 				list_item = i.get('list', {})
@@ -1941,30 +1958,35 @@ def sync_popular_lists(forced=False):
 				i['list']['content_type'] = ''
 				list_owner_slug = list_item.get('user', {}).get('ids', {}).get('slug', '')
 				if not list_owner_slug: list_owner_slug = list_item.get('user',{}).get('username')
-				if list_item.get('type') == 'official': list_items = getTraktAsJson(official_link % trakt_id, silent=True)
-				else: list_items = getTraktAsJson(list_link % (list_owner_slug, trakt_id), silent=True)
-				if not list_items: return
-				movie_items = [x for x in list_items if x.get('type', '') == 'movie']
-				if len(movie_items) > 0: i['list']['content_type'] = 'movies'
-				shows_items = [x for x in list_items if x.get('type', '') == 'show']
-				if len(shows_items) > 0:
-					i['list']['content_type'] = 'mixed' if i['list']['content_type'] == 'movies' else 'shows'
+				if list_item.get('type') == 'official':
+					list_items = getTraktAsJson(official_link % (trakt_id, 'movies'), silent=True)
+					if list_items and list_items != '[]': i['list']['content_type'] = 'movies'
+					list_items = getTraktAsJson(official_link % (trakt_id, 'shows'), silent=True)
+					if list_items and list_items != '[]': i['list']['content_type'] = 'mixed' if i['list']['content_type'] == 'movies' else 'shows'
+				else:
+					list_items = getTraktAsJson(list_link % (list_owner_slug, trakt_id, 'movies'), silent=True)
+					if list_items and list_items != '[]': i['list']['content_type'] = 'movies'
+					list_items = getTraktAsJson(list_link % (list_owner_slug, trakt_id, 'shows'), silent=True)
+					if list_items and list_items != '[]': i['list']['content_type'] = 'mixed' if i['list']['content_type'] == 'movies' else 'shows'
+				if not i['list']['content_type']: return
 				thrd_items.append(i)
 			threads = []
 			for i in items:
 				threads.append(Thread(target=items_list, args=(i,)))
-			[i.start() for i in threads]
-			[i.join() for i in threads]
+			for i in range(0, len(threads), 10):
+				batch = threads[i:i + 10]
+				[t.start() for t in batch]
+				[t.join() for t in batch]
 			traktsync.insert_public_lists(thrd_items, service_type='last_popularlist_at', new_sync=False)
-			if forced: log_utils.log('Forced - Trakt Popular Lists Sync Complete', __name__, log_utils.LOGDEBUG)
+			if forced: log_utils.log('Forced - Trakt Popular Lists Sync Complete', __name__, log_utils.LOGINFO)
 	except: log_utils.error()
 
 def sync_trending_lists(forced=False):
 	try:
 		from datetime import timedelta
 		link = '/lists/trending?limit=300'
-		list_link = '/users/%s/lists/%s/items/movie,show?page=1&limit=1000'
-		official_link = '/lists/%s/items/movie,show?page=1&limit=1000'
+		list_link = '/users/%s/lists/%s/items/%s?page=1&limit=1'
+		official_link = '/lists/%s/items/%s?page=1&limit=1'
 
 		db_last_trendingList = traktsync.last_sync('last_trendinglist_at')
 		cache_expiry = (datetime.utcnow() - timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%S.000Z")
@@ -1974,6 +1996,7 @@ def sync_trending_lists(forced=False):
 								(str(db_last_trendingList), str(cache_expiry)), __name__, log_utils.LOGDEBUG)
 			items = getTraktAsJson(link, silent=True)
 			if not items: return
+			log_utils.log('Forced - Trakt Trending Lists: processing %s lists in batches of 10' % len(items), __name__, log_utils.LOGINFO)
 			thrd_items = []
 			def items_list(i):
 				list_item = i.get('list', {})
@@ -1991,22 +2014,27 @@ def sync_trending_lists(forced=False):
 				i['list']['content_type'] = ''
 				list_owner_slug = list_item.get('user', {}).get('ids', {}).get('slug', '')
 				if not list_owner_slug: list_owner_slug = list_item.get('user', {}).get('username')
-				if list_item.get('type') == 'official': list_items = getTraktAsJson(official_link % trakt_id, silent=True)
-				else: list_items = getTraktAsJson(list_link % (list_owner_slug, trakt_id), silent=True)
-				if not list_items: return
-				movie_items = [x for x in list_items if x.get('type', '') == 'movie']
-				if len(movie_items) != 0: i['list']['content_type'] = 'movies'
-				shows_items = [x for x in list_items if x.get('type', '') == 'show']
-				if len(shows_items) != 0:
-					i['list']['content_type'] = 'mixed' if i['list']['content_type'] == 'movies' else 'shows'
+				if list_item.get('type') == 'official':
+					list_items = getTraktAsJson(official_link % (trakt_id, 'movies'), silent=True)
+					if list_items and list_items != '[]': i['list']['content_type'] = 'movies'
+					list_items = getTraktAsJson(official_link % (trakt_id, 'shows'), silent=True)
+					if list_items and list_items != '[]': i['list']['content_type'] = 'mixed' if i['list']['content_type'] == 'movies' else 'shows'
+				else:
+					list_items = getTraktAsJson(list_link % (list_owner_slug, trakt_id, 'movies'), silent=True)
+					if list_items and list_items != '[]': i['list']['content_type'] = 'movies'
+					list_items = getTraktAsJson(list_link % (list_owner_slug, trakt_id, 'shows'), silent=True)
+					if list_items and list_items != '[]': i['list']['content_type'] = 'mixed' if i['list']['content_type'] == 'movies' else 'shows'
+				if not i['list']['content_type']: return
 				thrd_items.append(i)
 			threads = []
 			for i in items:
 				threads.append(Thread(target=items_list, args=(i,)))
-			[i.start() for i in threads]
-			[i.join() for i in threads]
+			for i in range(0, len(threads), 10):
+				batch = threads[i:i + 10]
+				[t.start() for t in batch]
+				[t.join() for t in batch]
 			traktsync.insert_public_lists(thrd_items, service_type='last_trendinglist_at', new_sync=False)
-			if forced: log_utils.log('Forced - Trakt Trending Lists Sync Complete', __name__, log_utils.LOGDEBUG)
+			if forced: log_utils.log('Forced - Trakt Trending Lists Sync Complete', __name__, log_utils.LOGINFO)
 	except: log_utils.error()
 
 def traktClientID():

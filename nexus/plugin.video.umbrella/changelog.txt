@@ -1,3 +1,2 @@
-[B]Update - v6.7.56 - Mar 16th, 2026[/B]
---[Fix] Threading change for Trakt sync to stop crashes.
---[Fix] Changes for skin detection to avoid heavy processing when checking for skin.
+[B]Update - v6.7.57 - Mar 16th, 2026[/B]
+--[Fix] Fix for issues with Trakt Sync causing crashes.

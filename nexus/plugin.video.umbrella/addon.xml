@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.56">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.57">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -234,9 +234,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.56 - Mar 16th, 2026[/B]
---[Fix] Threading change for Trakt sync to stop crashes.
---[Fix] Changes for skin detection to avoid heavy processing when checking for skin.
+[B]Update - v6.7.57 - Mar 16th, 2026[/B]
+--[Fix] Fix for issues with Trakt Sync causing crashes.
 		</news>
 	</extension>
 
