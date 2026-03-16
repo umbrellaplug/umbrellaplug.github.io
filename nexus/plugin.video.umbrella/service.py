@@ -282,6 +282,16 @@ try:
 	testUmbrella = False
 	if control.setting('indicators') == '0':
 		control.setSetting('indicators', 'Local') #fix for making this setting a string.
+	_alt_map = {'0': 'Local', '1': 'Trakt', '2': 'Simkl', '3': 'MDBList'}
+	_alt_val = control.setting('indicators.alt')
+	_ind_val = control.setting('indicators')
+	if _alt_val in _alt_map and _ind_val != _alt_map[_alt_val]:
+		control.setSetting('indicators', _alt_map[_alt_val]) # sync display label with backing integer on upgrade
+	_scrobble_map = {'0': 'Local', '1': 'Trakt', '2': 'Simkl', '3': 'MDBList'}
+	_scrobble_val = control.setting('scrobble.source')
+	_scrobble_disp = control.setting('scrobble')
+	if _scrobble_val in _scrobble_map and _scrobble_disp != _scrobble_map[_scrobble_val]:
+		control.setSetting('scrobble', _scrobble_map[_scrobble_val]) # sync display label with backing integer on upgrade
 	kodiVersion = control.getKodiVersion(full=True)
 	addonVersion = control.addon('plugin.video.umbrella').getAddonInfo('version')
 	if len(str(control.getUmbrellaVersion())) > 6:

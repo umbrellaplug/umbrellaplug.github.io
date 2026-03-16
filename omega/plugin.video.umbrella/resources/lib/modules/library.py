@@ -624,7 +624,7 @@ class lib_tools:
 	def getMovieCollection(self):
 		try:
 			link = '/users/me/collection/%s?extended=full'
-			items = trakt.getTraktAsJson(link % 'movies', silent=True)
+			items = trakt.get_all_pages(link % 'movies', silent=True)
 		except:
 			items = []
 		return items
@@ -632,7 +632,7 @@ class lib_tools:
 	def getMovieWatchlist(self):
 		try:
 			link = '/users/me/watchlist/%s?extended=full'
-			items = trakt.getTraktAsJson(link % 'movies', silent=True)
+			items = trakt.get_all_pages(link % 'movies', silent=True)
 		except:
 			items = []
 		return items
@@ -640,7 +640,7 @@ class lib_tools:
 	def getTVShowCollection(self):
 		try:
 			link = '/users/me/collection/%s?extended=full'
-			items = trakt.getTraktAsJson(link % 'shows', silent=True)
+			items = trakt.get_all_pages(link % 'shows', silent=True)
 		except:
 			items = []
 		return items
@@ -648,7 +648,7 @@ class lib_tools:
 	def getTVShowWatchlist(self):
 		try:
 			link = '/users/me/watchlist/%s?extended=full'
-			items = trakt.getTraktAsJson(link % 'shows', silent=True)
+			items = trakt.get_all_pages(link % 'shows', silent=True)
 		except:
 			items = []
 		return items
@@ -657,7 +657,7 @@ class lib_tools:
 		self.list = []
 		try:
 			link = '/users/me/likes/lists'
-			items = trakt.getTraktAsJson(link, silent=True)
+			items = trakt.get_all_pages(link, silent=True)
 		except:
 			items = []
 		showOwnerShow = control.setting('trakt.lists.showowner') == 'true'
@@ -692,7 +692,7 @@ class lib_tools:
 		self.list = []
 		try:
 			link = '/users/me/likes/lists'
-			items = trakt.getTraktAsJson(link, silent=True)
+			items = trakt.get_all_pages(link, silent=True)
 		except:
 			items = []
 		showOwnerShow = control.setting('trakt.lists.showowner') == 'true'

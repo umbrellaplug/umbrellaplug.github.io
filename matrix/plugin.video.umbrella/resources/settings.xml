@@ -89,22 +89,6 @@
 						<heading/>
 					</control>
 				</setting>
-				<setting id="indicators" type="string" label="32313" help="">
-					<level>0</level>
-					<default>Local</default>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action">
-						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_indicators)</data>
-						<close>true</close>
-					</control>
-				</setting>
 				<setting id="highlight.color.display" type="string" label="40039" help="">
 					<level>0</level>
 					<default>[COLOR=FF33ADFF]FF33ADFF[/COLOR]</default> <!-- Blue -->
@@ -1143,6 +1127,11 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="navi.movie.imdb.oscarnominees" type="boolean" label="32451" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
 				<setting id="navi.movie.tmdb.genres" type="boolean" label="32486" help="">
 					<level>0</level>
 					<default>true</default>
@@ -1293,6 +1282,11 @@
 					<control type="toggle"/>
 				</setting>
 				<setting id="navi.tv.tmdb.ontv" type="boolean" label="32472" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="navi.tv.tmdb.newtvshows" type="boolean" label="40661" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
@@ -3164,7 +3158,52 @@
 							<option label="40621">3</option>
 						</options>
 					</constraints>
-					<control type="spinner" format="string"/>
+					<dependencies>
+					<dependency type="visible">
+						<condition on="property" name="InfoBool">false</condition>
+					</dependency>
+				</dependencies>
+				<control type="spinner" format="string"/>
+				</setting>
+				<setting id="indicators" type="string" label="40634" help="">
+					<level>0</level>
+					<default>Local</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<or>
+								<condition operator="!is" setting="trakt.user.token"/>
+								<condition operator="!is" setting="simkltoken"/>
+								<condition operator="!is" setting="mdblist.api"/>
+							</or>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_indicators)</data>
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="scrobble" type="string" label="40623" help="">
+					<level>0</level>
+					<default>Local</default>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<or>
+								<condition operator="!is" setting="trakt.user.token"/>
+								<condition operator="!is" setting="simkltoken"/>
+								<condition operator="!is" setting="mdblist.api"/>
+							</or>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_scrobble)</data>
+						<close>true</close>
+					</control>
 				</setting>
 				<setting id="scrobble.source" type="integer" label="40623" help="">
 					<level>0</level>
@@ -3179,11 +3218,7 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<or>
-								<condition operator="!is" setting="trakt.user.token"/>
-								<condition operator="!is" setting="simkltoken"/>
-								<condition operator="!is" setting="mdblist.api"/>
-							</or>
+							<condition on="property" name="InfoBool">false</condition>
 						</dependency>
 					</dependencies>
 					<control type="spinner" format="string"/>

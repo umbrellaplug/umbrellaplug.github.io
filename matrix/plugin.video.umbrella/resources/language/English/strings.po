@@ -1511,11 +1511,11 @@ msgid "Calendar (TVMaze)"
 msgstr ""
 
 msgctxt "#32451"
-msgid "Oscar Winners"
+msgid "Academy Award Winners"
 msgstr ""
 
 msgctxt "#32452"
-msgid "Oscar Winners (IMDb)"
+msgid "Academy Award Winners (Trakt)"
 msgstr ""
 
 msgctxt "#32453"
@@ -3269,23 +3269,23 @@ msgstr ""
 
 msgctxt "#40098"
 msgid "Next Episode in"
-msgstr ""
+msgstr 
 
 msgctxt "#40099"
 msgid "Watch Now"
-msgstr ""
+msgstr 
 
 msgctxt "#40100"
 msgid "Hide"
-msgstr ""
+msgstr
 
 msgctxt "#40101"
 msgid "Show Close/Hide Button"
-msgstr ""
+msgstr
 
 msgctxt "#40102"
 msgid "Use Skin Theme for PlayNext"
-msgstr ""
+msgstr
 
 msgctxt "#40103"
 msgid "Trakt Client ID"
@@ -5571,5 +5571,9 @@ msgstr ""
 
 msgctxt "#40660"
 msgid "[COLOR %s][B]Force MDBList Sync to local database[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40661"
+msgid "New TV Shows (TMDb)"
 msgstr ""
 

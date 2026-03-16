@@ -1511,12 +1511,12 @@ msgid "Calendar (TVMaze)"
 msgstr "Naptár (TVMaze)"
 
 msgctxt "#32451"
-msgid "Oscar Winners"
-msgstr "Oscar-díjasok"
+msgid "Academy Award Winners"
+msgstr "Academy Award Winners"
 
 msgctxt "#32452"
-msgid "Oscar Winners (IMDb)"
-msgstr "Oscar-díjasok (IMDb)"
+msgid "Academy Award Winners (IMDb)"
+msgstr "Academy Award Winners (IMDb)"
 
 msgctxt "#32453"
 msgid "Oscar Nominees"
@@ -5772,4 +5772,8 @@ msgstr ""
 
 msgctxt "#40660"
 msgid "[COLOR %s][B]Force MDBList Sync to local database[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40661"
+msgid "New TV Shows (TMDb)"
 msgstr ""

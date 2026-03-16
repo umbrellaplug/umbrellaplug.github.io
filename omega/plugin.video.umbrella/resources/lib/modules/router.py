@@ -209,7 +209,7 @@ def router(argv2):
 		movies.Movies().getMDBUserList(folderName=folderName)
 	elif action == 'mdbUserWatchListMovies':
 		from resources.lib.menus import movies
-		movies.Movies().get_mdbuser_watchlist(folderName=folderName)
+		movies.Movies().get_mdbuser_watchlist(url, folderName=folderName)
 	elif action == 'mdbUserWatchListTVShows':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().get_mdbuser_watchlist(url, folderName=folderName)
@@ -926,6 +926,9 @@ def router(argv2):
 		elif action == 'tools_indicators':
 			from resources.lib.modules import tools
 			tools.setIndicatorService()
+		elif action == 'tools_scrobble':
+			from resources.lib.modules import tools
+			tools.setScrobbleService()
 		elif action == 'tools_toolNavigator':
 			from resources.lib.menus import navigator
 			navigator.Navigator().tools(folderName=folderName)

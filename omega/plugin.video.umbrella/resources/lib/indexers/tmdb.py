@@ -263,9 +263,11 @@ class Movies(TMDb):
 	def tmdb_collections_list(self, url):
 		try:
 			if '/4/list/' in url or '/4/account/' in url:
+				fetch_url = url
 				result = self.get_v4_request(url)
 			else:
-				result = cache.get(self.get_request, self.tmdbcollection_hours, url)
+				fetch_url = url % self.API_key if '%s' in url else url
+				result = cache.get(self.get_request, self.tmdbcollection_hours, fetch_url)
 			if result is None: return
 			if isinstance(result, str) and '404:NOT FOUND' in result: return result
 			if '/collection/' in url: items = result['parts']
@@ -277,8 +279,8 @@ class Movies(TMDb):
 			page = int(result['page'])
 			total = int(result['total_pages'])
 			if page >= total: raise Exception()
-			if 'page=' not in url: raise Exception()
-			next = '%s&page=%s' % (url.split('&page=', 1)[0], page+1)
+			if 'page=' not in fetch_url: raise Exception()
+			next = '%s&page=%s' % (fetch_url.split('&page=', 1)[0], page+1)
 		except: next = ''
 		for item in items:
 			try:

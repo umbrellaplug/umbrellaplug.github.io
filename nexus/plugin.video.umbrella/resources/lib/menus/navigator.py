@@ -129,8 +129,8 @@ class Navigator:
 			self.addDirectoryItem(40260 if self.indexLabels else 40261, 'movies&url=traktbasedonsimilar&folderName=%s' % quote_plus(getLS(40260 if self.indexLabels else 40261)), 'trakt.png' if self.iconLogos else 'years.png', 'DefaultMovies.png')
 		#if getMenuEnabled('navi.movie.imdb.featured'):
 		#	self.addDirectoryItem(32447 if self.indexLabels else 32446, 'movies&url=featured&folderName=%s' % quote_plus(getLS(32447 if self.indexLabels else 32446)), 'imdb.png' if self.iconLogos else 'movies.png', 'movies.png')
-		#if getMenuEnabled('navi.movie.imdb.oscarnominees'):
-		#	self.addDirectoryItem(32454 if self.indexLabels else 32453, 'movies&url=oscarsnominees', 'imdb.png' if self.iconLogos else 'oscar-winners.png', 'DefaultMovies.png')
+		if getMenuEnabled('navi.movie.imdb.oscarnominees'):
+			self.addDirectoryItem(32452 if self.indexLabels else 32451, 'movies&url=oscars&folderName=%s' % quote_plus(getLS(32452 if self.indexLabels else 32451)), 'trakt.png' if self.iconLogos else 'oscar-winners.png', 'DefaultMovies.png')
 		if getMenuEnabled('navi.movie.tmdb.genres'):
 			self.addDirectoryItem(32486 if self.indexLabels else 32455, 'movieGenres&url=tmdb_genre&folderName=%s' % quote_plus(getLS(32486 if self.indexLabels else 32455)), 'tmdb.png' if self.iconLogos else 'genres.png', 'DefaultGenre.png')
 		if getMenuEnabled('navi.movie.trakt.genres'):
@@ -248,6 +248,8 @@ class Navigator:
 			self.addDirectoryItem(32472 if self.indexLabels else 32471, 'tmdbTvshows&url=tmdb_ontheair&folderName=%s' % quote_plus(getLS(32472 if self.indexLabels else 32471)), 'tmdb.png' if self.iconLogos else 'new-tvshows.png', 'DefaultRecentlyAddedEpisodes.png')
 		#if getMenuEnabled('navi.tv.imdb.newtvshows'):
 		#	self.addDirectoryItem(32476 if self.indexLabels else 32475, 'tvshows&url=premiere&folderName=%s' % quote_plus(getLS(32476 if self.indexLabels else 32475)), 'imdb.png' if self.iconLogos else 'new-tvshows.png', 'DefaultRecentlyAddedEpisodes.png')
+		if getMenuEnabled('navi.tv.tmdb.newtvshows'):
+			self.addDirectoryItem(40661 if self.indexLabels else 32475, 'tvshows&url=tmdb_newshows&folderName=%s' % quote_plus(getLS(40661 if self.indexLabels else 32475)), 'tmdb.png' if self.iconLogos else 'new-tvshows.png', 'DefaultRecentlyAddedEpisodes.png')
 		if getMenuEnabled('navi.tv.tvmaze.calendar'):
 			self.addDirectoryItem(32450 if self.indexLabels else 32027, 'calendars&folderName=%s' % quote_plus(getLS(32450 if self.indexLabels else 32027)), 'tvmaze.png' if self.iconLogos else 'calendar.png', 'DefaultYear.png')
 		if getMenuEnabled('navi.tv.mdblist.topList') and getSetting('mdblist.api') != '':

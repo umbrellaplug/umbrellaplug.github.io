@@ -60,7 +60,7 @@ class Episodes:
 		self.mdblist_progressFlatten = getSetting('mdblist.progressFlatten') == 'true'
 		self.trakt_link = 'https://api.trakt.tv'
 		self.trakthistory_link = 'https://api.trakt.tv/users/me/history/shows?limit=%s&page=1' % self.count
-		self.progress_link = 'https://api.trakt.tv/users/me/watched/shows'
+		self.progress_link = 'https://api.trakt.tv/users/me/watched/shows?limit=1000'
 		self.mycalendarRecent_link = 'https://api.trakt.tv/calendars/my/shows/date[30]/33/'
 		self.mycalendarUpcoming_link = 'https://api.trakt.tv/calendars/my/shows/date[0]/33/'
 		self.mycalendarPremiers_link = 'https://api.trakt.tv/calendars/my/shows/premieres/date[0]/33'
@@ -787,7 +787,7 @@ class Episodes:
 		#https://api.trakt.tv/users/me/watched/shows?extended=full
 
 		try:
-			url += '?extended=full'
+			url += ('&' if '?' in url else '?') + 'extended=full'
 			result = trakt.getTrakt(url).json()
 		except: return
 		items = []

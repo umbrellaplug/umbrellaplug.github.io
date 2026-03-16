@@ -88,7 +88,7 @@ class TVshows:
 		self.simklprogress_link = 'https://api.simkl.com/progress/shows?limit=%s&page=1' % self.page_limit
 		self.traktcollection_link = 'https://api.trakt.tv/users/me/collection/shows?limit=%s&page=1' % self.page_limit # this is now a dummy link for pagination to work
 		self.traktlist_link = 'https://api.trakt.tv/users/%s/lists/%s/items/shows?limit=%s&page=1' % ('%s', '%s', self.page_limit) # local pagination, limit and page used to advance, pulled from request
-		self.progress_link = 'https://api.trakt.tv/sync/watched/shows?extended=noseasons'
+		self.progress_link = 'https://api.trakt.tv/sync/watched/shows?extended=noseasons&limit=1000&page=1'
 		self.progresstv_link = 'https://api.trakt.tv/users/me/watched/shows'
 		self.trakt_genres = 'https://api.trakt.tv/genres/shows/'
 		self.traktanticipated_link = 'https://api.trakt.tv/shows/anticipated?limit=%s&page=1' % self.page_limit 
@@ -131,6 +131,7 @@ class TVshows:
 		self.tmdb_toprated_link = tmdb_base+'/3/tv/top_rated?api_key=%s&language=en-US&region=US&page=1'
 		self.tmdb_ontheair_link = tmdb_base+'/3/tv/on_the_air?api_key=%s&language=en-US&region=US&page=1'
 		self.tmdb_airingtoday_link = tmdb_base+'/3/tv/airing_today?api_key=%s&language=en-US&region=US&page=1'
+		self.tmdb_newshows = tmdb_base+'/3/discover/tv?api_key=%s&with_original_language=en&language=en-US&region=US&sort_by=popularity.desc&first_air_date.gte=%s&first_air_date.lte=%s&page=1' % ('%s', (self.date_time-timedelta(days=31)).strftime('%Y-%m-%d'), self.date_time.strftime('%Y-%m-%d'))
 		self.tmdb_networks_link = tmdb_base+'/3/discover/tv?api_key=%s&with_networks=%s&sort_by=%s&page=1' % ('%s', '%s', self.tmdb_DiscoverSort())
 		useLanguage = getSetting('useLanguageforOriginal') == 'true'
 		useorigincountries = getSetting('useOriginCountries') == 'true'
@@ -185,7 +186,9 @@ class TVshows:
 				return self.tmdb_trending_recentday(folderName=folderName)
 			elif url == 'tmdbrecentweek':
 				return self.tmdb_trending_recentweek(folderName=folderName)
-			elif u in self.search_tmdb_link and url != 'tmdbrecentday' and url != 'tmdbrecentweek' and url != 'favourites_tvshows':
+			elif url == 'tmdb_newshows':
+				return self.tmdb_new_shows(folderName=folderName)
+			elif u in self.search_tmdb_link and url != 'tmdbrecentday' and url != 'tmdbrecentweek' and url != 'tmdb_newshows' and url != 'favourites_tvshows':
 				return self.getTMDb(url, folderName=folderName)
 			elif u in (self.simkltrendingweek_link or u in self.simkltrendingmonth_link or u in self.simkltrendingtoday_link) and url != 'favourites_tvshows':
 				if 'watchlist' in url: return self.simklPlantowatch(url, folderName=folderName)
@@ -409,6 +412,21 @@ class TVshows:
 			return self.list
 		except:
 			
+			log_utils.error()
+			return
+
+	def tmdb_new_shows(self, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			url = self.tmdb_newshows
+			self.list = cache.get(tmdb_indexer().tmdb_list, self.tmdbrecentday_hours, url)
+			next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.tvshowDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
 			log_utils.error()
 			return
 
@@ -1314,7 +1332,7 @@ class TVshows:
 					
 					log_utils.error()
 			return self.list
-		self.list = cache.get(userList_totalItems, self.traktuserlist_hours, url.split('limit')[0] + 'extended=full')
+		self.list = cache.get(userList_totalItems, self.traktuserlist_hours, url.split('limit')[0] + 'limit=1000&extended=full')
 		if not self.list: return
 		self.sort() # sort before local pagination
 		total_pages = 1
@@ -1456,23 +1474,25 @@ class TVshows:
 		self.list = userList_totalItems(url)
 		if not self.list: return
 		self.sort() # sort before local pagination
-		total_pages = 1
-		if len(self.list) == int(self.page_limit):
-			useNext = False
-		else:
-			useNext = True
-		paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
-		total_pages = len(paginated_ids)
-		self.list = paginated_ids[index]
-		try:
-			if useNext == False: raise Exception()
-			if int(self.page_limit) != len(self.list): raise Exception()
-			if int(q['page']) == total_pages: raise Exception()
-			q.update({'page': str(int(q['page']) + 1)})
-			q = (urlencode(q)).replace('%2C', ',')
-			next = url.replace('?' + urlparse(url).query, '') + '?' + q
-			next = next + '&folderName=%s' % quote_plus(folderName)
-		except: next = ''
+		next = ''
+		if getSetting('mdblist.paginate.lists') == 'true':
+			total_pages = 1
+			if len(self.list) == int(self.page_limit):
+				useNext = False
+			else:
+				useNext = True
+			paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+			total_pages = len(paginated_ids)
+			self.list = paginated_ids[index]
+			try:
+				if useNext == False: raise Exception()
+				if int(self.page_limit) != len(self.list): raise Exception()
+				if int(q['page']) == total_pages: raise Exception()
+				q.update({'page': str(int(q['page']) + 1)})
+				q = (urlencode(q)).replace('%2C', ',')
+				next = url.replace('?' + urlparse(url).query, '') + '?' + q
+				next = next + '&folderName=%s' % quote_plus(folderName)
+			except: next = ''
 		for i in range(len(self.list)): self.list[i]['next'] = next
 		self.worker()
 		if self.list is None: self.list = []
@@ -1789,7 +1809,7 @@ class TVshows:
 	def trakt_tvshow_progress(self, create_directory=True, folderName=''):
 		self.list = []
 		try:
-			historyurl = 'https://api.trakt.tv/users/me/watched/shows?extended=full'
+			historyurl = 'https://api.trakt.tv/users/me/watched/shows?extended=full&limit=1000&page=1'
 			self.list = self.trakt_list(historyurl, self.trakt_user, folderName)
 			next = ''
 			for i in range(len(self.list)): self.list[i]['next'] = next
@@ -2036,7 +2056,7 @@ class TVshows:
 	def trakt_tvshow_watched(self, create_directory=True, folderName=''):
 		self.list = []
 		try:
-			historyurl = 'https://api.trakt.tv/users/me/watched/shows'
+			historyurl = 'https://api.trakt.tv/users/me/watched/shows?limit=1000&page=1'
 			self.list = self.trakt_list(historyurl, self.trakt_user, folderName)
 			next = ''
 			for i in range(len(self.list)): self.list[i]['next'] = next

@@ -1511,12 +1511,12 @@ msgid "Calendar (TVMaze)"
 msgstr "Kalender (TVMaze)"
 
 msgctxt "#32451"
-msgid "Oscar Winners"
-msgstr "Oscarwinnaars"
+msgid "Academy Award Winners"
+msgstr "Academy Award Winners"
 
 msgctxt "#32452"
-msgid "Oscar Winners (IMDb)"
-msgstr "Oscarwinnaars (IMDb)"
+msgid "Academy Award (IMDb)"
+msgstr "Academy Award Winners (IMDb)"
 
 msgctxt "#32453"
 msgid "Oscar Nominees"
@@ -5776,4 +5776,8 @@ msgstr ""
 
 msgctxt "#40660"
 msgid "[COLOR %s][B]Force MDBList Sync to local database[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40661"
+msgid "New TV Shows (TMDb)"
 msgstr ""

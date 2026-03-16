@@ -176,19 +176,23 @@ def setIndicatorService():
 	try:
 		currentSetting = control.setting('indicators.alt')
 		options = ['Local']
-		if simkl.getSimKLCredentialsInfo():
-			options += ['Simkl']
 		if trakt.getTraktCredentialsInfo():
 			options += ['Trakt']
+		if simkl.getSimKLCredentialsInfo():
+			options += ['Simkl']
+		if mdblist.getMDBListCredentialsInfo():
+			options += ['MDBList']
 		select = control.selectDialog(options, 'Please select service to use for indicators:')
 		if select == -1: return
 		selection = options[select]
 		if selection == 'Local':
 			optionVal = '0'
-		if selection == 'Trakt':
+		elif selection == 'Trakt':
 			optionVal = '1'
-		if selection == 'Simkl':
+		elif selection == 'Simkl':
 			optionVal = '2'
+		elif selection == 'MDBList':
+			optionVal = '3'
 
 		if currentSetting != optionVal:
 			if optionVal == '1':
@@ -199,6 +203,36 @@ def setIndicatorService():
 		control.setSetting('indicators.alt', optionVal)
 		control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 		control.setSetting('indicators', str(selection))
+		control.openSettings('0.0', 'plugin.video.umbrella')
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+
+def setScrobbleService():
+	try:
+		currentSetting = control.setting('scrobble.source')
+		options = ['Local']
+		if trakt.getTraktCredentialsInfo():
+			options += ['Trakt']
+		if simkl.getSimKLCredentialsInfo():
+			options += ['Simkl']
+		if mdblist.getMDBListCredentialsInfo():
+			options += ['MDBList']
+		select = control.selectDialog(options, getLS(40623))
+		if select == -1: return
+		selection = options[select]
+		if selection == 'Local':
+			optionVal = '0'
+		elif selection == 'Trakt':
+			optionVal = '1'
+		elif selection == 'Simkl':
+			optionVal = '2'
+		elif selection == 'MDBList':
+			optionVal = '3'
+		control.homeWindow.setProperty('umbrella.updateSettings', 'false')
+		control.setSetting('scrobble.source', optionVal)
+		control.homeWindow.setProperty('umbrella.updateSettings', 'true')
+		control.setSetting('scrobble', str(selection))
 		control.openSettings('0.0', 'plugin.video.umbrella')
 	except:
 		from resources.lib.modules import log_utils

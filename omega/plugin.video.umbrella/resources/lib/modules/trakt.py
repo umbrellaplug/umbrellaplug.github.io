@@ -732,7 +732,7 @@ def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True,
 		items += [(getLS(33576) % highlight_color, '/sync/collection/remove')]
 		items += [(getLS(33579), '/users/me/lists/%s/items')]
 
-		result = getTraktAsJson('/users/me/lists')
+		result = get_all_pages('/users/me/lists')
 		lists = [(i['name'], i['ids']['slug']) for i in result]
 		lists = [lists[i//2] for i in range(len(lists)*2)]
 
@@ -1001,7 +1001,7 @@ def cachesyncMovies(timeout=0):
 def syncMovies():
 	try:
 		if not getTraktCredentialsInfo(): return
-		indicators = getTraktAsJson('/users/me/watched/movies')
+		indicators = get_all_pages('/users/me/watched/movies')
 		if not indicators: return None
 		indicators = [i['movie']['ids'] for i in indicators]
 		indicators = [str(i['imdb']) for i in indicators if 'imdb' in i]
@@ -1041,7 +1041,7 @@ def syncMoviesLibrary(indicators):
 def watchedMovies():
 	try:
 		if not getTraktCredentialsInfo(): return
-		return getTraktAsJson('/users/me/watched/movies?extended=full')
+		return get_all_pages('/users/me/watched/movies?extended=full')
 	except: log_utils.error()
 
 def watchedMoviesTime(imdb):
@@ -1055,7 +1055,7 @@ def watchedMoviesTime(imdb):
 def watchedShows():
 	try:
 		if not getTraktCredentialsInfo(): return
-		return getTraktAsJson('/users/me/watched/shows?extended=full')
+		return get_all_pages('/users/me/watched/shows?extended=full')
 	except: log_utils.error()
 
 def watchedShowsTime(tvdb, season, episode):
@@ -1096,7 +1096,7 @@ def cachesyncTVShows(timeout=0):
 def syncTVShows(): # sync all watched shows ex. [({'imdb': 'tt12571834', 'tvdb': '384435', 'tmdb': '105161', 'trakt': '163639'}, 16, [(1, 16)]), ({'imdb': 'tt11761194', 'tvdb': '377593', 'tmdb': '119845', 'trakt': '158621'}, 2, [(1, 1), (1, 2)])]
 	try:
 		if not getTraktCredentialsInfo(): return
-		indicators = getTraktAsJson('/users/me/watched/shows?extended=full')
+		indicators = get_all_pages('/users/me/watched/shows?extended=full')
 		if not indicators: return None
 # /shows/ID/progress/watched  endpoint only accepts imdb or trakt ID so write all ID's
 		indicators = [({'imdb': i['show']['ids']['imdb'], 'tvdb': str(i['show']['ids']['tvdb']), 'tmdb': str(i['show']['ids']['tmdb']), 'trakt': str(i['show']['ids']['trakt'])}, \
@@ -1698,14 +1698,14 @@ def sync_playbackProgress(activities=None, forced=False):
 	try:
 		link = '/sync/playback/?extended=full'
 		if forced:
-			items = getTraktAsJson(link, silent=True)
+			items = get_all_pages(link, silent=True)
 			if items: traktsync.insert_bookmarks(items)
 		else:
 			db_last_paused = traktsync.last_sync('last_paused_at')
 			activity = getPausedActivity(activities)
 			#log_utils.log('Trakt Sync Playback db_last_paused: %s  activity: %s difference: %s' % (db_last_paused, activity,(activity - db_last_paused)),log_utils.LOGDEBUG)
 			if activity - db_last_paused >= 120: # do not sync unless 2 min difference or more
-				items = getTraktAsJson(link, silent=True)
+				items = get_all_pages(link, silent=True)
 				if items: traktsync.insert_bookmarks(items)
 	except: log_utils.error()
 
@@ -1761,7 +1761,7 @@ def sync_user_lists(activities=None, forced=False):
 		link = '/users/me/lists'
 		list_link = '/users/me/lists/%s/items/%s?page=1&limit=1'
 		if forced:
-			items = getTraktAsJson(link, silent=True)
+			items = get_all_pages(link, silent=True)
 			if not items: return
 			for i in items:
 				i['content_type'] = ''
@@ -1784,7 +1784,7 @@ def sync_user_lists(activities=None, forced=False):
 				clr_traktSync = {'bookmarks': False, 'hiddenProgress': False, 'liked_lists': False, 'movies_collection': False, 'movies_watchlist': False,
 							'public_lists': False, 'shows_collection': False, 'shows_watchlist': False, 'user_lists': True, 'watched': False}
 				traktsync.delete_tables(clr_traktSync)
-				items = getTraktAsJson(link, silent=True)
+				items = get_all_pages(link, silent=True)
 				if not items: return
 				for i in items:
 					i['content_type'] = ''
@@ -1801,18 +1801,18 @@ def sync_user_lists(activities=None, forced=False):
 
 def sync_liked_lists(activities=None, forced=False):
 	try:
-		link = '/users/likes/lists?limit=1000000'
+		link = '/users/likes/lists'
 		list_link = '/users/%s/lists/%s/items/%s?page=1&limit=1'
 		db_last_liked = traktsync.last_sync('last_liked_at')
 		listActivity = getListActivity(activities)
 		if (listActivity > db_last_liked) or forced:
-			if not forced: 
+			if not forced:
 					log_utils.log('Trakt Liked Lists Sync Update...(local db latest "liked_at" = %s, trakt api latest "liked_at" = %s)' % \
 								(str(db_last_liked), str(listActivity)), __name__, log_utils.LOGDEBUG)
 			clr_traktSync = {'bookmarks': False, 'hiddenProgress': False, 'liked_lists': True, 'movies_collection': False, 'movies_watchlist': False,
 							'public_lists': False, 'shows_collection': False, 'shows_watchlist': False, 'user_lists': False, 'watched': False}
 			traktsync.delete_tables(clr_traktSync)
-			items = getTraktAsJson(link, silent=True)
+			items = get_all_pages(link, silent=True)
 			if not items: return
 			thrd_items = []
 			def items_list(i):

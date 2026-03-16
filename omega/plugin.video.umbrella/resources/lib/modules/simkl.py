@@ -1217,6 +1217,9 @@ def sync_all_watchlists(activities=None, forced=False):
 			if 'last_watching_at' in needs_full:    sync_watching(forced=True)
 			if 'last_hold_at' in needs_full:        sync_hold(forced=True)
 			if 'last_dropped_at' in needs_full:     sync_dropped(forced=True)
+			# Advance timestamps for empty-category cases so 1970 never persists
+			for k in needs_full:
+				simklsync.set_sync_time(k)
 			return
 
 		# All tables have existing data; check if anything changed

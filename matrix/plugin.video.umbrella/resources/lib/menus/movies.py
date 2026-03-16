@@ -99,8 +99,7 @@ class Movies:
 		self.personlist_link = 'https://www.imdb.com/search/name/?count=100&gender=male,female'
 		self.person_link = 'https://www.imdb.com/search/title/?title_type=feature,tv_movie&production_status=released&role=%s&sort=year,desc&count=%s&start=1' % ('%s', self.genre_limit)
 		self.keyword_link = 'https://www.imdb.com/search/title/?title_type=feature,tv_movie,documentary&num_votes=100,&keywords=%s&sort=%s&count=%s&start=1' % ('%s', self.imdb_sort(), self.genre_limit)
-		self.oscars_link = 'https://www.imdb.com/search/title/?title_type=feature,tv_movie&production_status=released&groups=oscar_best_picture_winners&sort=year,desc&count=%s&start=1' % self.genre_limit
-		self.oscarsnominees_link = 'https://www.imdb.com/search/title/?title_type=feature,tv_movie&production_status=released&groups=oscar_best_picture_nominees&sort=year,desc&count=%s&start=1' % self.genre_limit
+		self.oscars_link = 'https://api.trakt.tv/users/thefork/lists/academy-awards-best-picture-winners/items/movies?limit=%s&page=1' % self.page_limit
 		self.theaters_link = 'https://www.imdb.com/search/title/?title_type=feature&num_votes=500,&release_date=date[90],date[0]&languages=en&sort=release_date,desc&count=%s&start=1' % self.genre_limit
 		self.imdb_comingsoon_link = 'https://www.imdb.com/calendar/?ref_=rlm&region=US&type=MOVIE'
 		self.year_link = 'https://www.imdb.com/search/title/?title_type=feature,tv_movie&num_votes=100,&production_status=released&year=%s,%s&sort=moviemeter,asc&count=%s&start=1' % ('%s', '%s', self.genre_limit)
@@ -148,7 +147,7 @@ class Movies:
 			self.traktmostplayed_link = 'https://api.trakt.tv/movies/played/weekly?limit=%s&page=1&languages=%s' % (self.page_limit,self.lang)
 			self.traktmostwatched_link = 'https://api.trakt.tv/movies/watched/weekly?limit=%s&page=1&languages=%s' % (self.page_limit,self.lang)
 			self.trakttrending_recent_link = 'https://api.trakt.tv/movies/trending?limit=%s&page=1&%s' % (self.page_limit, traktyears)
-			self.traktboxoffice_link = 'https://api.trakt.tv/movies/boxoffice?languages=%s' % self.lang # Returns the top 10 grossing movies in the U.S. box office last weekend
+			self.traktboxoffice_link = 'https://api.trakt.tv/movies/boxoffice?languages=%s&limit=%s&page=1' % (self.lang, self.page_limit) # Returns the top 10 grossing movies in the U.S. box office last weekend
 			self.traktpopular_link = 'https://api.trakt.tv/movies/popular?limit=%s&page=1&languages=%s' % (self.page_limit, self.lang)
 			self.traktrecommendations_link = 'https://api.trakt.tv/recommendations/movies?limit=40&languages=%s' % self.lang
 			self.trakt_similiar = 'https://api.trakt.tv/movies/%s/related?limit=%s&page=1&languages=%s' % ('%s', self.page_limit, self.lang)
@@ -157,7 +156,7 @@ class Movies:
 			self.traktmostplayed_link = 'https://api.trakt.tv/movies/played/weekly?limit=%s&page=1' % self.page_limit
 			self.traktmostwatched_link = 'https://api.trakt.tv/movies/watched/weekly?limit=%s&page=1' % self.page_limit
 			self.trakttrending_recent_link = 'https://api.trakt.tv/movies/trending?limit=%s&page=1&%s' % (self.page_limit, traktyears)
-			self.traktboxoffice_link = 'https://api.trakt.tv/movies/boxoffice' # Returns the top 10 grossing movies in the U.S. box office last weekend
+			self.traktboxoffice_link = 'https://api.trakt.tv/movies/boxoffice?limit=%s&page=1' % self.page_limit # Returns the top 10 grossing movies in the U.S. box office last weekend
 			self.traktpopular_link = 'https://api.trakt.tv/movies/popular?limit=%s&page=1' % self.page_limit
 			self.traktrecommendations_link = 'https://api.trakt.tv/recommendations/movies?limit=40'
 			self.trakt_similiar = 'https://api.trakt.tv/movies/%s/related?limit=%s&page=1' % ('%s', self.page_limit)
@@ -278,7 +277,11 @@ class Movies:
 			is_collection_url = '/list/' in url or '/account/' in url
 			if u in self.tmdb_link and is_collection_url:
 				self.list = tmdb_indexer().tmdb_collections_list(url) # caching handled in list indexer
-				self.sort(type='movies.tmdblist')
+				if '/3/list/' in url and self.list:
+					try: self.list = sorted(self.list, key=lambda k: k.get('premiered', ''), reverse=True)
+					except: pass
+				else:
+					self.sort(type='movies.tmdblist')
 			elif u in self.tmdb_link and '/list/' not in url:
 				self.list = tmdb_indexer().tmdb_list(url) # caching handled in list indexer
 			if self.list is None: self.list = []
@@ -386,17 +389,36 @@ class Movies:
 			from resources.lib.modules import log_utils
 			log_utils.error()
 
-	def get_mdbuser_watchlist(self, create_directory=True, folderName=''):
+	def get_mdbuser_watchlist(self, url=None, create_directory=True, folderName=''):
 		self.list = []
 		try:
-			#self.list = cache.get(self.mbd_user_watchlist, self.mdblist_hours)
+			try:
+				if not url or '?' not in url:
+					url = 'mdbwatchlist?limit=%s&page=1' % self.page_limit
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q.get('page', 1)) - 1
+			except:
+				index = 0
 			listType = 'movie'
 			self.list = cache.get(mdblist.get_user_watchlist, 0, listType)
 			if self.list is None: self.list = []
 			self.worker()
 			self.sort(type='movies.watchlist')
-			return self.movieDirectory(self.list, folderName=folderName)
-
+			next = ''
+			if getSetting('mdblist.paginate.lists') == 'true' and self.list:
+				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+				total_pages = len(paginated_ids)
+				self.list = paginated_ids[index] if index < total_pages else []
+				try:
+					if index + 1 >= total_pages: raise Exception()
+					next_page = index + 2
+					next = 'plugin://plugin.video.umbrella/?action=mdbUserWatchListMovies&url=%s&page=%s&folderName=%s' % (
+						quote_plus('mdbwatchlist?limit=%s&page=%s' % (self.page_limit, next_page)),
+						str(next_page), quote_plus(folderName))
+				except: pass
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			hasNext = bool(next)
+			return self.movieDirectory(self.list, next=hasNext, folderName=folderName)
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()
@@ -444,23 +466,25 @@ class Movies:
 		self.list = mbdList_totalItems(url)
 		if not self.list: return
 		self.sort() # sort before local pagination
-		total_pages = 1
-		if len(self.list) == int(self.page_limit):
-			useNext = False
-		else:
-			useNext = True
-		paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
-		total_pages = len(paginated_ids)
-		self.list = paginated_ids[index]
-		try:
-			if useNext == False: raise Exception()
-			if int(self.page_limit) != len(self.list): raise Exception()
-			if int(q['page']) == total_pages: raise Exception()
-			q.update({'page': str(int(q['page']) + 1)})
-			q = (urlencode(q)).replace('%2C', ',')
-			next = url.replace('?' + urlparse(url).query, '') + '?' + q
-			next = next + '&folderName=%s' % quote_plus(folderName)
-		except: next = ''
+		next = ''
+		if getSetting('mdblist.paginate.lists') == 'true':
+			total_pages = 1
+			if len(self.list) == int(self.page_limit):
+				useNext = False
+			else:
+				useNext = True
+			paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+			total_pages = len(paginated_ids)
+			self.list = paginated_ids[index]
+			try:
+				if useNext == False: raise Exception()
+				if int(self.page_limit) != len(self.list): raise Exception()
+				if int(q['page']) == total_pages: raise Exception()
+				q.update({'page': str(int(q['page']) + 1)})
+				q = (urlencode(q)).replace('%2C', ',')
+				next = url.replace('?' + urlparse(url).query, '') + '?' + q
+				next = next + '&folderName=%s' % quote_plus(folderName)
+			except: next = ''
 		for i in range(len(self.list)): self.list[i]['next'] = next
 		self.worker()
 		if self.list is None: self.list = []
@@ -1515,7 +1539,7 @@ class Movies:
 					from resources.lib.modules import log_utils
 					log_utils.error()
 			return self.list
-		self.list = cache.get(userList_totalItems, self.traktuserlist_hours, url.split('limit')[0] + 'extended=full')
+		self.list = cache.get(userList_totalItems, self.traktuserlist_hours, url.split('limit')[0] + 'limit=1000&extended=full')
 		if not self.list: return
 		self.sort() # sort before local pagination
 		total_pages = 1

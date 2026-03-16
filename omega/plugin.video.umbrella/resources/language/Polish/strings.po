@@ -6792,3 +6792,7 @@ msgstr ""
 msgctxt "#40660"
 msgid "[COLOR %s][B]Force MDBList Sync to local database[/B][/COLOR]"
 msgstr ""
+
+msgctxt "#40661"
+msgid "New TV Shows (TMDb)"
+msgstr ""
