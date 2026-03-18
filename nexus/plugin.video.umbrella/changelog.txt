@@ -1,2 +1,2 @@
-[B]Update - v6.7.57 - Mar 16th, 2026[/B]
---[Fix] Fix for issues with Trakt Sync causing crashes.
+[B]Update - v6.7.58 - Mar 17th, 2026[/B]
+--[Fix] Changes made to trakt to try to fix issues with Trakt sync causing out of memory error and crashing kodi.

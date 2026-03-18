@@ -499,6 +499,19 @@ def syncMovies():
 		return mdbsync.get_watched_movies() or []
 	except: log_utils.error()
 
+def _make_episode_ranges(ep_nums_sorted):
+	if not ep_nums_sorted: return []
+	ranges = []
+	start = end = ep_nums_sorted[0]
+	for ep in ep_nums_sorted[1:]:
+		if ep == end + 1:
+			end = ep
+		else:
+			ranges.append((start, end))
+			start = end = ep
+	ranges.append((start, end))
+	return ranges
+
 def syncTVShows():
 	try:
 		if not getMDBListCredentialsInfo(): return None
@@ -507,12 +520,14 @@ def syncTVShows():
 		shows = {}
 		for (show_imdb, show_tmdb, show_tvdb, season, episode) in episodes:
 			if show_imdb not in shows:
-				shows[show_imdb] = {
-					'ids': {'imdb': show_imdb, 'tmdb': show_tmdb, 'tvdb': show_tvdb},
-					'episodes': []
-				}
-			shows[show_imdb]['episodes'].append((int(season), int(episode)))
-		indicators = [(v['ids'], len(v['episodes']), v['episodes']) for v in shows.values()]
+				shows[show_imdb] = {'ids': {'imdb': show_imdb, 'tmdb': show_tmdb, 'tvdb': show_tvdb}, 'by_season': {}}
+			s = int(season)
+			shows[show_imdb]['by_season'].setdefault(s, []).append(int(episode))
+		indicators = []
+		for v in shows.values():
+			ep_ranges = {s: _make_episode_ranges(sorted(eps)) for s, eps in v['by_season'].items()}
+			total = sum(e - s + 1 for ranges in ep_ranges.values() for s, e in ranges)
+			indicators.append((v['ids'], total, ep_ranges))
 		return indicators
 	except: log_utils.error()
 

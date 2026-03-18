@@ -1063,7 +1063,7 @@ def watchedMoviesTime(imdb):
 def watchedShows():
 	try:
 		if not getTraktCredentialsInfo(): return
-		return get_all_pages('/users/me/watched/shows?extended=full')
+		return get_all_pages('/users/me/watched/shows')
 	except: log_utils.error()
 
 def watchedShowsTime(tvdb, season, episode):
@@ -1101,27 +1101,64 @@ def cachesyncTVShows(timeout=0):
 		indicators = ''
 		return indicators
 
-def syncTVShows(): # sync all watched shows ex. [({'imdb': 'tt12571834', 'tvdb': '384435', 'tmdb': '105161', 'trakt': '163639'}, 16, [(1, 16)]), ({'imdb': 'tt11761194', 'tvdb': '377593', 'tmdb': '119845', 'trakt': '158621'}, 2, [(1, 1), (1, 2)])]
+def _make_episode_ranges(ep_nums_sorted):
+	if not ep_nums_sorted: return []
+	ranges = []
+	start = end = ep_nums_sorted[0]
+	for ep in ep_nums_sorted[1:]:
+		if ep == end + 1:
+			end = ep
+		else:
+			ranges.append((start, end))
+			start = end = ep
+	ranges.append((start, end))
+	return ranges
+
+def syncTVShows(): # sync all watched shows ex. [({'imdb': 'tt12571834', 'tvdb': '384435', 'tmdb': '105161', 'trakt': '163639'}, 16, {1: [(1, 16)]}), ({'imdb': 'tt11761194', 'tvdb': '377593', 'tmdb': '119845', 'trakt': '158621'}, 2, {1: [(1, 2)]})]
 	try:
 		if not getTraktCredentialsInfo(): return
-		indicators = get_all_pages('/users/me/watched/shows?extended=full')
-		if not indicators: return None
-		# Deduplicate by trakt ID — guards against API pagination loops returning duplicate shows
+		# Process page-by-page to avoid loading all raw show data into memory at once.
+		# ?extended=full is omitted — only ids/aired_episodes/seasons are used, not show metadata.
+		indicators = []
 		seen_ids = set()
-		unique = []
-		for i in indicators:
-			tid = i['show']['ids']['trakt']
-			if tid not in seen_ids:
-				seen_ids.add(tid)
-				unique.append(i)
-		indicators = unique
+		page = 1
+		limit = 1000
+		while True:
+			response = getTrakt('/users/me/watched/shows?page=%d&limit=%d' % (page, limit))
+			if not response: break
+			try: page_results = response.json()
+			except: break
+			if not page_results: break
+			for i in page_results:
+				try:
+					tid = i['show']['ids']['trakt']
+					if tid in seen_ids: continue
+					seen_ids.add(tid)
+					ids = {'imdb': i['show']['ids']['imdb'], 'tvdb': str(i['show']['ids']['tvdb']), 'tmdb': str(i['show']['ids']['tmdb']), 'trakt': str(i['show']['ids']['trakt'])}
+					aired = int(i['show'].get('aired_episodes', 0))
 # /shows/ID/progress/watched  endpoint only accepts imdb or trakt ID so write all ID's
-		indicators = [({'imdb': i['show']['ids']['imdb'], 'tvdb': str(i['show']['ids']['tvdb']), 'tmdb': str(i['show']['ids']['tmdb']), 'trakt': str(i['show']['ids']['trakt'])}, \
-											i['show']['aired_episodes'], sum([[(s['number'], e['number']) for e in s['episodes'] if i['reset_at'] is None or e['last_watched_at'] > i['reset_at']] for s in i['seasons']], [])) for i in indicators]
-		# indicators = [({'imdb': i['show']['ids']['imdb'], 'tvdb': str(i['show']['ids']['tvdb']), 'tmdb': str(i['show']['ids']['tmdb']), 'trakt': str(i['show']['ids']['trakt'])}, \
-		# 									i['show']['aired_episodes'], sum([[(s['number'], e['number']) for e in s['episodes']] for s in i['seasons']], [])) for i in indicators]
-		indicators = [(i[0], int(i[1]), i[2]) for i in indicators]
-		return indicators
+					episodes = {}
+					reset_at = i.get('reset_at')
+					for s in i.get('seasons', []):
+						ep_nums = sorted(e['number'] for e in s['episodes'] if reset_at is None or e['last_watched_at'] > reset_at)
+						if ep_nums: episodes[s['number']] = _make_episode_ranges(ep_nums)
+					indicators.append((ids, aired, episodes))
+				except: pass
+			if len(page_results) < limit: break
+			if hasattr(response, 'headers'):
+				total_pages = response.headers.get('X-Pagination-Page-Count')
+				if total_pages:
+					try:
+						if page >= int(total_pages): break
+					except: pass
+				total_items = response.headers.get('X-Pagination-Item-Count')
+				if total_items:
+					try:
+						if len(indicators) >= int(total_items): break
+					except: pass
+			page += 1
+			if page > 100: break
+		return indicators if indicators else None
 	except: log_utils.error()
 
 # def syncTVShowsLibrary(indicators):
@@ -1265,7 +1302,8 @@ def service_syncSeasons(): # season indicators and counts for watched shows ex. 
 			tvdb = str(indicator[0].get('tvdb', '')) if indicator[0].get('tvdb') else ''
 			trakt = str(indicator[0].get('trakt', '')) if indicator[0].get('trakt') else ''
 			threads.append(Thread(target=cachesyncSeasons, args=(imdb, tvdb, trakt))) # season indicators and counts for an entire show
-		for i in range(0, len(threads), 10): # process in batches of 10 to avoid thread explosion on low-RAM devices
+		for i in range(0, len(threads), 10):
+			if control.monitor.abortRequested(): break
 			batch = threads[i:i + 10]
 			[t.start() for t in batch]
 			[t.join() for t in batch]
@@ -1336,11 +1374,11 @@ def markEpisodeAsWatched(imdb, tvdb, season, episode):
 	try:
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode)) #same
 		result = getTraktAsJson('/sync/history', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": imdb, "tvdb": tvdb}}]})
-		if not result: result = False
+		if not result: return False
 		if result['added']['episodes'] == 0 and tvdb:
 			control.sleep(1000)
 			result = getTraktAsJson('/sync/history', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": tvdb}}]})
-			if not result: result = False
+			if not result: return False
 			result = result['added']['episodes'] !=0
 		else:
 			result = result['added']['episodes'] !=0
@@ -1751,9 +1789,10 @@ def sync_watched(activities=None, forced=False): # writes to traktsync.db as of 
 		if forced:
 			cachesyncMovies()
 			cachesyncTVShows()
+			traktsync.insert_syncSeasons_at()
 			log_utils.log('Forced - Trakt Watched Sync Complete (movies + shows)', __name__, log_utils.LOGINFO)
 			control.sleep(5000)
-			# service_syncSeasons() is intentionally skipped here — it makes one API call per show
+			service_syncSeasons()
 		else:
 			moviesWatchedActivity = getMoviesWatchedActivity(activities)
 			db_movies_last_watched = timeoutsyncMovies()
@@ -1768,8 +1807,9 @@ def sync_watched(activities=None, forced=False): # writes to traktsync.db as of 
 				log_utils.log('Trakt Watched Shows Sync Update...(local db latest "watched_at" = %s, trakt api latest "watched_at" = %s)' % \
 								(str(min(db_last_syncTVShows, db_last_syncSeasons)), str(episodesWatchedActivity)), __name__, log_utils.LOGDEBUG)
 				cachesyncTVShows()
-				control.sleep(5000)
-				service_syncSeasons() # syncs all watched shows season indicators and counts
+				if time.time() - db_last_syncSeasons > 14400: # only run season sync every 4 hours in background to avoid memory pressure
+					control.sleep(5000)
+					service_syncSeasons()
 				traktsync.insert_syncSeasons_at()
 	except: log_utils.error()
 

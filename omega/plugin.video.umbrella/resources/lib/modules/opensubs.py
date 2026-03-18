@@ -47,9 +47,8 @@ class Opensubs():
 			else:
 				url = base_url + '/login'
 				response2 = requests.post(url, headers=self.headers, json=data)
-				response2 = response.json()
 				if response2.status_code == 200:
-					control.setSetting('opensubstoken', response.get('token'))
+					control.setSetting('opensubstoken', response2.json().get('token'))
 					return True
 				else:
 					return False

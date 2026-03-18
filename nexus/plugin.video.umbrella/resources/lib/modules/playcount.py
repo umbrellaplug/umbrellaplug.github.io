@@ -220,24 +220,15 @@ def getSeasonOverlay(indicators, imdb, tvdb, season): # tvdb no longer used
 def getEpisodeOverlay(indicators, imdb, tvdb, season, episode):
 	if not indicators: return '4'
 	try:
-		if traktIndicators:
-			playcount = [i[2] for i in indicators if (i[0].get('imdb') == imdb or str(i[0].get('tvdb')) == tvdb)]
-			playcount = playcount[0] if len(playcount) > 0 else []
-			playcount = [i for i in playcount if int(season) == int(i[0]) and int(episode) == int(i[1])]
-			playcount = '5' if len(playcount) > 0 else '4'
-			return playcount
-		elif simklIndicators:
-			playcount = [i[2] for i in indicators if (i[0].get('imdb') == imdb or str(i[0].get('tvdb')) == tvdb)]
-			playcount = playcount[0] if len(playcount) > 0 else []
-			playcount = [i for i in playcount if int(season) == int(i[0]) and int(episode) == int(i[1])]
-			playcount = '5' if len(playcount) > 0 else '4'
-			return playcount
-		elif mdblistIndicators:
-			playcount = [i[2] for i in indicators if (i[0].get('imdb') == imdb or str(i[0].get('tvdb')) == tvdb)]
-			playcount = playcount[0] if len(playcount) > 0 else []
-			playcount = [i for i in playcount if int(season) == int(i[0]) and int(episode) == int(i[1])]
-			playcount = '5' if len(playcount) > 0 else '4'
-			return playcount
+		if traktIndicators or simklIndicators or mdblistIndicators:
+			eps_data = [i[2] for i in indicators if (i[0].get('imdb') == imdb or str(i[0].get('tvdb')) == tvdb)]
+			eps_data = eps_data[0] if eps_data else []
+			if isinstance(eps_data, dict): # range format: {season: [(start_ep, end_ep), ...]}
+				s_ranges = eps_data.get(int(season), [])
+				ep_int = int(episode)
+				return '5' if any(s <= ep_int <= e for s, e in s_ranges) else '4'
+			else: # legacy tuple-list format: [(season, episode), ...]
+				return '5' if any(int(season) == int(i[0]) and int(episode) == int(i[1]) for i in eps_data) else '4'
 		else: # indicators will be metahandler object
 			playcount = indicators.get_watched_episode('episode', imdb, '', season=season, episode=episode)
 			return str(playcount)

@@ -687,7 +687,20 @@ def cachesyncTVShows(timeout=0):
 		indicators = ''
 		return indicators
 
-def syncTVShows(): # sync all watched shows ex. [({'imdb': 'tt12571834', 'tvdb': '384435', 'tmdb': '105161', 'trakt': '163639'}, 16, [(1, 16)]), ({'imdb': 'tt11761194', 'tvdb': '377593', 'tmdb': '119845', 'trakt': '158621'}, 2, [(1, 1), (1, 2)])]
+def _make_episode_ranges(ep_nums_sorted):
+	if not ep_nums_sorted: return []
+	ranges = []
+	start = end = ep_nums_sorted[0]
+	for ep in ep_nums_sorted[1:]:
+		if ep == end + 1:
+			end = ep
+		else:
+			ranges.append((start, end))
+			start = end = ep
+	ranges.append((start, end))
+	return ranges
+
+def syncTVShows(): # sync all watched shows ex. [({'imdb': 'tt12571834', 'tvdb': '384435', 'tmdb': '105161', 'simkl': '...'}, 16, {1: [(1, 16)]})]
 	try:
 		from resources.lib.modules import simkl
 		if not getSimKLCredentialsInfo():
@@ -696,27 +709,21 @@ def syncTVShows(): # sync all watched shows ex. [({'imdb': 'tt12571834', 'tvdb':
 		if not data:
 			return None
 		valid_statuses = {"watching", "completed", "hold", "dropped", "plantowatch"}
-
-		indicators = [
-			(
-				{
-					'imdb': show['show']['ids'].get('imdb', None),
-					'tvdb': str(show['show']['ids'].get('tvdb', '')),
-					'tmdb': str(show['show']['ids'].get('tmdb', '')),
-					'simkl': str(show['show']['ids'].get('simkl', '')),
-				},
-				show['total_episodes_count'] - show['not_aired_episodes_count'],
-				[
-					(season['number'], episode['number'])
-					for season in show.get('seasons', [])  # Default to an empty list if 'seasons' is missing
-					for episode in season.get('episodes', [])  # Default to an empty list if 'episodes' is missing
-				],
-			)
-			for show in data.get('shows', [])  # Default to an empty list if 'shows' is missing
-			if show.get('status') in valid_statuses  # Check if status is in the set of valid statuses
-		]
-
-		indicators = [(i[0], int(i[1]), i[2]) for i in indicators]
+		indicators = []
+		for show in data.get('shows', []):
+			if show.get('status') not in valid_statuses: continue
+			ids = {
+				'imdb': show['show']['ids'].get('imdb', None),
+				'tvdb': str(show['show']['ids'].get('tvdb', '')),
+				'tmdb': str(show['show']['ids'].get('tmdb', '')),
+				'simkl': str(show['show']['ids'].get('simkl', '')),
+			}
+			aired = int(show['total_episodes_count'] - show['not_aired_episodes_count'])
+			episodes = {}
+			for season in show.get('seasons', []):
+				ep_nums = sorted(ep['number'] for ep in season.get('episodes', []))
+				if ep_nums: episodes[season['number']] = _make_episode_ranges(ep_nums)
+			indicators.append((ids, aired, episodes))
 		return indicators
 	except: log_utils.error()
 

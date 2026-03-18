@@ -257,7 +257,7 @@ def services_syncs():
 			activities = trakt.getTraktAsJson('/sync/last_activities', silent=True)
 			if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '1':
 				trakt.sync_playbackProgress(activities)
-			trakt.sync_watchedProgress(activities)
+			trakt.sync_watchedProgress(activities, trigger_refresh=False)
 			if getSetting('indicators.alt') == '1':
 				trakt.sync_watched(activities) # writes to traktsync.db as of 1-19-2022
 			trakt.sync_user_lists(activities)
