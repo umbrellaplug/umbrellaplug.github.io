@@ -6891,3 +6891,15 @@ msgstr ""
 msgctxt "#40661"
 msgid "New TV Shows (TMDb)"
 msgstr ""
+
+msgctxt "#40662"
+msgid "Batch Thread Limit"
+msgstr ""
+
+msgctxt "#40663"
+msgid "Unlimited Batch Threads"
+msgstr ""
+
+msgctxt "#40664"
+msgid "Visit offcloud.com/activate and enter the code shown"
+msgstr ""

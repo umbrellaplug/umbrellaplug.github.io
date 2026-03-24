@@ -516,16 +516,17 @@ def router(argv2):
 			from resources.lib.debrid import alldebrid
 			alldebrid.AllDebrid().restart_transfer(params.get('id'), name, silent=False)
 
-	elif action and action.startswith('ed_'):
-		if action == 'ed_AccountInfo':
-			from resources.lib.debrid import easydebrid
-			easydebrid.EasyDebrid().account_info_to_dialog()
-		elif action == 'ed_Authorize':
-			from resources.lib.debrid import easydebrid
-			easydebrid.EasyDebrid().auth()
-		elif action == 'ed_Deauthorize':
-			from resources.lib.debrid import easydebrid
-			easydebrid.EasyDebrid().remove_auth()
+	# EasyDebrid disabled
+	# elif action and action.startswith('ed_'):
+	# 	if action == 'ed_AccountInfo':
+	# 		from resources.lib.debrid import easydebrid
+	# 		easydebrid.EasyDebrid().account_info_to_dialog()
+	# 	elif action == 'ed_Authorize':
+	# 		from resources.lib.debrid import easydebrid
+	# 		easydebrid.EasyDebrid().auth()
+	# 	elif action == 'ed_Deauthorize':
+	# 		from resources.lib.debrid import easydebrid
+	# 		easydebrid.EasyDebrid().remove_auth()
 
 	elif action and action.startswith('en_'):
 		if action == 'en_ServiceNavigator':
@@ -784,15 +785,16 @@ def router(argv2):
 				except:
 					import traceback
 					traceback.print_exc()
-			if caller == 'easydebrid':
-				control.busy()
-				try:
-					from resources.lib.modules import downloader
-					from resources.lib.debrid import easydebrid
-					downloader.download(name, image, easydebrid.EasyDebrid().unrestrict_link(url.replace(' ', '%20')))
-				except:
-					import traceback
-					traceback.print_exc()
+			# EasyDebrid disabled
+			# if caller == 'easydebrid':
+			# 	control.busy()
+			# 	try:
+			# 		from resources.lib.modules import downloader
+			# 		from resources.lib.debrid import easydebrid
+			# 		downloader.download(name, image, easydebrid.EasyDebrid().unrestrict_link(url.replace(' ', '%20')))
+			# 	except:
+			# 		import traceback
+			# 		traceback.print_exc()
 			if caller == 'easynews':
 				control.busy()
 				try:
@@ -1280,8 +1282,8 @@ def router(argv2):
 			from resources.lib.debrid.premiumize import Premiumize as debrid_function
 		elif caller == 'AllDebrid':
 			from resources.lib.debrid.alldebrid import AllDebrid as debrid_function
-		elif caller == 'EasyDebrid':
-			from resources.lib.debrid.easydebrid import EasyDebrid as debrid_function
+		# elif caller == 'EasyDebrid':  # EasyDebrid disabled
+		# 	from resources.lib.debrid.easydebrid import EasyDebrid as debrid_function
 		elif caller == 'TorBox':
 			from resources.lib.debrid.torbox import TorBox as debrid_function
 		success = debrid_function().add_uncached_torrent(url, pack=pack)

@@ -317,11 +317,13 @@ def get_connection_bookmarks():
 	return conn
 ##################
 def clear_local_bookmarks(): # clear all umbrella bookmarks from kodi database
+	dbcon = dbcur = None
 	try:
 		dbcon = db.connect(get_video_database_path())
 		dbcur = dbcon.cursor()
 		dbcur.execute('''SELECT * FROM files WHERE strFilename LIKE "%plugin.video.umbrella%"''')
 		file_ids = [str(i[0]) for i in dbcur.fetchall()]
+		if not file_ids: return
 		for table in ('bookmark', 'streamdetails', 'files'):
 			dbcur.execute('''DELETE FROM {} WHERE idFile IN ({})'''.format(table, ','.join(file_ids)))
 		dbcur.connection.commit()
@@ -329,7 +331,10 @@ def clear_local_bookmarks(): # clear all umbrella bookmarks from kodi database
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try:
+			if dbcur: dbcur.close()
+			if dbcon: dbcon.close()
+		except: pass
 
 def clear_local_bookmark(url): # clear all item specific bookmarks from kodi database
 	try:

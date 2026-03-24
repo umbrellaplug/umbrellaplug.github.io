@@ -146,7 +146,7 @@ class TVshows:
 		self.simkltrendingtoday_link = 'https://api.simkl.com/tv/trending/today?client_id=%s&extended=tmdb' % '%s'
 		self.simkltrendingweek_link = 'https://api.simkl.com/tv/trending/week?client_id=%s&extended=tmdb' % '%s'
 		self.simkltrendingmonth_link = 'https://api.simkl.com/tv/trending/month?client_id=%s&extended=tmdb'% '%s'
-		self.imdblist_hours = int(getSetting('cache.imdblist'))
+		self.imdblist_hours = 168
 		self.trakt_hours = int(getSetting('cache.traktother'))
 		self.traktpopular_hours = int(getSetting('cache.traktpopular'))
 		self.trakttrending_hours = int(getSetting('cache.trakttrending'))
@@ -532,8 +532,8 @@ class TVshows:
 	def sort(self, type='shows'):
 		try:
 			if not self.list: return
-			attribute = int(getSetting('sort.%s.type' % type))
-			reverse = int(getSetting('sort.%s.order' % type)) == 1
+			attribute = int(getSetting('sort.%s.type' % type) or '0')
+			reverse = int(getSetting('sort.%s.order' % type) or '0') == 1
 			if attribute == 0: 
 				if type == 'progress':
 					reverse = True
@@ -1224,6 +1224,7 @@ class TVshows:
 			next = url.replace('?' + urlparse(url).query, '') + '?' + q
 			next = next + '&folderName=%s' % quote_plus(folderName)
 		except: next = ''
+		watched_dates = trakt.getWatchedShowsLastWatchedDates()
 		for item in items: # rating and votes via TMDb, or I must use `extended=full and it slows down
 			try:
 				values = {}
@@ -1232,8 +1233,6 @@ class TVshows:
 				values['paused_at'] = item.get('paused_at', '') # for unfinished
 				try: values['progress'] = item['progress']
 				except: values['progress'] = ''
-				try: values['lastplayed'] = item['last_watched_at'] # for history
-				except: values['lastplayed'] = ''
 				show = item.get('show') or item
 				values['title'] = show.get('title')
 				values['originaltitle'] = values['title']
@@ -1243,6 +1242,8 @@ class TVshows:
 				values['imdb'] = str(ids.get('imdb', '')) if ids.get('imdb') else ''
 				values['tmdb'] = str(ids.get('tmdb', '')) if ids.get('tmdb') else ''
 				values['tvdb'] = str(ids.get('tvdb', '')) if ids.get('tvdb') else ''
+				# lastplayed: history endpoints include last_watched_at; for user lists fetch from watched data
+				values['lastplayed'] = item.get('last_watched_at') or watched_dates.get(values['tvdb'], '')
 				values['mediatype'] = 'tvshows'
 				seasons = item.get('seasons', [])
 				if seasons:

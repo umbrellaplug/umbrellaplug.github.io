@@ -96,7 +96,9 @@ class Episodes:
 				else:
 					showSeasons = meta
 				try:
-					with ThreadPoolExecutor(max_workers=10) as executor:  # Adjust max_workers as needed
+					_unlimited = getSetting('dev.batch.unlimited') == 'true'
+					_bs = None if _unlimited else int(getSetting('dev.batch.size') or '10')
+					with ThreadPoolExecutor(max_workers=_bs) as executor:
 						futures = [
 							executor.submit(get_episodes, tvshowtitle, imdb, tmdb, tvdb, meta, season['season_number'])
 							for season in showSeasons['seasons']
@@ -133,7 +135,9 @@ class Episodes:
 						showSeasons = meta
 
 					try:
-						with ThreadPoolExecutor(max_workers=10) as executor:  # Adjust max_workers as needed
+						_unlimited = getSetting('dev.batch.unlimited') == 'true'
+						_bs = None if _unlimited else int(getSetting('dev.batch.size') or '10')
+						with ThreadPoolExecutor(max_workers=_bs) as executor:
 							futures = [
 								executor.submit(get_episodes, tvshowtitle, imdb, tmdb, tvdb, meta, s['season_number'])
 								for s in showSeasons['seasons']
@@ -928,10 +932,13 @@ class Episodes:
 		for i in items:
 			append(Thread(target=items_list, args=(i,)))
 		from resources.lib.modules import log_utils
-		log_utils.log('trakt_progress_list: processing %s shows in batches of 10' % len(threads), __name__, log_utils.LOGINFO)
-		for i in range(0, len(threads), 10):
+		_unlimited = getSetting('dev.batch.unlimited') == 'true'
+		_bs = int(getSetting('dev.batch.size') or '10')
+		_chunk = len(threads) if _unlimited else _bs
+		log_utils.log('trakt_progress_list: processing %s shows in batches of %s' % (len(threads), 'unlimited' if _unlimited else _bs), __name__, log_utils.LOGINFO)
+		for i in range(0, len(threads), _chunk):
 			if control.monitor.abortRequested(): break
-			batch = threads[i:i + 10]
+			batch = threads[i:i + _chunk]
 			[t.start() for t in batch]
 			[t.join() for t in batch]
 		return self.list
@@ -1672,6 +1679,8 @@ class Episodes:
 					#item.setProperty('ResumeTime', str(resumetime))
 					try: item.setProperty('WatchedProgress', str(int(float(resumetime) / float(runtime) * 100))) # resumetime and runtime are both in minutes
 					except: pass
+				else:
+					resumetime = ''  # reset so unaired episodes don't inherit resume point from previous iteration
 
 				try: # Year is the shows year, not the seasons year. Extract year from premier date for infoLabels to have "season_year."
 					season_year = re.findall(r'(\d{4})', i.get('premiered', ''))[0]

@@ -1173,11 +1173,12 @@ class Sources:
 					valid_hoster = []
 					threads.append(Thread(target=checkStatus, args=(self.oc_cache_chk_list, d.name, valid_hoster)))
 				except: log_utils.error()
-			if d.name == 'EasyDebrid' and getSetting('easydebrid.enable') == 'true':
-				try:
-					valid_hoster = []
-					threads.append(Thread(name=d.name.upper(), target=checkStatus, args=(self.ed_cache_chk_list, d.name, valid_hoster)))
-				except: log_utils.error()
+			# EasyDebrid disabled
+			# if d.name == 'EasyDebrid' and getSetting('easydebrid.enable') == 'true':
+			# 	try:
+			# 		valid_hoster = []
+			# 		threads.append(Thread(name=d.name.upper(), target=checkStatus, args=(self.ed_cache_chk_list, d.name, valid_hoster)))
+			# 	except: log_utils.error()
 			if d.name == 'TorBox' and getSetting('torbox.enable') == 'true':
 				try:
 					valid_hoster = []
@@ -1379,8 +1380,8 @@ class Sources:
 						from resources.lib.debrid.alldebrid import AllDebrid as debrid_function
 					elif debrid_provider == 'Offcloud':
 						from resources.lib.debrid.offcloud import Offcloud as debrid_function
-					elif debrid_provider == 'EasyDebrid':
-						from resources.lib.debrid.easydebrid import EasyDebrid as debrid_function
+					# elif debrid_provider == 'EasyDebrid':  # EasyDebrid disabled
+					# 	from resources.lib.debrid.easydebrid import EasyDebrid as debrid_function
 					elif debrid_provider == 'TorBox':
 						from resources.lib.debrid.torbox import TorBox as debrid_function
 					else: return
@@ -1432,8 +1433,8 @@ class Sources:
 				from resources.lib.debrid.alldebrid import AllDebrid as debrid_function
 			elif provider in ('Offcloud', 'OC'):
 				from resources.lib.debrid.offcloud import Offcloud as debrid_function
-			elif provider in ('EasyDebrid', 'ED'):
-				from resources.lib.debrid.easydebrid import EasyDebrid as debrid_function
+			# elif provider in ('EasyDebrid', 'ED'):  # EasyDebrid disabled
+			# 	from resources.lib.debrid.easydebrid import EasyDebrid as debrid_function
 			elif provider in ('TorBox', 'TB'):
 				from resources.lib.debrid.torbox import TorBox as debrid_function
 			else: return
@@ -1466,8 +1467,8 @@ class Sources:
 				self.url = debrid_function().unrestrict_link(chosen_result['link'])
 			elif provider in ('Offcloud', 'OC'):
 				self.url = chosen_result['link']
-			elif provider in ('EasyDebrid', 'ED'):
-				self.url = chosen_result['link']
+			# elif provider in ('EasyDebrid', 'ED'):  # EasyDebrid disabled
+			# 	self.url = chosen_result['link']
 			elif provider in ('TorBox', 'TB'):
 				self.url = debrid_function().unrestrict_link(chosen_result['link'])
 				if not getSetting('torbox.saveToCloud') == 'true':
@@ -1780,21 +1781,22 @@ class Sources:
 			return torrent_List
 		except: log_utils.error()
 
-	def ed_cache_chk_list(self, torrent_List, hashList):
-		if len(torrent_List) == 0: return
-		try:
-			from resources.lib.debrid.easydebrid import EasyDebrid
-			cached = EasyDebrid().check_cache(hashList)
-			if not cached: return None
-			cached = cached['cached']
-			cached_torrent_list = []
-			for i, is_cached in zip(torrent_List, cached):
-				if i['hash'].lower() and is_cached:
-					if 'package' in i: i.update({'source': 'cached (pack) torrent'})
-					else: i.update({'source': 'cached torrent'})
-					cached_torrent_list.append(i)
-			return cached_torrent_list
-		except: log_utils.error()
+	def ed_cache_chk_list(self, torrent_List, hashList):  # EasyDebrid disabled
+		pass
+		# if len(torrent_List) == 0: return
+		# try:
+		# 	from resources.lib.debrid.easydebrid import EasyDebrid
+		# 	cached = EasyDebrid().check_cache(hashList)
+		# 	if not cached: return None
+		# 	cached = cached['cached']
+		# 	cached_torrent_list = []
+		# 	for i, is_cached in zip(torrent_List, cached):
+		# 		if i['hash'].lower() and is_cached:
+		# 			if 'package' in i: i.update({'source': 'cached (pack) torrent'})
+		# 			else: i.update({'source': 'cached torrent'})
+		# 			cached_torrent_list.append(i)
+		# 	return cached_torrent_list
+		# except: log_utils.error()
 
 	def tb_cache_chk_list(self, torrent_List, hashList):
 		if len(torrent_List) == 0: return

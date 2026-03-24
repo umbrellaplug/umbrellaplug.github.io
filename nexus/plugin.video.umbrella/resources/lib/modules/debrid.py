@@ -12,7 +12,7 @@ def debrid_resolvers(order_matters=True):
 		pm_enabled = getSetting('premiumizetoken') != '' and getSetting('premiumize.enable') == 'true'
 		rd_enabled = getSetting('realdebridtoken') != '' and getSetting('realdebrid.enable') == 'true'
 		tb_enabled = getSetting('torboxtoken') != '' and getSetting('torbox.enable') == 'true'
-		ed_enabled = getSetting('easydebridtoken') != '' and getSetting('easydebrid.enable') == 'true'
+		# ed_enabled = getSetting('easydebridtoken') != '' and getSetting('easydebrid.enable') == 'true'  # EasyDebrid disabled
 		premium_resolvers = []
 		if ad_enabled:
 			from resources.lib.debrid import alldebrid
@@ -29,9 +29,10 @@ def debrid_resolvers(order_matters=True):
 		if tb_enabled:
 			from resources.lib.debrid import torbox
 			premium_resolvers.append(torbox.TorBox())
-		if ed_enabled:
-			from resources.lib.debrid import easydebrid
-			premium_resolvers.append(easydebrid.EasyDebrid())
+		# EasyDebrid disabled
+		# if ed_enabled:
+		# 	from resources.lib.debrid import easydebrid
+		# 	premium_resolvers.append(easydebrid.EasyDebrid())
 		if order_matters:
 			premium_resolvers.sort(key=lambda x: get_priority(x))
 		return premium_resolvers

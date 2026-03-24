@@ -627,8 +627,8 @@ def _scrobble(endpoint, media_type, imdb, tmdb, tvdb, season, episode, percent):
 			season = int('%01d' % int(season)) if season else 1
 			episode = int('%01d' % int(episode)) if episode else 1
 			post = {
-				'show': {'ids': {'imdb': imdb, 'tmdb': int(tmdb) if tmdb else None, 'tvdb': int(tvdb) if tvdb else None},
-						 'season': {'number': season, 'episode': {'number': episode}}},
+				'show': {'ids': {'imdb': imdb, 'tmdb': int(tmdb) if tmdb else None, 'tvdb': int(tvdb) if tvdb else None}, 'season': season},
+				'episode': {'number': episode},
 				'progress': percent
 			}
 		return get_request(endpoint, post=post)
@@ -666,11 +666,15 @@ def scrobbleEpisode(tvshowtitle, year, imdb, tmdb, tvdb, season, episode, watche
 		log_utils.log('MDBList Scrobble Episode. imdb: %s S%sE%s percent: %s' % (imdb, season, episode, watched_percent), level=log_utils.LOGDEBUG)
 	except: log_utils.error()
 
-def scrobbleReset(imdb, tmdb='', tvdb='', season=None, episode=None, refresh=False, clear_local=True):
+def scrobbleReset(imdb, tmdb='', tvdb='', season=None, episode=None, refresh=False, clear_local=True, already_watched=False):
 	if not getMDBListCredentialsInfo(): return
 	try:
-		media_type = 'episode' if episode else 'movie'
-		_scrobble('/scrobble/stop', media_type, imdb, tmdb, tvdb, season, episode, 100)
+		if not already_watched:
+			if episode:
+				_post_sync_watched(show_ids={'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb},
+					seasons_dict={int(season) if season else 1: [int(episode)]})
+			else:
+				_post_sync_watched(movies=[{'imdb': imdb, 'tmdb': tmdb}])
 		if clear_local:
 			mdbsync.delete_bookmark(imdb, tvdb or '', season or '', episode or '')
 			sync_watchedProgress(forced=True)
@@ -742,9 +746,45 @@ def force_mdblistSync():
 	control.notification(message='Forced MDBList Sync Complete')
 
 
+def _post_sync_watched(movies=None, show_ids=None, seasons_dict=None):
+	try:
+		now = __import__('datetime').datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.000Z')
+		post = {}
+		if movies:
+			post['movies'] = [
+				{'ids': {'imdb': m.get('imdb'), 'tmdb': int(m['tmdb']) if m.get('tmdb') else None},
+				 'watched_at': now}
+				for m in movies
+			]
+		if show_ids:
+			show_entry = {
+				'ids': {
+					'imdb': show_ids.get('imdb'),
+					'tmdb': int(show_ids['tmdb']) if show_ids.get('tmdb') else None,
+					'tvdb': int(show_ids['tvdb']) if show_ids.get('tvdb') else None
+				},
+				'watched_at': now
+			}
+			if seasons_dict is not None:
+				seasons = []
+				for sn, eps in seasons_dict.items():
+					if eps is None:
+						seasons.append({'number': sn, 'watched_at': now})
+					elif eps:
+						seasons.append({'number': sn, 'episodes': [{'number': en, 'watched_at': now} for en in eps]})
+				if seasons:
+					show_entry['seasons'] = seasons
+					del show_entry['watched_at']
+			post['shows'] = [show_entry]
+		if not post: return None
+		return get_request('/sync/watched', post=post)
+	except: log_utils.error()
+	return None
+
+
 def markMovieAsWatched(imdb, tmdb=''):
 	try:
-		_scrobble('/scrobble/stop', 'movie', imdb, tmdb, '', '', '', 100)
+		_post_sync_watched(movies=[{'imdb': imdb, 'tmdb': tmdb}])
 		mdbsync.upsert_watched_movie(imdb=imdb, tmdb=str(tmdb),
 			last_watched_at=__import__('datetime').datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z"))
 		mdbsync.cache_delete(mdbsync._hash_function(syncMovies, ()))
@@ -761,7 +801,8 @@ def markMovieAsNotWatched(imdb):
 
 def markEpisodeAsWatched(imdb, tvdb, season, episode, tmdb=''):
 	try:
-		_scrobble('/scrobble/stop', 'episode', imdb, tmdb, tvdb, season, episode, 100)
+		_post_sync_watched(show_ids={'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb},
+			seasons_dict={int(season) if season else 1: [int(episode) if episode else 1]})
 		mdbsync.upsert_watched_episode(show_imdb=imdb, show_tvdb=str(tvdb), season=season, episode=episode,
 			last_watched_at=__import__('datetime').datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z"))
 		mdbsync.cache_delete(mdbsync._hash_function(syncTVShows, ()))
@@ -781,7 +822,6 @@ def markTVShowAsWatched(imdb, tvdb, tmdb=''):
 		from resources.lib.database import cache as _cache
 		from resources.lib.indexers import tmdb as _tmdb
 		tmdb_id = ''
-		last_season, last_episode = 1, 1
 		try:
 			res = _cache.get(_tmdb.TVshows().IdLookup, 96, imdb, tvdb)
 			if res: tmdb_id = str(res.get('id', ''))
@@ -796,9 +836,8 @@ def markTVShowAsWatched(imdb, tvdb, tmdb=''):
 						for en in range(1, ec + 1):
 							mdbsync.upsert_watched_episode(show_imdb=imdb, show_tvdb=str(tvdb),
 								show_tmdb=str(tmdb), season=sn, episode=en, last_watched_at=now)
-						last_season, last_episode = sn, ec
 			except: pass
-		_scrobble('/scrobble/stop', 'episode', imdb, tmdb, tvdb, last_season, last_episode, 100)
+		_post_sync_watched(show_ids={'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb})
 		mdbsync.cache_delete(mdbsync._hash_function(syncTVShows, ()))
 		return True
 	except: log_utils.error()
@@ -820,7 +859,6 @@ def markSeasonAsWatched(imdb, tvdb, season, tmdb=''):
 		from resources.lib.database import cache as _cache
 		from resources.lib.indexers import tmdb as _tmdb
 		tmdb_id = ''
-		last_episode = 1
 		try:
 			res = _cache.get(_tmdb.TVshows().IdLookup, 96, imdb, tvdb)
 			if res: tmdb_id = str(res.get('id', ''))
@@ -833,9 +871,9 @@ def markSeasonAsWatched(imdb, tvdb, season, tmdb=''):
 					if en > 0:
 						mdbsync.upsert_watched_episode(show_imdb=imdb, show_tvdb=str(tvdb),
 							show_tmdb=str(tmdb), season=season, episode=en, last_watched_at=now)
-						last_episode = max(last_episode, en)
 			except: pass
-		_scrobble('/scrobble/stop', 'episode', imdb, tmdb, tvdb, season, last_episode, 100)
+		_post_sync_watched(show_ids={'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb},
+			seasons_dict={season: None})
 		mdbsync.cache_delete(mdbsync._hash_function(syncTVShows, ()))
 		return True
 	except: log_utils.error()

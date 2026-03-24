@@ -1,3 +1,10 @@
+[B]Update - v6.7.59 - Mar 24th, 2026[/B]
+--[Change] Updated for new offcloud api changes.
+--[Fix] Simkl sorting fix for movies.
+--[Fix] Trakt sorting for data_watched on movies and others..
+--[Fix] Fix for double scrobble when onPlayBackStopped and onPlayBackEneded have already run.
+--[Fix] Made changes to endpoints being called for mdblist scrobble and mark as watched.
+
 [B]Update - v6.7.58 - Mar 17th, 2026[/B]
 --[Fix] Changes made to trakt to try to fix issues with Trakt sync causing out of memory error and crashing kodi.
 

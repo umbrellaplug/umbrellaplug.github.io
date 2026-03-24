@@ -41,6 +41,7 @@ class Player(xbmc.Player):
 		self.playbackStopped_triggered = False
 		self.playback_resumed = False
 		self.onPlayBackStopped_ran = False
+		self.scrobble_sent = False
 		self.media_type = None
 		self.DBID = None
 		self.offset = '0'
@@ -566,6 +567,12 @@ class Player(xbmc.Player):
 
 ### Kodi player callback methods ###
 	def onAVStarted(self): # Kodi docs suggests "Use onAVStarted() instead of onPlayBackStarted() as of v18"
+		self.watched_during_playback = False
+		self.scrobble_sent = False
+		self.onPlayBackStopped_ran = False
+		self.play_next_triggered = False
+		self.preScrape_triggered = False
+		self.subtitletime = None
 		#control.sleep(200)
 		for i in range(0, 500):
 			if self.isPlayback():
@@ -639,7 +646,7 @@ class Player(xbmc.Player):
 			homeWindow.clearProperty('umbrella.window_keep_alive')
 			clear_local_bookmarks() # clear all umbrella bookmarks from kodi database
 			control.playlist.clear()
-			if not self.onPlayBackStopped_ran or (self.playbackStopped_triggered and not self.onPlayBackStopped_ran): # Kodi callback unreliable and often not issued
+			if (not self.onPlayBackStopped_ran or (self.playbackStopped_triggered and not self.onPlayBackStopped_ran)) and not self.scrobble_sent: # Kodi callback unreliable and often not issued
 				self.onPlayBackStopped_ran = True
 				self.playbackStopped_triggered = False
 				Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
@@ -650,6 +657,7 @@ class Player(xbmc.Player):
 					Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, service='simkl', title=self.title, year=self.year, already_watched=self.watched_during_playback)
 				if self.mdblistCredentials and (_scrobble_source == '3' or getSetting('mdblist.markwatched') == 'true'):
 					Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, service='mdblist', title=self.title, tvshowtitle=self.title, year=self.year, already_watched=self.watched_during_playback)
+				self.scrobble_sent = True
 				watcher = self.getWatchedPercent()
 				seekable = (int(self.current_time) > 180 and (watcher < int(self.markwatched_percentage)))
 				if watcher >= int(self.markwatched_percentage): self.libForPlayback() # only write playcount to local lib
@@ -667,24 +675,28 @@ class Player(xbmc.Player):
 		except: log_utils.error()
 
 	def onPlayBackEnded(self):
-		Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
-		self.libForPlayback()
-		_scrobble_source = getSetting('scrobble.source')
-		if self.traktCredentials and (_scrobble_source == '1' or getSetting('trakt.markwatched') == 'true'):
-			Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, already_watched=self.watched_during_playback)
-		if self.simklCredentials and (_scrobble_source == '2' or getSetting('simkl.markwatched') == 'true'):
-			Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, service='simkl', title=self.title, year=self.year, already_watched=self.watched_during_playback)
-		if self.mdblistCredentials and (_scrobble_source == '3' or getSetting('mdblist.markwatched') == 'true'):
-			Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, service='mdblist', title=self.title, tvshowtitle=self.title, year=self.year, already_watched=self.watched_during_playback)
 		try:
-			playingfile = Player.isPlaying()
-		except:
-			playingfile = False
-		log_utils.log('onPlayBackEnded Playlist Position: %s isPlaying: %s' % (control.playlist.getposition(), playingfile), level=log_utils.LOGDEBUG)
-		if control.playlist.getposition() == control.playlist.size() or control.playlist.size() == 1 or (control.playlist.getposition() == 0 and playerWindow.getProperty('playnextPlayPressed') == '0'):
-			control.playlist.clear()
-		log_utils.log('onPlayBackEnded callback', level=log_utils.LOGDEBUG)
-		#control.checkforSkin(action='off')
+			Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
+			self.libForPlayback()
+			_scrobble_source = getSetting('scrobble.source')
+			if not self.scrobble_sent:
+				if self.traktCredentials and (_scrobble_source == '1' or getSetting('trakt.markwatched') == 'true'):
+					Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, already_watched=self.watched_during_playback)
+				if self.simklCredentials and (_scrobble_source == '2' or getSetting('simkl.markwatched') == 'true'):
+					Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, service='simkl', title=self.title, year=self.year, already_watched=self.watched_during_playback)
+				if self.mdblistCredentials and (_scrobble_source == '3' or getSetting('mdblist.markwatched') == 'true'):
+					Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, service='mdblist', title=self.title, tvshowtitle=self.title, year=self.year, already_watched=self.watched_during_playback)
+			self.scrobble_sent = True
+			try:
+				playingfile = Player.isPlaying()
+			except:
+				playingfile = False
+			log_utils.log('onPlayBackEnded Playlist Position: %s isPlaying: %s' % (control.playlist.getposition(), playingfile), level=log_utils.LOGDEBUG)
+			if control.playlist.getposition() == control.playlist.size() or control.playlist.size() == 1 or (control.playlist.getposition() == 0 and playerWindow.getProperty('playnextPlayPressed') == '0'):
+				control.playlist.clear()
+			log_utils.log('onPlayBackEnded callback', level=log_utils.LOGDEBUG)
+			#control.checkforSkin(action='off')
+		except: log_utils.error()
 
 	def onPlayBackError(self):
 		playerWindow.clearProperty('umbrella.preResolved_nextUrl')
@@ -1343,7 +1355,7 @@ class Bookmarks:
 			elif service == 'mdblist':
 				if not skip_scrobble and (seekable or percent >= int(markwatched_percentage)):
 					mdblist.scrobbleMovie(title, year, imdb, tmdb, percent) if media_type == 'movie' else mdblist.scrobbleEpisode(tvshowtitle or title, year, imdb, tmdb, tvdb, season, episode, percent)
-				if percent >= int(markwatched_percentage): mdblist.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False)
+				if percent >= int(markwatched_percentage): mdblist.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False, already_watched=skip_scrobble)
 			else:
 				if not skip_scrobble and (seekable or percent >= int(markwatched_percentage)):
 					trakt.scrobbleMovie(imdb, tmdb, percent) if media_type == 'movie' else trakt.scrobbleEpisode(imdb, tmdb, tvdb, season, episode, percent)

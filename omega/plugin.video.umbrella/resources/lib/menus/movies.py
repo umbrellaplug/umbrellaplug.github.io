@@ -169,7 +169,7 @@ class Movies:
 		self.simkltrendingmonth_link = 'https://api.simkl.com/movies/trending/month?client_id=%s&extended=tmdb'% '%s'
 		self.simklplantowatch_link = 'https://api.simkl.com/sync/all-items/movies/plantowatch?'
 		self.simklcompleted_link = 'https://api.simkl.com/sync/all-items/movies/completed?'
-		self.imdblist_hours = int(getSetting('cache.imdblist'))
+		self.imdblist_hours = 168
 		self.trakt_hours = int(getSetting('cache.traktother'))
 		self.traktpopular_hours = int(getSetting('cache.traktpopular'))
 		self.trakttrending_hours = int(getSetting('cache.trakttrending'))
@@ -823,8 +823,8 @@ class Movies:
 	def sort(self, type='movies'):
 		try:
 			if not self.list: return
-			attribute = int(getSetting('sort.%s.type' % type))
-			reverse = int(getSetting('sort.%s.order' % type)) == 1
+			attribute = int(getSetting('sort.%s.type' % type) or '0')
+			reverse = int(getSetting('sort.%s.order' % type) or '0') == 1
 			if attribute == 0: reverse = False # Sorting Order is not enabled when sort method is "Default"
 			if attribute > 0:
 				if attribute == 1:
@@ -1426,6 +1426,7 @@ class Movies:
 			next = url.replace('?' + urlparse(url).query, '') + '?' + q
 			next = next + '&folderName=%s' % quote_plus(folderName)
 		except: next = ''
+		watched_dates = trakt.getWatchedMoviesLastWatchedDates()
 		for item in items: # rating and votes via TMDb, or I must use "extended=full" and it slows down
 			try:
 				values = {}
@@ -1434,14 +1435,14 @@ class Movies:
 				values['paused_at'] = item.get('paused_at', '') # for unfinished
 				try: values['progress'] = item['progress']
 				except: values['progress'] = ''
-				try: values['lastplayed'] = item['watched_at'] # for history
-				except: values['lastplayed'] = ''
 				movie = item.get('movie') or item
 				values['title'] = movie.get('title')
 				values['originaltitle'] = values['title']
 				values['year'] = str(movie.get('year', '')) if movie.get('year') else ''
 				ids = movie.get('ids', {})
 				values['imdb'] = str(ids.get('imdb', '')) if ids.get('imdb') else ''
+				# lastplayed: history endpoints include watched_at; for user lists fetch from watched data
+				values['lastplayed'] = item.get('watched_at') or watched_dates.get(values['imdb'], '')
 				values['tmdb'] = str(ids.get('tmdb', '')) if ids.get('tmdb') else ''
 				values['tvdb'] = ''
 				values['mediatype'] = 'movies'
@@ -1541,6 +1542,12 @@ class Movies:
 			return self.list
 		self.list = cache.get(userList_totalItems, self.traktuserlist_hours, url.split('limit')[0] + 'limit=1000&extended=full')
 		if not self.list: return
+		if int(getSetting('sort.movies.type') or '0') == 6:
+			watched_dates = trakt.getWatchedMoviesLastWatchedDates()
+			if watched_dates:
+				for item in self.list:
+					if not item.get('lastplayed'):
+						item['lastplayed'] = watched_dates.get(item.get('imdb', ''), '')
 		self.sort() # sort before local pagination
 		total_pages = 1
 		useNext = True

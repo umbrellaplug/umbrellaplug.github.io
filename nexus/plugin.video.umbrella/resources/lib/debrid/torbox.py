@@ -405,8 +405,10 @@ class TorBox:
 		progressBG = control.progressDialogBG
 		progressBG.create('TorBox', 'Clearing cloud files')
 
+		_unlimited = control.setting('dev.batch.unlimited') == 'true'
+		_bs = None if _unlimited else int(control.setting('dev.batch.size') or '10')
 		try:
-			with ThreadPoolExecutor(max_workers=10) as executor:  # max-workers likely needs to be a setting.
+			with ThreadPoolExecutor(max_workers=_bs) as executor:
 				futures = {}
 				for count, req in enumerate(all_files, 1):
 					if req['type'] == 'torrent' or req['type'] == 'queue':
@@ -424,10 +426,8 @@ class TorBox:
 						)
 						control.sleep(200)
 					except Exception as e:
-						from resources.lib.modules import log_utils
 						log_utils.error(f"Error deleting file {req['name']}: {str(e)}")
 		except Exception as e:
-			from resources.lib.modules import log_utils
 			log_utils.error(f"Error deleting all user torrents: {str(e)}")
 		finally:
 			try:

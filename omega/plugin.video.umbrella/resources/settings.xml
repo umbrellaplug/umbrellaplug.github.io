@@ -545,7 +545,7 @@
 					</dependencies>
 					<control type="spinner" format="string"/>
 				</setting>
-				<!-- <setting id="sort.movies.plantowatch.type" type="integer" label="40569" help="">
+				<setting id="sort.movies.plantowatch.type" type="integer" label="40569" help="">
 					<level>0</level>
 					<default>5</default>
 					<constraints>
@@ -578,7 +578,7 @@
 						</dependency>
 					</dependencies>
 					<control type="spinner" format="string"/>
-				</setting> -->
+				</setting>
 				<setting id="sort.movies.watchlist.type" type="integer" label="35574" help="">
 					<level>0</level>
 					<default>5</default>
@@ -1746,7 +1746,7 @@
 					</dependencies>
 					<control type="spinner" format="string"/>
 				</setting>
-				<!-- <setting id="sort.shows.plantowatch.type" type="integer" label="40569" help="">
+				<setting id="sort.shows.plantowatch.type" type="integer" label="40569" help="">
 					<level>0</level>
 					<default>5</default>
 					<constraints>
@@ -1779,7 +1779,7 @@
 						</dependency>
 					</dependencies>
 					<control type="spinner" format="string"/>
-				</setting> -->
+				</setting>
 				<setting id="sort.shows.watchlist.type" type="integer" label="35574" help="">
 					<level>0</level>
 					<default>5</default>
@@ -2892,25 +2892,7 @@
 					</dependencies>
 					<control type="edit" format="string"></control>
 				</setting>
-				<setting id="sources.easydebrid.color.display" type="string" label="40536" help="">
-					<default>[COLOR FF31697E]FF31697E[/COLOR]</default> <!--  -->
-					<dependencies>
-						<dependency type="visible">
-							<and>
-								<condition operator="is" setting="sources.highlightmethod">1</condition>
-								<condition operator="!is" setting="easydebridtoken"/>
-							</and>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action">
-						<data>RunPlugin(plugin://plugin.video.umbrella/?action=colorpicker&amp;setting=sources.easydebrid.color)</data>
-					</control>
-				</setting>
-				<setting id="sources.easydebrid.color" type="string" label="40536" help="">
-					<default>FF31697E</default> <!--  -->
-					<visible>false</visible>
-					<control type="edit" format="string"/>
-				</setting>
+				<!-- EasyDebrid color settings disabled -->
 				<setting id="sources.offcloud.color.display" type="string" label="40542" help="">
 					<default>[COLOR FF5824b3]FF5824b3[/COLOR]</default> <!--  -->
 					<dependencies>
@@ -4269,6 +4251,7 @@
 					<control type="button" format="action"/>
 				</setting>
 			</group>
+			<!-- EasyDebrid account group disabled
 			<group id="2" label="40537">
 				<setting id="easydebridAuthorizeButton" type="action" label="32306" help="">
 					<data>RunPlugin(plugin://plugin.video.umbrella/?action=ed_Authorize&amp;query=9.0)</data>
@@ -4345,6 +4328,7 @@
 					<control type="button" format="action"/>
 				</setting>
 			</group>
+			-->
 			<group id="3" label="40540">
 				<setting id="offcloudAuthorizeButton" type="action" label="32306" help="">
 					<data>RunPlugin(plugin://plugin.video.umbrella/?action=oc_Authorize&amp;query=9.0)</data>
@@ -4353,8 +4337,21 @@
 							<condition operator="is" setting="offcloudtoken"/>
 						</dependency>
 					</dependencies>
-					<control type="button" format="action">
-						<close>true</close>
+					<control type="button" format="action"/>
+				</setting>
+				<setting id="offcloudAuthInfo" type="string" label="40664" help="">
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<enable>false</enable>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="offcloudtoken"/>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<hidden>false</hidden>
 					</control>
 				</setting>
 				<setting id="offcloudRevokeButton" type="action" label="40110" help="">
@@ -6335,19 +6332,6 @@
 			</group>
 		</category>
 		<category id="cache" label="40363" help="40368">
-			<group id="1" label="32034">
-				<setting id="cache.imdblist" type="integer" label="40369" help="">
-					<level>0</level>
-					<default>168</default>
-					<constraints>
-						<minimum>0</minimum>
-						<maximum>720</maximum>
-					</constraints>
-					<control type="slider" format="integer">
-						<popup>false</popup>
-					</control>
-				</setting>
-			</group>
 			<group id="2" label="40166">
 				<setting id="cache.tmdblist" type="integer" label="40370" help="">
 					<level>0</level>
@@ -6848,6 +6832,35 @@
 						</dependency>
 					</dependencies>
 					<control type="toggle"/>
+				</setting>
+				<setting id="dev.batch.unlimited" type="boolean" label="40663" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="dev.mode.enable">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="dev.batch.size" type="integer" label="40662" help="">
+					<level>0</level>
+					<default>10</default>
+					<constraints>
+						<minimum>1</minimum>
+						<maximum>100</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="dev.mode.enable">true</condition>
+						</dependency>
+						<dependency type="enable">
+							<condition operator="is" setting="dev.batch.unlimited">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
 				</setting>
 			</group>
 		</category>

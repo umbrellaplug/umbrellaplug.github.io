@@ -114,6 +114,7 @@ class SIMKL:
 			force_simklSync(silent=True)
 			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 			control.setSetting('indicators.alt', '2')
+			control.setSetting('scrobble.source', '2')
 			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 			control.setSetting('indicators', 'Simkl')
 			if fromSettings == 1:
@@ -146,6 +147,9 @@ class SIMKL:
 			if getSetting('indicators.alt') == '2':
 				control.setSetting('indicators.alt', '0')
 				control.setSetting('indicators', 'Local')
+			if getSetting('scrobble.source') == '2':
+				control.setSetting('scrobble.source', '0')
+			control.setSetting('simkl.markwatched', 'false')
 			if fromSettings == 1:
 				control.openSettings('8.2', 'plugin.video.umbrella')
 			control.dialog.ok(getLS(40342), getLS(32320))

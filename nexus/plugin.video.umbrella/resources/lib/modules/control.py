@@ -503,43 +503,13 @@ def getMenuEnabled(menu_title):
 	if (is_enabled == '' or is_enabled == 'false'): return False
 	return True
 
-_skin_uses_widgetreload = None  # None = not yet detected; True/False cached after first call
-
-def _detect_skin_widgetreload():
-	# widgetreload is a home-screen property some skins support
-	try:
-		import os
-		skin_path = xbmc.translatePath('special://skin/')
-		# find the resolution subfolder (e.g. 1080i, 1080p, 720p)
-		res_dir = None
-		for entry in os.listdir(skin_path):
-			if os.path.isdir(os.path.join(skin_path, entry)) and entry[0].isdigit():
-				res_dir = os.path.join(skin_path, entry)
-				break
-		if not res_dir:
-			res_dir = skin_path
-		for fname in ('Home.xml', 'Includes.xml', 'Variables.xml'):
-			fpath = os.path.join(res_dir, fname)
-			try:
-				with open(fpath, 'r', encoding='utf-8', errors='ignore') as f:
-					if 'widgetreload' in f.read():
-						return True
-			except Exception:
-				pass
-		return False
-	except Exception:
-		return False
-
 def trigger_widget_refresh():
-	global _skin_uses_widgetreload
 	import time
 	timestr = time.strftime("%Y%m%d%H%M%S", time.gmtime())
 	homeWindow.setProperty('widgetreload', timestr)
 	homeWindow.setProperty('widgetreload-episodes', timestr)
 	homeWindow.setProperty('widgetreload-movies', timestr)
-	if _skin_uses_widgetreload is None:
-		_skin_uses_widgetreload = _detect_skin_widgetreload()
-	if not _skin_uses_widgetreload:
+	if xbmc.getSkinDir() != 'skin.arctic.fuse.3':
 		execute('UpdateLibrary(video,/fake/path/to/force/refresh/on/home)')
 
 def refresh_playAction(): # for umbrella global CM play actions

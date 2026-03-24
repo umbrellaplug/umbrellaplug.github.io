@@ -318,6 +318,43 @@ try:
 except Exception:
 	log_utils.log('## ERROR GETTING Umbrella VERSION - Missing Repo or failed Install ', level=LOGINFO)
 
+try:
+	_ind_map = {'0': 'Local Only', '1': 'Trakt', '2': 'Simkl', '3': 'MDBList'}
+	_scr_map = {'0': 'Off', '1': 'Trakt', '2': 'Simkl', '3': 'MDBList'}
+	_ind = control.setting('indicators.alt')
+	_scr = control.setting('scrobble.source')
+	_trakt_authed = bool(control.setting('trakt.user.token') and control.setting('trakt.refreshtoken') and control.setting('trakt.user.name'))
+	_simkl_authed = bool(control.setting('simkltoken'))
+	_mdb_authed = bool(control.setting('mdblist.api'))
+	_trakt_user = control.setting('trakt.user.name') or 'N/A'
+	_trakt_custom_id = bool(control.setting('trakt.clientid'))
+	log_utils.log('########   UMBRELLA SERVICE CONFIGURATION   ########', level=LOGINFO)
+	log_utils.log('##   [Service Selection]', level=LOGINFO)
+	log_utils.log('##   Primary Indicators/Watch History: %s' % _ind_map.get(_ind, _ind), level=LOGINFO)
+	log_utils.log('##   Scrobble/Resume Source: %s' % _scr_map.get(_scr, _scr), level=LOGINFO)
+	log_utils.log('##   Mark Watched Threshold: %s%%' % control.setting('markwatched.percent'), level=LOGINFO)
+	log_utils.log('##   [Secondary Mark-Watched]', level=LOGINFO)
+	log_utils.log('##   Trakt Mark-Watched: %s' % control.setting('trakt.markwatched'), level=LOGINFO)
+	log_utils.log('##   Simkl Mark-Watched: %s' % control.setting('simkl.markwatched'), level=LOGINFO)
+	log_utils.log('##   MDBList Mark-Watched: %s' % control.setting('mdblist.markwatched'), level=LOGINFO)
+	log_utils.log('##   [Credentials]', level=LOGINFO)
+	log_utils.log('##   Trakt Authenticated: %s%s' % (_trakt_authed, ' (user: %s)' % _trakt_user if _trakt_authed else ''), level=LOGINFO)
+	log_utils.log('##   Trakt Custom Client ID: %s' % _trakt_custom_id, level=LOGINFO)
+	log_utils.log('##   Simkl Authenticated: %s' % _simkl_authed, level=LOGINFO)
+	log_utils.log('##   MDBList Authenticated: %s' % _mdb_authed, level=LOGINFO)
+	log_utils.log('##   [Sync Intervals]', level=LOGINFO)
+	log_utils.log('##   Service Loop Interval: %s min' % control.setting('background.service.syncInterval'), level=LOGINFO)
+	log_utils.log('##   Simkl Sync Interval: %s min' % control.setting('simkl.service.syncInterval'), level=LOGINFO)
+	log_utils.log('##   MDBList Sync Interval: %s min' % control.setting('mdblist.service.syncInterval'), level=LOGINFO)
+	log_utils.log('##   [Notifications]', level=LOGINFO)
+	log_utils.log('##   Scrobble Notify: %s' % control.setting('scrobble.notify'), level=LOGINFO)
+	log_utils.log('##   Trakt Notifications: %s' % control.setting('trakt.general.notifications'), level=LOGINFO)
+	log_utils.log('##   Simkl Notifications: %s' % control.setting('simkl.general.notifications'), level=LOGINFO)
+	log_utils.log('##   MDBList Notifications: %s' % control.setting('mdblist.general.notifications'), level=LOGINFO)
+	log_utils.log('####################################################', level=LOGINFO)
+except Exception:
+	log_utils.log('## ERROR logging service configuration', level=LOGINFO)
+
 def getTraktCredentialsInfo():
 	username = control.setting('trakt.user.name').strip()
 	token = control.setting('trakt.user.token')

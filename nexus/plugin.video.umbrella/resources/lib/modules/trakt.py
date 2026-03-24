@@ -293,6 +293,7 @@ def traktAuth(fromSettings=0):
 			if not control.yesnoDialog('Do you want to set Trakt as your service for your watched and unwatched indicators?','','','Indicators', 'No', 'Yes'): return True
 			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 			control.setSetting('indicators.alt', '1')
+			control.setSetting('scrobble.source', '1')
 			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 			control.setSetting('indicators', 'Trakt')
 			return True
@@ -328,6 +329,9 @@ def traktRevoke(fromSettings=0):
 			if getSetting('indicators.alt') == '1':
 				control.setSetting('indicators.alt', '0')
 				control.setSetting('indicators', 'Local')
+			if getSetting('scrobble.source') == '1':
+				control.setSetting('scrobble.source', '0')
+			control.setSetting('trakt.markwatched', 'false')
 			if fromSettings == 1:
 				control.openSettings('8.3', 'plugin.video.umbrella')
 				control.dialog.ok(control.lang(32315), control.lang(40109))
@@ -1060,6 +1064,28 @@ def watchedMoviesTime(imdb):
 			if str(item['movie']['ids']['imdb']) == imdb: return item['last_watched_at']
 	except: log_utils.error()
 
+def getWatchedMoviesLastWatchedDates():
+	"""Returns {imdb_id: last_watched_at} for all watched movies. Used to populate lastplayed for sort-by-date-watched on user lists."""
+	try:
+		if not getTraktCredentialsInfo(): return {}
+		items = get_all_pages('/users/me/watched/movies')
+		if not items: return {}
+		return {str(i['movie']['ids']['imdb']): i.get('last_watched_at', '') for i in items if i.get('movie', {}).get('ids', {}).get('imdb')}
+	except:
+		log_utils.error()
+		return {}
+
+def getWatchedShowsLastWatchedDates():
+	"""Returns {tvdb_id: last_watched_at} for all watched shows. Used to populate lastplayed for sort-by-date-watched on user lists."""
+	try:
+		if not getTraktCredentialsInfo(): return {}
+		items = get_all_pages('/users/me/watched/shows')
+		if not items: return {}
+		return {str(i['show']['ids']['tvdb']): i.get('last_watched_at', '') for i in items if i.get('show', {}).get('ids', {}).get('tvdb')}
+	except:
+		log_utils.error()
+		return {}
+
 def watchedShows():
 	try:
 		if not getTraktCredentialsInfo(): return
@@ -1302,9 +1328,12 @@ def service_syncSeasons(): # season indicators and counts for watched shows ex. 
 			tvdb = str(indicator[0].get('tvdb', '')) if indicator[0].get('tvdb') else ''
 			trakt = str(indicator[0].get('trakt', '')) if indicator[0].get('trakt') else ''
 			threads.append(Thread(target=cachesyncSeasons, args=(imdb, tvdb, trakt))) # season indicators and counts for an entire show
-		for i in range(0, len(threads), 10):
+		_unlimited = getSetting('dev.batch.unlimited') == 'true'
+		_bs = int(getSetting('dev.batch.size') or '10')
+		_chunk = len(threads) if _unlimited else _bs
+		for i in range(0, len(threads), _chunk):
 			if control.monitor.abortRequested(): break
-			batch = threads[i:i + 10]
+			batch = threads[i:i + _chunk]
 			[t.start() for t in batch]
 			[t.join() for t in batch]
 	except: log_utils.error()
@@ -1891,8 +1920,11 @@ def sync_liked_lists(activities=None, forced=False):
 			threads = []
 			for i in items:
 				threads.append(Thread(target=items_list, args=(i,)))
-			for i in range(0, len(threads), 10):
-				batch = threads[i:i + 10]
+			_unlimited = getSetting('dev.batch.unlimited') == 'true'
+			_bs = int(getSetting('dev.batch.size') or '10')
+			_chunk = len(threads) if _unlimited else _bs
+			for i in range(0, len(threads), _chunk):
+				batch = threads[i:i + _chunk]
 				[t.start() for t in batch]
 				[t.join() for t in batch]
 			traktsync.insert_liked_lists(thrd_items)
@@ -1980,7 +2012,7 @@ def sync_popular_lists(forced=False):
 								(str(db_last_popularList), str(cache_expiry)), __name__, log_utils.LOGDEBUG)
 			items = getTraktAsJson(link, silent=True)
 			if not items: return
-			log_utils.log('Forced - Trakt Popular Lists: processing %s lists in batches of 10' % len(items), __name__, log_utils.LOGINFO)
+			log_utils.log('Forced - Trakt Popular Lists: processing %s lists in batches of %s' % (len(items), 'unlimited' if getSetting('dev.batch.unlimited') == 'true' else getSetting('dev.batch.size') or '10'), __name__, log_utils.LOGINFO)
 			thrd_items = []
 			def items_list(i):
 				list_item = i.get('list', {})
@@ -2013,8 +2045,11 @@ def sync_popular_lists(forced=False):
 			threads = []
 			for i in items:
 				threads.append(Thread(target=items_list, args=(i,)))
-			for i in range(0, len(threads), 10):
-				batch = threads[i:i + 10]
+			_unlimited = getSetting('dev.batch.unlimited') == 'true'
+			_bs = int(getSetting('dev.batch.size') or '10')
+			_chunk = len(threads) if _unlimited else _bs
+			for i in range(0, len(threads), _chunk):
+				batch = threads[i:i + _chunk]
 				[t.start() for t in batch]
 				[t.join() for t in batch]
 			traktsync.insert_public_lists(thrd_items, service_type='last_popularlist_at', new_sync=False)
@@ -2036,7 +2071,7 @@ def sync_trending_lists(forced=False):
 								(str(db_last_trendingList), str(cache_expiry)), __name__, log_utils.LOGDEBUG)
 			items = getTraktAsJson(link, silent=True)
 			if not items: return
-			log_utils.log('Forced - Trakt Trending Lists: processing %s lists in batches of 10' % len(items), __name__, log_utils.LOGINFO)
+			log_utils.log('Forced - Trakt Trending Lists: processing %s lists in batches of %s' % (len(items), 'unlimited' if getSetting('dev.batch.unlimited') == 'true' else getSetting('dev.batch.size') or '10'), __name__, log_utils.LOGINFO)
 			thrd_items = []
 			def items_list(i):
 				list_item = i.get('list', {})
@@ -2069,8 +2104,11 @@ def sync_trending_lists(forced=False):
 			threads = []
 			for i in items:
 				threads.append(Thread(target=items_list, args=(i,)))
-			for i in range(0, len(threads), 10):
-				batch = threads[i:i + 10]
+			_unlimited = getSetting('dev.batch.unlimited') == 'true'
+			_bs = int(getSetting('dev.batch.size') or '10')
+			_chunk = len(threads) if _unlimited else _bs
+			for i in range(0, len(threads), _chunk):
+				batch = threads[i:i + _chunk]
 				[t.start() for t in batch]
 				[t.join() for t in batch]
 			traktsync.insert_public_lists(thrd_items, service_type='last_trendinglist_at', new_sync=False)
