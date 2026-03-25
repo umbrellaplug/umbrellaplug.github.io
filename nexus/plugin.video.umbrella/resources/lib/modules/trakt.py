@@ -265,6 +265,11 @@ def re_auth(headers):
 def traktAuth(fromSettings=0):
 	try:
 		traktDeviceCode = getTraktDeviceCode()
+		if not traktDeviceCode:
+			if fromSettings == 1:
+				control.openSettings('8.3', 'plugin.video.umbrella')
+			control.notification(message=40108, icon=trakt_icon)
+			return False
 		deviceCode = getTraktDeviceToken(traktDeviceCode)
 		if deviceCode:
 			deviceCode = deviceCode.json()
@@ -339,18 +344,25 @@ def traktRevoke(fromSettings=0):
 			log_utils.error()
 
 
+
 def getTraktDeviceCode():
 	try:
-		data = {'client_id': traktClientID()}
-		dCode = getTrakt('oauth/device/code', post=data)
-		result = dCode.json()
-		return result
-	except: 
+		data = jsdumps({'client_id': traktClientID()})
+		request_headers = {'Content-Type': 'application/json', 'trakt-api-key': traktClientID(), 'trakt-api-version': '2'}
+		url = urljoin(BASE_URL, 'oauth/device/code')
+		response = session.post(url, data=data, headers=request_headers, timeout=20)
+		if response.status_code == 200:
+			return response.json()
+		log_utils.log('TRAKT: getTraktDeviceCode failed: %s' % response.status_code, level=log_utils.LOGWARNING)
+		return None
+	except:
 		log_utils.error()
-		return ''
+		return None
 
 def getTraktDeviceToken(traktDeviceCode):
 	try:
+		if not traktDeviceCode or not isinstance(traktDeviceCode, dict):
+			return None
 		data = {"code": traktDeviceCode["device_code"],
 				"client_id": traktClientID(),
 				"client_secret": traktClientSecret()}
@@ -1761,10 +1773,14 @@ def force_traktSync():
 	if not control.yesnoDialog(getLS(32056), '', ''): return
 	control.busy()
 
-	# wipe all tables and start fresh
-	clr_traktSync = {'bookmarks': True, 'hiddenProgress': True, 'liked_lists': True, 'movies_collection': True, 'movies_watchlist': True,
-							'public_lists': True, 'shows_collection': True, 'shows_watchlist': True, 'user_lists': True, 'watched': True}
-	traktsync.delete_tables(clr_traktSync)
+	# delete the physical DB file so corruption can't block the sync
+	# tables are recreated fresh by each sync function via CREATE TABLE IF NOT EXISTS
+	import os
+	try:
+		if os.path.exists(control.traktSyncFile):
+			os.remove(control.traktSyncFile)
+	except Exception as e:
+		log_utils.log('TRAKT: force_traktSync failed to delete database: %s' % str(e), level=log_utils.LOGWARNING)
 	sync_playbackProgress(forced=True)
 	sync_hidden_progress(forced=True)
 	sync_liked_lists(forced=True)

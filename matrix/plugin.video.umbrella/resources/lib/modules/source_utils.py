@@ -146,7 +146,7 @@ def supported_video_extensions():
 	try:
 		from xbmc import getSupportedMedia
 		supported_video_extensions = getSupportedMedia('video').split('|')
-		return [i for i in supported_video_extensions if i != '' and i != '.zip']
+		return [i for i in supported_video_extensions if i != '' and i != '.zip' and i != '.iso']
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()

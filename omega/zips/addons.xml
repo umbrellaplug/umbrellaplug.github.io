@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.59">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.60">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -235,12 +235,10 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.59 - Mar 24th, 2026[/B]
---[Change] Updated for new offcloud api changes.
---[Fix] Simkl sorting fix for movies.
---[Fix] Trakt sorting for data_watched on movies and others..
---[Fix] Fix for double scrobble when onPlayBackStopped and onPlayBackEneded have already run.
---[Fix] Made changes to endpoints being called for mdblist scrobble and mark as watched.
+[B]Update - v6.7.60 - Mar 25th, 2026[/B]
+--[Fix] Made force trakt sync delete actual local database file first to fix malformed trakt databases.
+--[Change] Removed ISO files from results.
+
 		</news>
 	</extension>
 

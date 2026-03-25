@@ -1,3 +1,7 @@
+[B]Update - v6.7.60 - Mar 25th, 2026[/B]
+--[Fix] Made force trakt sync delete actual local database file first to fix malformed trakt databases.
+--[Change] Removed ISO files from results.
+
 [B]Update - v6.7.59 - Mar 24th, 2026[/B]
 --[Change] Updated for new offcloud api changes.
 --[Fix] Simkl sorting fix for movies.

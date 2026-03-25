@@ -3623,7 +3623,7 @@
 						<close>true</close>
 					</control>
 				</setting>
-				<setting id="trakt.token.expires" type="string" label="" help="">
+<setting id="trakt.token.expires" type="string" label="" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
