@@ -99,7 +99,10 @@ def fetch_bookmarks(imdb, tmdb='', tvdb='', season=None, episode=None, ret_all=N
 
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return progress
 
 def insert_bookmarks(items):
@@ -139,7 +142,10 @@ def insert_bookmarks(items):
 	except:
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def delete_bookmark(resume_id):
 	# resume_id is the Simkl playback session id (string)
@@ -154,7 +160,10 @@ def delete_bookmark(resume_id):
 	except:
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def fetch_plantowatch(table):
 	list = ''
@@ -174,7 +183,10 @@ def fetch_plantowatch(table):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return list
 
 def insert_plantowatch(items, table, new_sync=True):
@@ -227,7 +239,10 @@ def insert_plantowatch(items, table, new_sync=True):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def fetch_watching(table):
 	list = ''
@@ -247,7 +262,10 @@ def fetch_watching(table):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return list
 
 def insert_watching(items, table, new_sync=True):
@@ -304,7 +322,10 @@ def insert_watching(items, table, new_sync=True):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def fetch_hold(table):
 	list = ''
@@ -324,7 +345,10 @@ def fetch_hold(table):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return list
 
 def insert_hold(items, table, new_sync=True):
@@ -377,7 +401,10 @@ def insert_hold(items, table, new_sync=True):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def remove_hold_item(tvdb):
 	try:
@@ -403,7 +430,10 @@ def remove_hold_item(tvdb):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def remove_plan_to_watch(imdb, table):
 	try:
@@ -428,7 +458,10 @@ def remove_plan_to_watch(imdb, table):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def fetch_dropped(table):
 	list = ''
@@ -448,7 +481,10 @@ def fetch_dropped(table):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return list
 
 def insert_dropped(items, table, new_sync=True):
@@ -498,7 +534,10 @@ def insert_dropped(items, table, new_sync=True):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def delete_plantowatch_items(items, table, col_name='simkl'):
 	try:
@@ -523,7 +562,10 @@ def delete_plantowatch_items(items, table, col_name='simkl'):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def delete_hold_items(items, table, col_name='simkl'):
 	try:
@@ -548,7 +590,10 @@ def delete_hold_items(items, table, col_name='simkl'):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def delete_dropped_items(items, table, col_name='simkl'):
 	try:
@@ -573,7 +618,10 @@ def delete_dropped_items(items, table, col_name='simkl'):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def fetch_completed(table):
 	list = ''
@@ -593,7 +641,10 @@ def fetch_completed(table):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return list
 
 def insert_completed(items, table, new_sync=True):
@@ -650,7 +701,10 @@ def insert_completed(items, table, new_sync=True):
 	except:
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def delete_plantowatch(items, table, col_name='simkl'):
 	try:
@@ -675,7 +729,10 @@ def delete_plantowatch(items, table, col_name='simkl'):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def last_sync(type):
 	last_sync_at = 0
@@ -693,7 +750,10 @@ def last_sync(type):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return last_sync_at
 
 def set_sync_time(service_key):
@@ -706,7 +766,10 @@ def set_sync_time(service_key):
 	except:
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def delete_tables(tables):
 	cleared = False
@@ -737,7 +800,10 @@ def delete_tables(tables):
 		log_utils.error()
 		cleared = False
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return cleared
 
 def upsert_items(items, table, service_key, table_type='plantowatch'):
@@ -908,7 +974,10 @@ def cache_get(key):
 		log_utils.error()
 		return None
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def cache_insert(key, value):
 	try:
@@ -922,7 +991,10 @@ def cache_insert(key, value):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def remove(function, *args):
 	try:
@@ -969,7 +1041,10 @@ def insert_syncSeasons_at():
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 # future
 def insert_nextEpisode(imdb, tvdb, tmdb, simkl, next_episode):
@@ -984,4 +1059,7 @@ def insert_nextEpisode(imdb, tvdb, tmdb, simkl, next_episode):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass

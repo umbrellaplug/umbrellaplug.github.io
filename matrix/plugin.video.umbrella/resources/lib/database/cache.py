@@ -86,6 +86,8 @@ def cache_existing(function, *args):
 		return None
 
 def cache_get(key):
+	dbcon = None
+	dbcur = None
 	try:
 		dbcon = get_connection()
 		dbcur = get_connection_cursor(dbcon)
@@ -98,9 +100,12 @@ def cache_get(key):
 		log_utils.error()
 		return None
 	finally:
-		dbcur.close() ; dbcon.close()
+		if dbcur: dbcur.close()
+		if dbcon: dbcon.close()
 
 def cache_insert(key, value):
+	dbcon = None
+	dbcur = None
 	try:
 		dbcon = get_connection()
 		dbcur = get_connection_cursor(dbcon)
@@ -112,7 +117,8 @@ def cache_insert(key, value):
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		if dbcur: dbcur.close()
+		if dbcon: dbcon.close()
 
 def remove(function, *args):
 	try:
@@ -143,6 +149,8 @@ def _generate_md5(*args):
 
 def cache_clear(flush_only=False):
 	cleared = False
+	dbcon = None
+	dbcur = None
 	try:
 		dbcon = get_connection()
 		dbcur = get_connection_cursor(dbcon)
@@ -161,7 +169,8 @@ def cache_clear(flush_only=False):
 		log_utils.error()
 		cleared = False
 	finally:
-		dbcur.close() ; dbcon.close()
+		if dbcur: dbcur.close()
+		if dbcon: dbcon.close()
 	return cleared
 
 def clearMovieCache():
@@ -216,7 +225,10 @@ def cache_clear_search():
 		log_utils.error()
 		cleared = False
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return cleared
 
 def cache_clear_SearchPhrase(table, key):
@@ -233,7 +245,10 @@ def cache_clear_SearchPhrase(table, key):
 		log_utils.error()
 		cleared = False
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return cleared
 
 def get_connection_search():
@@ -283,7 +298,10 @@ def cache_clear_bookmarks():
 		log_utils.error()
 		cleared = False
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return cleared
 
 def cache_clear_bookmark(name, year='0'):
@@ -307,7 +325,10 @@ def cache_clear_bookmark(name, year='0'):
 		log_utils.error()
 		cleared = False
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return cleared
 
 def get_connection_bookmarks():
@@ -350,7 +371,10 @@ def clear_local_bookmark(url): # clear all item specific bookmarks from kodi dat
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def get_video_database_path():
 	databaseFound = False

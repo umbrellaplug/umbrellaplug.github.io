@@ -29,7 +29,10 @@ def substitute_get(key):
 		log_utils.error()
 		return None
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def all_substitutes(self):
 	results = []
@@ -47,7 +50,10 @@ def all_substitutes(self):
 		log_utils.error()
 		return results
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def sub_insert(originalTitle, subTitle):
 	try:
@@ -61,7 +67,10 @@ def sub_insert(originalTitle, subTitle):
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def get_connection():
 	if not control.existsPath(control.dataPath): control.makeFile(control.dataPath)
@@ -97,7 +106,10 @@ def clear_substitute(table, key):
 		log_utils.error()
 		cleared = False
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return cleared
 
 def get_connection_subs():

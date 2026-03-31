@@ -332,10 +332,10 @@ def yesnocustomDialog(line1, line2, line3, heading=addonInfo('name'), customlabe
 	message = '%s[CR]%s[CR]%s' % (line1, line2, line3)
 	return dialog.yesnocustom(heading, message, customlabel, nolabel, yeslabel)
 
-def selectDialog(list, heading=addonInfo('name'),useDetails=False):
+def selectDialog(list, heading=addonInfo('name'), useDetails=False, preselect=-1):
 	if useDetails:
-		return dialog.select(heading, list, useDetails=True)
-	else: return dialog.select(heading, list)
+		return dialog.select(heading, list, useDetails=True, preselect=preselect)
+	else: return dialog.select(heading, list, preselect=preselect)
 
 def okDialog(title=None, message=None, icon=None):
 	if title == 'default' or title is None: title = addonName()

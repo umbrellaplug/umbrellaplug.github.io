@@ -1538,14 +1538,22 @@ class Episodes:
 				banner = meta.get('banner') or addonBanner
 				clearart = meta.get('clearart', '')
 				clearlogo = meta.get('clearlogo', '')
+				ep_custom = None
+				show_custom = None
 				try:
-					useCustomArtwork = customArtwork.fetch_episode(imdb, tmdb, tvdb, season, episode)
+					ep_custom = customArtwork.fetch_episode(imdb, tmdb, tvdb, season, episode)
 				except Exception:
-					useCustomArtwork = None
-				if useCustomArtwork:
+					pass
+				try:
+					show_custom = customArtwork.fetch_show(imdb, tvdb)
+				except Exception:
+					pass
+				if ep_custom or show_custom:
 					allowed_keys = {"thumb", "poster", "fanart", "landscape", "banner", "clearart", "clearlogo"}
 					for key in allowed_keys:
-						value = useCustomArtwork[0].get(key)
+						value = ep_custom[0].get(key) if ep_custom else None
+						if value in (None, "", " ") and show_custom:
+							value = show_custom[0].get(key)
 						if value not in (None, "", " "):
 							if key == 'thumb': thumb = value
 							if key == 'poster': season_poster = value

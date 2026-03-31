@@ -4,6 +4,7 @@
 """
 
 from hashlib import md5
+from threading import Thread
 from json import dumps as jsdumps, loads as jsloads
 from sys import argv, exit as sysexit
 from sqlite3 import dbapi2 as database
@@ -162,24 +163,35 @@ class Player(xbmc.Player):
 	def addEpisodetoPlaylist(self):
 		try:
 			from resources.lib.menus import seasons, episodes
+			if self.debuglog: log_utils.log('addEpisodetoPlaylist: starting for "%s" S%sE%s tmdb=%s imdb=%s multi_season=%s' % (self.meta.get('tvshowtitle', ''), self.season, self.episode, self.tmdb, self.imdb, self.multi_season), level=log_utils.LOGDEBUG)
 			seasons_list = seasons.Seasons().tmdb_list(tvshowtitle='', imdb='', tmdb=self.tmdb, tvdb='', art=None)
-			seasons = []
+			if not seasons_list:
+				if self.debuglog: log_utils.log('addEpisodetoPlaylist: tmdb_list returned empty/None for tmdb=%s' % self.tmdb, level=log_utils.LOGWARNING)
+				return
+			season_nums = []
 			for s in seasons_list:
 				if isinstance(s, dict):
 					val = s.get('season')
 					try:
 						if val is not None:
-							seasons.append(int(val))
+							season_nums.append(int(val))
 					except (TypeError, ValueError):
 						continue
-			ep_data = [episodes.Episodes().get(self.meta.get('tvshowtitle'), self.meta.get('year'), self.imdb, self.tmdb, self.tvdb, self.meta, season=i, create_directory=False) for i in seasons]
+			if self.debuglog: log_utils.log('addEpisodetoPlaylist: found seasons %s' % season_nums, level=log_utils.LOGDEBUG)
+			ep_data = [episodes.Episodes().get(self.meta.get('tvshowtitle'), self.meta.get('year'), self.imdb, self.tmdb, self.tvdb, self.meta, season=i, create_directory=False) for i in season_nums]
 			items = [i for e in ep_data for i in e if isinstance(i, dict) and i.get('unaired') != 'true']
+			if self.debuglog: log_utils.log('addEpisodetoPlaylist: total aired episodes across all seasons: %s' % len(items), level=log_utils.LOGDEBUG)
+			if not items:
+				if self.debuglog: log_utils.log('addEpisodetoPlaylist: episode list is empty - cannot add next episode', level=log_utils.LOGWARNING)
+				return
 			if self.season is None or self.episode is None:
+				if self.debuglog: log_utils.log('addEpisodetoPlaylist: season or episode is None (season=%s episode=%s)' % (self.season, self.episode), level=log_utils.LOGWARNING)
 				return
 			try:
 				season_int = int(self.season)
 				episode_int = int(self.episode)
 			except (TypeError, ValueError):
+				if self.debuglog: log_utils.log('addEpisodetoPlaylist: cannot convert season/episode to int (season=%s episode=%s)' % (self.season, self.episode), level=log_utils.LOGWARNING)
 				return
 			def safe_int(val):
 				try:
@@ -198,21 +210,32 @@ class Player(xbmc.Player):
 					index = idx
 					break
 			if index is None:
+				if self.debuglog: log_utils.log('addEpisodetoPlaylist: current episode S%sE%s not found in items list (total items: %s)' % (season_int, episode_int, len(items)), level=log_utils.LOGWARNING)
 				return
+			if self.debuglog: log_utils.log('addEpisodetoPlaylist: found current episode at index %s of %s' % (index, len(items)), level=log_utils.LOGDEBUG)
 			if index + 1 >= len(items):
+				if self.debuglog: log_utils.log('addEpisodetoPlaylist: no next episode after S%sE%s (last in list)' % (season_int, episode_int), level=log_utils.LOGWARNING)
 				return
 			item = items[index+1]
 			if not isinstance(item, dict):
+				if self.debuglog: log_utils.log('addEpisodetoPlaylist: next item is not a dict', level=log_utils.LOGWARNING)
 				return
 			item_season = safe_int(item.get('season')) if isinstance(item, dict) else None
 			if item_season is None:
+				if self.debuglog: log_utils.log('addEpisodetoPlaylist: next item has no season value', level=log_utils.LOGWARNING)
 				return
 			if item_season > season_int and not self.multi_season:
+				if self.debuglog: log_utils.log('addEpisodetoPlaylist: next episode is S%sE%s but multi_season is disabled - not adding to playlist' % (item_season, item.get('episode')), level=log_utils.LOGWARNING)
 				return
-			items = episodes.Episodes().episodeDirectory([item], next=False, playlist=True)
-			for url, li, folder in items:
+			playlist_items = episodes.Episodes().episodeDirectory([item], next=False, playlist=True)
+			added = False
+			for url, li, folder in playlist_items:
 				if url and li:
 					control.playlist.add(url=url, listitem=li)
+					added = True
+					if self.debuglog: log_utils.log('addEpisodetoPlaylist: successfully added S%sE%s to playlist (playlist size now: %s)' % (item.get('season'), item.get('episode'), control.playlist.size()), level=log_utils.LOGDEBUG)
+			if not added:
+				if self.debuglog: log_utils.log('addEpisodetoPlaylist: episodeDirectory returned no valid items for S%sE%s' % (item.get('season'), item.get('episode')), level=log_utils.LOGWARNING)
 		except Exception:
 			log_utils.error()
 
@@ -243,13 +266,13 @@ class Player(xbmc.Player):
 						tvshowid = show_meta['tvshowid']
 						if tvshowid:
 							dbidmetameta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params":{"tvshowid": %d, "filter":{"and": [{"field": "season", "operator": "is", "value": "%s"}, {"field": "episode", "operator": "is", "value": "%s"}]}, "properties": ["showtitle", "title", "season", "episode", "firstaired", "runtime", "rating", "director", "writer", "cast", "plot", "thumbnail", "art", "file"]}, "id": 1}' % (tvshowid, self.season, self.episode))
-							dbidmetameta = jsloads(meta)['result']['episodes']
-						if dbidmetameta: meta = meta[0]
+							dbidmetameta = jsloads(dbidmetameta)['result']['episodes']
+						if dbidmetameta: meta = dbidmetameta[0]
 						else: raise Exception()
 						return meta.get('episodeid')
 				except:
 					log_utils.error()
-					return ''
+					return None
 			poster = meta.get('poster3') or meta.get('poster2') or meta.get('poster') #poster2 and poster3 may not be passed anymore
 			thumb = meta.get('thumb')
 			thumb = thumb or poster or control.addonThumb()
@@ -391,7 +414,7 @@ class Player(xbmc.Player):
 					position = self.getTime()
 					if position != 0: self.current_time = position
 					total_length = self.getTotalTime()
-					if total_length != 0: self.media_length = total_length
+					if total_length > 0: self.media_length = max(self.media_length, total_length)
 				except: pass
 			current_position = self.current_time
 			#log_utils.log('getWatchedPercent() current_position: %s' % current_position, level=log_utils.LOGDEBUG)
@@ -444,7 +467,8 @@ class Player(xbmc.Player):
 
 				try:
 					self.current_time = self.getTime()
-					self.media_length = self.getTotalTime()
+					_total = self.getTotalTime()
+					if _total > 0: self.media_length = max(self.media_length, _total)
 				except: pass
 				watcher = (self.getWatchedPercent() >= int(self.markwatched_percentage))
 				property = homeWindow.getProperty(pname)
@@ -465,22 +489,23 @@ class Player(xbmc.Player):
 							homeWindow.setProperty(pname, '5')
 							if self.debuglog:
 								log_utils.log('Sending Episode to be marked as watched. IMDB: %s TVDB: %s Season: %s Episode: %s Title: %s Watch Percentage Used: %s Current Percentage: %s' % (self.imdb, self.tvdb, self.season, self.episode, self.title, self.markwatched_percentage, self.getWatchedPercent()), level=log_utils.LOGDEBUG)
-							playcount.markEpisodeDuringPlayback(self.imdb, self.tvdb, self.season, self.episode, '5')
+							Thread(target=playcount.markEpisodeDuringPlayback, args=(self.imdb, self.tvdb, self.season, self.episode, '5')).start()
 							self.watched_during_playback = True
 						if self.enable_playnext and not self.play_next_triggered:
-							if int(control.playlist.size()) > 1:
+							playlist_size = int(control.playlist.size())
+							if playlist_size > 1:
 								if self.preScrape_triggered == False:
 									xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_preScrapeNext)')
 									self.preScrape_triggered = True
 								remaining_time = self.getRemainingTime()
 								if self.playnext_method== '0':
-									if remaining_time < (self.playnext_time + 1) and remaining_time != 0:
+									if remaining_time < (self.playnext_time + 1) and remaining_time > 0:
 										if self.debuglog:
 											log_utils.log('Playnext triggered by method time. IMDB: %s Title: %s Time Used: %s Remaining Time: %s' % (self.imdb, self.title, self.playnext_time, remaining_time), level=log_utils.LOGDEBUG)
 										xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_nextWindowXML)')
 										self.play_next_triggered = True
-								elif self.playnext_method== '1':	
-									if self.getWatchedPercent() >= int(self.playnext_percentage) and remaining_time != 0:
+								elif self.playnext_method== '1':
+									if self.getWatchedPercent() >= int(self.playnext_percentage) and remaining_time >= 0:
 										if self.debuglog:
 											log_utils.log('Playnext triggered by method percentage. IMDB: %s Title: %s Percentage Used: %s Current Percentage: %s' % (self.imdb, self.title, self.playnext_percentage, self.getWatchedPercent()), level=log_utils.LOGDEBUG)
 										xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_nextWindowXML)')
@@ -491,14 +516,14 @@ class Player(xbmc.Player):
 									if str(self.subtitletime) == 'default':
 										if getSetting('playnext.sub.backupmethod')== '0': #subtitle failed use seconds as backup
 											subtitletimeumb = int(getSetting('playnext.sub.seconds'))
-											if remaining_time < (subtitletimeumb + 1) and remaining_time != 0:
+											if remaining_time < (subtitletimeumb + 1) and remaining_time > 0:
 												if self.debuglog:
 													log_utils.log('Playnext triggered by method subtitle backup. IMDB: %s Title: %s Time Used: %s Current Time: %s' % (self.imdb, self.title, subtitletimeumb, remaining_time), level=log_utils.LOGDEBUG)
 												xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_nextWindowXML)')
 												self.play_next_triggered = True
 										elif getSetting('playnext.sub.backupmethod') == '1': #subtitle failed use percentage as backup
 											subtitletimeumb = int(getSetting('playnext.sub.percent'))
-											if self.getWatchedPercent() >= int(subtitletimeumb) and remaining_time != 0:
+											if self.getWatchedPercent() >= int(subtitletimeumb) and remaining_time > 0:
 												if self.debuglog:
 													log_utils.log('Playnext triggered by method subtitle backup. IMDB: %s Title: %s Percent Used: %s Current Percent: %s' % (self.imdb, self.title, subtitletimeumb, self.getWatchedPercent()), level=log_utils.LOGDEBUG)
 												xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_nextWindowXML)')
@@ -511,7 +536,7 @@ class Player(xbmc.Player):
 											#subtitle time is greater than 10 minutes we need to use the default now.
 											log_utils.log('Playnext triggered by method subtitle but the time is over 10 minutes. IMDB: %s Title: %s Time Attempting to Use Was: %s Changed to: %s Current Time: %s' % (self.imdb, self.title, self.subtitletime, int(getSetting('playnext.sub.seconds')), remaining_time), level=log_utils.LOGDEBUG)
 											self.subtitletime = int(getSetting('playnext.sub.seconds'))
-										if (remaining_time < (int(self.subtitletime) + 1) or remaining_time < int(self.playnext_min)) and remaining_time != 0:
+										if (remaining_time < (int(self.subtitletime) + 1) or remaining_time < int(self.playnext_min)) and remaining_time > 0:
 											if self.debuglog:
 													log_utils.log('Playnext triggered by method subtitle. IMDB: %s Title: %s Subtitle Time Used: %s Current Time: %s' % (self.imdb, self.title, self.subtitletime, remaining_time), level=log_utils.LOGDEBUG)
 											xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_nextWindowXML)')
@@ -556,7 +581,7 @@ class Player(xbmc.Player):
 		return playing and playingvideo and playTime
 
 	def libForPlayback(self):
-		if self.DBID is None: return
+		if not self.DBID: return
 		try:
 			if self.media_type == 'movie':
 				rpc = '{"jsonrpc": "2.0", "method": "VideoLibrary.SetMovieDetails", "params": {"movieid": %s, "playcount": 1 }, "id": 1 }' % str(self.DBID)
@@ -660,7 +685,9 @@ class Player(xbmc.Player):
 				self.scrobble_sent = True
 				watcher = self.getWatchedPercent()
 				seekable = (int(self.current_time) > 180 and (watcher < int(self.markwatched_percentage)))
-				if watcher >= int(self.markwatched_percentage): self.libForPlayback() # only write playcount to local lib
+				if watcher >= int(self.markwatched_percentage):
+					self.libForPlayback() # only write playcount to local lib
+					if _scrobble_source == '0' and getSetting('localnotify') == 'true': control.notification(title=self.title, message=getLS(35510))
 				if getSetting('crefresh') == 'true' and seekable:
 					log_utils.log('container.refresh issued', level=log_utils.LOGDEBUG)
 					control.refresh() #not all skins refresh after playback stopped
@@ -687,12 +714,13 @@ class Player(xbmc.Player):
 				if self.mdblistCredentials and (_scrobble_source == '3' or getSetting('mdblist.markwatched') == 'true'):
 					Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, service='mdblist', title=self.title, tvshowtitle=self.title, year=self.year, already_watched=self.watched_during_playback)
 			self.scrobble_sent = True
+			if _scrobble_source == '0' and getSetting('localnotify') == 'true': control.notification(title=self.title, message=getLS(35510))
 			try:
 				playingfile = Player.isPlaying()
 			except:
 				playingfile = False
 			log_utils.log('onPlayBackEnded Playlist Position: %s isPlaying: %s' % (control.playlist.getposition(), playingfile), level=log_utils.LOGDEBUG)
-			if control.playlist.getposition() == control.playlist.size() or control.playlist.size() == 1 or (control.playlist.getposition() == 0 and playerWindow.getProperty('playnextPlayPressed') == '0'):
+			if control.playlist.getposition() == control.playlist.size() or control.playlist.size() == 1 or (control.playlist.getposition() == 0 and playerWindow.getProperty('umbrella.playnextPlayPressed') == '0'):
 				control.playlist.clear()
 			log_utils.log('onPlayBackEnded callback', level=log_utils.LOGDEBUG)
 			#control.checkforSkin(action='off')
@@ -737,7 +765,7 @@ class PlayNext(xbmc.Player):
 			else: return
 			if self.playing_file != self.getPlayingFile(): return
 			if not self.isPlayingVideo(): return
-			if control.getCurrentWindowId != 12005: return
+			if not xbmc.getCondVisibility('Window.IsVisible(fullscreenvideo)'): return
 			target()
 
 	def isStill_watching(self):
@@ -856,11 +884,15 @@ class PlayNext(xbmc.Player):
 	def prescrapeNext(self):
 		try:
 			if getSetting('play.mode.tv') == '0': return
-			if control.playlist.size() > 0 and control.playlist.getposition() != (control.playlist.size() - 1):
+			playlist_pos = control.playlist.getposition()
+			playlist_size = control.playlist.size()
+			if playlist_size > 0 and playlist_pos != (playlist_size - 1):
 				from resources.lib.modules import sources
 				from resources.lib.database import providerscache
 				next_meta=self.getNext_meta()
-				if not next_meta: raise Exception()
+				if not next_meta:
+					if self.debuglog: log_utils.log('prescrapeNext: next_meta is None - cannot prescrape', level=log_utils.LOGWARNING)
+					raise Exception()
 				title = next_meta.get('title')
 				year = next_meta.get('year')
 				imdb = next_meta.get('imdb')
@@ -870,11 +902,13 @@ class PlayNext(xbmc.Player):
 				episode = next_meta.get('episode')
 				tvshowtitle = next_meta.get('tvshowtitle')
 				premiered = next_meta.get('premiered')
+				if self.debuglog: log_utils.log('prescrapeNext: scraping sources for "%s" S%sE%s' % (tvshowtitle, season, episode), level=log_utils.LOGDEBUG)
 				next_sources = providerscache.get(sources.Sources().getSources, self.providercache_hours, title, year, imdb, tmdb, tvdb, str(season), str(episode), tvshowtitle, premiered, next_meta, True)
 				if not self.isPlayingVideo():
 					return playerWindow.clearProperty('umbrella.preResolved_nextUrl')
 				sources.Sources().preResolve(next_sources, next_meta)
 			else:
+				if self.debuglog: log_utils.log('prescrapeNext: at end of playlist (size=%s pos=%s) - clearing preResolved' % (playlist_size, playlist_pos), level=log_utils.LOGWARNING)
 				playerWindow.clearProperty('umbrella.preResolved_nextUrl')
 		except:
 			log_utils.error()
@@ -1033,21 +1067,6 @@ class Subtitles:
 				if Player().isPlayback():
 					control.sleep(500)
 					control.notification(title=filename, message=getLS(40506) % lang.upper())
-			if self.playnext_method== '2' and getSetting('enable.playnext')== 'true' and Player().subtitletime == None: #added to check for playnext using subtitles if downloaded.
-				times = []
-				pattern = r'(\d{2}:\d{2}:\d{2},d{3}$)|(\d{2}:\d{2}:\d{2})'
-				with control.openFile(subtitles) as file:
-					text = file.read()
-					times = re.findall(pattern, text)
-					times = times[len(times)-4][-1]
-					file.close()
-				if len(times) > 0:
-					total_time = Player().media_length
-					h, m, s = str(times).split(':')
-					totalSeconds =  int(h) * 3600 + int(m) * 60 + int(s)
-					Player().subtitletime = int(total_time) - int(totalSeconds)
-				else:
-					Player().subtitletime = 'default'
 		except: log_utils.error()
 
 	def downloadForPlayNext(self,  title, year, imdb, season, episode, media_length):
@@ -1082,6 +1101,10 @@ class Subtitles:
 					return playnextTime
 			except:
 				log_utils.error()
+				return 'default'
+			if getSetting('subtitles') == 'true':
+				# Auto-download is enabled; get() handles the download and writes the temp file.
+				# Temp file not found yet means get() is still running — don't download twice.
 				return 'default'
 			try:
 				quality = ['bluray', 'hdrip', 'brrip', 'bdrip', 'dvdrip', 'webrip', 'hdtv']

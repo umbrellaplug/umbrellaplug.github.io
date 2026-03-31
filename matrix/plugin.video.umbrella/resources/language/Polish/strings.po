@@ -3366,7 +3366,7 @@ msgid "[COLOR %s][B]Force Trakt Sync to local database[/B][/COLOR]"
 msgstr "[COLOR %s][B]Wymuś synchronizację Trakt z lokalną bazą danych[/B][/COLOR]"
 
 msgctxt "#35067"
-msgid ""
+msgid "[COLOR %s][B]Delete Trakt Sync Database[/B][/COLOR]"
 msgstr ""
 
 msgctxt "#35068"

@@ -23,7 +23,10 @@ def fetch_movie(imdb, tmdb):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return list
 
 def fetch_show(imdb=None, tmdb=None, tvdb=None):
@@ -44,7 +47,10 @@ def fetch_show(imdb=None, tmdb=None, tvdb=None):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return list
 
 def fetch_season(imdb=None, tmdb=None, tvdb=None, season=None):
@@ -65,7 +71,10 @@ def fetch_season(imdb=None, tmdb=None, tvdb=None, season=None):
 		
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return list
 
 def fetch_episode(imdb=None, tmdb=None, tvdb=None, season=None, episode=None):
@@ -85,7 +94,10 @@ def fetch_episode(imdb=None, tmdb=None, tvdb=None, season=None, episode=None):
 	except:
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return list
 
 def manager(**kwargs):
@@ -309,7 +321,10 @@ def delete_artwork(**kwargs):
 		except:
 			log_utils.error()
 		finally:
-			dbcur.close() ; dbcon.close()
+			try: dbcur.close()
+			except: pass
+			try: dbcon.close()
+			except: pass
 	elif kwargs.get('media_type') == 'show':
 		try:
 			dbcon = get_connection()
@@ -327,7 +342,10 @@ def delete_artwork(**kwargs):
 		except:
 			log_utils.error()
 		finally:
-			dbcur.close() ; dbcon.close()
+			try: dbcur.close()
+			except: pass
+			try: dbcon.close()
+			except: pass
 	elif kwargs.get('media_type') == 'season':
 		try:
 			dbcon = get_connection()
@@ -346,7 +364,10 @@ def delete_artwork(**kwargs):
 		except:
 			log_utils.error()
 		finally:
-			dbcur.close() ; dbcon.close()
+			try: dbcur.close()
+			except: pass
+			try: dbcon.close()
+			except: pass
 	elif kwargs.get('media_type') == 'episode':
 		try:
 			dbcon = get_connection()
@@ -366,7 +387,10 @@ def delete_artwork(**kwargs):
 		except:
 			log_utils.error()
 		finally:
-			dbcur.close() ; dbcon.close()
+			try: dbcur.close()
+			except: pass
+			try: dbcon.close()
+			except: pass
 	else:
 		pass
 
@@ -390,7 +414,10 @@ def delete_artwork_one_item(**kwargs):
 		except:
 			log_utils.error()
 		finally:
-			dbcur.close() ; dbcon.close()
+			try: dbcur.close()
+			except: pass
+			try: dbcon.close()
+			except: pass
 	elif kwargs.get('media_type') == 'show':
 		try:
 			dbcon = get_connection()
@@ -409,7 +436,10 @@ def delete_artwork_one_item(**kwargs):
 		except:
 			log_utils.error()
 		finally:
-			dbcur.close() ; dbcon.close()
+			try: dbcur.close()
+			except: pass
+			try: dbcon.close()
+			except: pass
 	elif kwargs.get('media_type') == 'season':
 		try:
 			dbcon = get_connection()
@@ -429,7 +459,10 @@ def delete_artwork_one_item(**kwargs):
 		except:
 			log_utils.error()
 		finally:
-			dbcur.close() ; dbcon.close()
+			try: dbcur.close()
+			except: pass
+			try: dbcon.close()
+			except: pass
 	elif kwargs.get('media_type') == 'episode':
 		try:
 			dbcon = get_connection()
@@ -450,7 +483,10 @@ def delete_artwork_one_item(**kwargs):
 		except:
 			log_utils.error()
 		finally:
-			dbcur.close() ; dbcon.close()
+			try: dbcur.close()
+			except: pass
+			try: dbcon.close()
+			except: pass
 
 def add_movie_entry(**kwargs):
 	try:
@@ -471,7 +507,10 @@ def add_movie_entry(**kwargs):
 	except:
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def add_show_entry(**kwargs):
 	try:
@@ -492,7 +531,10 @@ def add_show_entry(**kwargs):
 	except:
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def add_season_entry(**kwargs):
 	try:
@@ -514,7 +556,10 @@ def add_season_entry(**kwargs):
 	except:
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def add_episode_entry(**kwargs):
 	try:
@@ -537,7 +582,10 @@ def add_episode_entry(**kwargs):
 	except:
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def get_connection(setRowFactory=False):
 	if not existsPath(dataPath): makeFile(dataPath)

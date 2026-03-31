@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.60">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.61">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -235,10 +235,18 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.60 - Mar 25th, 2026[/B]
---[Fix] Made force trakt sync delete actual local database file first to fix malformed trakt databases.
---[Change] Removed ISO files from results.
-
+[B]Update - v6.7.61 - Mar 30th, 2026 [/B]
+--[Change] Made changes to the trakt force sync to no longer delete database and added individual option to do it.
+--[Fix] Fix for Trakt sync error causing endless sync when user has no liked lists.
+--[Fix] Made a change to mark episode as watched using a thread to stop blocking other processses.
+--[Fix] Moved prescrape variables to homescreen properties instead of player window properties to avoid race conditions.
+--[Fix] Real-Debrid error notifications (internal_error, connection errors) are now suppressed during background pre-resolve so they no longer pop up on-screen mid-playback.
+--[Fix] Fixed Real-Debrid server notifications setting being ignored.
+--[Fix] Changes for playnext total time remaining calculation.
+--[Fix] Changes to the way json is read back from kodi.
+--[Fix] Changes for those using reuselanguageInvoker
+--[Fix] Changes for trakt key and storage.
+--[Change] Changed the way online services popup and scrobble services popup looked. motivated by pov so credit to kfw.
 		</news>
 	</extension>
 

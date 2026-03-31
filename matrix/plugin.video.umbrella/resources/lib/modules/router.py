@@ -1005,6 +1005,9 @@ def router(argv2):
 		elif action == 'tools_forceTraktSync':
 			from resources.lib.modules import trakt
 			trakt.force_traktSync()
+		elif action == 'tools_deleteTraktSyncDatabase':
+			from resources.lib.modules import trakt
+			trakt.delete_traktSyncDatabase()
 		elif action == 'tools_forceSimklSync':
 			from resources.lib.modules import simkl
 			simkl.force_simklSync(silent=False)

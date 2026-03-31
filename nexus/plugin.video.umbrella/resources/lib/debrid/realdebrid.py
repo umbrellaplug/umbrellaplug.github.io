@@ -64,7 +64,7 @@ class RealDebrid:
 		self.device_code = ''
 		self.auth_timeout = 0
 		self.auth_step = 0
-		self.server_notifications = getSetting('realdebrid.server.notifications')
+		self.server_notifications = getSetting('realdebrid.server.notifications') == 'true'
 		self.store_to_cloud = getSetting('realdebrid.saveToCloud') == 'true'
 		self.highlightColor = control.setting('highlight.color')
 
@@ -84,7 +84,7 @@ class RealDebrid:
 				url += "&auth_token=%s" % self.token
 			response = session.get(url, timeout=45) # cache checkiing of show packs results in random timeout at 30
 			if 'Temporarily Down For Maintenance' in response.text:
-				if self.server_notifications: control.notification(message='Real-Debrid Temporarily Down For Maintenance', icon=rd_icon)
+				if self.server_notifications and not control.homeWindow.getProperty('umbrella.preResolving'): control.notification(message='Real-Debrid Temporarily Down For Maintenance', icon=rd_icon)
 				log_utils.log('Real-Debrid Temporarily Down For Maintenance', level=log_utils.LOGWARNING)
 				return None
 			else: response = response.json()
@@ -94,7 +94,7 @@ class RealDebrid:
 					response = self._get(original_url, fail_check=True)
 			return response
 		except requests.exceptions.ConnectionError:
-			if self.server_notifications: control.notification(message='Failed to connect to Real-Debrid', icon=rd_icon)
+			if self.server_notifications and not control.homeWindow.getProperty('umbrella.preResolving'): control.notification(message='Failed to connect to Real-Debrid', icon=rd_icon)
 			log_utils.log('Failed to connect to Real-Debrid', __name__, log_utils.LOGWARNING)
 		except BaseException:
 			log_utils.error()
@@ -116,7 +116,7 @@ class RealDebrid:
 			response = session.post(url, data=data, timeout=15)
 			if '[204]' in str(response): return None
 			if 'Temporarily Down For Maintenance' in response.text:
-				if self.server_notifications: control.notification(message='Real-Debrid Temporarily Down For Maintenance', icon=rd_icon)
+				if self.server_notifications and not control.homeWindow.getProperty('umbrella.preResolving'): control.notification(message='Real-Debrid Temporarily Down For Maintenance', icon=rd_icon)
 				log_utils.log('Real-Debrid Temporarily Down For Maintenance', level=log_utils.LOGWARNING)
 				return None
 			else: response = response.json()
@@ -126,7 +126,7 @@ class RealDebrid:
 			elif 'error' in response:
 				message = response.get('error')
 				if message == 'action_already_done': return None
-				if self.server_notifications: control.notification(message=message, icon=rd_icon)
+				if self.server_notifications and not control.homeWindow.getProperty('umbrella.preResolving'): control.notification(message=message, icon=rd_icon)
 				log_utils.log('Real-Debrid Error:  %s' % message, log_utils.LOGWARNING)
 				return None
 			return response

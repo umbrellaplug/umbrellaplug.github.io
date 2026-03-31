@@ -798,37 +798,41 @@ class Sources:
 			log_utils.error()
 			return playerWindow.clearProperty('umbrella.preResolved_nextUrl')
 
-		for i in range(len(next_sources)):
-			try:
-				control.sleep(1000)
+		homeWindow.setProperty('umbrella.preResolving', 'true')
+		try:
+			for i in range(len(next_sources)):
 				try:
-					if control.monitor.abortRequested(): return sysexit()
-					url = self.sourcesResolve(next_sources[i])
-					if not url:
-						if self.debuglog:
-							log_utils.log('preResolve failed for : next_sources[i]=%s' % str(next_sources[i]), level=log_utils.LOGWARNING)
-						continue
-					# if not any(x in url.lower() for x in video_extensions):
-					if not any(x in self.url.lower() for x in video_extensions) and 'plex.direct:' not in self.url and 'torbox' not in self.url and 'tb-cdn' not in self.url and 'plugin://plugin.video.composite_for_plex' not in self.url:
-						if self.debuglog:
-							log_utils.log('preResolve Playback not supported for (sourcesAutoPlay()): %s' % url, level=log_utils.LOGWARNING)
-						continue
-					if url:
-						control.sleep(500)
-						player_hasVideo = control.condVisibility('Player.HasVideo')
-						if player_hasVideo: # do not setPropery if user stops playback quickly because "onPlayBackStopped" is already called and won't be able to clear it.
-							playerWindow.setProperty('umbrella.preResolved_nextUrl', url)
-							playerWindow.setProperty('umbrella.preResolved_season', str(next_meta.get('season', '')))
-							playerWindow.setProperty('umbrella.preResolved_episode', str(next_meta.get('episode', '')))
-							playerWindow.setProperty('umbrella.preResolved_imdb', str(next_meta.get('imdb', '')))
+					control.sleep(1000)
+					try:
+						if control.monitor.abortRequested(): return sysexit()
+						url = self.sourcesResolve(next_sources[i])
+						if not url:
 							if self.debuglog:
-								log_utils.log('preResolved_nextUrl : %s' % url, level=log_utils.LOGDEBUG)
-						else:
+								log_utils.log('preResolve failed for : next_sources[i]=%s' % str(next_sources[i]), level=log_utils.LOGWARNING)
+							continue
+						# if not any(x in url.lower() for x in video_extensions):
+						if not any(x in self.url.lower() for x in video_extensions) and 'plex.direct:' not in self.url and 'torbox' not in self.url and 'tb-cdn' not in self.url and 'plugin://plugin.video.composite_for_plex' not in self.url:
 							if self.debuglog:
-								log_utils.log('player_hasVideo = %s : skipping setting preResolved_nextUrl' % player_hasVideo, level=log_utils.LOGWARNING)
-						break
-				except: pass
-			except: log_utils.error()
+								log_utils.log('preResolve Playback not supported for (sourcesAutoPlay()): %s' % url, level=log_utils.LOGWARNING)
+							continue
+						if url:
+							control.sleep(500)
+							player_hasVideo = control.condVisibility('Player.HasVideo')
+							if player_hasVideo: # do not setPropery if user stops playback quickly because "onPlayBackStopped" is already called and won't be able to clear it.
+								playerWindow.setProperty('umbrella.preResolved_nextUrl', url)
+								playerWindow.setProperty('umbrella.preResolved_season', str(next_meta.get('season', '')))
+								playerWindow.setProperty('umbrella.preResolved_episode', str(next_meta.get('episode', '')))
+								playerWindow.setProperty('umbrella.preResolved_imdb', str(next_meta.get('imdb', '')))
+								if self.debuglog:
+									log_utils.log('preResolved_nextUrl : %s' % url, level=log_utils.LOGDEBUG)
+							else:
+								if self.debuglog:
+									log_utils.log('player_hasVideo = %s : skipping setting preResolved_nextUrl' % player_hasVideo, level=log_utils.LOGWARNING)
+							break
+					except: pass
+				except: log_utils.error()
+		finally:
+			homeWindow.clearProperty('umbrella.preResolving')
 		control.sleep(200)
 
 	def prepareSources(self):

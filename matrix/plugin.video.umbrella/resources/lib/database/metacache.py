@@ -19,7 +19,10 @@ def fetch(items, lang='en', user=''):
 			dbcur.execute('''CREATE TABLE IF NOT EXISTS meta (imdb TEXT, tmdb TEXT, tvdb TEXT, lang TEXT, user TEXT, item TEXT, time TEXT,
 			UNIQUE(imdb, tmdb, tvdb, lang, user));''')
 			dbcur.connection.commit()
-			dbcur.close() ; dbcon.close()
+			try: dbcur.close()
+			except: pass
+			try: dbcon.close()
+			except: pass
 			return items
 		t2 = int(time())
 	except:
@@ -110,7 +113,10 @@ def insert(meta):
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def cache_clear_meta():
 	cleared = False
@@ -126,7 +132,10 @@ def cache_clear_meta():
 		log_utils.error()
 		cleared = False
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return cleared
 
 def get_connection():

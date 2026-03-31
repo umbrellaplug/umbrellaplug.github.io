@@ -28,7 +28,10 @@ def fetch_watch_list(table):
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return list
 
 def insert_watch_list(items, table, new_sync=True):
@@ -86,7 +89,10 @@ def insert_watch_list(items, table, new_sync=True):
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def delete_watchList_items(items, table, col_name='mdblist'):
 	try:
@@ -111,7 +117,10 @@ def delete_watchList_items(items, table, col_name='mdblist'):
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def delete_mdb_tables(tables):
 	#Delete and vacuum the specified MDBList tables, and reset their service timestamps.
@@ -136,7 +145,10 @@ def delete_mdb_tables(tables):
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def last_sync(type):
 	last_sync_at = 0
@@ -154,7 +166,10 @@ def last_sync(type):
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return last_sync_at
 
 def get_connection(setRowFactory=False):
@@ -195,7 +210,10 @@ def upsert_watched_movie(imdb, tmdb='', title='', year='', last_watched_at=''):
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def upsert_watched_episode(show_imdb, show_tmdb='', show_tvdb='', season=0, episode=0, last_watched_at=''):
 	try:
@@ -208,7 +226,10 @@ def upsert_watched_episode(show_imdb, show_tmdb='', show_tvdb='', season=0, epis
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def delete_watched_movie(imdb):
 	try:
@@ -221,7 +242,10 @@ def delete_watched_movie(imdb):
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def delete_watched_episode(show_imdb, season, episode):
 	try:
@@ -234,7 +258,10 @@ def delete_watched_episode(show_imdb, season, episode):
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def get_watched_movies():
 	result = []
@@ -248,7 +275,10 @@ def get_watched_movies():
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return result
 
 def get_watched_episodes():
@@ -263,7 +293,10 @@ def get_watched_episodes():
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return result
 
 def update_last_watched_at(key='last_watched_at'):
@@ -278,7 +311,10 @@ def update_last_watched_at(key='last_watched_at'):
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 #Cache table (watched indicators cache)
 
@@ -299,7 +335,10 @@ def cache_get(key):
 		log_utils.error()
 		return None
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def cache_insert(key, value):
 	try:
@@ -313,7 +352,10 @@ def cache_insert(key, value):
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def cache_delete(key):
 	try:
@@ -327,7 +369,10 @@ def cache_delete(key):
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def cache_existing(function, *args):
 	try:
@@ -417,7 +462,10 @@ def fetch_bookmarks(imdb, tmdb='', tvdb='', season=None, episode=None, ret_all=N
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 	return progress
 
 def upsert_bookmark(tvshowtitle='', title='', resume_id='', imdb='', tmdb='', tvdb='', season='', episode='', genre='', mpaa='', studio='', duration='', percent_played='', paused_at=''):
@@ -437,7 +485,10 @@ def upsert_bookmark(tvshowtitle='', title='', resume_id='', imdb='', tmdb='', tv
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def clear_bookmarks():
 	try:
@@ -450,7 +501,10 @@ def clear_bookmarks():
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
 
 def delete_bookmark(imdb, tvdb='', season='', episode=''):
 	try:
@@ -465,4 +519,7 @@ def delete_bookmark(imdb, tvdb='', season='', episode=''):
 		from resources.lib.modules import log_utils
 		log_utils.error()
 	finally:
-		dbcur.close() ; dbcon.close()
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass

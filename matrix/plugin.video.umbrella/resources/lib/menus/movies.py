@@ -1416,16 +1416,20 @@ class Movies:
 	def trakt_list(self, url, user, folderName):
 		self.list = []
 		if ',return' in url: url = url.split(',return')[0]
-		items = trakt.getTraktAsJson(url)
+		if getSetting('trakt.paginate.lists') != 'true':
+			items = trakt.get_all_pages(url, silent=True)
+			next = ''
+		else:
+			items = trakt.getTraktAsJson(url)
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				if int(q['limit']) != len(items): raise Exception()
+				q.update({'page': str(int(q['page']) + 1)})
+				q = (urlencode(q)).replace('%2C', ',')
+				next = url.replace('?' + urlparse(url).query, '') + '?' + q
+				next = next + '&folderName=%s' % quote_plus(folderName)
+			except: next = ''
 		if not items: return
-		try:
-			q = dict(parse_qsl(urlsplit(url).query))
-			if int(q['limit']) != len(items): raise Exception()
-			q.update({'page': str(int(q['page']) + 1)})
-			q = (urlencode(q)).replace('%2C', ',')
-			next = url.replace('?' + urlparse(url).query, '') + '?' + q
-			next = next + '&folderName=%s' % quote_plus(folderName)
-		except: next = ''
 		watched_dates = trakt.getWatchedMoviesLastWatchedDates()
 		for item in items: # rating and votes via TMDb, or I must use "extended=full" and it slows down
 			try:

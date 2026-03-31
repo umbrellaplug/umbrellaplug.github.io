@@ -2675,6 +2675,10 @@ msgctxt "#35066"
 msgid "[COLOR %s][B]Force Trakt Sync to local database[/B][/COLOR]"
 msgstr ""
 
+msgctxt "#35067"
+msgid "[COLOR %s][B]Delete Trakt Sync Database[/B][/COLOR]"
+msgstr ""
+
 msgctxt "#35187"
 msgid "Rating"
 msgstr ""

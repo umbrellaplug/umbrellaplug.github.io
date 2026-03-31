@@ -8,7 +8,7 @@ from json import dumps as jsdumps, loads as jsloads
 import re
 import requests
 from requests.adapters import HTTPAdapter
-from threading import Thread
+from threading import Thread, Lock
 from urllib3.util.retry import Retry
 from urllib.parse import urljoin
 from resources.lib.database import cache, traktsync
@@ -16,6 +16,7 @@ from resources.lib.modules import cleandate
 from resources.lib.modules import control
 from resources.lib.modules import log_utils
 import time
+import xbmcaddon as _xbmcaddon
 
 getLS = control.lang
 getSetting = control.setting
@@ -32,14 +33,21 @@ service_syncInterval = int(getSetting('background.service.syncInterval')) if get
 trakt_icon = control.joinPath(control.artPath(), 'trakt.png')
 #trakt_qr = control.joinPath(control.artPath(), 'traktqr.png')
 trakt_token = getSetting('trakt.user.token')
+_reauth_lock = Lock()
+_reauth_failed = False
+_REAUTH_BUSY_PROP = 'umbrella.trakt.reauth.busy'
+_TRAKT_TOKEN_PROP = 'umbrella.trakt.access_token'
+control.homeWindow.setProperty(_TRAKT_TOKEN_PROP, getSetting('trakt.user.token') or '')
 
 def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0):
 	try:
 		if not url.startswith(BASE_URL): url = urljoin(BASE_URL, url)
 		headers['trakt-api-key'] = traktClientID()
 		if post: post = jsdumps(post)
-		if getTraktCredentialsInfo(): 
-			current_token = getSetting('trakt.user.token')
+		if getTraktCredentialsInfo():
+			# Use homeWindow property — immediately updated after re_auth() succeeds,
+			# avoiding stale getSetting() cache causing repeat 401s on retry.
+			current_token = control.homeWindow.getProperty(_TRAKT_TOKEN_PROP) or getSetting('trakt.user.token')
 			headers['Authorization'] = 'Bearer %s' % current_token
 		if post:
 			response = session.post(url, data=post, headers=headers, timeout=20)
@@ -190,77 +198,99 @@ def get_all_pages(url, silent=False):
 		return None
 
 def re_auth(headers):
-	try:
-		authed_clientid = getSetting('trakt.authed.clientid')
-		current_clientid = traktClientID()
-		if authed_clientid and authed_clientid != current_clientid:
-			log_utils.log('TRAKT: Client ID mismatch detected in re_auth. Token was issued by a different client app. Re-authentication required.', level=log_utils.LOGWARNING)
-			control.notification(title=32315, message=40617)
-			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
-			setSetting('trakt.isauthed', 'false')
-			setSetting('trakt.user.token', '')
-			setSetting('trakt.refreshtoken', '')
-			setSetting('trakt.token.expires', '')
-			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
-			return False
-		oauth = urljoin(BASE_URL, '/oauth/token')
-		opost = {'client_id': traktClientID(), 'client_secret': traktClientSecret(), 'redirect_uri': REDIRECT_URI, 'grant_type': 'refresh_token', 'refresh_token': getSetting('trakt.refreshtoken')}
-		log_utils.log('TRAKT: Re-Authenticating with refresh token', level=log_utils.LOGINFO)
-		response = session.post(url=oauth, data=jsdumps(opost), headers=headers, timeout=20)
-		status_code = str(response.status_code)
-
-		error_handler(oauth, response, status_code)
-		if status_code not in ('401', '403', '405'):
-			try: 
-				response_json = response.json()
-			except Exception as e:
-				log_utils.log('TRAKT: JSON decode error in re_auth: %s - Response text: %s' % (str(e), response.text), level=log_utils.LOGWARNING)
-				return False
-			
-			if 'error' in response_json and response_json['error'] == 'invalid_grant':
-				log_utils.log('Please Re-Authorize your Trakt Account: %s : %s' % (status_code, str(response_json)), __name__, level=log_utils.LOGWARNING)
-				control.notification(title=32315, message=33677)
-				# Clear invalid tokens to force re-authorization
-				control.homeWindow.setProperty('umbrella.updateSettings', 'false')
-				setSetting('trakt.isauthed', 'false')
-				setSetting('trakt.user.token', '')
-				setSetting('trakt.refreshtoken', '')
-				setSetting('trakt.token.expires', '')
-				control.homeWindow.setProperty('umbrella.updateSettings', 'true')
-				return False
-			
-			token, refresh = response_json['access_token'], response_json['refresh_token']
-			log_utils.log('TRAKT: Re-authentication successful, new tokens received', level=log_utils.LOGINFO)
-			# Use Trakt's provided expiration time instead of hardcoded 24 hours
-			expires_from_trakt = response_json['expires_in']
-			expires = str(time.time() + expires_from_trakt)
-			log_utils.log('TRAKT: Umbrella Trakt Expire: %s Trakt Expire: %s' % (str(expires),str(expires_from_trakt)), level=log_utils.LOGINFO)
-			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
-			setSetting('trakt.isauthed', 'true')
-			setSetting('trakt.user.token', token)
-			setSetting('trakt.refreshtoken', refresh)
-			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
-			setSetting('trakt.token.expires', expires)
-			#control.addon('script.module.myaccounts').setSetting('trakt.user.token', token)
-			#control.addon('script.module.myaccounts').setSetting('trakt.refreshtoken', refresh)
-			#control.addon('script.module.myaccounts').setSetting('trakt.token.expires', expires)
-			log_utils.log('Trakt Token Successfully Re-Authorized: expires on %s' % str(datetime.fromtimestamp(float(expires))), level=log_utils.LOGDEBUG)
-			return True
-		else:
-			log_utils.log('Error while Re-Authorizing Trakt Token: %s : %s' % (status_code, response.text), level=log_utils.LOGWARNING)
-			# If we get 401/403/405 on refresh, the refresh token is invalid
-			if status_code in ('401', '403'):
-				log_utils.log('TRAKT: Refresh token appears to be invalid, clearing tokens', level=log_utils.LOGWARNING)
-				control.homeWindow.setProperty('umbrella.updateSettings', 'false')
-				setSetting('trakt.isauthed', 'false')
-				setSetting('trakt.user.token', '')
-				setSetting('trakt.refreshtoken', '')
-				setSetting('trakt.token.expires', '')
-				control.homeWindow.setProperty('umbrella.updateSettings', 'true')
-			return False
-	except Exception as e: 
-		log_utils.log('TRAKT: Exception in re_auth: %s' % str(e), level=log_utils.LOGWARNING)
+	global _reauth_failed
+	if _reauth_failed:
 		return False
+	# The expired token that triggered the 401 — used to detect if another thread already refreshed
+	expired_token = headers.get('Authorization', '').replace('Bearer ', '').strip()
+	with _reauth_lock:
+		if _reauth_failed:
+			return False
+		# Cross-process wait: if another process is currently refreshing, wait up to 5 s
+		for _ in range(10):
+			if control.homeWindow.getProperty(_REAUTH_BUSY_PROP) != 'true':
+				break
+			control.sleep(500)
+		# Double-check: read the token from the shared homeWindow property.
+		# homeWindow properties are immediately visible across ALL Kodi processes (no caching).
+		# If the token changed since we got our 401, another process already refreshed.
+		current_token = control.homeWindow.getProperty(_TRAKT_TOKEN_PROP)
+		if current_token and expired_token and current_token != expired_token:
+			return True  # Another thread/process already refreshed — caller will retry with new token
+		# Claim cross-process busy flag before making the HTTP call
+		control.homeWindow.setProperty(_REAUTH_BUSY_PROP, 'true')
+		try:
+			authed_clientid = getSetting('trakt.authed.clientid')
+			current_clientid = traktClientID()
+			if authed_clientid and authed_clientid != current_clientid:
+				log_utils.log('TRAKT: Client ID mismatch detected in re_auth. Token was issued by a different client app. Re-authentication required.', level=log_utils.LOGWARNING)
+				control.notification(title=32315, message=40617)
+				control.homeWindow.setProperty('umbrella.updateSettings', 'false')
+				setSetting('trakt.isauthed', 'false')
+				setSetting('trakt.user.token', '')
+				setSetting('trakt.refreshtoken', '')
+				setSetting('trakt.token.expires', '')
+				control.homeWindow.setProperty('umbrella.updateSettings', 'true')
+				_reauth_failed = True
+				return False
+			oauth = urljoin(BASE_URL, '/oauth/token')
+			opost = {'client_id': traktClientID(), 'client_secret': traktClientSecret(), 'redirect_uri': REDIRECT_URI, 'grant_type': 'refresh_token', 'refresh_token': getSetting('trakt.refreshtoken')}
+			log_utils.log('TRAKT: Re-Authenticating with refresh token', level=log_utils.LOGINFO)
+			response = session.post(url=oauth, data=jsdumps(opost), headers=headers, timeout=20)
+			status_code = str(response.status_code)
+			error_handler(oauth, response, status_code)
+			if status_code not in ('401', '403', '405'):
+				try:
+					response_json = response.json()
+				except Exception as e:
+					log_utils.log('TRAKT: JSON decode error in re_auth: %s - Response text: %s' % (str(e), response.text), level=log_utils.LOGWARNING)
+					_reauth_failed = True
+					return False
+				if 'access_token' not in response_json:
+					# Handles invalid_grant, invalid_client, Cloudflare rate limit JSON, or any other error response
+					log_utils.log('Please Re-Authorize your Trakt Account: %s : %s' % (status_code, str(response_json)), __name__, level=log_utils.LOGWARNING)
+					control.notification(title=32315, message=33677)
+					control.homeWindow.setProperty('umbrella.updateSettings', 'false')
+					setSetting('trakt.isauthed', 'false')
+					setSetting('trakt.user.token', '')
+					setSetting('trakt.refreshtoken', '')
+					setSetting('trakt.token.expires', '')
+					control.homeWindow.setProperty('umbrella.updateSettings', 'true')
+					_reauth_failed = True
+					return False
+				token, refresh = response_json['access_token'], response_json['refresh_token']
+				log_utils.log('TRAKT: Re-authentication successful, new tokens received', level=log_utils.LOGINFO)
+				expires_from_trakt = response_json['expires_in']
+				expires = str(time.time() + expires_from_trakt)
+				log_utils.log('TRAKT: Umbrella Trakt Expire: %s Trakt Expire: %s' % (str(expires), str(expires_from_trakt)), level=log_utils.LOGINFO)
+				control.homeWindow.setProperty('umbrella.updateSettings', 'false')
+				setSetting('trakt.isauthed', 'true')
+				setSetting('trakt.user.token', token)
+				setSetting('trakt.refreshtoken', refresh)
+				control.homeWindow.setProperty('umbrella.updateSettings', 'true')
+				setSetting('trakt.token.expires', expires)
+				# Publish new token immediately to homeWindow so other processes/threads
+				# see it in their double-check without waiting for xbmcaddon cache propagation.
+				control.homeWindow.setProperty(_TRAKT_TOKEN_PROP, token)
+				log_utils.log('Trakt Token Successfully Re-Authorized: expires on %s' % str(datetime.fromtimestamp(float(expires))), level=log_utils.LOGDEBUG)
+				return True
+			else:
+				log_utils.log('Error while Re-Authorizing Trakt Token: %s : %s' % (status_code, response.text), level=log_utils.LOGWARNING)
+				if status_code in ('401', '403'):
+					log_utils.log('TRAKT: Refresh token appears to be invalid, clearing tokens', level=log_utils.LOGWARNING)
+					control.homeWindow.setProperty('umbrella.updateSettings', 'false')
+					setSetting('trakt.isauthed', 'false')
+					setSetting('trakt.user.token', '')
+					setSetting('trakt.refreshtoken', '')
+					setSetting('trakt.token.expires', '')
+					control.homeWindow.setProperty('umbrella.updateSettings', 'true')
+				_reauth_failed = True
+				return False
+		except Exception as e:
+			log_utils.log('TRAKT: Exception in re_auth: %s' % str(e), level=log_utils.LOGWARNING)
+			return False
+		finally:
+			control.homeWindow.setProperty(_REAUTH_BUSY_PROP, '')
 
 def traktAuth(fromSettings=0):
 	try:
@@ -279,6 +309,7 @@ def traktAuth(fromSettings=0):
 			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 			control.setSetting('trakt.token.expires', str(expires_at))
 			control.setSetting('trakt.user.token', deviceCode["access_token"])
+			control.homeWindow.setProperty(_TRAKT_TOKEN_PROP, deviceCode["access_token"])
 			control.setSetting('trakt.scrobble', 'true')
 			control.setSetting('resume.source', '1')
 			control.setSetting('trakt.isauthed', 'true')
@@ -296,11 +327,16 @@ def traktAuth(fromSettings=0):
 			if fromSettings == 1:
 				control.openSettings('8.3', 'plugin.video.umbrella')
 			if not control.yesnoDialog('Do you want to set Trakt as your service for your watched and unwatched indicators?','','','Indicators', 'No', 'Yes'): return True
+			global _reauth_failed
+			_reauth_failed = False
+			control.homeWindow.setProperty(_REAUTH_BUSY_PROP, '')
 			control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 			control.setSetting('indicators.alt', '1')
 			control.setSetting('scrobble.source', '1')
 			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 			control.setSetting('indicators', 'Trakt')
+			control.notification(message='Trakt Indicators Enabled - Syncing Watched Data...')
+			Thread(target=sync_watched, kwargs={'forced': True}).start()
 			return True
 		if fromSettings == 1:
 				control.openSettings('8.3', 'plugin.video.umbrella')
@@ -337,6 +373,10 @@ def traktRevoke(fromSettings=0):
 			if getSetting('scrobble.source') == '1':
 				control.setSetting('scrobble.source', '0')
 			control.setSetting('trakt.markwatched', 'false')
+			global _reauth_failed
+			_reauth_failed = False
+			control.homeWindow.setProperty(_REAUTH_BUSY_PROP, '')
+			control.homeWindow.setProperty(_TRAKT_TOKEN_PROP, '')
 			if fromSettings == 1:
 				control.openSettings('8.3', 'plugin.video.umbrella')
 				control.dialog.ok(control.lang(32315), control.lang(40109))
@@ -1076,24 +1116,30 @@ def watchedMoviesTime(imdb):
 			if str(item['movie']['ids']['imdb']) == imdb: return item['last_watched_at']
 	except: log_utils.error()
 
+def _fetch_watched_movies_dates():
+	items = get_all_pages('/users/me/watched/movies')
+	if not items: return {}
+	return {str(i['movie']['ids']['imdb']): i.get('last_watched_at', '') for i in items if i.get('movie', {}).get('ids', {}).get('imdb')}
+
 def getWatchedMoviesLastWatchedDates():
 	"""Returns {imdb_id: last_watched_at} for all watched movies. Used to populate lastplayed for sort-by-date-watched on user lists."""
 	try:
 		if not getTraktCredentialsInfo(): return {}
-		items = get_all_pages('/users/me/watched/movies')
-		if not items: return {}
-		return {str(i['movie']['ids']['imdb']): i.get('last_watched_at', '') for i in items if i.get('movie', {}).get('ids', {}).get('imdb')}
+		return traktsync.get(_fetch_watched_movies_dates, 60) or {}
 	except:
 		log_utils.error()
 		return {}
+
+def _fetch_watched_shows_dates():
+	items = get_all_pages('/users/me/watched/shows')
+	if not items: return {}
+	return {str(i['show']['ids']['tvdb']): i.get('last_watched_at', '') for i in items if i.get('show', {}).get('ids', {}).get('tvdb')}
 
 def getWatchedShowsLastWatchedDates():
 	"""Returns {tvdb_id: last_watched_at} for all watched shows. Used to populate lastplayed for sort-by-date-watched on user lists."""
 	try:
 		if not getTraktCredentialsInfo(): return {}
-		items = get_all_pages('/users/me/watched/shows')
-		if not items: return {}
-		return {str(i['show']['ids']['tvdb']): i.get('last_watched_at', '') for i in items if i.get('show', {}).get('ids', {}).get('tvdb')}
+		return traktsync.get(_fetch_watched_shows_dates, 60) or {}
 	except:
 		log_utils.error()
 		return {}
@@ -1769,31 +1815,43 @@ def trakt_service_sync():
 			sync_trending_lists()
 		if control.monitor.waitForAbort(60*service_syncInterval): break
 
+def delete_traktSyncDatabase():
+	import os
+	if not control.yesnoDialog('Are you sure you want to delete the Trakt sync database? This will clear all cached Trakt data and force a full re-sync.', '', ''): return
+	try:
+		if os.path.exists(control.traktSyncFile):
+			os.remove(control.traktSyncFile)
+			control.notification(message='Trakt sync database deleted. Run Force Sync to rebuild.')
+			log_utils.log('TRAKT: traktsync database deleted by user.', level=log_utils.LOGINFO)
+		else:
+			control.notification(message='Trakt sync database not found.')
+	except Exception as e:
+		control.notification(message='Failed to delete Trakt sync database: %s' % str(e))
+		log_utils.log('TRAKT: delete_traktSyncDatabase failed: %s' % str(e), level=log_utils.LOGWARNING)
+
 def force_traktSync():
 	if not control.yesnoDialog(getLS(32056), '', ''): return
 	control.busy()
 
-	# delete the physical DB file so corruption can't block the sync
-	# tables are recreated fresh by each sync function via CREATE TABLE IF NOT EXISTS
-	import os
-	try:
-		if os.path.exists(control.traktSyncFile):
-			os.remove(control.traktSyncFile)
-	except Exception as e:
-		log_utils.log('TRAKT: force_traktSync failed to delete database: %s' % str(e), level=log_utils.LOGWARNING)
-	sync_playbackProgress(forced=True)
-	sync_hidden_progress(forced=True)
+	# Run lightweight syncs in parallel (no internal threading, safe on low-end devices)
+	lightweight = [
+		Thread(target=sync_playbackProgress, kwargs={'forced': True}),
+		Thread(target=sync_hidden_progress, kwargs={'forced': True}),
+		Thread(target=sync_collection, kwargs={'forced': True}),
+		Thread(target=sync_watch_list, kwargs={'forced': True}),
+	]
+	[t.start() for t in lightweight]
+	[t.join() for t in lightweight]
+	# Thread-spawning functions run sequentially to cap concurrency on low-end devices
+	sync_user_lists(forced=True)
 	sync_liked_lists(forced=True)
-	sync_collection(forced=True)
-	sync_watch_list(forced=True)
 	sync_popular_lists(forced=True)
 	sync_trending_lists(forced=True)
-	sync_user_lists(forced=True)
-	sync_watched(forced=True) # writes to traktsync.db as of 1-19-2022
-	sync_watchedProgress(forced=True, trigger_refresh=False) # Trakt progress sync
+	sync_watched(forced=True)
 	control.hide()
-	control.trigger_widget_refresh() # single refresh after full sync completes
-	control.notification(message='Forced Trakt Sync Complete')
+	control.trigger_widget_refresh() # refresh after watched sync, progress will refresh again when done
+	control.notification(message='Trakt Sync Complete - Progress List Updating...')
+	Thread(target=sync_watchedProgress, kwargs={'forced': True, 'trigger_refresh': True}).start()
 
 def sync_playbackProgress(activities=None, forced=False):
 	#log_utils.log('Trakt Sync Playback Called Forced: %s' % (str(forced)), level=log_utils.LOGDEBUG)
@@ -1836,7 +1894,6 @@ def sync_watched(activities=None, forced=False): # writes to traktsync.db as of 
 			cachesyncTVShows()
 			traktsync.insert_syncSeasons_at()
 			log_utils.log('Forced - Trakt Watched Sync Complete (movies + shows)', __name__, log_utils.LOGINFO)
-			control.sleep(5000)
 			service_syncSeasons()
 		else:
 			moviesWatchedActivity = getMoviesWatchedActivity(activities)
@@ -1874,7 +1931,6 @@ def sync_user_lists(activities=None, forced=False):
 				list_items = getTraktAsJson(list_link % (trakt_id, 'shows'), silent=True)
 				if not list_items or list_items == '[]': pass
 				else: i['content_type'] = 'mixed' if i['content_type'] == 'movies' else 'shows'
-				control.sleep(200)
 			traktsync.insert_user_lists(items)
 			log_utils.log('Forced - Trakt User Lists Sync Complete', __name__, log_utils.LOGDEBUG)
 		else:
@@ -1897,7 +1953,6 @@ def sync_user_lists(activities=None, forced=False):
 					list_items = getTraktAsJson(list_link % (trakt_id, 'shows'), silent=True)
 					if not list_items or list_items == '[]': pass
 					else: i['content_type'] = 'mixed' if i['content_type'] == 'movies' else 'shows'
-					control.sleep(200)
 				traktsync.insert_user_lists(items)
 	except: log_utils.error()
 
@@ -1915,7 +1970,7 @@ def sync_liked_lists(activities=None, forced=False):
 							'public_lists': False, 'shows_collection': False, 'shows_watchlist': False, 'user_lists': False, 'watched': False}
 			traktsync.delete_tables(clr_traktSync)
 			items = get_all_pages(link, silent=True)
-			if not items: return
+			if items is None: return
 			thrd_items = []
 			def items_list(i):
 				list_item = i.get('list', {})

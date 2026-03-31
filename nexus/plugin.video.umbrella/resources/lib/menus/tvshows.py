@@ -1214,16 +1214,20 @@ class TVshows:
 	def trakt_list(self, url, user, folderName):
 		self.list = []
 		if ',return' in url: url = url.split(',return')[0]
-		items = trakt.getTraktAsJson(url)
+		if getSetting('trakt.paginate.lists') != 'true':
+			items = trakt.get_all_pages(url, silent=True)
+			next = ''
+		else:
+			items = trakt.getTraktAsJson(url)
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				if int(q['limit']) != len(items): raise Exception()
+				q.update({'page': str(int(q['page']) + 1)})
+				q = (urlencode(q)).replace('%2C', ',')
+				next = url.replace('?' + urlparse(url).query, '') + '?' + q
+				next = next + '&folderName=%s' % quote_plus(folderName)
+			except: next = ''
 		if not items: return
-		try:
-			q = dict(parse_qsl(urlsplit(url).query))
-			if int(q['limit']) != len(items): raise Exception()
-			q.update({'page': str(int(q['page']) + 1)})
-			q = (urlencode(q)).replace('%2C', ',')
-			next = url.replace('?' + urlparse(url).query, '') + '?' + q
-			next = next + '&folderName=%s' % quote_plus(folderName)
-		except: next = ''
 		watched_dates = trakt.getWatchedShowsLastWatchedDates()
 		for item in items: # rating and votes via TMDb, or I must use `extended=full and it slows down
 			try:
@@ -1818,8 +1822,12 @@ class TVshows:
 			if self.list is None: self.list = []
 			try:
 				hidden = traktsync.fetch_hidden_progress()
-				hidden = [str(i['tvdb']) for i in hidden]
-				self.list = [i for i in self.list if i['tvdb'] not in hidden] # removes hidden progress items
+				hidden_imdb = {str(i['imdb']) for i in hidden if i.get('imdb')}
+				hidden_tvdb = {str(i['tvdb']) for i in hidden if i.get('tvdb')}
+				self.list = [i for i in self.list if not (
+					(i.get('imdb') and i['imdb'] in hidden_imdb) or
+					(i.get('tvdb') and i['tvdb'] in hidden_tvdb)
+				)] # removes dropped/hidden progress items
 				prior_week = int(re.sub(r'[^0-9]', '', (self.date_time - timedelta(days=7)).strftime('%Y-%m-%d')))
 				sorted_list = []
 				top_items = [i for i in self.list if i['premiered'] and (int(re.sub(r'[^0-9]', '', str(i['premiered']))) >= prior_week)]

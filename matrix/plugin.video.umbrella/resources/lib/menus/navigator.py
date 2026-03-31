@@ -460,6 +460,7 @@ class Navigator:
 		self.addDirectoryItem(35065, 'tools_traktLikedListManager', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#self.addDirectoryItem(40217, 'tools_traktImportListManager', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(35066, 'tools_forceTraktSync', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(35067, 'tools_deleteTraktSyncDatabase', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 
 	def viewTypeNavigator(self, folderName=''):
