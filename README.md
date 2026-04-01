@@ -5,7 +5,7 @@ Welcome to the umbrellaplug.github.io
 Compatible with Kodi 19, 20, and 21.
 
 ## Current Versions:
-Umbrella - 6.7.59
+Umbrella - 6.7.62
 Umbrella Repo - 2.2.6
 
 ## Installation Instructions:
@@ -37,7 +37,6 @@ Currently Supported Debrid Providers:
 - Real Debrid
 - Premiumize
 - TorBox
-- EasyDebrid
 - OffCloud
 
 Currently Supported Other Providers:

@@ -1,12 +1,3 @@
-[B]Update - v6.7.61 - Mar 30th, 2026 [/B]
---[Change] Made changes to the trakt force sync to no longer delete database and added individual option to do it.
---[Fix] Fix for Trakt sync error causing endless sync when user has no liked lists.
---[Fix] Made a change to mark episode as watched using a thread to stop blocking other processses.
---[Fix] Moved prescrape variables to homescreen properties instead of player window properties to avoid race conditions.
---[Fix] Real-Debrid error notifications (internal_error, connection errors) are now suppressed during background pre-resolve so they no longer pop up on-screen mid-playback.
---[Fix] Fixed Real-Debrid server notifications setting being ignored.
---[Fix] Changes for playnext total time remaining calculation.
---[Fix] Changes to the way json is read back from kodi.
---[Fix] Changes for those using reuselanguageInvoker
---[Fix] Changes for trakt key and storage.
---[Change] Changed the way online services popup and scrobble services popup looked. motivated by pov so credit to kfw.
+[B]Update - v6.7.62 - April 1st, 2026 [/B]
+--[Change] Made changes to allow users to set number of batches to use for Trakt. Settings: General > Performance
+--[Fix] Fixed issue with old hidden shows causing dropped not to sync from Trakt. You will need to "Drop" any shows previously hidden.

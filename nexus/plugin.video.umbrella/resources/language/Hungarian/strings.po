@@ -5789,3 +5789,7 @@ msgstr ""
 msgctxt "#40664"
 msgid "Visit offcloud.com/activate and enter the code shown"
 msgstr ""
+
+msgctxt "#40665"
+msgid "Performance"
+msgstr ""

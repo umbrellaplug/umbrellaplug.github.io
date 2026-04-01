@@ -887,6 +887,29 @@
 					</control>
 				</setting>
 			</group>
+			<group id="6" label="40665">
+				<setting id="dev.batch.unlimited" type="boolean" label="40663" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="dev.batch.size" type="integer" label="40662" help="">
+					<level>0</level>
+					<default>20</default>
+					<constraints>
+						<minimum>1</minimum>
+						<maximum>100</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition operator="is" setting="dev.batch.unlimited">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+			</group>
 		</category>
 		<category id="navigation" label="32621" help="40184">
 			<group id="1" label="32005">
@@ -6832,35 +6855,6 @@
 						</dependency>
 					</dependencies>
 					<control type="toggle"/>
-				</setting>
-				<setting id="dev.batch.unlimited" type="boolean" label="40663" help="">
-					<level>0</level>
-					<default>false</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="dev.mode.enable">true</condition>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="dev.batch.size" type="integer" label="40662" help="">
-					<level>0</level>
-					<default>10</default>
-					<constraints>
-						<minimum>1</minimum>
-						<maximum>100</maximum>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="dev.mode.enable">true</condition>
-						</dependency>
-						<dependency type="enable">
-							<condition operator="is" setting="dev.batch.unlimited">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="slider" format="integer">
-						<popup>false</popup>
-					</control>
 				</setting>
 			</group>
 		</category>

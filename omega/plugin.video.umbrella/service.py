@@ -220,17 +220,17 @@ class VersionIsUpdateCheck:
 			if isUpdate:
 				window.setProperty('umbrella.updated', 'true')
 				curVersion = control.getUmbrellaVersion()
-				clearDB_version = '6.5.58' # set to desired version to force any db clearing needed
+				clearDB_version = '6.7.60' # set to desired version to force any db clearing needed
 				do_cacheClear = (int(oldVersion.replace('.', '')) < int(clearDB_version.replace('.', '')) <= int(curVersion.replace('.', '')))
 				if do_cacheClear:
 					clr_fanarttv = False
-					cache.clrCache_version_update(clr_providers=False, clr_metacache=True, clr_cache=True, clr_search=False, clr_bookmarks=False)
+					cache.clrCache_version_update(clr_providers=False, clr_metacache=False, clr_cache=False, clr_search=False, clr_bookmarks=False)
 					from resources.lib.database import traktsync
-					clr_traktSync = {'bookmarks': False, 'hiddenProgress': False, 'liked_lists': False, 'movies_collection': False, 'movies_watchlist': False, 'popular_lists': False,
+					clr_traktSync = {'bookmarks': False, 'hiddenProgress': True, 'liked_lists': False, 'movies_collection': False, 'movies_watchlist': False, 'popular_lists': False,
 											'public_lists': False, 'shows_collection': False, 'shows_watchlist': False, 'trending_lists': False, 'user_lists': False, 'watched': False}
 					cleared = traktsync.delete_tables(clr_traktSync)
 					from resources.lib.database import simklsync
-					clr_simklsync = {'movies_plantowatch': True, 'shows_plantowatch': True, 'shows_watching': True, 'shows_hold': True, 'movies_dropped': True, 'shows_dropped': True, 'watched': True, 'movies_completed': True, 'shows_completed': True}
+					clr_simklsync = {'movies_plantowatch': False, 'shows_plantowatch': False, 'shows_watching': False, 'shows_hold': False, 'movies_dropped': False, 'shows_dropped': False, 'watched': False, 'movies_completed': False, 'shows_completed': False}
 					cleared2 = simklsync.delete_tables(clr_simklsync)
 					if cleared:
 						control.notification(message='Forced traktsync clear for version update complete.')
