@@ -795,7 +795,13 @@ class TVshows(TMDb):
 			try: tmdblogo_path = [i['file_path'] for i in result['images']['logos'] if 'file_path' in i if i['file_path'].endswith('png')][0]
 			except: tmdblogo_path = ''
 			meta['tmdblogo'] = '%s%s' % (self.fanart_path, tmdblogo_path) if tmdblogo_path else ''
-			try: meta['duration'] = min(result['episode_run_time']) * 60
+			try:
+				run_times = result.get('episode_run_time') or []
+				if run_times:
+					meta['duration'] = min(run_times) * 60
+				else:
+					last_ep_runtime = (result.get('last_episode_to_air') or {}).get('runtime')
+					meta['duration'] = int(last_ep_runtime) * 60 if last_ep_runtime else ''
 			except: meta['duration'] = ''
 			meta['premiered'] = str(result.get('first_air_date', '')) if result.get('first_air_date') else ''
 			try: meta['year'] = meta['premiered'][:4]

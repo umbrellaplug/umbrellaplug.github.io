@@ -1,3 +1,3 @@
-[B]Update - v6.7.62 - April 1st, 2026 [/B]
---[Change] Made changes to allow users to set number of batches to use for Trakt. Settings: General > Performance
---[Fix] Fixed issue with old hidden shows causing dropped not to sync from Trakt. You will need to "Drop" any shows previously hidden.
+[B]Update - v6.7.63 - April 7th, 2026 [/B]
+--[Change] Added fix for episodes without runtimes to prevent false values.
+--[Fix] Added MDBList to services checked when loading my tv shows or my movies.

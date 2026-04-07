@@ -681,7 +681,7 @@ class Navigator:
 			return
 
 	def accountCheck(self):
-		if not self.traktCredentials and not self.simklCredentials and not self.tmdbCredentials:
+		if not self.traktCredentials and not self.simklCredentials and not self.tmdbCredentials and not self.mdblistCredentials:
 			control.hide()
 			control.notification(message=32042, icon='WARNING')
 			sysexit()
