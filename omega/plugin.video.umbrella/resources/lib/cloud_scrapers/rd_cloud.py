@@ -108,6 +108,7 @@ class source:
 							link = file.get('download')
 							size = file.get('bytes', '')
 						else:
+							if index_pos >= len(torrent_info['links']): continue
 							link = torrent_info['links'][index_pos]
 							size = file.get('bytes', '')
 						
