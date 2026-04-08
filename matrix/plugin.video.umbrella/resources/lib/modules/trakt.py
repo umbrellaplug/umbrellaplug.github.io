@@ -49,10 +49,19 @@ def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0):
 			# avoiding stale getSetting() cache causing repeat 401s on retry.
 			current_token = control.homeWindow.getProperty(_TRAKT_TOKEN_PROP) or getSetting('trakt.user.token')
 			headers['Authorization'] = 'Bearer %s' % current_token
-		if post:
-			response = session.post(url, data=post, headers=headers, timeout=20)
-		else:
-			response = session.get(url, headers=headers, timeout=20)
+		for _attempt in range(2):
+			try:
+				if post:
+					response = session.post(url, data=post, headers=headers, timeout=20)
+				else:
+					response = session.get(url, headers=headers, timeout=20)
+				break
+			except requests.exceptions.ConnectionError:
+				if _attempt == 0:
+					log_utils.log('getTrakt: connection reset, retrying with fresh connection...', level=log_utils.LOGDEBUG)
+					session.close()
+				else:
+					raise
 		status_code = str(response.status_code)
 		error_handler(url, response, status_code, silent=silent)
 		if response and status_code in ('200', '201'):

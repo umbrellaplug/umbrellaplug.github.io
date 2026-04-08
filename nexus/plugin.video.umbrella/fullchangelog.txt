@@ -1,3 +1,7 @@
+[B]Update - v6.7.64 - April 7th, 2026 [/B]
+--[Change] Made changes for trakt re-try logic.
+--[Fix] Changed MDBList scrobble episode due to errors from api.
+
 [B]Update - v6.7.63 - April 7th, 2026 [/B]
 --[Change] Added fix for episodes without runtimes to prevent false values.
 --[Fix] Added MDBList to services checked when loading my tv shows or my movies.

@@ -251,22 +251,26 @@ def services_syncs():
 			internets = None
 			from resources.lib.modules import log_utils
 			log_utils.error()
+		if control.monitor.abortRequested(): break
 		if internets and trakt.getTraktCredentialsInfo(): # run service in case user auth's trakt later
 			from resources.lib.modules import log_utils
 			log_utils.log('Trakt Sync Service is running.', 1)
 			activities = trakt.getTraktAsJson('/sync/last_activities', silent=True)
-			if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '1':
-				trakt.sync_playbackProgress(activities)
-			trakt.sync_watchedProgress(activities, trigger_refresh=False)
-			if getSetting('indicators.alt') == '1':
-				trakt.sync_watched(activities) # writes to traktsync.db as of 1-19-2022
-			trakt.sync_user_lists(activities)
-			trakt.sync_liked_lists(activities)
-			trakt.sync_hidden_progress(activities)
-			trakt.sync_collection(activities)
-			trakt.sync_watch_list(activities)
-			trakt.sync_popular_lists()
-			trakt.sync_trending_lists()
+			if not control.monitor.abortRequested():
+				if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '1':
+					trakt.sync_playbackProgress(activities)
+				trakt.sync_watchedProgress(activities, trigger_refresh=False)
+			if not control.monitor.abortRequested():
+				if getSetting('indicators.alt') == '1':
+					trakt.sync_watched(activities) # writes to traktsync.db as of 1-19-2022
+				trakt.sync_user_lists(activities)
+				trakt.sync_liked_lists(activities)
+				trakt.sync_hidden_progress(activities)
+				trakt.sync_collection(activities)
+				trakt.sync_watch_list(activities)
+				trakt.sync_popular_lists()
+				trakt.sync_trending_lists()
+		if control.monitor.abortRequested(): break
 		if internets and simkl.getSimKLCredentialsInfo():
 			current_time = time.time()
 			if (current_time - last_simkl_sync) >= (60 * simkl_syncInterval):
@@ -274,24 +278,29 @@ def services_syncs():
 				activities = json.dumps(activities)
 				from resources.lib.modules import log_utils
 				log_utils.log('SimKl Sync Service is running.', 1)
-				if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '2':
-					simkl.sync_playbackProgress(forced=True)
-				simkl.sync_watchedProgress(activities)
-				if getSetting('indicators.alt') == '2':
-					simkl.sync_watched(activities) #
-				simkl.sync_all_watchlists(activities)
+				if not control.monitor.abortRequested():
+					if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '2':
+						simkl.sync_playbackProgress(forced=True)
+					simkl.sync_watchedProgress(activities)
+				if not control.monitor.abortRequested():
+					if getSetting('indicators.alt') == '2':
+						simkl.sync_watched(activities) #
+					simkl.sync_all_watchlists(activities)
 				last_simkl_sync = current_time
+		if control.monitor.abortRequested(): break
 		if internets and mdblist.getMDBListCredentialsInfo():
 			current_time = time.time()
 			if (current_time - last_mdblist_sync) >= (60 * mdblist_syncInterval):
 				activities = mdblist.getActivities()
 				from resources.lib.modules import log_utils
 				log_utils.log('MDBList Sync Service is running.', 1)
-				if getSetting('indicators.alt') == '3':
-					mdblist.sync_watchedProgress(activities)
-				mdblist.sync_watch_list(activities)
-				if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '3':
-					mdblist.sync_playbackProgress()
+				if not control.monitor.abortRequested():
+					if getSetting('indicators.alt') == '3':
+						mdblist.sync_watchedProgress(activities)
+					mdblist.sync_watch_list(activities)
+				if not control.monitor.abortRequested():
+					if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '3':
+						mdblist.sync_playbackProgress()
 				last_mdblist_sync = current_time
 		if control.monitor.waitForAbort(60*service_syncInterval): break
 
