@@ -3176,15 +3176,6 @@
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<or>
-								<condition operator="!is" setting="trakt.user.token"/>
-								<condition operator="!is" setting="simkltoken"/>
-								<condition operator="!is" setting="mdblist.api"/>
-							</or>
-						</dependency>
-					</dependencies>
 					<control type="button" format="action">
 						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_indicators)</data>
 						<close>true</close>
@@ -3196,15 +3187,6 @@
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<or>
-								<condition operator="!is" setting="trakt.user.token"/>
-								<condition operator="!is" setting="simkltoken"/>
-								<condition operator="!is" setting="mdblist.api"/>
-							</or>
-						</dependency>
-					</dependencies>
 					<control type="button" format="action">
 						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_scrobble)</data>
 						<close>true</close>

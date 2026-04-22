@@ -828,18 +828,10 @@ class PlayNext(xbmc.Player):
 				if self.debuglog:
 					log_utils.log('Show Playnext Theme Netflix No Aura.', level=log_utils.LOGDEBUG)
 				window = PlayNextXML('auraplaynext2.xml', control.addonPath(control.addonId()), meta=next_meta)
-			elif self.playnext_theme == '1' and (control.skin in ('skin.arctic.horizon.2')):
+			elif self.playnext_theme == '1':
 				if self.debuglog:
-					log_utils.log('Show Playnext Theme AH2 with AH2 Skin', level=log_utils.LOGDEBUG)
-				window = PlayNextXML('ahplaynext2.xml', control.addonPath(control.addonId()), meta=next_meta)
-			elif self.playnext_theme == '1' and control.skin in ('skin.arctic.fuse'):
-				if self.debuglog:
-					log_utils.log('Show Playnext Theme AH2 with Arctic Fuse Skin.', level=log_utils.LOGDEBUG)
+					log_utils.log('Show Playnext Theme AH2.', level=log_utils.LOGDEBUG)
 				window = PlayNextXML('ahplaynext3.xml', control.addonPath(control.addonId()), meta=next_meta)
-			elif self.playnext_theme == '1' and control.skin not in ('skin.arctic.horizon.2') and control.skin not in ('skin.arctic.fuse'):
-				if self.debuglog:
-					log_utils.log('Show Playnext Theme AH2 without AH2 or AF.', level=log_utils.LOGDEBUG)
-				window = PlayNextXML('ahplaynext2.xml', control.addonPath(control.addonId()), meta=next_meta)
 			elif self.playnext_theme == '3':
 				if self.debuglog:
 					log_utils.log('Show Playnext Theme Arctic Fuse.', level=log_utils.LOGDEBUG)
@@ -866,12 +858,8 @@ class PlayNext(xbmc.Player):
 				window = StillWatchingXML('auraplaynext_stillwatching.xml', control.addonPath(control.addonId()), meta=next_meta)
 			elif self.playnext_theme == '2'and control.skin not in ('skin.auramod'):
 				window = StillWatchingXML('auraplaynext_stillwatching2.xml', control.addonPath(control.addonId()), meta=next_meta)
-			elif self.playnext_theme == '1' and control.skin in ('skin.arctic.horizon.2'):
-				window = StillWatchingXML('ahplaynext_stillwatching2.xml', control.addonPath(control.addonId()), meta=next_meta)
-			elif self.playnext_theme == '1' and control.skin in ('skin.arctic.fuse'):
+			elif self.playnext_theme == '1':
 				window = StillWatchingXML('ahplaynext_stillwatching3.xml', control.addonPath(control.addonId()), meta=next_meta)
-			elif self.playnext_theme == '1' and control.skin not in ('skin.arctic.horizon.2') and control.skin not in ('skin.arctic.fuse'):
-				window = StillWatchingXML('ahplaynext_stillwatching2.xml', control.addonPath(control.addonId()), meta=next_meta)
 			elif self.playnext_theme == '3':
 				window = StillWatchingXML('ahplaynext_stillwatching4.xml', control.addonPath(control.addonId()), meta=next_meta)
 			else:
@@ -1384,6 +1372,10 @@ class Bookmarks:
 			else:
 				if not skip_scrobble and (seekable or percent >= int(markwatched_percentage)):
 					trakt.scrobbleMovie(imdb, tmdb, percent) if media_type == 'movie' else trakt.scrobbleEpisode(imdb, tmdb, tvdb, season, episode, percent)
+				elif skip_scrobble:
+					# Item was already marked watched during playback. Close the open Trakt scrobble
+					# session at 0% so Trakt's server doesn't auto-scrobble it as a second watch.
+					trakt.scrobbleMovie(imdb, tmdb, 0) if media_type == 'movie' else trakt.scrobbleEpisode(imdb, tmdb, tvdb, season, episode, 0)
 				if percent >= int(markwatched_percentage): trakt.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False)
 		except:
 			log_utils.error()

@@ -2018,9 +2018,9 @@ def sync_liked_lists(activities=None, forced=False):
 
 def sync_hidden_progress(activities=None, forced=False):
 	try:
-		link = '/users/hidden/dropped?limit=1000&page=1&type=show'
+		link = '/users/hidden/dropped?type=show'
 		if forced:
-			items = getTraktAsJson(link, silent=True)
+			items = get_all_pages(link, silent=True)
 			traktsync.insert_hidden_progress(items)
 			log_utils.log('Forced - Trakt Dropped Progress Sync Complete', __name__, log_utils.LOGDEBUG)
 		else:
@@ -2029,7 +2029,7 @@ def sync_hidden_progress(activities=None, forced=False):
 			if hiddenActivity > db_last_hidden:
 				log_utils.log('Trakt Dropped Progress Sync Update...(local db latest "hidden_at" = %s, trakt api latest "hidden_at" = %s)' % \
 									(str(db_last_hidden), str(hiddenActivity)), __name__, log_utils.LOGDEBUG)
-				items = getTraktAsJson(link, silent=True)
+				items = get_all_pages(link, silent=True)
 				traktsync.insert_hidden_progress(items)
 	except: log_utils.error()
 
@@ -2063,9 +2063,9 @@ def sync_watch_list(activities=None, forced=False):
 	try:
 		link = '/users/me/watchlist/%s?extended=full'
 		if forced:
-			items = getTraktAsJson(link % 'movies', silent=True)
+			items = get_all_pages(link % 'movies', silent=True)
 			traktsync.insert_watch_list(items, 'movies_watchlist')
-			items = getTraktAsJson(link % 'shows', silent=True)
+			items = get_all_pages(link % 'shows', silent=True)
 			traktsync.insert_watch_list(items, 'shows_watchlist')
 			log_utils.log('Forced - Trakt Watch List Sync Complete', __name__, log_utils.LOGINFO)
 		else:
@@ -2077,9 +2077,9 @@ def sync_watch_list(activities=None, forced=False):
 				clr_traktSync = {'bookmarks': False, 'hiddenProgress': False, 'liked_lists': False, 'movies_collection': False, 'movies_watchlist': True,
 							'public_lists': False, 'shows_collection': False, 'shows_watchlist': True, 'user_lists': False, 'watched': False}
 				traktsync.delete_tables(clr_traktSync)
-				items = getTraktAsJson(link % 'movies', silent=True)
+				items = get_all_pages(link % 'movies', silent=True)
 				traktsync.insert_watch_list(items, 'movies_watchlist')
-				items = getTraktAsJson(link % 'shows', silent=True)
+				items = get_all_pages(link % 'shows', silent=True)
 				traktsync.insert_watch_list(items, 'shows_watchlist')
 	except: log_utils.error()
 

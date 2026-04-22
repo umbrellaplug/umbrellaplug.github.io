@@ -187,7 +187,14 @@ def manager(name, imdb=None, tvdb=None, tmdb=None, watched=None, season=None, ep
     try:
         if season: season = int(season)
         if episode: episode = int(episode)
-        content_type = 'tvshow' if tvdb and tvdb != 'None' else 'movie'
+        if episode:
+            content_type = 'episode'
+        elif season:
+            content_type = 'season'
+        elif tvdb and tvdb != 'None':
+            content_type = 'tvshow'
+        else:
+            content_type = 'movie'
         items = []
         if watched is not None:
             if watched is True:
@@ -197,9 +204,8 @@ def manager(name, imdb=None, tvdb=None, tmdb=None, watched=None, season=None, ep
         else:
             items += [(getLS(33651) % highlight_color, 'watch')]
             items += [(getLS(33652) % highlight_color, 'unwatch')]
-        if getSetting('scrobble.source') == '3' or getSetting('mdblist.markwatched') == 'true':
-            if content_type == 'movie' or episode:
-                items += [(getLS(40076) % highlight_color, 'scrobbleReset')]
+        if content_type in ('movie', 'episode', 'season'):
+            items += [(getLS(40076) % highlight_color, 'scrobbleReset')]
         items += [(getLS(40596) % highlight_color, 'add')]
         items += [(getLS(40597) % highlight_color, 'remove')]
         if not tvdb or tvdb == 'None':
@@ -222,10 +228,10 @@ def manager(name, imdb=None, tvdb=None, tmdb=None, watched=None, season=None, ep
         if select == -1: return
         if select >= 0:
                 if items[select][1] == 'watch':
-                    watch(content_type, name, imdb=imdb, tvdb=tvdb, tmdb=tmdb)
+                    watch(content_type, name, imdb=imdb, tvdb=tvdb, tmdb=tmdb, season=season, episode=episode)
                     return
                 if items[select][1] == 'unwatch':
-                    unwatch(content_type, name, imdb=imdb, tvdb=tvdb, tmdb=tmdb)
+                    unwatch(content_type, name, imdb=imdb, tvdb=tvdb, tmdb=tmdb, season=season, episode=episode)
                     return
                 if items[select][1] == 'scrobbleReset':
                     scrobbleReset(imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=True, clear_local=getSetting('indicators.alt') == '3')
@@ -589,6 +595,10 @@ def syncSeasons(imdb, tvdb):
 			counts[sn] = {'total': total, 'watched': watched, 'unwatched': unwatched}
 			if total > 0 and watched >= total:
 				completed_seasons.append('%01d' % sn)
+		# Include aired seasons with no watched episodes so getShowCount totals all seasons, not just watched ones
+		for sn, ep_count in season_totals.items():
+			if sn not in counts:
+				counts[sn] = {'total': ep_count, 'watched': 0, 'unwatched': ep_count}
 		return [completed_seasons, counts]
 	except: log_utils.error()
 	return [[], {}]
@@ -684,10 +694,17 @@ def scrobbleReset(imdb, tmdb='', tvdb='', season=None, episode=None, refresh=Fal
 			if episode:
 				_post_sync_watched(show_ids={'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb},
 					seasons_dict={int(season) if season else 1: [int(episode)]})
+			elif season:
+				pass  # season-level reset clears local resume points only, no re-mark-watched
 			else:
 				_post_sync_watched(movies=[{'imdb': imdb, 'tmdb': tmdb}])
 		if clear_local:
-			mdbsync.delete_bookmark(imdb, tvdb or '', season or '', episode or '')
+			if episode:
+				mdbsync.delete_bookmark(imdb, tvdb or '', season or '', episode)
+			elif season:
+				mdbsync.delete_bookmarks_for_season(imdb, tvdb or '', season)
+			else:
+				mdbsync.delete_bookmark(imdb, tvdb or '', '', '')
 			sync_watchedProgress(forced=True)
 			control.trigger_widget_refresh()
 		if refresh: control.refresh()

@@ -481,7 +481,12 @@ def markSeasonAsWatched(imdb, tvdb, season):
 			control.sleep(1000) # POST 1 call per sec rate-limit
 			result = simkl.post_request('/sync/history', {"shows": [{"seasons": [{"number": season}], "ids": {"tvdb": tvdb}}]})
 			if not result: return False
-		success = len(result.get('not_found', {}).get('shows', [])) == 0
+		if result.get('added', {}).get('episodes', 0) > 0:
+			success = True
+		elif not result.get('not_found', {}).get('shows'):
+			success = True  # episodes already in history (Simkl deduplicates)
+		else:
+			success = False
 		if success:
 			simklsync.remove_hold_item(imdb)
 			simklsync.remove_plan_to_watch(imdb, 'shows_plantowatch')
@@ -1448,10 +1453,19 @@ def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True,
 
 		if select == -1: return
 		if select >= 0:
-			if items[select][1] == 'watch':
-				watch(control.infoLabel('Container.ListItem.DBTYPE'), name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
-			elif items[select][1] == 'unwatch':
-				unwatch(control.infoLabel('Container.ListItem.DBTYPE'), name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
+			if items[select][1] in ('watch', 'unwatch'):
+				if episode:
+					content_type = 'episode'
+				elif season:
+					content_type = 'season'
+				elif tvdb:
+					content_type = 'tvshow'
+				else:
+					content_type = 'movie'
+				if items[select][1] == 'watch':
+					watch(content_type, name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
+				else:
+					unwatch(content_type, name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
 			elif items[select][1] == 'scrobbleReset':
 				scrobbleReset(imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=True, clear_local=getSetting('indicators.alt') == '2')
 			else:
@@ -1611,7 +1625,7 @@ def scrobbleReset(imdb, tmdb='', tvdb='', season=None, episode=None, refresh=Fal
 			if clear_local: simklsync.delete_bookmark(resume_id)
 			if refresh: control.refresh()
 			if getSetting('scrobble.notify') == 'true':
-				control.notification(title=32315, message='Successfully Removed Simkl playback progress: [COLOR %s]%s[/COLOR]' % (highlightColor, label_string))
+				control.notification(title=40342, message='Successfully Removed Simkl playback progress: [COLOR %s]%s[/COLOR]' % (highlightColor, label_string))
 			log_utils.log('Successfully Removed Simkl Playback Progress: %s with resume_id=%s' % (label_string, str(resume_id)), __name__, level=log_utils.LOGDEBUG)
 		else:
 			log_utils.log('Failed to Remove Simkl Playback Progress: %s with resume_id=%s' % (label_string, str(resume_id)), __name__, level=log_utils.LOGDEBUG)

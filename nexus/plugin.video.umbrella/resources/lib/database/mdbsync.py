@@ -523,3 +523,21 @@ def delete_bookmark(imdb, tvdb='', season='', episode=''):
 		except: pass
 		try: dbcon.close()
 		except: pass
+
+def delete_bookmarks_for_season(imdb, tvdb='', season=''):
+	try:
+		dbcon = get_connection()
+		dbcur = get_connection_cursor(dbcon)
+		_ensure_bookmarks_table(dbcur)
+		dbcur.execute('''DELETE FROM bookmarks WHERE imdb=? AND tvdb=? AND season=?''', (imdb, tvdb, str(season) if season else ''))
+		timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
+		dbcur.execute('''INSERT OR REPLACE INTO service Values (?, ?)''', ('last_paused_at', timestamp))
+		dbcur.connection.commit()
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+	finally:
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
