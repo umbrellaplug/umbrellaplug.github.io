@@ -4,7 +4,7 @@ Welcome to the umbrellaplug.github.io
 
 Compatible with Kodi 19, 20, and 21.
 
-##Issues and Discussions are closed due to users putting code into AI. If your robots work so well, they should be able to resolve any issues you have.
+## Issues and Discussions are closed due to users putting code into AI. If your robots work so well, they should be able to resolve any issues you have.
 
 ## Current Versions:
 Umbrella - 6.7.66
