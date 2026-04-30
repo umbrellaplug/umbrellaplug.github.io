@@ -1,0 +1,4 @@
+
+Often times known reboot shows are not properly labeled in the source link with the shows year.  It is common practice that reboot shows contain the year but many uploaders simply do not adhere to this practice and therefore identifying the show, if it's the original or the reboot version, becomes impossible.
+
+This setting uses a list of known tv show reboots.  If the episode of a show is a known reboot this setting will remove any source link that does not have the required year that matches the show you are scraping.  This may drop valid results for the cases where the source is of the new show and did not contain the reboots year but the results should now be more accurate.

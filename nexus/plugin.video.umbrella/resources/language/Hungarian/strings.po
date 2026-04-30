@@ -5793,3 +5793,11 @@ msgstr ""
 msgctxt "#40665"
 msgid "Performance"
 msgstr ""
+
+msgctxt "#40666"
+msgid "Use DMM Cache Check"
+msgstr ""
+
+msgctxt "#40667"
+msgid "Remove AI Upscaled Sources"
+msgstr ""

@@ -1,0 +1,6 @@
+
+TVDB has a rare issue where their server updates may contain old cached meta.  This can lead to broken
+meta for a period of 24-48hrs, from what I've seen, until the cached meta is brought current. Oddly some
+api keys the cached meta is more current than another api key.  This option allows you to switch api keys
+in hopes the cached meta for that key is more current. This option is a temporary solution for people who
+can not wait for the update to complete across TVDB servers.

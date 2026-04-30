@@ -1,0 +1,2 @@
+
+If you chose to remove [B]Dolby Vision[/B] sources but keep [B]HDR[/B] sources the source select may actualy keep a newer form of hybrid source that contains both streams. If your hardware does not support [B]Dolby Vision[/B] Kodi will chose the [B]HDR[/B] stream and plays fine.  These hybrid sources are kept under this setting choice for [B]HDR[/B] playback

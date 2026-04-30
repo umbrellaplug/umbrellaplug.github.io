@@ -1,0 +1,6 @@
+
+This setting will prepend the premiered date to the episode title for [B]"Upcoming Episodes"[/B] items
+only.  Skins tend to not use an addons assigned label passed via infoLabels for widgets and instead
+generate their own label using episode info.  Some skins do not show the premiered date for widgets
+so this comes in handy for those cases.  It's best to test this with your skin and widget settings in use.
+It also respects the color highlight setting.

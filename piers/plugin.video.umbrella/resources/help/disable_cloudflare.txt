@@ -1,0 +1,13 @@
+
+By disabling [B]"CloudFlare Protected Providers"[/B] you are turning off the folowing scrapers that use cfscrape to make requests.
+
+  maxrls (hoster)
+  rapidmoviez (hoster)
+  rlsbb (hoster)
+  scenerls (hoster)
+  extratorrent (torrent)
+  limetorrents (torrent)
+  torrentapi (torrent)
+  torrentgalaxy (torrent)
+
+Scraping of these sites will not take place with this option enabled.

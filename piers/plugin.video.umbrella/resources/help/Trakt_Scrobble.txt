@@ -1,0 +1,7 @@
+
+NOTE:
+  Trakt scrobble is a means to store your bookmarks to the Trakt api endpoint as a "scrobble pause".
+This resume point is sync'd across multiples devices.  If you have more than one device I suggest
+using Trakt Scrobble.  If you have only one deivce I suggest staying with the local bookmarks
+method.  Do Not enable this setting if you scrobble through the Trakt add-on as conflicted
+data occurs and Trakt will not allow multiple scroobles in a short time.

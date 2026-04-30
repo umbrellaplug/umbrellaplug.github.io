@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="FF000000">common/umbwhite.png</texture>
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" start="0" end="80" time="200" tween="sine" easing="in" />
+            </animation>
+        </control>
+        <control type="group">
+            <animation type="WindowOpen" reversible="false">
+                <effect type="fade" start="0" end="100" time="150" tween="sine" easing="in" />
+                <effect type="zoom" start="0" end="100" time="150" center="auto" tween="quadratic" easing="out" />
+            </animation>
+            <left>500</left>
+            <top>325</top>
+            <control type="image">
+                <height>430</height>
+                <width>920</width>
+                <texture border="16" colordiffuse="$INFO[Window.Property(umbrella.backgroundColor)]">common/umbdialog.png</texture>
+            </control>
+            <control type="image">
+                <height>60</height>
+                <width>920</width>
+                <texture border="16" colordiffuse="$INFO[Window.Property(umbrella.titleBarColor)]">common/umbdialogtop.png</texture>
+            </control>
+            <control type="image">
+                <left>5</left>
+                <top>5</top>
+                <height>50</height>
+                <width>50</width>
+                <align>left</align>
+                <aligny>top</aligny>
+                <aspectratio aligny="top">keep</aspectratio>
+                <texture colordiffuse="FFCCCCCC">common/icon.png</texture>
+            </control>
+            <control type="label">
+                <width max="800">auto</width>
+                <left>60</left>
+                <top>10</top>
+                <height>20</height>
+                <font>font16</font>
+                <textcolor>$INFO[Window.Property(umbrella.titleTextColor)]</textcolor>
+                <align>center</align>
+                <label>[UPPERCASE][B]$INFO[Window.Property(umbrella.heading)][/B][/UPPERCASE]</label>
+            </control>
+            <control type="group">
+                <left>5</left>
+                <top>5</top>
+                <control type="image">
+                    <left>640</left>
+                    <top>75</top>
+                    <width>250</width>
+                    <height>300</height>
+                    <aspectratio aligny="top">keep</aspectratio>
+                    <texture>$INFO[Window.Property(umbrella.icon)]</texture>
+                    <visible>!String.IsEmpty(Window.Property(umbrella.icon))</visible>
+                </control>
+                <control type="image" id="2020">
+                    <left>640</left>
+                    <top>85</top>
+                    <width>250</width>
+                    <height>250</height>
+                    <texture>common/umbspinner.gif</texture>
+                    <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
+                    <aspectratio aligny="top">stretch</aspectratio>
+                    <visible>Integer.IsGreater(Window().Property(percent),0)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                </control>
+                <control type="textbox" id="2001">
+                    <top>150</top>
+                    <left>20</left>
+                    <width>620</width>
+                    <height>300</height>
+                    <font>font13</font>
+                    <textcolor>$INFO[Window.Property(umbrella.textColor)]</textcolor>
+                    <align>center</align>
+                </control>
+                <control type="progress" id="5000">
+                    <description>Progressbar</description>
+                    <top>395</top>
+                    <left>0</left>
+                    <width>910</width>
+                    <height>25</height>
+                    <reveal>true</reveal>
+                    <visible>String.IsEqual(Window().Property(umbrella.qr),1)+Integer.IsGreater(Window().Property(percent),0)</visible>
+                </control>
+            </control>
+        </control>
+    </controls>
+</window>

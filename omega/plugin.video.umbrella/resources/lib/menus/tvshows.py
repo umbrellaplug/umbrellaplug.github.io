@@ -2366,6 +2366,15 @@ class TVshows:
 						# Safety net: has_next_episode guarantees ≥1 unwatched episode
 						if int(count.get('unwatched', 0)) == 0:
 							count['unwatched'] = max(1, trakt_aired - trakt_watched) if trakt_aired > trakt_watched else 1
+					# Stale Trakt progress data (syncSeasons returned 0 watched/total): fall back to
+					# the more reliable watched/shows endpoint count before display.
+					if count is not None and count['watched'] == 0:
+						_trakt_watched = int(meta.get('trakt_watched_episodes') or 0)
+						_trakt_aired = int(meta.get('trakt_aired_episodes') or 0)
+						if _trakt_watched > 0:
+							count['watched'] = _trakt_watched
+							count['total'] = max(count['total'], _trakt_aired)
+							count['unwatched'] = max(0, count['total'] - count['watched'])
 					if count:
 						count['unwatched'] = max(0, count['unwatched'])
 					if self.showCounts:
@@ -2374,8 +2383,8 @@ class TVshows:
 								item.setProperties({'WatchedEpisodes': str(count['watched']), 'UnWatchedEpisodes': str(count['unwatched'])})
 								item.setProperty('WatchedProgress', str(int(float(count['watched']) / float(count['total']) * 100)))
 							elif int(count['watched']) > 0 and (str(count['watched']) == str(count['total'])): #watched 100%
-								item.setProperties({'WatchedEpisodes': str(count['watched']), 'UnWatchedEpisodes': str(count['unwatched'])})
-								item.setProperty('WatchedProgress', str(int(float(count['watched']) / float(count['total']) * 100)))
+								item.setProperties({'WatchedEpisodes': str(count['watched']), 'UnWatchedEpisodes': ''})
+								item.setProperty('WatchedProgress', '100')
 							else:
 								item.setProperties({'WatchedEpisodes': '0','UnWatchedEpisodes': str(count['unwatched'])})
 								item.setProperty('WatchedProgress', str(0))
@@ -2386,7 +2395,8 @@ class TVshows:
 					else:
 						if count:
 							if int(count['watched']) > 0:
-								item.setProperties({'WatchedEpisodes': str(count['watched']), 'UnWatchedEpisodes': str(count['unwatched'])})
+								unwatched_str = '' if str(count['watched']) == str(count['total']) else str(count['unwatched'])
+								item.setProperties({'WatchedEpisodes': str(count['watched']), 'UnWatchedEpisodes': unwatched_str})
 							else:
 								item.setProperties({'WatchedEpisodes': '0','UnWatchedEpisodes': str(count['unwatched'])})
 							item.setProperties({'TotalSeasons': str(meta.get('total_seasons', '')), 'TotalEpisodes': str(count['total'])})

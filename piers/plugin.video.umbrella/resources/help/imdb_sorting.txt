@@ -1,0 +1,6 @@
+
+This setting is for IMDb list sorting methods outside of the [B]"My Movies"[/B] and [B]"My TVShows"[/B]
+category.  The only lists currently configured to use this sort option is [B]"Genres"[/B], [B]"Certification"[/B],
+and [B]"Language"[/B].  Using the [B]"Default"[/B] setting will continue to use the old IMDb [B]"Popularity"[/B] sort
+method.  Sorting is not local as these are parmaters passed in the url request that IMDb allows.  More
+list can be configured to use the new sorting if a need arise to do so.

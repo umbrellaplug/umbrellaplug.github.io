@@ -1,0 +1,4 @@
+
+Not a place for users to play and nothing here for you to see.  This setting is for developers to isolate
+and test scraping for single episodes, season packs, and show packs.  Please do no enable these
+options.

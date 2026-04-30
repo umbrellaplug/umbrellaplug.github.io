@@ -1,0 +1,17 @@
+Video filters are used to filter out video codecs or types that are incompatible with your hardware or you do not want to see in your source results.
+
+Here is the information I had available to me for file types and codecs. If it's wrong, feel free to send me the corrected information.
+
+Dolby Vision - HDR Codec - Support is dependent upon device and kodi build.
+HDR - 2160p Blu Ray
+HEVC - High Efficency Video Codec / H265 - Currently the second most popular format.
+AV1 - Newer version of HEVC with improved compression. Mostly unsupported until Kodi 20.
+AVC - Advanced Video Coding / H.264 or MPEG-4 - Most common format for video. Almost all devices should support this format.
+DIVX - Digital Video Express - Discontinued format you should not see anymore.
+MP4 - MPEG 4 - Commonly Used, Typically Larger Files, Almost all devices should support this format.
+MPEG - MPEG, MPG - Another discontinued format.
+WMV - Windows Media Video / Discontinued format.
+
+CAM - Filmed with a camera quality. Typically new releases filmed while still in theatres.
+SD - Standard Definition quality.
+3D - Only work if you have special 3d equipment.

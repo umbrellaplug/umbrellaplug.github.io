@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <controls>
+            <control type="progress" id="5000">
+                <description>blind scrape</description>
+                <left>0</left>
+                <top>0</top>
+                <width>100</width>
+                <height>100</height>
+                <visible>false</visible>
+                <info></info>
+            </control>
+        </control>
+    </controls>
+</window>

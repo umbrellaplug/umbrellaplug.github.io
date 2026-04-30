@@ -7,6 +7,7 @@ import re
 from urllib.parse import unquote, unquote_plus
 
 VIDEO_3D = ('.3d.', '.sbs.', '.hsbs', 'sidebyside', 'side.by.side', 'stereoscopic', '.tab.', '.htab.', 'topandbottom', 'top.and.bottom')
+AI_UPSCALED = ('.enhanced.', '.upscaled.', '.enhance.', '.upscale.', '.ai.')
 
 DOLBY_VISION = ('dolby.vision', 'dolbyvision', '.dovi.', '.dv.')
 HDR = ('2160p.bluray.hevc.truehd', '2160p.bluray.hevc.dts', '2160p.bluray.hevc.lpcm',
@@ -165,6 +166,7 @@ def getFileType(name_info=None, url=None):
 		if not fmt: return file_type
 		if any(value in fmt for value in APPLE_TV): file_type += ' APPLE-TV-PLUS /' #new apple tv plus format keep seeing
 		if any(value in fmt for value in VIDEO_3D):  file_type += ' 3D /'
+		if any(value in fmt for value in AI_UPSCALED): file_type += ' AI-UPSCALED /'
 		if '.sdr' in fmt: file_type += ' SDR /'
 		elif any(value in fmt for value in DOLBY_VISION): file_type += ' DOLBY-VISION /'
 		elif any(value in fmt for value in HDR): file_type += ' HDR /'

@@ -390,7 +390,7 @@ class RealDebrid:
 		response = self._get("torrents/instantAvailability" + hashString)
 		return response
 
-	def resolve_magnet(self, magnet_url, info_hash, season, episode, title):
+	def resolve_magnet(self, magnet_url, info_hash, season, episode, title, existing_torrent_id=None):
 		from resources.lib.modules.source_utils import seas_ep_filter, extras_filter
 		# from resources.lib.cloud_scrapers.cloud_utils import cloud_check_title # alias and title checking no longer used
 		try:
@@ -400,12 +400,15 @@ class RealDebrid:
 			info_hash = info_hash.lower()
 			compare_title = re.sub(r'[^A-Za-z0-9-]+', '.', title.replace('\'', '').replace('&', 'and').replace('%', '.percent')).lower()
 			elapsed_time, transfer_finished = 0, False
-			self.rd_check_max()
-			torrent_id = self.add_magnet(magnet_url)
-			self.add_torrent_select(torrent_id,'all')
+			if existing_torrent_id:
+				torrent_id = existing_torrent_id
+			else:
+				self.rd_check_max()
+				torrent_id = self.add_magnet(magnet_url)
+				self.add_torrent_select(torrent_id, 'all')
 			torrent_info = self.user_cloud_info_check(torrent_id)
-			if not torrent_info['links'] or 'error' in torrent_info: 
-				self.delete_torrent(torrent_id)
+			if not torrent_info['links'] or 'error' in torrent_info:
+				if not existing_torrent_id: self.delete_torrent(torrent_id)
 				return None
 			control.sleep(1000)
 			while elapsed_time <= 4 and not transfer_finished:
@@ -415,7 +418,7 @@ class RealDebrid:
 				if info_hash in active_list: control.sleep(1000)
 				else: transfer_finished = True
 			if not transfer_finished:
-				self.delete_torrent(torrent_id)
+				if not existing_torrent_id: self.delete_torrent(torrent_id)
 				return None
 			selected_files = [(idx, i) for idx, i in enumerate([i for i in torrent_info['files'] if i['selected'] == 1 and i['path'].lower().endswith(tuple(extensions))])]
 			selected_files = sorted(selected_files, key=lambda x: x[1]['bytes'], reverse=True)
@@ -450,16 +453,17 @@ class RealDebrid:
 						file_url, failed_reason = None, 'RD returned unsupported file extension --> %s' % file_url
 				except:
 						file_url, failed_reason = None, 'RD returned unsupported file extension or error getting file extension.' 
-				if not self.store_to_cloud: self.delete_torrent(torrent_id)
+				if not self.store_to_cloud:
+					if not existing_torrent_id: self.delete_torrent(torrent_id)
 			else:
-				self.delete_torrent(torrent_id)
+				if not existing_torrent_id: self.delete_torrent(torrent_id)
 			if not file_url:
 				log_utils.log('Real-Debrid: FAILED TO RESOLVE MAGNET "%s" : (%s)' % (magnet_url, failed_reason), __name__, log_utils.LOGWARNING)
-				self.delete_torrent(torrent_id)
+				if not existing_torrent_id: self.delete_torrent(torrent_id)
 			return file_url
 		except:
 			log_utils.error('Real-Debrid: Error RESOLVE MAGNET "%s" ' % magnet_url)
-			if torrent_id: self.delete_torrent(torrent_id)
+			if torrent_id and not existing_torrent_id: self.delete_torrent(torrent_id)
 			return None
 
 	def display_magnet_pack(self, magnet_url, info_hash):
@@ -552,8 +556,9 @@ class RealDebrid:
 				try: self.progressDialog.close()
 				except: pass
 		if status == 'downloaded':
-			control.busy()
-			return True
+			control.hide()
+			control.notification(message=getLS(32057), icon=rd_icon)
+			return torrent_id
 		if status == 'magnet_conversion': return _return_failed()
 		if any(x in status for x in stalled): return _return_failed(status)
 		if status == 'waiting_files_selection': 
@@ -572,7 +577,7 @@ class RealDebrid:
 					self.add_torrent_select(torrent_id, torrent_keys)
 					control.okDialog(title='default', message=getLS(40017) % getLS(40058))
 					control.hide()
-					return True # returning true here causes "success" to be returned and resolve runs on  non valid link
+					return torrent_id
 				except: return _return_failed()
 			else:
 				try:
@@ -586,7 +591,7 @@ class RealDebrid:
 			if status == 'downloaded':
 				control.hide()
 				control.notification(message=getLS(32057), icon=rd_icon)
-				return True
+				return torrent_id
 			file_size = round(float(video['bytes']) / (1000 ** 3), 2)
 			line1 = '%s...' % (getLS(40017) % getLS(40058))
 			line2 = torrent_info['filename']
@@ -625,7 +630,7 @@ class RealDebrid:
 				try: self.progressDialog.close()
 				except: pass
 			control.hide()
-			return True
+			return torrent_id
 		control.hide()
 		return False
 

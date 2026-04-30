@@ -1,0 +1,2 @@
+
+This setting will use the priority value of each scraper to set the order they run at.  Each scrapers priority value can be viewed in Umbrella Scrapers help file [B]"Torrent scraper Info"[/B].  This feature is best used with the Pre-emptive Termination so the better quality and speed scraper run first.  If you run the default Umbrella Scrapers without Pre-emptive Termination, or early cancelling, then there is no need to set the order the scrapers run.

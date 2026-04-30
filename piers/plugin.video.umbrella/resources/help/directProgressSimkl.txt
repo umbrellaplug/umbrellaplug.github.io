@@ -1,0 +1,3 @@
+
+[B]"Direct Progress scraping"[/B] allows an item in your Simkl Progress list to instantly scrape and play vs.
+loading an episode list from that current NextUp/Progress position. Note: if you use continual playback with "PlayNext" feature this setting should be turned off to load the episode list for playlist creation.

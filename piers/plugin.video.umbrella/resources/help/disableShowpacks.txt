@@ -1,0 +1,7 @@
+
+Real-Debrid has a very nasty bug in their torrent cache check endpoint,
+[B]"torrents/instantAvailability"[/B].  The issue occurs when RD attempts to cache check a [B]"show"[/B] pack.
+The data structure of these pack files seems to cause RD to lag badly in server response time.  This
+option allows you to ignore [B]"show"[/B] packs so the lag is not seen and the scrape results will appear
+MUCH faster.  I ONLY suggest enabling this feature for users with a secondary debrid account such as
+[B]AD[/B] and,or [B]PM[/B] that do NOT suffer this endpoint issue.

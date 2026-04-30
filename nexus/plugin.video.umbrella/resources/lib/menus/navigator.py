@@ -416,11 +416,11 @@ class Navigator:
 		self.addDirectoryItem(32043, 'tools_openSettings&query=0.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#-- Sorting and Filtering - 4
 		self.addDirectoryItem(40162, 'tools_openSettings&query=6.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
-		#-- Accounts - 7
-		self.addDirectoryItem(32044, 'tools_openSettings&query=10.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
-		#-- Providers - 
-		self.addDirectoryItem(40452, 'tools_openSettings&query=11.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
-		self.addDirectoryItem(40124, 'tools_openSettings&query=12.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		#-- Accounts - 9
+		self.addDirectoryItem(32044, 'tools_openSettings&query=9.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		#-- Providers - 10
+		self.addDirectoryItem(40452, 'tools_openSettings&query=10.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(40124, 'tools_openSettings&query=11.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(40611, 'tools_openSettings&query=8.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#self.addDirectoryItem(40559, 'tools_openSettings&query=9.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#self.addDirectoryItem(40123, 'tools_openSettings&query=9.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
@@ -431,10 +431,10 @@ class Navigator:
 		self.addDirectoryItem(32362, 'tools_openSettings&query=1.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#-- Playback - 3
 		self.addDirectoryItem(32045, 'tools_openSettings&query=5.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
-		#-- Downloads - 10
-		self.addDirectoryItem(32048, 'tools_openSettings&query=14.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
-		#-- Subtitles - 11
-		self.addDirectoryItem(32046, 'tools_openSettings&query=15.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		#-- Downloads - 13
+		self.addDirectoryItem(32048, 'tools_openSettings&query=13.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		#-- Subtitles - 14
+		self.addDirectoryItem(32046, 'tools_openSettings&query=14.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(32556, 'library_Navigator&folderName=%s' % quote_plus(getLS(32541)), 'tools.png', 'DefaultAddonService.png', isFolder=True)
 		self.addDirectoryItem(32049, 'tools_viewTypesNavigator', 'settings.png', 'DefaultAddonService.png', isFolder=True)
 		self.addDirectoryItem(32361, 'tools_resetViewTypes', 'settings.png', 'DefaultAddonService.png', isFolder=False)
