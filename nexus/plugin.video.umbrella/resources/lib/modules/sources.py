@@ -1847,59 +1847,10 @@ class Sources:
 
 	def rd_cache_chk_list(self, torrent_List, hashList):
 		if len(torrent_List) == 0: return
-		api_success = False
-		cached_hashes = set()
-		checked_hashes = set()
-		try:
-			import requests, ctypes, random as _random
-			_meta = getattr(self, 'meta', None) or {}
-			imdb = getattr(self, 'imdb', None) or _meta.get('imdb') or getattr(self, 'ids', {}).get('imdb')
-			hashes = [h for h in hashList if len(h) == 40]
-			if getSetting('sources.dmm.cache') != 'false' and imdb and hashes:
-				# DMM proof-of-work (ported from plugin.video.pov/resources/lib/magneto/dmm.py)
-				def _calc(t, n, c):
-					tmp = t ^ n
-					t = ctypes.c_long(tmp * c).value
-					return ctypes.c_long(t << 5).value | ctypes.c_long((t & 0xFFFFFFFF) >> 27).value
-				def _hash(e):
-					t = ctypes.c_long(0xDEADBEEF ^ len(e)).value
-					a = 1103547991 ^ len(e)
-					for ch in e:
-						n = ord(ch)
-						t = _calc(t, n, 2654435761)
-						a = _calc(a, n, 1597334677)
-					t = ctypes.c_long(t + ctypes.c_long(a * 1566083941).value).value
-					a = ctypes.c_long(a + ctypes.c_long(t * 2024237689).value).value
-					return ctypes.c_long(t ^ a).value & 0xFFFFFFFF
-				hex_str = '%08x' % _random.randrange(16 ** 8)
-				dmmProblemKey = '%s-%s' % (hex_str, int(time()))
-				s = '%x' % _hash(dmmProblemKey)
-				n = '%x' % _hash('debridmediamanager.com%%fe7#td00rA3vHz%VmI-' + hex_str)
-				half = len(s) // 2
-				solution = ''.join(ls + ln for ls, ln in zip(s[:half], n[:half])) + n[half:][::-1] + s[half:][::-1]
-				checked_hashes = set(h.lower() for h in hashes[:100])
-				data = {'dmmProblemKey': dmmProblemKey, 'solution': solution, 'imdbId': imdb, 'hashes': hashes[:100]}
-				log_utils.log('RD cache check: DMM request imdb=%s hashes=%s' % (imdb, len(checked_hashes)), __name__, log_utils.LOGDEBUG)
-				response = requests.post('https://debridmediamanager.com/api/availability/check', json=data, timeout=10)
-				for item in response.json().get('available', []):
-					if item.get('hash'): cached_hashes.add(item['hash'].lower())
-				log_utils.log('RD cache check: cached hashes found=%s' % len(cached_hashes), __name__, log_utils.LOGDEBUG)
-				api_success = True
-		except: log_utils.error()
 		try:
 			for i in torrent_List:
-				if not api_success:
-					if 'package' in i: i.update({'source': 'uncached (pack) torrent'})
-					else: i.update({'source': 'uncached torrent'})
-				elif i['hash'].lower() in cached_hashes:
-					if 'package' in i: i.update({'source': 'cached (pack) torrent'})
-					else: i.update({'source': 'cached torrent'})
-				elif i['hash'].lower() in checked_hashes:
-					if 'package' in i: i.update({'source': 'uncached (pack) torrent'})
-					else: i.update({'source': 'uncached torrent'})
-				else:
-					if 'package' in i: i.update({'source': 'uncached (pack) torrent'})
-					else: i.update({'source': 'uncached torrent'})
+				if 'package' in i: i.update({'source': 'unchecked (pack) torrent'})
+				else: i.update({'source': 'unchecked'})
 			return torrent_List
 		except: log_utils.error()
 

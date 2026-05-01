@@ -4860,19 +4860,7 @@
 					</dependencies>
 					<control type="button" format="action"/>
 				</setting>
-				<setting id="sources.dmm.cache" type="boolean" label="40666" help="">
-					<level>0</level>
-					<default>false</default>
-					<dependencies>
-						<dependency type="visible">
-							<and>
-								<condition operator="!is" setting="realdebridtoken"/>
-								<condition operator="is" setting="realdebrid.enable">true</condition>
-							</and>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
+
 				<setting id="realdebrid.server.notifications" type="boolean" label="33051" help="">
 					<level>0</level>
 					<default>true</default>

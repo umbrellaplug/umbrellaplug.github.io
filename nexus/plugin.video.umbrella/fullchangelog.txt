@@ -1,3 +1,6 @@
+[B]Update - v6.7.69 - April 30th, 2026 [/B]
+--[Change] Removed DMM Cache check due to users having issues with cached vs uncached.
+
 [B]Update - v6.7.68 - April 30th, 2026 [/B]
 --[Fix] Fix for "no sources" when using real-debrid.
 
