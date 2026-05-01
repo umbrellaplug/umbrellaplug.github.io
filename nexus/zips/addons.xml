@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.67">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.68">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -235,13 +235,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.67 - April 27th, 2026 [/B]
---[Fix] Fix added for uncached torrents from RD.
---[Fix] Fix where several menu items in tools list were opening wrong settings page.
---[Fix] Fix for bug where a fresh install would default to Trakt for watch indicators without Trakt being authenticated.
---[Change] Added DMM cache check as an option. Turn off to have all RD as unchecked again. Turn on for cached vs uncached.
---[Change] Added new filter for ai upscale.
---[Change] Added fix for year missing on re-scrape.
+[B]Update - v6.7.68 - April 30th, 2026 [/B]
+--[Fix] Fix for "no sources" when using real-debrid.
 		</news>
 	</extension>
 

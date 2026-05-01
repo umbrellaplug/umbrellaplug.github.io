@@ -1,3 +1,6 @@
+[B]Update - v6.7.68 - April 30th, 2026 [/B]
+--[Fix] Fix for "no sources" when using real-debrid.
+
 [B]Update - v6.7.67 - April 30th, 2026 [/B]
 --[Fix] Fix added for uncached torrents from RD.
 --[Fix] Fix where several menu items in tools list were opening wrong settings page.

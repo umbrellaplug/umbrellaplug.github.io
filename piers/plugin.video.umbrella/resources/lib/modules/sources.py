@@ -146,7 +146,7 @@ class Sources:
 					meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties" : ["title", "originaltitle", "uniqueid", "year", "premiered", "genre", "studio", "country", "runtime", "rating", "votes", "mpaa", "director", "writer", "cast", "plot", "plotoutline", "tagline", "thumbnail", "art", "file"]}, "id": 1}' % (year, str(int(year) + 1), str(int(year) - 1)))
 					meta = jsloads(meta)['result']['movies']
 					try:
-						meta = [i for i in meta if i.get('uniqueid', []).get('imdb', '') == imdb]
+						meta = [i for i in meta if i.get('uniqueid', {}).get('imdb', '') == imdb]
 					except:
 						if self.debuglog:
 							log_utils.log('Get Meta Failed in checkLibMeta: %s' % str(meta), level=log_utils.LOGDEBUG)
@@ -172,7 +172,7 @@ class Sources:
 					# do not add IMDBNUMBER as tmdb scraper puts their id in the key value
 					show_meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties" : ["title", "originaltitle", "uniqueid", "mpaa", "year", "genre", "runtime", "thumbnail", "file"]}, "id": 1}' % (year, str(int(year)+1), str(int(year)-1)))
 					show_meta = jsloads(show_meta)['result']['tvshows']
-					show_meta = [i for i in show_meta if i.get('uniqueid', []).get('imdb', '') == imdb]
+					show_meta = [i for i in show_meta if i.get('uniqueid', {}).get('imdb', '') == imdb]
 					if show_meta: show_meta = show_meta[0]
 					else: raise Exception()
 					tvshowid = show_meta['tvshowid']
@@ -322,7 +322,7 @@ class Sources:
 				meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties" : ["title", "originaltitle", "uniqueid", "year", "premiered", "genre", "studio", "country", "runtime", "rating", "votes", "mpaa", "director", "writer", "cast", "plot", "plotoutline", "tagline", "thumbnail", "art", "file"]}, "id": 1}' % (self.year, str(int(self.year) + 1), str(int(self.year) - 1)))
 				meta = jsloads(meta)['result']['movies']
 				try:
-					meta = [i for i in meta if i.get('uniqueid', []).get('imdb', '') == self.imdb]
+					meta = [i for i in meta if i.get('uniqueid', {}).get('imdb', '') == self.imdb]
 				except:
 					if self.debuglog:
 						log_utils.log('Get Meta Failed in checkLibMeta: %s' % str(meta), level=log_utils.LOGDEBUG)
@@ -348,7 +348,7 @@ class Sources:
 				# do not add IMDBNUMBER as tmdb scraper puts their id in the key value
 				show_meta = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties" : ["title", "originaltitle", "uniqueid", "mpaa", "year", "genre", "runtime", "thumbnail", "file"]}, "id": 1}' % (self.year, str(int(self.year)+1), str(int(self.year)-1)))
 				show_meta = jsloads(show_meta)['result']['tvshows']
-				show_meta = [i for i in show_meta if i.get('uniqueid', []).get('imdb', '') == self.imdb]
+				show_meta = [i for i in show_meta if i.get('uniqueid', {}).get('imdb', '') == self.imdb]
 				if show_meta: show_meta = show_meta[0]
 				else: raise Exception()
 				tvshowid = show_meta['tvshowid']
@@ -1853,7 +1853,7 @@ class Sources:
 		try:
 			import requests, ctypes, random as _random
 			_meta = getattr(self, 'meta', None) or {}
-			imdb = getattr(self, 'imdb', None) or _meta.get('imdb')
+			imdb = getattr(self, 'imdb', None) or _meta.get('imdb') or getattr(self, 'ids', {}).get('imdb')
 			hashes = [h for h in hashList if len(h) == 40]
 			if getSetting('sources.dmm.cache') != 'false' and imdb and hashes:
 				# DMM proof-of-work (ported from plugin.video.pov/resources/lib/magneto/dmm.py)
