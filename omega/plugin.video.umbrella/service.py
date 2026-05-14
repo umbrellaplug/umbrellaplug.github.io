@@ -299,12 +299,15 @@ try:
 		repoName = 'repository.umbrellakodi'
 		testUmbrella = True
 	else:
-		try:
-			repoVersion = control.addon('repository.umbrella').getAddonInfo('version')
-			repoName = 'repository.umbrella'
-		except Exception:
-			repoVersion = 'unknown'
-			repoName = 'Unknown Repo'
+		repoVersion = 'unknown'
+		repoName = 'Unknown Repo'
+		for candidate in ('repository.umbrella', 'repository.umbrellakodi', 'repository.aegis'):
+			try:
+				repoVersion = control.addon(candidate).getAddonInfo('version')
+				repoName = candidate
+				break
+			except Exception:
+				continue
 
 	log_utils.log('########   CURRENT Umbrella VERSIONS REPORT   ########', level=LOGINFO)
 	if testUmbrella == True:
