@@ -132,7 +132,7 @@ class TorBox:
 			extensions = supported_video_extensions()
 			extras_filtering_list = tuple(i for i in extras_filter() if not i in title.lower())
 			check = self.check_cache_single(info_hash)
-			match = info_hash in [i['hash'] for i in check['data']]
+			match = info_hash.lower() in [i['hash'].lower() for i in check['data']]
 			if not match: return None
 			torrent = self.add_magnet(magnet_url)
 			if not torrent['success']: return None
