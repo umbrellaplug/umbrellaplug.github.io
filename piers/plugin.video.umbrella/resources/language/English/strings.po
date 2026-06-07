@@ -5751,3 +5751,11 @@ msgstr ""
 msgctxt "#40704"
 msgid "Prefer Smaller File Sizes"
 msgstr ""
+
+msgctxt "#40705"
+msgid "Prioritize Language to top"
+msgstr ""
+
+msgctxt "#40706"
+msgid "Priority Language"
+msgstr ""
