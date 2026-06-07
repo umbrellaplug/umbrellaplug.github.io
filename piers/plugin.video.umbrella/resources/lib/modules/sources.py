@@ -1311,8 +1311,66 @@ class Sources:
 		self.sources = filter
 
 		self.sources = self.sources[:4000]
+		
+		if len(self.sources) > 0:
+			self.sources = self.sort_language_to_top(self.sources)
+
 		control.hide()
 		return self.sources
+
+	def sort_language_to_top(self, results):
+		import re
+		from xbmc import convertLanguage as cl, ISO_639_1, ISO_639_2
+		try:
+			# Check if the language filter toggle is enabled in settings.xml
+			is_language_filter_enabled = control.setting('results.language_filter') == 'true'
+			if is_language_filter_enabled:
+				# Read the configured priority language using the correct XML setting ID
+				priority_language = control.setting('results.language') or 'English'
+			else:
+				priority_language = 'None'
+				
+			# If the filter is disabled or set to None, return original results immediately
+			if priority_language == 'None':
+				return results
+				
+			# Dynamically generate standard ISO codes via Kodi for the selected language
+			language_tags = [priority_language, cl(priority_language, ISO_639_2), cl(priority_language, ISO_639_1)]
+			
+			# Clean the list to remove any None values or empty strings returned by Kodi
+			language_tags = [tag for tag in language_tags if tag]
+			
+			# Define global multi-language tags (common typos/variations included)
+			global_multi_tags = ['multi', 'multilang', 'multilanguage', 'mutli']
+			
+			# Create two distinct regex patterns to establish the 3-tier hierarchy
+			lang_pattern = r'\b(%s)\b' % '|'.join(language_tags)
+			multi_pattern = r'\b(%s)\b' % '|'.join(global_multi_tags)
+			
+			# Initialize 3 separate container lists for sorting priority
+			tier_1_lang = []   # Tier 1: Explicit language ISO codes found (e.g., "ENG" or "ENG MULTI")
+			tier_2_multi = []  # Tier 2: No specific language ISO, but contains a generic MULTI tag (e.g., "MULTI")
+			tier_3_other = []  # Tier 3: Everything else (e.g., pure English or other unsupported languages)
+			
+			# Loop through the scraped sources
+			for i in results:
+				name = i.get('name', '')
+				if re.search(lang_pattern, name, re.I):
+					# Matches specific language tag: pushed to absolute top (Tier 1)
+					tier_1_lang.append(i)
+				elif re.search(multi_pattern, name, re.I):
+					# Matches generic multi tag without explicit local language tag: goes to Tier 2
+					tier_2_multi.append(i)
+				else:
+					# No language or multi match: dropped to the bottom (Tier 3)
+					tier_3_other.append(i)
+			
+			# Merge all tiers back into a single list maintaining the strict hierarchy: Tier 1 > Tier 2 > Tier 3
+			results = tier_1_lang + tier_2_multi + tier_3_other
+		except:
+			import traceback
+			log_utils.log('Language Priority Error: %s' % traceback.format_exc(), level=log_utils.LOGDEBUG)
+		return results
 
 	def filter_dupes(self):
 		filter = []
