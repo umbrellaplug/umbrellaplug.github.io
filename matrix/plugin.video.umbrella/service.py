@@ -445,14 +445,14 @@ def main():
 		#SyncMovieLibrary().run()
 		#control.checkPlayNextEpisodes()
 		if control.setting('library.service.update') == 'true':
-			libraryService = Thread(target=LibraryService().run)
+			libraryService = Thread(target=LibraryService().run, daemon=True)
 			libraryService.start()
 		if control.setting('general.checkAddonUpdates') == 'true':
 			AddonCheckUpdate().run()
 		VersionIsUpdateCheck().run()
 		checkAutoStart().run()
 
-		syncServices = Thread(target=SyncServices().run) # run service in case user auth's trakt later, sync will loop and do nothing without valid auth'd account
+		syncServices = Thread(target=SyncServices().run, daemon=True) # run service in case user auth's trakt later, sync will loop and do nothing without valid auth'd account
 		syncServices.start()
 
 		# if getTraktCredentialsInfo():
@@ -469,10 +469,10 @@ def main():
 	SettingsMonitor().waitForAbort()
 	# start monitoring settings changes events
 	control.log('[ plugin.video.umbrella ]  Settings Monitor Service Stopping...', LOGINFO)
-	del syncServices # prob does not kill a running thread
+	if syncServices and syncServices.is_alive(): syncServices.join(2)
 	control.log('[ plugin.video.umbrella ]  Account Sync Service Stopping...', LOGINFO)
 	if libraryService:
-		del libraryService # prob does not kill a running thread
+		if libraryService.is_alive(): libraryService.join(2)
 		control.log('[ plugin.video.umbrella ]  Library Update Service Stopping...', LOGINFO)
 	if schedTrakt:
 		schedTrakt.cancel()
