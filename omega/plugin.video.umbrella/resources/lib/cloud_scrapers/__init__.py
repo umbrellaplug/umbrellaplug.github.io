@@ -27,10 +27,17 @@ def cloudSources():
 		return []
 
 def enabledCheck(cloud_scraper):
-	parent_dict = {'ad_cloud': 'alldebrid', 'oc_cloud': 'offcloud', 'pm_cloud': 'premiumize', 'rd_cloud': 'realdebrid', 'tb_cloud': 'torbox'}
+	parent_dict = {
+		'ad_cloud': ('alldebrid', 'alldebridtoken'),
+		'oc_cloud': ('offcloud', 'offcloudtoken'),
+		'pm_cloud': ('premiumize', 'premiumizetoken'),
+		'rd_cloud': ('realdebrid', 'realdebridtoken'),
+		'tb_cloud': ('torbox', 'torboxtoken'),
+		'db_cloud': ('deepbrid', 'deepbrid.token')
+	}
 	try:
-		parent_setting = parent_dict[cloud_scraper]
-		if not getSetting(parent_setting + 'token'): return False
+		parent_setting, token_setting = parent_dict[cloud_scraper]
+		if not getSetting(token_setting): return False
 		if getSetting(parent_setting + '.enable') == 'true' and getSetting(cloud_scraper + '.enabled') == 'true': return True
 		else: return False
 	except:

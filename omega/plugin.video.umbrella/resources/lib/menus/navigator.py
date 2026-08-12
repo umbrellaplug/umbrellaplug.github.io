@@ -35,6 +35,7 @@ class Navigator:
 		self.easynewsCredentials = getSetting('easynews.user') != ''
 		self.offcloudCredentials = getSetting('offcloudtoken') != ''
 		self.torboxCredentials = getSetting('torboxtoken') != ''
+		self.deepbridCredentials = getSetting('deepbrid.token') != ''
 		self.premiumizeCredentials = getSetting('premiumizetoken') != ''
 		self.realdebridCredentials = getSetting('realdebridtoken') != ''
 		self.tmdbSessionID = getSetting('tmdb.sessionid') != ''
@@ -670,6 +671,7 @@ class Navigator:
 		if self.premiumizeCredentials: self.addDirectoryItem(40057, 'pm_ServiceNavigator&folderName=%s' % quote_plus(getLS(40057)), 'premiumize.png', 'premiumize.png')
 		if self.realdebridCredentials: self.addDirectoryItem(40058, 'rd_ServiceNavigator&folderName=%s' % quote_plus(getLS(40058)), 'realdebrid.png', 'realdebrid.png')
 		if self.torboxCredentials:     self.addDirectoryItem(40529, 'tb_ServiceNavigator&folderName=%s' % quote_plus(getLS(35539)), 'torbox.png', 'torbox.png')
+		if self.deepbridCredentials:   self.addDirectoryItem('Deepbrid', 'db_ServiceNavigator&folderName=%s' % quote_plus('Deepbrid'), 'tools.png', 'DefaultAddonService.png')
 		self.endDirectory()
 
 	def alldebrid_service(self, folderName=''):
@@ -707,6 +709,18 @@ class Navigator:
 			self.addDirectoryItem('TorBox: Delete All Cloud Files', 'tb_DeleteCloud', 'torbox.png', 'DefaultAddonService.png', isFolder=False)
 		else:
 			self.addDirectoryItem('[I]Please setup in Accounts[/I]', 'tools_openSettings&query=6.6', 'torbox.png', 'DefaultAddonService.png', isFolder=False)
+		self.endDirectory()
+
+	def deepbrid_service(self, folderName=''):
+		if self.useContainerTitles: control.setContainerName(folderName)
+		if getSetting('deepbrid.token'):
+			self.addDirectoryItem('Deepbrid: Cloud Storage (Read-only)', 'db_CloudStorage&folderName=%s' % quote_plus('Deepbrid Cloud'), 'tools.png', 'DefaultAddonService.png')
+			self.addDirectoryItem('Deepbrid: Add NZB URL', 'db_AddUsenetUrl', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+			self.addDirectoryItem('Deepbrid: Download History', 'db_DownloadHistory&offset=0', 'tools.png', 'DefaultAddonService.png')
+			self.addDirectoryItem('Deepbrid: Hoster Limits', 'db_AccountLimits', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+			self.addDirectoryItem('Deepbrid: Account Info', 'db_AccountInfo', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		else:
+			self.addDirectoryItem('[I]Please setup in Accounts[/I]', 'tools_openSettings&query=6.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 
 	def premiumize_service(self, folderName=''):

@@ -368,6 +368,7 @@ class PremAccntNotification:
 		from resources.lib.debrid import alldebrid
 		from resources.lib.debrid import premiumize
 		from resources.lib.debrid import realdebrid
+		from resources.lib.debrid import deepbrid
 		control.log('[ plugin.video.umbrella ] Debrid Account Expiry Notification Service Starting...', LOGINFO)
 		self.duration = [(15, 10), (11, 7), (8, 4), (5, 2), (3, 0)]
 		if control.setting('alldebridusername') != '' and control.setting('alldebridexpirynotice') == 'true':
@@ -419,6 +420,32 @@ class PremAccntNotification:
 				if days_remaining >= 0:
 					if self.withinRangeCheck('realdebrid', days_remaining):
 						control.notification(message='Real-Debrid Account expires in %s days' % days_remaining, icon=control.joinPath(control.artPath(), 'realdebrid.png'))
+
+		if control.setting('deepbrid.token') != '' and control.setting('deepbridexpirynotice') == 'true':
+			try:
+				account_info = deepbrid.Deepbrid().account_info()
+			except Exception:
+				account_info = None
+				log_utils.error()
+			if account_info and not account_info.get('error'):
+				expiration = account_info.get('expiration')
+				try:
+					expires = datetime.strptime(str(expiration), '%Y-%m-%d')
+				except Exception:
+					expires = None
+					if not expiration:
+						control.notification(
+							message='Deepbrid Account has no expiration. Invalid or free account.',
+							icon=control.joinPath(control.artPath(), 'deepbrid.png')
+						)
+				if expires:
+					days_remaining = (expires.date() - datetime.today().date()).days
+					if days_remaining >= 0:
+						if self.withinRangeCheck('deepbrid', days_remaining):
+							control.notification(
+								message='Deepbrid Account expires in %s days' % days_remaining,
+								icon=control.joinPath(control.artPath(), 'deepbrid.png')
+							)
 
 	def withinRangeCheck(self, debrid_provider, days_remaining):
 		if days_remaining < 15:

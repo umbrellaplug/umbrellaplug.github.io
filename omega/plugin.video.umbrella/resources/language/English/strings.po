@@ -5791,3 +5791,7 @@ msgstr ""
 msgctxt "#40714"
 msgid "[COLOR %s][B]Dropped Manager - Shows[/B][/COLOR]"
 msgstr ""
+
+msgctxt "#40715"
+msgid "Deepbrid"
+msgstr ""

@@ -4652,6 +4652,128 @@
 					</control>
 				</setting>
 			</group>
+			<group id="7" label="40715">
+				<setting id="deepbrid.enable" type="boolean" label="32081" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="deepbrid.token"/>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+
+				<setting id="deepbrid.token" type="string" label="Deepbrid API Key" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>Deepbrid API Key</heading>
+					</control>
+				</setting>
+
+				<setting id="deepbrid.priority" type="integer" label="40005" help="">
+					<level>0</level>
+					<default>10</default>
+					<constraints>
+						<minimum>1</minimum>
+						<step>1</step>
+						<maximum>10</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="deepbrid.token"/>
+								<condition operator="is" setting="deepbrid.enable">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+
+				<setting id="deepbridexpirynotice" type="boolean" label="40120" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="deepbrid.token"/>
+								<condition operator="is" setting="deepbrid.enable">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="deepbrid.notification.range" type="string" label="" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string"></control>
+				</setting>
+
+				<setting id="db_cloud.enabled" type="boolean" label="32050" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="!is" setting="deepbrid.token"/>
+								<condition operator="is" setting="deepbrid.enable">true</condition>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+
+				<setting id="dbAuthorizeButton" type="action" label="40121" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=db_Authorize)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="deepbrid.token"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
+					</control>
+				</setting>
+
+				<setting id="dbRevokeButton" type="action" label="40110" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=db_Revoke)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="deepbrid.token"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
+					</control>
+				</setting>
+			</group>
 		</category>
 		<category id="Providers" label="40362" help="40191">
 			<group id="1" label="40450">

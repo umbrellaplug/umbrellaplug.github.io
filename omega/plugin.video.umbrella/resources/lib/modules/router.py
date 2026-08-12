@@ -765,6 +765,71 @@ def router(argv2):
 			from resources.lib.debrid import offcloud
 			offcloud.Offcloud().user_cloud_clear()
 
+	elif action and action.startswith('db_'):
+		if action == 'db_ServiceNavigator':
+			from resources.lib.menus import navigator
+			navigator.Navigator().deepbrid_service(folderName=folderName)
+		elif action == 'db_Authorize':
+			from resources.lib.debrid.deepbrid import Deepbrid
+			Deepbrid().auth()
+		elif action == 'db_Revoke':
+			from resources.lib.debrid.deepbrid import Deepbrid
+			Deepbrid().remove_auth()
+		elif action == 'db_AccountInfo':
+			from resources.lib.debrid.deepbrid import Deepbrid
+			Deepbrid().account_info_to_dialog()
+		elif action == 'db_AccountLimits':
+			from resources.lib.debrid.deepbrid import Deepbrid
+			Deepbrid().account_limits_to_dialog()
+		elif action == 'db_CloudStorage':
+			from resources.lib.debrid.deepbrid import Deepbrid
+			Deepbrid().user_cloud_to_listItem()
+		elif action == 'db_CloudTorrents':
+			from resources.lib.debrid.deepbrid import Deepbrid
+			Deepbrid().cloud_torrents_to_listitem()
+		elif action == 'db_CloudUsenet':
+			from resources.lib.debrid.deepbrid import Deepbrid
+			Deepbrid().cloud_usenet_to_listitem()
+		elif action == 'db_BrowseCloud':
+			from resources.lib.debrid.deepbrid import Deepbrid
+			Deepbrid().browse_user_torrents(params.get('id'), mediatype or 'torrent')
+		elif action == 'db_AddUsenetUrl':
+			from resources.lib.debrid.deepbrid import Deepbrid
+			Deepbrid().add_usenet_url_dialog()
+		elif action == 'db_DownloadHistory':
+			from resources.lib.debrid.deepbrid import Deepbrid
+			Deepbrid().download_history_to_listitem(offset=params.get('offset', '0'))
+		elif action == 'db_PlayCloud':
+			token = params.get('token') or ''
+			resolved = None
+			try:
+				kind, request_id, index, expected_count = token.split(',', 3)
+				from resources.lib.debrid.deepbrid import Deepbrid
+				db = Deepbrid()
+				if kind == 'dbt':
+					resolved = db.resolve_cloud_torrent_file(
+						request_id, index, expected_count
+					)
+				elif kind == 'dbu':
+					resolved = db.resolve_cloud_usenet_file(
+						request_id, index, expected_count
+					)
+			except Exception:
+				from resources.lib.modules import log_utils
+				log_utils.error('Deepbrid manual cloud resolve: ')
+
+			if resolved:
+				control.player.play(resolved.replace(' ', '%20'))
+			else:
+				control.notification(
+					title='Deepbrid',
+					message='Cloud file could not be refreshed',
+					icon='ERROR'
+				)
+		elif action == 'db_PlayDownload':
+			if url:
+				control.player.play(url.replace(' ', '%20'))
+
 
 	####################################################
 	#---Anime

@@ -92,10 +92,11 @@ class SourceResultsXML(BaseDialog):
 				from re import match as re_match
 				chosen_source = self.item_list[self.get_position(self.window_id)]
 				source_dict = chosen_source.getProperty('umbrella.source_dict')
+				debrid = chosen_source.getProperty('umbrella.debrid')
 				cm_list = [('[B]Additional Link Info[/B]', 'sourceInfo')]
-				if 'cached (pack)' in source_dict:
+				if debrid != 'Deepbrid' and 'cached (pack)' in source_dict:
 					cm_list += [('[B]Browse Debrid Pack[/B]', 'showDebridPack')]
-				if 'unchecked (pack)' in source_dict:
+				if debrid != 'Deepbrid' and 'unchecked (pack)' in source_dict:
 					cm_list += [('[B]Browse Debrid Pack[/B]', 'showDebridPack')]
 				source = chosen_source.getProperty('umbrella.source')
 				if not 'UNCACHED' in source and self.dnlds_enabled:
@@ -106,8 +107,7 @@ class SourceResultsXML(BaseDialog):
 						if _src_info and _src_info[0].get('package') in ('season', 'show') and 'magnet:' in _src_info[0].get('url', ''):
 							cm_list += [('[B]Download Pack[/B]', 'downloadPack')]
 					except: pass
-				debrid = chosen_source.getProperty('umbrella.debrid')
-				if (re_match(r'^CACHED.*TORRENT', source) or 'unchecked' in source_dict) and debrid != 'EasyDebrid':
+				if (re_match(r'^CACHED.*TORRENT', source) or 'unchecked' in source_dict) and debrid not in ('EasyDebrid', 'Deepbrid'):
 					cm_list += [('[B]Save to %s Cloud[/B]' % debrid, 'saveToCloud')]
 				if chosen_source.getProperty('umbrella.provider').upper() == 'EASYNEWS':
 					cm_list += [('[B]Play EasyNews Seekable[/B]', 'playENSeekable')]
@@ -116,7 +116,7 @@ class SourceResultsXML(BaseDialog):
 				cm_action = cm_list[chosen_cm_item][1]
 				if cm_action == 'sourceInfo':
 					self.execute_code('RunPlugin(plugin://plugin.video.umbrella/?action=sourceInfo&source=%s)' % quote_plus(source_dict))
-				elif cm_action == 'showDebridPack':
+				elif cm_action == 'showDebridPack' and debrid != 'Deepbrid':
 					debrid = chosen_source.getProperty('umbrella.debrid')
 					name = chosen_source.getProperty('umbrella.name')
 					hash = chosen_source.getProperty('umbrella.hash')
@@ -164,7 +164,7 @@ class SourceResultsXML(BaseDialog):
 					self.execute_code('RunPlugin(plugin://plugin.video.umbrella/?action=createStrm&name=%s&image=%s&source=%s&caller=sources&title=%s)' %
 										(new_sysname, quote_plus(poster), quote_plus(source_dict), sysname))
 					self.selected = (None, '')
-				elif cm_action == 'saveToCloud':
+				elif cm_action == 'saveToCloud' and debrid != 'Deepbrid':
 					magnet = chosen_source.getProperty('umbrella.url')
 					if debrid == 'AllDebrid':
 						from resources.lib.debrid import alldebrid
@@ -237,7 +237,7 @@ class SourceResultsXML(BaseDialog):
 
 	def debrid_abv(self, debrid):
 		try:
-			d_dict = {'AllDebrid': 'AD', 'EasyDebrid': 'ED','Premiumize.me': 'PM', 'Real-Debrid': 'RD', 'Torbox': 'TB', 'Offcloud': 'OC'}
+			d_dict = {'AllDebrid': 'AD', 'EasyDebrid': 'ED','Premiumize.me': 'PM', 'Real-Debrid': 'RD', 'Torbox': 'TB', 'Offcloud': 'OC', 'Deepbrid': 'DB'}
 			d = d_dict[debrid]
 		except:
 			d = ''
@@ -245,7 +245,7 @@ class SourceResultsXML(BaseDialog):
 
 	def debrid_name(self, debrid):
 		try:
-			d_dict = {'AllDebrid': 'AllDebrid', 'EasyDebrid': 'EasyDebrid','Premiumize.me': 'Premiumize', 'Real-Debrid': 'Real-Debrid', 'TorBox': 'TorBox', 'Offcloud': 'Offcloud'}
+			d_dict = {'AllDebrid': 'AllDebrid', 'EasyDebrid': 'EasyDebrid','Premiumize.me': 'Premiumize', 'Real-Debrid': 'Real-Debrid', 'TorBox': 'TorBox', 'Offcloud': 'Offcloud', 'Deepbrid': 'Deepbrid'}
 			d = d_dict[debrid]
 		except:
 			d = ''
@@ -276,6 +276,8 @@ class SourceResultsXML(BaseDialog):
 								providerHighlight = self.easyDebridHighlightColor
 							elif str(item.get('debrid')).lower()== 'offcloud':
 								providerHighlight = self.offcloudHighlightColor
+							elif str(item.get('debrid')).lower() == 'deepbrid':
+								providerHighlight = self.sourceHighlightColor
 						else:
 							if item.get('provider') == 'easynews':
 								providerHighlight = self.easynewsHighlightColor
