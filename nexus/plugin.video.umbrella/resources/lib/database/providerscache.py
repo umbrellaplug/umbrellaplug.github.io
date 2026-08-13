@@ -120,8 +120,12 @@ def get_connection():
 	if not existsPath(dataPath): makeFile(dataPath)
 	dbcon = db.connect(providercacheFile, timeout=60) # added timeout 3/23/21 for concurrency with threads
 	dbcon.execute('''PRAGMA page_size = 32768''')
-	dbcon.execute('''PRAGMA journal_mode = WAL''')
-	dbcon.execute('''PRAGMA synchronous = OFF''')
+	try:
+		dbcon.execute('''PRAGMA journal_mode = WAL''')
+		dbcon.execute('''PRAGMA synchronous = OFF''')
+	except db.OperationalError:
+		dbcon.execute('''PRAGMA journal_mode = OFF''')
+		dbcon.execute('''PRAGMA synchronous = OFF''')
 	dbcon.execute('''PRAGMA temp_store = memory''')
 	dbcon.execute('''PRAGMA mmap_size = 30000000000''')
 	dbcon.row_factory = _dict_factory

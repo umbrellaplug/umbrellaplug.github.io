@@ -799,9 +799,21 @@ def mdblistAuth(fromSettings=0):
 
 def mdblistRevoke(fromSettings=0):
 	try:
+		control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 		control.setSetting('mdblist.token', '')
 		control.setSetting('mdblist.refresh.token', '')
+		control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 		session.headers.pop('Authorization', None)
+		clr_mdb = {'mdb_watched_movies': True, 'mdb_watched_episodes': True, 'watched': True, 'bookmarks': True,
+			'movies_watchlist': True, 'shows_watchlist': True, 'movies_collection': True, 'shows_collection': True, 'shows_dropped': True}
+		mdbsync.delete_mdb_tables(clr_mdb)
+		if getSetting('indicators.alt') == '3':
+			control.setSetting('indicators.alt', '0')
+			control.setSetting('indicators', 'Local')
+		if getSetting('scrobble.source') == '3':
+			control.setSetting('scrobble.source', '0')
+			control.setSetting('scrobble', 'Local')
+		control.setSetting('mdblist.markwatched', 'false')
 		control.notification(title='MDBList', message='MDBList Authorization Revoked')
 	except: log_utils.error()
 	finally:
@@ -878,6 +890,20 @@ def get_up_next():
 			return []
 		items = result if isinstance(result, list) else result.get('items', result.get('shows', []))
 		return items
+	except: log_utils.error()
+	return []
+
+def get_calendar(start, end):
+	# MDBList's own /calendar/events — personalized to the user's watchlist/tracked
+	# shows, confirmed live (real response shape: {'events': [{'type': 'episode'|'movie',
+	# 'title': <show title>, 'episode_title':, 'show_tmdb':, 'season_number':,
+	# 'episode_number':, 'start': 'YYYY-MM-DD', ...}]}). Distinct from get_up_next()'s
+	# /upnext endpoint (per-show "next episode" only, unreliable for out-of-order
+	# watching — see mdblist_progress_list()'s local reconstruction for that case).
+	try:
+		result = get_request('/calendar/events?limit=1000&start=%s&end=%s' % (start, end))
+		if not result: return []
+		return result.get('events') or []
 	except: log_utils.error()
 	return []
 
@@ -970,6 +996,12 @@ def syncMovies():
 		return mdbsync.get_watched_movies() or []
 	except: log_utils.error()
 
+def watchedMovies():
+	try:
+		if not getMDBListCredentialsInfo(): return None
+		return mdbsync.get_watched_movies_full() or []
+	except: log_utils.error()
+
 def _make_episode_ranges(ep_nums_sorted):
 	if not ep_nums_sorted: return []
 	ranges = []
@@ -1002,14 +1034,24 @@ def syncTVShows():
 		return indicators
 	except: log_utils.error()
 
+def watchedShows():
+	try:
+		if not getMDBListCredentialsInfo(): return None
+		rows = mdbsync.get_watched_shows()
+		if not rows: return []
+		return [{'ids': {'imdb': r[0], 'tmdb': r[1], 'tvdb': r[2]}, 'last_watched_at': r[3]} for r in rows]
+	except: log_utils.error()
+
 def syncSeasons(imdb, tvdb):
 	try:
 		if not getMDBListCredentialsInfo(): return None
 		if not imdb and not tvdb: return None
 		episodes = mdbsync.get_watched_episodes()
-		if not episodes: return [[], {}]
-		show_eps = [(s, e) for (si, st, sv, s, e) in episodes if si == imdb or sv == tvdb]
-		if not show_eps: return [[], {}]
+		# MDBList's local watched-episode rows never populate show_tvdb (always ''), so
+		# comparing "sv == tvdb" against an empty tvdb matched every other show's rows too
+		# (both sides ''), silently merging hundreds of unrelated shows' episodes into one
+		# season/episode count — only match on a given id when it's actually non-empty.
+		show_eps = [(s, e) for (si, st, sv, s, e) in (episodes or []) if (imdb and si == imdb) or (tvdb and sv == tvdb)]
 		from collections import defaultdict
 		by_season = defaultdict(list)
 		for (s, e) in show_eps:
@@ -1241,12 +1283,17 @@ def removeWatchlistItems(media_type, imdb_list):
 
 def force_mdblistSync():
 	if not control.yesnoDialog(control.lang(32056), '', ''): return
-	control.busy()
-	clr_mdb = {'mdb_watched_movies': True, 'mdb_watched_episodes': True, 'movies_watchlist': True, 'shows_watchlist': True, 'watched': True}
-	mdbsync.delete_mdb_tables(clr_mdb)
-	sync_watch_list(forced=True)
-	sync_watchedProgress(forced=True)
-	control.hide()
+	dialog = control.progressDialog
+	dialog.create(control.addonName(), 'Preparing MDBList sync...')
+	try:
+		clr_mdb = {'mdb_watched_movies': True, 'mdb_watched_episodes': True, 'movies_watchlist': True, 'shows_watchlist': True, 'watched': True}
+		mdbsync.delete_mdb_tables(clr_mdb)
+		dialog.update(0, 'Syncing watchlist...')
+		sync_watch_list(forced=True)
+		dialog.update(50, 'Syncing watched history...')
+		sync_watchedProgress(forced=True)
+	finally:
+		dialog.close()
 	control.notification(message='Forced MDBList Sync Complete')
 
 
@@ -1350,8 +1397,12 @@ def markTVShowAsWatched(imdb, tvdb, tmdb=''):
 def markTVShowAsNotWatched(imdb, tvdb):
 	try:
 		episodes = mdbsync.get_watched_episodes()
+		# See syncSeasons() above: MDBList's local rows never populate show_tvdb (always
+		# ''), so matching on an empty tvdb matched every other show's rows too and wiped
+		# the entire local watched-episode table on a single unwatch — only match a given
+		# id when it's actually non-empty.
 		for (si, st, sv, s, e) in episodes:
-			if si == imdb or sv == tvdb:
+			if (imdb and si == imdb) or (tvdb and sv == tvdb):
 				mdbsync.delete_watched_episode(si, s, e)
 		mdbsync.cache_delete(mdbsync._hash_function(syncTVShows, ()))
 		return True
@@ -1387,7 +1438,7 @@ def markSeasonAsNotWatched(imdb, tvdb, season):
 	try:
 		episodes = mdbsync.get_watched_episodes()
 		for (si, st, sv, s, e) in episodes:
-			if (si == imdb or sv == tvdb) and int(s) == int(season):
+			if ((imdb and si == imdb) or (tvdb and sv == tvdb)) and int(s) == int(season):
 				mdbsync.delete_watched_episode(si, s, e)
 		mdbsync.cache_delete(mdbsync._hash_function(syncTVShows, ()))
 		return True

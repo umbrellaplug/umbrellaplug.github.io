@@ -110,64 +110,184 @@ _TVSHOWS_DEFAULTS = [
 _MYMOVIES_DEFAULTS = [
 	('mymv_userlists',        '32039', 'movieUserlists',                                   'userlists.png', 'userlists.png', 1, 1, 1,  0, 0, None,                   0, None),
 	('mymv_fav_movies',       '40465', 'getFavouritesMovies&url=favourites_movies',        'movies.png',    'movies.png',    1, 1, 1,  1, 0, 'favorite_movie',       0, None),
-	('mymv_mdb_userlist',     '40681', 'mdbUserListMovies',                                'mdblist.png',   'mdblist.png',   1, 1, 1,  2, 0, 'mdblist_token',        0, '40699'),
-	('mymv_mdb_watchlist',    '40682', 'mdbUserWatchListMovies',                           'mdblist.png',   'mdblist.png',   1, 1, 1,  3, 0, 'mdblist_token',        0, '40700'),
-	('mymv_mdb_collection',   '40706', 'mdbUserCollectionMovies',                          'mdblist.png',   'mdblist.png',   1, 1, 1,  4, 0, 'mdblist_token',        0, None),
-	('mymv_mdb_liked',        '40683', 'mdbLikedListMovies',                               'mdblist.png',   'mdblist.png',   1, 1, 1,  5, 0, 'mdblist_token',        0, '40701'),
-	('mymv_mdb_unfinished',   '40686', 'mdblistMoviesUnfinished',                          'mdblist.png',   'mdblist.png',   1, 1, 1,  6, 0, 'mdblist_with_indicators', 1, '35308'),
-	('mymv_tmdb_userlists',   'TMDb User Lists', 'tmdbUserListsMovies',                    'tmdb.png',      'tmdb.png',      1, 1, 1,  7, 0, 'tmdb_v4_token',        0, None),
-	('mymv_tmdb_watchlist',   '40612', 'tmdbV4WatchlistMovies',                            'tmdb.png',      'tmdb.png',      1, 1, 1,  8, 0, 'tmdb_v4_token',        0, None),
-	('mymv_simkl_completed',  '40548', 'movies&url=simklhistory',                          'simkl.png',     'simkl.png',     1, 1, 1,  9, 0, 'simkl_token',          0, None),
-	('mymv_simkl_watchlist',  '40550', 'movies&url=simklwatchlist',                        'simkl.png',     'simkl.png',     1, 1, 1, 10, 0, 'simkl_token',          0, None),
-	('mymv_simkl_dropped',    'Simkl Dropped', 'movies&url=simkldropped',                 'simkl.png',     'simkl.png',     1, 1, 1, 11, 0, 'simkl_token',          0, None),
-	('mymv_trakt_unfinished', '40687', 'moviesUnfinished&url=traktunfinished',             'trakt.png',     'trakt.png',     1, 1, 1, 12, 0, 'trakt_with_indicators', 1, '35308'),
-	('mymv_trakt_history',    '40695', 'movies&url=trakthistory',                          'trakt.png',     'trakt.png',     1, 1, 1, 13, 0, 'trakt_with_indicators', 1, '32036'),
-	('mymv_trakt_watchlist',  '40696', 'movies&url=traktwatchlist',                        'trakt.png',     'trakt.png',     1, 1, 1, 14, 0, 'trakt_credentials',    0, '40700'),
-	('mymv_trakt_collection', '40697', 'movies&url=traktcollection',                       'trakt.png',     'trakt.png',     1, 1, 1, 15, 0, 'trakt_credentials',    0, '32032'),
-	('mymv_trakt_liked',      '40698', 'movies_LikedLists',                               'trakt.png',     'trakt.png',     1, 1, 1, 16, 0, 'trakt_credentials',     1, 'My Liked Lists'),
-	('mymv_local_finish',     'Local: Finish Watching', 'local_finish_watching_movies',       'icon.png',      'icon.png',      1, 1, 1, 17, 0, 'local_scrobble',       1, None),
-	('mymv_movies_menu',      '32031', 'movieliteNavigator',                               'movies.png',    'movies.png',    1, 1, 1, 18, 0, 'not_lite',             0, None),
-	('mymv_person_search',    '33044', 'moviePerson',                                      'imdb.png',      'people-search.png', 0, 1, 1, 19, 0, 'not_lite',         0, None),
-	('mymv_movie_search',     '33042', 'movieSearch',                                      'search.png',    'search.png',    1, 1, 1, 20, 0, 'not_lite',             0, None),
+	('mymv_mdblist_folder',   'MDBList',  'mymovies_mdblistNavigator',                     'mdblist.png',   'mdblist.png',   1, 1, 1,  2, 0, 'mdblist_token',        0, None),
+	('mymv_custom_folder',    'Custom',   'mymovies_customNavigator',                      'icon.png',      'icon.png',      1, 1, 1,  3, 0, 'custom_token',         0, None),
+	('mymv_tmdb_folder',      'TMDb',     'mymovies_tmdbNavigator',                        'tmdb.png',      'tmdb.png',      1, 1, 1,  4, 0, 'tmdb_v4_token',        0, None),
+	('mymv_simkl_folder',     'Simkl',    'mymovies_simklNavigator',                       'simkl.png',     'simkl.png',     1, 1, 1,  5, 0, 'simkl_token',          0, None),
+	('mymv_trakt_folder',     'Trakt',    'mymovies_traktNavigator',                       'trakt.png',     'trakt.png',     1, 1, 1,  6, 0, 'trakt_credentials',    0, None),
+	('mymv_floppy_folder',  'Floppy', 'mymovies_floppyNavigator',                    'floppy.png',  'floppy.png',  1, 1, 1,  7, 0, 'floppy_credentials', 0, None),
+	('mymv_local_folder',   'Local',    'mymovies_localNavigator',                       'icon.png',      'icon.png',      1, 1, 1,  8, 0, 'local_scrobble',       0, None),
+	('mymv_movies_menu',      '32031', 'movieliteNavigator',                               'movies.png',    'movies.png',    1, 1, 1,  9, 0, 'not_lite',             0, None),
+	('mymv_person_search',    '33044', 'moviePerson',                                      'imdb.png',      'people-search.png', 0, 1, 1, 10, 0, 'not_lite',         0, None),
+	('mymv_movie_search',     '33042', 'movieSearch',                                      'search.png',    'search.png',    1, 1, 1, 11, 0, 'not_lite',             0, None),
+	('mymv_scrob_folder',     'Scrob',    'mymovies_scrobNavigator',                      'scrob.png',     'scrob.png',     1, 1, 1, 12, 0, 'scrob_credentials',    0, None),
+]
+
+_MYMOVIES_MDBLIST_DEFAULTS = [
+	('mymv_mdb_userlist',     '40681', 'mdbUserListMovies',                                'mdblist.png',   'mdblist.png',   1, 1, 1,  0, 0, 'mdblist_token',        0, '40699'),
+	('mymv_mdb_watchlist',    '40682', 'mdbUserWatchListMovies',                           'mdblist.png',   'mdblist.png',   1, 1, 1,  1, 0, 'mdblist_token',        0, '40700'),
+	('mymv_mdb_collection',   '40706', 'mdbUserCollectionMovies',                          'mdblist.png',   'mdblist.png',   1, 1, 1,  2, 0, 'mdblist_token',        0, None),
+	('mymv_mdb_liked',        '40683', 'mdbLikedListMovies',                               'mdblist.png',   'mdblist.png',   1, 1, 1,  3, 0, 'mdblist_token',        0, '40701'),
+	('mymv_mdb_unfinished',   '40686', 'mdblistMoviesUnfinished',                          'mdblist.png',   'mdblist.png',   1, 1, 1,  4, 0, 'mdblist_with_indicators', 1, '35308'),
+	('mymv_mdb_watched',      '40716', 'mdblist_movies_watched&url=mdblistwatchedmv',      'mdblist.png',   'mdblist.png',   1, 1, 1,  5, 0, 'mdblist_with_indicators', 1, None),
+]
+
+_MYMOVIES_CUSTOM_DEFAULTS = [
+	('mymv_custom_watchlist', '40736', 'custom_movies_watchlist&url=custommovieswatchlist',   'icon.png',   'icon.png',      1, 1, 1,  0, 0, 'custom_token',           0, None),
+	('mymv_custom_collection','40737', 'custom_movies_collection&url=custommoviescollection', 'icon.png',   'icon.png',      1, 1, 1,  1, 0, 'custom_token',           0, None),
+	('mymv_custom_unfinished','40741', 'custom_movies_unfinished&url=custommoviesunfinished', 'icon.png',   'icon.png',      1, 1, 1,  2, 0, 'custom_with_indicators', 1, '35308'),
+	('mymv_custom_watched',   '40745', 'custom_movies_watched&url=custommovieswatched',       'icon.png',   'icon.png',      1, 1, 1,  3, 0, 'custom_with_indicators', 1, None),
+	('mymv_custom_userlists', '40782', 'custom_movies_userlists',                             'icon.png',   'icon.png',      1, 1, 1,  4, 0, 'custom_token',           1, None),
+	# sort_order 99 (not 5): existing users' DBs already have mymv_custom_userlists at
+	# position 4 and won't retroactively re-sort it (only label/icon/poster/alt_label sync
+	# across an upgrade, per _sync_defaults()'s _field_sync) — a low sort_order here would
+	# collide with whatever already occupies position 5 in their menu.
+	('mymv_custom_dropped',   '40783', 'custom_movies_dropped&url=custommoviesdropped',       'icon.png',   'icon.png',      1, 1, 1, 99, 0, 'custom_token',           0, None),
+]
+
+_MYMOVIES_TMDB_DEFAULTS = [
+	('mymv_tmdb_userlists',   'TMDb User Lists', 'tmdbUserListsMovies',                    'tmdb.png',      'tmdb.png',      1, 1, 1,  0, 0, 'tmdb_v4_token',        0, None),
+	('mymv_tmdb_watchlist',   '40612', 'tmdbV4WatchlistMovies',                            'tmdb.png',      'tmdb.png',      1, 1, 1,  1, 0, 'tmdb_v4_token',        0, None),
+]
+
+_MYMOVIES_SIMKL_DEFAULTS = [
+	('mymv_simkl_completed',  '40548', 'movies&url=simklhistory',                          'simkl.png',     'simkl.png',     1, 1, 1,  0, 0, 'simkl_token',          0, None),
+	('mymv_simkl_watchlist',  '40550', 'movies&url=simklwatchlist',                        'simkl.png',     'simkl.png',     1, 1, 1,  1, 0, 'simkl_token',          0, None),
+	('mymv_simkl_dropped',    'Dropped (Simkl)', 'movies&url=simkldropped',                 'simkl.png',     'simkl.png',     1, 1, 1,  2, 0, 'simkl_token',          0, None),
+	('mymv_simkl_unfinished', 'Unfinished (Simkl)', 'simkl_movies_unfinished&url=simklmoviesunfinished', 'simkl.png', 'simkl.png', 1, 1, 1,  3, 0, 'simkl_with_indicators', 1, '35308'),
+]
+
+_MYMOVIES_TRAKT_DEFAULTS = [
+	('mymv_trakt_unfinished', '40687', 'moviesUnfinished&url=traktunfinished',             'trakt.png',     'trakt.png',     1, 1, 1,  0, 0, 'trakt_with_indicators', 1, '35308'),
+	('mymv_trakt_history',    '40695', 'movies&url=trakthistory',                          'trakt.png',     'trakt.png',     1, 1, 1,  1, 0, 'trakt_with_indicators', 1, '32036'),
+	('mymv_trakt_watchlist',  '40696', 'movies&url=traktwatchlist',                        'trakt.png',     'trakt.png',     1, 1, 1,  2, 0, 'trakt_credentials',    0, '40700'),
+	('mymv_trakt_collection', '40697', 'movies&url=traktcollection',                       'trakt.png',     'trakt.png',     1, 1, 1,  3, 0, 'trakt_credentials',    0, '32032'),
+	('mymv_trakt_liked',      '40698', 'movies_LikedLists',                               'trakt.png',     'trakt.png',     1, 1, 1,  4, 0, 'trakt_credentials',     1, 'My Liked Lists'),
+]
+
+_MYMOVIES_FLOPPY_DEFAULTS = [
+	('mymv_floppy_watching',   'Watching (Floppy)',   'floppy_movies_watching&url=floppymovieswatching',     'floppy.png', 'floppy.png', 1, 1, 1,  0, 0, 'floppy_credentials', 0, None),
+	('mymv_floppy_watchlist',  'Watchlist (Floppy)',  'floppy_movies_watchlist&url=floppymovieswatchlist',   'floppy.png', 'floppy.png', 1, 1, 1,  1, 0, 'floppy_credentials', 0, None),
+	('mymv_floppy_onhold',     'On Hold (Floppy)',    'floppy_movies_onhold&url=floppymoviesonhold',         'floppy.png', 'floppy.png', 1, 1, 1,  2, 0, 'floppy_credentials', 0, None),
+	('mymv_floppy_completed',  'Completed (Floppy)',  'floppy_movies_completed&url=floppymoviescompleted',   'floppy.png', 'floppy.png', 1, 1, 1,  3, 0, 'floppy_credentials', 0, None),
+	('mymv_floppy_dropped',    'Dropped (Floppy)',    'floppy_movies_dropped&url=floppymoviesdropped',       'floppy.png', 'floppy.png', 1, 1, 1,  4, 0, 'floppy_credentials', 0, None),
+	('mymv_floppy_collection', 'Collection (Floppy)', 'floppy_movies_collection&url=floppymoviescollection', 'floppy.png', 'floppy.png', 1, 1, 1,  5, 0, 'floppy_credentials', 0, None),
+	('mymv_floppy_unfinished', 'Unfinished (Floppy)', 'floppy_movies_unfinished&url=floppymoviesunfinished', 'floppy.png', 'floppy.png', 1, 1, 1,  6, 0, 'floppy_credentials', 1, '35308'),
+]
+
+_MYMOVIES_SCROB_DEFAULTS = [
+	('mymv_scrob_watched', 'Watched (Scrob)', 'scrob_movies_watched&url=scrobmovieswatched', 'scrob.png', 'scrob.png', 1, 1, 1, 0, 0, 'scrob_with_indicators', 1, None),
+	('mymv_scrob_unfinished', 'Unfinished (Scrob)', 'scrob_movies_unfinished&url=scrobmoviesunfinished', 'scrob.png', 'scrob.png', 1, 1, 1, 1, 0, 'scrob_credentials', 1, '35308'),
+	('mymv_scrob_userlists', '40781', 'scrob_movies_userlists', 'scrob.png', 'scrob.png', 1, 1, 1, 2, 0, 'scrob_credentials', 1, None),
+]
+
+_MYMOVIES_LOCAL_DEFAULTS = [
+	('mymv_local_finish', 'Local: Finish Watching', 'local_finish_watching_movies', 'icon.png', 'icon.png', 1, 1, 1, 0, 0, 'local_scrobble', 1, None),
 ]
 
 _MYTVSHOWS_DEFAULTS = [
 	('mytv_userlists',         '32040', 'tvUserlists',                                          'userlists.png', 'userlists.png', 1, 1, 1,  0, 0, None,                    0, None),
 	('mytv_fav_tvshows',       '40466', 'getFavouritesTVShows&url=favourites_tvshows',          'tvshows.png',   'tvshows.png',   1, 1, 1,  1, 0, 'favorite_tvshows',      0, None),
 	('mytv_fav_episodes',      '40467', 'getFavouritesEpisodes',                                'tvshows.png',   'tvshows.png',   1, 1, 1,  2, 0, 'favorite_episodes',     0, None),
-	('mytv_mdb_userlist',      '40681', 'mdbUserListTV',                                        'mdblist.png',   'mdblist.png',   1, 1, 1,  3, 0, 'mdblist_token',         0, '40699'),
-	('mytv_mdb_watchlist',     '40682', 'mdbUserWatchListTVShows',                              'mdblist.png',   'mdblist.png',   1, 1, 1,  4, 0, 'mdblist_token',         0, '40700'),
-	('mytv_mdb_collection',    '40706', 'mdbUserCollectionTVShows',                             'mdblist.png',   'mdblist.png',   1, 1, 1,  5, 0, 'mdblist_token',         0, None),
-	('mytv_mdb_liked',         '40683', 'mdbLikedListShows',                                    'mdblist.png',   'mdblist.png',   1, 1, 1,  6, 0, 'mdblist_token',         0, '40701'),
-	('mytv_mdb_shows_prog',    '40684', 'mdblist_shows_progress&url=mdbprogress',               'mdblist.png',   'mdblist.png',   1, 1, 1,  7, 0, 'mdblist_with_indicators',1, '40401'),
-	('mytv_mdb_ep_prog',       '40685', 'mdblist_calendar&url=mdbprogress',                     'mdblist.png',   'mdblist.png',   1, 1, 1,  8, 0, 'mdblist_with_indicators',1, '32037'),
-	('mytv_mdb_unfinished',    '40686', 'mdblistEpisodesUnfinished',                            'mdblist.png',   'mdblist.png',   1, 1, 1,  9, 0, 'mdblist_with_indicators',1, '35308'),
-	('mytv_local_shows_prog',  '40658', 'local_shows_progress&url=localprogress',               'icon.png',      'icon.png',      1, 1, 1, 10, 0, 'local_scrobble',        1, None),
-	('mytv_local_calendar',    '40659', 'local_calendar&url=localprogress',                     'icon.png',      'icon.png',      1, 1, 1, 11, 0, 'local_scrobble',        1, None),
-	('mytv_local_finish',      'Local: Finish Watching', 'local_finish_watching_episodes',         'icon.png',      'icon.png',      1, 1, 1, 12, 0, 'local_scrobble',        1, None),
-	('mytv_tmdb_userlists',    'TMDb User Lists', 'tmdbUserListsTV',                            'tmdb.png',      'tmdb.png',      1, 1, 1, 12, 0, 'tmdb_v4_token',         0, None),
-	('mytv_tmdb_watchlist',    '40612', 'tmdbV4WatchlistTV',                                    'tmdb.png',      'tmdb.png',      1, 1, 1, 13, 0, 'tmdb_v4_token',         0, None),
-	('mytv_simkl_ep_prog',     'Simkl Progress Episodes', 'simkl_calendar&url=/sync/all-items/shows/watching', 'simkl.png', 'simkl.png', 1, 1, 1, 14, 0, 'simkl_credentials', 1, None),
-	('mytv_simkl_watching',    'Simkl Watching', 'tvshows&url=simklwatching',                  'simkl.png',     'simkl.png',     1, 1, 1, 15, 0, 'simkl_credentials',     1, None),
-	('mytv_simkl_watchlist',   'Simkl Plan to Watch', 'tvshows&url=simklwatchlist',             'simkl.png',     'simkl.png',     1, 1, 1, 16, 0, 'simkl_credentials',     0, None),
-	('mytv_simkl_onhold',      'Simkl On Hold', 'tvshows&url=simklonhold',                     'simkl.png',     'simkl.png',     1, 1, 1, 17, 0, 'simkl_credentials',     0, None),
-	('mytv_simkl_completed',   'Simkl Completed', 'tvshows&url=simklhistory',                  'simkl.png',     'simkl.png',     1, 1, 1, 18, 0, 'simkl_credentials',     0, None),
-	('mytv_simkl_dropped',     'Simkl Dropped', 'tvshows&url=simkldropped',                   'simkl.png',     'simkl.png',     1, 1, 1, 19, 0, 'simkl_credentials',     0, None),
-	('mytv_trakt_unfinished',  '40687', 'episodesUnfinished&url=traktunfinished',               'trakt.png',     'trakt.png',     1, 1, 1, 20, 0, 'trakt_with_indicators',  1, '35308'),
-	('mytv_trakt_ep_prog',     '40688', 'calendar&url=progress',                                'trakt.png',     'trakt.png',     1, 1, 1, 21, 0, 'trakt_with_indicators',  1, '32037'),
-	('mytv_trakt_show_prog',   '40689', 'shows_progress&url=progresstv',                       'trakt.png',     'trakt.png',     1, 1, 1, 22, 0, 'trakt_with_indicators',  1, '40401'),
-	('mytv_trakt_watched',     '40690', 'shows_watched&url=watchedtv',                         'trakt.png',     'trakt.png',     1, 1, 1, 23, 0, 'trakt_with_indicators',  1, '40433'),
-	('mytv_trakt_upcoming',    '40691', 'upcomingProgress&url=progress',                       'trakt.png',     'trakt.png',     1, 1, 1, 24, 0, 'trakt_with_indicators',  1, '32019'),
-	('mytv_trakt_cal_recent',  '40692', 'calendar&url=mycalendarRecent',                       'trakt.png',     'trakt.png',     1, 1, 1, 25, 0, 'trakt_with_indicators',  1, '32202'),
-	('mytv_trakt_cal_upcoming','40693', 'calendar&url=mycalendarUpcoming',                     'trakt.png',     'trakt.png',     1, 1, 1, 26, 0, 'trakt_with_indicators',  1, '32203'),
-	('mytv_trakt_cal_premiers','40694', 'calendar&url=mycalendarPremiers',                     'trakt.png',     'trakt.png',     1, 1, 1, 27, 0, 'trakt_with_indicators',  1, '32204'),
-	('mytv_trakt_history',     '40695', 'calendar&url=trakthistory',                           'trakt.png',     'trakt.png',     1, 1, 1, 28, 0, 'trakt_with_indicators',  1, '32036'),
-	('mytv_trakt_watchlist',   '40696', 'tvshows&url=traktwatchlist',                          'trakt.png',     'trakt.png',     1, 1, 1, 29, 0, 'trakt_credentials',     0, '40700'),
-	('mytv_trakt_collection',  '40697', 'tvshows&url=traktcollection',                         'trakt.png',     'trakt.png',     1, 1, 1, 30, 0, 'trakt_credentials',     0, '32032'),
-	('mytv_trakt_liked',       '40698', 'shows_LikedLists',                                    'trakt.png',     'trakt.png',     1, 1, 1, 31, 0, 'trakt_credentials',      1, 'My Liked Lists'),
-	('mytv_tv_menu',           '32031', 'tvliteNavigator',                                     'tvshows.png',   'tvshows.png',   1, 1, 1, 32, 0, 'not_lite',              0, None),
-	('mytv_person_search',     '33045', 'tvPerson',                                            'imdb.png',      'people-search.png', 0, 1, 1, 33, 0, 'not_lite',          0, None),
-	('mytv_tv_search',         '33043', 'tvSearch',                                            'trakt.png',     'search.png',    1, 1, 1, 34, 0, 'not_lite',              0, None),
+	('mytv_mdblist_folder',    'MDBList',  'mytvshows_mdblistNavigator',                        'mdblist.png',   'mdblist.png',   1, 1, 1,  3, 0, 'mdblist_token',         0, None),
+	('mytv_custom_folder',     'Custom',   'mytvshows_customNavigator',                         'icon.png',      'icon.png',      1, 1, 1,  4, 0, 'custom_token',          0, None),
+	('mytv_local_folder',      'Local',    'mytvshows_localNavigator',                          'icon.png',      'icon.png',      1, 1, 1,  5, 0, 'local_scrobble',        0, None),
+	('mytv_tmdb_folder',       'TMDb',     'mytvshows_tmdbNavigator',                           'tmdb.png',      'tmdb.png',      1, 1, 1,  8, 0, 'tmdb_v4_token',         0, None),
+	('mytv_simkl_folder',      'Simkl',    'mytvshows_simklNavigator',                          'simkl.png',     'simkl.png',     1, 1, 1,  9, 0, 'simkl_credentials',     0, None),
+	('mytv_trakt_folder',      'Trakt',    'mytvshows_traktNavigator',                          'trakt.png',     'trakt.png',     1, 1, 1, 10, 0, 'trakt_credentials',     0, None),
+	('mytv_floppy_folder',   'Floppy', 'mytvshows_floppyNavigator',                       'floppy.png',  'floppy.png',  1, 1, 1, 11, 0, 'floppy_credentials',  0, None),
+	('mytv_tv_menu',           '32031', 'tvliteNavigator',                                     'tvshows.png',   'tvshows.png',   1, 1, 1, 12, 0, 'not_lite',              0, None),
+	('mytv_person_search',     '33045', 'tvPerson',                                            'imdb.png',      'people-search.png', 0, 1, 1, 13, 0, 'not_lite',          0, None),
+	('mytv_tv_search',         '33043', 'tvSearch',                                            'trakt.png',     'search.png',    1, 1, 1, 14, 0, 'not_lite',              0, None),
+	('mytv_scrob_folder',      'Scrob',    'mytvshows_scrobNavigator',                         'scrob.png',     'scrob.png',     1, 1, 1, 15, 0, 'scrob_credentials',     0, None),
+]
+
+_MYTVSHOWS_MDBLIST_DEFAULTS = [
+	('mytv_mdb_userlist',      '40681', 'mdbUserListTV',                                        'mdblist.png',   'mdblist.png',   1, 1, 1,  0, 0, 'mdblist_token',         0, '40699'),
+	('mytv_mdb_watchlist',     '40682', 'mdbUserWatchListTVShows',                              'mdblist.png',   'mdblist.png',   1, 1, 1,  1, 0, 'mdblist_token',         0, '40700'),
+	('mytv_mdb_collection',    '40706', 'mdbUserCollectionTVShows',                             'mdblist.png',   'mdblist.png',   1, 1, 1,  2, 0, 'mdblist_token',         0, None),
+	('mytv_mdb_liked',         '40683', 'mdbLikedListShows',                                    'mdblist.png',   'mdblist.png',   1, 1, 1,  3, 0, 'mdblist_token',         0, '40701'),
+	('mytv_mdb_shows_prog',    '40684', 'mdblist_shows_progress&url=mdbprogress',               'mdblist.png',   'mdblist.png',   1, 1, 1,  4, 0, 'mdblist_with_indicators',1, '40401'),
+	('mytv_mdb_ep_prog',       '40685', 'mdblist_calendar&url=mdbprogress',                     'mdblist.png',   'mdblist.png',   1, 1, 1,  5, 0, 'mdblist_with_indicators',1, '32037'),
+	('mytv_mdb_unfinished',    '40686', 'mdblistEpisodesUnfinished',                            'mdblist.png',   'mdblist.png',   1, 1, 1,  6, 0, 'mdblist_with_indicators',1, '35308'),
+	('mytv_mdb_watched',       '40715', 'mdblist_shows_watched&url=mdblistwatchedtv',           'mdblist.png',   'mdblist.png',   1, 1, 1,  7, 0, 'mdblist_with_indicators',1, '40433'),
+	('mytv_mdb_events_recent', '40778', 'mdblist_events_recent&url=mdblisteventsrecent',        'mdblist.png',   'mdblist.png',   1, 1, 1,  8, 0, 'mdblist_with_indicators',1, '32202'),
+	('mytv_mdb_events_upcoming','40779','mdblist_events_upcoming&url=mdblisteventsupcoming',    'mdblist.png',   'mdblist.png',   1, 1, 1,  9, 0, 'mdblist_with_indicators',1, '32203'),
+	('mytv_mdb_events_premiers','40780','mdblist_events_premieres&url=mdblisteventspremieres',  'mdblist.png',   'mdblist.png',   1, 1, 1, 10, 0, 'mdblist_with_indicators',1, '32204'),
+]
+
+_MYTVSHOWS_CUSTOM_DEFAULTS = [
+	('mytv_custom_watchlist',  '40736', 'custom_shows_watchlist&url=customshowswatchlist',       'icon.png',      'icon.png',      1, 1, 1,  0, 0, 'custom_token',           0, None),
+	('mytv_custom_collection', '40737', 'custom_shows_collection&url=customshowscollection',     'icon.png',      'icon.png',      1, 1, 1,  1, 0, 'custom_token',           0, None),
+	('mytv_custom_watched',    '40738', 'custom_shows_watched&url=customshowswatched',           'icon.png',      'icon.png',      1, 1, 1,  2, 0, 'custom_with_indicators', 1, '40433'),
+	('mytv_custom_show_prog',  '40739', 'custom_shows_progress&url=customshowsprogress',         'icon.png',      'icon.png',      1, 1, 1,  3, 0, 'custom_with_indicators', 1, '40401'),
+	('mytv_custom_ep_prog',    '40740', 'custom_episodes_progress&url=customepisodesprogress',   'icon.png',      'icon.png',      1, 1, 1,  4, 0, 'custom_with_indicators', 1, '32037'),
+	('mytv_custom_unfinished', '40741', 'customEpisodesUnfinished&url=customepisodesunfinished', 'icon.png',      'icon.png',      1, 1, 1,  5, 0, 'custom_with_indicators', 1, '35308'),
+	('mytv_custom_cal_recent', '40742', 'custom_calendar_recent&url=customcalendarrecent',       'icon.png',      'icon.png',      1, 1, 1,  6, 0, 'custom_with_indicators', 1, '32202'),
+	('mytv_custom_cal_upcoming','40743','custom_calendar_upcoming&url=customcalendarupcoming',   'icon.png',      'icon.png',      1, 1, 1,  7, 0, 'custom_with_indicators', 1, '32203'),
+	('mytv_custom_cal_premiers','40744','custom_calendar_premieres&url=customcalendarpremieres', 'icon.png',      'icon.png',      1, 1, 1,  8, 0, 'custom_with_indicators', 1, '32204'),
+	('mytv_custom_upcoming',   '40753', 'custom_upcoming_progress&url=customupcomingprogress',   'icon.png',      'icon.png',      1, 1, 1,  9, 0, 'custom_with_indicators', 1, '32019'),
+	('mytv_custom_userlists',  '40782', 'custom_shows_userlists',                                'icon.png',      'icon.png',      1, 1, 1, 10, 0, 'custom_token',           1, None),
+	# sort_order 99 — see mymv_custom_dropped's comment above for why this can't safely
+	# reuse position 11.
+	('mytv_custom_dropped',    '40783', 'custom_shows_dropped&url=customshowsdropped',           'icon.png',      'icon.png',      1, 1, 1, 99, 0, 'custom_token',           0, None),
+]
+
+_MYTVSHOWS_TMDB_DEFAULTS = [
+	('mytv_tmdb_userlists',    'TMDb User Lists', 'tmdbUserListsTV',                            'tmdb.png',      'tmdb.png',      1, 1, 1,  0, 0, 'tmdb_v4_token',         0, None),
+	('mytv_tmdb_watchlist',    '40612', 'tmdbV4WatchlistTV',                                    'tmdb.png',      'tmdb.png',      1, 1, 1,  1, 0, 'tmdb_v4_token',         0, None),
+]
+
+_MYTVSHOWS_SIMKL_DEFAULTS = [
+	('mytv_simkl_ep_prog',     'Progress Episodes (Simkl)', 'simkl_calendar&url=/sync/all-items/shows/watching', 'simkl.png', 'simkl.png', 1, 1, 1, 0, 0, 'simkl_credentials', 1, None),
+	('mytv_simkl_show_prog',   'Progress Shows (Simkl)', 'simkl_shows_progress&url=simklshowsprogress', 'simkl.png', 'simkl.png', 1, 1, 1,  1, 0, 'simkl_credentials',     1, None),
+	('mytv_simkl_watching',    'Watching (Simkl)', 'tvshows&url=simklwatching',                  'simkl.png',     'simkl.png',     1, 1, 1,  2, 0, 'simkl_credentials',     1, None),
+	('mytv_simkl_watchlist',   'Plan to Watch (Simkl)', 'tvshows&url=simklwatchlist',             'simkl.png',     'simkl.png',     1, 1, 1,  3, 0, 'simkl_credentials',     0, None),
+	('mytv_simkl_onhold',      'On Hold (Simkl)', 'tvshows&url=simklonhold',                     'simkl.png',     'simkl.png',     1, 1, 1,  4, 0, 'simkl_credentials',     0, None),
+	('mytv_simkl_completed',   'Completed (Simkl)', 'tvshows&url=simklhistory',                  'simkl.png',     'simkl.png',     1, 1, 1,  5, 0, 'simkl_credentials',     0, None),
+	('mytv_simkl_dropped',     'Dropped (Simkl)', 'tvshows&url=simkldropped',                   'simkl.png',     'simkl.png',     1, 1, 1,  6, 0, 'simkl_credentials',     0, None),
+]
+
+_MYTVSHOWS_TRAKT_DEFAULTS = [
+	('mytv_trakt_unfinished',  '40687', 'episodesUnfinished&url=traktunfinished',               'trakt.png',     'trakt.png',     1, 1, 1,  0, 0, 'trakt_with_indicators',  1, '35308'),
+	('mytv_trakt_ep_prog',     '40688', 'calendar&url=progress',                                'trakt.png',     'trakt.png',     1, 1, 1,  1, 0, 'trakt_with_indicators',  1, '32037'),
+	('mytv_trakt_show_prog',   '40689', 'shows_progress&url=progresstv',                       'trakt.png',     'trakt.png',     1, 1, 1,  2, 0, 'trakt_with_indicators',  1, '40401'),
+	('mytv_trakt_watched',     '40690', 'shows_watched&url=watchedtv',                         'trakt.png',     'trakt.png',     1, 1, 1,  3, 0, 'trakt_with_indicators',  1, '40433'),
+	('mytv_trakt_upcoming',    '40691', 'upcomingProgress&url=progress',                       'trakt.png',     'trakt.png',     1, 1, 1,  4, 0, 'trakt_with_indicators',  1, '32019'),
+	('mytv_trakt_cal_recent',  '40692', 'calendar&url=mycalendarRecent',                       'trakt.png',     'trakt.png',     1, 1, 1,  5, 0, 'trakt_with_indicators',  1, '32202'),
+	('mytv_trakt_cal_upcoming','40693', 'calendar&url=mycalendarUpcoming',                     'trakt.png',     'trakt.png',     1, 1, 1,  6, 0, 'trakt_with_indicators',  1, '32203'),
+	('mytv_trakt_cal_premiers','40694', 'calendar&url=mycalendarPremiers',                     'trakt.png',     'trakt.png',     1, 1, 1,  7, 0, 'trakt_with_indicators',  1, '32204'),
+	('mytv_trakt_history',     '40695', 'calendar&url=trakthistory',                           'trakt.png',     'trakt.png',     1, 1, 1,  8, 0, 'trakt_with_indicators',  1, '32036'),
+	('mytv_trakt_watchlist',   '40696', 'tvshows&url=traktwatchlist',                          'trakt.png',     'trakt.png',     1, 1, 1,  9, 0, 'trakt_credentials',     0, '40700'),
+	('mytv_trakt_collection',  '40697', 'tvshows&url=traktcollection',                         'trakt.png',     'trakt.png',     1, 1, 1, 10, 0, 'trakt_credentials',     0, '32032'),
+	('mytv_trakt_liked',       '40698', 'shows_LikedLists',                                    'trakt.png',     'trakt.png',     1, 1, 1, 11, 0, 'trakt_credentials',      1, 'My Liked Lists'),
+]
+
+_MYTVSHOWS_FLOPPY_DEFAULTS = [
+	('mytv_floppy_watching',   'Watching (Floppy)',   'floppy_shows_watching&url=floppyshowswatching',     'floppy.png', 'floppy.png', 1, 1, 1,  0, 0, 'floppy_credentials', 0, None),
+	('mytv_floppy_watchlist',  'Watchlist (Floppy)',  'floppy_shows_watchlist&url=floppyshowswatchlist',   'floppy.png', 'floppy.png', 1, 1, 1,  1, 0, 'floppy_credentials', 0, None),
+	('mytv_floppy_onhold',     'On Hold (Floppy)',    'floppy_shows_onhold&url=floppyshowsonhold',         'floppy.png', 'floppy.png', 1, 1, 1,  2, 0, 'floppy_credentials', 0, None),
+	('mytv_floppy_completed',  'Completed (Floppy)',  'floppy_shows_completed&url=floppyshowscompleted',   'floppy.png', 'floppy.png', 1, 1, 1,  3, 0, 'floppy_credentials', 0, None),
+	('mytv_floppy_dropped',    'Dropped (Floppy)',    'floppy_shows_dropped&url=floppyshowsdropped',       'floppy.png', 'floppy.png', 1, 1, 1,  4, 0, 'floppy_credentials', 0, None),
+	('mytv_floppy_collection', 'Collection (Floppy)', 'floppy_shows_collection&url=floppyshowscollection', 'floppy.png', 'floppy.png', 1, 1, 1,  5, 0, 'floppy_credentials', 0, None),
+	('mytv_floppy_show_prog',  'Progress Shows (Floppy)', 'floppy_shows_progress&url=floppyshowsprogress',   'floppy.png', 'floppy.png', 1, 1, 1,  6, 0, 'floppy_with_indicators', 1, None),
+	('mytv_floppy_ep_prog',    'Progress Episodes (Floppy)', 'floppy_episodes_progress&url=floppyepisodesprogress', 'floppy.png', 'floppy.png', 1, 1, 1,  7, 0, 'floppy_with_indicators', 1, None),
+	('mytv_floppy_upcoming',   'Upcoming Progress (Floppy)', 'floppy_upcoming_progress&url=floppyupcomingprogress', 'floppy.png', 'floppy.png', 1, 1, 1,  8, 0, 'floppy_with_indicators', 1, None),
+	('mytv_floppy_unfinished', 'Unfinished (Floppy)', 'floppy_episodes_unfinished&url=floppyepisodesunfinished', 'floppy.png', 'floppy.png', 1, 1, 1,  9, 0, 'floppy_credentials', 1, '35308'),
+]
+
+_MYTVSHOWS_SCROB_DEFAULTS = [
+	('mytv_scrob_show_prog',  'Progress Shows (Scrob)', 'scrob_shows_progress&url=scrobshowsprogress',     'scrob.png', 'scrob.png', 1, 1, 1,  0, 0, 'scrob_with_indicators', 1, None),
+	('mytv_scrob_ep_prog',    'Progress Episodes (Scrob)', 'scrob_episodes_progress&url=scrobepisodesprogress', 'scrob.png', 'scrob.png', 1, 1, 1,  1, 0, 'scrob_with_indicators', 1, None),
+	('mytv_scrob_upcoming',   'Upcoming Progress (Scrob)', 'scrob_upcoming_progress&url=scrobupcomingprogress', 'scrob.png', 'scrob.png', 1, 1, 1,  2, 0, 'scrob_with_indicators', 1, None),
+	('mytv_scrob_unfinished', 'Unfinished (Scrob)', 'scrob_episodes_unfinished&url=scrobepisodesunfinished', 'scrob.png', 'scrob.png', 1, 1, 1,  3, 0, 'scrob_credentials', 1, '35308'),
+	('mytv_scrob_userlists', '40781', 'scrob_tvshows_userlists', 'scrob.png', 'scrob.png', 1, 1, 1,  4, 0, 'scrob_credentials', 1, None),
+]
+
+_MYTVSHOWS_LOCAL_DEFAULTS = [
+	('mytv_local_shows_prog', '40658', 'local_shows_progress&url=localprogress', 'icon.png', 'icon.png', 1, 1, 1, 0, 0, 'local_scrobble', 1, None),
+	('mytv_local_calendar',   '40659', 'local_calendar&url=localprogress',       'icon.png', 'icon.png', 1, 1, 1, 1, 0, 'local_scrobble', 1, None),
+	('mytv_local_finish',     'Local: Finish Watching', 'local_finish_watching_episodes', 'icon.png', 'icon.png', 1, 1, 1, 2, 0, 'local_scrobble', 1, None),
 ]
 
 MENU_DEFAULTS = {
@@ -176,6 +296,22 @@ MENU_DEFAULTS = {
 	'tvshows':   _TVSHOWS_DEFAULTS,
 	'mymovies':  _MYMOVIES_DEFAULTS,
 	'mytvshows': _MYTVSHOWS_DEFAULTS,
+	'mymovies_mdblist':  _MYMOVIES_MDBLIST_DEFAULTS,
+	'mymovies_custom':   _MYMOVIES_CUSTOM_DEFAULTS,
+	'mymovies_tmdb':     _MYMOVIES_TMDB_DEFAULTS,
+	'mymovies_simkl':    _MYMOVIES_SIMKL_DEFAULTS,
+	'mymovies_trakt':    _MYMOVIES_TRAKT_DEFAULTS,
+	'mymovies_floppy': _MYMOVIES_FLOPPY_DEFAULTS,
+	'mymovies_scrob': _MYMOVIES_SCROB_DEFAULTS,
+	'mymovies_local': _MYMOVIES_LOCAL_DEFAULTS,
+	'mytvshows_mdblist':  _MYTVSHOWS_MDBLIST_DEFAULTS,
+	'mytvshows_custom':   _MYTVSHOWS_CUSTOM_DEFAULTS,
+	'mytvshows_tmdb':     _MYTVSHOWS_TMDB_DEFAULTS,
+	'mytvshows_simkl':    _MYTVSHOWS_SIMKL_DEFAULTS,
+	'mytvshows_trakt':    _MYTVSHOWS_TRAKT_DEFAULTS,
+	'mytvshows_floppy': _MYTVSHOWS_FLOPPY_DEFAULTS,
+	'mytvshows_scrob': _MYTVSHOWS_SCROB_DEFAULTS,
+	'mytvshows_local': _MYTVSHOWS_LOCAL_DEFAULTS,
 }
 
 # item_id -> alt_label for migrating existing DB rows
@@ -187,12 +323,43 @@ _ALT_LABEL_MAP = {
 }
 
 
+_session_defaults_synced = False
+_defaults_version_file = control.joinPath(control.dataPath, 'menu_defaults.v')
+# Bump this whenever _sync_defaults()/_NEW_DEFAULT_ITEMS needs to re-run for everyone
+# regardless of addon version (e.g. to fix a migration bug) — the on-disk marker below
+# is keyed on addonVersion+this, not addonVersion alone, so incrementing it forces one
+# more sync pass even for users already marked up to date on the current addon version.
+_MENU_SCHEMA_REVISION = '13'
+
+
+def _read_synced_version():
+	try:
+		with open(_defaults_version_file, 'r') as f:
+			return f.read().strip()
+	except Exception:
+		return None
+
+
+def _write_synced_version(version):
+	try:
+		if not control.existsPath(control.dataPath):
+			control.makeFile(control.dataPath)
+		with open(_defaults_version_file, 'w') as f:
+			f.write(version)
+	except Exception:
+		pass
+
+
 def _get_connection():
 	if not control.existsPath(control.dataPath):
 		control.makeFile(control.dataPath)
 	dbcon = db.connect(menuFile, timeout=60)
-	dbcon.execute('PRAGMA journal_mode = WAL')
-	dbcon.execute('PRAGMA synchronous = NORMAL')
+	try:
+		dbcon.execute('PRAGMA journal_mode = WAL')
+		dbcon.execute('PRAGMA synchronous = NORMAL')
+	except db.OperationalError:
+		dbcon.execute('PRAGMA journal_mode = OFF')
+		dbcon.execute('PRAGMA synchronous = OFF')
 	dbcon.execute('PRAGMA temp_store = memory')
 	dbcon.row_factory = lambda c, r: {col[0]: r[i] for i, col in enumerate(c.description)}
 	return dbcon
@@ -209,7 +376,197 @@ def _populate_defaults(dbcon, menu_name):
 	dbcon.commit()
 
 
+def _migrate_schema(dbcon):
+	# Add columns introduced after the original schema to pre-existing databases.
+	for col_def in [
+		('condition_key', 'TEXT'),
+		('queue',         'INTEGER NOT NULL DEFAULT 0'),
+		('alt_label',     'TEXT'),
+	]:
+		try:
+			dbcon.execute('ALTER TABLE menu_items ADD COLUMN %s %s' % col_def)
+		except db.OperationalError:
+			pass
+	dbcon.commit()
+
+
+def _sync_defaults(dbcon):
+	# Full defaults resync.
+	_field_sync = {
+		row[0]: (row[1], row[3], row[4], row[12])
+		for defaults in MENU_DEFAULTS.values()
+		for row in defaults
+	}
+	for item_id, (label, icon, poster, alt_label) in _field_sync.items():
+		dbcon.execute(
+			'UPDATE menu_items SET label=?, icon=?, poster=?, alt_label=? WHERE item_id=? AND is_custom=0',
+			(label, icon, poster, alt_label, item_id)
+		)
+	dbcon.commit()
+	# Move existing users' account-exclusive provider rows out of the flat
+	# mymovies/mytvshows buckets into the new per-provider submenu buckets.
+	# item_id is preserved, only menu_name changes, so enabled/sort_order/
+	# condition_key (i.e. all user customization) survives untouched.
+	_REGROUPED_ITEM_MOVES = {
+		'mymv_mdb_userlist':      ('mymovies', 'mymovies_mdblist'),
+		'mymv_mdb_watchlist':     ('mymovies', 'mymovies_mdblist'),
+		'mymv_mdb_collection':    ('mymovies', 'mymovies_mdblist'),
+		'mymv_mdb_liked':         ('mymovies', 'mymovies_mdblist'),
+		'mymv_mdb_unfinished':    ('mymovies', 'mymovies_mdblist'),
+		'mymv_mdb_watched':       ('mymovies', 'mymovies_mdblist'),
+		'mymv_custom_watchlist':  ('mymovies', 'mymovies_custom'),
+		'mymv_custom_collection': ('mymovies', 'mymovies_custom'),
+		'mymv_custom_unfinished': ('mymovies', 'mymovies_custom'),
+		'mymv_custom_watched':    ('mymovies', 'mymovies_custom'),
+		'mymv_tmdb_userlists':    ('mymovies', 'mymovies_tmdb'),
+		'mymv_tmdb_watchlist':    ('mymovies', 'mymovies_tmdb'),
+		'mymv_simkl_completed':   ('mymovies', 'mymovies_simkl'),
+		'mymv_simkl_watchlist':   ('mymovies', 'mymovies_simkl'),
+		'mymv_simkl_dropped':     ('mymovies', 'mymovies_simkl'),
+		'mymv_trakt_unfinished':  ('mymovies', 'mymovies_trakt'),
+		'mymv_trakt_history':     ('mymovies', 'mymovies_trakt'),
+		'mymv_trakt_watchlist':   ('mymovies', 'mymovies_trakt'),
+		'mymv_trakt_collection':  ('mymovies', 'mymovies_trakt'),
+		'mymv_trakt_liked':       ('mymovies', 'mymovies_trakt'),
+		'mymv_local_finish':      ('mymovies', 'mymovies_local'),
+		'mytv_mdb_userlist':      ('mytvshows', 'mytvshows_mdblist'),
+		'mytv_mdb_watchlist':     ('mytvshows', 'mytvshows_mdblist'),
+		'mytv_mdb_collection':    ('mytvshows', 'mytvshows_mdblist'),
+		'mytv_mdb_liked':         ('mytvshows', 'mytvshows_mdblist'),
+		'mytv_mdb_shows_prog':    ('mytvshows', 'mytvshows_mdblist'),
+		'mytv_mdb_ep_prog':       ('mytvshows', 'mytvshows_mdblist'),
+		'mytv_mdb_unfinished':    ('mytvshows', 'mytvshows_mdblist'),
+		'mytv_mdb_watched':       ('mytvshows', 'mytvshows_mdblist'),
+		'mytv_mdb_events_recent': ('mytvshows', 'mytvshows_mdblist'),
+		'mytv_mdb_events_upcoming': ('mytvshows', 'mytvshows_mdblist'),
+		'mytv_mdb_events_premiers': ('mytvshows', 'mytvshows_mdblist'),
+		'mytv_custom_watchlist':   ('mytvshows', 'mytvshows_custom'),
+		'mytv_custom_collection':  ('mytvshows', 'mytvshows_custom'),
+		'mytv_custom_watched':     ('mytvshows', 'mytvshows_custom'),
+		'mytv_custom_show_prog':   ('mytvshows', 'mytvshows_custom'),
+		'mytv_custom_ep_prog':     ('mytvshows', 'mytvshows_custom'),
+		'mytv_custom_unfinished':  ('mytvshows', 'mytvshows_custom'),
+		'mytv_custom_cal_recent':  ('mytvshows', 'mytvshows_custom'),
+		'mytv_custom_cal_upcoming':('mytvshows', 'mytvshows_custom'),
+		'mytv_custom_cal_premiers':('mytvshows', 'mytvshows_custom'),
+		'mytv_custom_upcoming':    ('mytvshows', 'mytvshows_custom'),
+		'mytv_tmdb_userlists':    ('mytvshows', 'mytvshows_tmdb'),
+		'mytv_tmdb_watchlist':    ('mytvshows', 'mytvshows_tmdb'),
+		'mytv_simkl_ep_prog':     ('mytvshows', 'mytvshows_simkl'),
+		'mytv_simkl_watching':    ('mytvshows', 'mytvshows_simkl'),
+		'mytv_simkl_watchlist':   ('mytvshows', 'mytvshows_simkl'),
+		'mytv_simkl_onhold':      ('mytvshows', 'mytvshows_simkl'),
+		'mytv_simkl_completed':   ('mytvshows', 'mytvshows_simkl'),
+		'mytv_simkl_dropped':     ('mytvshows', 'mytvshows_simkl'),
+		'mytv_trakt_unfinished':  ('mytvshows', 'mytvshows_trakt'),
+		'mytv_trakt_ep_prog':     ('mytvshows', 'mytvshows_trakt'),
+		'mytv_trakt_show_prog':   ('mytvshows', 'mytvshows_trakt'),
+		'mytv_trakt_watched':     ('mytvshows', 'mytvshows_trakt'),
+		'mytv_trakt_upcoming':    ('mytvshows', 'mytvshows_trakt'),
+		'mytv_trakt_cal_recent':  ('mytvshows', 'mytvshows_trakt'),
+		'mytv_trakt_cal_upcoming':('mytvshows', 'mytvshows_trakt'),
+		'mytv_trakt_cal_premiers':('mytvshows', 'mytvshows_trakt'),
+		'mytv_trakt_history':     ('mytvshows', 'mytvshows_trakt'),
+		'mytv_trakt_watchlist':   ('mytvshows', 'mytvshows_trakt'),
+		'mytv_trakt_collection':  ('mytvshows', 'mytvshows_trakt'),
+		'mytv_trakt_liked':       ('mytvshows', 'mytvshows_trakt'),
+		'mytv_local_shows_prog':  ('mytvshows', 'mytvshows_local'),
+		'mytv_local_calendar':    ('mytvshows', 'mytvshows_local'),
+		'mytv_local_finish':      ('mytvshows', 'mytvshows_local'),
+	}
+	for item_id, (old_menu, new_menu) in _REGROUPED_ITEM_MOVES.items():
+		# UPDATE OR IGNORE: if the target bucket was already auto-populated with its
+		# default row for this item_id (e.g. the user opened the new per-provider
+		# submenu, which self-populates via initialize(), before this migration ran),
+		# a plain UPDATE would violate the UNIQUE(menu_name, item_id) constraint.
+		dbcon.execute(
+			'UPDATE OR IGNORE menu_items SET menu_name=? WHERE menu_name=? AND item_id=? AND is_custom=0',
+			(new_menu, old_menu, item_id)
+		)
+		# If the row above didn't move (target already had it), drop the now-redundant
+		# old-bucket copy so it doesn't linger as an orphaned duplicate.
+		dbcon.execute(
+			'DELETE FROM menu_items WHERE menu_name=? AND item_id=? AND is_custom=0',
+			(old_menu, item_id)
+		)
+	dbcon.commit()
+	# The Yamtrack fork this integration targets was renamed to "Floppy" by its
+	# developer, so every yamtrack_* item_id/menu_name/condition_key was renamed to
+	# floppy_* to match. Old rows under the pre-rename names are dead weight (nothing
+	# renders menu_name='mymovies_yamtrack'/'mytvshows_yamtrack' anymore, and
+	# condition_key='yamtrack_credentials' is no longer recognized) — drop them so
+	# the fresh floppy_* defaults populate cleanly instead of leaving orphans behind.
+	dbcon.execute("DELETE FROM menu_items WHERE menu_name IN ('mymovies_yamtrack', 'mytvshows_yamtrack') AND is_custom=0")
+	dbcon.execute("DELETE FROM menu_items WHERE item_id IN ('mymv_yamtrack_folder', 'mytv_yamtrack_folder') AND is_custom=0")
+	dbcon.commit()
+	# mytv_mdb_cal_upcoming (TMDb next_episode_to_air per watchlisted show) is superseded
+	# by mytv_mdb_events_upcoming (MDBList's own personalized /calendar/events) — both
+	# rendered under the identical label "Upcoming Episodes (MDBList)", which read as one
+	# broken duplicated entry rather than two different features. Drop the old one.
+	dbcon.execute("DELETE FROM menu_items WHERE item_id='mytv_mdb_cal_upcoming' AND is_custom=0")
+	dbcon.commit()
+	# Insert items added after initial release for existing users
+	_NEW_DEFAULT_ITEMS = [
+		('mymovies', 'mymv_mdblist_folder',  'MDBList',  'mymovies_mdblistNavigator',  'mdblist.png',  'mdblist.png',  1, 1, 1, 2, 0, 'mdblist_token',        0, None),
+		('mymovies', 'mymv_custom_folder',   'Custom',   'mymovies_customNavigator',   'icon.png',     'icon.png',     1, 1, 1, 3, 0, 'custom_token',         0, None),
+		('mymovies', 'mymv_tmdb_folder',     'TMDb',     'mymovies_tmdbNavigator',     'tmdb.png',     'tmdb.png',     1, 1, 1, 4, 0, 'tmdb_v4_token',        0, None),
+		('mymovies', 'mymv_simkl_folder',    'Simkl',    'mymovies_simklNavigator',    'simkl.png',    'simkl.png',    1, 1, 1, 5, 0, 'simkl_token',          0, None),
+		('mymovies', 'mymv_trakt_folder',    'Trakt',    'mymovies_traktNavigator',    'trakt.png',    'trakt.png',    1, 1, 1, 6, 0, 'trakt_credentials',    0, None),
+		('mymovies', 'mymv_floppy_folder', 'Floppy', 'mymovies_floppyNavigator', 'floppy.png', 'floppy.png', 1, 1, 1, 7, 0, 'floppy_credentials', 0, None),
+		('mytvshows', 'mytv_mdblist_folder',  'MDBList',  'mytvshows_mdblistNavigator',  'mdblist.png',  'mdblist.png',  1, 1, 1, 3,  0, 'mdblist_token',        0, None),
+		('mytvshows', 'mytv_custom_folder',   'Custom',   'mytvshows_customNavigator',   'icon.png',     'icon.png',     1, 1, 1, 4,  0, 'custom_token',         0, None),
+		('mytvshows', 'mytv_tmdb_folder',     'TMDb',     'mytvshows_tmdbNavigator',     'tmdb.png',     'tmdb.png',     1, 1, 1, 8,  0, 'tmdb_v4_token',        0, None),
+		('mytvshows', 'mytv_simkl_folder',    'Simkl',    'mytvshows_simklNavigator',    'simkl.png',    'simkl.png',    1, 1, 1, 9,  0, 'simkl_credentials',    0, None),
+		('mytvshows', 'mytv_trakt_folder',    'Trakt',    'mytvshows_traktNavigator',    'trakt.png',    'trakt.png',    1, 1, 1, 10, 0, 'trakt_credentials',    0, None),
+		('mytvshows', 'mytv_floppy_folder', 'Floppy', 'mytvshows_floppyNavigator', 'floppy.png', 'floppy.png', 1, 1, 1, 11, 0, 'floppy_credentials', 0, None),
+		('mymovies', 'mymv_scrob_folder', 'Scrob', 'mymovies_scrobNavigator', 'scrob.png', 'scrob.png', 1, 1, 1, 12, 0, 'scrob_credentials', 0, None),
+		('mytvshows', 'mytv_scrob_folder', 'Scrob', 'mytvshows_scrobNavigator', 'scrob.png', 'scrob.png', 1, 1, 1, 15, 0, 'scrob_credentials', 0, None),
+		('mymovies_scrob', 'mymv_scrob_unfinished', 'Unfinished (Scrob)', 'scrob_movies_unfinished&url=scrobmoviesunfinished', 'scrob.png', 'scrob.png', 1, 1, 1, 99, 0, 'scrob_credentials', 1, '35308'),
+		('mytvshows_scrob', 'mytv_scrob_unfinished', 'Unfinished (Scrob)', 'scrob_episodes_unfinished&url=scrobepisodesunfinished', 'scrob.png', 'scrob.png', 1, 1, 1, 99, 0, 'scrob_credentials', 1, '35308'),
+		('mymovies_scrob', 'mymv_scrob_userlists', '40781', 'scrob_movies_userlists', 'scrob.png', 'scrob.png', 1, 1, 1, 100, 0, 'scrob_credentials', 1, None),
+		('mytvshows_scrob', 'mytv_scrob_userlists', '40781', 'scrob_tvshows_userlists', 'scrob.png', 'scrob.png', 1, 1, 1, 100, 0, 'scrob_credentials', 1, None),
+		('mymovies_floppy', 'mymv_floppy_unfinished', 'Unfinished (Floppy)', 'floppy_movies_unfinished&url=floppymoviesunfinished', 'floppy.png', 'floppy.png', 1, 1, 1, 99, 0, 'floppy_credentials', 1, '35308'),
+		('mytvshows_floppy', 'mytv_floppy_unfinished', 'Unfinished (Floppy)', 'floppy_episodes_unfinished&url=floppyepisodesunfinished', 'floppy.png', 'floppy.png', 1, 1, 1, 99, 0, 'floppy_credentials', 1, '35308'),
+		('mymovies_mdblist',  'mymv_mdb_unfinished',  '40686',  'mdblistMoviesUnfinished',          'mdblist.png', 'mdblist.png', 1, 1, 1, 99, 0, 'mdblist_with_indicators', 1, '35308'),
+		('mytvshows_mdblist', 'mytv_mdb_unfinished',  '40686',  'mdblistEpisodesUnfinished',         'mdblist.png', 'mdblist.png', 1, 1, 1, 99, 0, 'mdblist_with_indicators', 1, '35308'),
+		('mymovies',  'mymv_local_folder',    'Local', 'mymovies_localNavigator',  'icon.png',    'icon.png',    1, 1, 1, 99, 0, 'local_scrobble',          0, None),
+		('mytvshows', 'mytv_local_folder',    'Local', 'mytvshows_localNavigator', 'icon.png',    'icon.png',    1, 1, 1, 99, 0, 'local_scrobble',          0, None),
+		('mymovies_mdblist',  'mymv_mdb_collection',  '40706',  'mdbUserCollectionMovies',           'mdblist.png', 'mdblist.png', 1, 1, 1, 100, 0, 'mdblist_token',           0, None),
+		('mytvshows_mdblist', 'mytv_mdb_collection',  '40706',  'mdbUserCollectionTVShows',          'mdblist.png', 'mdblist.png', 1, 1, 1, 100, 0, 'mdblist_token',           0, None),
+		('movies',    'mv_mdb_official',      '40711',  'mdbOfficialListMovies',             'mdblist.png', 'mdblist.png', 1, 1, 1, 99, 0, 'mdblist_token',           0, None),
+		('tvshows',   'tv_mdb_official',      '40711',  'mdbOfficialListTV',                 'mdblist.png', 'mdblist.png', 1, 1, 1, 99, 0, 'mdblist_token',           0, None),
+		('mytvshows_mdblist', 'mytv_mdb_watched',     '40715',  'mdblist_shows_watched&url=mdblistwatchedtv', 'mdblist.png', 'mdblist.png', 1, 1, 1, 101, 0, 'mdblist_with_indicators', 1, '40433'),
+		('mymovies_mdblist',  'mymv_mdb_watched',     '40716',  'mdblist_movies_watched&url=mdblistwatchedmv', 'mdblist.png', 'mdblist.png', 1, 1, 1, 101, 0, 'mdblist_with_indicators', 1, None),
+		('mytvshows_mdblist', 'mytv_mdb_events_recent', '40778', 'mdblist_events_recent&url=mdblisteventsrecent', 'mdblist.png', 'mdblist.png', 1, 1, 1, 102, 0, 'mdblist_with_indicators', 1, '32202'),
+		('mytvshows_mdblist', 'mytv_mdb_events_upcoming', '40779', 'mdblist_events_upcoming&url=mdblisteventsupcoming', 'mdblist.png', 'mdblist.png', 1, 1, 1, 103, 0, 'mdblist_with_indicators', 1, '32203'),
+		('mytvshows_mdblist', 'mytv_mdb_events_premiers', '40780', 'mdblist_events_premieres&url=mdblisteventspremieres', 'mdblist.png', 'mdblist.png', 1, 1, 1, 104, 0, 'mdblist_with_indicators', 1, '32204'),
+		('mytvshows_custom', 'mytv_custom_watchlist',   '40736', 'custom_shows_watchlist&url=customshowswatchlist',       'icon.png', 'icon.png', 1, 1, 1, 99, 0, 'custom_token',           0, None),
+		('mytvshows_custom', 'mytv_custom_collection',  '40737', 'custom_shows_collection&url=customshowscollection',     'icon.png', 'icon.png', 1, 1, 1, 100, 0, 'custom_token',           0, None),
+		('mytvshows_custom', 'mytv_custom_watched',     '40738', 'custom_shows_watched&url=customshowswatched',           'icon.png', 'icon.png', 1, 1, 1, 101, 0, 'custom_with_indicators', 1, '40433'),
+		('mytvshows_custom', 'mytv_custom_show_prog',   '40739', 'custom_shows_progress&url=customshowsprogress',         'icon.png', 'icon.png', 1, 1, 1, 102, 0, 'custom_with_indicators', 1, '40401'),
+		('mytvshows_custom', 'mytv_custom_ep_prog',     '40740', 'custom_episodes_progress&url=customepisodesprogress',   'icon.png', 'icon.png', 1, 1, 1, 103, 0, 'custom_with_indicators', 1, '32037'),
+		('mytvshows_custom', 'mytv_custom_unfinished',  '40741', 'customEpisodesUnfinished&url=customepisodesunfinished', 'icon.png', 'icon.png', 1, 1, 1, 104, 0, 'custom_with_indicators', 1, '35308'),
+		('mytvshows_custom', 'mytv_custom_cal_recent',  '40742', 'custom_calendar_recent&url=customcalendarrecent',       'icon.png', 'icon.png', 1, 1, 1, 105, 0, 'custom_with_indicators', 1, '32202'),
+		('mytvshows_custom', 'mytv_custom_cal_upcoming','40743', 'custom_calendar_upcoming&url=customcalendarupcoming',   'icon.png', 'icon.png', 1, 1, 1, 106, 0, 'custom_with_indicators', 1, '32203'),
+		('mytvshows_custom', 'mytv_custom_cal_premiers','40744', 'custom_calendar_premieres&url=customcalendarpremieres','icon.png', 'icon.png', 1, 1, 1, 107, 0, 'custom_with_indicators', 1, '32204'),
+		('mytvshows_custom', 'mytv_custom_upcoming',    '40753', 'custom_upcoming_progress&url=customupcomingprogress',   'icon.png', 'icon.png', 1, 1, 1, 108, 0, 'custom_with_indicators', 1, '32019'),
+		('mymovies_custom',  'mymv_custom_watchlist',   '40736', 'custom_movies_watchlist&url=custommovieswatchlist',     'icon.png', 'icon.png', 1, 1, 1, 99, 0, 'custom_token',           0, None),
+		('mymovies_custom',  'mymv_custom_collection',  '40737', 'custom_movies_collection&url=custommoviescollection',   'icon.png', 'icon.png', 1, 1, 1, 100, 0, 'custom_token',           0, None),
+		('mymovies_custom',  'mymv_custom_unfinished',  '40741', 'custom_movies_unfinished&url=custommoviesunfinished',   'icon.png', 'icon.png', 1, 1, 1, 101, 0, 'custom_with_indicators', 1, '35308'),
+		('mymovies_custom',  'mymv_custom_watched',     '40745', 'custom_movies_watched&url=custommovieswatched',         'icon.png', 'icon.png', 1, 1, 1, 102, 0, 'custom_with_indicators', 1, None),
+		('mymovies_simkl', 'mymv_simkl_unfinished', 'Unfinished (Simkl)', 'simkl_movies_unfinished&url=simklmoviesunfinished', 'simkl.png', 'simkl.png', 1, 1, 1, 99, 0, 'simkl_with_indicators', 1, '35308'),
+	]
+	for row in _NEW_DEFAULT_ITEMS:
+		dbcon.execute(
+			'INSERT OR IGNORE INTO menu_items '
+			'(menu_name, item_id, label, action, icon, poster, is_folder, is_action, enabled, sort_order, is_custom, condition_key, queue, alt_label) '
+			'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)', row
+		)
+	dbcon.commit()
+
+
 def initialize(menu_name='root'):
+	global _session_defaults_synced
 	dbcon = _get_connection()
 	dbcon.execute('''CREATE TABLE IF NOT EXISTS menu_items (
 		id            INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -226,33 +583,9 @@ def initialize(menu_name='root'):
 		is_custom     INTEGER NOT NULL DEFAULT 0,
 		condition_key TEXT,
 		queue         INTEGER NOT NULL DEFAULT 0,
+		alt_label     TEXT,
 		UNIQUE(menu_name, item_id)
 	)''')
-	dbcon.commit()
-	for col_def in [
-		('condition_key', 'TEXT'),
-		('queue',         'INTEGER NOT NULL DEFAULT 0'),
-		('alt_label',     'TEXT'),
-	]:
-		try:
-			dbcon.execute('ALTER TABLE menu_items ADD COLUMN %s %s' % col_def)
-		except db.OperationalError:
-			pass
-	dbcon.commit()
-	# Sync label, icon, poster, alt_label for all non-custom items to match current defaults.
-	# This ensures changes to defaults (e.g. new alt_labels, corrected icons) always propagate
-	# to existing databases, not just new installs.
-	_field_sync = {
-		row[0]: (row[1], row[3], row[4], row[12])
-		for defaults in MENU_DEFAULTS.values()
-		for row in defaults
-	}
-	for item_id, (label, icon, poster, alt_label) in _field_sync.items():
-		dbcon.execute(
-			'UPDATE menu_items SET label=?, icon=?, poster=?, alt_label=? WHERE item_id=? AND is_custom=0',
-			(label, icon, poster, alt_label, item_id)
-		)
-	dbcon.commit()
 	dbcon.execute('''CREATE TABLE IF NOT EXISTS custom_folders (
 		id          INTEGER PRIMARY KEY AUTOINCREMENT,
 		folder_id   TEXT NOT NULL UNIQUE,
@@ -260,29 +593,25 @@ def initialize(menu_name='root'):
 		sort_order  INTEGER NOT NULL DEFAULT 0
 	)''')
 	dbcon.commit()
+	# Add any columns missing from pre-existing databases BEFORE inserting defaults
+	_migrate_schema(dbcon)
 	cur = dbcon.cursor()
 	cur.execute('SELECT COUNT(*) as cnt FROM menu_items WHERE menu_name=?', (menu_name,))
 	cnt = cur.fetchone()['cnt']
 	if cnt < len(MENU_DEFAULTS.get(menu_name, [])):
 		_populate_defaults(dbcon, menu_name)
-	# Insert items added after initial release for existing users (idempotent — OR IGNORE skips duplicates)
-	_NEW_DEFAULT_ITEMS = [
-		('mymovies',  'mymv_mdb_unfinished',  '40686',  'mdblistMoviesUnfinished',          'mdblist.png', 'mdblist.png', 1, 1, 1, 99, 0, 'mdblist_with_indicators', 1, '35308'),
-		('mytvshows', 'mytv_mdb_unfinished',  '40686',  'mdblistEpisodesUnfinished',         'mdblist.png', 'mdblist.png', 1, 1, 1, 99, 0, 'mdblist_with_indicators', 1, '35308'),
-		('mymovies',  'mymv_local_finish',    'Local: Finish Watching', 'local_finish_watching_movies',   'icon.png',    'icon.png',    1, 1, 1, 99, 0, 'local_scrobble',          1, None),
-		('mytvshows', 'mytv_local_finish',    'Local: Finish Watching', 'local_finish_watching_episodes', 'icon.png',    'icon.png',    1, 1, 1, 99, 0, 'local_scrobble',          1, None),
-		('mymovies',  'mymv_mdb_collection',  '40706',  'mdbUserCollectionMovies',           'mdblist.png', 'mdblist.png', 1, 1, 1, 99, 0, 'mdblist_token',           0, None),
-		('mytvshows', 'mytv_mdb_collection',  '40706',  'mdbUserCollectionTVShows',          'mdblist.png', 'mdblist.png', 1, 1, 1, 99, 0, 'mdblist_token',           0, None),
-		('movies',    'mv_mdb_official',      '40711',  'mdbOfficialListMovies',             'mdblist.png', 'mdblist.png', 1, 1, 1, 99, 0, 'mdblist_token',           0, None),
-		('tvshows',   'tv_mdb_official',      '40711',  'mdbOfficialListTV',                 'mdblist.png', 'mdblist.png', 1, 1, 1, 99, 0, 'mdblist_token',           0, None),
-	]
-	for row in _NEW_DEFAULT_ITEMS:
-		dbcon.execute(
-			'INSERT OR IGNORE INTO menu_items '
-			'(menu_name, item_id, label, action, icon, poster, is_folder, is_action, enabled, sort_order, is_custom, condition_key, queue, alt_label) '
-			'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)', row
-		)
-	dbcon.commit()
+	if not _session_defaults_synced:
+		# control.addonVersion is shadowed by an unrelated function of the same name
+		# elsewhere in control.py (takes a different addon as its argument) — use
+		# addonInfo('version') directly here rather than the broken bare reference,
+		# which was embedding a Python object repr (a per-process memory address)
+		# instead of the actual version string, defeating the version-marker's whole
+		# point of staying stable across restarts.
+		_synced_version = '%s-%s' % (control.addonInfo('version'), _MENU_SCHEMA_REVISION)
+		if _read_synced_version() != _synced_version:
+			_sync_defaults(dbcon)
+			_write_synced_version(_synced_version)
+		_session_defaults_synced = True
 	dbcon.close()
 
 

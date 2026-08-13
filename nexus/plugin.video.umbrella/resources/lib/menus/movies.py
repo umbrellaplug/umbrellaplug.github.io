@@ -12,7 +12,7 @@ import xbmc
 #from threading import Thread
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import quote_plus, urlencode, parse_qsl, urlparse, urlsplit
-from resources.lib.database import cache, metacache, fanarttv_cache, traktsync, simklsync
+from resources.lib.database import cache, metacache, fanarttv_cache, traktsync, simklsync, customtraktsync, floppysync, scrobsync
 from resources.lib.indexers.tmdb import Movies as tmdb_indexer
 from resources.lib.indexers.fanarttv import FanartTv
 from resources.lib.modules import simkl
@@ -24,6 +24,9 @@ from resources.lib.modules import tools, log_utils
 from resources.lib.modules import trakt
 from resources.lib.modules import views
 from resources.lib.modules import mdblist
+from resources.lib.modules import customtrakt
+from resources.lib.modules import floppy
+from resources.lib.modules import scrob
 from resources.lib.database import artwork as customArtwork
 from sqlite3 import dbapi2 as database
 from json import loads as jsloads
@@ -189,6 +192,9 @@ class Movies:
 		self.prefer_fanArt = getSetting('prefer.fanarttv') == 'true'
 		self.simklCredentials = simkl.getSimKLCredentialsInfo()
 		self.mdblist_authed = getSetting('mdblist.token') != ''
+		self.customCredentials = customtrakt.getCustomCredentialsInfo()
+		self.floppyCredentials = floppy.getFloppyCredentialsInfo()
+		self.scrobCredentials = scrob.getScrobCredentialsInfo()
 		from resources.lib.modules import tmdb4
 		self.tmdbv4Credentials = tmdb4.getTMDbV4CredentialsInfo()
 
@@ -886,6 +892,220 @@ class Movies:
 			from resources.lib.modules import log_utils
 			log_utils.error()
 
+	def mdblistUnfinishedManager(self):
+		try:
+			control.busy()
+			list = self.mdblist_unfinished(create_directory=False)
+			control.hide()
+			from resources.lib.windows.traktmovieprogress_manager import TraktMovieProgressManagerXML
+			window = TraktMovieProgressManagerXML('traktmovieprogress_manager.xml', control.addonPath(control.addonId()), results=list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for imdb in selected_items: mdblist.scrobbleReset(imdb=imdb, refresh=False)
+				control.trigger_widget_refresh()
+				if 'plugin.video.umbrella' in control.infoLabel('Container.PluginName'): control.refresh()
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
+	def simkl_unfinished(self, url=None, idx=True, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			from resources.lib.database import simklsync
+			self.list = simklsync.fetch_bookmarks('', ret_all=True, ret_type='movies')
+			if idx: self.worker()
+			self.list = sorted(self.list, key=lambda k: k['paused_at'], reverse=True)
+			if self.list is None: self.list = []
+			if create_directory: self.movieDirectory(self.list, unfinished=True, next=False, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def mdblist_watched(self, url=None, idx=True, create_directory=True, folderName=''):
+		# Paginated the same way customWatched() is: watch history is already a fully-local
+		# list (no live remote pagination possible), but without slicing before worker() runs,
+		# a large history means running a metacache/TMDb lookup for every single watched item
+		# on every load.
+		self.list = []
+		try:
+			url = url or 'mdblistmovieswatched'
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q['page']) - 1
+			except:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = 0
+			rows = mdblist.watchedMovies()
+			if not rows: return self.list
+			for (imdb, tmdb, title, year, last_watched_at) in rows:
+				try:
+					values = {}
+					values['imdb'] = imdb or ''
+					values['tmdb'] = tmdb or ''
+					values['title'] = title or ''
+					values['year'] = year or ''
+					values['lastplayed'] = last_watched_at or ''
+					values['mediatype'] = 'movies'
+					self.list.append(values)
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+			useNext = True
+			if create_directory:
+				self.sort(type='watched')
+				if getSetting('mdblist.paginate.lists') == 'true' and self.list:
+					if len(self.list) <= int(self.page_limit):
+						useNext = False
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					self.list = paginated_ids[index]
+			try:
+				if useNext == False: raise Exception()
+				if len(self.list) < int(self.page_limit): raise Exception()
+				q.update({'page': str(index + 2), 'limit': str(self.page_limit)})
+				q = (urlencode(q)).replace('%2C', ',')
+				continuation = url.replace('?' + urlparse(url).query, '') + '?' + q
+				next = 'plugin://plugin.video.umbrella/?action=mdblist_movies_watched&url=%s&folderName=%s' % (quote_plus(continuation), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			if idx: self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.movieDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def scrob_movies_watched(self, url=None, idx=True, create_directory=True, folderName=''):
+		# Same local-history pagination shape as mdblist_watched() — Scrob's watch
+		# history is pulled locally by sync_watchedProgress(), so slice before worker()
+		# runs rather than running a metacache/TMDb lookup for every item on every load.
+		self.list = []
+		try:
+			url = url or 'scrobmovieswatched'
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q['page']) - 1
+			except:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = 0
+			rows = scrob.watchedMovies()
+			if not rows: return self.list
+			for (imdb, tmdb, title, year, last_watched_at) in rows:
+				try:
+					values = {}
+					values['imdb'] = imdb or ''
+					values['tmdb'] = tmdb or ''
+					values['title'] = title or ''
+					values['year'] = year or ''
+					values['lastplayed'] = last_watched_at or ''
+					values['mediatype'] = 'movies'
+					self.list.append(values)
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+			useNext = True
+			if create_directory:
+				self.sort(type='watched')
+				if getSetting('scrob.paginate.lists') == 'true' and self.list:
+					if len(self.list) <= int(self.page_limit):
+						useNext = False
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					self.list = paginated_ids[index]
+			try:
+				if useNext == False: raise Exception()
+				if len(self.list) < int(self.page_limit): raise Exception()
+				q.update({'page': str(index + 2), 'limit': str(self.page_limit)})
+				q = (urlencode(q)).replace('%2C', ',')
+				continuation = url.replace('?' + urlparse(url).query, '') + '?' + q
+				next = 'plugin://plugin.video.umbrella/?action=scrob_movies_watched&url=%s&folderName=%s' % (quote_plus(continuation), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			if idx: self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.movieDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def scrob_user_lists(self, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			lists = scrobsync.fetch_user_lists('movie')
+			for lst in lists:
+				try:
+					list_id = lst.get('id')
+					if list_id is None: continue
+					name = lst.get('name', '')
+					count = lst.get('item_count', 0)
+					values = {
+						'name': '%s (%s)' % (name, count),
+						'action': 'scrob_list_movies&list_id=%s' % list_id,
+						'image': 'scrob.png', 'icon': 'scrob.png', 'url': '',
+					}
+					self.list.append(values)
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+			if create_directory: self.addDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def scrob_list_movies(self, list_id, url=None, create_directory=True, folderName=''):
+		# Local-cache read + client-side pagination, same shape as floppyList() — Scrob's
+		# GET /lists/{id} has no server-side paging, so this slices scrobsync's locally
+		# cached copy of the list rather than re-fetching the whole thing from the API.
+		self.list = []
+		try:
+			url = url or ('scroblistmovies?list_id=%s&limit=%s&page=1' % (list_id, self.page_limit))
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q.get('page', 1)) - 1
+			except:
+				index = 0
+			items = scrobsync.fetch_list_items(list_id, 'movie')
+			for i in items:
+				try:
+					values = {}
+					values['tmdb'] = i.get('tmdb', '')
+					values['imdb'] = ''
+					values['title'] = i.get('title', '')
+					values['year'] = i.get('year', '')
+					values['mediatype'] = 'movies'
+					self.list.append(values)
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+			useNext = True
+			if create_directory:
+				self.sort(type='movies.watchlist')
+				if getSetting('scrob.paginate.lists') == 'true' and self.list:
+					if len(self.list) <= int(self.page_limit):
+						useNext = False
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					self.list = paginated_ids[index]
+				else:
+					useNext = False
+			try:
+				if useNext == False: raise Exception()
+				next_page = index + 2
+				next = 'plugin://plugin.video.umbrella/?action=scrob_list_movies&list_id=%s&url=%s&folderName=%s' % (
+					list_id, quote_plus('scroblistmovies?list_id=%s&limit=%s&page=%s' % (list_id, self.page_limit, next_page)), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			if self.list is None: self.list = []
+			self.worker()
+			if create_directory: self.movieDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
 	def local_finish_watching(self, url='', folderName=''):
 		self.list = []
 		try:
@@ -1499,6 +1719,563 @@ class Movies:
 			from resources.lib.modules import log_utils
 			log_utils.error()
 
+	def customCollection(self, url, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q['page']) - 1
+			except:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = 0
+			self.list = customtraktsync.fetch_collection('movies_collection')
+			useNext = True
+			if create_directory:
+				self.sort()
+				if getSetting('custom.paginate.lists') == 'true' and self.list:
+					if len(self.list) <= int(self.page_limit):
+						useNext = False
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					self.list = paginated_ids[index]
+			try:
+				if useNext == False: raise Exception()
+				if len(self.list) < int(self.page_limit): raise Exception()
+				q.update({'page': str(index + 2), 'limit': str(self.page_limit)})
+				q = (urlencode(q)).replace('%2C', ',')
+				continuation = url.replace('?' + urlparse(url).query, '') + '?' + q
+				# Custom's Collection/Watchlist pagination is a local slice of an
+				# already-fully-synced list, not a live remote fetch, so the
+				# continuation has no real domain — build a full plugin:// action URL
+				# so movieDirectory()'s domain-sniffing next-page logic (which treats
+				# an empty netloc as an accidental substring match) doesn't mis-route it.
+				next = 'plugin://plugin.video.umbrella/?action=custom_movies_collection&url=%s&folderName=%s' % (quote_plus(continuation), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.movieDirectory(self.list, isCollection=True, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def customWatchlist(self, url, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q['page']) - 1
+			except:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = 0
+			self.list = customtraktsync.fetch_watch_list('movies_watchlist')
+			useNext = True
+			if create_directory:
+				self.sort(type='movies.watchlist')
+				if getSetting('custom.paginate.lists') == 'true' and self.list:
+					if len(self.list) <= int(self.page_limit):
+						useNext = False
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					self.list = paginated_ids[index]
+			try:
+				if useNext == False: raise Exception()
+				if len(self.list) < int(self.page_limit): raise Exception()
+				q.update({'page': str(index + 2), 'limit': str(self.page_limit)})
+				q = (urlencode(q)).replace('%2C', ',')
+				continuation = url.replace('?' + urlparse(url).query, '') + '?' + q
+				# See customCollection() above for why this must be a full plugin://
+				# action URL rather than a bare continuation token.
+				next = 'plugin://plugin.video.umbrella/?action=custom_movies_watchlist&url=%s&folderName=%s' % (quote_plus(continuation), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.movieDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def customDropped(self, url, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q['page']) - 1
+			except:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = 0
+			self.list = customtraktsync.fetch_dropped('movies_dropped')
+			useNext = True
+			if create_directory:
+				self.sort()
+				if getSetting('custom.paginate.lists') == 'true' and self.list:
+					if len(self.list) <= int(self.page_limit):
+						useNext = False
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					self.list = paginated_ids[index]
+			try:
+				if useNext == False: raise Exception()
+				if len(self.list) < int(self.page_limit): raise Exception()
+				q.update({'page': str(index + 2), 'limit': str(self.page_limit)})
+				q = (urlencode(q)).replace('%2C', ',')
+				continuation = url.replace('?' + urlparse(url).query, '') + '?' + q
+				# See customCollection() above for why this must be a full plugin://
+				# action URL rather than a bare continuation token.
+				next = 'plugin://plugin.video.umbrella/?action=custom_movies_dropped&url=%s&folderName=%s' % (quote_plus(continuation), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.movieDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def customWatchlistManager(self):
+		try:
+			control.busy()
+			self.list = customtraktsync.fetch_watch_list('movies_watchlist')
+			for item in self.list: item['trakt'] = item.get('imdb', '')
+			self.worker()
+			self.sort(type='movies.watchlist')
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for imdb in selected_items: customtrakt.remove_from_watchlist(imdb=imdb, media_type='movie')
+				customtrakt.sync_watch_list(forced=True)
+				control.trigger_widget_refresh()
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
+	def customCollectionManager(self):
+		try:
+			control.busy()
+			self.list = customtraktsync.fetch_collection('movies_collection')
+			for item in self.list: item['trakt'] = item.get('imdb', '')
+			self.worker()
+			self.sort()
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for imdb in selected_items: customtrakt.remove_from_collection(imdb=imdb, media_type='movie')
+				customtrakt.sync_collection(forced=True)
+				control.trigger_widget_refresh()
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
+	def customDroppedManager(self):
+		try:
+			control.busy()
+			self.list = customtraktsync.fetch_dropped('movies_dropped')
+			for item in self.list: item['trakt'] = item.get('imdb', '')
+			self.worker()
+			self.sort()
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for imdb in selected_items: customtrakt.remove_from_dropped(imdb=imdb, media_type='movie')
+				customtrakt.sync_dropped(forced=True)
+				control.trigger_widget_refresh()
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
+	def customUnfinishedManager(self):
+		try:
+			control.busy()
+			list = self.custom_unfinished(create_directory=False)
+			control.hide()
+			from resources.lib.windows.traktmovieprogress_manager import TraktMovieProgressManagerXML
+			window = TraktMovieProgressManagerXML('traktmovieprogress_manager.xml', control.addonPath(control.addonId()), results=list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for imdb in selected_items: customtrakt.scrobbleReset(imdb=imdb, refresh=False)
+				control.trigger_widget_refresh()
+				if 'plugin.video.umbrella' in control.infoLabel('Container.PluginName'): control.refresh()
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
+	def customUserlists(self, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			if not self.customCredentials: raise Exception()
+			lists = customtrakt.get_user_lists()
+			for lst in lists:
+				try:
+					list_id = customtrakt.list_numeric_id(lst)
+					if not list_id: continue
+					# No cached content-type metadata (see get_user_lists()), so the only
+					# reliable way to know if this list has any movies is to fetch its
+					# items and check — same live fetch customListMovies() would do anyway.
+					count = sum(1 for i in customtrakt.get_list_items(list_id) if i.get('movie'))
+					if not count: continue
+					name = lst.get('name', '')
+					values = {
+						'name': '%s (%s)' % (name, count),
+						'action': 'custom_list_movies&list_id=%s' % quote_plus(list_id),
+						'image': 'icon.png', 'icon': 'DefaultVideoPlaylists.png', 'url': '',
+					}
+					self.list.append(values)
+				except: pass
+		except: pass
+		if create_directory: self.addDirectory(self.list, folderName=folderName)
+		return self.list
+
+	def customListMovies(self, list_id, url=None, create_directory=True, folderName=''):
+		# Custom's user-list items are always live-fetched via get_all_pages(), never
+		# locally cached, so this slices the freshly fetched full list client-side —
+		# same pagination shape as customCollection()/customWatchlist() above.
+		self.list = []
+		try:
+			url = url or ('customlistmovies?list_id=%s&limit=%s&page=1' % (list_id, self.page_limit))
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q.get('page', 1)) - 1
+			except:
+				index = 0
+			items = customtrakt.get_list_items(list_id)
+			for i in items:
+				try:
+					movie = i.get('movie')
+					if not movie: continue
+					ids = movie.get('ids', {}) or {}
+					self.list.append({
+						'title': movie.get('title', ''), 'year': str(movie.get('year', '') or ''),
+						'imdb': ids.get('imdb', ''), 'tmdb': str(ids.get('tmdb', '') or ''),
+						'premiered': movie.get('released', '') or '',
+					})
+				except: pass
+			useNext = True
+			if create_directory:
+				self.sort()
+				if getSetting('custom.paginate.lists') == 'true' and self.list:
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					# useNext must reflect whether there's a page AFTER this one, not just
+					# whether the list needed paginating at all — checking total length
+					# against page_limit alone left the button showing on the last page too.
+					if index >= len(paginated_ids) - 1: useNext = False
+					self.list = paginated_ids[index] if index < len(paginated_ids) else []
+				else: useNext = False
+			try:
+				if useNext == False: raise Exception()
+				next_page = index + 2
+				next = 'plugin://plugin.video.umbrella/?action=custom_list_movies&list_id=%s&url=%s&folderName=%s' % (
+					quote_plus(list_id), quote_plus('customlistmovies?list_id=%s&limit=%s&page=%s' % (list_id, self.page_limit, next_page)), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			before_titles = [x.get('title') for x in self.list]
+			self.worker()
+			if self.list is None: self.list = []
+			after_titles = [x.get('title') for x in self.list]
+			if len(after_titles) != len(before_titles):
+				dropped = [t for t in before_titles if t not in after_titles]
+				from resources.lib.modules import log_utils
+				log_utils.log('CUSTOM: customListMovies(%s) worker() dropped %d item(s) with no resolvable tmdb id: %s' % (list_id, len(dropped), dropped), level=log_utils.LOGWARNING)
+			if create_directory: self.movieDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def floppyList(self, url, table, action, isCollection=False, create_directory=True, folderName=''):
+		# Generic Watchlist/Watching/On Hold/Completed/Dropped/Collection list, mirroring
+		# customWatchlist()/customCollection() above — Floppy's unified status model
+		# means all 6 lists share the same local-db-backed pagination shape.
+		self.list = []
+		try:
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q['page']) - 1
+			except:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = 0
+			self.list = floppysync.fetch_status_list(table)
+			useNext = True
+			if create_directory:
+				self.sort(type='movies.collection' if isCollection else 'movies.watchlist')
+				if getSetting('floppy.paginate.lists') == 'true' and self.list:
+					if len(self.list) <= int(self.page_limit):
+						useNext = False
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					self.list = paginated_ids[index]
+				else:
+					useNext = False
+			try:
+				if useNext == False: raise Exception()
+				if len(self.list) < int(self.page_limit): raise Exception()
+				q.update({'page': str(index + 2), 'limit': str(self.page_limit)})
+				q = (urlencode(q)).replace('%2C', ',')
+				continuation = url.replace('?' + urlparse(url).query, '') + '?' + q
+				next = 'plugin://plugin.video.umbrella/?action=%s&url=%s&folderName=%s' % (action, quote_plus(continuation), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.movieDirectory(self.list, isCollection=isCollection, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def customWatched(self, url=None, idx=True, create_directory=True, folderName=''):
+		# Paginated the same way customWatchlist()/customCollection() are: watch history
+		# is already a fully-local list (no live remote pagination possible), but without
+		# slicing before worker() runs, a large history means running a metacache/TMDb
+		# lookup for every single watched item on every load — the actual cause of "loads
+		# several thousand items" being slow, not just the missing Next-page link.
+		self.list = []
+		try:
+			url = url or 'custommovieswatched'
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q['page']) - 1
+			except:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = 0
+			rows = customtrakt.watchedMovies()
+			if not rows: return self.list
+			for (imdb, tmdb, title, year, last_watched_at) in rows:
+				try:
+					values = {}
+					values['imdb'] = imdb or ''
+					values['tmdb'] = tmdb or ''
+					values['title'] = title or ''
+					values['year'] = year or ''
+					values['lastplayed'] = last_watched_at or ''
+					values['mediatype'] = 'movies'
+					self.list.append(values)
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+			useNext = True
+			if create_directory:
+				self.sort(type='watched')
+				if getSetting('custom.paginate.lists') == 'true' and self.list:
+					if len(self.list) <= int(self.page_limit):
+						useNext = False
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					self.list = paginated_ids[index]
+			try:
+				if useNext == False: raise Exception()
+				if len(self.list) < int(self.page_limit): raise Exception()
+				q.update({'page': str(index + 2), 'limit': str(self.page_limit)})
+				q = (urlencode(q)).replace('%2C', ',')
+				continuation = url.replace('?' + urlparse(url).query, '') + '?' + q
+				next = 'plugin://plugin.video.umbrella/?action=custom_movies_watched&url=%s&folderName=%s' % (quote_plus(continuation), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			if idx: self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.movieDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def custom_unfinished(self, url=None, idx=True, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			self.list = customtraktsync.fetch_bookmarks(imdb='', ret_all=True, ret_type='movies')
+			if idx: self.worker()
+			self.list = sorted(self.list, key=lambda k: k['paused_at'], reverse=True)
+			if self.list is None: self.list = []
+			if create_directory: self.movieDirectory(self.list, unfinished=True, next=False, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def floppy_unfinished(self, url=None, idx=True, create_directory=True, folderName=''):
+		# Confirmed via GET /api/v1/playback/progress/ (not previously known when Floppy
+		# was first integrated) — a real server-side "in progress playback" endpoint,
+		# same idea as Scrob's continue-watching below. get_all_pages() already handles
+		# this response's {'pagination':..., 'results':[...]} shape unmodified.
+		self.list = []
+		try:
+			items = floppy.get_all_pages('/playback/progress/', silent=True) or []
+			for item in items:
+				try:
+					if item.get('media_type') != 'movie': continue
+					ids = item.get('ids') or {}
+					imdb = str(ids.get('imdb') or '')
+					tmdb = str(ids.get('tmdb') or item.get('media_id') or '')
+					if not imdb and not tmdb: continue
+					if not imdb and tmdb: imdb = floppy._resolve_movie_imdb(tmdb)
+					position = float(item.get('position_seconds') or 0)
+					duration = float(item.get('duration_seconds') or 0)
+					progress = round((position / duration) * 100, 1) if duration else 0
+					values = {}
+					values['imdb'] = imdb
+					values['tmdb'] = tmdb
+					values['progress'] = str(progress)
+					values['paused_at'] = item.get('updated_at', '') or ''
+					self.list.append(values)
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+			if idx: self.worker()
+			self.list = sorted(self.list, key=lambda k: k['paused_at'], reverse=True)
+			if self.list is None: self.list = []
+			if create_directory: self.movieDirectory(self.list, unfinished=True, next=False, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def floppyWatchlistManager(self):
+		try:
+			control.busy()
+			self.list = floppysync.fetch_status_list('movies_plantowatch')
+			for item in self.list: item['trakt'] = item.get('tmdb', '')
+			self.worker()
+			self.sort(type='movies.watchlist')
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for tmdb in selected_items: floppy.remove_from_watchlist(tmdb=tmdb, media_type='movie')
+				floppy.sync_watch_list(forced=True)
+				control.trigger_widget_refresh()
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
+	def floppyCollectionManager(self):
+		try:
+			control.busy()
+			self.list = floppy.get_collection_entries('movie')
+			self.worker()
+			self.sort()
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for entry_id in selected_items: floppy.remove_from_collection(entry_id)
+				floppy.sync_collection(forced=True)
+				control.trigger_widget_refresh()
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
+	def floppyDroppedManager(self):
+		try:
+			control.busy()
+			self.list = floppysync.fetch_status_list('movies_dropped')
+			for item in self.list: item['trakt'] = item.get('tmdb', '')
+			self.worker()
+			self.sort()
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for tmdb in selected_items: floppy.set_status(tmdb=tmdb, media_type='movie', status=floppy.STATUS_PLANNING)
+				floppy.sync_watch_list(forced=True)
+				control.trigger_widget_refresh()
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
+	def floppyUnfinishedManager(self):
+		try:
+			control.busy()
+			list = self.floppy_unfinished(create_directory=False)
+			control.hide()
+			from resources.lib.windows.traktmovieprogress_manager import TraktMovieProgressManagerXML
+			window = TraktMovieProgressManagerXML('traktmovieprogress_manager.xml', control.addonPath(control.addonId()), results=list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for imdb in selected_items:
+					item = next((i for i in list if i.get('imdb') == imdb), {})
+					floppy.scrobbleReset(imdb=imdb, tmdb=item.get('tmdb', ''), refresh=False)
+				control.trigger_widget_refresh()
+				if 'plugin.video.umbrella' in control.infoLabel('Container.PluginName'): control.refresh()
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
+	def scrob_unfinished(self, url=None, idx=True, create_directory=True, folderName=''):
+		# Unlike the other providers' "Unfinished" (which read local client-tracked
+		# bookmarks), Scrob has a real server-side "in progress playback" endpoint —
+		# using it directly means this reflects a pause point set from ANY client
+		# reporting to the same Scrob account, not just what Umbrella itself has seen.
+		self.list = []
+		try:
+			items = scrob.get_continue_watching()
+			for item in items:
+				try:
+					media = item.get('media') or {}
+					if media.get('type') != 'movie': continue
+					tmdb = str(media.get('tmdb_id') or '')
+					if not tmdb: continue
+					imdb = scrob._resolve_movie_imdb(tmdb)
+					values = {}
+					values['imdb'] = imdb
+					values['tmdb'] = tmdb
+					values['progress'] = str(round(float(item.get('progress_percent') or 0) * 100, 1))
+					values['paused_at'] = item.get('watched_at', '') or ''
+					self.list.append(values)
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+			if idx: self.worker()
+			self.list = sorted(self.list, key=lambda k: k['paused_at'], reverse=True)
+			if self.list is None: self.list = []
+			if create_directory: self.movieDirectory(self.list, unfinished=True, next=False, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def scrobUnfinishedManager(self):
+		try:
+			control.busy()
+			list = self.scrob_unfinished(create_directory=False)
+			control.hide()
+			from resources.lib.windows.traktmovieprogress_manager import TraktMovieProgressManagerXML
+			window = TraktMovieProgressManagerXML('traktmovieprogress_manager.xml', control.addonPath(control.addonId()), results=list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for imdb in selected_items:
+					item = next((i for i in list if i.get('imdb') == imdb), {})
+					scrob.scrobbleReset(imdb=imdb, tmdb=item.get('tmdb', ''), refresh=False)
+				control.trigger_widget_refresh()
+				if 'plugin.video.umbrella' in control.infoLabel('Container.PluginName'): control.refresh()
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
 	def simklPlantowatch(self, url, create_directory=True, folderName=''):
 		self.list = []
 		try:
@@ -1598,8 +2375,54 @@ class Movies:
 			if create_directory: self.movieDirectory(self.list, folderName=folderName)
 			return self.list
 		except:
-			
+
 			log_utils.error()
+
+	def simklPlantowatchManager(self):
+		try:
+			control.busy()
+			self.list = simklsync.fetch_plantowatch('movies_plantowatch')
+			for item in self.list: item['trakt'] = item.get('imdb', '')
+			self.worker()
+			self.sort()
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for imdb in selected_items:
+					if simkl.remove_item_from_list(imdb=imdb, mediatype='Movie', listname='plantowatch'):
+						simklsync.delete_plantowatch_items([imdb], 'movies_plantowatch', 'imdb')
+				simkl.sync_plantowatch(forced=True)
+				control.trigger_widget_refresh()
+		except:
+
+			log_utils.error()
+			control.hide()
+
+	def simklDroppedManager(self):
+		try:
+			control.busy()
+			self.list = simklsync.fetch_dropped('movies_dropped')
+			for item in self.list: item['trakt'] = item.get('imdb', '')
+			self.worker()
+			self.sort()
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for imdb in selected_items:
+					if simkl.remove_item_from_list(imdb=imdb, mediatype='Movie', listname='dropped'):
+						simklsync.delete_dropped_items([imdb], 'movies_dropped', 'imdb')
+				simkl.sync_dropped(forced=True)
+				control.trigger_widget_refresh()
+		except:
+
+			log_utils.error()
+			control.hide()
 
 	def traktLlikedlists(self, create_directory=True, folderName=''):
 		items = traktsync.fetch_liked_list('', True)
@@ -2406,6 +3229,9 @@ class Movies:
 		rescrapeMenu, findSimilarMenu = getLS(32185), getLS(32184)
 		simklManagerMenu = getLS(40577) % self.highlight_color
 		mdblistManagerMenu = '[COLOR %s]MDBList Manager[/COLOR]' % self.highlight_color
+		customManagerMenu = '[COLOR %s]%s Manager[/COLOR]' % (self.highlight_color, customtrakt.getCustomServiceName())
+		floppyManagerMenu = '[COLOR %s]Floppy Manager[/COLOR]' % self.highlight_color
+		scrobManagerMenu = '[COLOR %s]Scrob Manager[/COLOR]' % self.highlight_color
 		from resources.lib.modules import favourites
 		favoriteItems = favourites.getFavourites(content='movies')
 		favoriteItems = [x[1].get('imdb') for x in favoriteItems]
@@ -2513,6 +3339,12 @@ class Movies:
 						cm.append((simklManagerMenu, 'RunPlugin(%s?action=tools_simklManager&name=%s&imdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, watched, unfinished)))
 					if self.mdblist_authed:
 						cm.append((mdblistManagerMenu, 'RunPlugin(%s?action=tools_mdbWatchlist&name=%s&imdb=%s&watched=%s)' % (sysaddon, sysname, imdb, watched)))
+					if self.customCredentials:
+						cm.append((customManagerMenu, 'RunPlugin(%s?action=tools_customManager&name=%s&imdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, watched, unfinished)))
+					if self.floppyCredentials:
+						cm.append((floppyManagerMenu, 'RunPlugin(%s?action=tools_floppyManager&name=%s&imdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, watched, unfinished)))
+					if self.scrobCredentials:
+						cm.append((scrobManagerMenu, 'RunPlugin(%s?action=tools_scrobManager&name=%s&imdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, watched, unfinished)))
 					if self.tmdbv4Credentials:
 						cm.append((getLS(40606) if getLS(40606) else 'TMDB List Manager', 'RunPlugin(%s?action=tools_tmdbListManager&name=%s&tmdb=%s&mediatype=movie)' % (sysaddon, sysname, tmdb)))
 						if tmdb:

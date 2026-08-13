@@ -10,7 +10,7 @@ import re
 import xbmc
 from threading import Thread
 from urllib.parse import quote_plus, urlencode, parse_qsl, urlparse, urlsplit
-from resources.lib.database import cache, metacache, fanarttv_cache, traktsync, simklsync
+from resources.lib.database import cache, metacache, fanarttv_cache, traktsync, simklsync, customtraktsync, floppysync, scrobsync
 from resources.lib.indexers.tmdb import TVshows as tmdb_indexer
 from resources.lib.indexers.fanarttv import FanartTv
 from resources.lib.modules import cleangenre, log_utils
@@ -21,6 +21,9 @@ from resources.lib.modules import trakt
 from resources.lib.modules import views
 from resources.lib.modules import mdblist
 from resources.lib.modules import simkl
+from resources.lib.modules import customtrakt
+from resources.lib.modules import floppy
+from resources.lib.modules import scrob
 from resources.lib.database import artwork as customArtwork
 
 getLS = control.lang
@@ -168,6 +171,9 @@ class TVshows:
 		self.simkl_link = 'https://api.simkl.com'
 		self.prefer_fanArt = getSetting('prefer.fanarttv') == 'true'
 		self.mdblist_authed = getSetting('mdblist.token') != ''
+		self.customCredentials = customtrakt.getCustomCredentialsInfo()
+		self.floppyCredentials = floppy.getFloppyCredentialsInfo()
+		self.scrobCredentials = scrob.getScrobCredentialsInfo()
 		from resources.lib.modules import tmdb4
 		self.tmdbv4Credentials = tmdb4.getTMDbV4CredentialsInfo()
 
@@ -304,7 +310,11 @@ class TVshows:
 			elif u in self.tmdb_link and not is_collection_url:
 				self.list = tmdb_indexer().tmdb_list(url) # caching handled in list indexer
 			if self.list is None: self.list = []
-			if create_directory: self.sort(type='shows.tmdblist')
+			# Only re-sort locally for curated list/account URLs, which have no inherent
+			# order of their own. Discover-style URLs (Networks, Genres, Originals, etc.)
+			# already come back sorted by tmdb_DiscoverSort()'s sort_by param, and a local
+			# re-sort here (defaulting to alphabetical) was silently clobbering that order.
+			if create_directory and is_collection_url: self.sort(type='shows.tmdblist')
 			if create_directory: self.tvshowDirectory(self.list, folderName=folderName, isCollection=is_collection_url)
 			return self.list
 		except:
@@ -663,25 +673,32 @@ class TVshows:
 				elif attribute == 6:
 					nolastPlayed = []
 					for i in range(len(self.list)):
-						if 'lastplayed' not in self.list[i]: 
+						if 'lastplayed' not in self.list[i]:
 							self.list[i]['lastplayed'] = ''
-							
-							log_utils.log('TVShow Last Played Blank Title: %' % self.list[i]['title'], 1)
+							log_utils.log('TVShow Last Played Blank Title: %s' % self.list[i].get('title', ''), 1)
 					#self.list = sorted(self.list, key=lambda k: k['lastplayed'], reverse=reverse)
 					if self.list:
 						def _parse_lastplayed(k):
 							lp = k.get('lastplayed')
 							if not lp:
 								return time.gmtime(0)
-							try:
-								return time.strptime(lp, "%Y-%m-%dT%H:%M:%S.%fZ")
-							except ValueError:
-								return time.strptime(lp, "%Y-%m-%dT%H:%M:%SZ")
+							# Some providers' raw timestamps don't match either expected
+							# format (e.g. an unexpected double-fraction like
+							# "...25.000.000Z") — never let one bad value crash sorting
+							# for the whole list. Scrob's own /history timestamps come
+							# through with no trailing "Z" at all (Python's raw
+							# datetime.isoformat() shape, e.g. "...21:35:47.759746"),
+							# which silently fell back to epoch for every Scrob show and
+							# made its progress list sort in essentially arbitrary order.
+							for fmt in ("%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S.%f", "%Y-%m-%dT%H:%M:%S"):
+								try: return time.strptime(lp, fmt)
+								except ValueError: continue
+							return time.gmtime(0)
 						self.list = sorted(self.list, key=_parse_lastplayed, reverse=reverse)
 			elif reverse:
 				self.list = list(reversed(self.list))
 		except:
-			
+
 			log_utils.error()
 
 	def imdb_sort(self, type='shows'):
@@ -703,7 +720,15 @@ class TVshows:
 		elif sort == 2: tmdb_sort = 'vote_average'
 		elif sort == 3: tmdb_sort = 'vote_count'
 		elif sort in (4, 5, 6): tmdb_sort = 'primary_release_date'
-		tmdb_sort_order = '.asc' if (int(getSetting('sort.shows.order')) == 0) else '.desc'
+		if sort == 0:
+			# "Default" is meant to mean popularity, and its order control is disabled
+			# in settings (no user could have consciously chosen Ascending here) — always
+			# show most-popular-first rather than trusting sort.shows.order's raw stored
+			# value, which a settings.xml default fix alone didn't reliably propagate to
+			# already-installed users.
+			tmdb_sort_order = '.desc'
+		else:
+			tmdb_sort_order = '.asc' if (int(getSetting('sort.shows.order')) == 0) else '.desc'
 		sort_string = tmdb_sort + tmdb_sort_order
 		if sort == 2: sort_string = sort_string + '&vote_count.gte=500'
 		return sort_string
@@ -1090,7 +1115,297 @@ class TVshows:
 			if create_directory: self.tvshowDirectory(self.list, folderName=folderName)
 			return self.list
 		except:
-			
+
+			log_utils.error()
+
+	def customCollection(self, url, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q['page']) - 1
+			except:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = 0
+			self.list = customtraktsync.fetch_collection('shows_collection')
+			useNext = True
+			if create_directory:
+				self.sort()
+				if getSetting('custom.paginate.lists') == 'true' and self.list:
+					if len(self.list) <= int(self.page_limit):
+						useNext = False
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					self.list = paginated_ids[index]
+			try:
+				if useNext == False: raise Exception()
+				if len(self.list) < int(self.page_limit): raise Exception()
+				q.update({'page': str(index + 2), 'limit': str(self.page_limit)})
+				q = (urlencode(q)).replace('%2C', ',')
+				continuation = url.replace('?' + urlparse(url).query, '') + '?' + q
+				# Custom's Collection/Watchlist pagination is a local slice of an
+				# already-fully-synced list, not a live remote fetch, so the
+				# continuation has no real domain — build a full plugin:// action URL
+				# so tvshowDirectory()'s domain-sniffing next-page logic (which treats
+				# an empty netloc as an accidental substring match) doesn't mis-route it.
+				next = 'plugin://plugin.video.umbrella/?action=custom_shows_collection&url=%s&folderName=%s' % (quote_plus(continuation), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.tvshowDirectory(self.list, folderName=folderName, isCollection=True)
+			return self.list
+		except:
+			log_utils.error()
+
+	def customWatchlist(self, url, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q['page']) - 1
+			except:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = 0
+			self.list = customtraktsync.fetch_watch_list('shows_watchlist')
+			useNext = True
+			if create_directory:
+				self.sort(type='shows.watchlist')
+				if getSetting('custom.paginate.lists') == 'true' and self.list:
+					if len(self.list) <= int(self.page_limit):
+						useNext = False
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					self.list = paginated_ids[index]
+			try:
+				if useNext == False: raise Exception()
+				if len(self.list) < int(self.page_limit): raise Exception()
+				q.update({'page': str(index + 2), 'limit': str(self.page_limit)})
+				q = (urlencode(q)).replace('%2C', ',')
+				continuation = url.replace('?' + urlparse(url).query, '') + '?' + q
+				# See customCollection() above for why this must be a full plugin://
+				# action URL rather than a bare continuation token.
+				next = 'plugin://plugin.video.umbrella/?action=custom_shows_watchlist&url=%s&folderName=%s' % (quote_plus(continuation), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.tvshowDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			log_utils.error()
+
+	def customDropped(self, url, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q['page']) - 1
+			except:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = 0
+			self.list = customtraktsync.fetch_dropped('shows_dropped')
+			useNext = True
+			if create_directory:
+				self.sort()
+				if getSetting('custom.paginate.lists') == 'true' and self.list:
+					if len(self.list) <= int(self.page_limit):
+						useNext = False
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					self.list = paginated_ids[index]
+			try:
+				if useNext == False: raise Exception()
+				if len(self.list) < int(self.page_limit): raise Exception()
+				q.update({'page': str(index + 2), 'limit': str(self.page_limit)})
+				q = (urlencode(q)).replace('%2C', ',')
+				continuation = url.replace('?' + urlparse(url).query, '') + '?' + q
+				# See customCollection() above for why this must be a full plugin://
+				# action URL rather than a bare continuation token.
+				next = 'plugin://plugin.video.umbrella/?action=custom_shows_dropped&url=%s&folderName=%s' % (quote_plus(continuation), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.tvshowDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			log_utils.error()
+
+	def customWatchlistManager(self):
+		try:
+			control.busy()
+			self.list = customtraktsync.fetch_watch_list('shows_watchlist')
+			for item in self.list: item['trakt'] = item.get('imdb', '')
+			self.worker()
+			self.sort(type='shows.watchlist')
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for imdb in selected_items: customtrakt.remove_from_watchlist(imdb=imdb, media_type='tvshow')
+				customtrakt.sync_watch_list(forced=True)
+				control.trigger_widget_refresh()
+		except:
+			log_utils.error()
+			control.hide()
+
+	def customCollectionManager(self):
+		try:
+			control.busy()
+			self.list = customtraktsync.fetch_collection('shows_collection')
+			for item in self.list: item['trakt'] = item.get('imdb', '')
+			self.worker()
+			self.sort()
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for imdb in selected_items: customtrakt.remove_from_collection(imdb=imdb, media_type='tvshow')
+				customtrakt.sync_collection(forced=True)
+				control.trigger_widget_refresh()
+		except:
+			log_utils.error()
+			control.hide()
+
+	def customDroppedManager(self):
+		try:
+			control.busy()
+			self.list = customtraktsync.fetch_dropped('shows_dropped')
+			for item in self.list: item['trakt'] = item.get('imdb', '')
+			self.worker()
+			self.sort()
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for imdb in selected_items: customtrakt.remove_from_dropped(imdb=imdb, media_type='tvshow')
+				customtrakt.sync_dropped(forced=True)
+				control.trigger_widget_refresh()
+		except:
+			log_utils.error()
+			control.hide()
+
+	def customUserlists(self, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			if not self.customCredentials: raise Exception()
+			lists = customtrakt.get_user_lists()
+			for lst in lists:
+				try:
+					list_id = customtrakt.list_numeric_id(lst)
+					if not list_id: continue
+					# No cached content-type metadata (see get_user_lists()), so the only
+					# reliable way to know if this list has any shows is to fetch its
+					# items and check — same live fetch customListShows() would do anyway.
+					count = sum(1 for i in customtrakt.get_list_items(list_id) if i.get('show'))
+					if not count: continue
+					name = lst.get('name', '')
+					values = {
+						'name': '%s (%s)' % (name, count),
+						'action': 'custom_list_shows&list_id=%s' % quote_plus(list_id),
+						'image': 'icon.png', 'icon': 'DefaultVideoPlaylists.png', 'url': '',
+					}
+					self.list.append(values)
+				except: pass
+		except: pass
+		if create_directory: self.addDirectory(self.list, folderName=folderName)
+		return self.list
+
+	def customListShows(self, list_id, url=None, create_directory=True, folderName=''):
+		# Custom's user-list items are always live-fetched via get_all_pages(), never
+		# locally cached, so this slices the freshly fetched full list client-side —
+		# same pagination shape as customCollection()/customWatchlist() above.
+		self.list = []
+		try:
+			url = url or ('customlistshows?list_id=%s&limit=%s&page=1' % (list_id, self.page_limit))
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q.get('page', 1)) - 1
+			except:
+				index = 0
+			items = customtrakt.get_list_items(list_id)
+			for i in items:
+				try:
+					show = i.get('show')
+					if not show: continue
+					ids = show.get('ids', {}) or {}
+					tvshowtitle = show.get('title', '')
+					self.list.append({
+						'tvshowtitle': tvshowtitle, 'title': tvshowtitle, 'year': str(show.get('year', '') or ''),
+						'imdb': ids.get('imdb', ''), 'tmdb': str(ids.get('tmdb', '') or ''), 'tvdb': str(ids.get('tvdb', '') or ''),
+						'premiered': (show.get('first_aired', '') or '').split('T')[0],
+					})
+				except: pass
+			useNext = True
+			if create_directory:
+				self.sort()
+				if getSetting('custom.paginate.lists') == 'true' and self.list:
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					# useNext must reflect whether there's a page AFTER this one, not just
+					# whether the list needed paginating at all — checking total length
+					# against page_limit alone left the button showing on the last page too.
+					if index >= len(paginated_ids) - 1: useNext = False
+					self.list = paginated_ids[index] if index < len(paginated_ids) else []
+				else: useNext = False
+			try:
+				if useNext == False: raise Exception()
+				next_page = index + 2
+				next = 'plugin://plugin.video.umbrella/?action=custom_list_shows&list_id=%s&url=%s&folderName=%s' % (
+					quote_plus(list_id), quote_plus('customlistshows?list_id=%s&limit=%s&page=%s' % (list_id, self.page_limit, next_page)), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			before_titles = [x.get('title') for x in self.list]
+			self.worker()
+			if self.list is None: self.list = []
+			after_titles = [x.get('title') for x in self.list]
+			if len(after_titles) != len(before_titles):
+				dropped = [t for t in before_titles if t not in after_titles]
+				log_utils.log('CUSTOM: customListShows(%s) worker() dropped %d item(s) with no resolvable tmdb id: %s' % (list_id, len(dropped), dropped), level=log_utils.LOGWARNING)
+			if create_directory: self.tvshowDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			log_utils.error()
+
+	def floppyList(self, url, table, action, isCollection=False, create_directory=True, folderName=''):
+		# Generic Watchlist/Watching/On Hold/Completed/Dropped/Collection list, mirroring
+		# customWatchlist()/customCollection() above.
+		self.list = []
+		try:
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q['page']) - 1
+			except:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = 0
+			self.list = floppysync.fetch_status_list(table)
+			useNext = True
+			if create_directory:
+				self.sort()
+				if getSetting('floppy.paginate.lists') == 'true' and self.list:
+					if len(self.list) <= int(self.page_limit):
+						useNext = False
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					self.list = paginated_ids[index]
+				else:
+					useNext = False
+			try:
+				if useNext == False: raise Exception()
+				if len(self.list) < int(self.page_limit): raise Exception()
+				q.update({'page': str(index + 2), 'limit': str(self.page_limit)})
+				q = (urlencode(q)).replace('%2C', ',')
+				continuation = url.replace('?' + urlparse(url).query, '') + '?' + q
+				next = 'plugin://plugin.video.umbrella/?action=%s&url=%s&folderName=%s' % (action, quote_plus(continuation), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.tvshowDirectory(self.list, folderName=folderName, isCollection=isCollection)
+			return self.list
+		except:
 			log_utils.error()
 
 	def simklPlantowatch(self, url, create_directory=True, folderName=''):
@@ -1294,8 +1609,80 @@ class TVshows:
 			if create_directory: self.tvshowDirectory(self.list, folderName=folderName)
 			return self.list
 		except:
-			
+
 			log_utils.error()
+
+	def simklPlantowatchManager(self):
+		try:
+			control.busy()
+			self.list = simklsync.fetch_plantowatch('shows_plantowatch')
+			for item in self.list: item['trakt'] = item.get('tvdb', '')
+			self.worker()
+			self.sort()
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for tvdb in selected_items:
+					item = next((i for i in self.list if i.get('trakt') == tvdb), {})
+					if simkl.remove_item_from_list(imdb=item.get('imdb', ''), tvdb=tvdb, mediatype='Show', listname='plantowatch'):
+						simklsync.delete_plantowatch_items([tvdb], 'shows_plantowatch', 'tvdb')
+				simkl.sync_plantowatch(forced=True)
+				control.trigger_widget_refresh()
+		except:
+
+			log_utils.error()
+			control.hide()
+
+	def simklOnholdManager(self):
+		try:
+			control.busy()
+			self.list = simklsync.fetch_hold('shows_hold')
+			for item in self.list: item['trakt'] = item.get('tvdb', '')
+			self.worker()
+			self.sort()
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for tvdb in selected_items:
+					item = next((i for i in self.list if i.get('trakt') == tvdb), {})
+					if simkl.remove_item_from_list(imdb=item.get('imdb', ''), tvdb=tvdb, mediatype='Show', listname='hold'):
+						simklsync.delete_hold_items([tvdb], 'shows_hold', 'tvdb')
+				simkl.sync_hold(forced=True)
+				control.trigger_widget_refresh()
+		except:
+
+			log_utils.error()
+			control.hide()
+
+	def simklDroppedManager(self):
+		try:
+			control.busy()
+			self.list = simklsync.fetch_dropped('shows_dropped')
+			for item in self.list: item['trakt'] = item.get('tvdb', '')
+			self.worker()
+			self.sort()
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for tvdb in selected_items:
+					item = next((i for i in self.list if i.get('trakt') == tvdb), {})
+					if simkl.remove_item_from_list(imdb=item.get('imdb', ''), tvdb=tvdb, mediatype='Show', listname='dropped'):
+						simklsync.delete_dropped_items([tvdb], 'shows_dropped', 'tvdb')
+				simkl.sync_dropped(forced=True)
+				control.trigger_widget_refresh()
+		except:
+
+			log_utils.error()
+			control.hide()
 
 	def traktLlikedlists(self, create_directory=True, folderName=''):
 		items = traktsync.fetch_liked_list('', True)
@@ -2063,28 +2450,61 @@ class TVshows:
 	def simkl_progress(self, url, folderName=''):
 		self.list = []
 		try:
+			try:
+				q = dict(parse_qsl(urlsplit(url).query)) if url and '?' in url else {}
+				index = int(q.get('page', 1)) - 1
+			except:
+				index = 0
 			cache.get(self.simkl_tvshow_progress, 0, folderName)
 			self.sort(type='progress')
 			if self.list is None: self.list = []
+			next_url = ''
 			hasNext = False
+			if getSetting('simkl.paginate.lists') == 'true' and self.list:
+				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+				total_pages = len(paginated_ids)
+				self.list = paginated_ids[index] if index < total_pages else []
+				try:
+					if index + 1 >= total_pages: raise Exception()
+					next_page = index + 2
+					next_url = 'plugin://plugin.video.umbrella/?action=simkl_shows_progress&url=%s&folderName=%s' % (
+						quote_plus('simklshowsprogress?limit=%s&page=%s' % (self.page_limit, next_page)), quote_plus(folderName))
+					hasNext = True
+				except: pass
+			for i in range(len(self.list)): self.list[i]['next'] = next_url
 			self.tvshowDirectory(self.list, next=hasNext, isProgress=True, folderName=folderName)
 			return self.list
 		except:
-			
+
 			log_utils.error()
 			if not self.list:
 				control.hide()
 				if self.notifications and self.is_widget != True: control.notification(title=32326, message=33049)
     
 	def simkl_tvshow_progress(self, create_directory=True, folderName=''):
+		# Simkl treats anime as a separate content bucket from "shows" (see
+		# simkl_anime_list()'s dedicated anime discover endpoints) — querying only
+		# /sync/all-items/shows/watching silently excluded every in-progress anime title.
 		self.list = []
 		try:
-			url = 'https://api.simkl.com/sync/all-items/shows/watching'
-			self.list = self.simkl_list(url, folderName)
+			shows = self.simkl_list('https://api.simkl.com/sync/all-items/shows/watching', folderName) or []
+			anime = self.simkl_list('https://api.simkl.com/sync/all-items/anime/watching', folderName) or []
+			self.list = shows + anime
 			next = ''
 			for i in range(len(self.list)): self.list[i]['next'] = next
 			self.worker()
 			if self.list is None: self.list = []
+			try:
+				from resources.lib.database import simklsync as _simklsync
+				dropped = _simklsync.fetch_dropped('shows_dropped')
+				if dropped:
+					dropped_tmdb = {str(i['tmdb']) for i in dropped if i.get('tmdb')}
+					dropped_imdb = {str(i['imdb']) for i in dropped if i.get('imdb')}
+					self.list = [i for i in self.list if not (
+						(i.get('tmdb') and str(i['tmdb']) in dropped_tmdb) or
+						(i.get('imdb') and str(i['imdb']) in dropped_imdb)
+					)]
+			except: pass
 			#if create_directory: self.tvshowDirectory(self.list)
 		except:
 
@@ -2128,41 +2548,43 @@ class TVshows:
 				if self.notifications and self.is_widget != True: control.notification(title=32326, message=33049)
 
 	def mdblist_tvshow_progress(self, create_directory=True, folderName=''):
+		# Local reconstruction from the synced watched-episode set, mirroring
+		# floppy_tvshow_progress()/scrob_tvshow_progress() above — NOT mdblist.get_up_next()
+		# (MDBList's own live /upnext endpoint), which is documented as unreliable for
+		# out-of-order watching (see mdblist.py get_calendar()'s comment) and was already
+		# swapped out for this same local reconstruction on the episode-level progress list
+		# (mdblist_progress_list() in episodes.py) — the show-level list never got that fix,
+		# which is why its ordering/inclusion diverged from Trakt/Scrob/Floppy.
 		self.list = []
 		try:
-			items = mdblist.get_up_next()
-			if not items: return self.list
-			next = ''
-			for item in items:
+			from resources.lib.database import mdbsync as _mdbsync
+			indicators = mdblist.syncTVShows()
+			if not indicators: return self.list
+			last_watched_by_imdb = {r[0]: r[3] for r in _mdbsync.get_watched_shows() if r[0]}
+			for (ids, watched_count, ep_ranges) in indicators:
 				try:
+					imdb, tmdb, tvdb = ids.get('imdb', ''), ids.get('tmdb', ''), ids.get('tvdb', '')
+					if not imdb and not tvdb: continue
+					progress = mdblist.syncSeasons(imdb, tvdb)
+					if progress and len(progress) > 1:
+						counts = progress[1] or {}
+						total = sum(v.get('total', 0) for v in counts.values())
+						watched = sum(v.get('watched', 0) for v in counts.values())
+						if total and watched >= total: continue  # fully watched, not "in progress"
 					values = {}
-					values['next'] = next
+					values['next'] = ''
 					values['progress'] = ''
-					show = item.get('show', {})
-					last_watched = item.get('last_watched_at', '')
-					if last_watched:
-						try:
-							date_part = last_watched.split('T')[0]
-							time_part = last_watched.split('T')[1].split('+')[0].rstrip('Z')
-							values['lastplayed'] = '%sT%s.000Z' % (date_part, time_part)
-						except: values['lastplayed'] = ''
-					else: values['lastplayed'] = ''
-					values['title'] = show.get('title', '')
-					values['tvshowtitle'] = values['title']
-					values['year'] = str(show.get('year', '')) if show.get('year') else ''
-					ids = show.get('ids', {})
-					values['imdb'] = ''
-					values['tmdb'] = str(ids.get('tmdb', '')) if ids.get('tmdb') else ''
-					values['tvdb'] = ''
+					values['imdb'] = imdb
+					values['tmdb'] = tmdb
+					values['tvdb'] = tvdb
+					values['lastplayed'] = last_watched_by_imdb.get(imdb, '')
 					values['mediatype'] = 'tvshows'
 					values['has_next_episode'] = True
-					if not values['title']: continue
 					self.list.append(values)
 				except: log_utils.error()
 			self.worker()
 			if self.list is None: self.list = []
 			try:
-				from resources.lib.database import mdbsync as _mdbsync
 				dropped = _mdbsync.fetch_dropped('shows_dropped')
 				if dropped:
 					dropped_tmdb = {str(i['tmdb']) for i in dropped if i.get('tmdb')}
@@ -2226,6 +2648,410 @@ class TVshows:
 		except:
 			log_utils.error()
 		return self.list
+
+	def custom_progress(self, url, folderName=''):
+		# Paginated the same way Trakt's/MDBList's Show Progress lists are — this was
+		# unconditionally rendering every in-progress show on one screen (next=False),
+		# unlike every other provider's progress list.
+		self.list = []
+		try:
+			try:
+				if '?' not in url:
+					url = 'customshowsprogress?limit=%s&page=1' % self.page_limit
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q.get('page', 1)) - 1
+			except:
+				q = {'limit': self.page_limit, 'page': '1'}
+				index = 0
+			cache.get(self.custom_tvshow_progress, 0, folderName)
+			self.sort(type='progress')
+			if self.list is None: self.list = []
+			next = ''
+			if getSetting('custom.paginate.lists') == 'true' and self.list:
+				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+				total_pages = len(paginated_ids)
+				self.list = paginated_ids[index] if index < total_pages else []
+				try:
+					if index + 1 >= total_pages: raise Exception()
+					next_page = index + 2
+					next = 'plugin://plugin.video.umbrella/?action=custom_shows_progress&url=%s&page=%s&folderName=%s' % (
+						quote_plus('customshowsprogress?limit=%s&page=%s' % (self.page_limit, next_page)),
+						str(next_page), quote_plus(folderName))
+				except: pass
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			hasNext = bool(next)
+			self.tvshowDirectory(self.list, next=hasNext, isProgress=True, folderName=folderName)
+			return self.list
+		except:
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications and self.is_widget != True: control.notification(title=32326, message=33049)
+
+	def custom_tvshow_progress(self, create_directory=True, folderName=''):
+		# "In progress" shows for Custom: start from the locally-known watched-show
+		# list, then ask GET /shows/{imdb}/progress/watched (confirmed to match real
+		# Trakt's shape) per show for the authoritative aired/completed counts —
+		# more accurate than comparing against TMDb's raw episode_count, which can
+		# include not-yet-aired episodes and misclassify caught-up shows as "in progress".
+		self.list = []
+		try:
+			indicators = customtrakt.syncTVShows()
+			if not indicators: return self.list
+
+			def check_show(ids):
+				try:
+					imdb, tmdb, tvdb = ids.get('imdb', ''), ids.get('tmdb', ''), ids.get('tvdb', '')
+					progress = customtrakt.getShowProgress(imdb) if imdb else None
+					if progress:
+						aired, completed = int(progress.get('aired', 0)), int(progress.get('completed', 0))
+						if aired and completed >= aired: return  # fully watched, not "in progress"
+					if not tmdb:
+						try:
+							tmdb_result = cache.get(tmdb_indexer().IdLookup, 96, imdb, tvdb)
+							tmdb = str(tmdb_result.get('id', '')) if tmdb_result else ''
+						except: tmdb = ''
+					if not tmdb: return
+					if not progress:
+						# no server-side progress data for this show yet — fall back to
+						# comparing local watched count against TMDb's total episode count
+						watched_count = sum(e - s + 1 for ranges in ep_ranges_by_imdb.get(imdb, {}).values() for s, e in ranges)
+						showSeasons = cache.get(tmdb_indexer().get_showSeasons_meta, 96, tmdb)
+						total = sum(s.get('episode_count', 0) for s in (showSeasons or {}).get('seasons', []) if s.get('season_number', 0) > 0)
+						if total and watched_count >= total: return
+					values = {}
+					values['next'] = ''
+					values['progress'] = ''
+					values['imdb'] = imdb
+					values['tmdb'] = tmdb
+					values['tvdb'] = tvdb
+					values['mediatype'] = 'tvshows'
+					values['has_next_episode'] = True
+					self.list.append(values)
+				except: log_utils.error()
+
+			ep_ranges_by_imdb = {ids.get('imdb', ''): ep_ranges for (ids, watched_count, ep_ranges) in indicators}
+			threads = [Thread(target=check_show, args=(ids,)) for (ids, watched_count, ep_ranges) in indicators]
+			# Throttled: each thread makes a blocking GET /shows/{imdb}/progress/watched
+			# call — starting all of them at once can overwhelm a single-worker Custom
+			# server and stall the whole directory listing until Kodi kills the script.
+			_unlimited = getSetting('dev.batch.unlimited') == 'true'
+			_bs = max(int(getSetting('dev.batch.size') or '10'), 1)
+			_chunk = max(len(threads), 1) if _unlimited else _bs
+			for i in range(0, len(threads), _chunk):
+				if control.monitor.abortRequested(): break
+				batch = threads[i:i + _chunk]
+				[t.start() for t in batch]
+				[t.join() for t in batch]
+			self.worker()
+			if self.list is None: self.list = []
+			try:
+				dropped = customtraktsync.fetch_dropped('shows_dropped')
+				if dropped:
+					dropped_tmdb = {str(i['tmdb']) for i in dropped if i.get('tmdb')}
+					dropped_imdb = {str(i['imdb']) for i in dropped if i.get('imdb')}
+					self.list = [i for i in self.list if not (
+						(i.get('tmdb') and str(i['tmdb']) in dropped_tmdb) or
+						(i.get('imdb') and str(i['imdb']) in dropped_imdb)
+					)]
+			except: pass
+		except:
+			log_utils.error()
+		return self.list
+
+	def floppy_progress(self, url, folderName=''):
+		# Paginated the same way Trakt's/MDBList's Show Progress lists are (and the same
+		# way floppyList() already paginates Floppy's other lists) — this was
+		# unconditionally rendering every in-progress show on one screen (next=False).
+		self.list = []
+		try:
+			try:
+				if '?' not in url:
+					url = 'floppyshowsprogress?limit=%s&page=1' % self.page_limit
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q.get('page', 1)) - 1
+			except:
+				q = {'limit': self.page_limit, 'page': '1'}
+				index = 0
+			cache.get(self.floppy_tvshow_progress, 0, folderName)
+			self.sort(type='progress')
+			if self.list is None: self.list = []
+			next = ''
+			if getSetting('floppy.paginate.lists') == 'true' and self.list:
+				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+				total_pages = len(paginated_ids)
+				self.list = paginated_ids[index] if index < total_pages else []
+				try:
+					if index + 1 >= total_pages: raise Exception()
+					next_page = index + 2
+					next = 'plugin://plugin.video.umbrella/?action=floppy_shows_progress&url=%s&page=%s&folderName=%s' % (
+						quote_plus('floppyshowsprogress?limit=%s&page=%s' % (self.page_limit, next_page)),
+						str(next_page), quote_plus(folderName))
+				except: pass
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			hasNext = bool(next)
+			self.tvshowDirectory(self.list, next=hasNext, isProgress=True, folderName=folderName)
+			return self.list
+		except:
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications and self.is_widget != True: control.notification(title=32326, message=33049)
+
+	def floppy_tvshow_progress(self, create_directory=True, folderName=''):
+		# "In progress" shows for Floppy: start from the locally-known watched-episode
+		# list, then ask floppy.getShowProgress() per show — locally computed from TMDb
+		# season metadata capped at last_episode_to_air (see floppy.py), so an unaired
+		# season can't misclassify a caught-up show as "in progress" — mirroring
+		# custom_tvshow_progress()'s shape and inclusion logic above.
+		self.list = []
+		try:
+			indicators = floppy.syncTVShows()
+			if not indicators: return self.list
+			# sort(type='progress') sorts by 'lastplayed' — without setting it here every
+			# item ties at blank/epoch and the list falls back to arbitrary query order,
+			# not a real chronological sort. get_watched_shows() gives the real per-show
+			# MAX(last_watched_at) to key off, same as customtrakt's equivalent list.
+			last_watched_by_tmdb = {str(r[1]): r[3] for r in floppysync.get_watched_shows() if r[1]}
+			for (ids, watched_count, ep_ranges) in indicators:
+				try:
+					imdb, tmdb, tvdb = ids.get('imdb', ''), ids.get('tmdb', ''), ids.get('tvdb', '')
+					if not tmdb: continue
+					progress = floppy.getShowProgress(tmdb)
+					if progress and len(progress) > 1:
+						counts = progress[1] or {}
+						total = sum(v.get('total', 0) for v in counts.values())
+						watched = sum(v.get('watched', 0) for v in counts.values())
+						if total and watched >= total: continue  # fully watched, not "in progress"
+					values = {}
+					values['next'] = ''
+					values['progress'] = ''
+					values['imdb'] = imdb
+					values['tmdb'] = tmdb
+					values['tvdb'] = tvdb
+					values['lastplayed'] = last_watched_by_tmdb.get(str(tmdb), '')
+					values['mediatype'] = 'tvshows'
+					values['has_next_episode'] = True
+					self.list.append(values)
+				except: log_utils.error()
+			self.worker()
+			if self.list is None: self.list = []
+			try:
+				dropped = floppysync.fetch_status_list('shows_dropped')
+				if dropped:
+					dropped_tmdb = {str(i['tmdb']) for i in dropped if i.get('tmdb')}
+					self.list = [i for i in self.list if not (i.get('tmdb') and str(i['tmdb']) in dropped_tmdb)]
+			except: pass
+		except:
+			log_utils.error()
+		return self.list
+
+	def floppyWatchlistManager(self):
+		try:
+			control.busy()
+			self.list = floppysync.fetch_status_list('shows_plantowatch')
+			for item in self.list: item['trakt'] = item.get('tmdb', '')
+			self.worker()
+			self.sort(type='shows.watchlist')
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for tmdb in selected_items: floppy.remove_from_watchlist(tmdb=tmdb, media_type='tv')
+				floppy.sync_watch_list(forced=True)
+				control.trigger_widget_refresh()
+		except:
+			log_utils.error()
+			control.hide()
+
+	def floppyCollectionManager(self):
+		try:
+			control.busy()
+			self.list = floppy.get_collection_entries('tv')
+			self.worker()
+			self.sort()
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for entry_id in selected_items: floppy.remove_from_collection(entry_id)
+				floppy.sync_collection(forced=True)
+				control.trigger_widget_refresh()
+		except:
+			log_utils.error()
+			control.hide()
+
+	def floppyDroppedManager(self):
+		try:
+			control.busy()
+			self.list = floppysync.fetch_status_list('shows_dropped')
+			for item in self.list: item['trakt'] = item.get('tmdb', '')
+			self.worker()
+			self.sort()
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for tmdb in selected_items: floppy.set_status(tmdb=tmdb, media_type='tv', status=floppy.STATUS_PLANNING)
+				floppy.sync_watch_list(forced=True)
+				control.trigger_widget_refresh()
+		except:
+			log_utils.error()
+			control.hide()
+
+	def scrob_progress(self, url, folderName=''):
+		# Same paginated shape as floppy_progress() — but the underlying fetch is
+		# thinner: Scrob's GET /history/continue-watching is server-computed, so
+		# there's no per-show TMDb-metadata loop needed like Floppy's local
+		# reconstruction, just a straight fetch + dedupe by show.
+		self.list = []
+		try:
+			try:
+				if '?' not in url:
+					url = 'scrobshowsprogress?limit=%s&page=1' % self.page_limit
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q.get('page', 1)) - 1
+			except:
+				q = {'limit': self.page_limit, 'page': '1'}
+				index = 0
+			cache.get(self.scrob_tvshow_progress, 0, folderName)
+			self.sort(type='progress')
+			if self.list is None: self.list = []
+			next = ''
+			if getSetting('scrob.paginate.lists') == 'true' and self.list:
+				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+				total_pages = len(paginated_ids)
+				self.list = paginated_ids[index] if index < total_pages else []
+				try:
+					if index + 1 >= total_pages: raise Exception()
+					next_page = index + 2
+					next = 'plugin://plugin.video.umbrella/?action=scrob_shows_progress&url=%s&page=%s&folderName=%s' % (
+						quote_plus('scrobshowsprogress?limit=%s&page=%s' % (self.page_limit, next_page)),
+						str(next_page), quote_plus(folderName))
+				except: pass
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			hasNext = bool(next)
+			self.tvshowDirectory(self.list, next=hasNext, isProgress=True, folderName=folderName)
+			return self.list
+		except:
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications and self.is_widget != True: control.notification(title=32326, message=33049)
+
+	def scrob_tvshow_progress(self, create_directory=True, folderName=''):
+		# Same local-reconstruction shape as scrob_progress_list() in episodes.py (and
+		# floppy_tvshow_progress() before it) — a show belongs on this list if it has a
+		# real "next episode" pending per the synced watched-episode set + TMDb season
+		# metadata, aggregated to one row per show rather than one row per next episode.
+		self.list = []
+		try:
+			indicators = scrob.syncTVShows()
+			if not indicators: return self.list
+			last_watched_by_tmdb = {str(r[1]): r[3] for r in scrobsync.get_watched_shows() if r[1]}
+			for (ids, watched_count, ep_ranges) in indicators:
+				try:
+					imdb, tmdb, tvdb = ids.get('imdb', ''), ids.get('tmdb', ''), ids.get('tvdb', '')
+					if not tmdb: continue
+					progress = scrob.getShowProgress(tmdb)
+					if progress and len(progress) > 1:
+						counts = progress[1] or {}
+						total = sum(v.get('total', 0) for v in counts.values())
+						watched = sum(v.get('watched', 0) for v in counts.values())
+						if total and watched >= total: continue  # fully watched, not "in progress"
+					values = {}
+					values['next'] = ''
+					values['progress'] = ''
+					values['imdb'] = imdb
+					values['tmdb'] = tmdb
+					values['tvdb'] = tvdb
+					values['lastplayed'] = last_watched_by_tmdb.get(str(tmdb), '')
+					values['mediatype'] = 'tvshows'
+					values['has_next_episode'] = True
+					self.list.append(values)
+				except: log_utils.error()
+			self.worker()
+			if self.list is None: self.list = []
+		except:
+			log_utils.error()
+		return self.list
+
+	def scrob_user_lists(self, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			lists = scrobsync.fetch_user_lists('series')
+			for lst in lists:
+				try:
+					list_id = lst.get('id')
+					if list_id is None: continue
+					name = lst.get('name', '')
+					count = lst.get('item_count', 0)
+					values = {
+						'name': '%s (%s)' % (name, count),
+						'action': 'scrob_list_shows&list_id=%s' % list_id,
+						'image': 'scrob.png', 'icon': 'scrob.png', 'url': '',
+					}
+					self.list.append(values)
+				except: log_utils.error()
+			if create_directory: self.addDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			log_utils.error()
+
+	def scrob_list_shows(self, list_id, url=None, create_directory=True, folderName=''):
+		# Local-cache read + client-side pagination, same shape as floppyList() — Scrob's
+		# GET /lists/{id} has no server-side paging, so this slices scrobsync's locally
+		# cached copy of the list rather than re-fetching the whole thing from the API.
+		self.list = []
+		try:
+			url = url or ('scroblistshows?list_id=%s&limit=%s&page=1' % (list_id, self.page_limit))
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q.get('page', 1)) - 1
+			except:
+				index = 0
+			items = scrobsync.fetch_list_items(list_id, 'series')
+			for i in items:
+				try:
+					values = {}
+					values['tmdb'] = i.get('tmdb', '')
+					values['imdb'] = ''
+					values['tvdb'] = ''
+					values['tvshowtitle'] = i.get('title', '')
+					values['title'] = values['tvshowtitle']
+					values['year'] = i.get('year', '')
+					values['mediatype'] = 'tvshows'
+					self.list.append(values)
+				except: log_utils.error()
+			useNext = True
+			if create_directory:
+				self.sort()
+				if getSetting('scrob.paginate.lists') == 'true' and self.list:
+					if len(self.list) <= int(self.page_limit):
+						useNext = False
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					self.list = paginated_ids[index]
+				else:
+					useNext = False
+			try:
+				if useNext == False: raise Exception()
+				next_page = index + 2
+				next = 'plugin://plugin.video.umbrella/?action=scrob_list_shows&list_id=%s&url=%s&folderName=%s' % (
+					list_id, quote_plus('scroblistshows?list_id=%s&limit=%s&page=%s' % (list_id, self.page_limit, next_page)), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			if self.list is None: self.list = []
+			self.worker()
+			if create_directory: self.tvshowDirectory(self.list, next=bool(next), folderName=folderName)
+			return self.list
+		except:
+			log_utils.error()
 
 	def simkl_list(self, url, folderName):
 		self.list = []
@@ -2299,6 +3125,113 @@ class TVshows:
 
 			log_utils.error()
 		return self.list
+
+	def mdblist_tvshow_watched(self, url, folderName=''):
+		# Paginated the same way custom_tvshow_watched() is: watch history is already a
+		# fully-local list (no live remote pagination possible), but without slicing before
+		# worker() runs, a large history means running a metacache/TMDb lookup for every
+		# single watched item on every load.
+		self.list = []
+		try:
+			url = url or 'mdblistshowswatched'
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q['page']) - 1
+			except:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = 0
+			shows = mdblist.watchedShows()
+			if not shows: return self.list
+			for show in shows:
+				try:
+					ids = show.get('ids', {})
+					values = {}
+					values['imdb'] = str(ids.get('imdb', '')) if ids.get('imdb') else ''
+					values['tmdb'] = str(ids.get('tmdb', '')) if ids.get('tmdb') else ''
+					values['tvdb'] = str(ids.get('tvdb', '')) if ids.get('tvdb') else ''
+					values['lastplayed'] = show.get('last_watched_at', '') or ''
+					values['mediatype'] = 'tvshows'
+					self.list.append(values)
+				except: log_utils.error()
+			useNext = True
+			self.sort(type='watched')
+			if getSetting('mdblist.paginate.lists') == 'true' and self.list:
+				if len(self.list) <= int(self.page_limit):
+					useNext = False
+				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+				self.list = paginated_ids[index]
+			try:
+				if useNext == False: raise Exception()
+				if len(self.list) < int(self.page_limit): raise Exception()
+				q.update({'page': str(index + 2), 'limit': str(self.page_limit)})
+				q = (urlencode(q)).replace('%2C', ',')
+				continuation = url.replace('?' + urlparse(url).query, '') + '?' + q
+				next = 'plugin://plugin.video.umbrella/?action=mdblist_shows_watched&url=%s&folderName=%s' % (quote_plus(continuation), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if self.list is None: self.list = []
+			self.tvshowDirectory(self.list, isProgress=False, isWatched=True, folderName=folderName)
+			return self.list
+		except:
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications and self.is_widget != True: control.notification(title=32326, message=33049)
+
+	def custom_tvshow_watched(self, url, folderName=''):
+		# Paginated the same way customWatchlist()/customCollection() are: watch history
+		# is already a fully-local list (no live remote pagination possible), but without
+		# slicing before worker() runs, a large history means running a metacache/TMDb
+		# lookup for every single watched item on every load — the actual cause of "loads
+		# several thousand items" being slow, not just the missing Next-page link.
+		self.list = []
+		try:
+			url = url or 'customshowswatched'
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q['page']) - 1
+			except:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = 0
+			shows = customtrakt.watchedShows()
+			if not shows: return self.list
+			for show in shows:
+				try:
+					ids = show.get('ids', {})
+					values = {}
+					values['imdb'] = str(ids.get('imdb', '')) if ids.get('imdb') else ''
+					values['tmdb'] = str(ids.get('tmdb', '')) if ids.get('tmdb') else ''
+					values['tvdb'] = str(ids.get('tvdb', '')) if ids.get('tvdb') else ''
+					values['lastplayed'] = show.get('last_watched_at', '') or ''
+					values['mediatype'] = 'tvshows'
+					self.list.append(values)
+				except: log_utils.error()
+			useNext = True
+			self.sort(type='watched')
+			if getSetting('custom.paginate.lists') == 'true' and self.list:
+				if len(self.list) <= int(self.page_limit):
+					useNext = False
+				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+				self.list = paginated_ids[index]
+			try:
+				if useNext == False: raise Exception()
+				if len(self.list) < int(self.page_limit): raise Exception()
+				q.update({'page': str(index + 2), 'limit': str(self.page_limit)})
+				q = (urlencode(q)).replace('%2C', ',')
+				continuation = url.replace('?' + urlparse(url).query, '') + '?' + q
+				next = 'plugin://plugin.video.umbrella/?action=custom_shows_watched&url=%s&folderName=%s' % (quote_plus(continuation), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if self.list is None: self.list = []
+			self.tvshowDirectory(self.list, isProgress=False, isWatched=True, folderName=folderName)
+			return self.list
+		except:
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications and self.is_widget != True: control.notification(title=32326, message=33049)
 
 	def worker(self):
 		try:
@@ -2427,6 +3360,9 @@ class TVshows:
 		traktManagerMenu, queueMenu = '[COLOR %s]Trakt Manager[/COLOR]' % self.highlight_color, getLS(32065)
 		simklManagerMenu = getLS(40577) % self.highlight_color
 		mdblistManagerMenu = '[COLOR %s]MDBList Manager[/COLOR]' % self.highlight_color
+		customManagerMenu = '[COLOR %s]%s Manager[/COLOR]' % (self.highlight_color, customtrakt.getCustomServiceName())
+		floppyManagerMenu = '[COLOR %s]Floppy Manager[/COLOR]' % self.highlight_color
+		scrobManagerMenu = '[COLOR %s]Scrob Manager[/COLOR]' % self.highlight_color
 		showPlaylistMenu, clearPlaylistMenu = getLS(35517), getLS(35516)
 		playRandom, addToLibrary, addToFavourites, removeFromFavourites = getLS(32535), getLS(32551), getLS(40463), getLS(40468)
 		nextMenu, findSimilarMenu, trailerMenu = getLS(32053), getLS(32184), getLS(40431)
@@ -2461,7 +3397,7 @@ class TVshows:
 							else: continue
 					except: pass
 				
-				try: indicators = getSeasonIndicators(imdb, tvdb, has_next_episode=i.get('has_next_episode', False), tmdb_total_aired=i.get('total_aired_episodes'))
+				try: indicators = getSeasonIndicators(imdb, tvdb, has_next_episode=i.get('has_next_episode', False), tmdb_total_aired=i.get('total_aired_episodes'), force_lookup=(isCollection and self.collection_hideWatched))
 				except: indicators = None
 				meta = dict((k, v) for k, v in iter(i.items()) if v is not None and v != '')
 				meta.update({'code': imdb, 'imdbnumber': imdb, 'mediatype': 'tvshow', 'tag': [imdb, tmdb]}) # "tag" and "tagline" for movies only, but works in my skin mod so leave
@@ -2530,13 +3466,33 @@ class TVshows:
 				cm.append(('Play Trailer (Select)', 'RunPlugin(%s?action=play_Trailer_Select&type=%s&name=%s&year=%s&windowedtrailer=0)' % (sysaddon, 'show', systitle, year)))
 				try:
 					watched = (getTVShowOverlay(indicators[1], imdb, tvdb) == '5') if indicators else False
-					if watched and meta.get('has_next_episode'): watched = False
+					if watched and meta.get('has_next_episode'):
+						# A still-airing show isn't necessarily "unwatched" just because
+						# has_next_episode is true — it may mean nothing beyond "TMDb
+						# says the series is still in production," not that a specific
+						# next episode is actually out yet. Re-check with a forced-fresh
+						# indicator sync (mirrors the self-healing logic the dedicated
+						# Trakt "Show Progress" list already has) before suppressing the
+						# checkmark for real. getSeasonIndicators() already dispatches to
+						# whichever provider is the active indicators source internally.
+						watched = False
+						try:
+							re_indicators = getSeasonIndicators(imdb, tvdb, has_next_episode=True, tmdb_total_aired=meta.get('total_aired_episodes'))
+							re_count = getShowCount(re_indicators[1], imdb, tvdb) if re_indicators else None
+							if re_count and int(re_count.get('unwatched', 0)) == 0: watched = True
+						except: pass
 					if self.traktCredentials:
 						cm.append((traktManagerMenu, 'RunPlugin(%s?action=tools_traktManager&name=%s&imdb=%s&tvdb=%s&watched=%s&tvshow=tvshow)' % (sysaddon, systitle, imdb, tvdb, watched)))
 					if self.simklCredentials:
 						cm.append((simklManagerMenu, 'RunPlugin(%s?action=tools_simklManager&name=%s&imdb=%s&tvdb=%s&watched=%s&tvshow=tvshow)' % (sysaddon, systitle, imdb, tvdb, watched)))
 					if self.mdblist_authed:
 						cm.append((mdblistManagerMenu, 'RunPlugin(%s?action=tools_mdbWatchlist&name=%s&imdb=%s&tvdb=%s&tmdb=%s&watched=%s)' % (sysaddon, systitle, imdb, tvdb, tmdb, watched)))
+					if self.customCredentials:
+						cm.append((customManagerMenu, 'RunPlugin(%s?action=tools_customManager&name=%s&imdb=%s&tvdb=%s&watched=%s&tvshow=tvshow)' % (sysaddon, systitle, imdb, tvdb, watched)))
+					if self.floppyCredentials:
+						cm.append((floppyManagerMenu, 'RunPlugin(%s?action=tools_floppyManager&name=%s&imdb=%s&tvdb=%s&watched=%s&tvshow=tvshow)' % (sysaddon, systitle, imdb, tvdb, watched)))
+					if self.scrobCredentials:
+						cm.append((scrobManagerMenu, 'RunPlugin(%s?action=tools_scrobManager&name=%s&imdb=%s&tvdb=%s&watched=%s&tvshow=tvshow)' % (sysaddon, systitle, imdb, tvdb, watched)))
 					if watched:
 						meta.update({'playcount': 1, 'overlay': 5})
 						cm.append((unwatchedMenu, 'RunPlugin(%s?action=playcount_TVShow&name=%s&imdb=%s&tvdb=%s&query=4)' % (sysaddon, systitle, imdb, tvdb)))
@@ -2678,10 +3634,13 @@ class TVshows:
 				if 'imdb.com' in url and 'start' in url_params:
 					page = '  [I](%s)[/I]' % str(int(((int(url_params.get('start')) - 1) / int(self.page_limit)) + 1))
 				else: page = '  [I](%s)[/I]' % url_params.get('page')
+				if 'None' in page: page = page.split('  [I]')[0]
 				nextColor = '[COLOR %s]' % getSetting('highlight.color')
 				nextMenu = nextColor + nextMenu + page + '[/COLOR]'
 				u = urlparse(url).netloc.lower()
-				if u in self.imdb_link or u in self.trakt_link or u in self.simkl_link:
+				if url.startswith(sysaddon):
+					pass  # already a plugin action URL, use as-is
+				elif u in self.imdb_link or u in self.trakt_link or u in self.simkl_link:
 					url = '%s?action=tvshowPage&url=%s&folderName=%s' % (sysaddon, quote_plus(url), quote_plus(folderName))
 				elif u in self.tmdb_link:
 					url = '%s?action=tmdbTvshowPage&url=%s&folderName=%s' % (sysaddon, quote_plus(url), quote_plus(folderName))

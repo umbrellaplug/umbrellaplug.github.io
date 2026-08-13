@@ -78,6 +78,10 @@ def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0):
 		if response and status_code in ('200', '201'):
 			if extended: return response, response.headers
 			else: return response
+		elif status_code == '409': # Item already scrobbled/exists - not a real failure
+			log_utils.log('TRAKT: 409 Conflict (item already scrobbled/exists): %s' % url, level=log_utils.LOGINFO)
+			if extended: return response, response.headers
+			else: return response
 		elif status_code == '401': # Re-Auth token
 			if response.headers.get('x-private-user') == 'true':
 				#log_utils.log('URL:%s Has a Private User Header:Ignoring' % url, level=log_utils.LOGWARNING)
@@ -96,8 +100,12 @@ def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0):
 					control.notification(title=32315, message='Trakt Throttling Applied, Sleeping for %s seconds' % throttleTime) # message lang code 33674
 				control.sleep((int(throttleTime) + 1) * 1000)
 				return getTrakt(url, extended=extended, silent=silent, reauth_attempts=reauth_attempts)
-		else: return None
-	except:
+		else:
+			response_text = response.text[:300] if hasattr(response, 'text') else str(response)[:300]
+			log_utils.log_force('TRAKT: request failed url=%s status=%s response=%s' % (url, status_code, response_text), level=log_utils.LOGWARNING)
+			return None
+	except Exception as e:
+		log_utils.log_force('TRAKT: getTrakt exception url=%s error=%s' % (url, e), level=log_utils.LOGWARNING)
 		try: log_utils.error('getTrakt Error: ')
 		except: pass
 	return None
@@ -416,6 +424,7 @@ def traktRevoke(fromSettings=0):
 				control.setSetting('indicators', 'Local')
 			if getSetting('scrobble.source') == '1':
 				control.setSetting('scrobble.source', '0')
+				control.setSetting('scrobble', 'Local')
 			control.setSetting('trakt.markwatched', 'false')
 			global _reauth_failed
 			_reauth_failed = False
@@ -1501,7 +1510,7 @@ def update_syncMovies(imdb, remove_id=False):
 		traktsync.cache_insert(key, repr(indicators))
 	except: log_utils.error()
 
-def service_syncSeasons(): # season indicators and counts for watched shows ex. [['1', '2', '3'], {1: {'total': 8, 'watched': 8, 'unwatched': 0}, 2: {'total': 10, 'watched': 10, 'unwatched': 0}}]
+def service_syncSeasons(progress_callback=None): # season indicators and counts for watched shows ex. [['1', '2', '3'], {1: {'total': 8, 'watched': 8, 'unwatched': 0}, 2: {'total': 10, 'watched': 10, 'unwatched': 0}}]
 	def _compute_one(show_tuple):
 		try:
 			from resources.lib.indexers.tmdb import TVshows as _TMDbTVshows
@@ -1527,14 +1536,18 @@ def service_syncSeasons(): # season indicators and counts for watched shows ex. 
 		watched_data = traktsync.cache_existing(syncTVShows) # use cached data from service cachesyncTVShows() just written fresh
 		if not watched_data: return
 		threads = [Thread(target=_compute_one, args=(show_tuple,)) for show_tuple in watched_data]
+		total = len(threads)
 		_unlimited = getSetting('dev.batch.unlimited') == 'true'
 		_bs = max(int(getSetting('dev.batch.size') or '10'), 1)
-		_chunk = max(len(threads), 1) if _unlimited else _bs
-		for i in range(0, len(threads), _chunk):
+		_chunk = max(total, 1) if _unlimited else _bs
+		for i in range(0, total, _chunk):
 			if control.monitor.abortRequested(): break
 			batch = threads[i:i + _chunk]
 			[t.start() for t in batch]
 			[t.join() for t in batch]
+			if progress_callback:
+				try: progress_callback('Syncing season data', min(i + _chunk, total), total)
+				except: pass
 		traktsync.insert_syncSeasons_at()
 	except: log_utils.error()
 
@@ -1802,28 +1815,45 @@ def scrobbleMovie(imdb, tmdb, watched_percent):
 	log_utils.log('Trakt Scrobble Movie Called. Received: imdb: %s tmdb: %s watched_percent: %s' % (imdb, tmdb, watched_percent), level=log_utils.LOGDEBUG)
 	try:
 		if not imdb.startswith('tt'): imdb = 'tt' + imdb
-		success = getTrakt('/scrobble/pause', {"movie": {"ids": {"imdb": imdb}}, "progress": watched_percent})
+		post = {"movie": {"ids": {"imdb": imdb}}, "progress": watched_percent}
+		success = getTrakt('/scrobble/pause', post)
+		if not success:
+			# Single bounded retry — an unexpected non-timeout failure (e.g. a stray 405,
+			# likely a transient network/proxy blip) shouldn't permanently strand the
+			# remote "currently watching" progress at whatever the last successful call
+			# reported. Repeating this call with the same percent is safe/idempotent.
+			control.sleep(2000)
+			success = getTrakt('/scrobble/pause', post)
 		if success:
 			log_utils.log('Trakt Scrobble Movie Success: imdb: %s s' % (imdb), level=log_utils.LOGDEBUG)
 			if getSetting('scrobble.notify') == 'true': control.notification(message=32088)
 			control.sleep(1000)
 			sync_playbackProgress(forced=True)
 			control.trigger_widget_refresh()
-		else: control.notification(message=32130)
+		else:
+			log_utils.log_force('Trakt Scrobble Failed: imdb=%s tmdb=%s percent=%s' % (imdb, tmdb, watched_percent), level=log_utils.LOGWARNING)
+			if getSetting('scrobble.notify') == 'true': control.notification(message=32130)
 	except: log_utils.error()
 
 def scrobbleEpisode(imdb, tmdb, tvdb, season, episode, watched_percent):
 	#log_utils.log('Trakt Scrobble Episode Called. Received: imdb: %s tmdb: %s season: %s episode: %s watched_percent: %s' % (imdb, tmdb, season, episode, watched_percent), level=log_utils.LOGDEBUG)
 	try:
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
-		success = getTrakt('/scrobble/pause', {"show": {"ids": {"tvdb": tvdb}}, "episode": {"season": season, "number": episode}, "progress": watched_percent})
+		post = {"show": {"ids": {"tvdb": tvdb}}, "episode": {"season": season, "number": episode}, "progress": watched_percent}
+		success = getTrakt('/scrobble/pause', post)
+		if not success:
+			# Single bounded retry — see scrobbleMovie() for rationale.
+			control.sleep(2000)
+			success = getTrakt('/scrobble/pause', post)
 		if success:
 			log_utils.log('Trakt Scrobble Episode Success: imdb: %s s' % (imdb), level=log_utils.LOGDEBUG)
 			if getSetting('scrobble.notify') == 'true': control.notification(message=32088)
 			control.sleep(1000)
 			sync_playbackProgress(forced=True)
 			control.trigger_widget_refresh()
-		else: control.notification(message=32130)
+		else:
+			log_utils.log_force('Trakt Scrobble Failed: imdb=%s tvdb=%s season=%s episode=%s percent=%s' % (imdb, tvdb, season, episode, watched_percent), level=log_utils.LOGWARNING)
+			if getSetting('scrobble.notify') == 'true': control.notification(message=32130)
 	except: log_utils.error()
 
 def scrobbleStart(media_type, title='', tvshowtitle='', year='0', imdb='', tmdb='', tvdb='', season='', episode='', watched_percent=0):
@@ -1838,7 +1868,11 @@ def scrobbleStart(media_type, title='', tvshowtitle='', year='0', imdb='', tmdb=
 			        'episode': {'season': int(season) if season else 1,
 			                    'number': int(episode) if episode else 1},
 			        'progress': float(watched_percent)}
-		getTrakt('/scrobble/start', post)
+		success = getTrakt('/scrobble/start', post)
+		if not success:
+			# Single bounded retry — see scrobbleMovie() for rationale.
+			control.sleep(2000)
+			getTrakt('/scrobble/start', post)
 	except: log_utils.error()
 
 def scrobbleReset(imdb, tmdb=None, tvdb=None, season=None, episode=None, refresh=True, widgetRefresh=False, clear_local=True):
@@ -1973,24 +2007,41 @@ def delete_traktSyncDatabase():
 
 def force_traktSync():
 	if not control.yesnoDialog(getLS(32056), '', ''): return
-	control.busy()
-
-	# Run lightweight syncs in parallel (no internal threading, safe on low-end devices)
-	lightweight = [
-		Thread(target=sync_playbackProgress, kwargs={'forced': True}),
-		Thread(target=sync_hidden_progress, kwargs={'forced': True}),
-		Thread(target=sync_collection, kwargs={'forced': True}),
-		Thread(target=sync_watch_list, kwargs={'forced': True}),
-	]
-	[t.start() for t in lightweight]
-	[t.join() for t in lightweight]
-	# Thread-spawning functions run sequentially to cap concurrency on low-end devices
-	sync_user_lists(forced=True)
-	sync_liked_lists(forced=True)
-	sync_popular_lists()  # use TTL-based check — these are public lists, not user-specific
-	sync_trending_lists() # use TTL-based check — these are public lists, not user-specific
-	sync_watched(forced=True)
-	control.hide()
+	dialog = control.progressDialog
+	dialog.create(control.addonName(), 'Preparing Trakt sync...')
+	def _progress(phase, done=None, total=None):
+		try:
+			if done is not None and total:
+				dialog.update(min(int(100.0 * done / total), 100), '%s... (%s/%s)' % (phase, done, total))
+			elif done is not None:
+				dialog.update(0, '%s... (%s synced)' % (phase, done))
+			else:
+				dialog.update(0, '%s...' % phase)
+		except: pass
+	try:
+		# Run lightweight syncs in parallel (no internal threading, safe on low-end devices)
+		# — they run concurrently so only a single combined phase label is shown for this batch.
+		dialog.update(0, 'Syncing collection/watchlist/playback/hidden...')
+		lightweight = [
+			Thread(target=sync_playbackProgress, kwargs={'forced': True}),
+			Thread(target=sync_hidden_progress, kwargs={'forced': True}),
+			Thread(target=sync_collection, kwargs={'forced': True}),
+			Thread(target=sync_watch_list, kwargs={'forced': True}),
+		]
+		[t.start() for t in lightweight]
+		[t.join() for t in lightweight]
+		# Thread-spawning functions run sequentially to cap concurrency on low-end devices
+		dialog.update(20, 'Syncing user lists...')
+		sync_user_lists(forced=True)
+		dialog.update(35, 'Syncing liked lists...')
+		sync_liked_lists(forced=True)
+		dialog.update(50, 'Syncing popular lists...')
+		sync_popular_lists()  # use TTL-based check — these are public lists, not user-specific
+		dialog.update(60, 'Syncing trending lists...')
+		sync_trending_lists() # use TTL-based check — these are public lists, not user-specific
+		sync_watched(forced=True, progress_callback=_progress)
+	finally:
+		dialog.close()
 	control.trigger_widget_refresh() # refresh after watched sync, progress will refresh again when done
 	control.notification(message='Trakt Sync Complete - Progress List Updating...')
 	Thread(target=sync_watchedProgress, kwargs={'forced': True, 'trigger_refresh': True}).start()
@@ -2029,17 +2080,23 @@ def sync_watchedProgress(activities=None, forced=False, trigger_refresh=True):
 			if trigger_refresh: control.trigger_widget_refresh()
 	except: log_utils.error()
 
-def sync_watched(activities=None, forced=False): # writes to traktsync.db as of 1-19-2022
+def sync_watched(activities=None, forced=False, progress_callback=None): # writes to traktsync.db as of 1-19-2022
 	try:
 		FULL_SYNC_INTERVAL = 86400 # force a full resync every 24h to catch removes/resets
 		if forced:
+			if progress_callback:
+				try: progress_callback('Syncing watched movies', None, None)
+				except: pass
 			cachesyncMovies()
+			if progress_callback:
+				try: progress_callback('Syncing watched shows', None, None)
+				except: pass
 			cachesyncTVShows()
 			traktsync.insert_syncSeasons_at()
 			log_utils.log('Forced - Trakt Watched Sync Complete (movies + shows)', __name__, log_utils.LOGINFO)
 			control.sleep(5000) # avoid memory pressure on embedded hardware after heavy initial sync
 			if not control.monitor.abortRequested():
-				service_syncSeasons()
+				service_syncSeasons(progress_callback=progress_callback)
 		else:
 			moviesWatchedActivity = getMoviesWatchedActivity(activities)
 			db_movies_last_watched = timeoutsyncMovies()

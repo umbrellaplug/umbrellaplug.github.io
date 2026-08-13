@@ -380,6 +380,7 @@ class AllDebrid:
 					# try unlock to get accurate filename (sometimes container name differs)
 					try:
 						link_info = cache.get(self.unrestrict_link, 168, f.get('l', ''), True)
+						if not link_info: continue
 						name2 = string_tools.strip_non_ascii_and_unprintable(link_info.get('filename', name))
 						if name2.lower().endswith(invalid_extensions) or not name2.lower().endswith(tuple(extensions)):
 							continue
@@ -474,6 +475,7 @@ class AllDebrid:
 						continue
 					try:
 						link_info = cache.get(self.unrestrict_link, 168, link, True)  # returnAll=True path
+						if not link_info: continue
 						resolved_name = link_info.get('filename', name)
 						if seas_ep_filter(season, episode, resolved_name):
 							norm = {'filename': resolved_name, 'link': link, 'size': item.get('s', 0)}
@@ -539,6 +541,7 @@ class AllDebrid:
 					# try unlock to get final filename/size
 					try:
 						link_info = cache.get(self.unrestrict_link, 168, link, True)
+						if not link_info: continue
 						lname = link_info.get('filename', name)
 						lsize = int(link_info.get('filesize') or size_b)
 						if any(lname.lower().endswith(x) for x in extensions):

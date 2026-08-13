@@ -71,6 +71,10 @@ def log(msg, caller=None, level=LOGINFO):
 		import xbmc
 		xbmc.log('[ plugin.video.umbrella ] log_utils.log() Logging Failure: %s' % (e), LOGERROR)
 
+def log_force(msg, level=LOGWARNING):
+	import xbmc
+	xbmc.log('%s: %s' % (DEBUGPREFIX % debug_list[level], msg), level)
+
 def error(message=None, exception=True):
 	try:
 		import sys

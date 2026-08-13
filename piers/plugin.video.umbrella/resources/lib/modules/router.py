@@ -87,12 +87,42 @@ def router(argv2):
 	elif action == 'mymovieliteNavigator':
 		from resources.lib.menus import navigator
 		navigator.Navigator().mymovies(lite=True, folderName=folderName)
+	elif action == 'mymovies_mdblistNavigator':
+		from resources.lib.menus import navigator
+		navigator.Navigator().mymovies_mdblist(folderName=folderName)
+	elif action == 'mymovies_customNavigator':
+		from resources.lib.menus import navigator
+		navigator.Navigator().mymovies_custom(folderName=folderName)
+	elif action == 'mymovies_tmdbNavigator':
+		from resources.lib.menus import navigator
+		navigator.Navigator().mymovies_tmdb(folderName=folderName)
+	elif action == 'mymovies_simklNavigator':
+		from resources.lib.menus import navigator
+		navigator.Navigator().mymovies_simkl(folderName=folderName)
+	elif action == 'mymovies_traktNavigator':
+		from resources.lib.menus import navigator
+		navigator.Navigator().mymovies_trakt(folderName=folderName)
+	elif action == 'mymovies_floppyNavigator':
+		from resources.lib.menus import navigator
+		navigator.Navigator().mymovies_floppy(folderName=folderName)
+	elif action == 'mymovies_scrobNavigator':
+		from resources.lib.menus import navigator
+		navigator.Navigator().mymovies_scrob(folderName=folderName)
+	elif action == 'mymovies_localNavigator':
+		from resources.lib.menus import navigator
+		navigator.Navigator().mymovies_local(folderName=folderName)
 	elif action == 'movies':
 		from resources.lib.menus import movies
 		movies.Movies().get(url, folderName=folderName)
 	elif action == 'simklMovies':
 		from resources.lib.menus import movies
 		movies.Movies().getSimkl(url, folderName=folderName)
+	elif action == 'movies_simklPlantowatchManager':
+		from resources.lib.menus import movies
+		movies.Movies().simklPlantowatchManager()
+	elif action == 'movies_simklDroppedManager':
+		from resources.lib.menus import movies
+		movies.Movies().simklDroppedManager()
 	elif action == 'mixed' and 'movies' in url:
 		from resources.lib.menus import movies
 		movies.Movies().get(url, folderName=folderName)
@@ -180,6 +210,18 @@ def router(argv2):
 	elif action == 'mdblistMoviesUnfinished':
 		from resources.lib.menus import movies
 		movies.Movies().mdblist_unfinished(url, folderName=folderName)
+	elif action == 'movies_mdblistUnfinishedManager':
+		from resources.lib.menus import movies
+		movies.Movies().mdblistUnfinishedManager()
+	elif action == 'mdblist_movies_watched':
+		from resources.lib.menus import movies
+		movies.Movies().mdblist_watched(url, folderName=folderName)
+	elif action == 'custom_movies_unfinished':
+		from resources.lib.menus import movies
+		movies.Movies().custom_unfinished(url, folderName=folderName)
+	elif action == 'custom_movies_watched':
+		from resources.lib.menus import movies
+		movies.Movies().customWatched(url, folderName=folderName)
 	elif action == 'movieUserlists':
 		from resources.lib.menus import movies
 		movies.Movies().userlists(folderName=folderName, create_directory=True)
@@ -198,6 +240,24 @@ def router(argv2):
 	elif action == 'mdblistRevoke':
 		from resources.lib.modules import mdblist
 		mdblist.mdblistRevoke(fromSettings=1)
+	elif action == 'customAuth':
+		from resources.lib.modules import customtrakt
+		customtrakt.customAuth(fromSettings=1)
+	elif action == 'customRevoke':
+		from resources.lib.modules import customtrakt
+		customtrakt.customRevoke(fromSettings=1)
+	elif action == 'floppyAuth':
+		from resources.lib.modules import floppy
+		floppy.floppyAuth(fromSettings=1)
+	elif action == 'floppyRevoke':
+		from resources.lib.modules import floppy
+		floppy.floppyRevoke(fromSettings=1)
+	elif action == 'scrobAuth':
+		from resources.lib.modules import scrob
+		scrob.scrobAuth(fromSettings=1)
+	elif action == 'scrobRevoke':
+		from resources.lib.modules import scrob
+		scrob.scrobRevoke(fromSettings=1)
 	elif action == 'traktAccountInfo':
 		from resources.lib.modules import trakt as Trakt
 		Trakt.getTraktAccountInfo()
@@ -252,6 +312,84 @@ def router(argv2):
 	elif action == 'mdbUserCollectionMovies':
 		from resources.lib.menus import movies
 		movies.Movies().get_mdbuser_collection(url, folderName=folderName)
+	elif action == 'custom_movies_watchlist':
+		from resources.lib.menus import movies
+		movies.Movies().customWatchlist(url, folderName=folderName)
+	elif action == 'custom_movies_collection':
+		from resources.lib.menus import movies
+		movies.Movies().customCollection(url, folderName=folderName)
+	elif action == 'custom_movies_dropped':
+		from resources.lib.menus import movies
+		movies.Movies().customDropped(url, folderName=folderName)
+	elif action == 'custom_movies_userlists':
+		from resources.lib.menus import movies
+		movies.Movies().customUserlists(folderName=folderName, create_directory=True)
+	elif action == 'movies_customWatchlistManager':
+		from resources.lib.menus import movies
+		movies.Movies().customWatchlistManager()
+	elif action == 'movies_customCollectionManager':
+		from resources.lib.menus import movies
+		movies.Movies().customCollectionManager()
+	elif action == 'movies_customDroppedManager':
+		from resources.lib.menus import movies
+		movies.Movies().customDroppedManager()
+	elif action == 'movies_customUnfinishedManager':
+		from resources.lib.menus import movies
+		movies.Movies().customUnfinishedManager()
+	elif action == 'custom_list_movies':
+		from resources.lib.menus import movies
+		movies.Movies().customListMovies(params.get('list_id'), url=url, folderName=folderName)
+	elif action == 'floppy_movies_watching':
+		from resources.lib.menus import movies
+		movies.Movies().floppyList(url, 'movies_watching', 'floppy_movies_watching', folderName=folderName)
+	elif action == 'floppy_movies_watchlist':
+		from resources.lib.menus import movies
+		movies.Movies().floppyList(url, 'movies_plantowatch', 'floppy_movies_watchlist', folderName=folderName)
+	elif action == 'floppy_movies_onhold':
+		from resources.lib.menus import movies
+		movies.Movies().floppyList(url, 'movies_hold', 'floppy_movies_onhold', folderName=folderName)
+	elif action == 'floppy_movies_completed':
+		from resources.lib.menus import movies
+		movies.Movies().floppyList(url, 'movies_completed', 'floppy_movies_completed', folderName=folderName)
+	elif action == 'floppy_movies_dropped':
+		from resources.lib.menus import movies
+		movies.Movies().floppyList(url, 'movies_dropped', 'floppy_movies_dropped', folderName=folderName)
+	elif action == 'floppy_movies_collection':
+		from resources.lib.menus import movies
+		movies.Movies().floppyList(url, 'movies_collection', 'floppy_movies_collection', isCollection=True, folderName=folderName)
+	elif action == 'movies_floppyWatchlistManager':
+		from resources.lib.menus import movies
+		movies.Movies().floppyWatchlistManager()
+	elif action == 'movies_floppyCollectionManager':
+		from resources.lib.menus import movies
+		movies.Movies().floppyCollectionManager()
+	elif action == 'movies_floppyDroppedManager':
+		from resources.lib.menus import movies
+		movies.Movies().floppyDroppedManager()
+	elif action == 'movies_floppyUnfinishedManager':
+		from resources.lib.menus import movies
+		movies.Movies().floppyUnfinishedManager()
+	elif action == 'scrob_movies_watched':
+		from resources.lib.menus import movies
+		movies.Movies().scrob_movies_watched(url, folderName=folderName)
+	elif action == 'floppy_movies_unfinished':
+		from resources.lib.menus import movies
+		movies.Movies().floppy_unfinished(url, folderName=folderName)
+	elif action == 'scrob_movies_unfinished':
+		from resources.lib.menus import movies
+		movies.Movies().scrob_unfinished(url, folderName=folderName)
+	elif action == 'simkl_movies_unfinished':
+		from resources.lib.menus import movies
+		movies.Movies().simkl_unfinished(url, folderName=folderName)
+	elif action == 'movies_scrobUnfinishedManager':
+		from resources.lib.menus import movies
+		movies.Movies().scrobUnfinishedManager()
+	elif action == 'scrob_movies_userlists':
+		from resources.lib.menus import movies
+		movies.Movies().scrob_user_lists(folderName=folderName)
+	elif action == 'scrob_list_movies':
+		from resources.lib.menus import movies
+		movies.Movies().scrob_list_movies(params.get('list_id'), url=url, folderName=folderName)
 	elif action == 'mdbOfficialListMovies':
 		from resources.lib.menus import movies
 		movies.Movies().getMDBOfficialLists(folderName=folderName)
@@ -264,6 +402,66 @@ def router(argv2):
 	elif action == 'mdbUserCollectionTVShows':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().get_mdbuser_collection(url, folderName=folderName)
+	elif action == 'custom_shows_watchlist':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().customWatchlist(url, folderName=folderName)
+	elif action == 'custom_shows_collection':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().customCollection(url, folderName=folderName)
+	elif action == 'custom_shows_dropped':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().customDropped(url, folderName=folderName)
+	elif action == 'custom_shows_userlists':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().customUserlists(folderName=folderName, create_directory=True)
+	elif action == 'shows_customWatchlistManager':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().customWatchlistManager()
+	elif action == 'shows_customCollectionManager':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().customCollectionManager()
+	elif action == 'shows_customDroppedManager':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().customDroppedManager()
+	elif action == 'episodes_customUnfinishedManager':
+		from resources.lib.menus import episodes
+		episodes.Episodes().customUnfinishedManager()
+	elif action == 'custom_list_shows':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().customListShows(params.get('list_id'), url=url, folderName=folderName)
+	elif action == 'floppy_shows_watching':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().floppyList(url, 'shows_watching', 'floppy_shows_watching', folderName=folderName)
+	elif action == 'floppy_shows_progress':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().floppy_progress(url, folderName=folderName)
+	elif action == 'floppy_shows_watchlist':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().floppyList(url, 'shows_plantowatch', 'floppy_shows_watchlist', folderName=folderName)
+	elif action == 'floppy_shows_onhold':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().floppyList(url, 'shows_hold', 'floppy_shows_onhold', folderName=folderName)
+	elif action == 'floppy_shows_completed':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().floppyList(url, 'shows_completed', 'floppy_shows_completed', folderName=folderName)
+	elif action == 'floppy_shows_dropped':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().floppyList(url, 'shows_dropped', 'floppy_shows_dropped', folderName=folderName)
+	elif action == 'floppy_shows_collection':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().floppyList(url, 'shows_collection', 'floppy_shows_collection', isCollection=True, folderName=folderName)
+	elif action == 'shows_floppyWatchlistManager':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().floppyWatchlistManager()
+	elif action == 'shows_floppyCollectionManager':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().floppyCollectionManager()
+	elif action == 'shows_floppyDroppedManager':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().floppyDroppedManager()
+	elif action == 'scrob_shows_progress':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().scrob_progress(url, folderName=folderName)
 	elif action == 'mdbOfficialListTV':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().getMDBOfficialLists(folderName=folderName)
@@ -327,6 +525,30 @@ def router(argv2):
 	elif action == 'mytvliteNavigator':
 		from resources.lib.menus import navigator
 		navigator.Navigator().mytvshows(lite=True, folderName=folderName)
+	elif action == 'mytvshows_mdblistNavigator':
+		from resources.lib.menus import navigator
+		navigator.Navigator().mytvshows_mdblist(folderName=folderName)
+	elif action == 'mytvshows_customNavigator':
+		from resources.lib.menus import navigator
+		navigator.Navigator().mytvshows_custom(folderName=folderName)
+	elif action == 'mytvshows_tmdbNavigator':
+		from resources.lib.menus import navigator
+		navigator.Navigator().mytvshows_tmdb(folderName=folderName)
+	elif action == 'mytvshows_simklNavigator':
+		from resources.lib.menus import navigator
+		navigator.Navigator().mytvshows_simkl(folderName=folderName)
+	elif action == 'mytvshows_traktNavigator':
+		from resources.lib.menus import navigator
+		navigator.Navigator().mytvshows_trakt(folderName=folderName)
+	elif action == 'mytvshows_floppyNavigator':
+		from resources.lib.menus import navigator
+		navigator.Navigator().mytvshows_floppy(folderName=folderName)
+	elif action == 'mytvshows_scrobNavigator':
+		from resources.lib.menus import navigator
+		navigator.Navigator().mytvshows_scrob(folderName=folderName)
+	elif action == 'mytvshows_localNavigator':
+		from resources.lib.menus import navigator
+		navigator.Navigator().mytvshows_local(folderName=folderName)
 	elif action == 'tvshows':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().get(url, folderName=folderName)
@@ -345,6 +567,15 @@ def router(argv2):
 	elif action == 'simklTvshows':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().getSimkl(url, folderName=folderName)
+	elif action == 'shows_simklPlantowatchManager':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().simklPlantowatchManager()
+	elif action == 'shows_simklOnholdManager':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().simklOnholdManager()
+	elif action == 'shows_simklDroppedManager':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().simklDroppedManager()
 	elif action == 'tmdbTvshowPage':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().getTMDb(url, folderName=folderName)
@@ -447,6 +678,15 @@ def router(argv2):
 	elif action == 'mdblist_shows_progress':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().mdblist_progress(url, folderName=folderName)
+	elif action == 'mdblist_shows_watched':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().mdblist_tvshow_watched(url, folderName=folderName)
+	elif action == 'custom_shows_progress':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().custom_progress(url, folderName=folderName)
+	elif action == 'custom_shows_watched':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().custom_tvshow_watched(url, folderName=folderName)
 	elif action == 'local_shows_progress':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().local_progress(url, folderName=folderName)
@@ -528,6 +768,9 @@ def router(argv2):
 	elif action == 'mdblistEpisodesUnfinished':
 		from resources.lib.menus import episodes
 		episodes.Episodes().mdblist_unfinished(url=url, folderName=folderName)
+	elif action == 'customEpisodesUnfinished':
+		from resources.lib.menus import episodes
+		episodes.Episodes().custom_unfinished(url=url, folderName=folderName)
 	elif action == 'episodes_traktUnfinishedManager':
 		from resources.lib.menus import episodes
 		episodes.Episodes().unfinishedManager()
@@ -537,6 +780,63 @@ def router(argv2):
 	elif action == 'mdblist_calendar':
 		from resources.lib.menus import episodes
 		episodes.Episodes().mdblist_calendar(url, folderName=folderName)
+	elif action == 'custom_episodes_progress':
+		from resources.lib.menus import episodes
+		episodes.Episodes().custom_calendar(url, folderName=folderName)
+	elif action == 'custom_upcoming_progress':
+		from resources.lib.menus import episodes
+		episodes.Episodes().custom_upcoming_progress(url, folderName=folderName)
+	elif action == 'custom_calendar_recent':
+		from resources.lib.menus import episodes
+		episodes.Episodes().custom_calendar_recent(url, folderName=folderName)
+	elif action == 'custom_calendar_upcoming':
+		from resources.lib.menus import episodes
+		episodes.Episodes().custom_calendar_upcoming(url, folderName=folderName)
+	elif action == 'custom_calendar_premieres':
+		from resources.lib.menus import episodes
+		episodes.Episodes().custom_calendar_premieres(url, folderName=folderName)
+	elif action == 'mdblist_events_recent':
+		from resources.lib.menus import episodes
+		episodes.Episodes().mdblist_calendar_recent(url, folderName=folderName)
+	elif action == 'mdblist_events_upcoming':
+		from resources.lib.menus import episodes
+		episodes.Episodes().mdblist_calendar_upcoming(url, folderName=folderName)
+	elif action == 'mdblist_events_premieres':
+		from resources.lib.menus import episodes
+		episodes.Episodes().mdblist_calendar_premieres(url, folderName=folderName)
+	elif action == 'floppy_episodes_progress':
+		from resources.lib.menus import episodes
+		episodes.Episodes().floppy_calendar(url, folderName=folderName)
+	elif action == 'floppy_upcoming_progress':
+		from resources.lib.menus import episodes
+		episodes.Episodes().floppy_upcoming_progress(url, folderName=folderName)
+	elif action == 'scrob_episodes_progress':
+		from resources.lib.menus import episodes
+		episodes.Episodes().scrob_calendar(url, folderName=folderName)
+	elif action == 'scrob_upcoming_progress':
+		from resources.lib.menus import episodes
+		episodes.Episodes().scrob_upcoming_progress(url, folderName=folderName)
+	elif action == 'floppy_episodes_unfinished':
+		from resources.lib.menus import episodes
+		episodes.Episodes().floppy_unfinished(url, folderName=folderName)
+	elif action == 'episodes_floppyUnfinishedManager':
+		from resources.lib.menus import episodes
+		episodes.Episodes().floppyUnfinishedManager()
+	elif action == 'episodes_mdblistUnfinishedManager':
+		from resources.lib.menus import episodes
+		episodes.Episodes().mdblistUnfinishedManager()
+	elif action == 'episodes_scrobUnfinishedManager':
+		from resources.lib.menus import episodes
+		episodes.Episodes().scrobUnfinishedManager()
+	elif action == 'scrob_episodes_unfinished':
+		from resources.lib.menus import episodes
+		episodes.Episodes().scrob_unfinished(url, folderName=folderName)
+	elif action == 'scrob_tvshows_userlists':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().scrob_user_lists(folderName=folderName)
+	elif action == 'scrob_list_shows':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().scrob_list_shows(params.get('list_id'), url=url, folderName=folderName)
 	elif action == 'local_calendar':
 		from resources.lib.menus import episodes
 		episodes.Episodes().local_calendar(url, folderName=folderName)
@@ -1032,6 +1332,15 @@ def router(argv2):
 		elif action == 'tools_mdblistToolsNavigator':
 			from resources.lib.menus import navigator
 			navigator.Navigator().mdblistTools(folderName=folderName)
+		elif action == 'tools_customToolsNavigator':
+			from resources.lib.menus import navigator
+			navigator.Navigator().customTools(folderName=folderName)
+		elif action == 'tools_floppyToolsNavigator':
+			from resources.lib.menus import navigator
+			navigator.Navigator().floppyTools(folderName=folderName)
+		elif action == 'tools_scrobToolsNavigator':
+			from resources.lib.menus import navigator
+			navigator.Navigator().scrobTools(folderName=folderName)
 		elif action == 'tools_searchNavigator':
 			from resources.lib.menus import navigator
 			navigator.Navigator().search(folderName=folderName)
@@ -1084,6 +1393,24 @@ def router(argv2):
 			tvshow = (params.get('tvshow') == 'tvshow')
 			from resources.lib.modules import simkl
 			simkl.manager(name, imdb, tvdb, season, episode, watched=watched, unfinished=unfinished,tvshow=tvshow)
+		elif action == 'tools_customManager':
+			watched = (params.get('watched') == 'True') if params.get('watched') else None
+			unfinished = (params.get('unfinished') == 'True') if params.get('unfinished') else False
+			tvshow = (params.get('tvshow') == 'tvshow')
+			from resources.lib.modules import customtrakt
+			customtrakt.manager(name, imdb, tvdb, tmdb=tmdb, season=season, episode=episode, watched=watched, unfinished=unfinished, tvshow=tvshow)
+		elif action == 'tools_floppyManager':
+			watched = (params.get('watched') == 'True') if params.get('watched') else None
+			unfinished = (params.get('unfinished') == 'True') if params.get('unfinished') else False
+			tvshow = (params.get('tvshow') == 'tvshow')
+			from resources.lib.modules import floppy
+			floppy.manager(name, imdb, tvdb, tmdb=tmdb, season=season, episode=episode, watched=watched, unfinished=unfinished, tvshow=tvshow)
+		elif action == 'tools_scrobManager':
+			watched = (params.get('watched') == 'True') if params.get('watched') else None
+			unfinished = (params.get('unfinished') == 'True') if params.get('unfinished') else False
+			tvshow = (params.get('tvshow') == 'tvshow')
+			from resources.lib.modules import scrob
+			scrob.manager(name, imdb, tvdb, tmdb=tmdb, season=season, episode=episode, watched=watched, unfinished=unfinished, tvshow=tvshow)
 		elif action == 'tools_likeList':
 			from resources.lib.modules import trakt
 			trakt.like_list(params.get('list_owner'), params.get('list_name'), params.get('list_id'))
@@ -1102,6 +1429,15 @@ def router(argv2):
 		elif action == 'tools_forceMDBListSync':
 			from resources.lib.modules import mdblist
 			mdblist.force_mdblistSync()
+		elif action == 'tools_forceCustomSync':
+			from resources.lib.modules import customtrakt
+			customtrakt.force_customSync()
+		elif action == 'tools_forceFloppySync':
+			from resources.lib.modules import floppy
+			floppy.force_floppySync()
+		elif action == 'tools_forceScrobSync':
+			from resources.lib.modules import scrob
+			scrob.force_scrobSync()
 		elif action == 'tools_clearLogFile':
 			from resources.lib.modules import log_utils
 			cleared = log_utils.clear_logFile()

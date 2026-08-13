@@ -117,6 +117,7 @@ class SIMKL:
 			control.setSetting('scrobble.source', '2')
 			control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 			control.setSetting('indicators', 'Simkl')
+			control.setSetting('scrobble', 'Simkl')
 			if fromSettings == 1:
 				control.openSettings('5.2', 'plugin.video.umbrella')
 			return True, None
@@ -149,6 +150,7 @@ class SIMKL:
 				control.setSetting('indicators', 'Local')
 			if getSetting('scrobble.source') == '2':
 				control.setSetting('scrobble.source', '0')
+				control.setSetting('scrobble', 'Local')
 			control.setSetting('simkl.markwatched', 'false')
 			if fromSettings == 1:
 				control.openSettings('5.2', 'plugin.video.umbrella')
@@ -242,13 +244,20 @@ def get_request(url):
 		return None
 
 def getSimklAsJson(url, post=None, silent=False):
+	# get_request()/post_request() already return parsed JSON (dict/list), never a raw
+	# Response object — the old "r = r.json()" fallback below threw AttributeError (caught
+	# and silenced by the except) for every URL except the one hardcoded special-case,
+	# meaning ANY other caller (e.g. every /sync/activities call used for staleness checks
+	# throughout this module) always silently got None back.
 	try:
 		from resources.lib.modules import simkl
 		if post: r = simkl.post_request(url, data=post)
 		else: r = get_request(url)
 		if not r: return
-		if '/sync/all-items/shows/watching' in url: return r['shows']
-		r = r.json()
+		if isinstance(r, dict) and '/sync/all-items/' in url:
+			# /sync/all-items/{type}/{status} wraps results under a key matching {type}.
+			for key in ('shows', 'anime', 'movies'):
+				if key in r: return r[key]
 		return r
 	except: log_utils.error()
 
@@ -447,8 +456,7 @@ def post_request(url, data=None):
 
 def markMovieAsWatched(imdb):
 	try:
-		timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-		data = {"movies": [{"watched_at": timestamp,"ids": {"imdb": imdb}}]}
+		data = {"movies": [{"ids": {"imdb": imdb}}]}
 		from resources.lib.modules import simkl
 		result = simkl.post_request('/sync/history', data)
 		if not result: return False
@@ -500,14 +508,22 @@ def markSeasonAsWatched(imdb, tvdb, season):
 		from resources.lib.modules import simkl
 		season = int('%01d' % int(season))
 		result = simkl.post_request('/sync/history', {"shows": [{"seasons": [{"number": season}], "ids": {"imdb": imdb, "tvdb": tvdb}}]})
-		if not result: return False
+		if not result: result = {}
 		if result.get('not_found', {}).get('shows') and tvdb: # show not found, retry with tvdb only
 			control.sleep(1000) # POST 1 call per sec rate-limit
 			result = simkl.post_request('/sync/history', {"shows": [{"seasons": [{"number": season}], "ids": {"tvdb": tvdb}}]})
-			if not result: return False
-		if result.get('added', {}).get('episodes', 0) > 0:
+			if not result: result = {}
+		added = result.get('added', {}).get('episodes', 0)
+		not_found_shows = result.get('not_found', {}).get('shows')
+		if added == 0 and not not_found_shows:
+			# Simkl accepted the show but the season number didn't map to any episode
+			# under that catalog entry (e.g. show split across separate Simkl entries
+			# per season/part) — resolve every episode in this season individually by
+			# its own TVDB id instead, same technique markEpisodeAsWatched() uses.
+			added = _mark_season_by_episode_ids(imdb, tvdb, season, remove=False)
+		if added > 0:
 			success = True
-		elif not result.get('not_found', {}).get('shows'):
+		elif not not_found_shows:
 			success = True  # episodes already in history (Simkl deduplicates)
 		else:
 			success = False
@@ -522,22 +538,32 @@ def markSeasonAsNotWatched(imdb, tvdb, season):
 		from resources.lib.modules import simkl
 		season = int('%01d' % int(season))
 		result = simkl.post_request('/sync/history/remove', {"shows": [{"seasons": [{"number": season}], "ids": {"imdb": imdb, "tvdb": tvdb}}]})
-		if not result: return False
-		if result['deleted']['episodes'] == 0 and tvdb: # fail, trying again with tvdb as fallback
+		if not result: result = {}
+		if result.get('deleted', {}).get('episodes', 0) == 0 and tvdb: # fail, trying again with tvdb as fallback
 			control.sleep(1000) # POST 1 call per sec rate-limit
-			result = SIMKL.post_request('/sync/history/remove', {"shows": [{"seasons": [{"number": season}], "ids": {"tvdb": tvdb}}]})
-			if not result: return False
-		return result['deleted']['episodes'] != 0
+			result = simkl.post_request('/sync/history/remove', {"shows": [{"seasons": [{"number": season}], "ids": {"tvdb": tvdb}}]})
+			if not result: result = {}
+		deleted = result.get('deleted', {}).get('episodes', 0)
+		if deleted == 0:
+			# Same season/episode-number mismatch fallback as markSeasonAsWatched() above.
+			deleted = _mark_season_by_episode_ids(imdb, tvdb, season, remove=True)
+		return deleted != 0
 	except: log_utils.error()
 
-def _simkl_resolve_episode(simkl_mod, tvdb, imdb, tmdb_season, tmdb_episode):
+def _simkl_resolve_episode(simkl_mod, tvdb, imdb, tmdb_season, tmdb_episode, remove=False):
 	"""Translate TMDB season/episode to TVDB via:
 	   1. TVDB episode ID from TMDB external_ids (fastest, most accurate)
 	   2. Airdate matching against Simkl episode list (fallback)
-	   Returns Simkl post_request result dict, or None if all lookups fail."""
+	   Returns Simkl post_request result dict, or None if all lookups fail.
+	   remove=True targets /sync/history/remove and checks 'deleted' counts instead
+	   of /sync/history + 'added' — same technique, opposite direction, used by
+	   markEpisodeAsNotWatched()/the season-level fallback for shows Simkl catalogs
+	   under a different season structure/entry than TMDB (e.g. some multi-part anime)."""
 	try:
 		from resources.lib.database import cache as _cache
 		from resources.lib.indexers import tmdb as _tmdb
+		endpoint = '/sync/history/remove' if remove else '/sync/history'
+		count_key = 'deleted' if remove else 'added'
 		# Get TMDB show ID (cached from browsing)
 		tmdb_result = _cache.get(_tmdb.TVshows().IdLookup, 96, imdb, tvdb)
 		if not tmdb_result:
@@ -553,16 +579,16 @@ def _simkl_resolve_episode(simkl_mod, tvdb, imdb, tmdb_season, tmdb_episode):
 		if tvdb_ep_id:
 			# M1a: episode-level TVDB ID only (developer-confirmed format)
 			control.sleep(1000)
-			result = simkl_mod.post_request('/sync/history', {"episodes": [{"ids": {"tvdb": tvdb_ep_id}}]})
-			if result and result.get('added', {}).get('episodes', 0):
+			result = simkl_mod.post_request(endpoint, {"episodes": [{"ids": {"tvdb": tvdb_ep_id}}]})
+			if result and result.get(count_key, {}).get('episodes', 0):
 				return result
 			# M1b: episode-level TVDB ID nested inside show IDs (no season/episode numbers)
 			control.sleep(1000)
 			show_ids = {}
 			if imdb: show_ids['imdb'] = imdb
 			if tvdb: show_ids['tvdb'] = tvdb
-			result = simkl_mod.post_request('/sync/history', {"shows": [{"ids": show_ids, "episodes": [{"ids": {"tvdb": tvdb_ep_id}}]}]})
-			if result and result.get('added', {}).get('episodes', 0):
+			result = simkl_mod.post_request(endpoint, {"shows": [{"ids": show_ids, "episodes": [{"ids": {"tvdb": tvdb_ep_id}}]}]})
+			if result and result.get(count_key, {}).get('episodes', 0):
 				return result
 
 		# Method 2: Airdate-based matching against Simkl episode list
@@ -612,9 +638,37 @@ def _simkl_resolve_episode(simkl_mod, tvdb, imdb, tmdb_season, tmdb_episode):
 			tvdb_e = int(chosen.get('episode', tmdb_episode))
 			corrected_body = {"seasons": [{"episodes": [{"number": tvdb_e}], "number": tvdb_s}]}
 			control.sleep(1000)
-			return simkl_mod.post_request('/sync/history', {"shows": [{**corrected_body, "ids": {"tvdb": tvdb}}]})
+			return simkl_mod.post_request(endpoint, {"shows": [{**corrected_body, "ids": {"tvdb": tvdb}}]})
 	except: log_utils.error()
 	return None
+
+def _mark_season_by_episode_ids(imdb, tvdb, season, remove=False):
+	"""Per-episode TVDB-id fallback for a whole season — used when Simkl's
+	season/episode-number-based sync matched nothing (a show catalogued under a
+	different season structure/entry than TMDB, e.g. some multi-part anime). Resolves
+	and marks each episode in the season individually via _simkl_resolve_episode(),
+	same technique as the single-episode fallback, just looped. Slower (one/two extra
+	Simkl round-trips per episode) so only used as a last resort after the cheap
+	season-number attempt already came back empty.
+	Returns the number of episodes actually added/deleted."""
+	try:
+		from resources.lib.modules import simkl
+		from resources.lib.database import cache as _cache
+		from resources.lib.indexers import tmdb as _tmdb
+		tmdb_result = _cache.get(_tmdb.TVshows().IdLookup, 96, imdb, tvdb)
+		tmdb_id = str(tmdb_result.get('id', '')) if tmdb_result else ''
+		if not tmdb_id: return 0
+		raw = _cache.get(_tmdb.TVshows().get_season_request, 96, tmdb_id, season)
+		episode_numbers = [int(ep.get('episode_number')) for ep in (raw or {}).get('episodes', []) if ep.get('episode_number') is not None]
+		count_key = 'deleted' if remove else 'added'
+		total = 0
+		for ep_num in episode_numbers:
+			resolved = _simkl_resolve_episode(simkl, tvdb, imdb, season, ep_num, remove=remove)
+			if resolved: total += resolved.get(count_key, {}).get('episodes', 0)
+		return total
+	except:
+		log_utils.error()
+		return 0
 
 def markEpisodeAsWatched(imdb, tvdb, season, episode):
 	try:
@@ -652,13 +706,24 @@ def markEpisodeAsNotWatched(imdb, tvdb, season, episode):
 	try:
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
 		from resources.lib.modules import simkl
-		result = simkl.post_request('/sync/history/remove', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": imdb, "tvdb": tvdb}}]})
-		if not result: return False
-		if result['deleted']['episodes'] == 0 and tvdb:
-			control.sleep(1000)
-			result = simkl.post_request('/sync/history/remove', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"tvdb": tvdb}}]})
-			if not result: return False
-		return result['deleted']['episodes'] !=0
+		ep_body = {"seasons": [{"episodes": [{"number": episode}], "number": season}]}
+		# Attempt 1: imdb + tvdb (TMDB episode numbers)
+		result = simkl.post_request('/sync/history/remove', {"shows": [{**ep_body, "ids": {"imdb": imdb, "tvdb": tvdb}}]})
+		if not result: result = {}
+		if result.get('deleted', {}).get('episodes', 0) == 0:
+			# Attempt 2: tvdb only
+			if tvdb:
+				control.sleep(1000)
+				result = simkl.post_request('/sync/history/remove', {"shows": [{**ep_body, "ids": {"tvdb": tvdb}}]})
+				if not result: result = {}
+			if result.get('deleted', {}).get('episodes', 0) == 0:
+				# Attempt 3: season/episode numbers didn't match anything under this
+				# catalog entry (e.g. a show Simkl splits into separate entries per
+				# season/part) — resolve by the episode's own TVDB id instead, same
+				# fallback markEpisodeAsWatched() uses for adds.
+				resolved = _simkl_resolve_episode(simkl, tvdb, imdb, season, episode, remove=True)
+				if resolved: result = resolved
+		return result.get('deleted', {}).get('episodes', 0) != 0
 	except: log_utils.error()
 
 def seasonCount(imdb, tvdb): # return counts for all seasons of a show from simklsync.db
@@ -765,16 +830,31 @@ def chunked_iterator(iterable, size):
     while chunk := list(islice(iterator, size)):
         yield chunk
 
-def batchCacheSyncSeason(data):
+def batchCacheSyncSeason(data, progress_callback=None):
     #Process all items in data in chunks because simkl api had limit of 100 items per request
     extended_param = 'full,specials' if getSetting('tv.specials') == 'true' else 'full'
 
+    total = len(data)
+    done = 0
     for chunk in chunked_iterator(data, 100):  # Process chunks sequentially to avoid request bursts
         formatted_data = [show for show in chunk]
         results = post_request(f'/sync/watched?extended={extended_param}', data=formatted_data)
+        done += len(chunk)
+        if progress_callback:
+            try: progress_callback('Syncing season progress', done, total)
+            except: pass
         if not results:
             continue
-        with ThreadPoolExecutor() as executor:  # Parallel cache writes only (no API calls)
+        # cachesyncSeasons()->syncSeasons() also does a TMDb lookup + cache write per show
+        # (last-aired-boundary capping, added after this was written) — no longer "cache
+        # writes only" as the comment used to say. An unbounded default ThreadPoolExecutor
+        # (up to 32 workers) means up to 100 concurrent TMDb HTTP requests plus concurrent
+        # sqlite writes to the same cache.db file at once, which was enough to freeze a
+        # resource-constrained Android TV box mid-sync. Bound it the same way scrob.py's
+        # _threaded_resolve() batches TMDb lookups (dev.batch.size, default 10).
+        _unlimited = getSetting('dev.batch.unlimited') == 'true'
+        _max_workers = len(chunk) if _unlimited else max(int(getSetting('dev.batch.size') or '10'), 1)
+        with ThreadPoolExecutor(max_workers=_max_workers) as executor:
             for show in chunk:
                 imdb = show.get('imdb')
                 tvdb = show.get('tvdb')
@@ -819,6 +899,26 @@ def syncSeasons(imdb, tvdb, simkl_id=None, data=None): # season indicators and c
 		else:
 			results = data
 		show_data = results
+		# Cap per-season totals at TMDb's last-aired boundary — Simkl sometimes files
+		# placeholder episode rows for an announced-but-unreleased future season (no
+		# titles, TBA air date) under the show's 'seasons' list with no air-date flag
+		# to distinguish them, which otherwise inflates 'total' past what's actually
+		# aired (e.g. 19 aired + 8 phantom season-4 placeholders = 27). Mirrors the
+		# same TMDb-boundary approach mdblist.py's syncSeasons() already uses.
+		last_aired_sn, last_aired_ep, ended = 0, 0, False
+		try:
+			from resources.lib.indexers import tmdb as _tmdb
+			tmdb_result = cache.get(_tmdb.TVshows().IdLookup, 96, imdb, tvdb)
+			tmdb_id = str(tmdb_result.get('id', '')) if tmdb_result else ''
+			if tmdb_id:
+				meta = cache.get(_tmdb.TVshows().get_showSeasons_meta, 96, tmdb_id)
+				if meta:
+					status = (meta.get('status') or '').lower()
+					ended = status in ('ended', 'canceled', 'cancelled')
+					last_ep = meta.get('last_episode_to_air') or {}
+					last_aired_sn = int(last_ep.get('season_number', 0)) if last_ep else 0
+					last_aired_ep = int(last_ep.get('episode_number', 0)) if last_ep else 0
+		except: pass
 		for show in show_data:
 			show_imdb = show.get('imdb')
 			show_tvdb = str(show.get('tvdb', ''))
@@ -833,8 +933,12 @@ def syncSeasons(imdb, tvdb, simkl_id=None, data=None): # season indicators and c
 			counts = {}
 			for season in seasons:
 				s_num = season['number']
+				if last_aired_sn and not ended and s_num > last_aired_sn:
+					continue # future/unannounced season — Simkl's episode rows for it aren't real yet
 				eps = season.get('episodes', [])
 				total = season.get('episodes_aired', len(eps))
+				if last_aired_sn and not ended and s_num == last_aired_sn and last_aired_ep:
+					total = min(total, last_aired_ep) if total else last_aired_ep
 				watched_ct = season.get('episodes_watched', sum(1 for ep in eps if ep.get('watched')))
 				counts[s_num] = {
 					'total': total,
@@ -1345,7 +1449,7 @@ def sync_dropped(activities=None, forced=False):
         log_utils.error('Error in sync_dropped: %s' % str(e))
 
 
-def service_syncSeasons(): # season indicators and counts for watched shows ex. [['1', '2', '3'], {1: {'total': 8, 'watched': 8, 'unwatched': 0}, 2: {'total': 10, 'watched': 10, 'unwatched': 0}}]
+def service_syncSeasons(progress_callback=None): # season indicators and counts for watched shows ex. [['1', '2', '3'], {1: {'total': 8, 'watched': 8, 'unwatched': 0}, 2: {'total': 10, 'watched': 10, 'unwatched': 0}}]
 	try:
 		log_utils.log('Service - Simkl Watched Shows Season Sync...', __name__, log_utils.LOGDEBUG)
 		indicators = simklsync.cache_existing(syncTVShows) # use cached data from service cachesyncTVShows() just written fresh
@@ -1359,7 +1463,7 @@ def service_syncSeasons(): # season indicators and counts for watched shows ex. 
 		#[i.start() for i in threads]
 		#[i.join() for i in threads]
 		#cachesyncSeasons('tt2152112', None, None)
-		batchCacheSyncSeason(batch)
+		batchCacheSyncSeason(batch, progress_callback=progress_callback)
 	except: log_utils.error()
 
 def _merge_watched_movies(db_ts):
@@ -1402,13 +1506,22 @@ def _merge_watched_tvshows(db_ts):
 		simklsync.cache_insert(key, repr(merged))
 	except: log_utils.error()
 
-def sync_watched(activities=None, forced=False):
+def sync_watched(activities=None, forced=False, progress_callback=None):
 	try:
 		if forced:
+			if progress_callback:
+				try: progress_callback('Syncing watched movies')
+				except: pass
 			cachesyncMovies()
+			if progress_callback:
+				try: progress_callback('Syncing watched shows')
+				except: pass
 			cachesyncTVShows()
+			if progress_callback:
+				try: progress_callback('Syncing season indicators')
+				except: pass
 			control.sleep(5000)
-			service_syncSeasons() # syncs all watched shows season indicators and counts
+			service_syncSeasons(progress_callback=progress_callback)
 			simklsync.insert_syncSeasons_at()
 		else:
 			moviesWatchedActivity = getMoviesWatchedActivity(activities)
@@ -1670,21 +1783,42 @@ def sync_playbackProgress(activities=None, forced=False):
 	except: log_utils.error()
 
 def force_simklSync(silent=False):
+	dialog = None
 	if not silent:
 		if not control.yesnoDialog(getLS(32056), '', ''): return
-		control.busy()
+		dialog = control.progressDialog
+		dialog.create(control.addonName(), 'Preparing Simkl sync...')
 
-	# wipe all tables and start fresh
-	clr_simkl = {'movies_plantowatch': True, 'shows_plantowatch': True, 'shows_watching': True, 'shows_hold': True, 'movies_dropped': True, 'shows_dropped': True, 'watched': True, 'movies_completed': True, 'shows_completed': True}
-	simklsync.delete_tables(clr_simkl)
+	def _progress(phase, done=None, total=None):
+		if not dialog: return
+		try:
+			if done is not None and total:
+				dialog.update(min(int(100.0 * done / total), 100), '%s... (%s/%s)' % (phase, done, total))
+			elif done is not None:
+				dialog.update(0, '%s... (%s synced)' % (phase, done))
+			else:
+				dialog.update(0, '%s...' % phase)
+		except: pass
 
-	sync_plantowatch(forced=True)
-	sync_completed(forced=True)
-	sync_watched(forced=True) #simkl counts
-	sync_watchedProgress(forced=True) # simkl progress sync
-	sync_watching(forced=True)
-	sync_hold(forced=True)
-	sync_dropped(forced=True)
-	if not silent: 
-		control.hide()
+	try:
+		# wipe all tables and start fresh
+		clr_simkl = {'movies_plantowatch': True, 'shows_plantowatch': True, 'shows_watching': True, 'shows_hold': True, 'movies_dropped': True, 'shows_dropped': True, 'watched': True, 'movies_completed': True, 'shows_completed': True}
+		simklsync.delete_tables(clr_simkl)
+
+		if dialog: dialog.update(0, 'Syncing plan-to-watch...')
+		sync_plantowatch(forced=True)
+		if dialog: dialog.update(15, 'Syncing completed...')
+		sync_completed(forced=True)
+		sync_watched(forced=True, progress_callback=_progress) #simkl counts
+		if dialog: dialog.update(55, 'Syncing watched progress...')
+		sync_watchedProgress(forced=True) # simkl progress sync
+		if dialog: dialog.update(70, 'Syncing watching...')
+		sync_watching(forced=True)
+		if dialog: dialog.update(85, 'Syncing on hold...')
+		sync_hold(forced=True)
+		if dialog: dialog.update(95, 'Syncing dropped...')
+		sync_dropped(forced=True)
+	finally:
+		if dialog: dialog.close()
+	if not silent:
 		control.notification(message='Forced Simkl Sync Complete')

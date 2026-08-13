@@ -5331,7 +5331,7 @@ msgid "Completed"
 msgstr ""
 
 msgctxt "#40548"
-msgid "Completed (SimKl)"
+msgid "Completed (Simkl)"
 msgstr ""
 
 msgctxt "#40549"
@@ -5339,7 +5339,7 @@ msgid "Plan to Watch"
 msgstr ""
 
 msgctxt "#40550"
-msgid "Plan to Watch (SimKl)"
+msgid "Plan to Watch (Simkl)"
 msgstr ""
 
 msgctxt "#40551"
@@ -5988,4 +5988,156 @@ msgstr ""
 
 msgctxt "#40714"
 msgid "[COLOR %s][B]Dropped Manager - Shows[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40715"
+msgid "Watched Shows (MDBList)"
+msgstr ""
+
+msgctxt "#40716"
+msgid "Watched Movies (MDBList)"
+msgstr ""
+
+msgctxt "#40717"
+msgid "Upcoming Episodes (MDBList)"
+msgstr ""
+
+msgctxt "#40718"
+msgid "Custom"
+msgstr ""
+
+msgctxt "#40719"
+msgid "Custom Base URL"
+msgstr ""
+
+msgctxt "#40720"
+msgid "Custom Client ID"
+msgstr ""
+
+msgctxt "#40721"
+msgid "Custom Client Secret"
+msgstr ""
+
+msgctxt "#40722"
+msgid "Custom Username"
+msgstr ""
+
+msgctxt "#40723"
+msgid "Also mark watched on Custom"
+msgstr ""
+
+msgctxt "#40724"
+msgid "Revoke Custom Authorization"
+msgstr ""
+
+msgctxt "#40726"
+msgid "Custom sync interval (in minutes)"
+msgstr ""
+
+msgctxt "#40727"
+msgid "Custom Progress Show unaired episodes"
+msgstr ""
+
+msgctxt "#40728"
+msgid "Custom Upcoming Progress prepend date"
+msgstr ""
+
+msgctxt "#40729"
+msgid "%s Marked As Watched On %s"
+msgstr ""
+
+msgctxt "#40730"
+msgid "%s Failed to Mark As Watched On %s"
+msgstr ""
+
+msgctxt "#40731"
+msgid "%s Marked As Unwatched On %s"
+msgstr ""
+
+msgctxt "#40732"
+msgid "%s Failed to Mark As Unwatched On %s"
+msgstr ""
+
+msgctxt "#40733"
+msgid "[B]Custom Management Tools[/B]"
+msgstr ""
+
+msgctxt "#40734"
+msgid "Custom Management Tools"
+msgstr ""
+
+msgctxt "#40735"
+msgid "[COLOR %s][B]Force Custom Sync to local database[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40736"
+msgid "Watchlist (Custom)"
+msgstr ""
+
+msgctxt "#40737"
+msgid "Collection (Custom)"
+msgstr ""
+
+msgctxt "#40738"
+msgid "Watched Shows (Custom)"
+msgstr ""
+
+msgctxt "#40739"
+msgid "Progress Shows (Custom)"
+msgstr ""
+
+msgctxt "#40740"
+msgid "Progress Episodes (Custom)"
+msgstr ""
+
+msgctxt "#40741"
+msgid "Unfinished (Custom)"
+msgstr ""
+
+msgctxt "#40742"
+msgid "Recent Episodes (Custom)"
+msgstr ""
+
+msgctxt "#40743"
+msgid "Upcoming Episodes (Custom)"
+msgstr ""
+
+msgctxt "#40744"
+msgid "Season Premieres (Custom)"
+msgstr ""
+
+msgctxt "#40745"
+msgid "Watched Movies (Custom)"
+msgstr ""
+
+msgctxt "#40746"
+msgid "Add item to your [COLOR %s][B]Custom Watchlist[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40747"
+msgid "Remove item from your [COLOR %s][B]Custom Watchlist[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40748"
+msgid "Add to [COLOR %s][B]Custom Collection[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40749"
+msgid "Remove from [COLOR %s][B]Custom Collection[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40750"
+msgid "Custom Manager"
+msgstr ""
+
+msgctxt "#40751"
+msgid "Custom Service Name (blank = Custom)"
+msgstr ""
+
+msgctxt "#40752"
+msgid "%s Manager"
+msgstr ""
+
+msgctxt "#40753"
+msgid "Upcoming Progress (Custom)"
 msgstr ""

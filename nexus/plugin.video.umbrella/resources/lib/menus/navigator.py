@@ -9,6 +9,9 @@ from resources.lib.modules import control
 from resources.lib.modules.trakt import getTraktCredentialsInfo, getTraktIndicatorsInfo
 from resources.lib.modules import simkl
 from resources.lib.modules import mdblist
+from resources.lib.modules import customtrakt
+from resources.lib.modules import floppy
+from resources.lib.modules import scrob
 from resources.lib.modules.tmdb4 import getTMDbV4CredentialsInfo
 from resources.lib.modules import favourites
 from json import loads as jsloads
@@ -26,9 +29,15 @@ class Navigator:
 		self.traktCredentials = getTraktCredentialsInfo()
 		self.simklCredentials = simkl.getSimKLCredentialsInfo()
 		self.mdblistCredentials = mdblist.getMDBListCredentialsInfo()
+		self.customCredentials = customtrakt.getCustomCredentialsInfo()
+		self.floppyCredentials = floppy.getFloppyCredentialsInfo()
+		self.scrobCredentials = scrob.getScrobCredentialsInfo()
 		self.traktIndicators = getTraktIndicatorsInfo()
 		self.simklIndicators = simkl.getSimKLIndicatorsInfo()
 		self.mdblistIndicators = mdblist.getMDBListIndicatorsInfo()
+		self.customIndicators = customtrakt.getCustomIndicatorsInfo()
+		self.floppyIndicators = floppy.getFloppyIndicatorsInfo()
+		self.scrobIndicators = scrob.getScrobIndicatorsInfo()
 		self.tmdbCredentials = getTMDbV4CredentialsInfo()
 		self.simkltoken = getSetting('simkltoken') != ''
 		self.alldebridCredentials = getSetting('alldebridtoken') != ''
@@ -89,11 +98,21 @@ class Navigator:
 		if key == 'not_lite':                return not lite
 		if key == 'simkl_token':             return bool(self.simkltoken)
 		if key == 'simkl_credentials':       return bool(self.simklCredentials)
+		if key == 'simkl_with_indicators':   return bool(self.simklCredentials and (self.simklIndicators or getSetting('simkl.markwatched') == 'true'))
 		if key == 'trakt_credentials':       return bool(self.traktCredentials)
 		if key == 'trakt_with_indicators':   return bool(self.traktCredentials and (self.traktIndicators or getSetting('trakt.markwatched') == 'true'))
 		if key == 'mdblist_token':           return bool(getSetting('mdblist.token'))
 		if key == 'mdblist_credentials':     return bool(self.mdblistCredentials)
 		if key == 'mdblist_with_indicators': return bool(self.mdblistCredentials and (self.mdblistIndicators or getSetting('mdblist.markwatched') == 'true'))
+		if key == 'custom_token':            return bool(getSetting('dev.enable.custom') == 'true' and getSetting('custom.user.token'))
+		if key == 'custom_credentials':      return bool(self.customCredentials)
+		if key == 'custom_with_indicators':  return bool(self.customCredentials and (self.customIndicators or getSetting('custom.markwatched') == 'true'))
+		if key == 'floppy_token':          return bool(getSetting('floppy.token'))
+		if key == 'floppy_credentials':    return bool(self.floppyCredentials)
+		if key == 'floppy_with_indicators':return bool(self.floppyCredentials and (self.floppyIndicators or getSetting('floppy.markwatched') == 'true'))
+		if key == 'scrob_apikey':          return bool(getSetting('scrob.apikey'))
+		if key == 'scrob_credentials':     return bool(self.scrobCredentials)
+		if key == 'scrob_with_indicators': return bool(self.scrobCredentials and (self.scrobIndicators or getSetting('scrob.markwatched') == 'true'))
 		if key == 'tmdb_v4_token':           return bool(getSetting('tmdb.v4.accesstoken'))
 		if key == 'has_lib_movies':          return bool(self.hasLibMovies)
 		if key == 'favorite_movie':          return bool(self.favoriteMovie)
@@ -105,6 +124,7 @@ class Navigator:
 	def _renderDbMenu(self, menu_name, editor_action, editor_label, lite=False, folderName=''):
 		from resources.lib.database import menu as menu_db
 		menu_db.initialize(menu_name)
+		editor_label = self._MENU_EDITOR_LABELS.get(menu_name, editor_label)
 		rendered = 0
 		for item in menu_db.get_menu_items(menu_name):
 			ck = item.get('condition_key')
@@ -114,6 +134,11 @@ class Navigator:
 			if not self.indexLabels and item.get('alt_label'):
 				raw_label = item['alt_label']
 			label = getLS(int(raw_label)) if raw_label.isdigit() else raw_label
+			if item['item_id'].startswith(('mytv_custom_', 'mymv_custom_')):
+				from resources.lib.modules import customtrakt
+				custom_name = customtrakt.getCustomServiceName()
+				if custom_name != 'Custom':
+					label = label.replace('Custom', custom_name)
 			icon_file = item['icon'] if self.iconLogos else item['poster']
 			action = '%s&folderName=%s' % (item['action'], quote_plus(label)) if item['is_folder'] else item['action']
 			self.addDirectoryItem(label, action, icon_file, icon_file,
@@ -133,6 +158,22 @@ class Navigator:
 		'mymovies':  'Edit My Movies Menu',
 		'tvshows':   'Edit TV Shows Menu',
 		'mytvshows': 'Edit My TV Shows Menu',
+		'mymovies_mdblist':  'Edit My Movies: MDBList',
+		'mymovies_custom':   'Edit My Movies: Custom',
+		'mymovies_tmdb':     'Edit My Movies: TMDb',
+		'mymovies_simkl':    'Edit My Movies: Simkl',
+		'mymovies_trakt':    'Edit My Movies: Trakt',
+		'mymovies_floppy': 'Edit My Movies: Floppy',
+		'mymovies_scrob': 'Edit My Movies: Scrob',
+		'mymovies_local': 'Edit My Movies: Local',
+		'mytvshows_mdblist':  'Edit My TV Shows: MDBList',
+		'mytvshows_custom':   'Edit My TV Shows: Custom',
+		'mytvshows_tmdb':     'Edit My TV Shows: TMDb',
+		'mytvshows_simkl':    'Edit My TV Shows: Simkl',
+		'mytvshows_trakt':    'Edit My TV Shows: Trakt',
+		'mytvshows_floppy': 'Edit My TV Shows: Floppy',
+		'mytvshows_scrob': 'Edit My TV Shows: Scrob',
+		'mytvshows_local': 'Edit My TV Shows: Local',
 	}
 
 	def mainMenuEditor(self, menu_name='root'):
@@ -345,7 +386,11 @@ class Navigator:
 
 	def mainMenuReorderEditor(self, menu_name='root', preselected_id=None):
 		from resources.lib.database import menu as menu_db
-		enabled = menu_db.get_menu_items(menu_name)
+		all_enabled = menu_db.get_menu_items(menu_name)
+		# Only offer items that actually render (pass condition_key) for reordering,
+		# otherwise moving an item relative to a hidden one produces no visible change
+		# in the real menu, which looks like the reorder didn't stick.
+		enabled = [it for it in all_enabled if not (it.get('condition_key') and not self._eval_condition_key(it['condition_key']))]
 		if preselected_id is not None:
 			sel = next((i for i, it in enumerate(enabled) if it['item_id'] == preselected_id), -1)
 			if sel < 0:
@@ -366,9 +411,14 @@ class Navigator:
 			pos_display.append('%d.  %s%s' % (idx + 1, it_lbl, marker))
 		target = control.selectDialog(pos_display, heading='Move "%s" to:' % lbl, preselect=sel)
 		if target >= 0 and target != sel:
-			current_ids = [it['item_id'] for it in enabled]
-			current_ids.remove(item['item_id'])
-			current_ids.insert(target, item['item_id'])
+			new_visible_ids = [it['item_id'] for it in enabled]
+			new_visible_ids.remove(item['item_id'])
+			new_visible_ids.insert(target, item['item_id'])
+			visible_id_set = set(new_visible_ids)
+			new_visible_iter = iter(new_visible_ids)
+			# Re-weave the reordered visible ids back into the full enabled list so
+			# hidden (condition_key-filtered) items keep their existing relative position.
+			current_ids = [next(new_visible_iter) if it['item_id'] in visible_id_set else it['item_id'] for it in all_enabled]
 			menu_db.reorder_enabled_items(menu_name, current_ids)
 		control.refresh()
 
@@ -379,12 +429,60 @@ class Navigator:
 		self.accountCheck()
 		self._renderDbMenu('mymovies', 'myMoviesNavigatorEditor', 'Edit My Movies Menu', lite=lite, folderName=folderName)
 
+	def mymovies_mdblist(self, folderName=''):
+		self._renderDbMenu('mymovies_mdblist', 'myMoviesNavigatorEditor', 'Edit My Movies Menu', folderName=folderName)
+
+	def mymovies_custom(self, folderName=''):
+		self._renderDbMenu('mymovies_custom', 'myMoviesNavigatorEditor', 'Edit My Movies Menu', folderName=folderName)
+
+	def mymovies_tmdb(self, folderName=''):
+		self._renderDbMenu('mymovies_tmdb', 'myMoviesNavigatorEditor', 'Edit My Movies Menu', folderName=folderName)
+
+	def mymovies_simkl(self, folderName=''):
+		self._renderDbMenu('mymovies_simkl', 'myMoviesNavigatorEditor', 'Edit My Movies Menu', folderName=folderName)
+
+	def mymovies_trakt(self, folderName=''):
+		self._renderDbMenu('mymovies_trakt', 'myMoviesNavigatorEditor', 'Edit My Movies Menu', folderName=folderName)
+
+	def mymovies_floppy(self, folderName=''):
+		self._renderDbMenu('mymovies_floppy', 'myMoviesNavigatorEditor', 'Edit My Movies Menu', folderName=folderName)
+
+	def mymovies_scrob(self, folderName=''):
+		self._renderDbMenu('mymovies_scrob', 'myMoviesNavigatorEditor', 'Edit My Movies Menu', folderName=folderName)
+
+	def mymovies_local(self, folderName=''):
+		self._renderDbMenu('mymovies_local', 'myMoviesNavigatorEditor', 'Edit My Movies Menu', folderName=folderName)
+
 	def tvshows(self, lite=False, folderName=''):
 		self._renderDbMenu('tvshows', 'tvNavigatorEditor', 'Edit TV Shows Menu', lite=lite, folderName=folderName)
 
 	def mytvshows(self, lite=False, folderName=''):
 		self.accountCheck()
 		self._renderDbMenu('mytvshows', 'myTVShowsNavigatorEditor', 'Edit My TV Shows Menu', lite=lite, folderName=folderName)
+
+	def mytvshows_mdblist(self, folderName=''):
+		self._renderDbMenu('mytvshows_mdblist', 'myTVShowsNavigatorEditor', 'Edit My TV Shows Menu', folderName=folderName)
+
+	def mytvshows_custom(self, folderName=''):
+		self._renderDbMenu('mytvshows_custom', 'myTVShowsNavigatorEditor', 'Edit My TV Shows Menu', folderName=folderName)
+
+	def mytvshows_tmdb(self, folderName=''):
+		self._renderDbMenu('mytvshows_tmdb', 'myTVShowsNavigatorEditor', 'Edit My TV Shows Menu', folderName=folderName)
+
+	def mytvshows_simkl(self, folderName=''):
+		self._renderDbMenu('mytvshows_simkl', 'myTVShowsNavigatorEditor', 'Edit My TV Shows Menu', folderName=folderName)
+
+	def mytvshows_trakt(self, folderName=''):
+		self._renderDbMenu('mytvshows_trakt', 'myTVShowsNavigatorEditor', 'Edit My TV Shows Menu', folderName=folderName)
+
+	def mytvshows_floppy(self, folderName=''):
+		self._renderDbMenu('mytvshows_floppy', 'myTVShowsNavigatorEditor', 'Edit My TV Shows Menu', folderName=folderName)
+
+	def mytvshows_scrob(self, folderName=''):
+		self._renderDbMenu('mytvshows_scrob', 'myTVShowsNavigatorEditor', 'Edit My TV Shows Menu', folderName=folderName)
+
+	def mytvshows_local(self, folderName=''):
+		self._renderDbMenu('mytvshows_local', 'myTVShowsNavigatorEditor', 'Edit My TV Shows Menu', folderName=folderName)
 
 	def anime(self, lite=False, folderName=''):
 		self.addDirectoryItem(32001, 'anime_Movies&url=anime&folderName=%s' % quote_plus(getLS(32001)), 'movies.png', 'DefaultMovies.png')
@@ -537,6 +635,11 @@ class Navigator:
 		if self.simklCredentials: self.addDirectoryItem(40551, 'tools_simklToolsNavigator&folderName=%s' % quote_plus(getLS(40552)), 'tools.png', 'DefaultAddonService.png', isFolder=True)
 		if self.traktCredentials: self.addDirectoryItem(35057, 'tools_traktToolsNavigator&folderName=%s' % quote_plus(getLS(40461)), 'tools.png', 'DefaultAddonService.png', isFolder=True)
 		if self.mdblistCredentials: self.addDirectoryItem(40635, 'tools_mdblistToolsNavigator&folderName=%s' % quote_plus(getLS(40636)), 'tools.png', 'DefaultAddonService.png', isFolder=True)
+		if self.customCredentials:
+			_custom_tools_label = '%s Management Tools' % customtrakt.getCustomServiceName()
+			self.addDirectoryItem('[B]%s[/B]' % _custom_tools_label, 'tools_customToolsNavigator&folderName=%s' % quote_plus(_custom_tools_label), 'tools.png', 'DefaultAddonService.png', isFolder=True)
+		if self.floppyCredentials: self.addDirectoryItem('[B]Floppy Management Tools[/B]', 'tools_floppyToolsNavigator&folderName=%s' % quote_plus('Floppy Management Tools'), 'tools.png', 'DefaultAddonService.png', isFolder=True)
+		if self.scrobCredentials: self.addDirectoryItem('[B]Scrob Management Tools[/B]', 'tools_scrobToolsNavigator&folderName=%s' % quote_plus('Scrob Management Tools'), 'tools.png', 'DefaultAddonService.png', isFolder=True)
 		#-- Playback - 2
 		self.addDirectoryItem(32045, 'tools_openSettings&query=2.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#-- Downloads - 10
@@ -581,6 +684,11 @@ class Navigator:
 
 	def simklTools(self, folderName=''):
 		if self.useContainerTitles: control.setContainerName(folderName)
+		self.addDirectoryItem(getLS(40788) % self.highlight_color, 'movies_simklPlantowatchManager', 'simkl.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(40789) % self.highlight_color, 'shows_simklPlantowatchManager', 'simkl.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(40790) % self.highlight_color, 'shows_simklOnholdManager', 'simkl.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(40786) % self.highlight_color, 'movies_simklDroppedManager', 'simkl.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(40787) % self.highlight_color, 'shows_simklDroppedManager', 'simkl.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(40553, 'tools_forceSimklSync', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 
@@ -592,8 +700,53 @@ class Navigator:
 			self.addDirectoryItem(40670, 'mdblistRevoke', 'mdblist.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(40638, 'movies_mdblistWatchlistManager', 'mdblist.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(40639, 'shows_mdblistWatchlistManager', 'mdblist.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(40709) % self.highlight_color, 'movies_mdblistCollectionManager', 'mdblist.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(40710) % self.highlight_color, 'shows_mdblistCollectionManager', 'mdblist.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(35059) % self.highlight_color, 'movies_mdblistUnfinishedManager', 'mdblist.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(35060) % self.highlight_color, 'episodes_mdblistUnfinishedManager', 'mdblist.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(40714, 'shows_mdblistDroppedManager', 'mdblist.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(40637, 'tools_forceMDBListSync', 'mdblist.png', 'DefaultAddonService.png', isFolder=False)
+		self.endDirectory()
+
+	def customTools(self, folderName=''):
+		if self.useContainerTitles: control.setContainerName(folderName)
+		self.addDirectoryItem(getLS(35061) % self.highlight_color, 'movies_customWatchlistManager', 'icon.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(35062) % self.highlight_color, 'shows_customWatchlistManager', 'icon.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(35063) % self.highlight_color, 'movies_customCollectionManager', 'icon.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(35064) % self.highlight_color, 'shows_customCollectionManager', 'icon.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(40786) % self.highlight_color, 'movies_customDroppedManager', 'icon.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(40787) % self.highlight_color, 'shows_customDroppedManager', 'icon.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(35059) % self.highlight_color, 'movies_customUnfinishedManager', 'icon.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(35060) % self.highlight_color, 'episodes_customUnfinishedManager', 'icon.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem('[COLOR %s][B]Force %s Sync to local database[/B][/COLOR]' % (self.highlight_color, customtrakt.getCustomServiceName()), 'tools_forceCustomSync', 'icon.png', 'DefaultAddonService.png', isFolder=False)
+		self.endDirectory()
+
+	def floppyTools(self, folderName=''):
+		if self.useContainerTitles: control.setContainerName(folderName)
+		if not self.floppyCredentials:
+			self.addDirectoryItem('Authorize Floppy', 'floppyAuth', 'floppy.png', 'DefaultAddonService.png', isFolder=False)
+		else:
+			self.addDirectoryItem('Revoke Floppy', 'floppyRevoke', 'floppy.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(35061) % self.highlight_color, 'movies_floppyWatchlistManager', 'floppy.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(35062) % self.highlight_color, 'shows_floppyWatchlistManager', 'floppy.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(35063) % self.highlight_color, 'movies_floppyCollectionManager', 'floppy.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(35064) % self.highlight_color, 'shows_floppyCollectionManager', 'floppy.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(40786) % self.highlight_color, 'movies_floppyDroppedManager', 'floppy.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(40787) % self.highlight_color, 'shows_floppyDroppedManager', 'floppy.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(35059) % self.highlight_color, 'movies_floppyUnfinishedManager', 'floppy.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(35060) % self.highlight_color, 'episodes_floppyUnfinishedManager', 'floppy.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem('Force Floppy Sync', 'tools_forceFloppySync', 'floppy.png', 'DefaultAddonService.png', isFolder=False)
+		self.endDirectory()
+
+	def scrobTools(self, folderName=''):
+		if self.useContainerTitles: control.setContainerName(folderName)
+		if not self.scrobCredentials:
+			self.addDirectoryItem('Authorize Scrob', 'scrobAuth', 'scrob.png', 'DefaultAddonService.png', isFolder=False)
+		else:
+			self.addDirectoryItem('Revoke Scrob', 'scrobRevoke', 'scrob.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(35059) % self.highlight_color, 'movies_scrobUnfinishedManager', 'scrob.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem(getLS(35060) % self.highlight_color, 'episodes_scrobUnfinishedManager', 'scrob.png', 'DefaultAddonService.png', isFolder=False)
+		self.addDirectoryItem('Force Scrob Sync', 'tools_forceScrobSync', 'scrob.png', 'DefaultAddonService.png', isFolder=False)
 		self.endDirectory()
 
 	def loggingNavigator(self, folderName=''):
@@ -793,7 +946,9 @@ class Navigator:
 			return
 
 	def accountCheck(self):
-		if not self.traktCredentials and not self.simklCredentials and not self.tmdbCredentials and not self.mdblistCredentials:
+		if (not self.traktCredentials and not self.simklCredentials and not self.tmdbCredentials and not self.mdblistCredentials
+				and not self.customCredentials and not self.floppyCredentials and not self.scrobCredentials
+				and not (getSetting('indicators.alt') == '0' and getSetting('scrobble.source') == '0')):
 			control.hide()
 			control.notification(message=32042, icon='WARNING')
 			sysexit()
@@ -957,8 +1112,8 @@ class Navigator:
 			if isinstance(name, int): name = getLS(name)
 			url = 'plugin://plugin.video.umbrella/?action=%s' % query if isAction else query
 			_abs = lambda p: '://' in p or p.startswith('/') or (len(p) > 1 and p[1] == ':')
-			poster = control.joinPath(self.artPath, poster) if self.artPath and not _abs(poster) else (poster or icon)
-			if not icon.startswith('Default') and not _abs(icon): icon = control.joinPath(self.artPath, icon)
+			poster = control.themedIcon(poster) if self.artPath and not _abs(poster) else (poster or icon)
+			if not icon.startswith('Default') and not _abs(icon): icon = control.themedIcon(icon)
 			cm = []
 			queueMenu = getLS(32065)
 			if queue: cm.append((queueMenu, 'RunPlugin(plugin://plugin.video.umbrella/?action=playlist_QueueItem)'))

@@ -481,6 +481,44 @@ def get_watched_episodes():
 		except: pass
 	return result
 
+def get_watched_shows():
+	result = []
+	try:
+		dbcon = get_connection()
+		dbcur = get_connection_cursor(dbcon)
+		_ensure_watched_tables(dbcur)
+		rows = dbcur.execute('''SELECT show_imdb, show_tmdb, show_tvdb, MAX(last_watched_at) AS last_watched_at
+			FROM mdb_watched_episodes GROUP BY show_imdb ORDER BY last_watched_at DESC''').fetchall()
+		result = [(r[0], r[1], r[2], r[3]) for r in rows]
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+	finally:
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
+	return result
+
+def get_watched_movies_full():
+	result = []
+	try:
+		dbcon = get_connection()
+		dbcur = get_connection_cursor(dbcon)
+		_ensure_watched_tables(dbcur)
+		rows = dbcur.execute('''SELECT imdb, tmdb, title, year, last_watched_at FROM mdb_watched_movies
+			WHERE imdb != '' ORDER BY last_watched_at DESC''').fetchall()
+		result = [(r[0], r[1], r[2], r[3], r[4]) for r in rows]
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+	finally:
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
+	return result
+
 def update_last_watched_at(key='last_watched_at'):
 	try:
 		dbcon = get_connection()

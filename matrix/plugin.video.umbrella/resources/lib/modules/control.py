@@ -10,7 +10,6 @@ import xbmcaddon
 import xbmcgui
 import xbmcplugin
 import xbmcvfs
-import xml.etree.ElementTree as ET
 from threading import Thread
 from urllib.parse import unquote_plus
 from re import sub as re_sub
@@ -90,6 +89,9 @@ cacheFile = joinPath(dataPath, 'cache.db')
 traktSyncFile = joinPath(dataPath, 'traktSync.db')
 mdbSyncFile = joinPath(dataPath, 'mdbSync.db')
 simKLSyncFile = joinPath(dataPath, 'simKLSync.db')
+customTraktSyncFile = joinPath(dataPath, 'customTraktSync.db')
+floppySyncFile = joinPath(dataPath, 'floppySync.db')
+scrobSyncFile = joinPath(dataPath, 'scrobSync.db')
 subsFile = joinPath(dataPath, 'substitute.db')
 fanarttvCacheFile = joinPath(dataPath, 'fanarttv.db')
 metaInternalCacheFile = joinPath(dataPath, 'video_cache.db')
@@ -129,9 +131,23 @@ def getProgressWindow(heading='', icon=None, qr=0, artwork=0):
 	Thread(target=window.run).start()
 	return window
 
+_UNSET = object()
+_settings_cache = _UNSET
+_settings_cache_raw = None
+
 def setting(id, fallback=None):
-	try: settings_dict = jsloads(homeWindow.getProperty('umbrella_settings'))
-	except: settings_dict = make_settings_dict()
+	global _settings_cache, _settings_cache_raw
+	raw = homeWindow.getProperty('umbrella_settings')
+	if raw and raw == _settings_cache_raw:
+		settings_dict = _settings_cache
+	else:
+		try: settings_dict = jsloads(raw) if raw else None
+		except Exception: settings_dict = None
+		if settings_dict is None:
+			# make_settings_dict() itself may legitimately return None (parse failure) — only
+			# retry it once per process (on the first-ever miss), never on every single call.
+			settings_dict = make_settings_dict() if _settings_cache is _UNSET else _settings_cache
+		_settings_cache, _settings_cache_raw = settings_dict, raw
 	if settings_dict is None: settings_dict = settings_fallback(id)
 	value = settings_dict.get(id, '')
 	if fallback is None: return value
@@ -148,16 +164,17 @@ def setSetting(id, value):
 	xbmcaddon.Addon().setSetting(id, value)
 
 def make_settings_dict(): # service runs upon a setting change
+	from xml.dom.minidom import parse as mdParse # ET.parse() is unreliable on Apple platforms (tvOS/iOS); minidom is not, see clean_settings.py
 	settings_dict = None
 	for attempt in range(2):
 		try:
-			root = ET.parse(settingsFile).getroot()
+			root = mdParse(settingsFile)
 			settings_dict = {}
-			for item in root.iter('setting'):
-				setting_id = item.get('id')
-				setting_value = item.text
-				if setting_value is None: setting_value = ''
-				settings_dict.update({setting_id: setting_value})
+			for item in root.getElementsByTagName('setting'):
+				setting_id = item.getAttribute('id')
+				try: setting_value = item.firstChild.data
+				except Exception: setting_value = ''
+				settings_dict[setting_id] = setting_value
 			break
 		except:
 			if attempt < 1: xbmc.sleep(1000)
@@ -226,6 +243,19 @@ def artPath():
 	if os.path.isdir(user_path):
 		return user_path
 	return joinPath(xbmcaddon.Addon('plugin.video.umbrella').getAddonInfo('path'), 'resources', 'artwork', theme)
+
+def themedIcon(filename):
+	# A third-party icon pack (e.g. a "smallbrella"-style alternate theme, downloaded
+	# under userIconFolders()) predates whatever provider icon was added most recently
+	# to Umbrella's own bundled set and simply won't have that file — artPath() only
+	# falls back to the bundled theme when the whole pack directory is missing, not
+	# per missing file. Resolve against the active pack first, then fall back to
+	# Umbrella's own bundled "umbrella" theme (which always has every icon Umbrella
+	# itself references) so a gap in a third-party pack shows the real icon instead
+	# of a broken/blank one.
+	path = joinPath(artPath(), filename)
+	if existsPath(path): return path
+	return joinPath(iconFolders(), 'umbrella', filename)
 
 def genreIconPath():
 	theme = appearance()
@@ -538,6 +568,9 @@ def refresh_contextProperties():
 		'context.umbrella.traktManager',
 		'context.umbrella.mdblistManager',
 		'context.umbrella.simklManager',
+		'context.umbrella.customManager',
+		'context.umbrella.floppyManager',
+		'context.umbrella.scrobManager',
 		'context.umbrella.tmdbListManager',
 		'context.umbrella.tmdbWatchlist',
 		'context.umbrella.clearProviders',

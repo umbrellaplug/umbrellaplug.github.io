@@ -1,3 +1,38 @@
+[B]Update - v6.7.82 - August 13th, 2026 [/B]
+--[Change] Reorganized My TV Shows and My Movies to put lists under providers names. Ex: My TV Shows > Trakt > Progress Episodes
+--[Change] Added support for Scrob. (https://github.com/ellite/scrob)
+--[Change] Added support for Floppy. (https://github.com/dannyvfilms/Floppy)
+--[Change] Changed labels throughout providers to be consistent.
+--[Change] Added support for dropped to all calendar lists.
+--[Change] Added support for 3 digit episode numbers from manthock.
+--[Change] Management Tools Sections and Managers in context menu updated to add all available options for each provider.
+--[Change] Fixed pagination showing Next Page (None) in some instances.
+--[Change] Support for lists add from more providers.
+--[Change] Changes made to avoid double scrobbles.
+--[Change] Fixed My TV Shows and My Movies being incorrectly gated.
+--[Fix] Added pagination for user lists.
+--[Change] Made all force sync show progress dialogs.
+--[Fix] Change made for database on android 14 devices.
+--[Change] Change made to allow for sorting networks by popularity.
+--[Change] Change to playlist creation to avoid duplicate episodes.
+--[Change] MdbList Calendar added.
+--[Fix] Changes made for providers to clear cache on full history sync to avoid stale progress indicators.
+--[Change] Moved custom trakt provider behind developer options.
+--[Fix] Added pagination to MDBList History.
+--[Fix] Added progress for sync when changing watch indicators.
+--[Change] Made change so that tv and movie lists only showed up if those types of items are present in scrob user lists.
+--[Fix] Fix for resume on trakt resetting banner to 0.
+--[Fix] Fix to send separate stop event on Floppy to remove now playing banner.
+--[Fix] Runtime duration for mdblist fixed.
+--[Fix] Fix for hiding collection items from trakt.
+--[Change] Change made for Trakt scrobble on pause.
+--[Fix] Made changes to the way counts are done when using Simkl
+--[Change] Menus changed to group lists from services together. 
+--[Change] Added more mdblist lists for tv and movies like watched.
+--[Fix] Removed timestamp from Simkl scrobble. Now uses server time.
+--[Fix] Made sure scrobble fails no longer show when scrobble notifications are disabled.
+--[Fix] Change for settings reads for apple devices to fix long delays.
+
 [B]Update - v6.7.81 - July 13th, 2026 [/B]
 --[Fix] Fix to clear cache on show episode and season counts when episode count does not match cache.
 

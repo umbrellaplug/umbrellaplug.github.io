@@ -14,6 +14,9 @@ import json
 from resources.lib.modules import trakt
 from resources.lib.modules import simkl
 from resources.lib.modules import mdblist
+from resources.lib.modules import customtrakt
+from resources.lib.modules import floppy
+from resources.lib.modules import scrob
 from resources.lib.database import traktsync
 
 ZoneUtc = 'utc'
@@ -25,6 +28,9 @@ FormatTimeShort = '%H:%M'
 service_syncInterval = int(getSetting('background.service.syncInterval')) if getSetting('background.service.syncInterval') else 30
 simkl_syncInterval = int(getSetting('simkl.service.syncInterval')) if getSetting('simkl.service.syncInterval') else 30
 mdblist_syncInterval = int(getSetting('mdblist.service.syncInterval')) if getSetting('mdblist.service.syncInterval') else 30
+custom_syncInterval = int(getSetting('custom.service.syncInterval')) if getSetting('custom.service.syncInterval') else 30
+floppy_syncInterval = int(getSetting('floppy.service.syncInterval')) if getSetting('floppy.service.syncInterval') else 30
+scrob_syncInterval = int(getSetting('scrob.service.syncInterval')) if getSetting('scrob.service.syncInterval') else 30
 
 # def datetime_from_string(self, string, format=FormatDateTime):
 	# try:
@@ -176,15 +182,20 @@ def resetCustomBG():
 def setIndicatorService():
 	try:
 		import xbmcgui
-		art = control.artPath()
 		currentSetting = control.setting('indicators.alt')
-		service_map = [('Local', control.joinPath(art, 'icon.png'), '0')]
+		service_map = [('Local', control.themedIcon('icon.png'), '0')]
 		if trakt.getTraktCredentialsInfo():
-			service_map.append(('Trakt', control.joinPath(art, 'trakt.png'), '1'))
+			service_map.append(('Trakt', control.themedIcon('trakt.png'), '1'))
 		if simkl.getSimKLCredentialsInfo():
-			service_map.append(('Simkl', control.joinPath(art, 'simkl.png'), '2'))
+			service_map.append(('Simkl', control.themedIcon('simkl.png'), '2'))
 		if mdblist.getMDBListCredentialsInfo():
-			service_map.append(('MDBList', control.joinPath(art, 'mdblist.png'), '3'))
+			service_map.append(('MDBList', control.themedIcon('mdblist.png'), '3'))
+		if customtrakt.getCustomCredentialsInfo():
+			service_map.append((customtrakt.getCustomServiceName(), control.themedIcon('icon.png'), '4'))
+		if floppy.getFloppyCredentialsInfo():
+			service_map.append(('Floppy', control.themedIcon('floppy.png'), '5'))
+		if scrob.getScrobCredentialsInfo():
+			service_map.append(('Scrob', control.themedIcon('scrob.png'), '6'))
 		current_index = next((i for i, (_, _, v) in enumerate(service_map) if v == currentSetting), -1)
 		items = []
 		for i, (label, icon, _) in enumerate(service_map):
@@ -196,10 +207,33 @@ def setIndicatorService():
 		selection, _, optionVal = service_map[select]
 
 		if currentSetting != optionVal:
-			if optionVal == '1':
-				trakt.sync_watched(forced=True)
-			if optionVal == '2':
-				simkl.sync_watched(forced=True)
+			# DialogProgress (modal, center-screen) rather than DialogProgressBG (small
+			# corner toast) — the toast is easy to miss entirely once Settings closes and
+			# focus shifts back to whatever screen was behind it.
+			dialog = control.progressDialog
+			dialog.create(control.addonName(), 'Syncing watch history...')
+			def _progress(phase, done=None, total=None):
+				try:
+					if done is not None and total:
+						dialog.update(min(int(100.0 * done / total), 100), '%s... (%s/%s)' % (phase, done, total))
+					elif done is not None:
+						dialog.update(0, '%s... (%s synced)' % (phase, done))
+					else:
+						dialog.update(0, '%s...' % phase)
+				except: pass
+			try:
+				if optionVal == '1':
+					trakt.sync_watched(forced=True, progress_callback=_progress)
+				if optionVal == '2':
+					simkl.sync_watched(forced=True, progress_callback=_progress)
+				if optionVal == '4':
+					customtrakt.sync_watched(forced=True, progress_callback=_progress)
+				if optionVal == '5':
+					floppy.sync_watched(forced=True, progress_callback=_progress)
+				if optionVal == '6':
+					scrob.sync_watched(forced=True, progress_callback=_progress)
+			finally:
+				dialog.close()
 		control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 		control.setSetting('indicators.alt', optionVal)
 		control.homeWindow.setProperty('umbrella.updateSettings', 'true')
@@ -212,15 +246,20 @@ def setIndicatorService():
 def setScrobbleService():
 	try:
 		import xbmcgui
-		art = control.artPath()
 		currentSetting = control.setting('scrobble.source')
-		service_map = [('Local', control.joinPath(art, 'icon.png'), '0')]
+		service_map = [('Local', control.themedIcon('icon.png'), '0')]
 		if trakt.getTraktCredentialsInfo():
-			service_map.append(('Trakt', control.joinPath(art, 'trakt.png'), '1'))
+			service_map.append(('Trakt', control.themedIcon('trakt.png'), '1'))
 		if simkl.getSimKLCredentialsInfo():
-			service_map.append(('Simkl', control.joinPath(art, 'simkl.png'), '2'))
+			service_map.append(('Simkl', control.themedIcon('simkl.png'), '2'))
 		if mdblist.getMDBListCredentialsInfo():
-			service_map.append(('MDBList', control.joinPath(art, 'mdblist.png'), '3'))
+			service_map.append(('MDBList', control.themedIcon('mdblist.png'), '3'))
+		if customtrakt.getCustomCredentialsInfo():
+			service_map.append((customtrakt.getCustomServiceName(), control.themedIcon('icon.png'), '4'))
+		if floppy.getFloppyCredentialsInfo():
+			service_map.append(('Floppy', control.themedIcon('floppy.png'), '5'))
+		if scrob.getScrobCredentialsInfo():
+			service_map.append(('Scrob', control.themedIcon('scrob.png'), '6'))
 		current_index = next((i for i, (_, _, v) in enumerate(service_map) if v == currentSetting), -1)
 		items = []
 		for i, (label, icon, _) in enumerate(service_map):
@@ -242,6 +281,9 @@ def setScrobbleService():
 def services_syncs():
 	last_simkl_sync = 0
 	last_mdblist_sync = 0
+	last_custom_sync = 0
+	last_floppy_sync = 0
+	last_scrob_sync = 0
 	while not control.monitor.abortRequested():
 		control.sleep(5000) # wait 5sec in case of device wake from sleep
 		try:
@@ -306,8 +348,12 @@ def services_syncs():
 				from resources.lib.modules import log_utils
 				log_utils.log('MDBList Sync Service is running.', 1)
 				if not control.monitor.abortRequested():
-					if getSetting('indicators.alt') == '3':
-						mdblist.sync_watchedProgress(activities)
+					# Unconditional like Trakt/Custom/Floppy's equivalents — this feeds
+					# mdb_watched_episodes, which the MDBList Episode Progress widget reads
+					# from regardless of whether MDBList is the active indicators source.
+					# Gating it behind indicators.alt=='3' left that table stale for anyone
+					# using the widget with a different indicators source selected.
+					mdblist.sync_watchedProgress(activities)
 					mdblist.sync_watch_list(activities)
 					mdblist.sync_collection(activities)
 					mdblist.sync_dropped(activities)
@@ -315,6 +361,49 @@ def services_syncs():
 					if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '3':
 						mdblist.sync_playbackProgress()
 				last_mdblist_sync = current_time
+		if control.monitor.abortRequested(): break
+		if internets and customtrakt.getCustomCredentialsInfo():
+			current_time = time.time()
+			if (current_time - last_custom_sync) >= (60 * custom_syncInterval):
+				activities = customtrakt.getActivities()
+				from resources.lib.modules import log_utils
+				log_utils.log('%s Service Sync is running.' % customtrakt.getCustomServiceName(), 1)
+				if not control.monitor.abortRequested():
+					if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '4':
+						customtrakt.sync_playbackProgress(activities, forced=True)
+					customtrakt.sync_watchedProgress(activities)
+				if not control.monitor.abortRequested():
+					customtrakt.sync_watch_list(activities, forced=True)
+					customtrakt.sync_collection(activities, forced=True)
+					customtrakt.sync_dropped(activities, forced=True)
+				last_custom_sync = current_time
+		if control.monitor.abortRequested(): break
+		if internets and floppy.getFloppyCredentialsInfo():
+			current_time = time.time()
+			if (current_time - last_floppy_sync) >= (60 * floppy_syncInterval):
+				from resources.lib.modules import log_utils
+				log_utils.log('Floppy Service Sync is running.', 1)
+				if not control.monitor.abortRequested():
+					if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '5':
+						floppy.sync_playbackProgress()
+					floppy.sync_watchedProgress(forced=True)
+				if not control.monitor.abortRequested():
+					floppy.sync_watch_list(forced=True)
+					floppy.sync_collection(forced=True)
+				last_floppy_sync = current_time
+		if control.monitor.abortRequested(): break
+		if internets and scrob.getScrobCredentialsInfo():
+			current_time = time.time()
+			if (current_time - last_scrob_sync) >= (60 * scrob_syncInterval):
+				from resources.lib.modules import log_utils
+				log_utils.log('Scrob Service Sync is running.', 1)
+				if not control.monitor.abortRequested():
+					if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '6':
+						scrob.sync_playbackProgress()
+					scrob.sync_watchedProgress(forced=True)
+				if not control.monitor.abortRequested():
+					scrob.sync_user_lists(forced=True)
+				last_scrob_sync = current_time
 		if control.monitor.waitForAbort(60*service_syncInterval): break
 
 def originCountry_Select():

@@ -8,7 +8,7 @@ from json import dumps as jsdumps, loads as jsloads
 import re
 from threading import Thread
 from urllib.parse import quote_plus, urlencode, parse_qsl, urlparse, urlsplit
-from resources.lib.database import cache, fanarttv_cache, traktsync
+from resources.lib.database import cache, fanarttv_cache, traktsync, customtraktsync, floppysync, scrobsync
 from resources.lib.database import artwork as customArtwork
 from resources.lib.indexers.tmdb import TVshows as tmdb_indexer
 from resources.lib.indexers.fanarttv import FanartTv
@@ -19,6 +19,9 @@ from resources.lib.modules import tools
 from resources.lib.modules import trakt
 from resources.lib.modules import simkl
 from resources.lib.modules import mdblist
+from resources.lib.modules import customtrakt
+from resources.lib.modules import floppy
+from resources.lib.modules import scrob
 from resources.lib.modules import views
 from resources.lib.modules.playcount import getTVShowIndicators, getEpisodeOverlay, getShowCount, getSeasonIndicators
 from resources.lib.modules.player import Bookmarks
@@ -52,6 +55,9 @@ class Episodes:
 		self.traktCredentials = trakt.getTraktCredentialsInfo()
 		self.simklCredentials = simkl.getSimKLCredentialsInfo()
 		self.mdblist_authed = getSetting('mdblist.token') != ''
+		self.customCredentials = customtrakt.getCustomCredentialsInfo()
+		self.floppyCredentials = floppy.getFloppyCredentialsInfo()
+		self.scrobCredentials = scrob.getScrobCredentialsInfo()
 		self.trakt_directProgressScrape = getSetting('trakt.directProgress.scrape') == 'true'
 		self.simkl_directProgressScrape = getSetting('simkl.directProgress.scrape') == 'true'
 		self.mdblist_directProgressScrape = getSetting('mdblist.directProgress.scrape') == 'true'
@@ -260,6 +266,199 @@ class Episodes:
 			from resources.lib.modules import log_utils
 			log_utils.error()
 
+	def mdblistUnfinishedManager(self):
+		try:
+			control.busy()
+			list = self.mdblist_unfinished(create_directory=False)
+			control.hide()
+			from resources.lib.windows.traktepisodeprogress_manager import TraktEpisodeProgressManagerXML
+			window = TraktEpisodeProgressManagerXML('traktepisodeprogress_manager.xml', control.addonPath(control.addonId()), results=list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for i in selected_items:
+					mdblist.scrobbleReset(imdb=i.get('imdb', ''), tvdb=i.get('tvdb', ''), season=i.get('season'), episode=i.get('episode'), refresh=False)
+				control.trigger_widget_refresh()
+				if 'plugin.video.umbrella' in control.infoLabel('Container.PluginName'): control.refresh()
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
+	def floppy_unfinished(self, url=None, create_directory=True, folderName=''):
+		# Confirmed via GET /api/v1/playback/progress/ (not previously known when
+		# Floppy was first integrated) — same idea as scrob_unfinished() below, but
+		# season/episode/ids all come straight off the live item, no imdb resolution
+		# needed unless the ids block is missing it.
+		self.list = []
+		try:
+			raw_items = floppy.get_all_pages('/playback/progress/', silent=True) or []
+			items = []
+			for item in raw_items:
+				try:
+					if item.get('media_type') != 'episode': continue
+					ids = item.get('ids') or {}
+					show_tmdb = str(ids.get('tmdb') or '')
+					season, episode = item.get('season_number'), item.get('episode_number')
+					if not show_tmdb or season is None or episode is None: continue
+					show_tvdb = str(ids.get('tvdb') or '')
+					show_imdb = str(ids.get('imdb') or '') or floppy._resolve_tv_imdb(show_tmdb)
+					position = float(item.get('position_seconds') or 0)
+					duration = float(item.get('duration_seconds') or 0)
+					progress = round((position / duration) * 100, 1) if duration else 0
+					items.append({
+						'tvshowtitle': item.get('series_title', '') or '', 'title': item.get('title', '') or '',
+						'imdb': show_imdb, 'tmdb': show_tmdb, 'tvdb': show_tvdb,
+						'season': int(season), 'episode': int(episode),
+						'genre': '', 'mpaa': '', 'studio': '', 'duration': 0,
+						'progress': str(progress),
+						'paused_at': item.get('updated_at', '') or '',
+					})
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+			if not items:
+				if create_directory: self.episodeDirectory(self.list, unfinished=True, next=False, folderName=folderName)
+				return self.list
+			cache_key = 'floppyunfinished'
+			self.list = cache.get(self.trakt_episodes_list, 0, cache_key, self.trakt_user, self.lang, items)
+			if self.list is None: self.list = []
+			self.list = sorted(self.list, key=lambda k: k['paused_at'], reverse=True)
+			if self.list and not self.showunaired:
+				self.list = [i for i in self.list if i.get('unaired', '') != 'true']
+			if create_directory: self.episodeDirectory(self.list, unfinished=True, next=False, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def floppyUnfinishedManager(self):
+		try:
+			control.busy()
+			list = self.floppy_unfinished(create_directory=False)
+			control.hide()
+			from resources.lib.windows.traktepisodeprogress_manager import TraktEpisodeProgressManagerXML
+			window = TraktEpisodeProgressManagerXML('traktepisodeprogress_manager.xml', control.addonPath(control.addonId()), results=list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for i in selected_items:
+					item = next((x for x in list if x.get('imdb') == i.get('imdb') and str(x.get('season')) == str(i.get('season')) and str(x.get('episode')) == str(i.get('episode'))), {})
+					floppy.scrobbleReset(imdb=i.get('imdb', ''), tmdb=item.get('tmdb', ''), tvdb=i.get('tvdb', ''), season=i.get('season'), episode=i.get('episode'), refresh=False)
+				control.trigger_widget_refresh()
+				if 'plugin.video.umbrella' in control.infoLabel('Container.PluginName'): control.refresh()
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
+	def custom_unfinished(self, url=None, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			items = customtraktsync.fetch_bookmarks(imdb='', ret_all=True, ret_type='episodes')
+			if not items:
+				if create_directory: self.episodeDirectory(self.list, unfinished=True, next=False, folderName=folderName)
+				return self.list
+			cache_key = 'customunfinished'
+			if customtrakt.getActivity() > cache.timeout(self.trakt_episodes_list, cache_key, self.trakt_user, self.lang, items):
+				self.list = cache.get(self.trakt_episodes_list, 0, cache_key, self.trakt_user, self.lang, items)
+			else:
+				self.list = cache.get(self.trakt_episodes_list, self.trakt_unfinished_hours, cache_key, self.trakt_user, self.lang, items)
+			if self.list is None: self.list = []
+			self.list = sorted(self.list, key=lambda k: k['paused_at'], reverse=True)
+			if self.list and not self.showunaired:
+				self.list = [i for i in self.list if i.get('unaired', '') != 'true']
+			if create_directory: self.episodeDirectory(self.list, unfinished=True, next=False, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def customUnfinishedManager(self):
+		try:
+			control.busy()
+			list = self.custom_unfinished(create_directory=False)
+			control.hide()
+			from resources.lib.windows.traktepisodeprogress_manager import TraktEpisodeProgressManagerXML
+			window = TraktEpisodeProgressManagerXML('traktepisodeprogress_manager.xml', control.addonPath(control.addonId()), results=list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for i in selected_items:
+					customtrakt.scrobbleReset(imdb=i.get('imdb', ''), tvdb=i.get('tvdb', ''), season=i.get('season'), episode=i.get('episode'), refresh=False)
+				control.trigger_widget_refresh()
+				if 'plugin.video.umbrella' in control.infoLabel('Container.PluginName'): control.refresh()
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
+	def scrob_unfinished(self, url=None, create_directory=True, folderName=''):
+		# Unlike the other providers' "Unfinished" (which read local client-tracked
+		# bookmarks), Scrob has a real server-side "in progress playback" endpoint —
+		# reading it directly here means this reflects a pause point set from ANY
+		# client reporting to the same Scrob account, not just what Umbrella itself
+		# has seen. Season/episode numbers come straight from the live item, so unlike
+		# scrob_progress_list()'s "next episode" guess, no TMDb-episode-matching by
+		# number is needed beyond trakt_episodes_list()'s normal art/plot enrichment.
+		self.list = []
+		try:
+			raw_items = scrob.get_continue_watching()
+			items = []
+			for item in raw_items:
+				try:
+					media = item.get('media') or {}
+					if media.get('type') != 'episode': continue
+					show_tmdb = str(media.get('show_tmdb_id') or '')
+					season, episode = media.get('season_number'), media.get('episode_number')
+					if not show_tmdb or season is None or episode is None: continue
+					show_tvdb = str(media.get('show_tvdb_id') or '')
+					show_imdb = scrob._resolve_tv_imdb(show_tmdb)
+					items.append({
+						'tvshowtitle': media.get('show_title', '') or '', 'title': media.get('title', '') or '',
+						'imdb': show_imdb, 'tmdb': show_tmdb, 'tvdb': show_tvdb,
+						'season': int(season), 'episode': int(episode),
+						'genre': '', 'mpaa': '', 'studio': '', 'duration': 0,
+						'progress': str(round(float(item.get('progress_percent') or 0) * 100, 1)),
+						'paused_at': item.get('watched_at', '') or '',
+					})
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+			if not items:
+				if create_directory: self.episodeDirectory(self.list, unfinished=True, next=False, folderName=folderName)
+				return self.list
+			cache_key = 'scrobunfinished'
+			self.list = cache.get(self.trakt_episodes_list, 0, cache_key, self.trakt_user, self.lang, items)
+			if self.list is None: self.list = []
+			self.list = sorted(self.list, key=lambda k: k['paused_at'], reverse=True)
+			if self.list and not self.showunaired:
+				self.list = [i for i in self.list if i.get('unaired', '') != 'true']
+			if create_directory: self.episodeDirectory(self.list, unfinished=True, next=False, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def scrobUnfinishedManager(self):
+		try:
+			control.busy()
+			list = self.scrob_unfinished(create_directory=False)
+			control.hide()
+			from resources.lib.windows.traktepisodeprogress_manager import TraktEpisodeProgressManagerXML
+			window = TraktEpisodeProgressManagerXML('traktepisodeprogress_manager.xml', control.addonPath(control.addonId()), results=list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				for i in selected_items:
+					scrob.scrobbleReset(imdb=i.get('imdb', ''), tvdb=i.get('tvdb', ''), season=i.get('season'), episode=i.get('episode'), refresh=False)
+				control.trigger_widget_refresh()
+				if 'plugin.video.umbrella' in control.infoLabel('Container.PluginName'): control.refresh()
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
 	def local_finish_watching(self, url='', folderName=''):
 		self.list = []
 		try:
@@ -450,6 +649,15 @@ class Episodes:
 				if trakt.getActivity() > cache.timeout(self.trakt_episodes_list, url, self.trakt_user, self.lang):
 					self.list = cache.get(self.trakt_episodes_list, 0, url, self.trakt_user, self.lang)
 				else: self.list = cache.get(self.trakt_episodes_list, 1, url, self.trakt_user, self.lang)
+				try:
+					hidden_prog = traktsync.fetch_hidden_progress()
+					hidden_imdb = {str(i['imdb']) for i in hidden_prog if i.get('imdb')}
+					hidden_tvdb = {str(i['tvdb']) for i in hidden_prog if i.get('tvdb')}
+					self.list = [i for i in (self.list or []) if not (
+						(i.get('imdb') and str(i['imdb']) in hidden_imdb) or
+						(i.get('tvdb') and str(i['tvdb']) in hidden_tvdb)
+					)]
+				except: pass
 				if (url == self.mycalendarUpcoming_link) or (url == self.mycalendarPremiers_link):
 					if self.list:
 						self.list = [i for i in self.list if int(re.sub(r'[^0-9]', '', str(i['premiered']).split('T')[0])) >= int(re.sub(r'[^0-9]', '', str(self.today_date)))]
@@ -536,6 +744,17 @@ class Episodes:
 				sorted_list.extend(top_items)
 				sorted_list.extend([i for i in self.list if i not in top_items])
 				self.list = sorted_list
+				try:
+					from resources.lib.database import simklsync as _simklsync
+					dropped = _simklsync.fetch_dropped('shows_dropped')
+					if dropped:
+						dropped_tmdb = {str(i['tmdb']) for i in dropped if i.get('tmdb')}
+						dropped_imdb = {str(i['imdb']) for i in dropped if i.get('imdb')}
+						self.list = [i for i in self.list if not (
+							(i.get('tmdb') and str(i['tmdb']) in dropped_tmdb) or
+							(i.get('imdb') and str(i['imdb']) in dropped_imdb)
+						)]
+				except: pass
 			if self.list is None: self.list = []
 			if not self.progress_showunairedSimkl:
 				self.list = [i for i in self.list if i.get('unaired', '') != 'true']
@@ -625,47 +844,71 @@ class Episodes:
 				if self.notifications: control.notification(title=32326, message=33049)
 
 	def mdblist_progress_list(self, url='/upnext', direct=False):
+		# MDBList's own /upnext endpoint (get_up_next()) was returning S1E1 for shows
+		# watched out of order — it depends on MDBList's server-side watched-history
+		# tracking for the show, which doesn't reliably reflect out-of-order watching.
+		# Reconstructed locally instead, from mdbsync's watched-episode table, the same
+		# "furthest watched episode + 1" approach floppy_progress_list() uses (matches
+		# real Trakt's own progress semantics: resume from your furthest point, not the
+		# first unwatched episode in chronological order).
+		self.list = []
 		try:
-			result = mdblist.get_up_next()
-		except: return
-		if not result: return
-		items = []
-		for item in result:
+			from resources.lib.database import mdbsync
+			episodes = mdbsync.get_watched_episodes()
+			if not episodes: return self.list
+			shows = {}
+			for (show_imdb, show_tmdb, show_tvdb, season, episode) in episodes:
+				key = show_imdb or show_tmdb
+				if not key: continue
+				shows.setdefault(key, {'imdb': show_imdb, 'tmdb': show_tmdb, 'tvdb': show_tvdb, 'watched_set': set()})
+				shows[key]['watched_set'].add((int(season), int(episode)))
 			try:
-				values = {}
-				next_ep = item.get('next_episode', {})
-				if not next_ep: continue
-				values['snum'] = next_ep.get('season')
-				values['enum'] = next_ep.get('episode')
-				last_watched = item.get('last_watched_at', '')
-				if last_watched:
-					try:
-						date_part = last_watched.split('T')[0]
-						time_part = last_watched.split('T')[1].split('+')[0].rstrip('Z')
-						values['lastplayed'] = '%sT%s.000Z' % (date_part, time_part)
-					except: values['lastplayed'] = ''
-				else: values['lastplayed'] = ''
-				show = item.get('show', {})
-				values['tvshowtitle'] = show.get('title', '')
-				if not values['tvshowtitle']: continue
-				ids = show.get('ids', {})
-				values['tmdb'] = str(ids.get('tmdb', '')) if ids.get('tmdb') else ''
-				values['imdb'] = ''
-				values['tvdb'] = ''
-				values['duration'] = str(next_ep.get('runtime', ''))
-				items.append(values)
+				for (show_imdb, show_tmdb, show_tvdb, last_watched_at) in mdbsync.get_watched_shows():
+					key = show_imdb or show_tmdb
+					if key in shows: shows[key]['lastplayed'] = last_watched_at
 			except: pass
+			items = list(shows.values())
+		except: return self.list
+		if not items: return self.list
 
 		def items_list(i):
-			values = i
-			tmdb = i.get('tmdb')
-			if not tmdb: return
+			imdb_id = i.get('imdb', '')
+			tmdb_id = i.get('tmdb', '')
+			watched_set = i.get('watched_set', set())
 			try:
+				candidates = watched_set if self.showspecials else set((s, e) for (s, e) in watched_set if s != 0)
+				if not candidates: return
+				furthest_season = max(s for (s, e) in candidates)
+				furthest_episode = max(e for (s, e) in candidates if s == furthest_season)
+				tmdb = tmdb_id
+				if not tmdb and imdb_id:
+					tmdb_result = cache.get(tmdb_indexer().IdLookup, 96, imdb_id, i.get('tvdb', ''))
+					tmdb = str(tmdb_result.get('id')) if tmdb_result else ''
+				if not tmdb: return
 				showSeasons = cache.get(tmdb_indexer().get_showSeasons_meta, 96, tmdb)
 				if not showSeasons: return
-				next_season_num = i['snum']
-				next_episode_num = i['enum']
-				if next_season_num > showSeasons['total_seasons']: return
+				seasons_meta = {s.get('season_number'): s for s in showSeasons.get('seasons', [])}
+				season_meta = seasons_meta.get(furthest_season)
+				# Not capped to TMDb's last-aired boundary (last_episode_to_air) — that
+				# show-level field lags behind reality right around an episode's actual air
+				# date/time, which caused this to silently drop shows whose next episode had
+				# genuinely already released but TMDb hadn't flipped last_episode_to_air to
+				# yet (e.g. next_episode_to_air.air_date == today). The per-episode "unaired"
+				# check below (using that specific episode's own air_date, refreshed via
+				# get_seasonEpisodes_meta_checked) is the precise signal for whether an episode
+				# is actually out yet; a "renewed but next season not released" show is still
+				# correctly excluded by the seasons_meta membership check right after this.
+				raw_count = season_meta.get('episode_count', 0) if season_meta else 0
+				if raw_count and furthest_episode < raw_count:
+					next_season_num, next_episode_num = furthest_season, furthest_episode + 1
+				else:
+					next_season_num, next_episode_num = furthest_season + 1, 1
+				if next_season_num not in seasons_meta: return  # no further known season — fully caught up
+				values = {}
+				values['imdb'] = imdb_id
+				values['tmdb'] = tmdb
+				values['tvdb'] = i.get('tvdb', '')
+				values['lastplayed'] = i.get('lastplayed', '')
 				if not self.showspecials and next_season_num == 0: return
 				seasonEpisodes = tmdb_indexer().get_seasonEpisodes_meta_checked(tmdb, next_season_num)
 				if not seasonEpisodes: return
@@ -677,6 +920,10 @@ class Episodes:
 				values.update(seasonEpisodes)
 				values.update(episode_meta)
 				for k in ('episodes', 'snum', 'enum'): values.pop(k, None)
+				duration = values.get('duration')
+				if duration:
+					try: values['duration'] = int(duration) * 60
+					except: pass
 				air_date = values.get('premiered', '')
 				values['unaired'] = ''
 				try:
@@ -700,9 +947,127 @@ class Episodes:
 		threads = []
 		for i in items:
 			threads.append(Thread(target=items_list, args=(i,)))
-		[i.start() for i in threads]
-		[i.join() for i in threads]
+		_unlimited = getSetting('dev.batch.unlimited') == 'true'
+		_bs = max(int(getSetting('dev.batch.size') or '10'), 1)
+		_chunk = max(len(threads), 1) if _unlimited else _bs
+		for i in range(0, len(threads), _chunk):
+			if control.monitor.abortRequested(): break
+			batch = threads[i:i + _chunk]
+			[t.start() for t in batch]
+			[t.join() for t in batch]
 		return self.list
+
+	def mdblist_calendar_items(self, days=33, start_date=None):
+		# Flat episode-reference items from MDBList's own /calendar/events — personalized
+		# to the user's watchlist/tracked shows, confirmed live against a real account.
+		# Mapped into the same shape trakt_list() produces so trakt_episodes_list can
+		# enrich them with TMDb data unmodified, mirroring custom_calendar_items() exactly.
+		# Confirmed schema: {type: 'episode'|'movie', title: <show title>, episode_title,
+		# show_tmdb, season_number, episode_number, start: 'YYYY-MM-DD'} — MDBList's
+		# calendar has no imdb/tvdb on the event itself, only show_tmdb.
+		items = []
+		try:
+			start = start_date or self.date_time.strftime('%Y-%m-%d')
+			# datetime.strptime() is unreliable on some embedded Python builds (confirmed:
+			# broke on a Firecube Android TV device with 'NoneType' object is not callable —
+			# strptime's lazy _strptime import isn't thread-safe there) — every other date
+			# computation in this file already avoids it, this was the one new usage.
+			# datetime(y, m, d) needs no lazy import, so build the date manually instead.
+			y, m, d = (int(x) for x in start.split('-')[:3])
+			end = (datetime(y, m, d) + timedelta(days=days)).strftime('%Y-%m-%d')
+			raw = mdblist.get_calendar(start, end)
+			if not raw: return items
+			for i in raw:
+				try:
+					if i.get('type') != 'episode': continue
+					season, episode = i.get('season_number'), i.get('episode_number')
+					if season is None or episode is None: continue
+					if not self.showspecials and season == 0: continue
+					tvshowtitle = i.get('title')
+					if not tvshowtitle: continue
+					tmdb = str(i.get('show_tmdb') or '')
+					if not tmdb: continue
+					values = {
+						'title': i.get('episode_title') or '', 'season': season, 'episode': episode,
+						'tvshowtitle': tvshowtitle, 'year': '',
+						'premiered': i.get('start') or '',
+						'imdb': '', 'tmdb': tmdb, 'tvdb': '',
+						'next': '',
+					}
+					items.append(values)
+				except: pass
+			try:
+				from resources.lib.database import mdbsync as _mdbsync
+				dropped = _mdbsync.fetch_dropped('shows_dropped')
+				if dropped:
+					dropped_tmdb = {str(i['tmdb']) for i in dropped if i.get('tmdb')}
+					items = [i for i in items if not (i.get('tmdb') and str(i['tmdb']) in dropped_tmdb)]
+			except: pass
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+		return items
+
+	def mdblist_calendar_recent(self, url, folderName=''):
+		# "Recent" needs a window that actually reaches into the past — mirrors
+		# custom_calendar_recent()'s date-window override for the same reason.
+		self.list = []
+		try:
+			recent_start = (self.date_time - timedelta(days=30)).strftime('%Y-%m-%d')
+			items = cache.get(self.mdblist_calendar_items, 1, 33, recent_start)
+			self.list = self.trakt_episodes_list('mdblistcalendarrecent', self.trakt_user, self.lang, items=items)
+			if self.list:
+				self.list = [i for i in self.list if int(re.sub(r'[^0-9]', '', str(i['premiered']).split('T')[0])) <= int(re.sub(r'[^0-9]', '', str(self.today_date)))]
+				for i in range(len(self.list)): self.list[i]['calendar_recent'] = True
+				self.list = sorted(self.list, key=lambda k: k['premiered'], reverse=True)
+			if self.list is None: self.list = []
+			self.episodeDirectory(self.list, unfinished=False, next=False, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications: control.notification(title=32326, message=33049)
+
+	def mdblist_calendar_upcoming(self, url, folderName=''):
+		self.list = []
+		try:
+			items = cache.get(self.mdblist_calendar_items, 1, 33)
+			self.list = self.trakt_episodes_list('mdblistcalendarupcoming', self.trakt_user, self.lang, items=items)
+			if self.list:
+				self.list = [i for i in self.list if int(re.sub(r'[^0-9]', '', str(i['premiered']).split('T')[0])) >= int(re.sub(r'[^0-9]', '', str(self.today_date)))]
+				for i in range(len(self.list)): self.list[i]['calendar_unaired'] = True
+				self.list = sorted(self.list, key=lambda k: k['premiered'], reverse=False)
+			if self.list is None: self.list = []
+			self.episodeDirectory(self.list, unfinished=False, next=False, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications: control.notification(title=32326, message=33049)
+
+	def mdblist_calendar_premieres(self, url, folderName=''):
+		self.list = []
+		try:
+			items = cache.get(self.mdblist_calendar_items, 1, 33)
+			self.list = self.trakt_episodes_list('mdblistcalendarpremieres', self.trakt_user, self.lang, items=items)
+			if self.list:
+				self.list = [i for i in self.list if i.get('episode') == 1 and
+					int(re.sub(r'[^0-9]', '', str(i['premiered']).split('T')[0])) >= int(re.sub(r'[^0-9]', '', str(self.today_date)))]
+				for i in range(len(self.list)): self.list[i]['calendar_unaired'] = True
+				self.list = sorted(self.list, key=lambda k: k['premiered'], reverse=False)
+			if self.list is None: self.list = []
+			self.episodeDirectory(self.list, unfinished=False, next=False, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications: control.notification(title=32326, message=33049)
 
 	def local_calendar(self, url, folderName=''):
 		self.list = []
@@ -790,6 +1155,10 @@ class Episodes:
 					values.update(seasonEpisodes)
 					values.update(episode_meta)
 					for k in ('episodes', 'snum', 'enum'): values.pop(k, None)
+					duration = values.get('duration')
+					if duration:
+						try: values['duration'] = int(duration) * 60
+						except: pass
 					air_date = values.get('premiered', '')
 					values['unaired'] = ''
 					try:
@@ -819,6 +1188,656 @@ class Episodes:
 			from resources.lib.modules import log_utils
 			log_utils.error()
 		return self.list
+
+	def custom_calendar(self, url, folderName=''):
+		self.list = []
+		try:
+			self.list = cache.get(self.custom_progress_list, 0, url)
+			self.sort(type='progress')
+			if self.list is None: self.list = []
+			prior_week = int(re.sub(r'[^0-9]', '', (self.date_time - timedelta(days=7)).strftime('%Y-%m-%d')))
+			sorted_list = []
+			top_items = [i for i in self.list if i.get('episode') == 1 and i.get('premiered') and (int(re.sub(r'[^0-9]', '', str(i['premiered']))) >= prior_week)]
+			sorted_list.extend(top_items)
+			sorted_list.extend([i for i in self.list if i not in top_items])
+			self.list = sorted_list
+			if self.list is None: self.list = []
+			if not getSetting('custom.progress.showunaired') == 'true':
+				self.list = [i for i in self.list if i.get('unaired', '') != 'true']
+			for i in range(len(self.list)): self.list[i]['next'] = ''
+			self.episodeDirectory(self.list, unfinished=False, next=False, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications: control.notification(title=32326, message=33049)
+
+	def custom_upcoming_progress(self, url, folderName=''):
+		self.list = []
+		try:
+			self.list = cache.get(self.custom_progress_list, 0, url, False, True)
+			if self.list:
+				self.list = sorted(self.list, key=lambda k: (k['premiered'] if k.get('premiered') else '3021-01-01', k.get('airtime', '')))
+			if self.list is None: self.list = []
+			self.episodeDirectory(self.list, unfinished=False, next=False, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications: control.notification(title=32326, message=33049)
+
+	def custom_progress_list(self, url='', direct=False, upcoming=False):
+		# Uses GET /shows/{imdb}/progress/watched (confirmed to match real Trakt's
+		# shape) for each show's authoritative next_episode when an imdb id is known;
+		# falls back to walking the first unwatched episode in chronological order
+		# from the local watched-episode set when no imdb id or progress data exists.
+		self.list = []
+		try:
+			episodes = customtraktsync.get_watched_episodes()
+			if not episodes: return self.list
+			shows = {}
+			for (show_imdb, show_tmdb, show_tvdb, season, episode) in episodes:
+				shows.setdefault(show_imdb, {'imdb': show_imdb, 'tmdb': show_tmdb, 'tvdb': show_tvdb, 'watched_set': set()})
+				shows[show_imdb]['watched_set'].add((int(season), int(episode)))
+			try:
+				for (show_imdb, show_tmdb, show_tvdb, last_watched_at) in customtraktsync.get_watched_shows():
+					if show_imdb in shows: shows[show_imdb]['lastplayed'] = last_watched_at
+			except: pass
+			items = list(shows.values())
+			if not items: return self.list
+
+			def items_list(i):
+				imdb_id = i.get('imdb', '')
+				tmdb_id = i.get('tmdb', '')
+				watched_set = i.get('watched_set', set())
+				try:
+					# "Next episode" = the episode after the highest-numbered watched
+					# episode in the highest-numbered season with any watched episode —
+					# matches real Trakt's own progress semantics (resume from your
+					# furthest point), not the first unwatched episode in chronological
+					# order. A show watched out of order (e.g. S2E5 watched, S2E1-4
+					# never watched) should resume at S2E6, not jump back to S1E1.
+					candidates = watched_set if self.showspecials else set((s, e) for (s, e) in watched_set if s != 0)
+					if not candidates: return
+					furthest_season = max(s for (s, e) in candidates)
+					furthest_episode = max(e for (s, e) in candidates if s == furthest_season)
+					if not tmdb_id and imdb_id:
+						tmdb_result = cache.get(tmdb_indexer().IdLookup, 96, imdb_id, i.get('tvdb', ''))
+						tmdb_id = str(tmdb_result.get('id')) if tmdb_result else ''
+					if not tmdb_id: return
+					showSeasons = cache.get(tmdb_indexer().get_showSeasons_meta, 96, tmdb_id)
+					if not showSeasons: return
+					seasons_meta = {s.get('season_number'): s for s in showSeasons.get('seasons', [])}
+					season_meta = seasons_meta.get(furthest_season)
+					if season_meta and furthest_episode < season_meta.get('episode_count', 0):
+						next_season, next_episode = furthest_season, furthest_episode + 1
+					else:
+						next_season, next_episode = furthest_season + 1, 1
+					if next_season not in seasons_meta: return  # no further known season — fully caught up
+					seasonEpisodes = tmdb_indexer().get_seasonEpisodes_meta_checked(tmdb_id, next_season)
+					if not seasonEpisodes: return
+					episode_list = seasonEpisodes.get('episodes', [])
+					try: episode_meta = [x for x in episode_list if x.get('episode') == next_episode][0]
+					except: return
+					values = {}
+					values['imdb'] = imdb_id
+					values['tmdb'] = tmdb_id
+					values['tvdb'] = i.get('tvdb', '')
+					values['lastplayed'] = i.get('lastplayed', '')
+					values['snum'] = next_season
+					values['enum'] = next_episode
+					if not episode_meta.get('plot'): episode_meta['plot'] = showSeasons.get('plot', '')
+					values.update(showSeasons)
+					values.update(seasonEpisodes)
+					values.update(episode_meta)
+					for k in ('episodes', 'snum', 'enum'): values.pop(k, None)
+					duration = values.get('duration')
+					if duration:
+						try: values['duration'] = int(duration) * 60
+						except: pass
+					air_date = values.get('premiered', '')
+					values['unaired'] = ''
+					if upcoming:
+						values['customUpcomingProgress'] = True
+						try:
+							if values.get('status', '').lower() == 'ended': return
+							elif not air_date: values['unaired'] = 'true'
+							elif int(re.sub(r'[^0-9]', '', air_date)) > int(re.sub(r'[^0-9]', '', str(self.today_date))):
+								values['unaired'] = 'true'
+							else: return  # already aired (today or earlier) - not "upcoming"
+						except:
+							from resources.lib.modules import log_utils
+							log_utils.error('tvshowtitle = %s' % values.get('tvshowtitle', ''))
+					else:
+						values['customProgress'] = True
+						try:
+							if values.get('status', '').lower() == 'ended': pass
+							elif not air_date: values['unaired'] = 'true'
+							elif int(re.sub(r'[^0-9]', '', air_date)) > int(re.sub(r'[^0-9]', '', str(self.today_date))):
+								values['unaired'] = 'true'
+						except: pass
+					if self.enable_fanarttv:
+						tvdb = values.get('tvdb', '')
+						extended_art = fanarttv_cache.get(FanartTv().get_tvshow_art, 336, tvdb)
+						if extended_art: values.update(extended_art)
+					if not direct: values['action'] = 'episodes'
+					values['extended'] = True
+					self.list.append(values)
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+
+			threads = []
+			for i in items:
+				threads.append(Thread(target=items_list, args=(i,)))
+			# Batched: each thread may need a TMDb lookup/season-meta fetch — throttled
+			# to avoid hammering the TMDb cache layer with too many threads at once.
+			_unlimited = getSetting('dev.batch.unlimited') == 'true'
+			_bs = max(int(getSetting('dev.batch.size') or '10'), 1)
+			_chunk = max(len(threads), 1) if _unlimited else _bs
+			for i in range(0, len(threads), _chunk):
+				if control.monitor.abortRequested(): break
+				batch = threads[i:i + _chunk]
+				[t.start() for t in batch]
+				[t.join() for t in batch]
+			try:
+				dropped = customtraktsync.fetch_dropped('shows_dropped')
+				if dropped:
+					dropped_tmdb = {str(i['tmdb']) for i in dropped if i.get('tmdb')}
+					dropped_imdb = {str(i['imdb']) for i in dropped if i.get('imdb')}
+					self.list = [i for i in self.list if not (
+						(i.get('tmdb') and str(i['tmdb']) in dropped_tmdb) or
+						(i.get('imdb') and str(i['imdb']) in dropped_imdb)
+					)]
+			except: pass
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+		return self.list
+
+	def floppy_calendar(self, url, folderName=''):
+		# Paginated the same way Trakt's own Progress list is (calendar(), above) — this
+		# was unconditionally rendering every in-progress show's next episode on one
+		# screen (next=False), unlike every other provider's episode progress list.
+		self.list = []
+		try:
+			try:
+				if '?' not in url:
+					url = 'floppyepisodesprogress?limit=%s&page=1' % (self.count or 20)
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q.get('page', 1)) - 1
+				page_limit = max(1, int(q['limit'])) if q.get('limit') else max(1, int(self.count) if self.count else 20)
+			except:
+				index = 0
+				page_limit = max(1, int(self.count) if self.count else 20)
+			self.list = cache.get(self.floppy_progress_list, 0, url)
+			self.sort(type='progress')
+			if self.list is None: self.list = []
+			prior_week = int(re.sub(r'[^0-9]', '', (self.date_time - timedelta(days=7)).strftime('%Y-%m-%d')))
+			sorted_list = []
+			top_items = [i for i in self.list if i.get('episode') == 1 and i.get('premiered') and (int(re.sub(r'[^0-9]', '', str(i['premiered']))) >= prior_week)]
+			sorted_list.extend(top_items)
+			sorted_list.extend([i for i in self.list if i not in top_items])
+			self.list = sorted_list
+			if self.list is None: self.list = []
+			if not getSetting('floppy.progress.showunaired') == 'true':
+				self.list = [i for i in self.list if i.get('unaired', '') != 'true']
+			next_url = ''
+			hasNext = False
+			if getSetting('floppy.paginate.lists') == 'true' and self.list:
+				paginated_ids = [self.list[x:x + page_limit] for x in range(0, len(self.list), page_limit)]
+				total_pages = len(paginated_ids)
+				self.list = paginated_ids[index] if index < total_pages else []
+				try:
+					if index + 1 >= total_pages: raise Exception()
+					next_page = index + 2
+					next_url = 'plugin://plugin.video.umbrella/?action=floppy_episodes_progress&url=%s&page=%s&folderName=%s' % (
+						quote_plus('floppyepisodesprogress?limit=%s&page=%s' % (page_limit, next_page)),
+						str(next_page), quote_plus(folderName))
+					hasNext = True
+				except: pass
+			for i in range(len(self.list)): self.list[i]['next'] = next_url
+			self.episodeDirectory(self.list, unfinished=False, next=hasNext, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications: control.notification(title=32326, message=33049)
+
+	def floppy_upcoming_progress(self, url, folderName=''):
+		self.list = []
+		try:
+			self.list = cache.get(self.floppy_progress_list, 0, url, False, True)
+			if self.list:
+				self.list = sorted(self.list, key=lambda k: (k['premiered'] if k.get('premiered') else '3021-01-01', k.get('airtime', '')))
+			if self.list is None: self.list = []
+			self.episodeDirectory(self.list, unfinished=False, next=False, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications: control.notification(title=32326, message=33049)
+
+	def floppy_progress_list(self, url='', direct=False, upcoming=False):
+		# Floppy has no aggregated per-show "next episode" endpoint (unlike Custom's
+		# /shows/{imdb}/progress/watched), so this is built entirely from the locally
+		# synced watched-episode set (floppysync) — the season-level /history/ progress
+		# counts are already expanded into individual (season, episode) rows during sync
+		# (_sync_episode_tracking_for_show), so the exact same "furthest watched episode"
+		# resume logic as Custom's progress list applies unmodified.
+		self.list = []
+		try:
+			episodes = floppysync.get_watched_episodes()
+			if not episodes: return self.list
+			shows = {}
+			for (show_imdb, show_tmdb, show_tvdb, season, episode) in episodes:
+				shows.setdefault(show_imdb, {'imdb': show_imdb, 'tmdb': show_tmdb, 'tvdb': show_tvdb, 'watched_set': set()})
+				shows[show_imdb]['watched_set'].add((int(season), int(episode)))
+			try:
+				for (show_imdb, show_tmdb, show_tvdb, last_watched_at) in floppysync.get_watched_shows():
+					if show_imdb in shows: shows[show_imdb]['lastplayed'] = last_watched_at
+			except: pass
+			items = list(shows.values())
+			if not items: return self.list
+
+			def items_list(i):
+				imdb_id = i.get('imdb', '')
+				tmdb_id = i.get('tmdb', '')
+				watched_set = i.get('watched_set', set())
+				try:
+					# "Next episode" = the episode after the highest-numbered watched
+					# episode in the highest-numbered season with any watched episode —
+					# matches real Trakt's own progress semantics (resume from your
+					# furthest point), not the first unwatched episode in chronological
+					# order. A show watched out of order (e.g. S2E5 watched, S2E1-4
+					# never watched) should resume at S2E6, not jump back to S1E1.
+					candidates = watched_set if self.showspecials else set((s, e) for (s, e) in watched_set if s != 0)
+					if not candidates: return
+					furthest_season = max(s for (s, e) in candidates)
+					furthest_episode = max(e for (s, e) in candidates if s == furthest_season)
+					if not tmdb_id and imdb_id:
+						tmdb_result = cache.get(tmdb_indexer().IdLookup, 96, imdb_id, i.get('tvdb', ''))
+						tmdb_id = str(tmdb_result.get('id')) if tmdb_result else ''
+					if not tmdb_id: return
+					showSeasons = cache.get(tmdb_indexer().get_showSeasons_meta, 96, tmdb_id)
+					if not showSeasons: return
+					seasons_meta = {s.get('season_number'): s for s in showSeasons.get('seasons', [])}
+					season_meta = seasons_meta.get(furthest_season)
+					if season_meta and furthest_episode < season_meta.get('episode_count', 0):
+						next_season, next_episode = furthest_season, furthest_episode + 1
+					else:
+						next_season, next_episode = furthest_season + 1, 1
+					if next_season not in seasons_meta: return  # no further known season — fully caught up
+					seasonEpisodes = tmdb_indexer().get_seasonEpisodes_meta_checked(tmdb_id, next_season)
+					if not seasonEpisodes: return
+					episode_list = seasonEpisodes.get('episodes', [])
+					try: episode_meta = [x for x in episode_list if x.get('episode') == next_episode][0]
+					except: return
+					values = {}
+					values['imdb'] = imdb_id
+					values['tmdb'] = tmdb_id
+					values['tvdb'] = i.get('tvdb', '')
+					values['lastplayed'] = i.get('lastplayed', '')
+					values['snum'] = next_season
+					values['enum'] = next_episode
+					if not episode_meta.get('plot'): episode_meta['plot'] = showSeasons.get('plot', '')
+					values.update(showSeasons)
+					values.update(seasonEpisodes)
+					values.update(episode_meta)
+					for k in ('episodes', 'snum', 'enum'): values.pop(k, None)
+					duration = values.get('duration')
+					if duration:
+						try: values['duration'] = int(duration) * 60
+						except: pass
+					air_date = values.get('premiered', '')
+					values['unaired'] = ''
+					if upcoming:
+						values['floppyUpcomingProgress'] = True
+						try:
+							if values.get('status', '').lower() == 'ended': return
+							elif not air_date: values['unaired'] = 'true'
+							elif int(re.sub(r'[^0-9]', '', air_date)) > int(re.sub(r'[^0-9]', '', str(self.today_date))):
+								values['unaired'] = 'true'
+							else: return  # already aired (today or earlier) - not "upcoming"
+						except:
+							from resources.lib.modules import log_utils
+							log_utils.error('tvshowtitle = %s' % values.get('tvshowtitle', ''))
+					else:
+						values['floppyProgress'] = True
+						try:
+							if values.get('status', '').lower() == 'ended': pass
+							elif not air_date: values['unaired'] = 'true'
+							elif int(re.sub(r'[^0-9]', '', air_date)) > int(re.sub(r'[^0-9]', '', str(self.today_date))):
+								values['unaired'] = 'true'
+						except: pass
+					if self.enable_fanarttv:
+						tvdb = values.get('tvdb', '')
+						extended_art = fanarttv_cache.get(FanartTv().get_tvshow_art, 336, tvdb)
+						if extended_art: values.update(extended_art)
+					if not direct: values['action'] = 'episodes'
+					values['extended'] = True
+					self.list.append(values)
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+
+			threads = []
+			for i in items:
+				threads.append(Thread(target=items_list, args=(i,)))
+			_unlimited = getSetting('dev.batch.unlimited') == 'true'
+			_bs = max(int(getSetting('dev.batch.size') or '10'), 1)
+			_chunk = max(len(threads), 1) if _unlimited else _bs
+			for i in range(0, len(threads), _chunk):
+				if control.monitor.abortRequested(): break
+				batch = threads[i:i + _chunk]
+				[t.start() for t in batch]
+				[t.join() for t in batch]
+			try:
+				dropped = floppysync.fetch_status_list('shows_dropped')
+				if dropped:
+					dropped_tmdb = {str(i['tmdb']) for i in dropped if i.get('tmdb')}
+					self.list = [i for i in self.list if not (i.get('tmdb') and str(i['tmdb']) in dropped_tmdb)]
+			except: pass
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+		return self.list
+
+	def scrob_calendar(self, url, folderName=''):
+		# Same paginated shape as floppy_calendar() — ported verbatim, sourced from
+		# scrobsync instead of floppysync.
+		self.list = []
+		try:
+			try:
+				if '?' not in url:
+					url = 'scrobepisodesprogress?limit=%s&page=1' % (self.count or 20)
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q.get('page', 1)) - 1
+				page_limit = max(1, int(q['limit'])) if q.get('limit') else max(1, int(self.count) if self.count else 20)
+			except:
+				index = 0
+				page_limit = max(1, int(self.count) if self.count else 20)
+			self.list = cache.get(self.scrob_progress_list, 0, url)
+			self.sort(type='progress')
+			if self.list is None: self.list = []
+			prior_week = int(re.sub(r'[^0-9]', '', (self.date_time - timedelta(days=7)).strftime('%Y-%m-%d')))
+			sorted_list = []
+			top_items = [i for i in self.list if i.get('episode') == 1 and i.get('premiered') and (int(re.sub(r'[^0-9]', '', str(i['premiered']))) >= prior_week)]
+			sorted_list.extend(top_items)
+			sorted_list.extend([i for i in self.list if i not in top_items])
+			self.list = sorted_list
+			if self.list is None: self.list = []
+			self.list = [i for i in self.list if i.get('unaired', '') != 'true']
+			next_url = ''
+			hasNext = False
+			if getSetting('scrob.paginate.lists') == 'true' and self.list:
+				paginated_ids = [self.list[x:x + page_limit] for x in range(0, len(self.list), page_limit)]
+				total_pages = len(paginated_ids)
+				self.list = paginated_ids[index] if index < total_pages else []
+				try:
+					if index + 1 >= total_pages: raise Exception()
+					next_page = index + 2
+					next_url = 'plugin://plugin.video.umbrella/?action=scrob_episodes_progress&url=%s&page=%s&folderName=%s' % (
+						quote_plus('scrobepisodesprogress?limit=%s&page=%s' % (page_limit, next_page)),
+						str(next_page), quote_plus(folderName))
+					hasNext = True
+				except: pass
+			for i in range(len(self.list)): self.list[i]['next'] = next_url
+			self.episodeDirectory(self.list, unfinished=False, next=hasNext, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications: control.notification(title=32326, message=33049)
+
+	def scrob_upcoming_progress(self, url, folderName=''):
+		self.list = []
+		try:
+			self.list = cache.get(self.scrob_progress_list, 0, url, False, True)
+			if self.list:
+				self.list = sorted(self.list, key=lambda k: (k['premiered'] if k.get('premiered') else '3021-01-01', k.get('airtime', '')))
+			if self.list is None: self.list = []
+			self.episodeDirectory(self.list, unfinished=False, next=False, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications: control.notification(title=32326, message=33049)
+
+	def scrob_progress_list(self, url='', direct=False, upcoming=False):
+		# Ported verbatim from floppy_progress_list() — Scrob's GET /history/next-up
+		# is server-computed, but doesn't carry the TMDb-enriched fields (plot/art/
+		# premiered) episodeDirectory() needs, so this still builds "next episode" the
+		# same locally-reconstructed way from the synced watched-episode set.
+		self.list = []
+		try:
+			episodes = scrobsync.get_watched_episodes()
+			if not episodes: return self.list
+			shows = {}
+			for (show_imdb, show_tmdb, show_tvdb, season, episode) in episodes:
+				shows.setdefault(show_imdb, {'imdb': show_imdb, 'tmdb': show_tmdb, 'tvdb': show_tvdb, 'watched_set': set()})
+				shows[show_imdb]['watched_set'].add((int(season), int(episode)))
+			try:
+				for (show_imdb, show_tmdb, show_tvdb, last_watched_at) in scrobsync.get_watched_shows():
+					if show_imdb in shows: shows[show_imdb]['lastplayed'] = last_watched_at
+			except: pass
+			items = list(shows.values())
+			if not items: return self.list
+
+			def items_list(i):
+				imdb_id = i.get('imdb', '')
+				tmdb_id = i.get('tmdb', '')
+				watched_set = i.get('watched_set', set())
+				try:
+					candidates = watched_set if self.showspecials else set((s, e) for (s, e) in watched_set if s != 0)
+					if not candidates: return
+					furthest_season = max(s for (s, e) in candidates)
+					furthest_episode = max(e for (s, e) in candidates if s == furthest_season)
+					if not tmdb_id and imdb_id:
+						tmdb_result = cache.get(tmdb_indexer().IdLookup, 96, imdb_id, i.get('tvdb', ''))
+						tmdb_id = str(tmdb_result.get('id')) if tmdb_result else ''
+					if not tmdb_id: return
+					showSeasons = cache.get(tmdb_indexer().get_showSeasons_meta, 96, tmdb_id)
+					if not showSeasons: return
+					seasons_meta = {s.get('season_number'): s for s in showSeasons.get('seasons', [])}
+					season_meta = seasons_meta.get(furthest_season)
+					if season_meta and furthest_episode < season_meta.get('episode_count', 0):
+						next_season, next_episode = furthest_season, furthest_episode + 1
+					else:
+						next_season, next_episode = furthest_season + 1, 1
+					if next_season not in seasons_meta: return  # no further known season — fully caught up
+					seasonEpisodes = tmdb_indexer().get_seasonEpisodes_meta_checked(tmdb_id, next_season)
+					if not seasonEpisodes: return
+					episode_list = seasonEpisodes.get('episodes', [])
+					try: episode_meta = [x for x in episode_list if x.get('episode') == next_episode][0]
+					except: return
+					values = {}
+					values['imdb'] = imdb_id
+					values['tmdb'] = tmdb_id
+					values['tvdb'] = i.get('tvdb', '')
+					values['lastplayed'] = i.get('lastplayed', '')
+					values['snum'] = next_season
+					values['enum'] = next_episode
+					if not episode_meta.get('plot'): episode_meta['plot'] = showSeasons.get('plot', '')
+					values.update(showSeasons)
+					values.update(seasonEpisodes)
+					values.update(episode_meta)
+					for k in ('episodes', 'snum', 'enum'): values.pop(k, None)
+					duration = values.get('duration')
+					if duration:
+						try: values['duration'] = int(duration) * 60
+						except: pass
+					air_date = values.get('premiered', '')
+					values['unaired'] = ''
+					if upcoming:
+						values['scrobUpcomingProgress'] = True
+						try:
+							if values.get('status', '').lower() == 'ended': return
+							elif not air_date: values['unaired'] = 'true'
+							elif int(re.sub(r'[^0-9]', '', air_date)) > int(re.sub(r'[^0-9]', '', str(self.today_date))):
+								values['unaired'] = 'true'
+							else: return  # already aired (today or earlier) - not "upcoming"
+						except:
+							from resources.lib.modules import log_utils
+							log_utils.error('tvshowtitle = %s' % values.get('tvshowtitle', ''))
+					else:
+						values['scrobProgress'] = True
+						try:
+							if values.get('status', '').lower() == 'ended': pass
+							elif not air_date: values['unaired'] = 'true'
+							elif int(re.sub(r'[^0-9]', '', air_date)) > int(re.sub(r'[^0-9]', '', str(self.today_date))):
+								values['unaired'] = 'true'
+						except: pass
+					if self.enable_fanarttv:
+						tvdb = values.get('tvdb', '')
+						extended_art = fanarttv_cache.get(FanartTv().get_tvshow_art, 336, tvdb)
+						if extended_art: values.update(extended_art)
+					if not direct: values['action'] = 'episodes'
+					values['extended'] = True
+					self.list.append(values)
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+
+			threads = []
+			for i in items:
+				threads.append(Thread(target=items_list, args=(i,)))
+			_unlimited = getSetting('dev.batch.unlimited') == 'true'
+			_bs = max(int(getSetting('dev.batch.size') or '10'), 1)
+			_chunk = max(len(threads), 1) if _unlimited else _bs
+			for i in range(0, len(threads), _chunk):
+				if control.monitor.abortRequested(): break
+				batch = threads[i:i + _chunk]
+				[t.start() for t in batch]
+				[t.join() for t in batch]
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+		return self.list
+
+	def custom_calendar_items(self, media_type='shows', days=33, start_date=None):
+		# Flat episode-reference items from Custom's /calendars/my/shows/{date}/{days},
+		# mapped into the same shape trakt_list() produces so trakt_episodes_list can
+		# enrich them with TMDb data unmodified. Confirmed schema: ShowCalendarItem =
+		# {first_aired, episode: EpisodeOut, show: ShowOut} — first_aired lives on the
+		# calendar item itself, not on the nested episode object.
+		items = []
+		try:
+			raw = customtrakt.get_calendar(media_type, days, start_date=start_date)
+			if not raw: return items
+			for item in raw:
+				try:
+					show = item.get('show', {})
+					ep = item.get('episode', {})
+					season, episode = ep.get('season'), ep.get('number')
+					if season is None or episode is None: continue
+					if not self.showspecials and season == 0: continue
+					tvshowtitle = show.get('title')
+					if not tvshowtitle: continue
+					ids = show.get('ids', {})
+					values = {
+						'title': ep.get('title') or '', 'season': season, 'episode': episode,
+						'tvshowtitle': tvshowtitle, 'year': str(show.get('year', '')) if show.get('year') else '',
+						'premiered': item.get('first_aired') or ep.get('first_aired') or ep.get('premiered', ''),
+						'imdb': str(ids.get('imdb', '')) if ids.get('imdb') else '',
+						'tmdb': str(ids.get('tmdb', '')) if ids.get('tmdb') else '',
+						'tvdb': str(ids.get('tvdb', '')) if ids.get('tvdb') else '',
+						'next': '',
+					}
+					items.append(values)
+				except: pass
+			try:
+				dropped = customtraktsync.fetch_dropped('shows_dropped')
+				if dropped:
+					dropped_tmdb = {str(i['tmdb']) for i in dropped if i.get('tmdb')}
+					dropped_imdb = {str(i['imdb']) for i in dropped if i.get('imdb')}
+					items = [i for i in items if not (
+						(i.get('tmdb') and str(i['tmdb']) in dropped_tmdb) or
+						(i.get('imdb') and str(i['imdb']) in dropped_imdb)
+					)]
+			except: pass
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+		return items
+
+	def custom_calendar_recent(self, url, folderName=''):
+		# "Recent" needs a window that actually reaches into the past — Trakt's own
+		# equivalent link (mycalendarRecent_link) requests date[30] (today minus 30
+		# days) then locally filters down to premiered<=today. custom_calendar_items()
+		# defaults to starting *today* when no start_date is given (matching Upcoming/
+		# Premieres, which correctly want a future-only window), so without an explicit
+		# override here every item in the [today, today+33] window gets thrown away by
+		# the premiered<=today filter below, leaving Recent empty.
+		self.list = []
+		try:
+			recent_start = (self.date_time - timedelta(days=30)).strftime('%Y-%m-%d')
+			items = cache.get(self.custom_calendar_items, 1, 'shows', 33, recent_start)
+			self.list = self.trakt_episodes_list('customcalendarrecent', self.trakt_user, self.lang, items=items)
+			if self.list:
+				self.list = [i for i in self.list if int(re.sub(r'[^0-9]', '', str(i['premiered']).split('T')[0])) <= int(re.sub(r'[^0-9]', '', str(self.today_date)))]
+				for i in range(len(self.list)): self.list[i]['calendar_recent'] = True
+				self.list = sorted(self.list, key=lambda k: k['premiered'], reverse=True)
+			if self.list is None: self.list = []
+			self.episodeDirectory(self.list, unfinished=False, next=False, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications: control.notification(title=32326, message=33049)
+
+	def custom_calendar_upcoming(self, url, folderName=''):
+		self.list = []
+		try:
+			items = cache.get(self.custom_calendar_items, 1, 'shows', 33)
+			self.list = self.trakt_episodes_list('customcalendarupcoming', self.trakt_user, self.lang, items=items)
+			if self.list:
+				self.list = [i for i in self.list if int(re.sub(r'[^0-9]', '', str(i['premiered']).split('T')[0])) >= int(re.sub(r'[^0-9]', '', str(self.today_date)))]
+				for i in range(len(self.list)): self.list[i]['calendar_unaired'] = True
+				self.list = sorted(self.list, key=lambda k: k['premiered'], reverse=False)
+			if self.list is None: self.list = []
+			self.episodeDirectory(self.list, unfinished=False, next=False, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications: control.notification(title=32326, message=33049)
+
+	def custom_calendar_premieres(self, url, folderName=''):
+		self.list = []
+		try:
+			items = cache.get(self.custom_calendar_items, 1, 'shows', 33)
+			self.list = self.trakt_episodes_list('customcalendarpremieres', self.trakt_user, self.lang, items=items)
+			if self.list:
+				self.list = [i for i in self.list if i.get('episode') == 1 and
+					int(re.sub(r'[^0-9]', '', str(i['premiered']).split('T')[0])) >= int(re.sub(r'[^0-9]', '', str(self.today_date)))]
+				for i in range(len(self.list)): self.list[i]['calendar_unaired'] = True
+				self.list = sorted(self.list, key=lambda k: k['premiered'], reverse=False)
+			if self.list is None: self.list = []
+			self.episodeDirectory(self.list, unfinished=False, next=False, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications: control.notification(title=32326, message=33049)
 
 	def sort(self, type='shows'):
 		try:
@@ -1176,9 +2195,15 @@ class Episodes:
 			try:
 				itemyear = tmdb_indexer().get_showSeasons_meta(tmdb)
 				seasonEpisodes = tmdb_indexer().get_seasonEpisodes_meta_checked(tmdb, i['season'])
-				if not seasonEpisodes: return
+				if not seasonEpisodes:
+					from resources.lib.modules import log_utils
+					log_utils.log('CALENDAR: dropped %s S%sE%s (tmdb=%s) - no TMDb season data' % (i.get('tvshowtitle'), i.get('season'), i.get('episode'), tmdb), level=log_utils.LOGWARNING)
+					return
 				try: episode_meta = [x for x in seasonEpisodes.get('episodes') if x.get('episode') == i['episode']][0] # to pull just the episode meta we need
-				except: return
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.log('CALENDAR: dropped %s S%sE%s (tmdb=%s) - no matching episode in TMDb season data' % (i.get('tvshowtitle'), i.get('season'), i.get('episode'), tmdb), level=log_utils.LOGWARNING)
+					return
 				if 'premiered' in values and values.get('premiered'):
 					episode_meta.pop('premiered') # prefer Trakt premiered because TMDb is fucked for some shows like Family Law off by months
 					seasonEpisodes.pop('premiered') # this is series premiered so pop
@@ -1340,9 +2365,12 @@ class Episodes:
 
 	def simkl_progress_list(self, url, direct=False, upcoming=False):
 		#https://api.simkl.com/sync/all-items/shows/watching?extended=full
+		# Simkl treats anime as a separate content bucket from "shows" — querying only
+		# the shows endpoint silently excluded every in-progress anime title.
 		try:
-			url = '/sync/all-items/shows/watching?extended=full'
-			result = simkl.getSimklAsJson(url)
+			shows_result = simkl.getSimklAsJson('/sync/all-items/shows/watching?extended=full') or []
+			anime_result = simkl.getSimklAsJson('/sync/all-items/anime/watching?extended=full') or []
+			result = shows_result + anime_result
 		except: return
 		if not result: return
 		items = []
@@ -1480,6 +2508,12 @@ class Episodes:
 		except: simklUpcomingProgress = False
 		try: mdblistUpcomingProgress = False if 'mdblistUpcomingProgress' not in items[0] else True
 		except: mdblistUpcomingProgress = False
+		try: customUpcomingProgress = False if 'customUpcomingProgress' not in items[0] else True
+		except: customUpcomingProgress = False
+		try: floppyUpcomingProgress = False if 'floppyUpcomingProgress' not in items[0] else True
+		except: floppyUpcomingProgress = False
+		try: scrobUpcomingProgress = False if 'scrobUpcomingProgress' not in items[0] else True
+		except: scrobUpcomingProgress = False
 
 
 
@@ -1506,6 +2540,8 @@ class Episodes:
 		upcoming_prependDate = getSetting('trakt.UpcomingProgress.prependDate') == 'true'
 		upcoming_prependDate2 = getSetting('simkl.UpcomingProgress.prependDate') == 'true'
 		upcoming_prependDate3 = getSetting('mdblist.UpcomingProgress.prependDate') == 'true'
+		upcoming_prependDate4 = getSetting('custom.UpcomingProgress.prependDate') == 'true'
+		upcoming_prependDate5 = getSetting('floppy.UpcomingProgress.prependDate') == 'true'
 		try: sysaction = items[0]['action']
 		except: sysaction = ''
 		multi_unwatchedEnabled = getSetting('multi.unwatched.enabled') == 'true'
@@ -1543,6 +2579,9 @@ class Episodes:
 		traktManagerMenu, playlistManagerMenu, queueMenu = '[COLOR %s]Trakt Manager[/COLOR]' % self.highlight_color, getLS(35522), getLS(32065)
 		simklManagerMenu = '[COLOR %s]Simkl Manager[/COLOR]' % self.highlight_color
 		mdblistManagerMenu = '[COLOR %s]MDBList Manager[/COLOR]' % self.highlight_color
+		customManagerMenu = '[COLOR %s]%s Manager[/COLOR]' % (self.highlight_color, customtrakt.getCustomServiceName())
+		floppyManagerMenu = '[COLOR %s]Floppy Manager[/COLOR]' % self.highlight_color
+		scrobManagerMenu = '[COLOR %s]Scrob Manager[/COLOR]' % self.highlight_color
 		tvshowBrowserMenu, addToLibrary, addToFavourites, removeFromFavourites = getLS(32071), getLS(32551), getLS(40463), getLS(40468)
 		clearSourcesMenu, rescrapeMenu, progressRefreshMenu = getLS(32611), getLS(32185), getLS(32194)
 		trailerMenu = getLS(40431)
@@ -1557,6 +2596,9 @@ class Episodes:
 				if traktUpcomingProgress: pass
 				elif simklUpcomingProgress: pass
 				elif mdblistUpcomingProgress: pass
+				elif customUpcomingProgress: pass
+				elif floppyUpcomingProgress: pass
+				elif scrobUpcomingProgress: pass
 				elif traktProgress:
 					if not self.progress_showunaired and i.get('unaired', '') == 'true': continue
 				elif simklProgress:
@@ -1599,7 +2641,7 @@ class Episodes:
 					except: pass
 
 
-				if (upcoming_prependDate and traktUpcomingProgress is True) or (upcoming_prependDate2 and simklUpcomingProgress) or (upcoming_prependDate3 and mdblistUpcomingProgress): # uses TMDb premiered
+				if (upcoming_prependDate and traktUpcomingProgress is True) or (upcoming_prependDate2 and simklUpcomingProgress) or (upcoming_prependDate3 and mdblistUpcomingProgress) or (upcoming_prependDate4 and customUpcomingProgress) or (upcoming_prependDate5 and floppyUpcomingProgress): # uses TMDb premiered
 
 
 					try:
@@ -1723,6 +2765,12 @@ class Episodes:
 						cm.append((simklManagerMenu, 'RunPlugin(%s?action=tools_simklManager&name=%s&imdb=%s&tvdb=%s&season=%s&episode=%s&watched=%s)' % (sysaddon, systvshowtitle, imdb, tvdb, season, episode, watched)))
 					if self.mdblist_authed:
 						cm.append((mdblistManagerMenu, 'RunPlugin(%s?action=tools_mdbWatchlist&name=%s&imdb=%s&tvdb=%s&tmdb=%s&season=%s&episode=%s&watched=%s)' % (sysaddon, systvshowtitle, imdb, tvdb, tmdb, season, episode, watched)))
+					if self.customCredentials:
+						cm.append((customManagerMenu, 'RunPlugin(%s?action=tools_customManager&name=%s&imdb=%s&tvdb=%s&tmdb=%s&season=%s&episode=%s&watched=%s&unfinished=%s)' % (sysaddon, systvshowtitle, imdb, tvdb, tmdb, season, episode, watched, unfinished)))
+					if self.floppyCredentials:
+						cm.append((floppyManagerMenu, 'RunPlugin(%s?action=tools_floppyManager&name=%s&imdb=%s&tvdb=%s&tmdb=%s&season=%s&episode=%s&watched=%s&unfinished=%s)' % (sysaddon, systvshowtitle, imdb, tvdb, tmdb, season, episode, watched, unfinished)))
+					if self.scrobCredentials:
+						cm.append((scrobManagerMenu, 'RunPlugin(%s?action=tools_scrobManager&name=%s&imdb=%s&tvdb=%s&tmdb=%s&season=%s&episode=%s&watched=%s&unfinished=%s)' % (sysaddon, systvshowtitle, imdb, tvdb, tmdb, season, episode, watched, unfinished)))
 					if watched:
 						meta.update({'playcount': 1, 'overlay': 5})
 						cm.append((unwatchedMenu, 'RunPlugin(%s?action=playcount_Episode&name=%s&imdb=%s&tvdb=%s&season=%s&episode=%s&query=4)' % (sysaddon, systvshowtitle, imdb, tvdb, season, episode)))
@@ -1838,7 +2886,7 @@ class Episodes:
 				except: pass
 				setUniqueIDs={'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb}
 
-				if (upcoming_prependDate and traktUpcomingProgress is True) or (upcoming_prependDate2 and simklUpcomingProgress) or (upcoming_prependDate3 and mdblistUpcomingProgress):
+				if (upcoming_prependDate and traktUpcomingProgress is True) or (upcoming_prependDate2 and simklUpcomingProgress) or (upcoming_prependDate3 and mdblistUpcomingProgress) or (upcoming_prependDate4 and customUpcomingProgress) or (upcoming_prependDate5 and floppyUpcomingProgress):
 					try:
 						if premiered and meta.get('airtime'): combined='%sT%s' % (premiered, meta.get('airtime', ''))
 						else: raise Exception()
