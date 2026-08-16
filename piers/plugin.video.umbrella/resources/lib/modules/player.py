@@ -235,14 +235,6 @@ class Player(xbmc.Player):
 			if item_season > season_int and not self.multi_season:
 				if self.debuglog: log_utils.log('addEpisodetoPlaylist: next episode is S%sE%s but multi_season is disabled - not adding to playlist' % (item_season, item.get('episode')), level=log_utils.LOGWARNING)
 				return
-			# Kodi itself commonly auto-queues the rest of a folder's contents into
-			# control.playlist when playback is started from within a season/episode folder
-			# listing (confirmed via device logs: starting a 2-episode season from its folder
-			# consistently left the playlist at size 3 — S1E1, S1E2 from Kodi's own
-			# auto-queue, then S1E2 again from here). checkPlaylist() already detects "is
-			# something already queued" via getposition()==-1, but this function runs
-			# unconditionally regardless of what that found. If the playlist already has an
-			# item queued right after the current position, trust it and don't add a duplicate.
 			try:
 				current_pos = control.playlist.getposition()
 				if current_pos != -1 and control.playlist.size() > current_pos + 1:
@@ -497,12 +489,7 @@ class Player(xbmc.Player):
 					if _total > 0: self.media_length = max(self.media_length, _total)
 				except: pass
 				try:
-					# Scrob's Now Playing card only updates progress on discrete pause/
-					# resume/stop events (see scrobbleStart's comment) — send a periodic
-					# heartbeat so it advances during normal, uninterrupted playback
-					# instead of freezing at whatever value the last such event sent.
-					# Throttled to ~30s of real playback time so this isn't a webhook
-					# call every 2-second keepAlive tick.
+
 					if self.scrobCredentials and (getSetting('scrobble.source') == '6' or getSetting('scrob.markwatched') == 'true'):
 						if self.current_time - self._scrob_heartbeat_at >= 30:
 							self._scrob_heartbeat_at = self.current_time
@@ -596,26 +583,9 @@ class Player(xbmc.Player):
 				xbmc.sleep(1000)
 		homeWindow.clearProperty(pname)
 		if playlist_skip:
-			# Kodi's playlist already advanced to the next item (playnext button, or the
-			# time/percentage auto-trigger) — confirmed via device logs that the native
-			# onPlayBackEnded callback for the item that just finished is not reliably
-			# firing here either (a ~12 minute gap with no onPlayBackStopped between a
-			# playnext trigger and an unrelated show starting, and the playlist growing to
-			# 10 stale entries across sessions from never being cleared). Send mark-watched
-			# and the Floppy/Scrob stop signal for the finishing item directly — but do NOT
-			# call onPlayBackStopped()/clear control.playlist here, since the next item is
-			# often already playing off that same playlist by this point.
 			if not self.scrobble_sent:
 				self._sendFinishedItemState()
 		else:
-			# Kodi is unreliable issuing callback "onPlayBackStopped" and "onPlayBackEnded" —
-			# this is the fallback for that. It used to only fire below the watched
-			# threshold, which is backwards: a full natural play-to-completion (no manual
-			# stop) is exactly the case where the native callbacks are least reliable, and
-			# that previous condition skipped the fallback precisely then, leaving Floppy/
-			# Scrob's live session stuck "now playing" forever with no stop signal ever
-			# sent. self.scrobble_sent is the real idempotency guard (also checked inside
-			# onPlayBackStopped/onPlayBackEnded), so key off that instead of percentage.
 			if not self.scrobble_sent:
 				self.playbackStopped_triggered = True
 				self.onPlayBackStopped()
@@ -723,15 +693,6 @@ class Player(xbmc.Player):
 				log_utils.log('Exception trying to seekTime() offset: %s'% self.offset, level=log_utils.LOGDEBUG)
 			self.playback_resumed = True
 		if getSetting('subtitles') == 'true': Subtitles().get(self.title, self.year, self.imdb, self.season, self.episode)
-		# Kodi doesn't guarantee onAVStarted fires only once per playback session — some
-		# players/resolvers can re-fire it mid-session (e.g. around a pause/resume cycle
-		# that reinitializes the video pipeline). If that happens here, re-running this
-		# block would call scrobbleReset() (deleting the resume bookmark onPlayBackPaused/
-		# onPlayBackResumed just correctly established) and then scrobbleStart() with the
-		# *original* start-of-playback offset (0 for a non-resumed play), visibly
-		# resetting the remote "currently watching" progress back to the beginning. Guard
-		# it to run once per Player() instance — a genuinely new video gets a fresh
-		# instance, so this doesn't affect normal start-of-playback scrobbling.
 		if not self.av_started_ran:
 			self.av_started_ran = True
 			scrobble_source = getSetting('scrobble.source')
@@ -769,21 +730,7 @@ class Player(xbmc.Player):
 		log_utils.log('onQueueNextItem callback', level=log_utils.LOGDEBUG)
 
 	def _sendFinishedItemState(self):
-		# Marks watched (local library + watchedcache progress) and sends the scrobble-stop
-		# signal to every configured provider for the item that just finished. Factored out
-		# of onPlayBackStopped() so keepAlive()'s playlist-advance path (see the bottom of
-		# keepAlive()) can call it too, without the playlist-clearing/property-clearing side
-		# effects onPlayBackStopped() also does — those would tear out the shared
-		# control.playlist out from under the NEXT item, which is often already playing off
-		# it by the time a playlist-driven transition is detected. Returns (seekable,
-		# scrobble_source) for the caller's own follow-up (e.g. the crefresh check below).
 		Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
-		# Set the idempotency guard BEFORE the (slow, network-bound) set_scrobble() calls
-		# below, not after — onPlayBackStopped()/onPlayBackEnded()/keepAlive()'s playlist-
-		# advance path can all race to call this within the same finished-item window, and
-		# each set_scrobble() call is a real HTTP POST that can take long enough for a second
-		# caller to read self.scrobble_sent as still False and duplicate every provider's
-		# watched/scrobble-stop signal for this item.
 		self.scrobble_sent = True
 		_scrobble_source = getSetting('scrobble.source')
 		if _scrobble_source == '0':
@@ -869,10 +816,6 @@ class Player(xbmc.Player):
 				elif _indicators_alt == '5' and self.floppyCredentials: _scrobble_source = '5'
 				elif _indicators_alt == '6' and self.scrobCredentials: _scrobble_source = '6'
 			if not self.scrobble_sent:
-				# Set the guard before the (slow, network-bound) set_scrobble() calls below —
-				# see the matching comment in _sendFinishedItemState() for why: this can race
-				# against onPlayBackStopped()/keepAlive()'s playlist-advance path for the same
-				# finished item.
 				self.scrobble_sent = True
 				if self.traktCredentials and (_scrobble_source == '1' or getSetting('trakt.markwatched') == 'true'):
 					Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, already_watched=self.watched_during_playback)
@@ -900,11 +843,11 @@ class Player(xbmc.Player):
 					from resources.lib.database import watchedcache as _wc
 					_wc.delete_progress(self.media_type, self.imdb, self.tmdb or '', self.season or 0, self.episode or 0)
 			try:
-				playingfile = Player.isPlaying()
+				playingfile = self.isPlaying()
 			except:
 				playingfile = False
 			log_utils.log('onPlayBackEnded Playlist Position: %s isPlaying: %s' % (control.playlist.getposition(), playingfile), level=log_utils.LOGDEBUG)
-			if control.playlist.getposition() == control.playlist.size() or control.playlist.size() == 1 or (control.playlist.getposition() == 0 and playerWindow.getProperty('umbrella.playnextPlayPressed') == '0'):
+			if not playingfile and (control.playlist.getposition() == control.playlist.size() or control.playlist.size() == 1 or (control.playlist.getposition() == 0 and playerWindow.getProperty('umbrella.playnextPlayPressed') == '0')):
 				control.playlist.clear()
 			log_utils.log('onPlayBackEnded callback', level=log_utils.LOGDEBUG)
 			#control.checkforSkin(action='off')
@@ -966,10 +909,6 @@ class Player(xbmc.Player):
 			if self.watched_during_playback: return
 			total_time = self.getTotalTime()
 			if total_time <= 0: return
-			# self.getTime() can momentarily report 0/stale right at the resume instant,
-			# before Kodi's player has caught up internally — fall back to the last known
-			# tracked position (kept current by the keepAlive() poll loop) rather than
-			# risk sending a spurious 0% progress that would reset the remote scrobble bar.
 			resume_position = self.getTime() or self.current_time
 			resume_percent = round((resume_position / total_time) * 100, 2)
 			scrobble_source = getSetting('scrobble.source')
@@ -1576,10 +1515,6 @@ class Bookmarks:
 				from resources.lib.database import scrobsync
 				progress = float(scrobsync.fetch_bookmarks(imdb, tmdb, tvdb, season, episode))
 				if progress <= 0:
-					# No local bookmark on this device — unlike the other providers here,
-					# Scrob has a genuine server-side continue-watching list (confirmed
-					# live), so a second device with nothing paused locally can still pick
-					# up a resume point a different device stopped at.
 					progress = float(scrob.get_resume_percent(tmdb, season=season, episode=episode) or 0)
 				offset = (progress / 100) * runtime
 				display_offset = offset * 60
@@ -1672,72 +1607,31 @@ class Bookmarks:
 					mdblist.scrobbleMovie(title, year, imdb, tmdb, percent) if media_type == 'movie' else mdblist.scrobbleEpisode(tvshowtitle or title, year, imdb, tmdb, tvdb, season, episode, percent)
 				if percent >= int(markwatched_percentage): mdblist.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False, already_watched=skip_scrobble)
 			elif service == 'custom':
-				# No skip_scrobble "close at 0%" call here — Trakt's protocol rejects
-				# /scrobble/pause below 1% progress (see the trakt branch fix below), and
-				# it's unnecessary anyway: scrobbleReset already cleans up the resume/paused
-				# marker, matching how the simkl/mdblist branches above handle this case.
 				if not skip_scrobble and (seekable or percent >= int(markwatched_percentage)):
 					customtrakt.scrobbleMovie(imdb, tmdb, percent) if media_type == 'movie' else customtrakt.scrobbleEpisode(imdb, tmdb, tvdb, season, episode, percent)
 				if percent >= int(markwatched_percentage):
 					customtrakt.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False)
 					if not already_watched:
-						# markMovieDuringPlayback/markEpisodeDuringPlayback (which already refresh the
-						# local watched cache instantly) only fire on the mid-playback threshold crossing.
-						# If completion is only detected here (e.g. that crossing was missed), there's no
-						# aggregated "watched" endpoint to re-derive state from — pull fresh /sync/history
-						# in the background so the local cache (and indicators) converge without waiting
-						# for the next scheduled sync.
 						Thread(target=customtrakt.sync_watchedProgress, kwargs={'forced': True}).start()
 			elif service == 'floppy':
-				# Mirrors the 'custom' branch above — Floppy's real scrobble endpoint
-				# still has no aggregated "watched" re-query, so a background full sync
-				# is kicked off on completion the same way, to converge indicators.
-				# Use the 'stop' action here (not 'pause' — that's for onPlayBackPaused's
-				# genuine mid-playback pauses): per Floppy's own API docs, 'pause' only
-				# updates the live Now Playing card, while 'stop' is what actually persists
-				# a durable watch/progress update and clears that card.
 				completed = percent >= int(markwatched_percentage)
 				if getSetting('debug.level') == '1':
 					log_utils.log('FLOPPY: set_scrobble stop gate — percent=%.2f current_time=%s media_length=%s seekable=%s completed=%s skip_scrobble=%s' % (percent, current_time, media_length, seekable, completed, skip_scrobble), level=log_utils.LOGDEBUG)
-				# Always send 'stop' — unlike Trakt/Simkl, Floppy's live Now Playing card is
-				# only ever cleared by this call, nothing else closes it (confirmed via
-				# Scrob's own backend source for the equivalent case). skip_scrobble being
-				# True (already marked watched mid-playback) previously skipped this call
-				# entirely, leaving the card stuck on every normal watch-to-completion —
-				# the far more common case than a short/aborted stop. Floppy's server
-				# treats a low-percent 'stop' as a no-op for history, so this is safe.
 				floppy.scrobbleStopMovie(imdb, tmdb, percent, completed=completed, current_time=current_time, total_time=media_length, already_watched=skip_scrobble) if media_type == 'movie' else floppy.scrobbleStopEpisode(imdb, tmdb, tvdb, season, episode, percent, completed=completed, current_time=current_time, total_time=media_length, already_watched=skip_scrobble)
 				if percent >= int(markwatched_percentage):
 					floppy.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False)
 					if not already_watched:
 						Thread(target=floppy.sync_watchedProgress, kwargs={'forced': True}).start()
 			elif service == 'scrob':
-				# Mirrors the 'floppy' branch above — Scrob's Kodi webhook has no
-				# aggregated "watched" re-query either, so a background full sync is
-				# kicked off on completion the same way, to converge indicators.
 				completed = percent >= int(markwatched_percentage)
 				if getSetting('debug.level') == '1':
 					log_utils.log('SCROB: set_scrobble stop gate — percent=%.2f current_time=%s media_length=%s seekable=%s completed=%s skip_scrobble=%s' % (percent, current_time, media_length, seekable, completed, skip_scrobble), level=log_utils.LOGDEBUG)
-				# Always send 'stop' — confirmed via Scrob's own backend source
-				# (_handle_kodi_webhook in routers/webhooks.py): the live session is only
-				# ever closed by a Player.OnStop event, nothing else clears it, and a
-				# redundant/low-percent stop is already safely no-op'd server-side
-				# (_close_session runs unconditionally; the WatchEvent write below it is
-				# separately gated and de-duped). skip_scrobble being True (already marked
-				# watched mid-playback) previously skipped this call entirely, leaving the
-				# card stuck on every normal watch-to-completion — the common case, not an
-				# edge case.
 				scrob.scrobbleStopMovie(imdb, tmdb, percent, completed=completed, current_time=current_time, total_time=media_length, already_watched=skip_scrobble) if media_type == 'movie' else scrob.scrobbleStopEpisode(imdb, tmdb, tvdb, season, episode, percent, completed=completed, current_time=current_time, total_time=media_length, already_watched=skip_scrobble)
 				if percent >= int(markwatched_percentage):
 					scrob.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False)
 					if not already_watched:
 						Thread(target=scrob.sync_watchedProgress, kwargs={'forced': True}).start()
 			else:
-				# No skip_scrobble "close at 0%" call — Trakt's API rejects /scrobble/pause
-				# below 1% progress (HTTP 422: "Progress should be at least 1.0% to pause."),
-				# so this always failed when hit and never actually closed anything.
-				# scrobbleReset below already clears the resume/paused marker on its own,
-				# matching how the simkl/mdblist branches above handle the same case.
 				if not skip_scrobble and (seekable or percent >= int(markwatched_percentage)):
 					trakt.scrobbleMovie(imdb, tmdb, percent) if media_type == 'movie' else trakt.scrobbleEpisode(imdb, tmdb, tvdb, season, episode, percent)
 				if percent >= int(markwatched_percentage): trakt.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False)

@@ -154,7 +154,6 @@ _MYMOVIES_SIMKL_DEFAULTS = [
 	('mymv_simkl_completed',  '40548', 'movies&url=simklhistory',                          'simkl.png',     'simkl.png',     1, 1, 1,  0, 0, 'simkl_token',          0, None),
 	('mymv_simkl_watchlist',  '40550', 'movies&url=simklwatchlist',                        'simkl.png',     'simkl.png',     1, 1, 1,  1, 0, 'simkl_token',          0, None),
 	('mymv_simkl_dropped',    'Dropped (Simkl)', 'movies&url=simkldropped',                 'simkl.png',     'simkl.png',     1, 1, 1,  2, 0, 'simkl_token',          0, None),
-	('mymv_simkl_unfinished', 'Unfinished (Simkl)', 'simkl_movies_unfinished&url=simklmoviesunfinished', 'simkl.png', 'simkl.png', 1, 1, 1,  3, 0, 'simkl_with_indicators', 1, '35308'),
 ]
 
 _MYMOVIES_TRAKT_DEFAULTS = [
@@ -505,6 +504,11 @@ def _sync_defaults(dbcon):
 	# broken duplicated entry rather than two different features. Drop the old one.
 	dbcon.execute("DELETE FROM menu_items WHERE item_id='mytv_mdb_cal_upcoming' AND is_custom=0")
 	dbcon.commit()
+	# mymv_simkl_unfinished (My Movies > Simkl > Unfinished) is the same list as
+	# mymv_simkl_watchlist (Plan to Watch) — Simkl has no separate "in-progress"
+	# concept for movies the way it does for shows, so this was a pure duplicate. Drop it.
+	dbcon.execute("DELETE FROM menu_items WHERE item_id='mymv_simkl_unfinished' AND is_custom=0")
+	dbcon.commit()
 	# Insert items added after initial release for existing users
 	_NEW_DEFAULT_ITEMS = [
 		('mymovies', 'mymv_mdblist_folder',  'MDBList',  'mymovies_mdblistNavigator',  'mdblist.png',  'mdblist.png',  1, 1, 1, 2, 0, 'mdblist_token',        0, None),
@@ -554,7 +558,6 @@ def _sync_defaults(dbcon):
 		('mymovies_custom',  'mymv_custom_collection',  '40737', 'custom_movies_collection&url=custommoviescollection',   'icon.png', 'icon.png', 1, 1, 1, 100, 0, 'custom_token',           0, None),
 		('mymovies_custom',  'mymv_custom_unfinished',  '40741', 'custom_movies_unfinished&url=custommoviesunfinished',   'icon.png', 'icon.png', 1, 1, 1, 101, 0, 'custom_with_indicators', 1, '35308'),
 		('mymovies_custom',  'mymv_custom_watched',     '40745', 'custom_movies_watched&url=custommovieswatched',         'icon.png', 'icon.png', 1, 1, 1, 102, 0, 'custom_with_indicators', 1, None),
-		('mymovies_simkl', 'mymv_simkl_unfinished', 'Unfinished (Simkl)', 'simkl_movies_unfinished&url=simklmoviesunfinished', 'simkl.png', 'simkl.png', 1, 1, 1, 99, 0, 'simkl_with_indicators', 1, '35308'),
 	]
 	for row in _NEW_DEFAULT_ITEMS:
 		dbcon.execute(

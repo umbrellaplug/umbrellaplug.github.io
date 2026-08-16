@@ -249,8 +249,13 @@ class Movies(TMDb):
 		append = threads.append
 		for i in range(0, len(self.list)):
 			append(Thread(target=items_list, args=(i,)))
-		[i.start() for i in threads]
-		[i.join() for i in threads]
+		_unlimited = getSetting('dev.batch.unlimited') == 'true'
+		_bs = max(int(getSetting('dev.batch.size') or '10'), 1)
+		_chunk = max(len(threads), 1) if _unlimited else _bs
+		for i in range(0, len(threads), _chunk):
+			batch = threads[i:i + _chunk]
+			[t.start() for t in batch]
+			[t.join() for t in batch]
 		if self.meta:
 			self.meta = [i for i in self.meta if i.get('tmdb')]
 			metacache.insert(self.meta)
@@ -324,8 +329,13 @@ class Movies(TMDb):
 		append = threads.append
 		for i in range(0, len(self.list)):
 			append(Thread(target=items_list, args=(i,)))
-		[i.start() for i in threads]
-		[i.join() for i in threads]
+		_unlimited = getSetting('dev.batch.unlimited') == 'true'
+		_bs = max(int(getSetting('dev.batch.size') or '10'), 1)
+		_chunk = max(len(threads), 1) if _unlimited else _bs
+		for i in range(0, len(threads), _chunk):
+			batch = threads[i:i + _chunk]
+			[t.start() for t in batch]
+			[t.join() for t in batch]
 		if self.meta:
 			self.meta = [i for i in self.meta if i.get('tmdb')]
 			metacache.insert(self.meta)
@@ -691,8 +701,13 @@ class TVshows(TMDb):
 		append = threads.append
 		for i in range(0, len(self.list)):
 			append(Thread(target=items_list, args=(i,)))
-		[i.start() for i in threads]
-		[i.join() for i in threads]
+		_unlimited = getSetting('dev.batch.unlimited') == 'true'
+		_bs = max(int(getSetting('dev.batch.size') or '10'), 1)
+		_chunk = max(len(threads), 1) if _unlimited else _bs
+		for i in range(0, len(threads), _chunk):
+			batch = threads[i:i + _chunk]
+			[t.start() for t in batch]
+			[t.join() for t in batch]
 		if self.meta:
 			self.meta = [i for i in self.meta if i.get('tmdb')]
 			metacache.insert(self.meta)
@@ -764,8 +779,13 @@ class TVshows(TMDb):
 		append = threads.append
 		for i in range(0, len(self.list)):
 			append(Thread(target=items_list, args=(i,)))
-		[i.start() for i in threads]
-		[i.join() for i in threads]
+		_unlimited = getSetting('dev.batch.unlimited') == 'true'
+		_bs = max(int(getSetting('dev.batch.size') or '10'), 1)
+		_chunk = max(len(threads), 1) if _unlimited else _bs
+		for i in range(0, len(threads), _chunk):
+			batch = threads[i:i + _chunk]
+			[t.start() for t in batch]
+			[t.join() for t in batch]
 		if self.meta:
 			self.meta = [i for i in self.meta if i.get('tmdb')]
 			metacache.insert(self.meta)

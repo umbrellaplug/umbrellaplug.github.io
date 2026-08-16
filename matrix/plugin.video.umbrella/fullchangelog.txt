@@ -1,3 +1,8 @@
+[B]Update - v6.7.83 - August 15th, 2026 [/B]
+--[Fix] Added guard for clearing playlist to avoid play next not working.
+--[Fix] Added thread limits to tmdb to avoid lockups on lower end devices.
+--[Change] Removed Simkl Unfinished.
+
 [B]Update - v6.7.82 - August 13th, 2026 [/B]
 --[Change] Reorganized My TV Shows and My Movies to put lists under providers names. Ex: My TV Shows > Trakt > Progress Episodes
 --[Change] Added support for Scrob. (https://github.com/ellite/scrob)

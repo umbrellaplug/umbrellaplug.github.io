@@ -909,6 +909,13 @@ class Episodes:
 				values['tmdb'] = tmdb
 				values['tvdb'] = i.get('tvdb', '')
 				values['lastplayed'] = i.get('lastplayed', '')
+				try:
+					show_summary = trakt.getTVShowSummary(imdb_id, full=False) if imdb_id else None
+					airs = (show_summary or {}).get('airs', {}) or {}
+					values['airday'] = airs.get('day', '')
+					values['airtime'] = airs.get('time', '')
+					values['airzone'] = airs.get('timezone', '')
+				except: pass
 				if not self.showspecials and next_season_num == 0: return
 				seasonEpisodes = tmdb_indexer().get_seasonEpisodes_meta_checked(tmdb, next_season_num)
 				if not seasonEpisodes: return
@@ -1290,6 +1297,13 @@ class Episodes:
 					values['lastplayed'] = i.get('lastplayed', '')
 					values['snum'] = next_season
 					values['enum'] = next_episode
+					try:
+						show_summary = trakt.getTVShowSummary(imdb_id, full=False) if imdb_id else None
+						airs = (show_summary or {}).get('airs', {}) or {}
+						values['airday'] = airs.get('day', '')
+						values['airtime'] = airs.get('time', '')
+						values['airzone'] = airs.get('timezone', '')
+					except: pass
 					if not episode_meta.get('plot'): episode_meta['plot'] = showSeasons.get('plot', '')
 					values.update(showSeasons)
 					values.update(seasonEpisodes)
@@ -1488,6 +1502,13 @@ class Episodes:
 					values['lastplayed'] = i.get('lastplayed', '')
 					values['snum'] = next_season
 					values['enum'] = next_episode
+					try:
+						show_summary = trakt.getTVShowSummary(imdb_id, full=False) if imdb_id else None
+						airs = (show_summary or {}).get('airs', {}) or {}
+						values['airday'] = airs.get('day', '')
+						values['airtime'] = airs.get('time', '')
+						values['airzone'] = airs.get('timezone', '')
+					except: pass
 					if not episode_meta.get('plot'): episode_meta['plot'] = showSeasons.get('plot', '')
 					values.update(showSeasons)
 					values.update(seasonEpisodes)
@@ -1670,6 +1691,13 @@ class Episodes:
 					values['lastplayed'] = i.get('lastplayed', '')
 					values['snum'] = next_season
 					values['enum'] = next_episode
+					try:
+						show_summary = trakt.getTVShowSummary(imdb_id, full=False) if imdb_id else None
+						airs = (show_summary or {}).get('airs', {}) or {}
+						values['airday'] = airs.get('day', '')
+						values['airtime'] = airs.get('time', '')
+						values['airzone'] = airs.get('timezone', '')
+					except: pass
 					if not episode_meta.get('plot'): episode_meta['plot'] = showSeasons.get('plot', '')
 					values.update(showSeasons)
 					values.update(seasonEpisodes)
