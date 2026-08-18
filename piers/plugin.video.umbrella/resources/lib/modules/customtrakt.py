@@ -1202,6 +1202,7 @@ def manager(name, imdb=None, tvdb=None, tmdb=None, season=None, episode=None, re
 				sync_dropped(forced=True)
 				if refresh: control.refresh()
 		elif action_key == 'list_add':
+			notify = getSetting('custom.general.notifications') == 'true'
 			lists = get_user_lists()
 			options = [l.get('name', '') for l in lists] + ['[COLOR %s]+ New List[/COLOR]' % hc]
 			list_select = control.selectDialog(options, heading=control.addonInfo('name') + ' - %s Lists' % getCustomServiceName())
@@ -1211,26 +1212,27 @@ def manager(name, imdb=None, tvdb=None, tmdb=None, season=None, episode=None, re
 				if not new_name: return
 				slug = create_list(new_name)
 				if not slug:
-					control.notification(title=getCustomServiceName(), message='Failed to create list')
+					if notify: control.notification(title=getCustomServiceName(), message='Failed to create list')
 					return
 			else:
 				slug = list_numeric_id(lists[list_select])
 			if slug and add_to_list(slug, imdb=imdb, tmdb=tmdb, tvdb=tvdb, media_type=media_type):
-				control.notification(title=getCustomServiceName(), message='Added to list')
+				if notify: control.notification(title=getCustomServiceName(), message='Added to list')
 				if refresh: control.refresh()
 			else:
-				control.notification(title=getCustomServiceName(), message='Failed to add to list')
+				if notify: control.notification(title=getCustomServiceName(), message='Failed to add to list')
 		elif action_key == 'list_remove':
+			notify = getSetting('custom.general.notifications') == 'true'
 			lists = get_user_lists()
 			if not lists:
-				control.notification(title=getCustomServiceName(), message='No lists found')
+				if notify: control.notification(title=getCustomServiceName(), message='No lists found')
 				return
 			list_select = control.selectDialog([l.get('name', '') for l in lists], heading=control.addonInfo('name') + ' - Remove From List')
 			if list_select == -1: return
 			slug = list_numeric_id(lists[list_select])
 			if slug and remove_from_list(slug, imdb=imdb, tmdb=tmdb, tvdb=tvdb, media_type=media_type):
-				control.notification(title=getCustomServiceName(), message='Removed from list')
+				if notify: control.notification(title=getCustomServiceName(), message='Removed from list')
 				if refresh: control.refresh()
 			else:
-				control.notification(title=getCustomServiceName(), message='Failed to remove from list')
+				if notify: control.notification(title=getCustomServiceName(), message='Failed to remove from list')
 	except: log_utils.error()

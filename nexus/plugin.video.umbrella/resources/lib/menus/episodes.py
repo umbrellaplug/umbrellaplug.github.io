@@ -61,6 +61,9 @@ class Episodes:
 		self.trakt_directProgressScrape = getSetting('trakt.directProgress.scrape') == 'true'
 		self.simkl_directProgressScrape = getSetting('simkl.directProgress.scrape') == 'true'
 		self.mdblist_directProgressScrape = getSetting('mdblist.directProgress.scrape') == 'true'
+		self.custom_directProgressScrape = getSetting('custom.directProgress.scrape') == 'true'
+		self.floppy_directProgressScrape = getSetting('floppy.directProgress.scrape') == 'true'
+		self.scrob_directProgressScrape = getSetting('scrob.directProgress.scrape') == 'true'
 		self.trakt_progressFlatten = getSetting('trakt.progressFlatten') == 'true'
 		self.simkl_progressFlatten = getSetting('simkl.progressFlatten') == 'true'
 		self.mdblist_progressFlatten = getSetting('mdblist.progressFlatten') == 'true'
@@ -598,9 +601,30 @@ class Episodes:
 				if self.notifications: control.notification(title=32326, message=33049)
 
 	def clr_progress_cache(self, url):
+		if url == 'simklprogress':
+			cache.remove(self.simkl_progress_list, '/sync/all-items/shows/watching', self.simkl_directProgressScrape)
+			cache.remove(self.simkl_progress_list, '/sync/all-items/shows/watching?extended=full', self.simkl_directProgressScrape)
+			control.sleep(200)
+			return control.refresh()
 		if url == 'mdbprogress':
 			cache.remove(self.mdblist_progress_list, '/upnext', self.mdblist_directProgressScrape)
 			cache.remove(self.mdblist_progress_list, url, self.mdblist_directProgressScrape)
+			control.sleep(200)
+			return control.refresh()
+		if url == 'customprogress':
+			cache.remove(self.custom_progress_list, 'customepisodesprogress', self.custom_directProgressScrape)
+			control.sleep(200)
+			return control.refresh()
+		if url == 'floppyprogress':
+			# custom_calendar() uses the bare url as its cache key, but floppy_calendar()/
+			# scrob_calendar() rewrite it to include limit/page before ever calling
+			# cache.get() (see floppy_calendar() above) — the cache key has to be
+			# reconstructed identically here or this would silently clear nothing.
+			cache.remove(self.floppy_progress_list, 'floppyepisodesprogress?limit=%s&page=1' % (self.count or 20), self.floppy_directProgressScrape)
+			control.sleep(200)
+			return control.refresh()
+		if url == 'scrobprogress':
+			cache.remove(self.scrob_progress_list, 'scrobepisodesprogress?limit=%s&page=1' % (self.count or 20), self.scrob_directProgressScrape)
 			control.sleep(200)
 			return control.refresh()
 		try: url = getattr(self, url + '_link')
@@ -631,6 +655,11 @@ class Episodes:
 				if trakt.getProgressActivity() > cache.timeout(self.trakt_progress_list, api_url, self.trakt_user, self.lang, self.trakt_directProgressScrape):
 					self.list = cache.get(self.trakt_progress_list, 0, api_url, self.trakt_user, self.lang, self.trakt_directProgressScrape)
 				else: self.list = cache.get(self.trakt_progress_list, self.trakt_progress_hours, api_url, self.trakt_user, self.lang, self.trakt_directProgressScrape)
+				# Rebuild progress rows cached before full air-schedule enrichment.
+				if self.list and any(not i.get('airinfo_enriched') for i in self.list):
+					cache.remove(self.trakt_progress_list, api_url, self.trakt_user, self.lang, self.trakt_directProgressScrape)
+					self.list = []
+					self.list = cache.get(self.trakt_progress_list, 0, api_url, self.trakt_user, self.lang, self.trakt_directProgressScrape)
 				try:
 					hidden_prog = traktsync.fetch_hidden_progress()
 					hidden_tvdb_set = {str(i['tvdb']) for i in hidden_prog if i.get('tvdb')}
@@ -735,6 +764,11 @@ class Episodes:
 				if simkl.getProgressActivity() > cache.timeout(self.simkl_progress_list, api_url, self.simkl_directProgressScrape):
 					self.list = cache.get(self.simkl_progress_list, 0, api_url, self.simkl_directProgressScrape)
 				else: self.list = cache.get(self.simkl_progress_list, self.simkl_hours, api_url, self.simkl_directProgressScrape)
+				# Rebuild progress rows cached before air-schedule enrichment.
+				if self.list and any(not i.get('airinfo_enriched') for i in self.list):
+					cache.remove(self.simkl_progress_list, api_url, self.simkl_directProgressScrape)
+					self.list = []
+					self.list = cache.get(self.simkl_progress_list, 0, api_url, self.simkl_directProgressScrape)
 				self.sort(type='progress')
 				if self.list is None: self.list = []
 				# place new season ep1's at top of list for 1 week
@@ -789,6 +823,11 @@ class Episodes:
 				self.list = cache.get(self.mdblist_progress_list, 0, url, self.mdblist_directProgressScrape)
 			else:
 				self.list = cache.get(self.mdblist_progress_list, self.mdblist_hours, url, self.mdblist_directProgressScrape)
+			# Progress rows cached before air-schedule enrichment do not contain the
+			# fields needed by the Air Information label. Rebuild those rows once.
+			if self.list and any(not i.get('airinfo_enriched') for i in self.list):
+				cache.remove(self.mdblist_progress_list, url, self.mdblist_directProgressScrape)
+				self.list = cache.get(self.mdblist_progress_list, 0, url, self.mdblist_directProgressScrape)
 			self.sort(type='progress')
 			if self.list is None: self.list = []
 			# place new season ep1's at top of list for 1 week
@@ -910,12 +949,15 @@ class Episodes:
 				values['tvdb'] = i.get('tvdb', '')
 				values['lastplayed'] = i.get('lastplayed', '')
 				try:
-					show_summary = trakt.getTVShowSummary(imdb_id, full=False) if imdb_id else None
+					# The minimal Trakt show summary does not include the `airs` schedule.
+					# MDBList progress items need the full summary for Air Information labels.
+					show_summary = trakt.getTVShowSummary(imdb_id, full=True) if imdb_id else None
 					airs = (show_summary or {}).get('airs', {}) or {}
 					values['airday'] = airs.get('day', '')
 					values['airtime'] = airs.get('time', '')
 					values['airzone'] = airs.get('timezone', '')
 				except: pass
+				values['airinfo_enriched'] = True
 				if not self.showspecials and next_season_num == 0: return
 				seasonEpisodes = tmdb_indexer().get_seasonEpisodes_meta_checked(tmdb, next_season_num)
 				if not seasonEpisodes: return
@@ -1199,7 +1241,7 @@ class Episodes:
 	def custom_calendar(self, url, folderName=''):
 		self.list = []
 		try:
-			self.list = cache.get(self.custom_progress_list, 0, url)
+			self.list = cache.get(self.custom_progress_list, 0, url, self.custom_directProgressScrape)
 			self.sort(type='progress')
 			if self.list is None: self.list = []
 			prior_week = int(re.sub(r'[^0-9]', '', (self.date_time - timedelta(days=7)).strftime('%Y-%m-%d')))
@@ -1224,7 +1266,7 @@ class Episodes:
 	def custom_upcoming_progress(self, url, folderName=''):
 		self.list = []
 		try:
-			self.list = cache.get(self.custom_progress_list, 0, url, False, True)
+			self.list = cache.get(self.custom_progress_list, 0, url, self.custom_directProgressScrape, True)
 			if self.list:
 				self.list = sorted(self.list, key=lambda k: (k['premiered'] if k.get('premiered') else '3021-01-01', k.get('airtime', '')))
 			if self.list is None: self.list = []
@@ -1298,12 +1340,13 @@ class Episodes:
 					values['snum'] = next_season
 					values['enum'] = next_episode
 					try:
-						show_summary = trakt.getTVShowSummary(imdb_id, full=False) if imdb_id else None
+						show_summary = trakt.getTVShowSummary(imdb_id, full=True) if imdb_id else None
 						airs = (show_summary or {}).get('airs', {}) or {}
 						values['airday'] = airs.get('day', '')
 						values['airtime'] = airs.get('time', '')
 						values['airzone'] = airs.get('timezone', '')
 					except: pass
+					values['airinfo_enriched'] = True
 					if not episode_meta.get('plot'): episode_meta['plot'] = showSeasons.get('plot', '')
 					values.update(showSeasons)
 					values.update(seasonEpisodes)
@@ -1388,7 +1431,7 @@ class Episodes:
 			except:
 				index = 0
 				page_limit = max(1, int(self.count) if self.count else 20)
-			self.list = cache.get(self.floppy_progress_list, 0, url)
+			self.list = cache.get(self.floppy_progress_list, 0, url, self.floppy_directProgressScrape)
 			self.sort(type='progress')
 			if self.list is None: self.list = []
 			prior_week = int(re.sub(r'[^0-9]', '', (self.date_time - timedelta(days=7)).strftime('%Y-%m-%d')))
@@ -1427,7 +1470,7 @@ class Episodes:
 	def floppy_upcoming_progress(self, url, folderName=''):
 		self.list = []
 		try:
-			self.list = cache.get(self.floppy_progress_list, 0, url, False, True)
+			self.list = cache.get(self.floppy_progress_list, 0, url, self.floppy_directProgressScrape, True)
 			if self.list:
 				self.list = sorted(self.list, key=lambda k: (k['premiered'] if k.get('premiered') else '3021-01-01', k.get('airtime', '')))
 			if self.list is None: self.list = []
@@ -1503,12 +1546,13 @@ class Episodes:
 					values['snum'] = next_season
 					values['enum'] = next_episode
 					try:
-						show_summary = trakt.getTVShowSummary(imdb_id, full=False) if imdb_id else None
+						show_summary = trakt.getTVShowSummary(imdb_id, full=True) if imdb_id else None
 						airs = (show_summary or {}).get('airs', {}) or {}
 						values['airday'] = airs.get('day', '')
 						values['airtime'] = airs.get('time', '')
 						values['airzone'] = airs.get('timezone', '')
 					except: pass
+					values['airinfo_enriched'] = True
 					if not episode_meta.get('plot'): episode_meta['plot'] = showSeasons.get('plot', '')
 					values.update(showSeasons)
 					values.update(seasonEpisodes)
@@ -1586,7 +1630,7 @@ class Episodes:
 			except:
 				index = 0
 				page_limit = max(1, int(self.count) if self.count else 20)
-			self.list = cache.get(self.scrob_progress_list, 0, url)
+			self.list = cache.get(self.scrob_progress_list, 0, url, self.scrob_directProgressScrape)
 			self.sort(type='progress')
 			if self.list is None: self.list = []
 			prior_week = int(re.sub(r'[^0-9]', '', (self.date_time - timedelta(days=7)).strftime('%Y-%m-%d')))
@@ -1624,7 +1668,7 @@ class Episodes:
 	def scrob_upcoming_progress(self, url, folderName=''):
 		self.list = []
 		try:
-			self.list = cache.get(self.scrob_progress_list, 0, url, False, True)
+			self.list = cache.get(self.scrob_progress_list, 0, url, self.scrob_directProgressScrape, True)
 			if self.list:
 				self.list = sorted(self.list, key=lambda k: (k['premiered'] if k.get('premiered') else '3021-01-01', k.get('airtime', '')))
 			if self.list is None: self.list = []
@@ -1692,12 +1736,13 @@ class Episodes:
 					values['snum'] = next_season
 					values['enum'] = next_episode
 					try:
-						show_summary = trakt.getTVShowSummary(imdb_id, full=False) if imdb_id else None
+						show_summary = trakt.getTVShowSummary(imdb_id, full=True) if imdb_id else None
 						airs = (show_summary or {}).get('airs', {}) or {}
 						values['airday'] = airs.get('day', '')
 						values['airtime'] = airs.get('time', '')
 						values['airzone'] = airs.get('timezone', '')
 					except: pass
+					values['airinfo_enriched'] = True
 					if not episode_meta.get('plot'): episode_meta['plot'] = showSeasons.get('plot', '')
 					values.update(showSeasons)
 					values.update(seasonEpisodes)
@@ -1938,6 +1983,9 @@ class Episodes:
 				values = {}
 				values.update(seasonEpisodes)
 				values.update(item)
+				# Preserve the show rating separately because an unrated episode's
+				# TMDb vote_average (0.0) overwrites it in the episode metadata.
+				values['tvshow_rating'] = showSeasons.get('rating', '')
 				values['tvshowtitle'] = tvshowtitle
 				values['year'] = showSeasons.get('year')
 				values['trailer'] = showSeasons.get('trailer')
@@ -2037,6 +2085,17 @@ class Episodes:
 		def items_list(i):
 			values = i
 			imdb, tmdb, tvdb = i.get('imdb'), i.get('tmdb'), i.get('tvdb')
+			try:
+				# `extended=progress` can omit the `airs` object. Fill it from the
+				# full show summary so Air Information works in Progress Episodes.
+				if not (values.get('airday') or values.get('airtime')):
+					show_summary = trakt.getTVShowSummary(imdb or tvdb, full=True) if (imdb or tvdb) else None
+					airs = (show_summary or {}).get('airs', {}) or {}
+					values['airday'] = airs.get('day', '')
+					values['airtime'] = airs.get('time', '')[:5]
+					values['airzone'] = airs.get('timezone', '')
+			except: pass
+			values['airinfo_enriched'] = True
 			if not tmdb and (imdb or tvdb):
 				try:
 					result = cache.get(tmdb_indexer().IdLookup, 96, imdb, tvdb)
@@ -2428,6 +2487,14 @@ class Episodes:
 		def items_list(i):
 			values = i
 			imdb, tmdb, tvdb = i.get('imdb'), i.get('tmdb'), i.get('tvdb')
+			try:
+				show_summary = trakt.getTVShowSummary(imdb or tvdb, full=True) if (imdb or tvdb) else None
+				airs = (show_summary or {}).get('airs', {}) or {}
+				values['airday'] = airs.get('day', '')
+				values['airtime'] = airs.get('time', '')[:5]
+				values['airzone'] = airs.get('timezone', '')
+			except: pass
+			values['airinfo_enriched'] = True
 			if not tmdb and (imdb or tvdb):
 				try:
 					result = cache.get(tmdb_indexer().IdLookup, 96, imdb, tvdb)
@@ -2551,9 +2618,18 @@ class Episodes:
 		except: simklProgress = False
 		try: mdblistProgress = False if 'mdblistProgress' not in items[0] else True
 		except: mdblistProgress = False
-		if simklProgress and self.simkl_directProgressScrape: progressMenu = getLS(32016)
+		try: customProgress = False if 'customProgress' not in items[0] else True
+		except: customProgress = False
+		try: floppyProgress = False if 'floppyProgress' not in items[0] else True
+		except: floppyProgress = False
+		try: scrobProgress = False if 'scrobProgress' not in items[0] else True
+		except: scrobProgress = False
 		if traktProgress and self.trakt_directProgressScrape: progressMenu = getLS(32016)
+		elif simklProgress and self.simkl_directProgressScrape: progressMenu = getLS(32016)
 		elif mdblistProgress and self.mdblist_directProgressScrape: progressMenu = getLS(32016)
+		elif customProgress and self.custom_directProgressScrape: progressMenu = getLS(32016)
+		elif floppyProgress and self.floppy_directProgressScrape: progressMenu = getLS(32016)
+		elif scrobProgress and self.scrob_directProgressScrape: progressMenu = getLS(32016)
 		else: progressMenu = getLS(32015)
 		if traktProgress: isMultiList = True
 		elif simklProgress: isMultiList = True
@@ -2810,11 +2886,17 @@ class Episodes:
 				if traktProgress and is_widget == False:
 					cm.append((progressRefreshMenu, 'RunPlugin(%s?action=episodes_clrProgressCache&url=progress)' % sysaddon))
 				if simklProgress and is_widget == False:
-					cm.append((progressRefreshMenu, 'RunPlugin(%s?action=episodes_clrProgressCache&url=progress)' % sysaddon))	
+					cm.append((progressRefreshMenu, 'RunPlugin(%s?action=episodes_clrProgressCache&url=simklprogress)' % sysaddon))	
 				if mdblistProgress and is_widget == False:
 					cm.append((progressRefreshMenu, 'RunPlugin(%s?action=episodes_clrProgressCache&url=mdbprogress)' % sysaddon))
+				if customProgress and is_widget == False:
+					cm.append((progressRefreshMenu, 'RunPlugin(%s?action=episodes_clrProgressCache&url=customprogress)' % sysaddon))
+				if floppyProgress and is_widget == False:
+					cm.append((progressRefreshMenu, 'RunPlugin(%s?action=episodes_clrProgressCache&url=floppyprogress)' % sysaddon))
+				if scrobProgress and is_widget == False:
+					cm.append((progressRefreshMenu, 'RunPlugin(%s?action=episodes_clrProgressCache&url=scrobprogress)' % sysaddon))
 				if isFolder:
-					if (traktProgress or simklProgress or mdblistProgress) and is_widget == False:
+					if (traktProgress or simklProgress or mdblistProgress or customProgress or floppyProgress or scrobProgress) and is_widget == False:
 						cm.append((progressMenu, 'PlayMedia(%s)' % url))
 					url = '%s?action=episodes&tvshowtitle=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&meta=%s&season=%s&episode=%s&art=%s' % (sysaddon, systvshowtitle, year, imdb, tmdb, tvdb, sysmeta, season, episode, sysart)
 				cm.append((playlistManagerMenu, 'RunPlugin(%s?action=playlist_Manager&name=%s&url=%s&meta=%s&art=%s)' % (sysaddon, syslabelProgress, sysurl, sysmeta, sysart)))
@@ -2832,7 +2914,7 @@ class Episodes:
 					# cm.append((tvshowBrowserMenu, 'Container.Update(%s?action=episodes&tvshowtitle=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&meta=%s,return)' % (sysaddon, systvshowtitle, year, imdb, tmdb, tvdb, sysmeta)))
 
 				if not isFolder:
-					if (traktProgress or simklProgress or mdblistProgress) and is_widget == False: cm.append((progressMenu, 'Container.Update(%s)' % Folderurl))
+					if (traktProgress or simklProgress or mdblistProgress or customProgress or floppyProgress or scrobProgress) and is_widget == False: cm.append((progressMenu, 'Container.Update(%s)' % Folderurl))
 					#cm.append((playbackMenu, 'RunPlugin(%s?action=alterSources&url=%s&meta=%s)' % (sysaddon, sysurl, sysmeta)))
 					if not rescrape_useDefault:
 						cm.append(('Rescrape Options ------>', 'PlayMedia(%s?action=rescrapeMenu&title=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&tvshowtitle=%s&premiered=%s&meta=%s)' % (

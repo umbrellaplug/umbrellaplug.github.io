@@ -264,6 +264,27 @@ def get_watched_movies():
 		except: pass
 	return result
 
+def get_watched_movies_full():
+	# Full rows (imdb, tmdb, title, year, last_watched_at) for the dedicated Watched
+	# list — get_watched_movies() above only selects imdb for the indicator-matching
+	# path and can't be reused for a real history-sorted list.
+	result = []
+	try:
+		dbcon = get_connection()
+		dbcur = get_connection_cursor(dbcon)
+		_ensure_watched_tables(dbcur)
+		rows = dbcur.execute('''SELECT imdb, tmdb, title, year, last_watched_at FROM floppy_watched_movies''').fetchall()
+		result = [(r[0], r[1], r[2], r[3], r[4]) for r in rows]
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+	finally:
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
+	return result
+
 def get_watched_episodes():
 	result = []
 	try:

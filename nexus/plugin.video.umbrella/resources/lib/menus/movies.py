@@ -2141,6 +2141,137 @@ class Movies:
 			from resources.lib.modules import log_utils
 			log_utils.error()
 
+	def floppyWatched(self, url=None, idx=True, create_directory=True, folderName=''):
+		# Dedicated watched-history list, mirroring customWatched() — floppyList() above
+		# (used for Watchlist/Watching/On Hold/Dropped/Collection) always sorts with
+		# 'movies.watchlist' and only carries each item's first-tracked date, not when it
+		# was actually watched. Reusing it for Completed made the "watched movies" list
+		# sort by watchlist-add order instead of watch history. floppy_watched_movies
+		# (populated by floppy.sync_watchedProgress(), same table used for the watched/
+		# unwatched overlay) has the real last_watched_at, so build this list from that.
+		self.list = []
+		try:
+			url = url or 'floppymovieswatched'
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q['page']) - 1
+			except:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = 0
+			rows = floppysync.get_watched_movies_full()
+			if not rows: return self.list
+			for (imdb, tmdb, title, year, last_watched_at) in rows:
+				try:
+					values = {}
+					values['imdb'] = imdb or ''
+					values['tmdb'] = tmdb or ''
+					values['title'] = title or ''
+					values['year'] = year or ''
+					values['lastplayed'] = last_watched_at or ''
+					values['mediatype'] = 'movies'
+					self.list.append(values)
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+			useNext = True
+			if create_directory:
+				self.sort(type='watched')
+				if getSetting('floppy.paginate.lists') == 'true' and self.list:
+					if len(self.list) <= int(self.page_limit):
+						useNext = False
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					self.list = paginated_ids[index]
+				else:
+					useNext = False
+			try:
+				if useNext == False: raise Exception()
+				if len(self.list) < int(self.page_limit): raise Exception()
+				q.update({'page': str(index + 2), 'limit': str(self.page_limit)})
+				q = (urlencode(q)).replace('%2C', ',')
+				continuation = url.replace('?' + urlparse(url).query, '') + '?' + q
+				next = 'plugin://plugin.video.umbrella/?action=floppy_movies_watched&url=%s&folderName=%s' % (quote_plus(continuation), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			if idx: self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.movieDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def floppyUserlists(self, create_directory=True, folderName=''):
+		# Mirrors customUserlists() — Floppy's /lists/ + /lists/{id}/items/ (confirmed
+		# via live Postman testing 2026-08-16) work the same way Custom's user lists do,
+		# so this follows the identical live-fetch-and-filter pattern rather than caching
+		# locally (list items embed a large per-country watch_providers block per item
+		# that isn't worth persisting, and floppy.get_list_items() already strips it).
+		self.list = []
+		try:
+			if not self.floppyCredentials: raise Exception()
+			lists = floppy.get_user_lists()
+			for lst in lists:
+				try:
+					list_id = str(lst.get('id', '') or '')
+					if not list_id: continue
+					count = sum(1 for i in floppy.get_list_items(list_id) if i.get('media_type') == 'movie')
+					if not count: continue
+					name = lst.get('name', '')
+					values = {
+						'name': '%s (%s)' % (name, count),
+						'action': 'floppy_list_movies&list_id=%s' % quote_plus(list_id),
+						'image': lst.get('image') or 'icon.png', 'icon': 'DefaultVideoPlaylists.png', 'url': '',
+					}
+					self.list.append(values)
+				except: pass
+		except: pass
+		if create_directory: self.addDirectory(self.list, folderName=folderName)
+		return self.list
+
+	def floppyListMovies(self, list_id, url=None, create_directory=True, folderName=''):
+		# Live-fetched every call, same as customListMovies() — see floppyUserlists().
+		self.list = []
+		try:
+			url = url or ('floppylistmovies?list_id=%s&limit=%s&page=1' % (list_id, self.page_limit))
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q.get('page', 1)) - 1
+			except:
+				index = 0
+			items = floppy.get_list_items(list_id)
+			for i in items:
+				try:
+					if i.get('media_type') != 'movie': continue
+					self.list.append({
+						'title': i.get('title', ''), 'year': i.get('year', ''),
+						'tmdb': i.get('tmdb', ''), 'premiered': i.get('premiered', ''),
+					})
+				except: pass
+			useNext = True
+			if create_directory:
+				self.sort()
+				if getSetting('floppy.paginate.lists') == 'true' and self.list:
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					# useNext must reflect whether there's a page AFTER this one, not just
+					# whether the list needed paginating at all.
+					if index >= len(paginated_ids) - 1: useNext = False
+					self.list = paginated_ids[index] if index < len(paginated_ids) else []
+				else: useNext = False
+			try:
+				if useNext == False: raise Exception()
+				next_page = index + 2
+				next = 'plugin://plugin.video.umbrella/?action=floppy_list_movies&list_id=%s&url=%s&folderName=%s' % (
+					quote_plus(list_id), quote_plus('floppylistmovies?list_id=%s&limit=%s&page=%s' % (list_id, self.page_limit, next_page)), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.movieDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
 	def floppyWatchlistManager(self):
 		try:
 			control.busy()
@@ -3148,7 +3279,12 @@ class Movies:
 				values['rating'] = self.list[i]['rating']
 			if 'votes' in self.list[i] and self.list[i]['votes']:
 				values['votes'] = self.list[i]['votes']
-			if 'year' in self.list[i] and self.list[i]['year'] != values.get('year'):
+			# Only let the caller's own year win over TMDb's when it's actually a real
+			# value — checking key presence rather than truthiness meant callers that pass
+			# an empty-string placeholder (e.g. a watched-history source with no cached
+			# year, like floppyWatched()) silently overwrote a correct freshly-fetched
+			# TMDb year with '', which the empty-key filter below then strips entirely.
+			if self.list[i].get('year') and self.list[i]['year'] != values.get('year'):
 				values['year'] = self.list[i]['year']
 			if not imdb:
 				imdb = values.get('imdb', '')

@@ -168,10 +168,11 @@ _MYMOVIES_FLOPPY_DEFAULTS = [
 	('mymv_floppy_watching',   'Watching (Floppy)',   'floppy_movies_watching&url=floppymovieswatching',     'floppy.png', 'floppy.png', 1, 1, 1,  0, 0, 'floppy_credentials', 0, None),
 	('mymv_floppy_watchlist',  'Watchlist (Floppy)',  'floppy_movies_watchlist&url=floppymovieswatchlist',   'floppy.png', 'floppy.png', 1, 1, 1,  1, 0, 'floppy_credentials', 0, None),
 	('mymv_floppy_onhold',     'On Hold (Floppy)',    'floppy_movies_onhold&url=floppymoviesonhold',         'floppy.png', 'floppy.png', 1, 1, 1,  2, 0, 'floppy_credentials', 0, None),
-	('mymv_floppy_completed',  'Completed (Floppy)',  'floppy_movies_completed&url=floppymoviescompleted',   'floppy.png', 'floppy.png', 1, 1, 1,  3, 0, 'floppy_credentials', 0, None),
+	('mymv_floppy_completed',  'Completed (Floppy)',  'floppy_movies_watched&url=floppymovieswatched',   'floppy.png', 'floppy.png', 1, 1, 1,  3, 0, 'floppy_credentials', 0, None),
 	('mymv_floppy_dropped',    'Dropped (Floppy)',    'floppy_movies_dropped&url=floppymoviesdropped',       'floppy.png', 'floppy.png', 1, 1, 1,  4, 0, 'floppy_credentials', 0, None),
 	('mymv_floppy_collection', 'Collection (Floppy)', 'floppy_movies_collection&url=floppymoviescollection', 'floppy.png', 'floppy.png', 1, 1, 1,  5, 0, 'floppy_credentials', 0, None),
 	('mymv_floppy_unfinished', 'Unfinished (Floppy)', 'floppy_movies_unfinished&url=floppymoviesunfinished', 'floppy.png', 'floppy.png', 1, 1, 1,  6, 0, 'floppy_credentials', 1, '35308'),
+	('mymv_floppy_userlists',  'User Lists (Floppy)', 'floppy_movies_userlists', 'floppy.png', 'floppy.png', 1, 1, 1,  7, 0, 'floppy_credentials', 0, None),
 ]
 
 _MYMOVIES_SCROB_DEFAULTS = [
@@ -273,6 +274,7 @@ _MYTVSHOWS_FLOPPY_DEFAULTS = [
 	('mytv_floppy_ep_prog',    'Progress Episodes (Floppy)', 'floppy_episodes_progress&url=floppyepisodesprogress', 'floppy.png', 'floppy.png', 1, 1, 1,  7, 0, 'floppy_with_indicators', 1, None),
 	('mytv_floppy_upcoming',   'Upcoming Progress (Floppy)', 'floppy_upcoming_progress&url=floppyupcomingprogress', 'floppy.png', 'floppy.png', 1, 1, 1,  8, 0, 'floppy_with_indicators', 1, None),
 	('mytv_floppy_unfinished', 'Unfinished (Floppy)', 'floppy_episodes_unfinished&url=floppyepisodesunfinished', 'floppy.png', 'floppy.png', 1, 1, 1,  9, 0, 'floppy_credentials', 1, '35308'),
+	('mytv_floppy_userlists',  'User Lists (Floppy)', 'floppy_shows_userlists', 'floppy.png', 'floppy.png', 1, 1, 1, 10, 0, 'floppy_credentials', 0, None),
 ]
 
 _MYTVSHOWS_SCROB_DEFAULTS = [
@@ -509,6 +511,13 @@ def _sync_defaults(dbcon):
 	# concept for movies the way it does for shows, so this was a pure duplicate. Drop it.
 	dbcon.execute("DELETE FROM menu_items WHERE item_id='mymv_simkl_unfinished' AND is_custom=0")
 	dbcon.commit()
+	# mymv_floppy_completed previously routed through the generic status-bucket
+	# floppyList() (same 'movies.watchlist' sort as Watchlist/On Hold/Dropped, and only
+	# each item's first-tracked date rather than a real watched date) — point it at the
+	# new dedicated floppyWatched() handler instead, which sorts by actual watch history
+	# like every other provider's Watched list.
+	dbcon.execute("UPDATE menu_items SET action=? WHERE item_id='mymv_floppy_completed' AND is_custom=0", ('floppy_movies_watched&url=floppymovieswatched',))
+	dbcon.commit()
 	# Insert items added after initial release for existing users
 	_NEW_DEFAULT_ITEMS = [
 		('mymovies', 'mymv_mdblist_folder',  'MDBList',  'mymovies_mdblistNavigator',  'mdblist.png',  'mdblist.png',  1, 1, 1, 2, 0, 'mdblist_token',        0, None),
@@ -531,6 +540,8 @@ def _sync_defaults(dbcon):
 		('mytvshows_scrob', 'mytv_scrob_userlists', '40781', 'scrob_tvshows_userlists', 'scrob.png', 'scrob.png', 1, 1, 1, 100, 0, 'scrob_credentials', 1, None),
 		('mymovies_floppy', 'mymv_floppy_unfinished', 'Unfinished (Floppy)', 'floppy_movies_unfinished&url=floppymoviesunfinished', 'floppy.png', 'floppy.png', 1, 1, 1, 99, 0, 'floppy_credentials', 1, '35308'),
 		('mytvshows_floppy', 'mytv_floppy_unfinished', 'Unfinished (Floppy)', 'floppy_episodes_unfinished&url=floppyepisodesunfinished', 'floppy.png', 'floppy.png', 1, 1, 1, 99, 0, 'floppy_credentials', 1, '35308'),
+		('mymovies_floppy', 'mymv_floppy_userlists', 'User Lists (Floppy)', 'floppy_movies_userlists', 'floppy.png', 'floppy.png', 1, 1, 1, 100, 0, 'floppy_credentials', 0, None),
+		('mytvshows_floppy', 'mytv_floppy_userlists', 'User Lists (Floppy)', 'floppy_shows_userlists', 'floppy.png', 'floppy.png', 1, 1, 1, 101, 0, 'floppy_credentials', 0, None),
 		('mymovies_mdblist',  'mymv_mdb_unfinished',  '40686',  'mdblistMoviesUnfinished',          'mdblist.png', 'mdblist.png', 1, 1, 1, 99, 0, 'mdblist_with_indicators', 1, '35308'),
 		('mytvshows_mdblist', 'mytv_mdb_unfinished',  '40686',  'mdblistEpisodesUnfinished',         'mdblist.png', 'mdblist.png', 1, 1, 1, 99, 0, 'mdblist_with_indicators', 1, '35308'),
 		('mymovies',  'mymv_local_folder',    'Local', 'mymovies_localNavigator',  'icon.png',    'icon.png',    1, 1, 1, 99, 0, 'local_scrobble',          0, None),

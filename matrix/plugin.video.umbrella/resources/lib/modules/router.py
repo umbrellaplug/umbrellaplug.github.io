@@ -351,6 +351,15 @@ def router(argv2):
 	elif action == 'floppy_movies_completed':
 		from resources.lib.menus import movies
 		movies.Movies().floppyList(url, 'movies_completed', 'floppy_movies_completed', folderName=folderName)
+	elif action == 'floppy_movies_watched':
+		from resources.lib.menus import movies
+		movies.Movies().floppyWatched(url, folderName=folderName)
+	elif action == 'floppy_movies_userlists':
+		from resources.lib.menus import movies
+		movies.Movies().floppyUserlists(folderName=folderName, create_directory=True)
+	elif action == 'floppy_list_movies':
+		from resources.lib.menus import movies
+		movies.Movies().floppyListMovies(params.get('list_id'), url=url, folderName=folderName)
 	elif action == 'floppy_movies_dropped':
 		from resources.lib.menus import movies
 		movies.Movies().floppyList(url, 'movies_dropped', 'floppy_movies_dropped', folderName=folderName)
@@ -444,6 +453,12 @@ def router(argv2):
 	elif action == 'floppy_shows_completed':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().floppyList(url, 'shows_completed', 'floppy_shows_completed', folderName=folderName)
+	elif action == 'floppy_shows_userlists':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().floppyUserlists(folderName=folderName, create_directory=True)
+	elif action == 'floppy_list_shows':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().floppyListShows(params.get('list_id'), url=url, folderName=folderName)
 	elif action == 'floppy_shows_dropped':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().floppyList(url, 'shows_dropped', 'floppy_shows_dropped', folderName=folderName)
@@ -1029,6 +1044,9 @@ def router(argv2):
 		elif action == 'tb_DeleteUserTorrent':
 			from resources.lib.debrid import torbox
 			torbox.TorBox().delete_user_torrent(params.get('id'), mediatype, name)
+		elif action == 'tb_ToggleAirlock':
+			from resources.lib.debrid import torbox
+			torbox.TorBox().toggle_airlock(params.get('id'), mediatype, name)
 		elif action == 'tb_ReferralLink':
 			from resources.lib.debrid import torbox
 			torbox.TorBox().referral_link()
@@ -1635,7 +1653,13 @@ def router(argv2):
 				elif rtype == "episode":
 					try: control.notification(title=32536, message='%s - %01dx%02d - %s' % (rlist[rand]['tvshowtitle'], int(rlist[rand]['season']), int(rlist[rand]['episode']), rlist[rand]['title']))
 					except: pass
-				if 'play_Item' in r: control.execute('PlayMedia(%s)' % r)
+				if 'play_Item' in r:
+					# Play Random starts a new continuous-playback chain. A playlist left
+					# behind by an earlier session makes Player.addEpisodetoPlaylist()
+					# mistake that stale entry for an already queued next episode, so the
+					# random episode plays but continuous playback stops afterward.
+					if rtype == 'episode': control.playlist.clear()
+					control.execute('PlayMedia(%s)' % r)
 				else: control.execute('RunPlugin(%s)' % r)
 			except: control.notification(message=32537)
 

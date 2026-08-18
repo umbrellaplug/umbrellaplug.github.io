@@ -35,6 +35,9 @@ class TorBox:
 	removeQueued = '/torrents/controlqueued'
 	download_webdl = '/webdl/requestdl'
 	remove_webdl = '/webdl/controlwebdownload'
+	edit = '/torrents/edittorrent'
+	edit_usenet = '/usenet/editusenetdownload'
+	edit_webdl = '/webdl/editwebdownload'
 
 	def __init__(self):
 		self.name = 'TorBox'
@@ -62,6 +65,9 @@ class TorBox:
 	def _POST(self, url, params=None, json=None, data=None):
 		return self._request('post', url, params=params, json=json, data=data)
 
+	def _PUT(self, url, params=None, json=None, data=None):
+		return self._request('put', url, params=params, json=json, data=data)
+
 	def add_headers_to_url(self, url):
 		return url + '|' + urlencode(self.headers())
 
@@ -78,6 +84,36 @@ class TorBox:
 	def delete_torrent(self, request_id=''):
 		data = {'torrent_id': request_id, 'operation': 'delete'}
 		return self._POST(self.remove, json=data)
+
+	def edit_torrent(self, request_id, name, tags, alternative_hashes, airlocked):
+		data = {
+			'torrent_id': int(request_id),
+			'name': name,
+			'tags': tags or [],
+			'alternative_hashes': alternative_hashes or [],
+			'airlocked': bool(airlocked)
+		}
+		return self._PUT(self.edit, json=data)
+
+	def edit_usenet_download(self, request_id, name, tags, alternative_hashes, airlocked):
+		data = {
+			'usenet_download_id': int(request_id),
+			'name': name,
+			'tags': tags or [],
+			'alternative_hashes': alternative_hashes or [],
+			'airlocked': bool(airlocked)
+		}
+		return self._PUT(self.edit_usenet, json=data)
+
+	def edit_web_download(self, request_id, name, tags, alternative_hashes, airlocked):
+		data = {
+			'webdl_id': int(request_id),
+			'name': name,
+			'tags': tags or [],
+			'alternative_hashes': alternative_hashes or [],
+			'airlocked': bool(airlocked)
+		}
+		return self._PUT(self.edit_webdl, json=data)
 
 	def delete_torrent_queued(self, request_id=''):
 		data = {'torrent_id': request_id, 'operation': 'delete'}
@@ -362,17 +398,17 @@ class TorBox:
 			return control.selectDialog(items, 'TorBox')
 		except: log_utils.error()
 
-	def user_cloud(self, request_id=None):
+	def user_cloud(self, request_id=None, bypass_cache=False):
 		url = self.explore % request_id if request_id else self.history
-		return self._GET(url)
+		return self._GET(url, params={'bypass_cache': 'true'} if bypass_cache else None)
 
-	def user_cloud_usenet(self, request_id=None):
+	def user_cloud_usenet(self, request_id=None, bypass_cache=False):
 		url = self.explore_usenet % request_id if request_id else self.history_usenet
-		return self._GET(url)
+		return self._GET(url, params={'bypass_cache': 'true'} if bypass_cache else None)
 
-	def user_cloud_webdl(self, request_id=None):
+	def user_cloud_webdl(self, request_id=None, bypass_cache=False):
 		url = self.explore_webdl % request_id if request_id else self.history_webdl
-		return self._GET(url)
+		return self._GET(url, params={'bypass_cache': 'true'} if bypass_cache else None)
 
 	def user_cloud_clear(self):
 		if not control.yesnoDialog(getLS(32056), '', ''): return
@@ -389,15 +425,15 @@ class TorBox:
 		file_str, downloadMenu = getLS(40047).upper(), getLS(40048)
 		folders = []
 		try:
-			torrent_response = self.user_cloud()
+			torrent_response = self.user_cloud(bypass_cache=True)
 			folders += [{**i, 'mediatype': 'torent'} for i in (torrent_response['data'] or []) if i.get('download_finished') or i.get('download_state') == 'completed']
 		except: pass
 		try:
-			usenet_response = self.user_cloud_usenet()
+			usenet_response = self.user_cloud_usenet(bypass_cache=True)
 			folders += [{**i, 'mediatype': 'usenet'} for i in (usenet_response['data'] or []) if i.get('download_finished') or i.get('download_state') == 'completed']
 		except: pass
 		try:
-			webdl_response = self.user_cloud_webdl()
+			webdl_response = self.user_cloud_webdl(bypass_cache=True)
 			folders += [{**i, 'mediatype': 'webdl'} for i in (webdl_response['data'] or []) if i.get('download_finished') or i.get('download_state') == 'completed']
 		except: pass
 		folders.sort(key=lambda k: k['updated_at'], reverse=True)
@@ -406,9 +442,14 @@ class TorBox:
 				cm = []
 				folder_name = string_tools.strip_non_ascii_and_unprintable(item['name'])
 				status_str = '[COLOR %s]%s[/COLOR]' % (highlight_color, item['download_state'].capitalize())
+				airlocked = bool(item.get('airlocked'))
+				airlock_menu = 'Remove from Airlock' if airlocked else 'Add to Airlock'
+				cm.append((airlock_menu, 'RunPlugin(%s?action=tb_ToggleAirlock&id=%s&mediatype=%s&name=%s)' %
+					(sysaddon, item['id'], item['mediatype'], quote_plus(folder_name))))
 				cm.append((deleteMenu % 'Torrent', 'RunPlugin(%s?action=tb_DeleteUserTorrent&id=%s&mediatype=%s&name=%s)' %
 					(sysaddon, item['id'], item['mediatype'], quote_plus(folder_name))))
-				label = '%02d | [B]%s[/B] | [B]%s[/B] | [I]%s [/I]' % (count, status_str, folder_str, folder_name)
+				airlock_str = ' | [B]AIRLOCKED[/B]' if airlocked else ''
+				label = '%02d | [B]%s[/B] | [B]%s[/B]%s | [I]%s [/I]' % (count, status_str, folder_str, airlock_str, folder_name)
 				url = '%s?action=tb_BrowseUserTorrents&id=%s&mediatype=%s' % (sysaddon, item['id'], item['mediatype'])
 				item = control.item(label=label, offscreen=True)
 				item.addContextMenuItems(cm)
@@ -418,6 +459,39 @@ class TorBox:
 			except: log_utils.error()
 		control.content(syshandle, 'files')
 		control.directory(syshandle, cacheToDisc=True)
+
+	def toggle_airlock(self, request_id, mediatype, name=''):
+		try:
+			if mediatype == 'usenet':
+				response = self.user_cloud_usenet(request_id, bypass_cache=True)
+				edit_function = self.edit_usenet_download
+			elif mediatype == 'webdl':
+				response = self.user_cloud_webdl(request_id, bypass_cache=True)
+				edit_function = self.edit_web_download
+			else:
+				response = self.user_cloud(request_id, bypass_cache=True)
+				edit_function = self.edit_torrent
+			item = response.get('data') or {}
+			if isinstance(item, list):
+				item = next((i for i in item if str(i.get('id')) == str(request_id)), {})
+			if not item: raise ValueError('Torrent was not found')
+			new_state = not bool(item.get('airlocked'))
+			result = edit_function(
+				request_id,
+				item.get('name') or name,
+				item.get('tags', []),
+				item.get('alternative_hashes', []),
+				new_state
+			)
+			if result and result.get('success'):
+				message = 'added to Airlock' if new_state else 'removed from Airlock'
+				control.notification(message='TorBox: %s was %s' % (item.get('name') or name, message), icon=tb_icon)
+				return control.refresh()
+			message = (result or {}).get('detail') or (result or {}).get('error') or 'Unable to update Airlock'
+			control.notification(title='TorBox', message=message, icon=tb_icon)
+		except Exception:
+			log_utils.error('TorBox toggle_airlock: ')
+			control.notification(title='TorBox', message='Unable to update Airlock', icon=tb_icon)
 
 	def browse_user_torrents(self, folder_id, mediatype):
 		sysaddon, syshandle = 'plugin://plugin.video.umbrella/', int(argv[1])

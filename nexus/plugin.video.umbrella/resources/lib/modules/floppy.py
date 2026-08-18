@@ -79,6 +79,8 @@ def getFloppy(url, post=None, method=None, silent=False):
 					response = session.post(url, data=body, headers=req_headers, timeout=20)
 				elif method == 'PATCH':
 					response = session.patch(url, data=body, headers=req_headers, timeout=20)
+				elif method == 'PUT':
+					response = session.put(url, data=body, headers=req_headers, timeout=20)
 				elif method == 'DELETE':
 					response = session.delete(url, headers=req_headers, timeout=20)
 				else:
@@ -131,8 +133,21 @@ def get_all_pages(url, silent=False):
 			page_results = data.get('results', []) if isinstance(data, dict) else data
 			if not page_results: break
 			results.extend(page_results)
-			if len(page_results) < limit: break
-			offset += limit
+			# The server silently clamps the requested limit (confirmed: requesting
+			# limit=250 comes back with 200 results per page) — comparing the returned
+			# count against the *requested* limit then reads as "last page" after every
+			# single page for any collection over 200 items, silently truncating history/
+			# status-bucket syncs there. pagination.next is the real "more pages exist"
+			# signal; only fall back to the requested-limit comparison if a response is
+			# ever missing the pagination block. offset advances by the actual page size
+			# returned, not the requested one, so the next request picks up where the
+			# server actually left off either way.
+			pagination = data.get('pagination') if isinstance(data, dict) else None
+			if pagination is not None:
+				if not pagination.get('next'): break
+			elif len(page_results) < limit:
+				break
+			offset += len(page_results)
 			if offset > 100000:
 				log_utils.log('FLOPPY: get_all_pages reached safety limit for URL: %s' % url, level=log_utils.LOGWARNING)
 				break
@@ -750,7 +765,8 @@ def sync_watchedProgress(activities=None, forced=False, progress_callback=None):
 				imdb = _resolve_movie_imdb(tmdb)
 				if imdb: resolved += 1
 				else: unresolved += 1
-				floppysync.upsert_watched_movie(imdb=imdb, tmdb=tmdb, title=item.get('title', ''), last_watched_at=i.get('progressed_at') or i.get('created_at') or _now_iso())
+				year = (item.get('release_datetime') or '')[:4]
+				floppysync.upsert_watched_movie(imdb=imdb, tmdb=tmdb, title=item.get('title', ''), year=year, last_watched_at=i.get('progressed_at') or i.get('created_at') or _now_iso())
 			if progress_callback:
 				try: progress_callback('Syncing watched movies', idx + 1, total)
 				except: pass
@@ -1062,6 +1078,75 @@ def seasonCount(imdb, tvdb):
 	except: log_utils.error()
 
 
+#### Custom lists (GET /lists/, GET /lists/{id}/items/ — confirmed via live Postman
+#### testing against a real instance 2026-08-16) ####
+
+def get_user_lists():
+	try:
+		if not getFloppyCredentialsInfo(): return []
+		return get_all_pages('/lists/', silent=True) or []
+	except:
+		log_utils.error()
+		return []
+
+def get_list_items(list_id):
+	# Each item's nested 'item' object also carries a huge per-country watch_providers
+	# block (confirmed via Postman — tens of KB per item) that nothing here uses, so
+	# only the fields actually needed are pulled out rather than keeping the raw item.
+	results = []
+	try:
+		items = get_all_pages('/lists/%s/items/' % list_id, silent=True) or []
+		for i in items:
+			try:
+				item = i.get('item') or {}
+				results.append({
+					'entry_id': str(i.get('id', '') or ''),
+					'tmdb': str(item.get('media_id') or ''),
+					'media_type': 'movie' if item.get('media_type') == 'movie' else 'tv',
+					'title': item.get('title', ''),
+					'premiered': (item.get('release_datetime') or '')[:10],
+					'year': (item.get('release_datetime') or '')[:4],
+				})
+			except: pass
+	except:
+		log_utils.error()
+	return results
+
+def add_to_list(list_id, tmdb='', media_type='movie'):
+	# Confirmed via live Postman testing 2026-08-16: adding/removing is NOT done through
+	# POST/DELETE /lists/{id}/items/ (that endpoint is GET-only in the actual source,
+	# api/views.py: ListItemsView) — it's PUT/DELETE on the media resource itself,
+	# api/views.py: MediaListDetailView. No request body needed. A 409 means the media
+	# is already in the list, which is treated as success here since the desired end
+	# state (item is in the list) is already true.
+	try:
+		media = 'movie' if media_type == 'movie' else 'tv'
+		response = getFloppy('/media/%s/tmdb/%s/lists/%s/' % (media, tmdb, list_id), post={}, method='PUT', silent=True)
+		return bool(response is not None and response.status_code in (200, 201, 409))
+	except:
+		log_utils.error()
+		return False
+
+def remove_from_list(list_id, tmdb='', media_type='movie'):
+	try:
+		media = 'movie' if media_type == 'movie' else 'tv'
+		response = getFloppy('/media/%s/tmdb/%s/lists/%s/' % (media, tmdb, list_id), method='DELETE', silent=True)
+		return bool(response is not None and response.status_code in (200, 204))
+	except:
+		log_utils.error()
+		return False
+
+def create_list(name):
+	try:
+		response = getFloppy('/lists/', post={'name': name}, method='POST', silent=True)
+		if response is None or response.status_code not in (200, 201): return None
+		result = response.json()
+		return str(result.get('id', '') or '') or None
+	except:
+		log_utils.error()
+		return None
+
+
 #### Watchlist / Collection membership (context-menu actions) ####
 
 def add_to_watchlist(tmdb='', media_type='movie', season_number=None):
@@ -1148,6 +1233,8 @@ def manager(name, imdb=None, tvdb=None, tmdb=None, season=None, episode=None, re
 			items += [('[COLOR %s]Set to On Hold[/COLOR]' % hc, 'set_onhold')]
 			items += [('[COLOR %s]Set to Dropped[/COLOR]' % hc, 'set_dropped')]
 			items += [('[COLOR %s]Add to Collection[/COLOR]' % hc, 'collection_add')]
+			items += [('[COLOR %s]Add to List[/COLOR]' % hc, 'list_add')]
+			items += [('[COLOR %s]Remove from List[/COLOR]' % hc, 'list_remove')]
 		control.hide()
 		select = control.selectDialog([i[0] for i in items], heading=control.addonInfo('name') + ' - Floppy')
 		if select == -1: return
@@ -1179,4 +1266,42 @@ def manager(name, imdb=None, tvdb=None, tmdb=None, season=None, episode=None, re
 			if resolved_tmdb and add_to_collection(tmdb=resolved_tmdb, media_type=media_type):
 				sync_collection(forced=True)
 				if refresh: control.refresh()
+		elif action_key == 'list_add':
+			notify = getSetting('floppy.general.notifications') == 'true'
+			resolved_tmdb = tmdb or _resolve_tmdb(media_type, imdb=imdb, tvdb=tvdb)
+			if not resolved_tmdb: return
+			lists = get_user_lists()
+			options = [l.get('name', '') for l in lists] + ['[COLOR %s]+ New List[/COLOR]' % hc]
+			list_select = control.selectDialog(options, heading=control.addonInfo('name') + ' - Floppy Lists')
+			if list_select == -1: return
+			if list_select == len(lists):
+				new_name = control.dialog.input(getLS(32520))
+				if not new_name: return
+				list_id = create_list(new_name)
+				if not list_id:
+					if notify: control.notification(title='Floppy', message='Failed to create list')
+					return
+			else:
+				list_id = str(lists[list_select].get('id', '') or '')
+			if list_id and add_to_list(list_id, tmdb=resolved_tmdb, media_type=media_type):
+				if notify: control.notification(title='Floppy', message='Added to list')
+				if refresh: control.refresh()
+			else:
+				if notify: control.notification(title='Floppy', message='Failed to add to list')
+		elif action_key == 'list_remove':
+			notify = getSetting('floppy.general.notifications') == 'true'
+			resolved_tmdb = tmdb or _resolve_tmdb(media_type, imdb=imdb, tvdb=tvdb)
+			if not resolved_tmdb: return
+			lists = get_user_lists()
+			if not lists:
+				if notify: control.notification(title='Floppy', message='No lists found')
+				return
+			list_select = control.selectDialog([l.get('name', '') for l in lists], heading=control.addonInfo('name') + ' - Remove From List')
+			if list_select == -1: return
+			list_id = str(lists[list_select].get('id', '') or '')
+			if list_id and remove_from_list(list_id, tmdb=resolved_tmdb, media_type=media_type):
+				if notify: control.notification(title='Floppy', message='Removed from list')
+				if refresh: control.refresh()
+			else:
+				if notify: control.notification(title='Floppy', message='Failed to remove from list')
 	except: log_utils.error()

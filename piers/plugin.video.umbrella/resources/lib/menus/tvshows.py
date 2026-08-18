@@ -1370,6 +1370,76 @@ class TVshows:
 		except:
 			log_utils.error()
 
+	def floppyUserlists(self, create_directory=True, folderName=''):
+		# Mirrors customUserlists() — Floppy's /lists/ + /lists/{id}/items/ (confirmed
+		# via live Postman testing 2026-08-16) work the same way Custom's user lists do,
+		# so this follows the identical live-fetch-and-filter pattern rather than caching
+		# locally (list items embed a large per-country watch_providers block per item
+		# that isn't worth persisting, and floppy.get_list_items() already strips it).
+		self.list = []
+		try:
+			if not self.floppyCredentials: raise Exception()
+			lists = floppy.get_user_lists()
+			for lst in lists:
+				try:
+					list_id = str(lst.get('id', '') or '')
+					if not list_id: continue
+					count = sum(1 for i in floppy.get_list_items(list_id) if i.get('media_type') == 'tv')
+					if not count: continue
+					name = lst.get('name', '')
+					values = {
+						'name': '%s (%s)' % (name, count),
+						'action': 'floppy_list_shows&list_id=%s' % quote_plus(list_id),
+						'image': lst.get('image') or 'icon.png', 'icon': 'DefaultVideoPlaylists.png', 'url': '',
+					}
+					self.list.append(values)
+				except: pass
+		except: pass
+		if create_directory: self.addDirectory(self.list, folderName=folderName)
+		return self.list
+
+	def floppyListShows(self, list_id, url=None, create_directory=True, folderName=''):
+		# Live-fetched every call, same as customListShows() — see floppyUserlists().
+		self.list = []
+		try:
+			url = url or ('floppylistshows?list_id=%s&limit=%s&page=1' % (list_id, self.page_limit))
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q.get('page', 1)) - 1
+			except:
+				index = 0
+			items = floppy.get_list_items(list_id)
+			for i in items:
+				try:
+					if i.get('media_type') != 'tv': continue
+					title = i.get('title', '')
+					self.list.append({
+						'tvshowtitle': title, 'title': title, 'year': i.get('year', ''),
+						'tmdb': i.get('tmdb', ''), 'premiered': i.get('premiered', ''),
+					})
+				except: pass
+			useNext = True
+			if create_directory:
+				self.sort()
+				if getSetting('floppy.paginate.lists') == 'true' and self.list:
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					if index >= len(paginated_ids) - 1: useNext = False
+					self.list = paginated_ids[index] if index < len(paginated_ids) else []
+				else: useNext = False
+			try:
+				if useNext == False: raise Exception()
+				next_page = index + 2
+				next = 'plugin://plugin.video.umbrella/?action=floppy_list_shows&list_id=%s&url=%s&folderName=%s' % (
+					quote_plus(list_id), quote_plus('floppylistshows?list_id=%s&limit=%s&page=%s' % (list_id, self.page_limit, next_page)), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.tvshowDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			log_utils.error()
+
 	def floppyList(self, url, table, action, isCollection=False, create_directory=True, folderName=''):
 		# Generic Watchlist/Watching/On Hold/Completed/Dropped/Collection list, mirroring
 		# customWatchlist()/customCollection() above.
@@ -2565,12 +2635,14 @@ class TVshows:
 				try:
 					imdb, tmdb, tvdb = ids.get('imdb', ''), ids.get('tmdb', ''), ids.get('tvdb', '')
 					if not imdb and not tvdb: continue
-					progress = mdblist.syncSeasons(imdb, tvdb)
-					if progress and len(progress) > 1:
-						counts = progress[1] or {}
-						total = sum(v.get('total', 0) for v in counts.values())
-						watched = sum(v.get('watched', 0) for v in counts.values())
-						if total and watched >= total: continue  # fully watched, not "in progress"
+					# Keep the non-special watched count with the lightweight local row.
+					# worker() fetches show metadata once; its aired total is then enough
+					# to remove completed shows without a duplicate syncSeasons/TMDb pass.
+					watched_aired = sum(
+						(end - start + 1)
+						for season, ranges in (ep_ranges or {}).items() if int(season) > 0
+						for start, end in ranges
+					)
 					values = {}
 					values['next'] = ''
 					values['progress'] = ''
@@ -2580,10 +2652,16 @@ class TVshows:
 					values['lastplayed'] = last_watched_by_imdb.get(imdb, '')
 					values['mediatype'] = 'tvshows'
 					values['has_next_episode'] = True
+					values['_mdb_watched_aired'] = watched_aired
 					self.list.append(values)
 				except: log_utils.error()
 			self.worker()
 			if self.list is None: self.list = []
+			self.list = [i for i in self.list if not (
+				int(i.get('total_aired_episodes') or 0) > 0
+				and int(i.get('_mdb_watched_aired') or 0) >= int(i.get('total_aired_episodes') or 0)
+			)]
+			for i in self.list: i.pop('_mdb_watched_aired', None)
 			try:
 				dropped = _mdbsync.fetch_dropped('shows_dropped')
 				if dropped:
@@ -2955,16 +3033,17 @@ class TVshows:
 			indicators = scrob.syncTVShows()
 			if not indicators: return self.list
 			last_watched_by_tmdb = {str(r[1]): r[3] for r in scrobsync.get_watched_shows() if r[1]}
-			for (ids, watched_count, ep_ranges) in indicators:
+
+			def check_show(ids):
 				try:
 					imdb, tmdb, tvdb = ids.get('imdb', ''), ids.get('tmdb', ''), ids.get('tvdb', '')
-					if not tmdb: continue
+					if not tmdb: return
 					progress = scrob.getShowProgress(tmdb)
 					if progress and len(progress) > 1:
 						counts = progress[1] or {}
 						total = sum(v.get('total', 0) for v in counts.values())
 						watched = sum(v.get('watched', 0) for v in counts.values())
-						if total and watched >= total: continue  # fully watched, not "in progress"
+						if total and watched >= total: return  # fully watched, not "in progress"
 					values = {}
 					values['next'] = ''
 					values['progress'] = ''
@@ -2976,6 +3055,19 @@ class TVshows:
 					values['has_next_episode'] = True
 					self.list.append(values)
 				except: log_utils.error()
+
+			threads = [Thread(target=check_show, args=(ids,)) for (ids, watched_count, ep_ranges) in indicators]
+			# getShowProgress() can block on TMDb season metadata for every uncached
+			# show. Run those independent lookups in the same bounded batches used by
+			# the other metadata-heavy progress providers.
+			_unlimited = getSetting('dev.batch.unlimited') == 'true'
+			_bs = max(int(getSetting('dev.batch.size') or '10'), 1)
+			_chunk = max(len(threads), 1) if _unlimited else _bs
+			for i in range(0, len(threads), _chunk):
+				if control.monitor.abortRequested(): break
+				batch = threads[i:i + _chunk]
+				[t.start() for t in batch]
+				[t.join() for t in batch]
 			self.worker()
 			if self.list is None: self.list = []
 		except:
@@ -3293,7 +3385,10 @@ class TVshows:
 			values.update(showSeasons)
 			if 'rating' in self.list[i] and self.list[i]['rating']: values['rating'] = self.list[i]['rating'] # prefer imdb,trakt rating and votes if set
 			if 'votes' in self.list[i] and self.list[i]['votes']: values['votes'] = self.list[i]['votes']
-			if 'year' in self.list[i] and self.list[i]['year'] != values.get('year'): values['year'] = self.list[i]['year']
+			# Presence check rather than truthiness let a caller-supplied empty-string
+			# placeholder overwrite a correct freshly-fetched year with '' — see the same
+			# fix in movies.py: super_info() for the full explanation.
+			if self.list[i].get('year') and self.list[i]['year'] != values.get('year'): values['year'] = self.list[i]['year']
 			if not tvdb: tvdb = values.get('tvdb', '')
 			if not values.get('imdb'): values['imdb'] = imdb
 			if not values.get('tmdb'): values['tmdb'] = tmdb

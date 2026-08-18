@@ -697,6 +697,7 @@ def markEpisodeAsWatched(imdb, tvdb, season, episode):
 		if result:
 			simklsync.remove_hold_item(imdb)
 			simklsync.remove_plan_to_watch(imdb, 'shows_plantowatch')
+			_clr_episode_progress_cache()
 		if getSetting('debug.level') == '1':
 			log_utils.log('SimKL markEpisodeAsWatched IMDB: %s TVDB: %s Season: %s Episode: %s Result: %s' % (imdb, tvdb, season, episode, result), level=log_utils.LOGDEBUG)
 		return result
@@ -723,7 +724,9 @@ def markEpisodeAsNotWatched(imdb, tvdb, season, episode):
 				# fallback markEpisodeAsWatched() uses for adds.
 				resolved = _simkl_resolve_episode(simkl, tvdb, imdb, season, episode, remove=True)
 				if resolved: result = resolved
-		return result.get('deleted', {}).get('episodes', 0) != 0
+		success = result.get('deleted', {}).get('episodes', 0) != 0
+		if success: _clr_episode_progress_cache()
+		return success
 	except: log_utils.error()
 
 def seasonCount(imdb, tvdb): # return counts for all seasons of a show from simklsync.db
@@ -776,6 +779,16 @@ def cachesyncTV(imdb, tvdb):  # Sync full watched shows then sync imdb_id "seaso
 		simklsync.insert_syncSeasons_at()
 	except Exception as e:
 		log_utils.error(f"Error in cachesyncTV: {e}")
+
+def _clr_episode_progress_cache():
+	try:
+		from resources.lib.menus.episodes import Episodes
+		ep = Episodes()
+		# simkl_calendar() uses the bare endpoint as its cache key. Clear the old
+		# extended key too so service-created entries cannot remain stale.
+		for url in ('/sync/all-items/shows/watching', '/sync/all-items/shows/watching?extended=full'):
+			cache.remove(ep.simkl_progress_list, url, ep.simkl_directProgressScrape)
+	except: log_utils.error()
 
 def cachesyncTVShows(timeout=0):
 	try:
@@ -1151,7 +1164,7 @@ def sync_watchedProgress(activities=None, forced=False):
 	try:
 		from resources.lib.menus import episodes
 		direct = getSetting('simkl.directProgress.scrape') == 'true'
-		url = '/sync/all-items/shows/watching?extended=full'
+		url = '/sync/all-items/shows/watching'
 		progressActivity = getProgressActivity(activities)
 		local_listCache = cache.timeout(episodes.Episodes().simkl_progress_list, url, direct)
 		if forced or (progressActivity > local_listCache) or progressActivity == 0:

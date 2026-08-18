@@ -186,7 +186,12 @@ class Player(xbmc.Player):
 					except (TypeError, ValueError):
 						continue
 			if self.debuglog: log_utils.log('addEpisodetoPlaylist: found seasons %s' % season_nums, level=log_utils.LOGDEBUG)
-			ep_data = [episodes.Episodes().get(self.meta.get('tvshowtitle'), self.meta.get('year'), self.imdb, self.tmdb, self.tvdb, self.meta, season=i, create_directory=False) for i in season_nums]
+			show_meta = dict(self.meta)
+			try:
+				series_rating = next(float(s.get('rating') or 0) for s in seasons_list if float(s.get('rating') or 0) > 0)
+				show_meta['rating'] = series_rating
+			except: pass
+			ep_data = [episodes.Episodes().get(self.meta.get('tvshowtitle'), self.meta.get('year'), self.imdb, self.tmdb, self.tvdb, show_meta, season=i, create_directory=False) for i in season_nums]
 			items = [i for e in ep_data for i in e if isinstance(i, dict) and i.get('unaired') != 'true']
 			if self.debuglog: log_utils.log('addEpisodetoPlaylist: total aired episodes across all seasons: %s' % len(items), level=log_utils.LOGDEBUG)
 			if not items:
@@ -784,7 +789,24 @@ class Player(xbmc.Player):
 			playerWindow.clearProperty('umbrella.playlistStart_position')
 			homeWindow.clearProperty('umbrella.window_keep_alive')
 			clear_local_bookmarks() # clear all umbrella bookmarks from kodi database
-			control.playlist.clear()
+			# Don't wipe a playlist that already has the next episode legitimately
+			# queued. addEpisodetoPlaylist() pre-queues the next episode while the
+			# current one is still playing, but on some devices/sources natural
+			# end-of-file fires only onPlayBackStopped (no onPlayBackEnded at all), and
+			# Kodi's native playlist auto-advance doesn't always win the race against
+			# this callback — confirmed via device logs: the next episode was freshly,
+			# successfully queued (addEpisodetoPlaylist: successfully added ...), then
+			# wiped by this unconditional clear() a fraction of a second later, before
+			# Kodi ever opened it, breaking playnext auto-continue intermittently. Same
+			# "is something already queued right after the current position" check
+			# addEpisodetoPlaylist() itself uses to avoid duplicate adds.
+			try:
+				current_pos = control.playlist.getposition()
+				has_next_queued = current_pos != -1 and control.playlist.size() > current_pos + 1
+			except:
+				has_next_queued = False
+			if not has_next_queued:
+				control.playlist.clear()
 			if (not self.onPlayBackStopped_ran or (self.playbackStopped_triggered and not self.onPlayBackStopped_ran)) and not self.scrobble_sent: # Kodi callback unreliable and often not issued
 				self.onPlayBackStopped_ran = True
 				self.playbackStopped_triggered = False
@@ -846,8 +868,15 @@ class Player(xbmc.Player):
 				playingfile = self.isPlaying()
 			except:
 				playingfile = False
-			log_utils.log('onPlayBackEnded Playlist Position: %s isPlaying: %s' % (control.playlist.getposition(), playingfile), level=log_utils.LOGDEBUG)
-			if not playingfile and (control.playlist.getposition() == control.playlist.size() or control.playlist.size() == 1 or (control.playlist.getposition() == 0 and playerWindow.getProperty('umbrella.playnextPlayPressed') == '0')):
+			playlist_position = control.playlist.getposition()
+			playlist_size = control.playlist.size()
+			has_next_queued = playlist_position >= 0 and playlist_position + 1 < playlist_size
+			log_utils.log('onPlayBackEnded Playlist Position: %s Playlist Count: %s Has Next: %s isPlaying: %s' % (playlist_position, playlist_size, has_next_queued, playingfile), level=log_utils.LOGDEBUG)
+			# Kodi can briefly report position 0 with no active file between plugin
+			# playlist items. Position 0 is not a reason to clear when position 1 is
+			# the next episode; doing so breaks continuous playback after the second
+			# episode even though the Play Next window found and displayed episode 3.
+			if not playingfile and not has_next_queued and (playlist_size <= 1 or playlist_position >= playlist_size - 1):
 				control.playlist.clear()
 			log_utils.log('onPlayBackEnded callback', level=log_utils.LOGDEBUG)
 			#control.checkforSkin(action='off')
@@ -987,11 +1016,18 @@ class PlayNext(xbmc.Player):
 					if str(item.get('episode')) != helper_episode: continue #episode is a string.... important to note.
 					else: break
 				next_meta = {'tvshowtitle': item.get('tvshowtitle'), 'title': item.get('title'), 'year': item.get('year'), 'premiered': item.get('premiered'), 'season': helper_season, 'episode': helper_episode, 'imdb': item.get('imdb'),
-									'tmdb': item.get('tmdb'), 'tvdb': item.get('tvdb'), 'rating': item.get('rating'), 'landscape': '', 'fanart': item.get('fanart'), 'thumb': item.get('thumb'), 'duration': item.get('duration'), 'episode_type': item.get('episode_type')}
+									'tmdb': item.get('tmdb'), 'tvdb': item.get('tvdb'), 'rating': item.get('rating'), 'tvshow_rating': item.get('tvshow_rating'), 'landscape': '', 'fanart': item.get('fanart'), 'thumb': item.get('thumb'), 'duration': item.get('duration'), 'episode_type': item.get('episode_type')}
 			elif 'plugin.video.umbrella' in next_url:
 				next_meta = jsloads(params.get('meta')) if params.get('meta') else ''
 			elif 'videob://' in next_url and not control.addonInstalled('service.upnext'):
 				log_utils.log('Library not supported currently.', level=log_utils.LOGDEBUG)
+			if next_meta:
+				try: episode_rating = float(next_meta.get('rating') or 0)
+				except: episode_rating = 0
+				try: show_rating = float(next_meta.get('tvshow_rating') or 0)
+				except: show_rating = 0
+				rating = episode_rating if episode_rating > 0 else show_rating
+				next_meta['rating'] = round(rating, 1) if rating > 0 else ''
 		except:
 			log_utils.error()
 		return next_meta
@@ -1603,7 +1639,10 @@ class Bookmarks:
 					simkl.scrobbleMovie(title, year, imdb, tmdb, percent) if media_type == 'movie' else simkl.scrobbleEpisode(tvshowtitle or title, year, imdb, tmdb, tvdb, season, episode, percent)
 				if percent >= int(markwatched_percentage): simkl.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False)
 			elif service == 'mdblist':
-				if not skip_scrobble and (seekable or percent >= int(markwatched_percentage)):
+				# Do not create a new pause bookmark immediately before clearing a
+				# completed item. If the subsequent clear is delayed or fails, that
+				# final pause point is synced back and leaves the episode in progress.
+				if not skip_scrobble and seekable:
 					mdblist.scrobbleMovie(title, year, imdb, tmdb, percent) if media_type == 'movie' else mdblist.scrobbleEpisode(tvshowtitle or title, year, imdb, tmdb, tvdb, season, episode, percent)
 				if percent >= int(markwatched_percentage): mdblist.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False, already_watched=skip_scrobble)
 			elif service == 'custom':

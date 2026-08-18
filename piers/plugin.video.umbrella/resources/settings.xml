@@ -3947,6 +3947,22 @@
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
+				<setting id="customdirectprogress" type="action" label="32137" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=directProgressCustom)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="dev.enable.custom">true</condition>
+								<condition operator="!is" setting="custom.user.token"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action"/>
+				</setting>
 				<setting id="custom.progressFlatten" type="boolean" label="32017" help="">
 					<level>0</level>
 					<default>true</default>
@@ -4162,6 +4178,29 @@
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
+				<setting id="floppy.directProgress.scrape" type="boolean" label="35492" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="floppy.token"/>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="floppydirectprogress" type="action" label="32137" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=directProgressFloppy)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="floppy.token"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action"/>
+				</setting>
 			</group>
 			<group id="7" label="40767">
 				<setting id="scrob.baseurl" type="string" label="40768" help="">
@@ -4311,6 +4350,29 @@
 						</dependency>
 					</dependencies>
 					<control type="toggle"/>
+				</setting>
+				<setting id="scrob.directProgress.scrape" type="boolean" label="35492" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="scrob.apikey"/>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="scrobdirectprogress" type="action" label="32137" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=directProgressScrob)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="scrob.apikey"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action"/>
 				</setting>
 			</group>
 		</category>
