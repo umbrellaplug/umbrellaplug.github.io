@@ -509,12 +509,6 @@ def scrobbleStopMovie(imdb, tmdb, watched_percent, completed=False, current_time
 		if tmdb: ids['tmdb'] = str(tmdb)
 		if imdb: ids['imdb'] = str(imdb)
 		position_seconds, duration_seconds = _scrobble_seconds(watched_percent, current_time, total_time)
-		# already_watched means markMovieDuringPlayback() already recorded this as watched
-		# mid-playback (see playcount.py) — sending completed=True here too would write a
-		# second, duplicate watched-history entry server-side. Still send the stop action
-		# itself unconditionally (that's what closes Floppy's live "Now Playing" session —
-		# skipping this call entirely left that card stuck on every normal watch-to-
-		# completion), just with completed forced False so it's a no-op for history.
 		send_completed = bool(completed) and not already_watched
 		body = {'action': 'stop', 'media_type': 'movie', 'ids': ids, 'position_seconds': position_seconds, 'duration_seconds': duration_seconds, 'completed': send_completed}
 		response = getFloppy('/scrobble/', post=body, method='POST', silent=True)
@@ -596,12 +590,6 @@ def _resolve_tv_imdb(tmdb):
 		return ''
 
 def _mark_all_episodes_watched_locally(imdb, tmdb, season=None):
-	# Fallback only (network/API failure) — assumes every TMDb-listed episode of the
-	# season/show was watched. NOT used as the primary path: live testing against the
-	# real server confirmed a season's own 'tracked'/'status' fields do NOT reliably
-	# reflect its episodes' real watched state (a season can show tracked=false while
-	# individual episodes underneath it are tracked=true), so _sync_episode_tracking_
-	# for_show() (real per-episode data) is used everywhere this matters.
 	try:
 		from resources.lib.database import cache as _cache
 		from resources.lib.indexers import tmdb as _tmdb
@@ -638,12 +626,6 @@ def _mark_all_episodes_watched_locally(imdb, tmdb, season=None):
 	except: log_utils.error()
 
 def _watch_all_episodes_remote(tmdb, season=None):
-	# Setting a show/season's 'status' to Completed does NOT itself mark its episodes
-	# tracked on the server — confirmed via live testing, episode 'tracked' is a fully
-	# separate per-episode record. So actually "watching" a whole show/season requires
-	# hitting POST .../episodes/{n}/watch/ for every one of its episodes individually,
-	# same as markEpisodeAsWatched does for a single episode. Episode numbers come from
-	# TMDb season metadata since Floppy has no "list all episode numbers" shortcut.
 	try:
 		from resources.lib.database import cache as _cache
 		from resources.lib.indexers import tmdb as _tmdb
@@ -658,31 +640,12 @@ def _watch_all_episodes_remote(tmdb, season=None):
 			for ep in (raw or {}).get('episodes', []):
 				en = ep.get('episode_number')
 				if en is None: continue
-				# Skip episodes that haven't aired yet — a "watch this whole show/season"
-				# action was previously sending a real watch request to Floppy's own
-				# server for every TMDb-listed episode regardless of air date, which for
-				# a currently-airing season meant marking not-yet-released episodes
-				# watched server-side. air_date is null for genuinely unannounced dates,
-				# and compares fine as a plain 'YYYY-MM-DD' string otherwise.
 				air_date = ep.get('air_date')
 				if not air_date or air_date > today: continue
 				getFloppy(_episode_watch_url(tmdb, sn, int(en)), post={}, method='POST', silent=True)
 	except: log_utils.error()
 
 def _sync_episode_tracking_for_show(imdb, tmdb):
-	# Confirmed against a live Floppy instance (real Postman testing, not guesswork):
-	# the per-episode 'tracked' flag on /media/tv/tmdb/{id}/{season}/episodes/ items is
-	# NOT reliable — it read false for every episode of a season the web UI showed as
-	# 10/10 watched. The real signal is each season's consumption HISTORY record: GET
-	# /media/tv/tmdb/{id}/{season}/history/ returns entries with an integer 'progress'
-	# field (how many episodes of that season have been watched, sequential from
-	# episode 1 — e.g. progress=6 means episodes 1-6), which matched the web UI exactly
-	# in testing (season 2 progress=6 of 9; show-level progress=16 = 10+6 across both
-	# seasons). This mirrors the same sequential-progress model already used for every
-	# other provider's season/episode indicators.
-	# Returns None on a hard API/network failure (caller should consider a fallback),
-	# or an int count of watched episodes actually written (0 is a legitimate,
-	# successful result — e.g. a show the user hasn't actually watched any of yet).
 	try:
 		detail = getFloppyAsJson(_tv_url(tmdb), silent=True)
 		if detail is None: return None
@@ -690,10 +653,6 @@ def _sync_episode_tracking_for_show(imdb, tmdb):
 		now = _now_iso()
 		tracked_count = 0
 		for s in seasons:
-			# Each season is independent: one season's request/parse failure (e.g. a
-			# Season 0 "Specials" entry with no real history, or any other per-season
-			# quirk) must not abort the whole show and wipe out seasons that would
-			# otherwise have synced fine.
 			try:
 				s_item = s.get('item') or {}
 				s_num = s_item.get('season_number')
@@ -715,17 +674,8 @@ def _sync_episode_tracking_for_show(imdb, tmdb):
 		return None
 
 def _sync_watched_episodes_from_shows(progress_callback=None):
-	# Floppy has no confirmed global "episode watch history" endpoint, so this is the
-	# only way watched-episode state ever reaches Umbrella for shows tracked/marked
-	# directly through Floppy itself (rather than marked from within Umbrella, which
-	# already upserts individual episodes live via markEpisodeAsWatched).
 	try:
 		floppysync.delete_floppy_tables(('floppy_watched_episodes',))
-		# Any status besides Planning (0) can have real watch history behind it — e.g. a
-		# show paused between seasons (On Hold) or one the user stopped on (Dropped)
-		# might still have episodes actually watched. Only querying Completed/Watching
-		# meant shows sitting in any other status showed up as completely unwatched
-		# regardless of real history.
 		shows = (_fetch_status_bucket('tv', STATUS_COMPLETED) + _fetch_status_bucket('tv', STATUS_WATCHING)
 			+ _fetch_status_bucket('tv', STATUS_ONHOLD) + _fetch_status_bucket('tv', STATUS_DROPPED))
 		total = len(shows)
@@ -739,9 +689,6 @@ def _sync_watched_episodes_from_shows(progress_callback=None):
 				if result is None:
 					failed_shows += 1
 					if i.get('status') == STATUS_COMPLETED:
-						# Hard API/network failure, not "genuinely no tracked episodes" —
-						# fall back to the TMDb-based assumption so a Completed show doesn't
-						# end up with zero local data on a transient error.
 						_mark_all_episodes_watched_locally(imdb, tmdb, season=None)
 				else:
 					total_tracked += result
@@ -766,20 +713,14 @@ def sync_watchedProgress(activities=None, forced=False, progress_callback=None):
 				if imdb: resolved += 1
 				else: unresolved += 1
 				year = (item.get('release_datetime') or '')[:4]
-				floppysync.upsert_watched_movie(imdb=imdb, tmdb=tmdb, title=item.get('title', ''), year=year, last_watched_at=i.get('progressed_at') or i.get('created_at') or _now_iso())
+				last_watched_at = i.get('end_date') or i.get('progressed_at') or i.get('created_at') or _now_iso()
+				floppysync.upsert_watched_movie(imdb=imdb, tmdb=tmdb, title=item.get('title', ''), year=year, last_watched_at=last_watched_at)
 			if progress_callback:
 				try: progress_callback('Syncing watched movies', idx + 1, total)
 				except: pass
 		log_utils.log('FLOPPY: movie sync — %s completed movies, %s resolved to imdb, %s could not be resolved' % (len(items), resolved, unresolved), level=log_utils.LOGINFO)
 		_sync_watched_episodes_from_shows(progress_callback=progress_callback)
 		floppysync.update_last_watched_at('last_history_at')
-		# getShowProgress()/syncSeasons() are cached per-show (keyed on tmdb/imdb+tvdb) on
-		# top of this — clearing only the two no-arg syncMovies/syncTVShows keys left every
-		# already-viewed show's per-season progress (15 min) and cachesyncSeasons() (12 hr)
-		# entries pointing at pre-sync data, so a show could show fully watched one level
-		# down (season/episode lists recompute live) while the show-list widget kept
-		# reporting stale remaining-episode counts for hours. Wipe the whole cache table
-		# instead so every indicator recomputes against the just-synced data.
 		floppysync.clear_cache()
 		control.trigger_widget_refresh()
 	except: log_utils.error()
@@ -807,11 +748,6 @@ def sync_collection(activities=None, forced=False):
 	except: log_utils.error()
 
 def get_collection_entries(media_type='movie'):
-	# DELETE /collection/{entry_id}/ (see remove_from_collection()) is keyed on the
-	# collection entry's own id, not the tracked media item's id — sync_collection()
-	# only ever caches the nested item id (floppysync's generic status-bucket schema has
-	# no column for a second id), so the Collection Manager needs its own live fetch that
-	# keeps both ids straight rather than reading from that cache.
 	results = []
 	try:
 		media_param = 'movie' if media_type == 'movie' else 'tv'
@@ -834,12 +770,6 @@ def get_collection_entries(media_type='movie'):
 	return results
 
 def sync_playbackProgress(activities=None, forced=False):
-	# GET /playback/progress/ genuinely exists and works (confirmed live against a real
-	# instance — the comment this replaced was based on earlier, incomplete API research).
-	# Mirrors trakt.py's sync_playbackProgress()/traktsync.insert_bookmarks(): pull the
-	# full server-side in-progress list and fully replace the local bookmarks table with
-	# it, rather than only ever writing what *this* device paused — so a second device
-	# can see a resume point another device left on Floppy's server.
 	try:
 		if not getFloppyCredentialsInfo(): return
 		items = get_all_pages('/playback/progress/', silent=True) or []
@@ -949,18 +879,7 @@ def getShowProgress(tmdb):
 		return None
 
 def _fetchShowProgress(tmdb):
-	# The tv-detail response's nested season progress isn't confirmed reliable
-	# enough to trust for per-season total/watched/unwatched counts, so this is
-	# computed locally from floppysync's tracked-episode table plus TMDb season
-	# metadata, mirroring customtrakt.py's _local_syncSeasons fallback exactly.
 	try:
-		# Trakt's equivalent (trakt.py syncSeasons) queries with specials=false by default
-		# and only includes season 0 when the user has 'tv.specials' enabled — this had no
-		# equivalent here, so Season 0/Specials (which almost nobody tracks watched episodes
-		# for) was always being added below as a fully-unwatched season, permanently
-		# preventing otherwise-fully-watched shows from ever reading as complete. Confirmed
-		# against a real account: 19 of 40 sampled "Completed" shows had this exact mismatch,
-		# nearly all with Season 0 as the only zero-watched season.
 		include_specials = getSetting('tv.specials') == 'true'
 		episodes = floppysync.get_watched_episodes()
 		show_eps = [(s, e) for (si, st, sv, s, e) in (episodes or []) if st == tmdb]
@@ -972,9 +891,6 @@ def _fetchShowProgress(tmdb):
 			by_season[s].append(int(e))
 		from resources.lib.database import cache as _cache
 		from resources.lib.indexers import tmdb as _tmdb
-		# Cap each season's total at TMDb's last-aired boundary — an announced-but-
-		# unreleased future season otherwise inflates 'total' past what's actually
-		# aired (same fix applied to simkl.py's syncSeasons()).
 		season_counts = {}
 		try:
 			showSeasons = _cache.get(_tmdb.TVshows().get_showSeasons_meta, 96, tmdb)
@@ -1003,10 +919,6 @@ def _fetchShowProgress(tmdb):
 			watched = len(set(watched_eps))
 			result_counts[s] = {'total': total, 'watched': watched, 'unwatched': max(total - watched, 0)}
 			if watched >= total: fully_watched.append(s)
-		# Include aired seasons with no tracked episodes at all — otherwise a show
-		# with zero watched episodes reports an empty counts dict instead of 0/total,
-		# leaving the "WatchedEpisodes" property unset (blank "/total" in the skin)
-		# where Trakt/MDBList/Custom would show "0/total".
 		for sn, total in season_counts.items():
 			if sn not in result_counts:
 				result_counts[sn] = {'total': total, 'watched': 0, 'unwatched': total}
@@ -1090,9 +1002,6 @@ def get_user_lists():
 		return []
 
 def get_list_items(list_id):
-	# Each item's nested 'item' object also carries a huge per-country watch_providers
-	# block (confirmed via Postman — tens of KB per item) that nothing here uses, so
-	# only the fields actually needed are pulled out rather than keeping the raw item.
 	results = []
 	try:
 		items = get_all_pages('/lists/%s/items/' % list_id, silent=True) or []
@@ -1113,12 +1022,6 @@ def get_list_items(list_id):
 	return results
 
 def add_to_list(list_id, tmdb='', media_type='movie'):
-	# Confirmed via live Postman testing 2026-08-16: adding/removing is NOT done through
-	# POST/DELETE /lists/{id}/items/ (that endpoint is GET-only in the actual source,
-	# api/views.py: ListItemsView) — it's PUT/DELETE on the media resource itself,
-	# api/views.py: MediaListDetailView. No request body needed. A 409 means the media
-	# is already in the list, which is treated as success here since the desired end
-	# state (item is in the list) is already true.
 	try:
 		media = 'movie' if media_type == 'movie' else 'tv'
 		response = getFloppy('/media/%s/tmdb/%s/lists/%s/' % (media, tmdb, list_id), post={}, method='PUT', silent=True)

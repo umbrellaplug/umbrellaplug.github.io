@@ -1,3 +1,8 @@
+[B]Update - v6.7.85 - August 19th, 2026 [/B]
+--[Fix] Fixed hosts.quality setting being used for sorting but not filtering.
+--[Change] Change made for Floppy to use end_date for Watch History sorting.
+--[Fix] Changes made for playlist creation for playnext.
+
 [B]Update - v6.7.84 - August 18th, 2026 [/B]
 --[Enhancement] Added Airlock status and controls to TorBox cloud files, including fresh status after changes.
 --[Change] Removed the TorBox Delete All Cloud Files menu item.
@@ -12,3 +17,8 @@
 --[Change] Added direct progress scrape settings for new providers. 
 --[Fix] Added support for custom lists from Floppy.
 --[Change] Success and Fail messages for add and remove from lists.
+
+[B]Update - v6.7.83 - August 15th, 2026 [/B]
+--[Fix] Added guard for clearing playlist to avoid play next not working.
+--[Fix] Added thread limits to tmdb to avoid lockups on lower end devices.
+--[Change] Removed Simkl Unfinished.

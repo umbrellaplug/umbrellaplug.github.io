@@ -1250,6 +1250,8 @@ class Sources:
 			_rd_block = re.compile(r'(?i)\b(WEB-DL|WEBRip|BDRip|HDRip|DVDRip|HDTV|AMZN|NF|DSNP|CR|YTS|TGX|TorrentGalaxy|FGT|LOL|KILLERS|EPSiLON|Erai-raws)\b|rartv|rarbg|eztv')
 			self.sources = [i for i in self.sources if not (i.get('debrid') == 'Real-Debrid' and _rd_block.search(i.get('name', '')))]
 
+		self.sources = self.sort_byQuality(self.sources)
+
 		quality_rank_maps = {
 			'0': {'4K': 0, '1080p': 1, '720p': 2, 'SCR': 3, 'SD': 4, 'CAM': 5},
 			'1': {'4K': 5, '1080p': 0, '720p': 1, 'SCR': 2, 'SD': 3, 'CAM': 4},
