@@ -80,9 +80,18 @@ class Opensubs():
 			log_utils.log('OpenSubs Searching: Imdb:%s Season: %s Episode: %s Language: %s.' % (imdb, season, episode,language), level=log_utils.LOGDEBUG)
 			for count, x in enumerate(response):
 				try:
-					fileName = response[count]['attributes'].get('files')[0].get('file_name')
-					fileID = response[count]['attributes'].get('files')[0].get('file_id')
-					results.append({'fileName': fileName, 'fileID': fileID})
+					attributes = response[count].get('attributes') or {}
+					file_data = (attributes.get('files') or [])[0]
+					results.append({
+						'fileName': file_data.get('file_name'),
+						'fileID': file_data.get('file_id'),
+						'hearing_impaired': bool(attributes.get('hearing_impaired')),
+						'foreign_parts_only': bool(attributes.get('foreign_parts_only')),
+						'moviehash_match': bool(attributes.get('moviehash_match')),
+						'from_trusted': bool(attributes.get('from_trusted')),
+						'ratings': float(attributes.get('ratings') or 0),
+						'download_count': int(attributes.get('download_count') or 0),
+						'release': attributes.get('release') or ''})
 				except:
 					from resources.lib.modules import log_utils
 					log_utils.error()

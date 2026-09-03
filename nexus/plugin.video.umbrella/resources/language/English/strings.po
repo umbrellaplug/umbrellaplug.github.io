@@ -6091,3 +6091,15 @@ msgstr ""
 msgctxt "#40790"
 msgid "[COLOR %s][B]On Hold Manager - Shows[/B][/COLOR]"
 msgstr ""
+
+msgctxt "#40791"
+msgid "Prefer embedded subtitles"
+msgstr ""
+
+msgctxt "#40792"
+msgid "Prefer hearing-impaired subtitles"
+msgstr ""
+
+msgctxt "#40793"
+msgid "Prefer forced subtitles"
+msgstr ""

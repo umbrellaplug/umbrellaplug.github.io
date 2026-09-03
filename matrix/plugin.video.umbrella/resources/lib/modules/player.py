@@ -29,6 +29,7 @@ from resources.lib.modules.source_utils import seas_ep_filter
 from urllib.request import urlopen, Request
 import fnmatch
 import os
+import time
 
 LOGINFO = 1
 getLS = control.lang
@@ -803,9 +804,21 @@ class Player(xbmc.Player):
 				self.onPlayBackStopped_ran = True
 				self.playbackStopped_triggered = False
 				seekable, _scrobble_source = self._sendFinishedItemState()
-				if getSetting('crefresh') == 'true' and seekable:
-					log_utils.log('container.refresh issued', level=log_utils.LOGDEBUG)
-					control.refresh() #not all skins refresh after playback stopped
+				# Do not refresh the directory between queued episodes. Kodi may deliver
+				# stop callbacks from more than one Player instance during a multi-episode
+				# session; overlapping refreshes can leave an empty container and append the
+				# same directory rows twice. Only the final callback refreshes, and debounce
+				# that refresh across Player instances.
+				if (getSetting('crefresh') == 'true' and seekable and not playnext_transition
+						and not has_next_queued
+						and 'plugin.video.umbrella' in control.infoLabel('Container.PluginName')):
+					now = time.time()
+					try: last_refresh = float(homeWindow.getProperty('umbrella.container_refresh_at') or 0)
+					except: last_refresh = 0
+					if now - last_refresh >= 2:
+						homeWindow.setProperty('umbrella.container_refresh_at', str(now))
+						log_utils.log('container.refresh issued at end of playback queue', level=log_utils.LOGDEBUG)
+						control.refresh() #not all skins refresh after playback stopped
 				#control.trigger_widget_refresh() # skinshortcuts handles widget refresh
 				#control.checkforSkin(action='off')
 				try:
@@ -923,6 +936,10 @@ class Player(xbmc.Player):
 					scrob.scrobbleMovie(self.imdb, self.tmdb, pause_percent, current_time=self.getTime(), total_time=total_time)
 				else:
 					scrob.scrobbleEpisode(self.imdb, self.tmdb, self.tvdb, self.season, self.episode, pause_percent, current_time=self.getTime(), total_time=total_time)
+		except RuntimeError:
+			# Kodi may deliver the pause callback as playback is stopping, after the
+			# player has already discarded its timing state.
+			return
 		except: log_utils.error()
 
 	def onPlayBackResumed(self):
@@ -1123,6 +1140,56 @@ class Subtitles:
 		self.debuglog = control.setting('debug.level') == '1'
 		self.playnext_method = getSetting('playnext.method')
 
+	def _language_code(self, language):
+		language = (language or '').strip().lower()
+		if not language: return ''
+		# Kodi may expose a name, ISO-639-1/2 code, or a decorated stream label.
+		aliases = {'gre': 'ell', 'ger': 'deu', 'fre': 'fra', 'dut': 'nld', 'rum': 'ron', 'chi': 'zho', 'cze': 'ces', 'slo': 'slk'}
+		for value in (language, re.split(r'[^a-z]+', language)[0]):
+			try: code = xbmc.convertLanguage(value, xbmc.ISO_639_2).lower()
+			except: code = value
+			code = aliases.get(code, code)
+			if len(code) == 3: return code
+		return aliases.get(language[:3], language[:3])
+
+	def _select_embedded(self, preferred_language):
+		if getSetting('subtitles.prefer.embedded') != 'true': return False
+		preferred_code = self._language_code(preferred_language)
+		prefer_hi = getSetting('subtitles.prefer.hearing_impaired') == 'true'
+		prefer_forced = getSetting('subtitles.prefer.forced') == 'true'
+		# Some input streams report their tracks shortly after onAVStarted.
+		for attempt in range(5):
+			try: streams = xbmc.Player().getAvailableSubtitleStreams() or []
+			except: streams = []
+			matches = []
+			for index, stream in enumerate(streams):
+				if self._language_code(stream) != preferred_code: continue
+				label = str(stream).lower()
+				is_hi = any(token in label for token in ('hearing impaired', 'hearing-impaired', 'sdh', '[cc]', ' closed caption'))
+				is_forced = 'forced' in label or 'foreign parts' in label
+				score = (20 if is_hi == prefer_hi else -20) + (30 if is_forced == prefer_forced else -30)
+				matches.append((score, index))
+			if matches:
+				xbmc.Player().setSubtitleStream(max(matches)[1])
+				return True
+			if attempt < 4: control.sleep(250)
+		return False
+
+	def _subtitle_score(self, item, playing_filename):
+		filename = item.get('fileName') or ''
+		release = item.get('release') or filename
+		score = max(SequenceMatcher(None, playing_filename.lower(), filename.lower()).ratio(),
+			SequenceMatcher(None, playing_filename.lower(), release.lower()).ratio()) * 100
+		if item.get('moviehash_match'): score += 200
+		if item.get('from_trusted'): score += 20
+		score += min(float(item.get('ratings') or 0), 10) * 2
+		score += min(int(item.get('download_count') or 0), 10000) / 1000.0
+		prefer_hi = getSetting('subtitles.prefer.hearing_impaired') == 'true'
+		prefer_forced = getSetting('subtitles.prefer.forced') == 'true'
+		score += 20 if bool(item.get('hearing_impaired')) == prefer_hi else -20
+		score += 30 if bool(item.get('foreign_parts_only')) == prefer_forced else -30
+		return score
+
 	def get(self, title, year, imdb, season, episode):
 		try:
 			import re
@@ -1135,26 +1202,18 @@ class Subtitles:
 
 			try: subLang = xbmc.Player().getSubtitles()
 			except: subLang = ''
-			if subLang == 'gre': subLang = 'ell'
-			if subLang == langs[0]: 
+			if self._language_code(subLang) == self._language_code(langs[0]):
 				if getSetting('subtitles.notification') == 'true':
 					if Player().isPlayback():
 						control.sleep(1000)
 						control.notification(message=getLS(32393) % subLang.upper(), time=5000)
 				return log_utils.log(getLS(32393) % subLang.upper(), level=log_utils.LOGDEBUG)
-			try:
-				subLangs = xbmc.Player().getAvailableSubtitleStreams()
-				if 'gre' in subLangs: subLangs[subLangs.index('gre')] = 'ell'
-				subLang = [i for i in subLangs if i == langs[0]][0]
-			except: subLangs = subLang = ''
-			if subLangs and subLang == langs[0]:
-				control.sleep(1000)
-				xbmc.Player().setSubtitleStream(subLangs.index(subLang))
+			if self._select_embedded(langs[0]):
 				if getSetting('subtitles.notification') == 'true':
 					if Player().isPlayback():
 						control.sleep(1000)
-						control.notification(message=getLS(32394) % subLang.upper(), time=5000)
-				return log_utils.log(getLS(32394) % subLang.upper(), level=log_utils.LOGDEBUG)
+						control.notification(message=getLS(32394) % langs[0].upper(), time=5000)
+				return log_utils.log(getLS(32394) % langs[0].upper(), level=log_utils.LOGDEBUG)
 			if opensubs.Opensubs().auth():
 				log_utils.log('OpenSubs Authorized.', level=log_utils.LOGDEBUG)
 			else:
@@ -1185,12 +1244,12 @@ class Subtitles:
 				for j in result:
 					if season:
 							if seas_ep_filter(season, episode, j['fileName']):
-								seq = SequenceMatcher(None, pFileName.lower(), j['fileName'].lower())
-								matches.append({'fileName': j['fileName'], 'fileID': j['fileID'],  'ratio': seq.ratio()})
+								j['score'] = self._subtitle_score(j, pFileName)
+								matches.append(j)
 					else:
-						seq = SequenceMatcher(None, pFileName.lower(), j['fileName'].lower())
-						matches.append({'fileName': j['fileName'], 'fileID': j['fileID'], 'ratio': seq.ratio()})
-			matches.sort(key = lambda i: i['ratio'], reverse = True)
+						j['score'] = self._subtitle_score(j, pFileName)
+						matches.append(j)
+			matches.sort(key = lambda i: i['score'], reverse = True)
 
 			filter = matches
 			if not filter: 
@@ -1348,12 +1407,12 @@ class Subtitles:
 					for j in result:
 						if season:
 								if seas_ep_filter(season, episode, j['fileName']):
-									seq = SequenceMatcher(None, pFileName.lower(), j['fileName'].lower())
-									matches.append({'fileName': j['fileName'], 'fileID': j['fileID'],  'ratio': seq.ratio()})
+									j['score'] = self._subtitle_score(j, pFileName)
+									matches.append(j)
 						else:
-							seq = SequenceMatcher(None, pFileName.lower(), j['fileName'].lower())
-							matches.append({'fileName': j['fileName'], 'fileID': j['fileID'], 'ratio': seq.ratio()})
-				matches.sort(key = lambda i: i['ratio'], reverse = True)
+							j['score'] = self._subtitle_score(j, pFileName)
+							matches.append(j)
+				matches.sort(key = lambda i: i['score'], reverse = True)
 
 				filter = matches
 				if not filter: return None

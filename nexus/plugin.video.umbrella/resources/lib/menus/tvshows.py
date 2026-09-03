@@ -645,6 +645,27 @@ class TVshows:
 			log_utils.error()
 			control.hide()
 
+	def scrobDroppedManager(self):
+		try:
+			from resources.lib.modules import scrob
+			control.busy()
+			self.list = scrob.get_dropped('shows')
+			for item in self.list: item['trakt'] = item.get('tmdb', '')
+			self.worker()
+			self.sort(type='shows.watchlist')
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				scrob.remove_dropped_items(selected_items, 'shows')
+				control.trigger_widget_refresh()
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
 	def sort(self, type='shows'):
 		try:
 			if not self.list: return
@@ -3587,7 +3608,7 @@ class TVshows:
 					if self.floppyCredentials:
 						cm.append((floppyManagerMenu, 'RunPlugin(%s?action=tools_floppyManager&name=%s&imdb=%s&tvdb=%s&watched=%s&tvshow=tvshow)' % (sysaddon, systitle, imdb, tvdb, watched)))
 					if self.scrobCredentials:
-						cm.append((scrobManagerMenu, 'RunPlugin(%s?action=tools_scrobManager&name=%s&imdb=%s&tvdb=%s&watched=%s&tvshow=tvshow)' % (sysaddon, systitle, imdb, tvdb, watched)))
+						cm.append((scrobManagerMenu, 'RunPlugin(%s?action=tools_scrobManager&name=%s&imdb=%s&tvdb=%s&tmdb=%s&watched=%s&tvshow=tvshow)' % (sysaddon, systitle, imdb, tvdb, tmdb, watched)))
 					if watched:
 						meta.update({'playcount': 1, 'overlay': 5})
 						cm.append((unwatchedMenu, 'RunPlugin(%s?action=playcount_TVShow&name=%s&imdb=%s&tvdb=%s&query=4)' % (sysaddon, systitle, imdb, tvdb)))

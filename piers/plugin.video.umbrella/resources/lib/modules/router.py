@@ -375,6 +375,9 @@ def router(argv2):
 	elif action == 'movies_floppyDroppedManager':
 		from resources.lib.menus import movies
 		movies.Movies().floppyDroppedManager()
+	elif action == 'movies_scrobDroppedManager':
+		from resources.lib.menus import movies
+		movies.Movies().scrobDroppedManager()
 	elif action == 'movies_floppyUnfinishedManager':
 		from resources.lib.menus import movies
 		movies.Movies().floppyUnfinishedManager()
@@ -474,6 +477,9 @@ def router(argv2):
 	elif action == 'shows_floppyDroppedManager':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().floppyDroppedManager()
+	elif action == 'shows_scrobDroppedManager':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().scrobDroppedManager()
 	elif action == 'scrob_shows_progress':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().scrob_progress(url, folderName=folderName)

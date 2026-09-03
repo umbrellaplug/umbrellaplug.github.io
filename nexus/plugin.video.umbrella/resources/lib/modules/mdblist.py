@@ -267,7 +267,7 @@ def _map_user_watchlist_items(response, listType):
 
 def get_user_collection(listType):
     try:
-        mediatype = 'movie' if listType == 'movie' else 'episode'
+        mediatype = 'movie' if listType == 'movie' else 'show'
         base_url = f"{mdblist_baseurl}/sync/collection?mediatype={mediatype}&limit=1000"
         all_raw = []
         url = base_url
@@ -277,7 +277,7 @@ def get_user_collection(listType):
                 log_utils.log(response.error, level=log_utils.LOGDEBUG)
                 return None
             data = response.json()
-            key = 'movies' if listType == 'movie' else 'episodes'
+            key = 'movies' if listType == 'movie' else 'shows'
             all_raw.extend(data.get(key) or [])
             next_cursor = data.get('pagination', {}).get('next_cursor')
             url = f"{base_url}&cursor={next_cursor}" if next_cursor else None
@@ -307,12 +307,12 @@ def _map_movie_collection_items(raw_list):
         except: pass
     return items
 
-def _map_show_collection_items(episodes_raw):
-    """Deduplicate episodes by show, returning one entry per unique show."""
+def _map_show_collection_items(shows_raw):
+    """Map show-level collection results, tolerating legacy episode results."""
     seen = {}
-    for i in episodes_raw:
+    for i in shows_raw:
         try:
-            show = i.get('episode', {}).get('show', {})
+            show = i.get('show') or i.get('episode', {}).get('show') or i
             ids = show.get('ids', {})
             imdb = ids.get('imdb', '')
             tmdb = ids.get('tmdb', 0)
@@ -565,8 +565,8 @@ def sync_watch_list(activities=None, forced=False):
 
 def get_mdb_collection_as_json(url, listKind):
     try:
-        mediatype = 'movie' if listKind == 'movie' else 'episode'
-        key = 'movies' if listKind == 'movie' else 'episodes'
+        mediatype = 'movie' if listKind == 'movie' else 'show'
+        key = 'movies' if listKind == 'movie' else 'shows'
         base_url = f"{url}?mediatype={mediatype}&limit=1000"
         all_raw = []
         current_url = base_url

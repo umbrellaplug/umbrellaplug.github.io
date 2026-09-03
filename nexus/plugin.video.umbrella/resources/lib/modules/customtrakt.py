@@ -150,9 +150,10 @@ def get_all_pages(url, silent=False):
 	# Confirmed spec paginates with page (default 1) / limit (default 50).
 	try:
 		sep = '&' if '?' in url else '?'
-		limit = 250
+		limit = 1000
 		page = 1
 		results = []
+		previous_page = None
 		while True:
 			page_url = url + sep + 'page=%d&limit=%d' % (page, limit)
 			response = getCustom(page_url, silent=silent)
@@ -165,6 +166,7 @@ def get_all_pages(url, silent=False):
 				log_utils.log('CUSTOM: get_all_pages JSON decode error on page %d: %s' % (page, str(e)), level=log_utils.LOGWARNING)
 				if page == 1: return None
 				break
+			response_data = page_results
 			if isinstance(page_results, dict):
 				# Some endpoints likely wrap results (e.g. {"items": [...], "pagination": {...}}) —
 				# unwrap the first list-valued field found, matching the confirmed pagination shape.
@@ -175,7 +177,23 @@ def get_all_pages(url, silent=False):
 			if not page_results:
 				if page == 1: return page_results if page_results is not None else []
 				break
+			# A few Trakt-compatible servers accept page/limit but return page 1 for
+			# every request. Without this guard the same records are appended 400
+			# times and the endpoint is hammered until the safety limit is reached.
+			if previous_page is not None and page_results == previous_page:
+				log_utils.log('CUSTOM: get_all_pages stopped on repeated page %d for URL: %s' % (page, url), level=log_utils.LOGWARNING)
+				break
+			previous_page = page_results
 			results.extend(page_results)
+			pagination = response_data.get('pagination') if isinstance(response_data, dict) else None
+			if isinstance(pagination, dict):
+				total_pages = pagination.get('total_pages') or pagination.get('page_count')
+				if total_pages is not None and page >= int(total_pages): break
+				if 'next' in pagination and not pagination.get('next'): break
+			else:
+				try: total_pages = int(response.headers.get('X-Pagination-Page-Count', ''))
+				except: total_pages = 0
+				if total_pages and page >= total_pages: break
 			page += 1
 			if page > 400:
 				log_utils.log('CUSTOM: get_all_pages reached safety limit of 400 pages for URL: %s' % url, level=log_utils.LOGWARNING)

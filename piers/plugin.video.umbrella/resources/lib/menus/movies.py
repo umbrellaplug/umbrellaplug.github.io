@@ -1896,6 +1896,27 @@ class Movies:
 			log_utils.error()
 			control.hide()
 
+	def scrobDroppedManager(self):
+		try:
+			from resources.lib.modules import scrob
+			control.busy()
+			self.list = scrob.get_dropped('movies')
+			for item in self.list: item['trakt'] = item.get('tmdb', '')
+			self.worker()
+			self.sort()
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				scrob.remove_dropped_items(selected_items, 'movies')
+				control.trigger_widget_refresh()
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
 	def customUnfinishedManager(self):
 		try:
 			control.busy()
@@ -3480,7 +3501,7 @@ class Movies:
 					if self.floppyCredentials:
 						cm.append((floppyManagerMenu, 'RunPlugin(%s?action=tools_floppyManager&name=%s&imdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, watched, unfinished)))
 					if self.scrobCredentials:
-						cm.append((scrobManagerMenu, 'RunPlugin(%s?action=tools_scrobManager&name=%s&imdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, watched, unfinished)))
+						cm.append((scrobManagerMenu, 'RunPlugin(%s?action=tools_scrobManager&name=%s&imdb=%s&tmdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, tmdb, watched, unfinished)))
 					if self.tmdbv4Credentials:
 						cm.append((getLS(40606) if getLS(40606) else 'TMDB List Manager', 'RunPlugin(%s?action=tools_tmdbListManager&name=%s&tmdb=%s&mediatype=movie)' % (sysaddon, sysname, tmdb)))
 						if tmdb:

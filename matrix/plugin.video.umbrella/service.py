@@ -329,8 +329,8 @@ try:
 	_mdb_authed = bool(control.setting('mdblist.token'))
 	_custom_authed = bool(control.setting('custom.user.token') and control.setting('custom.refreshtoken') and control.setting('custom.user.name'))
 	_floppy_authed = bool(control.setting('floppy.baseurl') and control.setting('floppy.token'))
-	_scrob_authed = bool(control.setting('scrob.baseurl') and control.setting('scrob.apikey'))
-	_scrob_write = bool(_scrob_authed and control.setting('scrob.username') and control.setting('scrob.password'))
+	_scrob_authed = bool(control.setting('scrob.baseurl') and (control.setting('scrob.refreshtoken') or control.setting('scrob.accesstoken') or control.setting('scrob.apikey')))
+	_scrob_write = bool(_scrob_authed and (control.setting('scrob.refreshtoken') or control.setting('scrob.accesstoken') or (control.setting('scrob.username') and control.setting('scrob.password'))))
 	_trakt_user = control.setting('trakt.user.name') or 'N/A'
 	_trakt_custom_id = bool(control.setting('trakt.clientid'))
 	_custom_user = control.setting('custom.user.name') or 'N/A'

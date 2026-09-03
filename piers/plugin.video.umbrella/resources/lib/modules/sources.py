@@ -1610,10 +1610,10 @@ class Sources:
 					if not episode: mediatype = 'movie'
 					else: mediatype = 'episode'
 					select = getSetting('play.mode.movie') if mediatype == 'movie' else getSetting('play.mode.tv')
-					systitle, sysmeta = quote_plus(title), quote_plus(jsdumps(self.meta))
+					systitle, sysmeta = quote_plus(str(title or '')), quote_plus(jsdumps(self.meta))
 					if tvshowtitle:
 						url = '%s?action=rescrapeAuto&title=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&tvshowtitle=%s&premiered=%s&meta=%s&select=%s' % (
-								plugin, systitle, year, imdb, tmdb, tvdb, season, episode, quote_plus(tvshowtitle), premiered, sysmeta, select)
+								plugin, systitle, year, imdb, tmdb, tvdb, season, episode, quote_plus(str(tvshowtitle or '')), premiered, sysmeta, select)
 					else:
 						url = '%s?action=rescrapeAuto&title=%s&year=%s&imdb=%s&tmdb=%s&premiered=%s&meta=%s&select=%s' % (
 								plugin, systitle, year, imdb, tmdb, premiered, sysmeta, select)
@@ -1859,7 +1859,9 @@ class Sources:
 			from resources.lib.debrid.torbox import TorBox
 			cached = TorBox().check_cache(hashList)
 			if not cached: return None
-			cached = [i['hash'] for i in cached['data']]
+			cache_data = cached.get('data') if isinstance(cached, dict) else None
+			if not isinstance(cache_data, list): return None
+			cached = [i['hash'] for i in cache_data if isinstance(i, dict) and i.get('hash')]
 			for i in torrent_List:
 				if i['hash'].lower() in cached:
 					if 'package' in i: i.update({'source': 'cached (pack) torrent'})

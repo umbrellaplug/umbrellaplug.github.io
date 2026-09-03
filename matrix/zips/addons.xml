@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.85">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.86">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -262,10 +262,16 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.85 - August 19th, 2026 [/B]
---[Fix] Fixed hosts.quality setting being used for sorting but not filtering.
---[Change] Change made for Floppy to use end_date for Watch History sorting.
---[Fix] Changes made for playlist creation for playnext.
+[B]Update - v6.7.86 - Sept 3rd, 2026 [/B]
+--[Enhancement] Added support for Scrob dropped.
+--[Enhancement] Added support for Scrob device authorization using device token.
+--[Fix] Made changes to custom to increase limit to 1000 items.
+--[Change] Fixed issue with Trakt retries on mark episode as watched.
+--[Fix] Fixed issue where multiple container refreshes were sent after an item was watched.
+--[Fix] Changes made to subtitle module to improve matching and detection.
+--[Fix] Changed to use Scrob's history/next-up endpoint instead of reconstructing from local history.
+--[Fix] Prevented overlapping container refreshes after multi-episode playback, from producing blank or duplicated episode menus.
+--[Fix] MDBList TV show collections now use the show-level collection feed.
 		</news>
 	</extension>
 

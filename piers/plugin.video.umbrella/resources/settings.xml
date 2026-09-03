@@ -2870,7 +2870,7 @@
 					<dependencies>
 						<dependency type="visible">
 							<and>
-								<condition operator="!is" setting="scrob.apikey"/>
+								<condition operator="!is" setting="scrob.isauthed"/>
 								<condition operator="!is" setting="indicators.alt">6</condition>
 							</and>
 						</dependency>
@@ -4219,29 +4219,13 @@
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
 					<control type="edit" format="string">
 						<heading>40769</heading>
-						<hidden>true</hidden>
-					</control>
-				</setting>
-				<setting id="scrob.username" type="string" label="40770" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<control type="edit" format="string">
-						<heading>40770</heading>
-					</control>
-				</setting>
-				<setting id="scrob.password" type="string" label="40771" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<control type="edit" format="string">
-						<heading>40771</heading>
 						<hidden>true</hidden>
 					</control>
 				</setting>
@@ -4251,6 +4235,11 @@
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="scrob.isauthed"/>
+						</dependency>
+					</dependencies>
 					<control type="button" format="action">
 						<close>true</close>
 					</control>
@@ -4263,7 +4252,7 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="!is" setting="scrob.apikey"/>
+							<condition operator="!is" setting="scrob.isauthed"/>
 						</dependency>
 					</dependencies>
 					<control type="button" format="action">
@@ -4271,6 +4260,21 @@
 					</control>
 				</setting>
 				<setting id="scrob.accesstoken" type="string" label="" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="scrob.refreshtoken" type="string" label="" help="">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -4320,7 +4324,7 @@
 					<default>true</default>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="!is" setting="scrob.apikey"/>
+							<condition operator="!is" setting="scrob.isauthed"/>
 						</dependency>
 					</dependencies>
 					<control type="toggle"/>
@@ -4334,7 +4338,7 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="!is" setting="scrob.apikey"/>
+							<condition operator="!is" setting="scrob.isauthed"/>
 						</dependency>
 					</dependencies>
 					<control type="slider" format="integer">
@@ -4346,7 +4350,7 @@
 					<default>true</default>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="!is" setting="scrob.apikey"/>
+							<condition operator="!is" setting="scrob.isauthed"/>
 						</dependency>
 					</dependencies>
 					<control type="toggle"/>
@@ -4356,7 +4360,7 @@
 					<default>false</default>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="!is" setting="scrob.apikey"/>
+							<condition operator="!is" setting="scrob.isauthed"/>
 						</dependency>
 					</dependencies>
 					<control type="toggle"/>
@@ -4369,7 +4373,7 @@
 					</constraints>
 					<dependencies>
 						<dependency type="visible">
-							<condition operator="!is" setting="scrob.apikey"/>
+							<condition operator="!is" setting="scrob.isauthed"/>
 						</dependency>
 					</dependencies>
 					<control type="button" format="action"/>
@@ -6477,6 +6481,36 @@
 				</setting>
 			</group>
 			<group id="2">
+				<setting id="subtitles.prefer.embedded" type="boolean" label="40791" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="enable">
+							<condition operator="is" setting="subtitles">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="subtitles.prefer.hearing_impaired" type="boolean" label="40792" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="enable">
+							<condition operator="is" setting="subtitles">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="subtitles.prefer.forced" type="boolean" label="40793" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="enable">
+							<condition operator="is" setting="subtitles">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
 				<setting id="subtitles.utf" type="boolean" label="32355" help="">
 					<level>0</level>
 					<default>false</default>

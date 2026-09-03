@@ -47,7 +47,10 @@ def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0):
 			session.close()
 		if not url.startswith(BASE_URL): url = urljoin(BASE_URL, url)
 		headers['trakt-api-key'] = traktClientID()
-		if post: post = jsdumps(post)
+		# Keep the original object for authenticated/throttled retries. Reusing the
+		# serialized value would encode it twice, while omitting it changes a POST
+		# /sync/history retry into a GET whose valid response is a list.
+		post_data = jsdumps(post) if post else None
 		if getTraktCredentialsInfo():
 			# Use homeWindow property — immediately updated after re_auth() succeeds,
 			# avoiding stale getSetting() cache causing repeat 401s on retry.
@@ -56,8 +59,8 @@ def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0):
 		_req_start = time.time()
 		for _attempt in range(2):
 			try:
-				if post:
-					response = session.post(url, data=post, headers=headers, timeout=20)
+				if post_data:
+					response = session.post(url, data=post_data, headers=headers, timeout=20)
 				else:
 					response = session.get(url, headers=headers, timeout=20)
 				_last_request_time = time.time()
@@ -68,7 +71,7 @@ def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0):
 					log_utils.log('TRAKT: request took %.1fs: %s' % (_req_elapsed, url), level=log_utils.LOGDEBUG)
 				break
 			except requests.exceptions.ConnectionError:
-				if _attempt == 0 and not post:  # Only retry GETs; retrying POSTs risks double-submission to /sync/history
+				if _attempt == 0 and not post_data:  # Only retry GETs; retrying POSTs risks double-submission to /sync/history
 					log_utils.log('getTrakt: connection reset, retrying with fresh connection...', level=log_utils.LOGDEBUG)
 					session.close()
 				else:
@@ -92,14 +95,14 @@ def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0):
 				return None
 			log_utils.log('TRAKT: %s Status Code Returned on call to url: %s (attempt %d)' % (status_code, url, reauth_attempts + 1), level=log_utils.LOGINFO)
 			success = re_auth(headers)
-			if success: return getTrakt(url, extended=extended, silent=silent, reauth_attempts=reauth_attempts + 1)
+			if success: return getTrakt(url, post=post, extended=extended, silent=silent, reauth_attempts=reauth_attempts + 1)
 		elif status_code == '429':
 			if 'Retry-After' in response.headers: # API REQUESTS ARE BEING THROTTLED, INTRODUCE WAIT TIME (1000 get requests every 5 minutes, 1 post/put/delte every per second)
 				throttleTime = response.headers['Retry-After']
 				if not silent and server_notification and not control.condVisibility('Player.HasVideo'):
 					control.notification(title=32315, message='Trakt Throttling Applied, Sleeping for %s seconds' % throttleTime) # message lang code 33674
 				control.sleep((int(throttleTime) + 1) * 1000)
-				return getTrakt(url, extended=extended, silent=silent, reauth_attempts=reauth_attempts)
+				return getTrakt(url, post=post, extended=extended, silent=silent, reauth_attempts=reauth_attempts)
 		else:
 			response_text = response.text[:300] if hasattr(response, 'text') else str(response)[:300]
 			log_utils.log_force('TRAKT: request failed url=%s status=%s response=%s' % (url, status_code, response_text), level=log_utils.LOGWARNING)
@@ -1617,13 +1620,18 @@ def markEpisodeAsWatched(imdb, tvdb, season, episode):
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode)) #same
 		result = getTraktAsJson('/sync/history', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": imdb, "tvdb": tvdb}}]})
 		if not result: return False
-		if result['added']['episodes'] == 0 and tvdb:
+		if not isinstance(result, dict):
+			log_utils.log('Trakt markEpisodeAsWatched returned unexpected response type: %s' % type(result).__name__, level=log_utils.LOGWARNING)
+			return False
+		added = int((result.get('added') or {}).get('episodes') or 0)
+		existing = int((result.get('existing') or {}).get('episodes') or 0)
+		if added == 0 and existing == 0 and tvdb:
 			control.sleep(1000)
-			result = getTraktAsJson('/sync/history', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": tvdb}}]})
-			if not result: return False
-			result = result['added']['episodes'] !=0
-		else:
-			result = result['added']['episodes'] !=0
+			result = getTraktAsJson('/sync/history', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"tvdb": tvdb}}]})
+			if not isinstance(result, dict): return False
+			added = int((result.get('added') or {}).get('episodes') or 0)
+			existing = int((result.get('existing') or {}).get('episodes') or 0)
+		result = added != 0 or existing != 0
 		if getSetting('debug.level') == '1':
 			log_utils.log('Trakt markEpisodeAsWatched IMDB: %s TVDB: %s Season: %s Episode: %s Result: %s' % (imdb, tvdb, season, episode, result), level=log_utils.LOGDEBUG)
 		return result
@@ -1634,11 +1642,16 @@ def markEpisodeAsNotWatched(imdb, tvdb, season, episode):
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
 		result = getTraktAsJson('/sync/history/remove', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": imdb, "tvdb": tvdb}}]})
 		if not result: return False
-		if result['deleted']['episodes'] == 0 and tvdb:
+		if not isinstance(result, dict):
+			log_utils.log('Trakt markEpisodeAsNotWatched returned unexpected response type: %s' % type(result).__name__, level=log_utils.LOGWARNING)
+			return False
+		deleted = int((result.get('deleted') or {}).get('episodes') or 0)
+		if deleted == 0 and tvdb:
 			control.sleep(1000)
-			result = getTraktAsJson('/sync/history/remove', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": tvdb}}]})
-			if not result: return False
-		return result['deleted']['episodes'] !=0
+			result = getTraktAsJson('/sync/history/remove', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"tvdb": tvdb}}]})
+			if not isinstance(result, dict): return False
+			deleted = int((result.get('deleted') or {}).get('episodes') or 0)
+		return deleted != 0
 	except: log_utils.error()
 
 def getMovieTranslation(id, lang, full=False):

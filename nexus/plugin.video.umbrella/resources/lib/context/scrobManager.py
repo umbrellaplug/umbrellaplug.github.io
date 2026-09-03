@@ -20,12 +20,14 @@ if __name__ == '__main__':
 
 	imdb = params.get('imdb', '')
 	tvdb = params.get('tvdb', '')
+	tmdb = params.get('tmdb', '')
 	season = params.get('season', '')
 	episode = params.get('episode', '')
 
 	playcount = getInfoLabel('ListItem.Playcount')
 	watched = (int(playcount) >= 1) if playcount else False
 
-	path = 'RunPlugin(%s?action=tools_scrobManager&name=%s&imdb=%s&tvdb=%s&season=%s&episode=%s&watched=%s)' % (
-				plugin, sysname, imdb, tvdb, season, episode, watched)
+	tvshow = '&tvshow=tvshow' if 'tvshowtitle' in params and not season and not episode else ''
+	path = 'RunPlugin(%s?action=tools_scrobManager&name=%s&imdb=%s&tvdb=%s&tmdb=%s&season=%s&episode=%s&watched=%s%s)' % (
+				plugin, sysname, imdb, tvdb, tmdb, season, episode, watched, tvshow)
 	executebuiltin(path)
