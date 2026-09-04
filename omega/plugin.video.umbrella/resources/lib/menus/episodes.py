@@ -1630,15 +1630,9 @@ class Episodes:
 			except:
 				index = 0
 				page_limit = max(1, int(self.count) if self.count else 20)
+			# ReelDojo already returns Next Up in most-recently-watched order.
+			# scrob_progress_list restores that order after threaded enrichment.
 			self.list = cache.get(self.scrob_progress_list, 0, url, self.scrob_directProgressScrape)
-			self.sort(type='progress')
-			if self.list is None: self.list = []
-			prior_week = int(re.sub(r'[^0-9]', '', (self.date_time - timedelta(days=7)).strftime('%Y-%m-%d')))
-			sorted_list = []
-			top_items = [i for i in self.list if i.get('episode') == 1 and i.get('premiered') and (int(re.sub(r'[^0-9]', '', str(i['premiered']))) >= prior_week)]
-			sorted_list.extend(top_items)
-			sorted_list.extend([i for i in self.list if i not in top_items])
-			self.list = sorted_list
 			if self.list is None: self.list = []
 			self.list = [i for i in self.list if i.get('unaired', '') != 'true']
 			next_url = ''
@@ -1687,7 +1681,7 @@ class Episodes:
 			next_up = scrob.get_next_up()
 			if not next_up: return self.list
 			items = []
-			for item in next_up:
+			for position, item in enumerate(next_up):
 				try:
 					show = item.get('show') or item.get('series') or {}
 					next_episode = item.get('next_episode') or item.get('episode') or item.get('media') or {}
@@ -1704,7 +1698,8 @@ class Episodes:
 						or item.get('series_tvdb_id') or item.get('show_tvdb') or item.get('series_tvdb'))
 					items.append({'imdb': str(imdb_id or ''), 'tmdb': str(tmdb_id or ''), 'tvdb': str(tvdb_id or ''),
 						'season': int(season), 'episode': int(episode),
-						'lastplayed': item.get('last_watched_at') or item.get('updated_at') or ''})
+						'lastplayed': item.get('last_watched_at') or item.get('updated_at') or '',
+						'_scrob_position': position})
 				except: pass
 			if not items: return self.list
 
@@ -1745,6 +1740,7 @@ class Episodes:
 					values.update(showSeasons)
 					values.update(seasonEpisodes)
 					values.update(episode_meta)
+					values['_scrob_position'] = i['_scrob_position']
 					for k in ('episodes', 'snum', 'enum'): values.pop(k, None)
 					duration = values.get('duration')
 					if duration:
@@ -1793,6 +1789,8 @@ class Episodes:
 				batch = threads[i:i + _chunk]
 				[t.start() for t in batch]
 				[t.join() for t in batch]
+			self.list.sort(key=lambda item: item.get('_scrob_position', len(items)))
+			for item in self.list: item.pop('_scrob_position', None)
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()
