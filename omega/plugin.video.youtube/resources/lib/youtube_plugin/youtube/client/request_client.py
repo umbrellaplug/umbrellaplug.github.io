@@ -59,24 +59,24 @@ class YouTubeRequestClient(BaseRequestsClass):
             '_id': 28,
             '_query_subtitles': False,
             '_os': {
-                'deviceCodename': 'eureka',
-                'build': 'SQ3A.220605.009.A1',
+                'deviceCodename': 'A8110',
+                'build': '5.13.7',
             },
             'json': {
                 'context': {
                     'client': {
                         'clientName': 'ANDROID_VR',
-                        'clientVersion': '1.61.48',
-                        'deviceMake': 'Oculus',
-                        'deviceModel': 'Quest 3',
+                        'clientVersion': '1.73.21',
+                        'deviceMake': 'Pico',
+                        'deviceModel': 'A8110',
                         'osName': 'Android',
-                        'osVersion': '12L',
-                        'androidSdkVersion': '32',
+                        'osVersion': '10',
+                        'androidSdkVersion': '29',
                     }
                 }
             },
             'headers': {
-                'User-Agent': ('com.google.android.apps.youtube.vr.oculus/'
+                'User-Agent': ('com.google.android.apps.youtube.vr.pico/'
                                '{json[context][client][clientVersion]}'
                                ' (Linux; U; {json[context][client][osName]}'
                                ' {json[context][client][osVersion]};'
