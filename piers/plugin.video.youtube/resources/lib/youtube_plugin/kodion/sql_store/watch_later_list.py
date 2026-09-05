@@ -2,7 +2,7 @@
 """
 
     Copyright (C) 2014-2016 bromix (plugin.video.youtube)
-    Copyright (C) 2016-2018 plugin.video.youtube
+    Copyright (C) 2016-2025 plugin.video.youtube
 
     SPDX-License-Identifier: GPL-2.0-only
     See LICENSES/GPL-2.0-only for more information.
@@ -26,7 +26,12 @@ class WatchLaterList(Storage):
         result = self._get_by_ids(process=from_json, as_dict=True)
         return result
 
-    def add_item(self, video_id, item):
+    def add_item(self, video_id, item=None):
+        if item is None:
+            item = self._get(video_id)
+            if item:
+                self._update(video_id, item)
+                return
         self._set(video_id, item)
 
     def del_item(self, video_id):

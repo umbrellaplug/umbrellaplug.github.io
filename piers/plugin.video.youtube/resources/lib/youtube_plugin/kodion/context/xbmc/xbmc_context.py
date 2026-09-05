@@ -2,7 +2,7 @@
 """
 
     Copyright (C) 2014-2016 bromix (plugin.video.youtube)
-    Copyright (C) 2016-2018 plugin.video.youtube
+    Copyright (C) 2016-2025 plugin.video.youtube
 
     SPDX-License-Identifier: GPL-2.0-only
     See LICENSES/GPL-2.0-only for more information.
@@ -10,12 +10,14 @@
 
 from __future__ import absolute_import, division, unicode_literals
 
-import atexit
 import json
 import sys
+from atexit import register as atexit_register
+from timeit import default_timer
 from weakref import proxy
 
 from ..abstract_context import AbstractContext
+from ... import logging
 from ...compatibility import (
     parse_qsl,
     urlsplit,
@@ -26,28 +28,78 @@ from ...compatibility import (
 from ...constants import (
     ABORT_FLAG,
     ADDON_ID,
+    BUSY_FLAG,
+    CHANNEL_ID,
     CONTENT,
-    CONTENT_TYPE,
+    FOLDER_NAME,
+    FOLDER_URI,
+    PLAYLIST_ID,
+    PLAYLIST_IDS,
     PLAY_FORCE_AUDIO,
+    SERVICE_IPC,
+    SERVICE_RUNNING_FLAG,
     SORT,
-    WAKEUP,
+    URI,
+    VIDEO_ID,
+    VIDEO_IDS,
 )
+from ...json_store import APIKeyStore, AccessManager
 from ...player import XbmcPlaylistPlayer
 from ...settings import XbmcPluginSettings
 from ...ui import XbmcContextUI
-from ...utils import (
-    current_system_version,
+from ...utils.file_system import make_dirs
+from ...utils.methods import (
     get_kodi_setting_bool,
     get_kodi_setting_value,
     jsonrpc,
     loose_version,
-    make_dirs,
-    to_unicode,
     wait,
 )
+from ...utils.system_version import current_system_version
+
+
+class IPCMonitor(xbmc.Monitor):
+    EXPECTED_SENDER = '.'.join((ADDON_ID, 'service'))
+
+    def __init__(self, target, timeout):
+        super(IPCMonitor, self).__init__()
+        self.target = target
+        self.value = None
+        self.latency = None
+        self.received = False
+
+        wait_period = 0.01
+        elapsed = 0
+        self._start = default_timer()
+        while not self.received and not self.waitForAbort(wait_period):
+            if timeout:
+                elapsed += wait_period
+                if elapsed >= timeout:
+                    break
+
+    def onNotification(self, sender, method, data):
+        if sender != self.EXPECTED_SENDER:
+            return
+
+        group, separator, event = method.partition('.')
+
+        if event == SERVICE_IPC:
+            if not isinstance(data, dict):
+                data = json.loads(data)
+            if not data:
+                return
+
+            if self.target != data.get('target'):
+                return
+
+            self.value = data.get('response')
+            self.latency = 1000 * (default_timer() - self._start)
+            self.received = True
 
 
 class XbmcContext(AbstractContext):
+    log = logging.getLogger(__name__)
+
     # https://github.com/xbmc/xbmc/blob/master/xbmc/LangInfo.cpp#L1230
     _KODI_UI_PLAYER_LANGUAGE_OPTIONS = {
         None,  # No setting value
@@ -66,6 +118,10 @@ class XbmcContext(AbstractContext):
     }
 
     LOCAL_MAP = {
+        'add.to.x': 30613,
+        'added.x': 30670,
+        'added.to.x': 30615,
+        'after_watch.play_suggested': 30582,
         'api.config': 30634,
         'api.config.bookmark': 30638,
         'api.config.not_updated': 30635,
@@ -81,27 +137,30 @@ class XbmcContext(AbstractContext):
         'are_you_sure': 750,
         'author': 21863,
         'bookmark': 30101,
-        'bookmark.channel': 30803,
+        'bookmark.x': 30803,
         'bookmark.created': 21362,
         'bookmark.remove': 20404,
         'bookmarks': 30100,
+        'bookmarks.add': 294,
         'bookmarks.clear': 30801,
         'bookmarks.clear.check': 30802,
+        'bookmarks.edit.name': 30108,
+        'bookmarks.edit.uri': 30109,
         'browse_channels': 30512,
         'cancel': 222,
         'channel': 19029,
         'channels': 19019,
         'client.id.incorrect': 30649,
-        'client.ip': 30700,
+        'client.ip.is.x': 30700,
         'client.ip.failed': 30701,
         'client.secret.incorrect': 30650,
         'completed': 19256,
         'content.clear': 30120,
-        'content.clear.check': 30121,
+        'content.clear.check.x': 30121,
         'content.delete': 30114,
-        'content.delete.check': 30116,
+        'content.delete.check.x': 30116,
         'content.remove': 30115,
-        'content.remove.check': 30117,
+        'content.remove.check.x': 30117,
         'datetime.a_minute_ago': 30677,
         'datetime.airing_now': 30691,
         'datetime.airing_soon': 30693,
@@ -120,29 +179,33 @@ class XbmcContext(AbstractContext):
         'datetime.yesterday_at': 30682,
         'delete': 117,
         'disliked.video': 30717,
-        'error.no_video_streams_found': 30549,
+        'edit.x': 30501,
+        'error.no_streams_found': 30549,
+        'error.no_videos_found': 30545,
         'error.rtmpe_not_supported': 30542,
         'failed': 30576,
+        'failed.x': 30500,
         'feeds': 30518,
         'filtered': 30105,
-        'go_to_channel': 30502,
+        'go_to.x': 30502,
         'history': 30509,
         'history.clear': 30609,
         'history.clear.check': 30610,
-        'history.list.remove': 30572,
-        'history.list.remove.check': 30573,
-        'history.list.set': 30571,
-        'history.list.set.check': 30574,
-        'history.mark.unwatched': 30669,
-        'history.mark.watched': 30670,
+        'history.list.unassign': 30572,
+        'history.list.unassign.check': 30573,
+        'history.list.assign': 30571,
+        'history.list.assign.check': 30574,
+        'history.mark.unwatched': 16104,
+        'history.mark.watched': 16103,
         'history.remove': 15015,
-        'history.reset.resume_point': 30674,
+        'history.reset.resume_point': 38209,
         'home': 10000,
         'httpd': 30628,
         'httpd.not.running': 30699,
         'httpd.connect.wait': 13028,
         'httpd.connect.failed': 1001,
         'inputstreamhelper.is_installed': 30625,
+        'internet.connection.required': 21451,
         'isa.enable.check': 30579,
         'key.requirement': 30731,
         'liked.video': 30716,
@@ -157,23 +220,20 @@ class XbmcContext(AbstractContext):
         'maintenance.feed_history': 30814,
         'maintenance.function_cache': 30557,
         'maintenance.playback_history': 30673,
+        'maintenance.requests_cache': 30523,
         'maintenance.search_history': 30558,
         'maintenance.watch_later': 30782,
+        'members_only': 30624,
         'my_channel': 30507,
         'my_location': 30654,
         'my_subscriptions': 30510,
-        'my_subscriptions.loading': 30510,
-        'my_subscriptions.filter.add': 30587,
-        'my_subscriptions.filter.added': 30589,
-        'my_subscriptions.filter.remove': 30588,
-        'my_subscriptions.filter.removed': 30590,
         'my_subscriptions.filtered': 30584,
         'none': 231,
         'page.back': 30815,
         'page.choose': 30806,
         'page.empty': 30816,
         'page.next': 30106,
-        'playlist.added_to': 30714,
+        'playlist': 559,
         'playlist.create': 525,
         'playlist.play.all': 22083,
         'playlist.play.default': 571,
@@ -184,22 +244,26 @@ class XbmcContext(AbstractContext):
         'playlist.play.shuffle': 191,
         'playlist.podcast': 30820,
         'playlist.progress.updating': 30536,
-        'playlist.removed_from': 30715,
         'playlist.select': 524,
         'playlist.view.all': 30562,
         'playlists': 136,
         'please_wait': 30119,
         'purchases': 30622,
+        'rating': 563,
         'recommendations': 30551,
         'refresh': 184,
         'refresh.settings.check': 30818,
-        'related_videos': 30514,
         'remove': 15015,
-        'removed': 30666,
+        'remove.from.x': 30614,
+        'removed.from.x': 30616,
+        'removed.name.x': 30666,
+        'removed.x': 30669,
         'rename': 118,
-        'renamed': 30667,
+        'renamed.x.y': 30667,
         'reset.access_manager.check': 30581,
         'retry': 30612,
+        'save': 190,
+        'saved': 35259,
         'saved.playlists': 30611,
         'search': 137,
         'search.clear': 30556,
@@ -232,10 +296,12 @@ class XbmcContext(AbstractContext):
         'setup_wizard.capabilities.max': 30792,
         'setup_wizard.locale.language': 30524,
         'setup_wizard.locale.region': 30525,
-        'setup_wizard.prompt': 30030,
+        'setup_wizard.prompt.x': 30030,
         'setup_wizard.prompt.import_playback_history': 30778,
         'setup_wizard.prompt.import_search_history': 30779,
         'setup_wizard.prompt.locale': 30527,
+        'setup_wizard.prompt.migrate_watch_history': 30715,
+        'setup_wizard.prompt.migrate_watch_later': 30718,
         'setup_wizard.prompt.my_location': 30653,
         'setup_wizard.prompt.settings': 10004,
         'setup_wizard.prompt.settings.defaults': 30783,
@@ -250,6 +316,7 @@ class XbmcContext(AbstractContext):
         'sign.out': 30112,
         'sign.multi.text': 30547,
         'sign.multi.title': 30546,
+        'sign.multi.failed': 30548,
         'start': 335,
         'stats.commentCount': 30732,
         # 'stats.favoriteCount': 1036,
@@ -268,41 +335,41 @@ class XbmcContext(AbstractContext):
         'stream.original': 30744,
         'stream.secondary': 30747,
         'subscribe': 30506,
-        'subscribe_to': 30517,
+        'subscribe.to.x': 30517,
         'subscribed.to.channel': 30719,
-        'subscriptions': 30504,
+        'subscribed_channels': 30504,
         'subtitles.download': 30705,
         'subtitles.download.pre': 30706,
         'subtitles.all': 30774,
         'subtitles.language': 21448,
         'subtitles.no_asr': 30602,
-        'subtitles.translation': 30775,
+        'subtitles.translation.x': 30775,
         'subtitles.with_fallback': 30601,
         'succeeded': 30575,
         'trending': 30513,
-        'unrated.video': 30718,
         'unsubscribe': 30505,
         'unsubscribed.from.channel': 30720,
         'untitled': 30707,
         'upcoming': 30766,
-        'updated_': 30597,
+        'updated.x': 30631,
         'uploads': 30726,
-        'user.changed': 30659,
+        'user.changed_to.x': 30659,
         'user.default': 571,
         'user.enter_name': 30658,
         'user.new': 30656,
         'user.remove': 30662,
         'user.rename': 30663,
         'user.switch': 30655,
-        'user.switch.now': 30665,
+        'user.switch_to.x': 30665,
         'user.unnamed': 30657,
         'video.add_to_playlist': 30520,
         'video.comments': 30732,
         'video.comments.edited': 30735,
         'video.comments.likes': 30733,
         'video.comments.replies': 30734,
-        'video.description.links': 30544,
-        'video.description.links.not_found': 30545,
+        'video.description_links': 30544,
+        'video.description_links.from.x': 30118,
+        'video.description_links.not_found': 30545,
         'video.disliked': 30538,
         'video.liked': 30508,
         'video.more': 22082,
@@ -310,23 +377,24 @@ class XbmcContext(AbstractContext):
         'video.play.ask_for_quality': 30730,
         'video.play.audio_only': 30708,
         'video.play.timeshift': 30819,
-        'video.play.with': 30540,
+        'video.play.using': 15213,
         'video.play.with_subtitles': 30702,
-        'video.queue': 30511,
+        'video.queue': 13347,
         'video.rate': 30528,
         'video.rate.dislike': 30530,
         'video.rate.like': 30529,
         'video.rate.none': 15015,
+        'video.related': 30514,
+        'video.related.to.x': 30113,
         'videos': 3,
         'watch_later': 30107,
         'watch_later.add': 30107,
-        'watch_later.added_to': 30713,
         'watch_later.clear': 30769,
         'watch_later.clear.check': 30770,
-        'watch_later.list.remove': 30568,
-        'watch_later.list.remove.check': 30569,
-        'watch_later.list.set': 30567,
-        'watch_later.list.set.check': 30570,
+        'watch_later.list.unassign': 30568,
+        'watch_later.list.unassign.check': 30569,
+        'watch_later.list.assign': 30567,
+        'watch_later.list.assign.check': 30570,
         'watch_later.remove': 15015,
         'youtube': 30003,
     }
@@ -340,7 +408,7 @@ class XbmcContext(AbstractContext):
         'locationRadius',
         'maxResults',
         'order',
-        'pageToken'
+        'pageToken',
         'publishedAfter',
         'publishedBefore',
         'q',
@@ -395,7 +463,7 @@ class XbmcContext(AbstractContext):
         self._ui = None
         self._playlist = None
 
-        atexit.register(self.tear_down)
+        atexit_register(self.tear_down)
 
     def init(self):
         num_args = len(sys.argv)
@@ -410,22 +478,34 @@ class XbmcContext(AbstractContext):
             self._plugin_handle = -1
             return
 
+        self._param_string = ''
+        self._params = {}
+
         # first the path of the uri
-        self.set_path(urlsplit(uri).path, force=True, update_uri=False)
+        path = self.set_path(
+            urlsplit(uri).path,
+            force=True,
+            parser=XbmcContextUI.get_infolabel,
+            update_uri=False,
+        )
+        params = self.parse_path(path)
 
         # after that try to get the params
-        self._params = {}
         if num_args > 2:
-            params = sys.argv[2][1:]
-            if params:
-                self.parse_params(
-                    dict(parse_qsl(params, keep_blank_values=True))
-                )
+            _params = sys.argv[2][1:]
+            if _params:
+                self._param_string = _params
+                params.update(dict(parse_qsl(_params, keep_blank_values=True)))
 
         # then Kodi resume status
         if num_args > 3 and sys.argv[3].lower() == 'resume:true':
-            self._params['resume'] = True
+            params['resume'] = True
 
+        if params:
+            self.parse_params(
+                params,
+                parser=XbmcContextUI.get_infolabel,
+            )
         self.update_uri()
 
     def get_region(self):
@@ -468,57 +548,115 @@ class XbmcContext(AbstractContext):
         return time_obj.strftime(str_format)
 
     @staticmethod
-    def get_language():
-        language = xbmc.getLanguage(format=xbmc.ISO_639_1, region=True)
-        lang_code, separator, region = language.partition('-')
-        if not lang_code:
-            language = xbmc.getLanguage(format=xbmc.ISO_639_2, region=False)
-            lang_code, separator, region = language.partition('-')
-            if lang_code != 'fil':
-                lang_code = lang_code[:2]
-            region = region[:2]
-        if not lang_code:
-            return 'en-US'
+    def get_language(region=True, separator='-', code_format=xbmc.ISO_639_1):
+        _code_format = xbmc.ISO_639_1
+        _language = xbmc.getLanguage(format=_code_format, region=region)
         if region:
-            return separator.join((lang_code.lower(), region.upper()))
-        return lang_code
-
-    def get_language_name(self, lang_id=None):
-        if lang_id is None:
-            lang_id = self.get_language()
-        return xbmc.convertLanguage(lang_id, xbmc.ENGLISH_NAME).split(';')[0]
-
-    def get_player_language(self):
-        language = get_kodi_setting_value('locale.audiolanguage')
-        if language == 'default':
-            language = get_kodi_setting_value('locale.language')
-            language = language.replace('resource.language.', '').split('_')[0]
-        elif language not in self._KODI_UI_PLAYER_LANGUAGE_OPTIONS:
-            language = xbmc.convertLanguage(language, xbmc.ISO_639_1)
-        return language, get_kodi_setting_bool('videoplayer.preferdefaultflag')
-
-    def get_subtitle_language(self):
-        language = get_kodi_setting_value('locale.subtitlelanguage')
-        if language == 'default':
-            language = get_kodi_setting_value('locale.language')
-            language = language.replace('resource.language.', '').split('_')[0]
-        elif language in self._KODI_UI_SUBTITLE_LANGUAGE_OPTIONS:
-            language = None
+            language, _, _region = _language.partition('-')
         else:
-            language = xbmc.convertLanguage(language, xbmc.ISO_639_1)
+            language = _language
+            _region = None
+
+        if not language:
+            _code_format = xbmc.ISO_639_2
+            _language = xbmc.getLanguage(format=_code_format, region=False)
+            if region:
+                language, _, _region = _language.partition('-')
+                _region = _region[:2]
+            else:
+                language = _language
+                _region = None
+
+        if language:
+            if code_format is not None and _code_format != code_format:
+                _language = xbmc.convertLanguage(language, code_format)
+                if _language:
+                    language = _language
+                elif code_format == xbmc.ISO_639_1 and language != 'fil':
+                    language = language[:2]
+        elif code_format == xbmc.ISO_639_2:
+            language = 'eng'
+        else:
+            language = 'en'
+
+        if region:
+            _region = _region.upper() if _region else 'US'
+            return separator.join((language, _region))
+
         return language
+
+    @classmethod
+    def get_language_name(cls, language=None):
+        if language is None:
+            language = cls.get_language(code_format=None)
+        return xbmc.convertLanguage(language, xbmc.ENGLISH_NAME).split(';')[0]
+
+    @classmethod
+    def get_player_language(cls):
+        language = get_kodi_setting_value('locale.audiolanguage')
+        prefer_default = get_kodi_setting_bool('videoplayer.preferdefaultflag')
+        if not language or language == 'default':
+            language = get_kodi_setting_value('locale.language')
+            if language:
+                code = language.replace('resource.language.', '').split('_')[0]
+            else:
+                code = None
+        elif language not in cls._KODI_UI_PLAYER_LANGUAGE_OPTIONS:
+            code = xbmc.convertLanguage(language, xbmc.ISO_639_1)
+        else:
+            return language, prefer_default
+        if not code:
+            code = cls.get_language(
+                region=False,
+                code_format=xbmc.ISO_639_1,
+            )
+        return code, prefer_default
+
+    @classmethod
+    def get_subtitle_language(cls):
+        language = get_kodi_setting_value('locale.subtitlelanguage')
+        if not language or language == 'default':
+            language = get_kodi_setting_value('locale.language')
+            if language:
+                code = language.replace('resource.language.', '').split('_')[0]
+            else:
+                code = None
+        elif language not in cls._KODI_UI_SUBTITLE_LANGUAGE_OPTIONS:
+            code = xbmc.convertLanguage(language, xbmc.ISO_639_1)
+        else:
+            return None
+        if not code:
+            code = cls.get_language(
+                region=False,
+                code_format=xbmc.ISO_639_1,
+            )
+        return code
+
+    def reload_access_manager(self):
+        access_manager = AccessManager(proxy(self))
+        self._access_manager = access_manager
+        return access_manager
+
+    def reload_api_store(self):
+        api_store = APIKeyStore(proxy(self))
+        self._api_store = api_store
+        return api_store
 
     def get_playlist_player(self, playlist_type=None):
         if self.get_param(PLAY_FORCE_AUDIO) or self.get_settings().audio_only():
             playlist_type = 'audio'
-        if not self._playlist or playlist_type:
-            self._playlist = XbmcPlaylistPlayer(proxy(self), playlist_type)
-        return self._playlist
+        playlist_player = self._playlist
+        if not playlist_player or playlist_type:
+            playlist_player = XbmcPlaylistPlayer(proxy(self), playlist_type)
+            self._playlist = playlist_player
+        return playlist_player
 
     def get_ui(self):
-        if not self._ui:
-            self._ui = XbmcContextUI(proxy(self))
-        return self._ui
+        ui = self._ui
+        if not ui:
+            ui = XbmcContextUI(proxy(self))
+            self._ui = ui
+        return ui
 
     def get_data_path(self):
         return self._data_path
@@ -544,54 +682,80 @@ class XbmcContext(AbstractContext):
                 self.__class__._settings = XbmcPluginSettings(addon)
         return self._settings
 
-    def localize(self, text_id, default_text=None):
-        if default_text is None:
-            default_text = 'Undefined string ID: |{0}|'.format(text_id)
+    def localize(self, text_id, args=None, default_text=None):
+        if isinstance(text_id, tuple):
+            _args = text_id[1:]
+            _text_id = text_id[0]
+            localize_args = True
+        else:
+            _args = args
+            _text_id = text_id
+            localize_args = False
 
-        if not isinstance(text_id, int):
+        if not isinstance(_text_id, int):
             try:
-                text_id = self.LOCAL_MAP[text_id]
+                _text_id = self.LOCAL_MAP[_text_id]
             except KeyError:
                 try:
-                    text_id = int(text_id)
-                except ValueError:
-                    return default_text
-        if text_id <= 0:
+                    _text_id = int(_text_id)
+                except (TypeError, ValueError):
+                    _text_id = -1
+        if _text_id <= 0:
+            msg = 'Undefined string ID: {text_id!r}'
+            if default_text is None:
+                default_text = msg.format(text_id=text_id)
+                self.log.warning(default_text)
+            else:
+                self.log.warning(msg, text_id=text_id)
             return default_text
 
         """
         We want to use all localization strings!
-        Addons should only use the range 30000 thru 30999
-        (see: http://kodi.wiki/view/Language_support) but we do it anyway.
+        Addons should only use the range 30000 through 30999
+        (see: http://kodi.wiki/view/Language_support), but we do it anyway.
         I want some of the localized strings for the views of a skin.
         """
-        source = self._addon if 30000 <= text_id < 31000 else xbmc
-        result = source.getLocalizedString(text_id)
-        result = to_unicode(result) if result else default_text
+        source = self._addon if 30000 <= _text_id < 31000 else xbmc
+        result = source.getLocalizedString(_text_id)
+        if not result:
+            msg = 'Untranslated string ID: {text_id!r}'
+            if default_text is None:
+                default_text = msg.format(text_id=text_id)
+                self.log.warning(default_text)
+            else:
+                self.log.warning(msg, text_id=text_id)
+            return default_text
+        result = result
+
+        if _args:
+            if localize_args:
+                _args = tuple(self.localize(arg, default_text=arg)
+                              for arg in _args)
+            try:
+                return result % _args
+            except TypeError:
+                self.log.exception(('Localization error',
+                                    'String: {result!r} ({text_id!r})',
+                                    'args:   {original_args!r}'),
+                                   result=result,
+                                   text_id=text_id,
+                                   original_args=args)
         return result
 
-    def set_content(self, content_type, sub_type=None, category_label=None):
-        ui = self.get_ui()
-        ui.set_property(CONTENT_TYPE, json.dumps(
-            (content_type, sub_type, category_label),
-            ensure_ascii=False,
-        ))
-
-    def apply_content(self):
+    def apply_content(self,
+                      content_type=None,
+                      sub_type=None,
+                      category_label=None):
         # ui local variable used for ui.get_view_manager() in unofficial version
+        # noinspection PyUnusedLocal
         ui = self.get_ui()
 
-        content_type = ui.pop_property(CONTENT_TYPE)
         if content_type:
-            content_type, sub_type, category_label = json.loads(content_type)
-            self.log_debug('Applying content-type: |{type}| for |{path}|'.format(
-                type=(sub_type or content_type), path=self.get_path()
-            ))
-            xbmcplugin.setContent(self._plugin_handle, content_type)
-        else:
-            content_type = None
-            sub_type = None
-            category_label = None
+            self.log.debug('Applying content-type: {type!r} for {path!r}',
+                           type=(sub_type or content_type),
+                           path=self.get_path())
+            if content_type != 'default':
+                xbmcplugin.setContent(self._plugin_handle, content_type)
 
         if category_label is None:
             category_label = self.get_param('category_label')
@@ -599,66 +763,51 @@ class XbmcContext(AbstractContext):
             xbmcplugin.setPluginCategory(self._plugin_handle, category_label)
 
         detailed_labels = self.get_settings().show_detailed_labels()
-        if sub_type == 'history':
+        if sub_type == CONTENT.HISTORY:
             self.add_sort_method(
-                (SORT.LASTPLAYED,       '%T \u2022 %P',           '%D | %J'),
-                (SORT.PLAYCOUNT,        '%T \u2022 %P',           '%D | %J'),
-                (SORT.UNSORTED,         '%T \u2022 %P',           '%D | %J'),
-                (SORT.LABEL,            '%T \u2022 %P',           '%D | %J'),
-            ) if detailed_labels else self.add_sort_method(
-                (SORT.LASTPLAYED,),
-                (SORT.PLAYCOUNT,),
-                (SORT.UNSORTED,),
-                (SORT.LABEL,),
+                SORT.HISTORY_CONTENT_DETAILED
+                if detailed_labels else
+                SORT.HISTORY_CONTENT_SIMPLE
             )
-        elif sub_type == 'comments':
+        elif sub_type == CONTENT.COMMENTS:
             self.add_sort_method(
-                (SORT.CHANNEL,          '[%A - ]%T \u2022 %P',       '%J'),
-                (SORT.ARTIST,           '[%J - ]%T \u2022 %P',       '%A'),
-                (SORT.PROGRAM_COUNT,    '[%A - ]%T \u2022 %P | %J',  '%C'),
-                (SORT.DATE,             '[%A - ]%T \u2022 %P',       '%J'),
-                (SORT.TRACKNUM,         '[%N. ][%A - ]%T \u2022 %P', '%J'),
-            ) if detailed_labels else self.add_sort_method(
-                (SORT.CHANNEL,          '[%A - ]%T'),
-                (SORT.ARTIST,           '[%A - ]%T'),
-                (SORT.PROGRAM_COUNT,    '[%A - ]%T'),
-                (SORT.DATE,             '[%A - ]%T'),
-                (SORT.TRACKNUM,         '[%N. ][%A - ]%T '),
+                SORT.COMMENTS_CONTENT_DETAILED
+                if detailed_labels else
+                SORT.COMMENTS_CONTENT_SIMPLE
+            )
+        elif sub_type == CONTENT.PLAYLIST:
+            self.add_sort_method(
+                SORT.PLAYLIST_CONTENT_DETAILED
+                if detailed_labels else
+                SORT.PLAYLIST_CONTENT_SIMPLE
+            )
+        elif content_type == CONTENT.VIDEO_CONTENT:
+            self.add_sort_method(
+                SORT.VIDEO_CONTENT_DETAILED
+                if detailed_labels else
+                SORT.VIDEO_CONTENT_SIMPLE
             )
         else:
             self.add_sort_method(
-                (SORT.UNSORTED,         '%T \u2022 %P',           '%D | %J'),
-                (SORT.LABEL,            '%T \u2022 %P',           '%D | %J'),
-            ) if detailed_labels else self.add_sort_method(
-                (SORT.UNSORTED,),
-                (SORT.LABEL,),
+                SORT.LIST_CONTENT_DETAILED
+                if detailed_labels else
+                SORT.LIST_CONTENT_SIMPLE
             )
 
-        if content_type == CONTENT.VIDEO_CONTENT:
-            self.add_sort_method(
-                (SORT.CHANNEL,          '[%A - ]%T \u2022 %P',    '%D | %J'),
-                (SORT.ARTIST,           '%T \u2022 %P | %D | %J', '%A'),
-                (SORT.PROGRAM_COUNT,    '%T \u2022 %P | %D | %J', '%C'),
-                (SORT.VIDEO_RATING,     '%T \u2022 %P | %D | %J', '%R'),
-                (SORT.DATE,             '%T \u2022 %P | %D',      '%J'),
-                (SORT.DATEADDED,        '%T \u2022 %P | %D',      '%a'),
-                (SORT.VIDEO_RUNTIME,    '%T \u2022 %P | %J',      '%D'),
-                (SORT.TRACKNUM,         '[%N. ]%T \u2022 %P',     '%D | %J'),
-            ) if detailed_labels else self.add_sort_method(
-                (SORT.CHANNEL,          '[%A - ]%T'),
-                (SORT.ARTIST,),
-                (SORT.PROGRAM_COUNT,),
-                (SORT.VIDEO_RATING,),
-                (SORT.DATE,),
-                (SORT.DATEADDED,),
-                (SORT.VIDEO_RUNTIME,),
-                (SORT.TRACKNUM,         '[%N. ]%T '),
-            )
-
-    def add_sort_method(self, *sort_methods):
-        args = slice(None if current_system_version.compatible(19) else 2)
-        for sort_method in sort_methods:
-            xbmcplugin.addSortMethod(self._plugin_handle, *sort_method[args])
+    if current_system_version.compatible(19):
+        def add_sort_method(self,
+                            sort_methods,
+                            _add_sort_method=xbmcplugin.addSortMethod):
+            handle = self._plugin_handle
+            for sort_method in sort_methods:
+                _add_sort_method(handle, *sort_method)
+    else:
+        def add_sort_method(self,
+                            sort_methods,
+                            _add_sort_method=xbmcplugin.addSortMethod):
+            handle = self._plugin_handle
+            for sort_method in sort_methods:
+                _add_sort_method(handle, *sort_method[:3:2])
 
     def clone(self, new_path=None, new_params=None):
         if not new_path:
@@ -673,12 +822,14 @@ class XbmcContext(AbstractContext):
 
         new_context._access_manager = self._access_manager
         new_context._uuid = self._uuid
+        new_context._api_store = self._api_store
 
         new_context._bookmarks_list = self._bookmarks_list
         new_context._data_cache = self._data_cache
         new_context._feed_history = self._feed_history
         new_context._function_cache = self._function_cache
         new_context._playback_history = self._playback_history
+        new_context._requests_cache = self._requests_cache
         new_context._search_history = self._search_history
         new_context._watch_later_list = self._watch_later_list
 
@@ -687,20 +838,45 @@ class XbmcContext(AbstractContext):
 
         return new_context
 
-    def execute(self, command, wait=False, wait_for=None):
+    def execute(self,
+                command,
+                wait=False,
+                wait_for=None,
+                wait_for_set=True,
+                block_ui=None,
+                _execute=xbmc.executebuiltin):
         if not wait_for:
-            xbmc.executebuiltin(command, wait)
+            if block_ui is False:
+                _execute('Dialog.Close(all,true)')
+            _execute(command, wait)
             return
 
         ui = self.get_ui()
-        ui.clear_property(wait_for)
-        pop_property = ui.pop_property
-        waitForAbort = xbmc.Monitor().waitForAbort
+        wait_for_abort = xbmc.Monitor().waitForAbort
 
-        xbmc.executebuiltin(command, wait)
+        if block_ui is False:
+            _execute('Dialog.Close(all,true)')
+        _execute(command, wait)
 
-        while not pop_property(wait_for) and not waitForAbort(1):
-            pass
+        if block_ui:
+            _execute('ActivateWindow(busydialognocancel)')
+
+        if isinstance(wait_for, tuple):
+            wait_for, wait_for_kwargs, delay = wait_for
+            while not wait_for(**wait_for_kwargs) and not wait_for_abort(delay):
+                pass
+        elif wait_for_set:
+            ui.clear_property(wait_for)
+            pop_property = ui.pop_property
+            while not pop_property(wait_for) and not wait_for_abort(1):
+                pass
+        else:
+            get_property = ui.get_property
+            while get_property(wait_for) and not wait_for_abort(1):
+                pass
+
+        if block_ui:
+            _execute('Dialog.Close(busydialognocancel)')
 
     @staticmethod
     def sleep(timeout=None):
@@ -712,15 +888,13 @@ class XbmcContext(AbstractContext):
                                    'properties': ['enabled']})
         try:
             return response['result']['addon']['enabled'] is True
-        except (KeyError, TypeError) as exc:
+        except (KeyError, TypeError):
             error = response.get('error', {})
-            self.log_error('XbmcContext.addon_enabled - Error'
-                           '\n\tException: {exc!r}'
-                           '\n\tCode:      {code}'
-                           '\n\tMessage:   {msg}'
-                           .format(exc=exc,
-                                   code=error.get('code', 'Unknown'),
-                                   msg=error.get('message', 'Unknown')))
+            self.log.exception(('Error',
+                                'Code:    {code}',
+                                'Message: {message}'),
+                               code=error.get('code', 'Unknown'),
+                               message=error.get('message', 'Unknown'))
             return False
 
     def set_addon_enabled(self, addon_id, enabled=True):
@@ -729,21 +903,19 @@ class XbmcContext(AbstractContext):
                                    'enabled': enabled})
         try:
             return response['result'] == 'OK'
-        except (KeyError, TypeError) as exc:
+        except (KeyError, TypeError):
             error = response.get('error', {})
-            self.log_error('XbmcContext.set_addon_enabled - Error'
-                           '\n\tException: {exc!r}'
-                           '\n\tCode:      {code}'
-                           '\n\tMessage:   {msg}'
-                           .format(exc=exc,
-                                   code=error.get('code', 'Unknown'),
-                                   msg=error.get('message', 'Unknown')))
+            self.log.exception(('Error',
+                                'Code:    {code}',
+                                'Message: {message}'),
+                               code=error.get('code', 'Unknown'),
+                               message=error.get('message', 'Unknown'))
             return False
 
     @staticmethod
-    def send_notification(method, data=True):
+    def send_notification(method, data=True, sender=ADDON_ID):
         jsonrpc(method='JSONRPC.NotifyAll',
-                params={'sender': ADDON_ID,
+                params={'sender': sender,
                         'message': method,
                         'data': data})
 
@@ -776,6 +948,8 @@ class XbmcContext(AbstractContext):
         'drm': loose_version('2.2.12'),
         'live': loose_version('2.0.12'),
         'timeshift': loose_version('2.5.2'),
+        # subtitles
+        'vtt': loose_version('2.3.8'),
         'ttml': loose_version('20.0.0'),
         # properties
         'config_prop': loose_version('21.4.11'),
@@ -826,24 +1000,9 @@ class XbmcContext(AbstractContext):
             return False
 
     def abort_requested(self):
-        return self.get_ui().get_property(ABORT_FLAG).lower() == 'true'
-
-    @staticmethod
-    def get_infobool(name):
-        return xbmc.getCondVisibility(name)
-
-    @staticmethod
-    def get_infolabel(name):
-        return xbmc.getInfoLabel(name)
-
-    @staticmethod
-    def get_listitem_property(detail_name):
-        return xbmc.getInfoLabel('Container.ListItem(0).Property({0})'
-                                 .format(detail_name))
-
-    @staticmethod
-    def get_listitem_info(detail_name):
-        return xbmc.getInfoLabel('Container.ListItem(0).' + detail_name)
+        return self.get_ui().get_property(
+            ABORT_FLAG, stacklevel=3, as_bool=True
+        )
 
     def tear_down(self):
         self.clear_settings()
@@ -863,6 +1022,8 @@ class XbmcContext(AbstractContext):
         attrs = (
             '_ui',
             '_playlist',
+            '_api_store',
+            '_access_manager',
         )
         for attr in attrs:
             try:
@@ -871,54 +1032,117 @@ class XbmcContext(AbstractContext):
             except AttributeError:
                 pass
 
-    def wakeup(self, target, timeout=None, payload=None):
+    def ipc_exec(self,
+                 target,
+                 timeout=None,
+                 payload=None,
+                 raise_exc=False,
+                 stacklevel=2):
+        if not XbmcContextUI.get_property(SERVICE_RUNNING_FLAG, as_bool=True):
+            msg = 'Service IPC - Monitor has not started'
+            XbmcContextUI.set_property(SERVICE_RUNNING_FLAG, BUSY_FLAG)
+            if raise_exc:
+                raise RuntimeError(msg)
+            self.log.warning_trace(msg, stacklevel=stacklevel)
+            return None
+
         data = {'target': target, 'response_required': bool(timeout)}
         if payload:
             data.update(payload)
-        self.send_notification(WAKEUP, data)
+        self.send_notification(SERVICE_IPC, data)
+
         if not timeout:
             return None
+        if timeout < 0:
+            timeout = None
 
-        pop_property = self.get_ui().pop_property
-        no_timeout = timeout < 0
-        remaining = timeout = timeout * 1000
-        wait_period_ms = 100
-        wait_period = wait_period_ms / 1000
-
-        while no_timeout or remaining > 0:
-            data = pop_property(WAKEUP)
-            if data:
-                data = json.loads(data)
-
-            if data:
-                response = data.get('response')
-                response_target = data.get('target') or 'Unknown'
-
-                if target == response_target:
-                    if response:
-                        self.log_debug('Wakeup |{0}| in {1}ms'
-                                       .format(response_target,
-                                               timeout - remaining))
-                    else:
-                        self.log_error('Wakeup |{0}| in {1}ms - failed'
-                                       .format(response_target,
-                                               timeout - remaining))
-                    return response
-
-                self.log_error('Wakeup |{0}| in {1}ms - expected |{2}|'
-                               .format(response_target,
-                                       timeout - remaining,
-                                       target))
-                break
-
-            wait(wait_period)
-            remaining -= wait_period_ms
+        response = IPCMonitor(target, timeout)
+        if response.received:
+            value = response.value
+            if value is False:
+                log_level = logging.ERROR
+                log_value = 'FAILED'
+                stack_info = True
+            else:
+                log_level = logging.DEBUG
+                log_value = value
+                stack_info = False
+            self.log.log(
+                level=log_level,
+                msg='Service IPC <{target}({payload})>:'
+                    ' {value} (in {time_ms:.2f}ms)',
+                target=target,
+                payload=payload,
+                value=log_value,
+                time_ms=response.latency,
+                stack_info=stack_info,
+                stacklevel=stacklevel,
+            )
         else:
-            self.log_error('Wakeup |{0}| timed out in {1}ms'
-                           .format(target, timeout))
-        return False
+            value = None
+            self.log.error_trace(
+                'Service IPC <{target}({payload})>:'
+                ' TIMED OUT (in {time_s:.2f}s)',
+                target=target,
+                payload=payload,
+                time_s=timeout,
+                stacklevel=stacklevel,
+            )
+        return value
 
-    def is_plugin_folder(self, folder_name=None):
-        if folder_name is None:
-            folder_name = xbmc.getInfoLabel('Container.FolderName')
-        return folder_name == self._plugin_name
+    def is_plugin_folder(self, folder_path='', name=False, partial=True):
+        if name:
+            return XbmcContextUI.get_container_info(
+                FOLDER_NAME,
+            ) == self._plugin_name
+        return self.is_plugin_path(
+            uri=XbmcContextUI.get_container_info(
+                FOLDER_URI,
+            ),
+            uri_path=folder_path,
+            partial=partial,
+        )
+
+    def refresh_requested(self, force=False, on=False, off=False, params=None):
+        if params is None:
+            params = self.get_params()
+        refresh = params.get('refresh')
+        if not force:
+            return refresh and refresh > 0
+
+        if refresh is None:
+            refresh = 0
+        if off:
+            if refresh > 0:
+                refresh = -refresh
+        elif on or refresh:
+            if refresh < 0:
+                refresh = -refresh
+            refresh += 1
+
+        return refresh
+
+    def parse_item_ids(self,
+                       uri='',
+                       from_listitem=True,
+                       _ids=(VIDEO_ID,
+                             VIDEO_IDS,
+                             CHANNEL_ID,
+                             # CHANNEL_IDS,  # not currently supported
+                             PLAYLIST_ID,
+                             PLAYLIST_IDS)):
+        if not uri and from_listitem:
+            uri = XbmcContextUI.get_listitem_info(URI)
+        if not uri or not self.is_plugin_path(uri):
+            return {}
+
+        uri = urlsplit(uri)
+        item_ids = self.parse_path(uri.path)
+        _params = dict(parse_qsl(uri.query))
+        _prop = XbmcContextUI.get_listitem_property if from_listitem else False
+        for name in _ids:
+            value = _params.get(name) or _prop and _prop(name)
+            if value:
+                item_ids[name] = value
+
+        return item_ids

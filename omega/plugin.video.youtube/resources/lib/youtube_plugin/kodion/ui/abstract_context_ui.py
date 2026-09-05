@@ -2,15 +2,13 @@
 """
 
     Copyright (C) 2014-2016 bromix (plugin.video.youtube)
-    Copyright (C) 2016-2018 plugin.video.youtube
+    Copyright (C) 2016-2025 plugin.video.youtube
 
     SPDX-License-Identifier: GPL-2.0-only
     See LICENSES/GPL-2.0-only for more information.
 """
 
 from __future__ import absolute_import, division, unicode_literals
-
-from ..compatibility import string_type
 
 
 class AbstractContextUI(object):
@@ -24,16 +22,20 @@ class AbstractContextUI(object):
                                message_template=None):
         raise NotImplementedError()
 
-    def on_keyboard_input(self, title, default='', hidden=False):
+    @staticmethod
+    def on_keyboard_input(title, default='', hidden=False):
         raise NotImplementedError()
 
-    def on_numeric_input(self, title, default=''):
+    @staticmethod
+    def on_numeric_input(title, default=''):
         raise NotImplementedError()
 
-    def on_yes_no_input(self, title, text, nolabel='', yeslabel=''):
+    @staticmethod
+    def on_yes_no_input(title, text, nolabel='', yeslabel=''):
         raise NotImplementedError()
 
-    def on_ok(self, title, text):
+    @staticmethod
+    def on_ok(title, text):
         raise NotImplementedError()
 
     def on_remove_content(self, name):
@@ -45,7 +47,8 @@ class AbstractContextUI(object):
     def on_clear_content(self, name):
         raise NotImplementedError()
 
-    def on_select(self, title, items=None, preselect=-1, use_details=False):
+    @staticmethod
+    def on_select(title, items=None, preselect=-1, use_details=False):
         raise NotImplementedError()
 
     def show_notification(self, message, header='', image_uri='',
@@ -53,7 +56,10 @@ class AbstractContextUI(object):
         raise NotImplementedError()
 
     @staticmethod
-    def refresh_container():
+    def on_busy():
+        raise NotImplementedError()
+
+    def refresh_container(self, force=False, stacklevel=None):
         """
         Needs to be implemented by a mock for testing or the real deal.
         This will refresh the current container or list.
@@ -61,135 +67,165 @@ class AbstractContextUI(object):
         """
         raise NotImplementedError()
 
+    def focus_container(self, container_id=None, position=None):
+        raise NotImplementedError()
 
-class AbstractProgressDialog(object):
-    def __init__(self,
-                 ui,
-                 dialog,
-                 background,
-                 heading,
-                 message='',
-                 total=0,
-                 message_template=None,
-                 template_params=None):
-        self._ui = ui
-        if ui.busy_dialog_active():
-            self._dialog = dialog()
-            self._dialog.create(heading, message)
-            self._created = True
-        else:
-            self._dialog = dialog()
-            self._created = False
+    @staticmethod
+    def get_infobool(name):
+        raise NotImplementedError()
 
-        self._background = background
+    @staticmethod
+    def get_infolabel(name):
+        raise NotImplementedError()
 
-        self._position = None
-        self._total = total
+    def get_container(self,
+                      container_type=True,
+                      check_ready=False,
+                      stacklevel=None):
+        raise NotImplementedError()
 
-        self._heading = heading
-        self._message = message
-        if message_template:
-            self._message_template = message_template
-            self._template_params = {
-                '_message': message,
-                '_progress': (0, self._total),
-                '_current': 0,
-                '_total': self._total,
-            }
-            if template_params:
-                self._template_params.update(template_params)
-        else:
-            self._message_template = None
-            self._template_params = None
+    @classmethod
+    def get_container_id(cls, container_type=True):
+        raise NotImplementedError()
 
-        # simple reset because KODI won't do it :(
-        self.update(position=0)
+    @classmethod
+    def get_container_bool(cls,
+                           name,
+                           container_id=True,
+                           strict=True,
+                           stacklevel=None):
+        raise NotImplementedError()
 
-    def __enter__(self):
-        return self
+    @classmethod
+    def get_container_info(cls,
+                           name,
+                           container_id=True,
+                           strict=True,
+                           stacklevel=None):
+        raise NotImplementedError()
 
-    def __exit__(self, exc_type=None, exc_val=None, exc_tb=None):
-        self.close()
+    @classmethod
+    def get_listitem_bool(cls,
+                          name,
+                          container_id=True,
+                          strict=True,
+                          stacklevel=None):
+        raise NotImplementedError()
 
-    def get_total(self):
-        return self._total
+    @classmethod
+    def get_listitem_info(cls,
+                          name,
+                          container_id=True,
+                          strict=True,
+                          stacklevel=None):
+        raise NotImplementedError()
 
-    def get_position(self):
-        return self._position
+    @classmethod
+    def get_listitem_property(cls,
+                              name,
+                              container_id=True,
+                              strict=True,
+                              stacklevel=None):
+        raise NotImplementedError()
 
-    def close(self):
-        if self._dialog and self._created:
-            self._dialog.close()
-            self._dialog = None
-            self._created = False
+    @classmethod
+    def set_property(cls,
+                     property_id,
+                     value='true',
+                     stacklevel=2,
+                     process=None,
+                     log_redact=False,
+                     raw=False,
+                     as_bool=False):
+        raise NotImplementedError()
 
-    def is_aborted(self):
-        if self._dialog and self._created:
-            return getattr(self._dialog, 'iscanceled', bool)()
-        return False
+    @classmethod
+    def get_property(cls,
+                     property_id,
+                     stacklevel=2,
+                     process=None,
+                     log_redact=False,
+                     raw=False,
+                     as_bool=False,
+                     default=False):
+        raise NotImplementedError()
 
-    def set_total(self, total):
-        self._total = int(total)
+    @classmethod
+    def pop_property(cls,
+                     property_id,
+                     stacklevel=2,
+                     process=None,
+                     log_redact=False,
+                     raw=False,
+                     as_bool=False,
+                     default=False):
+        raise NotImplementedError()
 
-    def reset_total(self, new_total, **kwargs):
-        self._total = int(new_total)
-        self.update(position=0, **kwargs)
+    @classmethod
+    def clear_property(cls, property_id, stacklevel=2, raw=False):
+        raise NotImplementedError()
 
-    def update_total(self, new_total, **kwargs):
-        self._total = int(new_total)
-        self.update(steps=0, **kwargs)
+    @staticmethod
+    def bold(value, cr_before=0, cr_after=0):
+        return ''.join((
+            '[CR]' * cr_before,
+            '[B]', value, '[/B]',
+            '[CR]' * cr_after,
+        ))
 
-    def grow_total(self, new_total=None, delta=None):
-        if delta:
-            delta = int(delta)
-            self._total += delta
-        elif new_total:
-            total = int(new_total)
-            if total > self._total:
-                self._total = total
-        return self._total
+    @staticmethod
+    def uppercase(value, cr_before=0, cr_after=0):
+        return ''.join((
+            '[CR]' * cr_before,
+            '[UPPERCASE]', value, '[/UPPERCASE]',
+            '[CR]' * cr_after,
+        ))
 
-    def update(self, steps=1, position=None, message=None, **template_params):
-        if not self._dialog:
-            return
+    @staticmethod
+    def color(color, value, cr_before=0, cr_after=0):
+        return ''.join((
+            '[CR]' * cr_before,
+            '[COLOR=', color.lower(), ']', value, '[/COLOR]',
+            '[CR]' * cr_after,
+        ))
 
-        if position is None:
-            self._position += steps
-        else:
-            self._position = position
+    @staticmethod
+    def light(value, cr_before=0, cr_after=0):
+        return ''.join((
+            '[CR]' * cr_before,
+            '[LIGHT]', value, '[/LIGHT]',
+            '[CR]' * cr_after,
+        ))
 
-        if not self._total:
-            percent = 0
-        elif self._position >= self._total:
-            percent = 100
-            self._total = self._position
-        else:
-            percent = int(100 * self._position / self._total)
+    @staticmethod
+    def italic(value, cr_before=0, cr_after=0):
+        return ''.join((
+            '[CR]' * cr_before,
+            '[I]', value, '[/I]',
+            '[CR]' * cr_after,
+        ))
 
-        if isinstance(message, string_type):
-            self._message = message
-        elif self._message_template:
-            if template_params:
-                self._template_params.update(template_params)
-            template_params = self._template_params
-            progress = (self._position, self._total)
-            template_params['_progress'] = progress
-            template_params['_current'], template_params['_total'] = progress
-            message = self._message_template.format(
-                *template_params['_progress'],
-                **template_params
-            )
-            self._message = message
+    @staticmethod
+    def indent(number=1, value='', cr_before=0, cr_after=0):
+        return ''.join((
+            '[CR]' * cr_before,
+            '[TABS]', str(number), '[/TABS]', value,
+            '[CR]' * cr_after,
+        ))
 
-        if not self._created:
-            if self._ui.busy_dialog_active():
-                return
-            self._dialog.create(self._heading, self._message)
-            self._created = True
+    @staticmethod
+    def new_line(value=1, cr_before=0, cr_after=0):
+        if isinstance(value, int):
+            return '[CR]' * value
+        return ''.join((
+            '[CR]' * cr_before,
+            value,
+            '[CR]' * cr_after,
+        ))
 
-        # Kodi 18 renamed XbmcProgressDialog.update argument line1 to message.
-        # Only use positional arguments to maintain compatibility
-        if self._background:
-            self._dialog.update(percent, self._heading, self._message)
-        else:
-            self._dialog.update(percent, self._message)
+    def set_focus_next_item(self):
+        raise NotImplementedError()
+
+    @staticmethod
+    def busy_dialog_active():
+        raise NotImplementedError()

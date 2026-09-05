@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 
-    Copyright (C) 2018-2018 plugin.video.youtube
+    Copyright (C) 2018-2025 plugin.video.youtube
 
     SPDX-License-Identifier: GPL-2.0-only
     See LICENSES/GPL-2.0-only for more information.
@@ -25,10 +25,11 @@ class PlaybackHistory(Storage):
         value['last_played'] = fromtimestamp(item[1])
         return value
 
-    def get_items(self, keys=None, limit=-1, process=None):
+    def get_items(self, item_ids=(), limit=-1, process=None, excluding=None):
         if process is None:
             process = self._add_last_played
-        result = self._get_by_ids(keys,
+        result = self._get_by_ids(item_ids=item_ids,
+                                  excluding=excluding,
                                   oldest_first=False,
                                   process=process,
                                   as_dict=True,
@@ -39,8 +40,8 @@ class PlaybackHistory(Storage):
         result = self._get(key, process=self._add_last_played)
         return result
 
-    def set_item(self, video_id, play_data, timestamp=None):
-        self._set(video_id, play_data, timestamp)
+    def set_item(self, video_id, play_data):
+        self._set(video_id, play_data)
 
     def del_item(self, video_id):
         self._remove(video_id)
@@ -51,5 +52,5 @@ class PlaybackHistory(Storage):
     def _optimize_item_count(self, limit=-1, defer=False):
         return False
 
-    def _optimize_file_size(self, limit=-1, defer=False):
+    def _optimize_file_size(self, defer=False, db=None):
         return False

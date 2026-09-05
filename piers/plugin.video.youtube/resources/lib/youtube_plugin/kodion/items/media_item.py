@@ -2,7 +2,7 @@
 """
 
     Copyright (C) 2014-2016 bromix (plugin.video.youtube)
-    Copyright (C) 2016-2018 plugin.video.youtube
+    Copyright (C) 2016-2025 plugin.video.youtube
 
     SPDX-License-Identifier: GPL-2.0-only
     See LICENSES/GPL-2.0-only for more information.
@@ -15,8 +15,8 @@ from re import compile as re_compile
 
 from . import BaseItem
 from ..compatibility import datetime_infolabel, to_str, unescape, urlencode
-from ..constants import CONTENT
-from ..utils import duration_to_seconds, seconds_to_duration
+from ..constants import CHANNEL_ID, CONTENT, PLAYLIST_ID, VIDEO_ID
+from ..utils.convert_format import duration_to_seconds, seconds_to_duration
 
 
 class MediaItem(BaseItem):
@@ -35,8 +35,15 @@ class MediaItem(BaseItem):
                  channel_id=None,
                  playlist_id=None,
                  playlist_item_id=None,
-                 subscription_id=None):
-        super(MediaItem, self).__init__(name, uri, image, fanart)
+                 subscription_id=None,
+                 **kwargs):
+        super(MediaItem, self).__init__(
+            name=name,
+            uri=uri,
+            image=image,
+            fanart=fanart,
+            **kwargs
+        )
         self._aired = None
         self._premiered = None
         self._scheduled_start_utc = None
@@ -72,6 +79,53 @@ class MediaItem(BaseItem):
         self._subscription_id = subscription_id
         self._playlist_id = playlist_id
         self._playlist_item_id = playlist_item_id
+
+    def __str_parts__(self, as_dict=False):
+        kwargs = {
+            'type': self.__class__.__name__,
+            'name': self._name,
+            'uri': self._uri,
+            VIDEO_ID: self._video_id,
+            CHANNEL_ID: self._channel_id,
+            PLAYLIST_ID: self._playlist_id,
+            # PLAYLIST_ITEM_ID: self._playlist_item_id,
+            # SUBSCRIPTION_ID: self._subscription_id,
+            'available': self._available,
+            'vod': self._vod,
+            'live': self._live,
+            'completed': self._completed,
+            'upcoming': self._upcoming,
+            'short': self._short,
+            'duration': self._duration,
+            'play_count': self._play_count,
+            'added': self._added_utc,
+            'track_number': self._track_number,
+            'filtered': self._filter_reason,
+        }
+        if as_dict:
+            return kwargs
+        out = (
+            '{type}(',
+            'name={name!r}, ',
+            'uri={uri!r}, ',
+            'video_id={video_id!r}, ',
+            'channel_id={channel_id!r}, ',
+            'playlist_id={playlist_id!r}, ',
+            # 'playlist_item_id={playlist_item_id!r}, ',
+            # 'subscription_id={subscription_id!r}, ',
+            'available={available!r}, ',
+            'vod={vod!r}, ',
+            'live={live!r}, ',
+            'completed={completed!r}, ',
+            'upcoming={upcoming!r}, ',
+            'short={short!r}, ',
+            'duration={duration!r}, ',
+            'play_count={play_count!r}, ',
+            'added=\'{added!s}\', ',
+            'track_number={track_number!r}, ',
+            'filtered={filtered!r})',
+        )
+        return out, kwargs
 
     def set_aired(self, year, month, day):
         self._aired = date(year, month, day)
@@ -347,16 +401,18 @@ class AudioItem(MediaItem):
                  playlist_id=None,
                  playlist_item_id=None,
                  subscription_id=None):
-        super(AudioItem, self).__init__(name,
-                                        uri,
-                                        image,
-                                        fanart,
-                                        plot,
-                                        video_id,
-                                        channel_id,
-                                        playlist_id,
-                                        playlist_item_id,
-                                        subscription_id)
+        super(AudioItem, self).__init__(
+            name=name,
+            uri=uri,
+            image=image,
+            fanart=fanart,
+            plot=plot,
+            video_id=video_id,
+            channel_id=channel_id,
+            playlist_id=playlist_id,
+            playlist_item_id=playlist_item_id,
+            subscription_id=subscription_id,
+        )
         self._album = None
 
     def set_album_name(self, album_name):
@@ -386,19 +442,26 @@ class VideoItem(MediaItem):
                  channel_id=None,
                  playlist_id=None,
                  playlist_item_id=None,
-                 subscription_id=None):
-        super(VideoItem, self).__init__(name,
-                                        uri,
-                                        image,
-                                        fanart,
-                                        plot,
-                                        video_id,
-                                        channel_id,
-                                        playlist_id,
-                                        playlist_item_id,
-                                        subscription_id)
+                 subscription_id=None,
+                 **kwargs):
+        super(VideoItem, self).__init__(
+            name=name,
+            uri=uri,
+            image=image,
+            fanart=fanart,
+            plot=plot,
+            video_id=video_id,
+            channel_id=channel_id,
+            playlist_id=playlist_id,
+            playlist_item_id=playlist_item_id,
+            subscription_id=subscription_id,
+            **kwargs
+        )
         self._directors = None
         self._imdb_id = None
+        self._video_aspect = None
+        self._video_height = None
+        self._video_width = None
 
     def add_directors(self, director):
         if director:
@@ -421,3 +484,44 @@ class VideoItem(MediaItem):
 
     def get_imdb_id(self):
         return self._imdb_id
+
+    def set_stream_details_from_player(self, player):
+        height = player.get('embedHeight')
+        width = player.get('embedWidth')
+        if not height or not width:
+            return
+
+        height = int(height)
+        width = int(width)
+        aspect_ratio = round(width / height, 2)
+
+        self._video_aspect = aspect_ratio
+        self._video_height = height
+        self._video_width = width
+
+    def get_stream_details(self):
+        if self._video_aspect is None:
+            return None
+        return {
+            'aspect': self._video_aspect,
+            'height': self._video_height,
+            'width': self._video_width,
+        }
+
+    def set_aspect_ratio(self, aspect_ratio):
+        self._video_aspect = round(aspect_ratio, 2)
+
+    def get_aspect_ratio(self):
+        return self._video_aspect
+
+    def set_video_width(self, width):
+        self._video_width = int(width)
+
+    def get_video_width(self):
+        return self._video_width
+
+    def set_video_height(self, height):
+        self._video_height = int(height)
+
+    def get_video_height(self):
+        return self._video_height

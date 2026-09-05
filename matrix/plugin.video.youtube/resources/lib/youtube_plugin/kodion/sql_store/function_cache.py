@@ -2,7 +2,7 @@
 """
 
     Copyright (C) 2014-2016 bromix (plugin.video.youtube)
-    Copyright (C) 2016-2019 plugin.video.youtube
+    Copyright (C) 2016-2025 plugin.video.youtube
 
     SPDX-License-Identifier: GPL-2.0-only
     See LICENSES/GPL-2.0-only for more information.
@@ -11,10 +11,10 @@
 from __future__ import absolute_import, division, unicode_literals
 
 from functools import partial
-from hashlib import md5
 from itertools import chain
 
 from .storage import Storage
+from ..utils.methods import generate_hash
 
 
 class FunctionCache(Storage):
@@ -78,7 +78,7 @@ class FunctionCache(Storage):
                 partial_func.args,
                 partial_func.keywords.items(),
             )
-        return md5(','.join(map(str, signature)).encode('utf-8')).hexdigest()
+        return generate_hash(iter=signature)
 
     def get_result(self, func, *args, **kwargs):
         partial_func = partial(func, *args, **kwargs)
@@ -91,21 +91,23 @@ class FunctionCache(Storage):
         cache_id = self._create_id_from_func(partial_func)
         return self._get(cache_id)
 
-    def run(self, func, seconds=None, *args, **kwargs):
+    def run(self, func, seconds=-1, *args, **kwargs):
         """
         Returns the cached data of the given function.
         :param function func: function to call and cache if not already cached
-        :param int|None seconds: max allowable age of cached result
+        :param int seconds: max allowable age of cached result
         :param tuple args: positional arguments passed to the function
         :param dict kwargs: keyword arguments passed to the function
         :keyword _scope: (int) cache result if matching:
                          0: function only,
                          1: function + value of builtin type parameters
                          2: function + value of all parameters, default 2
-        :keyword _ignore_value: (Any) don't cache func return value if equal to
-                                _ignored_value, default None
+        :keyword _ignore_value: (Any) don't cache or process func return value
+                                if equal to _ignored_value, default None
         :keyword _oneshot: (bool) remove previously cached result, default False
         :keyword _refresh: (bool) updates cache with new result, default False
+        :keyword _process: (callable) function called to process new/cached
+                           result, default None
         :keyword _retry_value: (Any) re-evaluate func if cached value is equal
                                _retry_value, default None
         :return:
@@ -114,6 +116,7 @@ class FunctionCache(Storage):
         ignore_value = kwargs.pop('_ignore_value', None)
         oneshot = kwargs.pop('_oneshot', False)
         refresh = kwargs.pop('_refresh', False)
+        process = kwargs.pop('_process', None)
         retry_value = kwargs.pop('_retry_value', None)
         partial_func = partial(func, *args, **kwargs)
 
@@ -122,9 +125,25 @@ class FunctionCache(Storage):
             return partial_func()
 
         cache_id = self._create_id_from_func(partial_func, scope)
-        data = retry_value if refresh else self._get(cache_id, seconds=seconds)
-        if data == retry_value:
+        old_data = self._get(cache_id, as_dict=True)
+        if old_data:
+            age = old_data['age']
+            old_data = old_data['value']
+            if age > seconds >= 0 or old_data == retry_value:
+                refresh = True
+        else:
+            old_data = None
+            refresh = True
+
+        if refresh:
             data = partial_func()
+            if callable(process):
+                data = process(data, old_data)
+        elif callable(process):
+            data = process(None, old_data)
+        else:
+            data = old_data
+
         if data != ignore_value:
             self._set(cache_id, data)
         elif oneshot:

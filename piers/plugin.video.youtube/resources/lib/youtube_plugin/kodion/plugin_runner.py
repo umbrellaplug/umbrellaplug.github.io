@@ -2,7 +2,7 @@
 """
 
     Copyright (C) 2014-2016 bromix (plugin.video.youtube)
-    Copyright (C) 2016-2018 plugin.video.youtube
+    Copyright (C) 2016-2025 plugin.video.youtube
 
     SPDX-License-Identifier: GPL-2.0-only
     See LICENSES/GPL-2.0-only for more information.
@@ -10,7 +10,17 @@
 
 from __future__ import absolute_import, division, unicode_literals
 
-from .constants import CHECK_SETTINGS
+import gc
+
+from . import logging
+from .constants import (
+    BUSY_FLAG,
+    CHECK_SETTINGS,
+    FOLDER_URI,
+    FORCE_PLAY_PARAMS,
+    PATHS,
+    TRAKT_PAUSE_FLAG,
+)
 from .context import XbmcContext
 from .debug import Profiler
 from .plugin import XbmcPlugin
@@ -20,70 +30,125 @@ from ..youtube import Provider
 __all__ = ('run',)
 
 _context = XbmcContext()
+_log = logging.getLogger(__name__)
 _plugin = XbmcPlugin()
 _provider = Provider()
-_profiler = Profiler(enabled=False, print_callees=False, num_lines=20)
+_profiler = Profiler(enabled=False,
+                     timer=Profiler.elapsed_timer,
+                     print_callees=False,
+                     num_lines=20)
 
 
 def run(context=_context,
+        log=_log,
         plugin=_plugin,
         provider=_provider,
         profiler=_profiler):
+    ui = context.get_ui()
 
-    if context.get_ui().pop_property(CHECK_SETTINGS):
-        provider.reset_client()
+    if ui.pop_property(CHECK_SETTINGS):
+        provider.reset_client(context=context)
         settings = context.get_settings(refresh=True)
     else:
         settings = context.get_settings()
 
-    debug = settings.logging_enabled()
-    if debug:
-        context.debug_log(on=True)
+    log_level = settings.log_level()
+    if log_level:
+        log.debugging = True
+        # Verbose
+        if log_level & 2:
+            log.stack_info = True
+            log.verbose_logging = True
+        # Enabled or Auto on
+        else:
+            log.stack_info = False
+            log.verbose_logging = False
         profiler.enable(flush=True)
+    # Disabled or Auto off
     else:
-        context.debug_log(off=True)
+        log.debugging = False
+        log.stack_info = False
+        log.verbose_logging = False
+        profiler.disable()
 
-    current_uri = context.get_uri()
-    current_path = context.get_path()
-    current_params = context.get_params()
+    old_path = context.get_path().rstrip('/')
+    old_uri = ui.get_container_info(FOLDER_URI, container_id=None)
+    old_handle = context.get_handle()
     context.init()
-    new_uri = context.get_uri()
-    new_params = context.get_params()
-    new_handle = context.get_handle()
+    current_path = context.get_path().rstrip('/')
+    current_params = context.get_original_params()
+    current_handle = context.get_handle()
 
-    forced = (new_handle != -1
-              and ((current_uri == new_uri
-                    and current_path != '/'
-                    and current_params == new_params)
-                   or (current_uri != new_uri
-                       and current_path == '/'
-                       and not current_params)
-                   or (current_path == '/play/')))
-    if forced and 'refresh' in new_params:
-        refresh = new_params['refresh']
-        if refresh > 0:
-            new_params['refresh'] = -refresh
+    new_params = {}
+    new_kwargs = {}
 
-    log_params = new_params.copy()
-    for key in ('api_key', 'client_id', 'client_secret'):
-        if key in log_params:
-            log_params[key] = '<redacted>'
+    params = context.get_params()
+    refresh = context.refresh_requested(params=params)
+    was_playing = old_path == PATHS.PLAY
+    is_same_path = current_path == old_path and old_handle != -1
+
+    if was_playing or is_same_path or refresh:
+        old_path, old_params = context.parse_uri(
+            old_uri,
+            parse_params=False,
+        )
+        old_path = old_path.rstrip('/')
+        is_same_path = current_path == old_path
+        if was_playing and current_handle != -1:
+            forced = True
+        elif is_same_path and current_params == old_params:
+            forced = True
+        else:
+            forced = False
+    else:
+        forced = False
+
+    if forced:
+        refresh = context.refresh_requested(force=True, off=True, params=params)
+        new_params['refresh'] = refresh if refresh else 0
+
+    if new_params:
+        context.set_params(**new_params)
 
     system_version = context.get_system_version()
-    context.log_notice('Plugin: Running v{version}'
-                       '\n\tKodi:   v{kodi}'
-                       '\n\tPython: v{python}'
-                       '\n\tHandle: {handle}'
-                       '\n\tPath:   |{path}|'
-                       '\n\tParams: |{params}|'
-                       .format(version=context.get_version(),
-                               kodi=str(system_version),
-                               python=system_version.get_python_version(),
-                               handle=new_handle,
-                               path=context.get_path(),
-                               params=log_params))
+    log.info(('Running v{version}',
+              'Kodi:   v{kodi}',
+              'Python: v{python}',
+              'Handle: {handle}',
+              'Path:   {path!r} ({path_link})',
+              'Params: {params!p}',
+              'Forced: {forced!r}'),
+             version=context.get_version(),
+             kodi=str(system_version),
+             python=system_version.get_python_version(),
+             handle=current_handle,
+             path=current_path,
+             path_link='linked' if is_same_path else 'new',
+             params=params,
+             forced=forced)
 
-    plugin.run(provider, context, forced=forced)
-
-    if debug:
-        profiler.print_stats()
+    gc_threshold = gc.get_threshold()
+    gc.set_threshold(0)
+    try:
+        plugin.run(provider,
+                   context,
+                   forced=forced,
+                   is_same_path=is_same_path,
+                   **new_kwargs)
+    except Exception:
+        log.exception('Error')
+        ui.clear_property(BUSY_FLAG)
+        ui.clear_property(TRAKT_PAUSE_FLAG, raw=True)
+        for param in FORCE_PLAY_PARAMS:
+            ui.clear_property(param)
+        plugin.end(
+            context.get_handle(),
+            succeeded=False,
+            update_listing=True,
+            cache_to_disc=False,
+        )
+    finally:
+        if log_level:
+            profiler.print_stats()
+        gc.collect()
+        gc.set_threshold(*gc_threshold)

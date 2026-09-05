@@ -2,7 +2,7 @@
 """
 
     Copyright (C) 2014-2016 bromix (plugin.video.youtube)
-    Copyright (C) 2016-2019 plugin.video.youtube
+    Copyright (C) 2016-2025 plugin.video.youtube
 
     SPDX-License-Identifier: GPL-2.0-only
     See LICENSES/GPL-2.0-only for more information.
@@ -17,6 +17,8 @@ class DataCache(Storage):
     _table_name = 'storage_v2'
     _table_updated = False
     _sql = {}
+
+    _memory_store = {}
 
     def __init__(self, filepath, max_file_size_mb=5):
         max_file_size_kb = max_file_size_mb * 1024
@@ -56,11 +58,11 @@ class DataCache(Storage):
         result = self._get(content_id, seconds=seconds, as_dict=as_dict)
         return result
 
-    def set_item(self, content_id, item):
-        self._set(content_id, item)
+    def set_item(self, content_id, item, defer=False, flush=False):
+        self._set(content_id, item, defer=defer, flush=flush)
 
-    def set_items(self, items):
-        self._set_many(items)
+    def set_items(self, items, defer=False, flush=False):
+        self._set_many(items, defer=defer, flush=flush)
 
     def del_item(self, content_id):
         self._remove(content_id)

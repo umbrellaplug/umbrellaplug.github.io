@@ -2,7 +2,7 @@
 """
 
     Copyright (C) 2014-2016 bromix (plugin.video.youtube)
-    Copyright (C) 2016-2018 plugin.video.youtube
+    Copyright (C) 2016-2025 plugin.video.youtube
 
     SPDX-License-Identifier: GPL-2.0-only
     See LICENSES/GPL-2.0-only for more information.
@@ -11,34 +11,42 @@
 from __future__ import absolute_import, division, unicode_literals
 
 from ...kodion import KodionException
-from ...kodion.constants import PATHS
+from ...kodion.constants import URI, VIDEO_ID
 from ...kodion.items import menu_items
-from ...kodion.utils import find_video_id
 
 
 def _process_rate_video(provider,
                         context,
                         re_match=None,
                         video_id=None,
-                        current_rating=None):
-    listitem_path = context.get_listitem_info('FileNameAndPath')
-    ratings = ['like', 'dislike', 'none']
+                        current_rating=None,
+                        new_rating=None,
+                        _ratings=('like', 'dislike', 'none')):
+    ui = context.get_ui()
+    li_path = ui.get_listitem_info(URI)
 
-    rating_param = context.get_param('rating', '')
+    localize = context.localize
+
+    if new_rating is None:
+        rating_param = context.get_param('rating', '')
+    else:
+        rating_param = new_rating
     if rating_param:
-        rating_param = rating_param.lower() if rating_param.lower() in ratings else ''
+        rating_param = rating_param.lower()
+        if rating_param not in _ratings:
+            rating_param = ''
 
     if video_id is None:
-        video_id = context.get_param('video_id')
+        video_id = context.get_param(VIDEO_ID)
     if not video_id:
         try:
-            video_id = re_match.group('video_id')
+            video_id = re_match.group(VIDEO_ID)
         except IndexError:
-            if context.is_plugin_path(listitem_path, PATHS.PLAY):
-                video_id = find_video_id(listitem_path)
-
-            if not video_id:
-                raise KodionException('video/rate/: missing video_id')
+            pass
+    if not video_id and li_path:
+        video_id = context.parse_item_ids(li_path).get(VIDEO_ID)
+    if not video_id:
+        raise KodionException('video/rate/: missing video_id')
 
     if current_rating is None:
         try:
@@ -49,74 +57,91 @@ def _process_rate_video(provider,
         client = provider.get_client(context)
         json_data = client.get_video_rating(video_id)
         if not json_data:
-            return False, {provider.RESULT_FALLBACK: False}
+            return False, {provider.FALLBACK: False}
 
         items = json_data.get('items', [])
         if items:
             current_rating = items[0].get('rating', '')
 
-    rating_items = []
     if not rating_param:
-        for rating in ratings:
-            if rating != current_rating:
-                rating_items.append((context.localize('video.rate.%s' % rating), rating))
-        result = context.get_ui().on_select(context.localize('video.rate'), rating_items)
+        result = ui.on_select(localize('video.rate'), [
+            (localize('video.rate.%s' % rating), rating)
+            for rating in _ratings
+            if rating != current_rating
+        ])
     elif rating_param != current_rating:
         result = rating_param
     else:
         result = -1
 
+    notify_message = None
+    response = None
     if result != -1:
-        notify_message = ''
-
         response = provider.get_client(context).rate_video(video_id, result)
-
         if response:
-            # this will be set if we are in the 'Liked Video' playlist
-            if context.get_param('refresh', 0) > 0:
-                context.get_ui().refresh_container()
-
             if result == 'none':
-                notify_message = context.localize('unrated.video')
+                notify_message = localize(('removed.x', 'rating'))
             elif result == 'like':
-                notify_message = context.localize('liked.video')
+                notify_message = localize('liked.video')
             elif result == 'dislike':
-                notify_message = context.localize('disliked.video')
+                notify_message = localize('disliked.video')
         else:
-            notify_message = context.localize('failed')
+            notify_message = localize('failed')
 
-        if notify_message:
-            context.get_ui().show_notification(
-                message=notify_message,
-                time_ms=2500,
-                audible=False,
-            )
+    if notify_message:
+        ui.show_notification(
+            message=notify_message,
+            time_ms=2500,
+            audible=False,
+        )
 
-    return True
+    return (
+        True,
+        {
+            # this will be set if we are in the 'Liked Video' playlist
+            provider.FORCE_REFRESH: response and context.refresh_requested(),
+        },
+    )
 
 
-def _process_more_for_video(context):
+def _process_more_for_video(provider, context):
     params = context.get_params()
 
-    video_id = params.get('video_id')
+    video_id = params.get(VIDEO_ID)
     if not video_id:
         raise KodionException('video/more/: missing video_id')
 
+    item_name = params.get('item_name')
+
     items = [
-        menu_items.add_video_to_playlist(context, video_id),
-        menu_items.related_videos(context, video_id),
-        menu_items.video_comments(context, video_id, params.get('item_name')),
-        menu_items.content_from_description(context, video_id),
-        menu_items.rate_video(context, video_id),
+        menu_items.playlist_add_to_selected(context, video_id),
+        menu_items.video_related(context, video_id, item_name),
+        menu_items.video_comments(context, video_id, item_name),
+        menu_items.video_description_links(context, video_id, item_name),
+        menu_items.video_rate(context, video_id),
     ] if params.get('logged_in') else [
-        menu_items.related_videos(context, video_id),
-        menu_items.video_comments(context, video_id, params.get('item_name')),
-        menu_items.content_from_description(context, video_id),
+        menu_items.video_related(context, video_id, item_name),
+        menu_items.video_comments(context, video_id, item_name),
+        menu_items.video_description_links(context, video_id, item_name),
     ]
 
     result = context.get_ui().on_select(context.localize('video.more'), items)
-    if result != -1:
-        context.execute(result)
+    if result == -1:
+        return (
+            False,
+            {
+                provider.FALLBACK: False,
+                provider.FORCE_RETURN: True,
+            },
+        )
+    return (
+        True,
+        {
+            provider.FALLBACK: result,
+            provider.FORCE_RETURN: True,
+            provider.POST_RUN: True,
+        },
+    )
 
 
 def process(provider, context, re_match=None, command=None, **kwargs):
@@ -127,6 +152,6 @@ def process(provider, context, re_match=None, command=None, **kwargs):
         return _process_rate_video(provider, context, re_match, **kwargs)
 
     if command == 'more':
-        return _process_more_for_video(context)
+        return _process_more_for_video(provider, context)
 
     raise KodionException('Unknown video command: %s' % command)

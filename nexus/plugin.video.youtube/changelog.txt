@@ -1,3 +1,1017 @@
+## v7.4.4
+### Fixed
+- Fix not including FolderPath in current container details #1467
+- Fix current plugin item window properties sometimes not updating correctly
+- Fix not updating remote history upon consecutive playback events for certain video types
+- Fix using unimplemented change to localisation identifier when showing API config page address
+- Fix play uri parameters/properties not being able to be forced off
+- Limit retrying feeds that cannot be accessed #1425
+
+### Changed
+- Improve responsiveness of service loop upon plugin invocation
+- Log redacted visitorData details #1425
+- More aggressively utilise cached data for My Subscriptions feed failures #1425
+
+### New
+- Add option to play YouTube error notification video upon playback failure #1428
+
+## v7.4.4+beta.4
+### Fixed
+- Fix not including FolderPath in current container details #1467
+
+## v7.4.4+beta.3
+### Fixed
+- Fix current plugin item window properties sometimes not updating correctly
+- Fix not updating remote history upon consecutive playback events for certain video types
+
+### Changed
+- Improve responsiveness of service loop upon plugin invocation
+- Log redacted visitorData details #1425
+
+## v7.4.4+beta.2
+### Fixed
+- Fix using unimplemented change to localisation identifier when showing API config page address
+
+### Changed
+- More aggressively utilise cached data for My Subscriptions feed failures #1425
+
+## v7.4.4+beta.1
+### Fixed
+- Fix play uri parameters/properties not being able to be forced off
+- Limit retrying feeds that cannot be accessed #1425
+
+### New
+- Add option to play YouTube error notification video upon playback failure #1428
+
+## v7.4.3
+### Fixed
+- Limit chunk size when reading stream proxy response #1444
+- Fix regressions with accessing http urls
+- Improve handling of retries upon server error #1438
+- Improve identification of post-live streams #1420
+- Updates to resolve inconsistent Python2 string encoding/decoding
+- Ensure parameters to Kodi builtin functions are parsed as string literals
+- Allow trailing slashes in url of html pages served by internal http server
+
+### Changed
+- Rename Subscriptions to Subscribed Channels #1435
+- Open confirmation dialog, with a link for further information, when sign in process fails
+- Update API config page html
+- Improve handling of API key settings changes
+- Detect and notify when API requests cannot be completed
+- Use consistent language for signing in/out
+
+### New
+- Add button in API settings to view address of API config page
+- Fallback to playing channel uploads if no live stream is available
+- Add fallback method to load playlists when v3 API request cannot be made
+
+## v7.4.3+beta.3
+### Fixed
+- Fix regressions with accessing http urls
+
+## v7.4.3+beta.2
+### Fixed
+- Improve handling of retries upon server error #1438
+- Improve identification of post-live streams #1420
+
+### Changed
+- Rename Subscriptions to Subscribed Channels #1435
+
+## v7.4.3+beta.1
+### Fixed
+- Updates to resolve inconsistent Python2 string encoding/decoding
+- Ensure parameters to Kodi builtin functions are parsed as string literals
+- Allow trailing slashes in url of html pages served by internal http server
+
+### Changed
+- Open confirmation dialog, with a link for further information, when sign in process fails
+- Update API config page html
+- Improve handling of API key settings changes
+- Detect and notify when API requests cannot be completed
+- Use consistent language for signing in/out
+
+### New
+- Add button in API settings to view address of API config page
+- Fallback to playing channel uploads if no live stream is available
+- Add fallback method to load playlists when v3 API request cannot be made
+
+## v7.4.2
+### Fixed
+- Ensure updated context is used in client instance when rerouting to existing provider handler methods #1418
+- Fix required ID potentially not being passed to YouTubeDataClient.(add|remove)_video_from_playlist() #1418
+- Skip unplayable live manifests #1377
+- Handle inconsistent error codes and names used in Python 2 #1412
+- Simplify byte range to timestamp conversion for compatibility with Python 2 #1412
+- Fix unnecessarily reloading listing when adding items to Bookmarks
+
+### Changed
+- Update parsing of plugin urls for path params and ID lists #1418
+- Rework addon debug log settings (Addon > Settings > Advanced > Debug > Enable debug logging) #1385
+  - Allowable values:
+    - Disabled (addon logging output disabled)
+    - Auto (default, addon logging output enabled if Kodi debug logging enabled)
+    - Always enabled (addon logging output enabled)
+    - Verbose (additional addon logging output enabled)
+- Various other improvement to addon logging
+
+### New
+- Update Setup Wizard to account for user possibly using mismatched watch history settings
+
+## v7.4.2+beta.2
+### Fixed
+- Ensure updated context is used in client instance when rerouting to existing provider handler methods #1418
+- Fix required ID potentially not being passed to YouTubeDataClient.(add|remove)_video_from_playlist() #1418
+
+### Changed
+- Update parsing of plugin urls for path params and ID lists #1418
+
+## v7.4.2+beta.1
+### Fixed
+- Skip unplayable live manifests #1377
+- Handle inconsistent error codes and names used in Python 2 #1412
+- Simplify byte range to timestamp conversion for compatibility with Python 2 #1412
+- Fix unnecessarily reloading listing when adding items to Bookmarks
+
+### Changed
+- Rework addon debug log settings (Addon > Settings > Advanced > Debug > Enable debug logging) #1385
+  - Allowable values:
+    - Disabled (addon logging output disabled)
+    - Auto (default, addon logging output enabled if Kodi debug logging enabled)
+    - Always enabled (addon logging output enabled)
+    - Verbose (additional addon logging output enabled)
+- Various other improvement to addon logging
+
+### New
+- Update Setup Wizard to account for user possibly using mismatched watch history settings
+
+## v7.4.1.1
+### Fixed
+- Address possible race condition resulting in KeyError exception when calling pop() on an empty set
+
+## v7.4.1
+### Fixed
+- Fix unnecessary double resolve on playback #1371
+- Attempt to break busy dialog workaround loop if post run action succeeds #1386
+- Don't swallow unhandled plugin exceptions without logging and running listing end callback #1386
+- Python 2 compatibility fix for urllib3 only checking for str type when accessing module constants using getattr
+- Always refresh missing access tokens if partially logged in and refresh tokens are available #1389
+- Fix missing post run plugin runner option used when search input is a plugin url
+- Fix incorrectly identifying and removing Opus audio from list of available streams #537
+- Clean up window properties in case of exception during plugin invocation #1386
+
+### Changed
+- Simplify caching and fetching of updated subscriptions for My Subscriptions #1395
+- Always load cached My Subscriptions feed data and load cached data if feed update fails #1395
+- Use available access token when first initialising client rather than setting access tokens at later stage of client initialisation #1389
+- Don't cache main plugin menu so that Sign-In/Out item always reflects actual logged in status
+- Automatically add/remove items from local watch later list when using YouTube WL list
+
+### New
+- Add Auto-like after watch feature with optional channel filtering
+
+## v7.4.1+beta.3
+### Changed
+- Always load cached My Subscriptions feed data and load cached data if feed update fails #1395
+
+## v7.4.1+beta.2
+### Fixed
+- Fix unnecessary double resolve on playback #1371
+- Attempt to break busy dialog workaround loop if post run action succeeds #1386
+- Don't swallow unhandled plugin exceptions without logging and running listing end callback #1386
+- Python 2 compatibility fix for urllib3 only checking for str type when accessing module constants using getattr
+
+## v7.4.1+beta.1
+### Fixed
+- Always refresh missing access tokens if partially logged in and refresh tokens are available #1389
+- Fix missing post run plugin runner option used when search input is a plugin url
+- Fix incorrectly identifying and removing Opus audio from list of available streams #537
+- Clean up window properties in case of exception during plugin invocation #1386
+
+### Changed
+- Use available access token when first initialising client rather than setting access tokens at later stage of client initialisation #1389
+- Don't cache main plugin menu so that Sign-In/Out item always reflects actual logged in status
+- Automatically add/remove items from local watch later list when using YouTube WL list
+
+### New
+- Add Auto-like after watch feature with optional channel filtering
+
+## v7.4.0.1
+### Fixed
+- Use correct default value if view count is missing from player requests response #1386
+
+## v7.4.0
+### Fixed
+- Fix exceptions caused by retrieving incorrect setting for audio only streams
+- Add ForceResolvePlugin property to resolved ListItem #1371
+- Fix continuously loading SSL certificate when not required
+- Ensure logged URLs are redacted
+- Improve workarounds and fallbacks used to query Kodi language settings #1372
+- Fix error in PlayerMonitorThread.run #1368
+- Don't prevent JSON file writes if there is no existing file to read #1362
+- Improve sqlite3 exception handling
+- Various Python 2 compatibiliy fixes
+- Avoid creating PlayerMonitorThread as a subclass of threading.Thread
+- Additional workarounds for JSON file operations failing due to addon service start delays #1362
+- Avoid unnecessary window navigation when opening More... context menu dialog
+- Fix typo in evaluating whether plugin container is loaded or active
+- Fix possible exception when using default fallback for failed search
+- Fix retrieving items from local history database #1356
+- Fix fallback method for retrieving string list setting when setting has no value
+- Update workaround for Python strptime bug
+- Fix not updating authorised client request result used for playback tracking #1343
+- Don't process results in resource_manager methods if no items are available
+- Set default MPEG-DASH timescale to 1000
+- Disable request cache if response is streamed
+
+### Changed
+- Update and trigger Setup Wizard to set default value for My Subscription sources
+- Pass additional headers to all player request and manifest urls by default
+- Workaround Kodi not executing Play action on listitems in non-video containers
+- Improve context menu runtime checks when used with widget containers
+- Re-organise post play settings
+- Enable streaming for My Subscriptions feed requests
+
+### New
+- Add context menu items to open Settings/Setup Wizard from Setup Wizard/Settings main menu entries
+- Log summary of stream proxy request and response details #1363
+- Log stream proxy request range #1363
+- Add setting to choose what sources are used for My Subscriptions
+- Add aspect ratio info to video ListItem #1348
+- Enable using saved playlists in My Subscriptions
+
+## v7.4.0+beta.5
+### Fixed
+- Fix exceptions caused by retrieving incorrect setting for audio only streams
+
+## v7.4.0+beta.4
+### Fixed
+- Add ForceResolvePlugin property to resolved ListItem #1371
+- Fix continuously loading SSL certificate when not required
+- Ensure logged URLs are redacted
+- Improve workarounds and fallbacks used to query Kodi language settings #1372
+- Fix error in PlayerMonitorThread.run #1368
+- Don't prevent JSON file writes if there is no existing file to read #1362
+- Improve sqlite3 exception handling
+- Various Python 2 compatibiliy fixes
+
+## v7.4.0+beta.3
+### Fixed
+- Avoid creating PlayerMonitorThread as a subclass of threading.Thread
+- Additional workarounds for JSON file operations failing due to addon service start delays #1362
+- Avoid unnecessary window navigation when opening More... context menu dialog
+- Fix typo in evaluating whether plugin container is loaded or active
+- Fix possible exception when using default fallback for failed search
+
+### Changed
+- Update and trigger Setup Wizard to set default value for My Subscription sources
+- Pass additional headers to all player request and manifest urls by default
+- Workaround Kodi not executing Play action on listitems in non-video containers
+- Improve context menu runtime checks when used with widget containers
+
+### New
+- Add context menu items to open Settings/Setup Wizard from Setup Wizard/Settings main menu entries
+- Log summary of stream proxy request and response details #1363
+- Log stream proxy request range #1363
+
+## v7.4.0+beta.2
+### Fixed
+- Fix retrieving items from local history database #1356
+
+## v7.4.0+beta.1
+### Fixed
+- Fix fallback method for retrieving string list setting when setting has no value
+- Update workaround for Python strptime bug
+- Fix not updating authorised client request result used for playback tracking #1343
+- Don't process results in resource_manager methods if no items are available
+- Set default MPEG-DASH timescale to 1000
+- Disable request cache if response is streamed
+
+### Changed
+- Re-organise post play settings
+- Enable streaming for My Subscriptions feed requests
+
+### New
+- Add setting to choose what sources are used for My Subscriptions
+- Add aspect ratio info to video ListItem #1348
+- Enable using saved playlists in My Subscriptions
+
+## v7.3.0.1
+### Fixed
+- Workaround crash caused by non-thread safe behaviour of sqlite connection when used as context manager #1346
+
+### Changed
+- Delay gc collection rather than disabling
+
+## v7.3.0
+### Fixed
+- Revert change to busy polling interval #1339
+- Prune invalid entries from DB when closing connection #1331
+- Fix regressions with SQLite db operations #1331
+- Disable label masks being used in Kodi 18 #1327
+- Python 2 compatibility workaround for lack of timeout when trying to acquire an RLock #1327
+- More expansive handling of inconsistent urllib3 exception re-raising
+- Fix regression in handling audio only setting after d154325c5b672dccc6a17413063cfdeb32256ffd
+- Fix comments not using correct sort methods
+- Fix incorrectly using playlist cache entries that have been invalidated by playlist modification
+- Fix some context menu actions failing for video item bookmarks
+- Ensure listings and items added by the addon have correct sort order
+- Fix resetting client region when playing media with subtitles enabled
+- Only add playable items to playlist when adding related items
+- Fix using invalid default end limit with Playlist.GetItems JSONRPC method
+- Fix conversion of SRT subtitles to WebVTT #1256
+- Workaround playback failure of progressive streams
+- Fix re-sorting live search lists
+- Disable use of custom thumbnail urls #1245
+- Workaround addon service not starting prior to plugin invocation #1298
+- Fix unofficial version using localised sort order #1309
+- Fix parsing of logged_in query parameter
+- Fix typo in YouTubePlayerClient error hook
+- Fix not resolving single playable items when using the uri2addon plugin endpoint #1300
+- Correctly check whether access tokens are available to be used for player requests
+- Fix not correctly resetting client instance
+- Dont restore container position on forced refresh when playback ends
+- Better handle urllib3 re-raising low level errors but sometimes not
+- Ignore unused parameters in item constructors #1282
+- Various misc fixes for focus and position loss on refresh
+- Fix possible unnecessary listing refresh after playlist action
+- Don't check items added to non music or video playlists
+- Re-enable setting for displaying saved playlists #1023
+- Fix exceptions with using non-existent request response as context manager #1279
+- Use different default player client request which provides more captions in response #1250
+- Exclude retrying player clients that do not support authentication if authentication is required #1273
+- Only request authenticated player request once, if not otherwise required #1273
+- Fix not updating breadcrumb after certain context menu actions
+- Fix setting focus on items in listing when parent item is not shown #1012
+- Reduce CPU usage of service runner loop when idle
+- Simplify window history fallback for search inputs #1070 #1266
+- Fix MPD quality selection #1268
+- Fix stream feature for disabling HFR at max resolution #539
+- Don't re-raise BrokenPipeError in RequestHandler.handle_one_request #1259
+- Fix including details in label2 mask when video details in listings is disabled #1265
+- Fix incorrect modification of custom thumbnails #1245
+- Refresh stale cached entries if new player data is available #1259
+- Disable use of captions from clients that are sometimes aggressively rate limited #1250
+- Switch browse client for recommended videos #1254
+- Ignore failing player requests that require signing in but won't accept OAuth2 authentication #1254
+- Improve querying of GUI info to work with widgets and custom windows #1243
+- Fix using locale specific abbreviations for weekday and month in If-Modified-Since header #1246
+- Workaround various Kodi 18 and Python 2 issues #1246
+- Fix inconsistencies between item IDs used as params that could result in exceptions
+- Fix generated page token not working for first page in listing
+- Don't replace non-standard JPEG thumbnails with WebP thumbnails #1245
+- Fix not parsing infolabels used in plugin url path #1239 #1243
+- Fix not parsing infolabels used as plugin url query params #1239
+- Fix unnecessarily processing window properties #1238
+- Workaround for distributions that patch Kodi to disable System.InternetState #1224
+- Workaround issue with search not returning items if no search query is used
+- Misc updates to try and prevent some GVS requests from failing #1222
+- Fix not correctly updating channel details of subscriptions #1226
+- Redact IP address in stream urls when not using InputStream.Adaptive
+- Fix implementation of logging module debugging property
+- Python 2 compatibility fix to automatically handle timezones when determining timestamps
+- Fix not skipping invalid items in plugin list response
+- Fix not showing Create bookmark item if bookmarks list is empty
+- Python 2 compatibility fixes for pretty print logging and lack of datetime.datetime.timestamp
+- Fix typo resulting in spatial audio streams not being correctly enabled/disabled
+- Ensure DELETE API requests are properly authorised #1226
+- Update XbmcContext.localize to handle string interpolation #1225
+- Attempt to mitigate possible memory leaks associated with use of Python Requests
+- Ensure plugin folders in channel listings are not processed as YouTube items
+- Fix not refreshing cached data when not logged in #1224
+- Fix potentially misidentifying vp9.2 video streams #1222
+- Fix not fully redacting logged stream data
+- Fix clip start and end time parsing
+- Fix possible exception when fetching subtitles after http server fails to wakeup
+- Improve concurrent JSON file IO operations #1218
+- Change pruning of sqlite databases to avoid potential deadlocks #1161
+- Avoid potential deadlock in v3._process_list_response #1161
+- Improve listing pre and post fill methods #1161
+- Fix repeating previous V1 browse/next requests when no continuation is available #1161
+- Fix typo in allowable search parameters
+- Ensure best available quality is used for thumbnails as fanart #1212
+- Fix double forward slash in channel url in description
+- Fix toggling watched status on non-forced refresh
+- Ensure logged in status is properly (re)set when client is reset #1210
+- Don't rely on dict insertion order for client groups #1185
+- Ensure authenticated requests are used only when necessary #1210 #1196
+- Workaround playlistNotFound error in Related Videos #1210 #1196
+- Fix stream quality checks incorrectly identifying 480p streams as 360p
+- Add workarounds for various Kodi/ISA subtitle incompatibilities and formatting issues #489 #1147
+- Identify API requests requiring authentication
+- Fix incorrect page number used when post filling listings
+- Prevent unnecessary API requests when refreshing listing that uses channel filters
+- Improve loading of malformed/partial access_manager.json #1173
+
+### Changed
+- Improve robustness of fetching recommended and related videos
+- Improve workarounds for SQLite concurrency issues
+- Remove possibly invalid access token if an authentication error occurs
+- Better organise and use standard labels for http server address and port settings
+- Try to make http server IP address selection even more obvious when running Setup Wizard #1320
+- Improve logging of errors caused by localised strings that have been incorrectly translated
+- Improve offline access to cached data
+- Updates to SQLite database lock handling
+- Ignore player request failures that may incorrectly indicate a need to sign-in #1312
+- Include playlist_id listitem property for items from virtual playlists
+- Don't list users own playlists in listing of saved playlists
+- Allow sign-in when partially logged in without needing to sign-out
+- Identify if user is only partially logged in
+- Use persistent visitor data where possible except when incognito
+- Allow additional query parameters to be inherited from parent listing #1282
+- Improve process for initial player request if remote history not enabled #1273
+- Disable unusable player clients #1273
+- Disable multiple busy dialog crash workarounds in Kodi 22
+- Include visitorData in subtitle request headers along with referer #1250
+- Revert use of WEBP thumbnails #1245
+- Improve notification of player request errors #1254 #1262
+  - Add notification if reCaptcha check is required
+- Improve workarounds for failing authorised player requests #1254
+- Allow plugin url query parameters to hide folders in search and channel playlist listing #1251
+- Use WebP thumbnails instead of JPEG thumbnails
+- Update Setup Wizard for the various new Stream Features that have been added
+- Don't cache playback associated requests
+- Bypass requests cache when a listing is refreshed
+- Update order and wording of prompts used when adding custom bookmark
+- Allow bookmarking channel of videos within Bookmarks list
+- Return empty listing on failure to parse YouTube url
+- Update known itag details
+- Do not show notification when automatically removing played video from Watch Later list
+- Add visitor ID to stream headers #1222
+- Improve logging of adaptive streams from player requests #1222
+- Identify and de-prioritise DRC audio streams
+- Specifically use elapsed time for plugin profiling if available
+- Use new BookmarkItem class for custom bookmarks to allow updating details like normal bookmarks
+- Default to list as path command if not given when navigating to various internal listings
+- Re-enable http server idle shutdown for all platforms
+- Update default cache size to 50 MiB
+- Enable caching of YouTube virtual lists #1220
+- Improve fetching of cached playlist items #1220
+- Allow for use of last known good value if JSON file read IPC timeout occurs #1220
+- Limit JSON-RPC usage when interacting with Kodi playlist #1220
+- Improve syncing local history with Kodi play count
+- api_keys.json not backwards compatible with older addon versions
+- Set default live stream type to adaptive HLS
+- Allow saving of play count and last played date for live streams
+- Disable script.trakt scrobbling when playing YouTube videos
+- Allow failure of unauthorised player requests to be ignored #1211
+- Try to prevent misuse of strm files #1208
+- Update thumbnails size settings and selection logic #1204
+- Only show folders in channel playlists listing on first page and if not hidden
+- Improve cache performance and reliability
+- Improve management of user data stored as JSON files
+
+### New
+- Add refresh to context menu of playlists
+- Allow watch urls from music.youtube.com to be directly handled by the addon
+- Allow urls from www.youtubekids.com to be directly handled by the addon
+- Add support for listing members only content of channels
+- Add selections to hide various folders from listings #1282
+- Add support for additional OAuth2 client to allow playback of age restricted videos #1273
+- Add dubbed audio preferences to stream features #1036 #1228 #1232
+- Add support for directly adding YouTube URL as custom bookmark
+- Add support for 3D/VR video and spatial audio in stream selections
+- Add Setup Wizard steps to change custom Watch History and Watch Later playlists to internal YouTube lists #1210
+- Add support for viewing YouTube history list (HL)
+- Add support for podcasts in related videos #1161
+- Add notification on successfully adding item to local Watch Later list #1210
+- Add support for saving/removing playlists to/from YouTube library (Saved Playlists) #1023
+- Add support for removing liked videos from YouTube Liked videos list
+- Add support for auto removing videos from YouTube Watch Later list after playback #1210
+- Add support for removing videos from YouTube Watch Later list #1210
+- Add support for adding videos to YouTube Watch Later list #1210
+- Initial support for viewing Saved Playlists #1023
+- Initial support for viewing YouTube Watch Later list (WL) #1210
+- Implement request cache
+- Add ability to create custom bookmarks #1208
+- Add subtitle type selection to stream features
+- Add plugin execution timeout to forcibly terminate execution after set time limit #1161
+- Improve addon logging using customised Python logging module
+
+## v7.3.0+beta.10
+### Fixed
+- Prune invalid entries from DB when closing connection #1331
+- Fix regressions with SQLite db operations #1331
+
+## v7.3.0+beta.9
+### Fixed
+- Disable label masks being used in Kodi 18 #1327
+- Python 2 compatibility workaround for lack of timeout when trying to acquire an RLock #1327
+- More expansive handling of inconsistent urllib3 exception re-raising
+
+### Changed
+- Improve robustness of fetching recommended and related videos
+- Improve workarounds for SQLite concurrency issues
+- Remove possibly invalid access token if an authentication error occurs
+- Better organise and use standard labels for http server address and port settings
+- Try to make http server IP address selection even more obvious when running Setup Wizard #1320
+- Improve logging of errors caused by localised strings that have been incorrectly translated
+
+## v7.3.0+beta.8
+### Fixed
+- Fix regression in handling audio only setting after d154325c5b672dccc6a17413063cfdeb32256ffd
+- Fix comments not using correct sort methods
+- Fix incorrectly using playlist cache entries that have been invalidated by playlist modification
+- Fix some context menu actions failing for video item bookmarks
+- Ensure listings and items added by the addon have correct sort order
+- Fix resetting client region when playing media with subtitles enabled
+
+### Changed
+- Improve offline access to cached data
+- Updates to SQLite database lock handling
+
+## v7.3.0+beta.7
+### Fixed
+- Only add playable items to playlist when adding related items
+- Fix using invalid default end limit with Playlist.GetItems JSONRPC method
+- Fix conversion of SRT subtitles to WebVTT #1256
+- Workaround playback failure of progressive streams
+- Fix re-sorting live search lists
+- Disable use of custom thumbnail urls #1245
+- Workaround addon service not starting prior to plugin invocation #1298
+- Fix unofficial version using localised sort order #1309
+- Fix parsing of logged_in query parameter
+
+### Changed
+- Ignore player request failures that may incorrectly indicate a need to sign-in #1312
+- Include playlist_id listitem property for items from virtual playlists
+
+### New
+- Add refresh to context menu of playlists
+- Allow watch urls from music.youtube.com to be directly handled by the addon
+- Allow urls from www.youtubekids.com to be directly handled by the addon
+
+## v7.3.0+beta.6
+### Fixed
+- Fix typo in YouTubePlayerClient error hook
+
+## v7.3.0+beta.5
+### Fixed
+- Fix not resolving single playable items when using the uri2addon plugin endpoint #1300
+- Correctly check whether access tokens are available to be used for player requests
+- Fix not correctly resetting client instance
+- Dont restore container position on forced refresh when playback ends
+- Better handle urllib3 re-raising low level errors but sometimes not
+- Ignore unused parameters in item constructors #1282
+
+### Changed
+- Don't list users own playlists in listing of saved playlists
+- Allow sign-in when partially logged in without needing to sign-out
+- Identify if user is only partially logged in
+- Use persistent visitor data where possible except when incognito
+
+## v7.3.0+beta.4
+### Fixed
+- Various misc fixes for focus and position loss on refresh
+- Fix possible unnecessary listing refresh after playlist action
+- Don't check items added to non music or video playlists
+- Re-enable setting for displaying saved playlists #1023
+- Fix exceptions with using non-existent request response as context manager #1279
+- Use different default player client request which provides more captions in response #1250
+- Exclude retrying player clients that do not support authentication if authentication is required #1273
+- Only request authenticated player request once, if not otherwise required #1273
+- Fix not updating breadcrumb after certain context menu actions
+- Fix setting focus on items in listing when parent item is not shown #1012
+- Reduce CPU usage of service runner loop when idle
+- Simplify window history fallback for search inputs #1070 #1266
+- Fix MPD quality selection #1268
+- Fix stream feature for disabling HFR at max resolution #539
+- Don't re-raise BrokenPipeError in RequestHandler.handle_one_request #1259
+- Fix including details in label2 mask when video details in listings is disabled #1265
+- Fix incorrect modification of custom thumbnails #1245
+- Refresh stale cached entries if new player data is available #1259
+- Disable use of captions from clients that are sometimes aggressively rate limited #1250
+
+### Changed
+- Allow additional query parameters to be inherited from parent listing #1282
+- Improve process for initial player request if remote history not enabled #1273
+- Disable unusable player clients #1273
+- Disable multiple busy dialog crash workarounds in Kodi 22
+- Include visitorData in subtitle request headers along with referer #1250
+- Revert use of WEBP thumbnails #1245
+- Improve notification of player request errors #1254 #1262
+  - Add notification if reCaptcha check is required
+- Improve workarounds for failing authorised player requests #1254
+
+### New
+- Add support for listing members only content of channels
+- Add selections to hide various folders from listings #1282
+- Add support for additional OAuth2 client to allow playback of age restricted videos #1273
+
+## v7.3.0+beta.3
+### Fixed
+- Switch browse client for recommended videos #1254
+- Ignore failing player requests that require signing in but won't accept OAuth2 authentication #1254
+- Improve querying of GUI info to work with widgets and custom windows #1243
+- Fix using locale specific abbreviations for weekday and month in If-Modified-Since header #1246
+- Workaround various Kodi 18 and Python 2 issues #1246
+- Fix inconsistencies between item IDs used as params that could result in exceptions
+- Fix generated page token not working for first page in listing
+- Don't replace non-standard JPEG thumbnails with WebP thumbnails #1245
+- Fix not parsing infolabels used in plugin url path #1239 #1243
+
+### Changed
+- Allow plugin url query parameters to hide folders in search and channel playlist listing #1251
+
+## v7.3.0+beta.2
+### Fixed
+- Fix not parsing infolabels used as plugin url query params #1239
+- Fix unnecessarily processing window properties #1238
+
+## v7.3.0+beta.1
+### Fixed
+- Workaround for distributions that patch Kodi to disable System.InternetState #1224
+- Workaround issue with search not returning items if no search query is used
+- Misc updates to try and prevent some GVS requests from failing #1222
+
+### Changed
+- Use WebP thumbnails instead of JPEG thumbnails
+- Update Setup Wizard for the various new Stream Features that have been added
+- Don't cache playback associated requests
+- Bypass requests cache when a listing is refreshed
+- Update order and wording of prompts used when adding custom bookmark
+
+### New
+- Add dubbed audio preferences to stream features #1036 #1228 #1232
+
+## v7.3.0+alpha.5
+### Fixed
+- Fix not correctly updating channel details of subscriptions #1226
+- Redact IP address in stream urls when not using InputStream.Adaptive
+- Fix implementation of logging module debugging property
+- Python 2 compatibility fix to automatically handle timezones when determining timestamps
+- Fix not skipping invalid items in plugin list response
+
+## v7.3.0+alpha.4
+### Fixed
+- Fix not showing Create bookmark item if bookmarks list is empty
+- Python 2 compatibility fixes for pretty print logging and lack of datetime.datetime.timestamp
+- Fix typo resulting in spatial audio streams not being correctly enabled/disabled
+- Ensure DELETE API requests are properly authorised #1226
+- Update XbmcContext.localize to handle string interpolation #1225
+- Attempt to mitigate possible memory leaks associated with use of Python Requests
+
+### Changed
+- Allow bookmarking channel of videos within Bookmarks list
+- Return empty listing on failure to parse YouTube url
+- Update known itag details
+
+### New
+- Add support for directly adding YouTube URL as custom bookmark
+
+## v7.3.0+alpha.3
+### Fixed
+- Ensure plugin folders in channel listings are not processed as YouTube items
+- Fix not refreshing cached data when not logged in #1224
+- Fix potentially misidentifying vp9.2 video streams #1222
+- Fix not fully redacting logged stream data
+
+### Changed
+- Do not show notification when automatically removing played video from Watch Later list
+- Add visitor ID to stream headers #1222
+- Improve logging of adaptive streams from player requests #1222
+- Identify and de-prioritise DRC audio streams
+- Specifically use elapsed time for plugin profiling if available
+- Use new BookmarkItem class for custom bookmarks to allow updating details like normal bookmarks
+- Default to list as path command if not given when navigating to various internal listings
+
+### New
+- Add support for 3D/VR video and spatial audio in stream selections
+
+## v7.3.0+alpha.2
+### Fixed
+- Fix clip start and end time parsing
+- Fix possible exception when fetching subtitles after http server fails to wakeup
+
+### Changed
+- Re-enable http server idle shutdown for all platforms
+- Update default cache size to 50 MiB
+- Enable caching of YouTube virtual lists #1220
+- Improve fetching of cached playlist items #1220
+- Allow for use of last known good value if JSON file read IPC timeout occurs #1220
+- Limit JSON-RPC usage when interacting with Kodi playlist #1220
+
+### New
+- Add Setup Wizard steps to change custom Watch History and Watch Later playlists to internal YouTube lists #1210
+
+## v7.3.0+alpha.1
+### Fixed
+- Improve concurrent JSON file IO operations #1218
+- Change pruning of sqlite databases to avoid potential deadlocks #1161
+- Avoid potential deadlock in v3._process_list_response #1161
+- Improve listing pre and post fill methods #1161
+- Fix repeating previous V1 browse/next requests when no continuation is available #1161
+- Fix typo in allowable search parameters
+- Ensure best available quality is used for thumbnails as fanart #1212
+- Fix double forward slash in channel url in description
+- Fix toggling watched status on non-forced refresh
+- Ensure logged in status is properly (re)set when client is reset #1210
+- Don't rely on dict insertion order for client groups #1185
+- Ensure authenticated requests are used only when necessary #1210 #1196
+- Workaround playlistNotFound error in Related Videos #1210 #1196
+- Fix stream quality checks incorrectly identifying 480p streams as 360p
+- Add workarounds for various Kodi/ISA subtitle incompatibilities and formatting issues #489 #1147
+- Identify API requests requiring authentication
+- Fix incorrect page number used when post filling listings
+- Prevent unnecessary API requests when refreshing listing that uses channel filters
+- Improve loading of malformed/partial access_manager.json #1173
+
+### Changed
+- Improve syncing local history with Kodi play count
+- api_keys.json not backwards compatible with older addon versions
+- Set default live stream type to adaptive HLS
+- Allow saving of play count and last played date for live streams
+- Disable script.trakt scrobbling when playing YouTube videos
+- Allow failure of unauthorised player requests to be ignored #1211
+- Try to prevent misuse of strm files #1208
+- Update thumbnails size settings and selection logic #1204
+- Only show folders in channel playlists listing on first page and if not hidden
+- Improve cache performance and reliability
+- Improve management of user data stored as JSON files
+
+### New
+- Add support for viewing YouTube history list (HL)
+- Add support for podcasts in related videos #1161
+- Add notification on successfully adding item to local Watch Later list #1210
+- Add support for saving/removing playlists to/from YouTube library (Saved Playlists) #1023
+- Add support for removing liked videos from YouTube Liked videos list
+- Add support for auto removing videos from YouTube Watch Later list after playback #1210
+- Add support for removing videos from YouTube Watch Later list #1210
+- Add support for adding videos to YouTube Watch Later list #1210
+- Initial support for viewing Saved Playlists #1023
+- Initial support for viewing YouTube Watch Later list (WL) #1210
+- Implement request cache
+- Add ability to create custom bookmarks #1208
+- Add subtitle type selection to stream features
+- Add plugin execution timeout to forcibly terminate execution after set time limit #1161
+- Improve addon logging using customised Python logging module
+
+## v7.2.0.3
+### Fixed
+- Fix performance regression with channel filters
+- Fix regression preventing video playback from Kodi Info dialog #1184
+- Fix exception in youtube.helper.v3.response_to_items when using Kodi 18 (Python 2) #1188
+- Fix exception in YouTubeRequestClient.json_traverse when using Kodi 18 (Python 2) #1187
+- Fix handling of custom Watch Later playlist in add to playlist dialog
+- Fix Liked video playlist not loading #1175
+- Fix typo preventing some video only searches from working
+- Fix incorrect deletion of provider parameter in 10c3758 #1160
+- Fix possible hangs in multiple busy dialog workaround
+- Fix misidentifying channels in channel filter #1159
+- Attempt to avoid race condition where user input occurs prior to window rerouting #1021
+- Fix incorrectly referencing channels as playlist in My Subscriptions after db44928
+- Improve handling of invalid playlists in My Subscriptions after db44928
+- Update YouTube.get_related_videos and YouTube.get_related_for_home #1161
+- Fix error with listing comments if number of replies is 1000+
+- Fix regression in opening playlists of logged in user #1154
+- Fix regressions in checking channel filters
+- Clear old function cache values on initial run after install #1150
+- Fix My Subscriptions not loading old or previously accessed content #1123
+- Manually redirect video server requests if required #1127 #1135
+- Improve logging of client ID #1117
+- Fix possible exception that may occur if video thumbnails fail to update
+- Fix unsubscribing from My Subscriptions #1137
+- Fix folders for channel shorts and live streams not being routed correctly #988 #1060
+- Update YouTube.get_recommended_for_home #1107
+- Improve url resolver error handling
+- Fix showing Uploads playlist if all videos are private #988 #1060
+- Fix updating progress of background progress dialogs #1032
+- Fix showing duplicate channel progress dialogs in My Subscriptions #1032
+- Ensure correct playlist_type_hint is used with audio only playback
+- Workaround various issues with Kodi window opening and history navigation when accepting search inputs #1070
+- Fix various Python2 unicode encoding errors
+- Disable refresh parameter on Kodi forced refresh #1072
+- Improve handling of playlists feeds in My Subscriptions
+- Reprioritise clients and avoid re-authenticating requests if authentication already provided #1076
+- Reduce CPU usage while waiting for HTTP server input/output to be ready #1103
+- Fix repeated subtitle queries/prompts #1056
+- Fix always using video playlist even for audio items
+- Improve error handling and http server shutdown/restart #1056
+- Fix possible exception in creating request clients if client_data is not provided
+- Only force playback if plugin invocation was triggered through UI
+- Ensure that any set UI playback properties are cleared if playback does not start
+- Fix episode and season getter/setter not being available for AudioItem
+- Fix full playlist listings not being able to be redirected
+- Fix audio langauge fallback selection #989 #1036
+  - Also correctly distinguish between original vs default audio streams
+  - Respect Kodi Prefer default audio streams setting
+    - Applies to both default audio and original audio
+- Fix search context menu items for Next Page and New Search items
+- Fix lock acquire/release logic in My Subscriptions #1032
+- Avoid potential player request loop
+- Revert using configured language settings for player requests
+- Fix missing message argument for InvalidGrant #1038
+- Fix incorrectly trying to refresh access tokens when no refresh tokens exist #1038
+- Fix issues with handling duplicated and unavailable items in lists
+- Fix issues with processing channel handles
+- Fix processing of "q" and "channelId" search query params
+- Fix using incorrect client headers with cURL when ISA is not used
+- Fix incorrect use of str.lstrip
+- Ensure language and region are passed to StreamInfo instances #989
+- Fix not updating cache for empty feeds in My Subscriptions
+- Make parsing and serialising of list type parameters a reversible operation
+- Fix logic used to filter out various type of streams
+  - Was previously checking any inclusion filters
+  - Now any exclusion filter that matches will filter stream out
+- Fix plugin URI redirect from search
+- Fix incorrect path handling during migration of old sqlite databases in Setup Wizard
+- Fix errors with progress dialogs in Kodi 18 #1000
+- Fix remote watch history not updating #1008
+- Fix error when all subtitles are requested
+- Fix Python2 syntax error #1000
+- Fix interaction between certain plugin URI query parameters when used in STRM files
+- Fix playing clips in a playlist #1007
+- Fix not identifying own playlists in personal channel
+- Fix API requests when not signed in #1013
+- Fix potential leak of sensitive data via HTTPServer logging #1016
+- Fix adding/removing subscriptions to/from filter list
+- Fix playback not working when no API key is provided #1018
+- Fix using provided keys for requests that can't use them #1018
+- Fix window redirect on video playback failure #1018
+
+### Changed
+- Update client details #1185
+- Properly identify custom History playlist in add to playlist dialog
+- Use channel handle by default when adding/removing/matching channels
+  - Channel filters may need to be updated to use handles instead of channel name
+  - e.g. "@channel_1_handle,@channel_2_handle" instead of "channel 1 name, channel 2 name"
+  - Channels can be added/removed from the filter through the Subscriptions or Bookmarks context menu
+- Use channel handle as artist and in channel info for visibility
+- Reduce number of GET requests when using v3 Data API
+- Improve listing filler handling #1035
+  - Migrate My Subscriptions, Recommendations, Related, Trending and channel listings to use new filler methods
+- Show comment statistics before text in listings
+- Respect hide_folders plugin url query parameter in My Subscriptions
+  - Also respect value of hide_videos (new), hide_shorts, and hide_live params
+- Improve handling of using filtered playlists in channels #988 #1060
+- Base64 encode/decode header query param to obfuscate in debug logs
+- Update client details
+- Automatically handle different types of identifiers as channel_id parameter
+- Improve pagination of filtered listings #984 #1035
+- Split My Subscriptions into Long Form, Shorts and Live folders #988
+- Various improvements to thread handling and cache usage in My Subscriptions #1072
+- Delay progress dialog creation if other dialogs are open #1072
+- Minor optimisation and improve reliability of stream proxy
+- Update client details and include player response visitorData
+- Improve handling of invalid filter attributes #1102 #984
+- Disable http server idle shutdown on Linux systems #1056
+- Fetch last updated subscription feeds first and fetch playlists feeds in My Subscriptions
+- Hide empty/unavailable standard playlists in channels #1060
+- Store date added to playlist for playlist items #1059
+- Add indication to Next page item if listing has been filtered #1035
+- Proxy stream requests using HTTPServer #527 #1040
+  - Correct primary video server url #1040
+  - Allow skipping adaptive formats for clients that may need PO tokens #1040
+  - Add option to redirect streams using stream proxy #1040
+    - As headers are not matched this can lead to detection of Kodi being used as a client
+- Use default http server listen address of 127.0.0.1
+- Allow playback parameters to be applied for entire listings
+- Further improvements to fallback window handling to minimise crashes and loss of window history
+  - Enable intercepting and redirecting PlayMedia calls
+  - Improve handling of search keyboard input when navigating through window history
+    - Also allow bookmarks/favourites to be created for Quick Search
+    - Remove need to store search query in data cache
+    - Improve handling of searching for YouTube urls
+- Store modified date from player requests as publishedAt for local history #991
+- Update player request client details
+- Reorganise video item context menu
+- Re-enable player request clients that require specific OAuth tokens
+- Re-enable OAuth authorisation for YouTube TV
+- Update itags for 30fps HLS VP9.2 streams
+- Update player client details and selections
+- Add some ultra low quality itags
+- Optimise wakeup to ensure http server is only started when required
+- Improve check for Kodi subtitle language
+- Improve handling of audio language selection #989
+- Replace preferred language subtitle option with preferred language + fallback + no ASR option #992
+- Allow for caching of subscriptions API requests in My Subscriptions
+- Only use OAuth tokens if necessary #994 #996
+- Set default live stream type to MPEG-DASH for Kodi 21+ #1004
+- Skip asking or re-ordering playlists if there is only 1 item in the list
+- Prevent caching in incognito mode
+- Improve caching and updating of playlist details #1024
+- Improve listen address config in Setup Wizard #1016
+  - Also make 127.0.0.1 the default listen address
+  - Fallback to 0.0.0.0 if no other local address works
+
+### New
+- Add hide_progress plugin url query parameter
+- Show broadcasting streams at the top of channel live streams folder listings #1092
+- Send JSON-RPC event notification when video playback fails
+- Add additional debug logging of complete API response content #1107
+- Add "Play recently added" context menu item to playlists #1059
+  - Will play all videos added to the playlist in the last day
+- Allow channels and playlists to be played from Info dialog
+- Add IPv6 support for http server #1039
+- Show total number of uploads, shorts and live videos in channel playlists
+- Add support for more channel url formats
+- Update display of comments to be match other listings
+  - Make comment details follow "Show video details in video lists" setting
+  - Allow various sorting options
+  - Truncate comment to 140 characters in listing, full comment available in info dialog
+  - Show user thumbnail in listing
+  - Show user with thumbnail in info dialog
+  - Show video/comment details in navigation breadcrumb bar
+- Overhaul update of fanart and other channel info for listings
+  - Add additional channel info to all items in listings in one pass
+    - channel name thumbnail in info dialog
+    - channel name in context menu items
+    - channel fanart if enabled
+  - Reduce network requests
+  - Improve cache usage
+  - Reduce thread usage
+- Add custom Shorts duration #984
+- Allow use of HLS streams in external players
+  - Also allows for playing in Kodi without InputStream.Adaptive
+- Add ability to create arbitrary filter criteria to My Subscriptions #984
+  - "{ATTR_1}{OPERATOR_1}{VALUE_1}[{ATTR_X}{OPERATOR_X}{VALUE_X}...]"
+    - where ATTR_X can be any valid item getter or property e.g.
+      - "duration", "title", "artists"/"artists_string", "plot", "date", etc. or
+      - ".live", ".upcoming", ".completed" etc. Note the "." prefix
+    - where OPERATOR_X can be
+      - ">", ">=" (default), "<", "<=", "=", "==", "!=" typically for a int/float/bool type VALUE or
+      - "contains", "startswith", "endswith", "search" for a string type VALUE
+    - where VALUE_X is the desired criteria value.
+      - String type values are wrapped in double quote marks eg. "example"
+        - "," must be encoded as "%2C" eg. "example,test" becomes "example%2Ctest"
+        - "}" must be encoded as "%7D" eg. "example}test" becomes "example%7Dtest"
+    - any number of criteria rules can be used together
+      - rules seperated by a comma are OR rules
+      - rules contained within a comma group are AND rules
+- Add filler parameter to v3.response_to_items
+  - Allows listings to be recursively filled after post request filtering
+  - Also show progress dialog for all listings
+- Add support for sequentially filling Recommendations listing
+- Add support for sequentially filling Trending listing
+- Add new advanced list filter setting
+  - Works in the same manner as the My Subscriptions filter, but for all listings
+  - Can also be set using the item_filter plugin URI query parameter
+- Add option to prefer lower resolution streams for unselected codecs
+- Populate My Subscription listings using feed details
+- Store video details from player requests for local history #991
+- Add separate Shorts sub-folder in Channel folders #988
+  - Implementation by @mhomak
+- Allow adding/removing bookmarks to/from filter list
+- Add direct playback of temporary playlists from YouTube or plugin urls in the form
+  - plugin://plugin.video.youtube/play?video_ids=xxxxxxxx,xxxxxxxx
+
+## v7.2.0+beta.9
+### Fixed
+- Fix incorrect deletion of provider parameter in 10c3758 #1160
+- Fix possible hangs in multiple busy dialog workaround
+- Fix misidentifying channels in channel filter #1159
+- Attempt to avoid race condition where user input occurs prior to window rerouting #1021
+- Fix incorrectly referencing channels as playlist in My Subscriptions after db44928
+- Improve handling of invalid playlists in My Subscriptions after db44928
+- Update YouTube.get_related_videos and YouTube.get_related_for_home #1161
+- Fix error with listing comments if number of replies is 1000+
+
+### Changed
+- Use channel handle by default when adding/removing/matching channels
+  - Channel filters may need to be updated to use handles instead of channel name
+  - e.g. "@channel_1_handle,@channel_2_handle" instead of "channel 1 name, channel 2 name"
+  - Channels can be added/removed from the filter through the Subscriptions or Bookmarks context menu
+- Use channel handle as artist and in channel info for visibility
+- Reduce number of GET requests when using v3 Data API
+- Improve listing filler handling #1035
+  - Migrate My Subscriptions, Recommendations, Related, Trending and channel listings to use new filler methods
+- Show comment statistics before text in listings
+- Respect hide_folders plugin url query parameter in My Subscriptions
+  - Also respect value of hide_videos (new), hide_shorts, and hide_live params
+
+### New
+- Add hide_progress plugin url query parameter
+
+## v7.2.0+beta.8
+### Fixed
+- Fix regression in opening playlists of logged in user #1154
+- Fix regressions in checking channel filters
+
+## v7.2.0+beta.7
+### Fixed
+- Clear old function cache values on initial run after install #1150
+
+## v7.2.0+beta.6
+### Fixed
+- Fix My Subscriptions not loading old or previously accessed content #1123
+- Manually redirect video server requests if required #1127 #1135
+- Improve logging of client ID #1117
+- Fix possible exception that may occur if video thumbnails fail to update
+- Fix unsubscribing from My Subscriptions #1137
+- Fix folders for channel shorts and live streams not being routed correctly #988 #1060
+- Update YouTube.get_recommended_for_home #1107
+
+### Changed
+- Improve handling of using filtered playlists in channels #988 #1060
+- Base64 encode/decode header query param to obfuscate in debug logs
+- Update client details
+- Automatically handle different types of identifiers as channel_id parameter
+- Improve pagination of filtered listings #984 #1035
+- Split My Subscriptions into Long Form, Shorts and Live folders #988
+
+### New
+- Show broadcasting streams at the top of channel live streams folder listings #1092
+
 ## v7.2.0+beta.5
 ### Fixed
 - Improve url resolver error handling
@@ -5,22 +1019,23 @@
 - Fix updating progress of background progress dialogs #1032
 - Fix showing duplicate channel progress dialogs in My Subscriptions #1032
 - Ensure correct playlist_type_hint is used with audio only playback
-- Workaround Kodi window history issues when accepting search inputs #1070
+- Workaround various issues with Kodi window opening and history navigation when accepting search inputs #1070
 - Fix various Python2 unicode encoding errors
 - Disable refresh parameter on Kodi forced refresh #1072
 - Improve handling of playlists feeds in My Subscriptions
 - Reprioritise clients and avoid re-authenticating requests if authentication already provided #1076
-- Prevent trying to open a fallback window when opening new search window #1070
-- Workarounds for race condition preventing window opening on search input #1070
+- Reduce CPU usage while waiting for HTTP server input/output to be ready #1103
 
 ### Changed
 - Various improvements to thread handling and cache usage in My Subscriptions #1072
 - Delay progress dialog creation if other dialogs are open #1072
 - Minor optimisation and improve reliability of stream proxy
 - Update client details and include player response visitorData
+- Improve handling of invalid filter attributes #1102 #984
 
 ### New
 - Send JSON-RPC event notification when video playback fails
+- Add additional debug logging of complete API response content #1107
 
 ## v7.2.0+beta.4
 ### Fixed
@@ -185,7 +1200,6 @@
 - Allow adding/removing bookmarks to/from filter list
 - Add direct playback of temporary playlists from YouTube or plugin urls in the form
   - plugin://plugin.video.youtube/play?video_ids=xxxxxxxx,xxxxxxxx
-
 
 ## v7.1.1.6
 ### Fixed

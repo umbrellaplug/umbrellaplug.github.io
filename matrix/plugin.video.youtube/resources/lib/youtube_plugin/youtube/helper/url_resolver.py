@@ -2,7 +2,7 @@
 """
 
     Copyright (C) 2014-2016 bromix (plugin.video.youtube)
-    Copyright (C) 2016-2018 plugin.video.youtube
+    Copyright (C) 2016-2025 plugin.video.youtube
 
     SPDX-License-Identifier: GPL-2.0-only
     See LICENSES/GPL-2.0-only for more information.
@@ -12,7 +12,9 @@ from __future__ import absolute_import, division, unicode_literals
 
 from re import compile as re_compile
 
+from ...kodion import logging
 from ...kodion.compatibility import parse_qsl, unescape, urlencode, urlsplit
+from ...kodion.constants import YOUTUBE_HOSTNAMES
 from ...kodion.network import BaseRequestsClass
 
 
@@ -59,18 +61,19 @@ class YouTubeResolver(AbstractResolver):
     _RE_CLIP_DETAILS = re_compile(r'(<meta property="og:video:url" content="'
                                   r'(?P<video_url>[^"]+)'
                                   r'">)'
+                                  r'|(?P<is_clip>"clipConfig":\{)'
                                   r'|("startTimeMs":"(?P<start_time>\d+)")'
                                   r'|("endTimeMs":"(?P<end_time>\d+)")')
+    _RE_MUSIC_VIDEO_ID = re_compile(r'"INITIAL_ENDPOINT":.+?videoId\\":\\"'
+                                    r'(?P<video_id>[^\\"]+)'
+                                    r'\\"')
 
     def __init__(self, *args, **kwargs):
         super(YouTubeResolver, self).__init__(*args, **kwargs)
 
     def supports_url(self, url, url_components):
-        if url_components.hostname not in {
-            'www.youtube.com',
-            'youtube.com',
-            'm.youtube.com',
-        }:
+        hostname = url_components.hostname
+        if hostname not in YOUTUBE_HOSTNAMES:
             return False
 
         path = url_components.path.lower()
@@ -89,8 +92,12 @@ class YouTubeResolver(AbstractResolver):
                 '/redirect',
                 '/shorts',
                 '/supported_browsers',
-                '/watch',
         )):
+            return 'HEAD'
+
+        if path.startswith('/watch'):
+            if hostname.startswith('music.'):
+                return 'GET'
             return 'HEAD'
 
         # user channel in the form of youtube.com/username
@@ -130,48 +137,58 @@ class YouTubeResolver(AbstractResolver):
                                 # consent redirect
                                 cookies={'SOCS': 'CAISAiAD'},
                                 allow_redirects=True)
-        if not response or not response.ok:
+        if response is None:
             return url
+        with response:
+            if response.status_code >= 400:
+                return url
+            url = response.url
+            response_text = response.text if method == 'GET' else None
 
         if path.startswith('/clip'):
-            all_matches = self._RE_CLIP_DETAILS.finditer(response.text)
-            num_matched = 0
+            all_matches = self._RE_CLIP_DETAILS.finditer(response_text)
+            matched_state = 0
             url_components = params = start_time = end_time = None
             for matches in all_matches:
                 matches = matches.groupdict()
 
-                if not num_matched & 1:
-                    url = matches['video_url']
-                    if url:
-                        num_matched += 1
-                        url_components = urlsplit(unescape(url))
+                if not matched_state & 1:
+                    new_url = matches['video_url']
+                    if new_url:
+                        matched_state += 1
+                        url_components = urlsplit(unescape(new_url))
                         params = dict(parse_qsl(url_components.query))
 
-                if not num_matched & 2:
-                    start_time = matches['start_time']
-                    if start_time:
-                        start_time = int(start_time) / 1000
-                        num_matched += 2
+                if not matched_state & 2:
+                    is_clip = matches['is_clip']
+                    if is_clip:
+                        matched_state += 2
+                else:
+                    if not matched_state & 4:
+                        start_time = matches['start_time']
+                        if start_time:
+                            start_time = int(start_time) / 1000
+                            matched_state += 4
 
-                if not num_matched & 4:
-                    end_time = matches['end_time']
-                    if end_time:
-                        end_time = int(end_time) / 1000
-                        num_matched += 4
+                    if not matched_state & 8:
+                        end_time = matches['end_time']
+                        if end_time:
+                            end_time = int(end_time) / 1000
+                            matched_state += 8
 
-                if num_matched != 7:
+                if matched_state != 15:
                     continue
 
-                params.update({
-                    'clip': True,
-                    'start': start_time,
-                    'end': end_time,
-                })
+                params.update((
+                    ('clip', True),
+                    ('start', start_time),
+                    ('end', end_time),
+                ))
                 return url_components._replace(query=urlencode(params)).geturl()
 
         elif path == '/watch_videos':
             params = dict(parse_qsl(url_components.query))
-            new_components = urlsplit(response.url)
+            new_components = urlsplit(url)
             new_params = dict(parse_qsl(new_components.query))
             # add/overwrite all other params from original query string
             new_params.update(params)
@@ -180,24 +197,34 @@ class YouTubeResolver(AbstractResolver):
                 query=urlencode(new_params)
             ).geturl()
 
-        # we try to extract the channel id from the html content
+        # try to extract the real videoId from the html content
+        elif method == 'GET' and url_components.hostname.startswith('music.'):
+            match = self._RE_MUSIC_VIDEO_ID.search(response_text)
+            if match:
+                params = dict(parse_qsl(url_components.query))
+                params['v'] = match.group('video_id')
+                return url_components._replace(
+                    query=urlencode(params)
+                ).geturl()
+
+        # try to extract the channel id from the html content
         # With the channel id we can construct a URL we already work with
         # https://www.youtube.com/channel/<CHANNEL_ID>
         elif method == 'GET':
-            match = self._RE_CHANNEL_URL.search(response.text)
+            match = self._RE_CHANNEL_URL.search(response_text)
             if match:
-                url = match.group('channel_url')
+                new_url = match.group('channel_url')
                 if path.endswith(('/live', '/streams')):
-                    url_components = urlsplit(unescape(url))
+                    url_components = urlsplit(unescape(new_url))
                     params = dict(parse_qsl(url_components.query))
                     params['live'] = 1
                     return url_components._replace(
                         query=urlencode(params)
                     ).geturl()
-                if url != 'undefined':
-                    return url
+                if new_url != 'undefined':
+                    return new_url
 
-        return response.url
+        return url
 
 
 class CommonResolver(AbstractResolver):
@@ -205,11 +232,7 @@ class CommonResolver(AbstractResolver):
         super(CommonResolver, self).__init__(*args, **kwargs)
 
     def supports_url(self, url, url_components):
-        if url_components.hostname in {
-            'www.youtube.com',
-            'youtube.com',
-            'm.youtube.com',
-        }:
+        if url_components.hostname in YOUTUBE_HOSTNAMES:
             return False
         return 'HEAD'
 
@@ -218,12 +241,17 @@ class CommonResolver(AbstractResolver):
                                 method=method,
                                 headers=self._HEADERS,
                                 allow_redirects=True)
-        if not response or not response.ok:
+        if response is None:
             return url
-        return response.url
+        with response:
+            if response.status_code >= 400:
+                return url
+            return response.url
 
 
 class UrlResolver(object):
+    log = logging.getLogger(__name__)
+
     def __init__(self, context):
         self._context = context
         self._resolvers = (
@@ -240,14 +268,14 @@ class UrlResolver(object):
             if not method:
                 continue
 
-            self._context.log_debug('Resolving |{uri}| using |{name} {method}|'
-                                    .format(uri=resolved_url,
-                                            name=resolver_name,
-                                            method=method))
+            self.log.debug('Resolving {uri!r} using {name} {method}',
+                           uri=resolved_url,
+                           name=resolver_name,
+                           method=method)
             resolved_url = resolver.resolve(resolved_url,
                                             url_components,
                                             method)
-            self._context.log_debug('Resolved to |{0}|'.format(resolved_url))
+            self.log.debug('Resolved to %r', resolved_url)
         return resolved_url
 
     def resolve(self, url):
@@ -255,8 +283,8 @@ class UrlResolver(object):
         resolved_url = function_cache.run(
             self._resolve,
             function_cache.ONE_DAY,
-            _refresh=self._context.get_param('refresh', 0) > 0,
-            url=url
+            _refresh=self._context.refresh_requested(),
+            url=url,
         )
         if not resolved_url or resolved_url == '/':
             return url

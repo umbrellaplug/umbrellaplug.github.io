@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 
-    Copyright (C) 2018-2018 plugin.video.youtube
+    Copyright (C) 2018-2025 plugin.video.youtube
 
     SPDX-License-Identifier: GPL-2.0-only
     See LICENSES/GPL-2.0-only for more information.
@@ -16,6 +16,8 @@ class FeedHistory(Storage):
     _table_name = 'storage_v2'
     _table_updated = False
     _sql = {}
+
+    _memory_store = {}
 
     def __init__(self, filepath):
         super(FeedHistory, self).__init__(filepath)
@@ -32,10 +34,10 @@ class FeedHistory(Storage):
         return result
 
     def set_items(self, items):
-        self._set_many(items)
+        self._set_many(items, defer=True)
 
     def _optimize_item_count(self, limit=-1, defer=False):
         return False
 
-    def _optimize_file_size(self, limit=-1, defer=False):
+    def _optimize_file_size(self, defer=False, db=None):
         return False

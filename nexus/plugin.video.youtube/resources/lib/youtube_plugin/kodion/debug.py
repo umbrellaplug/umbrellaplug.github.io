@@ -2,7 +2,7 @@
 """
 
     Copyright (C) 2014-2016 bromix (plugin.video.youtube)
-    Copyright (C) 2016-present plugin.video.youtube
+    Copyright (C) 2016-2025 plugin.video.youtube
 
     SPDX-License-Identifier: GPL-2.0-only
     See LICENSES/GPL-2.0-only for more information.
@@ -10,13 +10,24 @@
 
 from __future__ import absolute_import, division, unicode_literals
 
-import atexit
-import os
+import sys
+import threading
+import time
+from atexit import register as atexit_register
+from cProfile import Profile
+from functools import wraps
+from inspect import getargvalues
+from os.path import normpath
+import pstats
+from traceback import extract_stack, format_list
+from weakref import ref
 
-from .logger import Logger
+from . import logging
+from .compatibility import StringIO
 
 
 def debug_here(host='localhost'):
+    import os
     import sys
 
     for comp in sys.path:
@@ -36,6 +47,48 @@ def debug_here(host='localhost'):
     pydevd.settrace(host, stdoutToServer=True, stderrToServer=True)
 
 
+class ProfilerProxy(ref):
+    def __call__(self, *args, **kwargs):
+        return super(ProfilerProxy, self).__call__().__call__(
+            *args, **kwargs
+        )
+
+    def __enter__(self, *args, **kwargs):
+        return super(ProfilerProxy, self).__call__().__enter__(
+            *args, **kwargs
+        )
+
+    def __exit__(self, *args, **kwargs):
+        return super(ProfilerProxy, self).__call__().__exit__(
+            *args, **kwargs
+        )
+
+    def disable(self, *args, **kwargs):
+        return super(ProfilerProxy, self).__call__().disable(
+            *args, **kwargs
+        )
+
+    def enable(self, *args, **kwargs):
+        return super(ProfilerProxy, self).__call__().enable(
+            *args, **kwargs
+        )
+
+    def get_stats(self, *args, **kwargs):
+        return super(ProfilerProxy, self).__call__().get_stats(
+            *args, **kwargs
+        )
+
+    def print_stats(self, *args, **kwargs):
+        return super(ProfilerProxy, self).__call__().print_stats(
+            *args, **kwargs
+        )
+
+    def tear_down(self, *args, **kwargs):
+        return super(ProfilerProxy, self).__call__().tear_down(
+            *args, **kwargs
+        )
+
+
 class Profiler(object):
     """Class used to profile a block of code"""
 
@@ -47,61 +100,9 @@ class Profiler(object):
         '_profiler',
         '_reuse',
         '_timer',
-        'name',
     )
 
-    from cProfile import Profile as _Profile
-    from pstats import Stats as _Stats
-
-    try:
-        from StringIO import StringIO as _StringIO
-    except ImportError:
-        from io import StringIO as _StringIO
-    from functools import wraps as _wraps
-
-    _wraps = staticmethod(_wraps)
-    from weakref import ref as _ref
-
-    class Proxy(_ref):
-        def __call__(self, *args, **kwargs):
-            return super(Profiler.Proxy, self).__call__().__call__(
-                *args, **kwargs
-            )
-
-        def __enter__(self, *args, **kwargs):
-            return super(Profiler.Proxy, self).__call__().__enter__(
-                *args, **kwargs
-            )
-
-        def __exit__(self, *args, **kwargs):
-            return super(Profiler.Proxy, self).__call__().__exit__(
-                *args, **kwargs
-            )
-
-        def disable(self, *args, **kwargs):
-            return super(Profiler.Proxy, self).__call__().disable(
-                *args, **kwargs
-            )
-
-        def enable(self, *args, **kwargs):
-            return super(Profiler.Proxy, self).__call__().enable(
-                *args, **kwargs
-            )
-
-        def get_stats(self, *args, **kwargs):
-            return super(Profiler.Proxy, self).__call__().get_stats(
-                *args, **kwargs
-            )
-
-        def print_stats(self, *args, **kwargs):
-            return super(Profiler.Proxy, self).__call__().print_stats(
-                *args, **kwargs
-            )
-
-        def tear_down(self, *args, **kwargs):
-            return super(Profiler.Proxy, self).__call__().tear_down(
-                *args, **kwargs
-            )
+    log = logging.getLogger(__name__)
 
     _instances = set()
 
@@ -110,13 +111,12 @@ class Profiler(object):
         cls._instances.add(self)
         if not kwargs.get('enabled') or kwargs.get('lazy'):
             self.__init__(*args, **kwargs)
-            return cls.Proxy(self)
+            return ProfilerProxy(self)
         return self
 
     def __init__(self,
                  enabled=True,
                  lazy=True,
-                 name=__name__,
                  num_lines=20,
                  print_callees=False,
                  reuse=False,
@@ -127,12 +127,11 @@ class Profiler(object):
         self._profiler = None
         self._reuse = reuse
         self._timer = timer
-        self.name = name
 
         if enabled and not lazy:
             self._create_profiler()
 
-        atexit.register(self.tear_down)
+        atexit_register(self.tear_down)
 
     def __enter__(self):
         if not self._enabled:
@@ -145,11 +144,7 @@ class Profiler(object):
         if not self._enabled:
             return
 
-        Logger.log_debug('Profiling stats: {0}'.format(self.get_stats(
-            num_lines=self._num_lines,
-            print_callees=self._print_callees,
-            reuse=self._reuse,
-        )))
+        self.print_stats()
         if not self._reuse:
             self.tear_down()
 
@@ -158,53 +153,19 @@ class Profiler(object):
 
         if not func:
             self._reuse = reuse
-            self.name = name
             return self
 
-        @self.__class__._wraps(func)  # pylint: disable=protected-access
+        @wraps(func)
         def wrapper(*args, **kwargs):
-            """Wrapper to:
+            """
+            Wrapper to:
                1) create a new Profiler instance;
                2) run the function being profiled;
                3) print out profiler result to the log; and
-               4) return result of function call"""
-
-            name = getattr(func, '__qualname__', None)
-            if name:
-                # If __qualname__ is available (Python 3.3+) then use it
-                pass
-
-            elif args and getattr(args[0], func.__name__, None):
-                if isinstance(args[0], type):
-                    class_name = args[0].__name__
-                else:
-                    class_name = args[0].__class__.__name__
-                name = '.'.join((
-                    class_name,
-                    func.__name__,
-                ))
-
-            elif (func.__class__
-                  and not isinstance(func.__class__, type)
-                  and func.__class__.__name__ != 'function'):
-                name = '.'.join((
-                    func.__class__.__name__,
-                    func.__name__,
-                ))
-
-            elif func.__module__:
-                name = '.'.join((
-                    func.__module__,
-                    func.__name__,
-                ))
-
-            else:
-                name = func.__name__
-
-            self.name = name
+               4) return result of function call
+            """
             with self:
                 result = func(*args, **kwargs)
-
             return result
 
         if not self._enabled:
@@ -214,15 +175,17 @@ class Profiler(object):
 
     def _create_profiler(self):
         if self._timer:
-            self._profiler = self._Profile(timer=self._timer)
+            self._profiler = Profile(timer=self._timer)
         else:
-            self._profiler = self._Profile()
+            self._profiler = Profile()
         self._profiler.enable()
 
-    @classmethod
-    def wait_timer(cls):
-        times = os.times()
-        return times.elapsed - (times.system + times.user)
+    try:
+        elapsed_timer = time.perf_counter
+        process_timer = time.process_time
+    except AttributeError:
+        elapsed_timer = time.clock
+        process_timer = time.clock
 
     def disable(self):
         if self._profiler:
@@ -245,16 +208,20 @@ class Profiler(object):
 
         self.disable()
 
-        output_stream = self._StringIO()
+        output_stream = StringIO()
         try:
-            stats = self._Stats(
+            stats = Stats(
                 self._profiler,
                 stream=output_stream
             )
-            stats.strip_dirs().sort_stats('cumulative', 'time')
+            stats.strip_dirs()
             if print_callees:
+                stats.sort_stats('cumulative')
                 stats.print_callees(num_lines)
             else:
+                stats.sort_stats('cumpercall')
+                stats.print_stats(num_lines)
+                stats.sort_stats('totalpercall')
                 stats.print_stats(num_lines)
             output = output_stream.getvalue()
         # Occurs when no stats were able to be generated from profiler
@@ -270,11 +237,199 @@ class Profiler(object):
         return output
 
     def print_stats(self):
-        Logger.log_debug('Profiling stats: {0}'.format(self.get_stats(
-            num_lines=self._num_lines,
-            print_callees=self._print_callees,
-            reuse=self._reuse,
-        )))
+        self.log.info('Profiling stats: %s',
+                      self.get_stats(
+                          num_lines=self._num_lines,
+                          print_callees=self._print_callees,
+                          reuse=self._reuse,
+                      ),
+                      stacklevel=3)
 
     def tear_down(self):
         self.__class__._instances.discard(self)
+
+
+class Stats(pstats.Stats):
+    """
+    Custom Stats class that adds functionality to sort by
+      - Cumulative time per call ("cumpercall")
+      - Total time per call ("totalpercall")
+    Code by alexnvdias from https://bugs.python.org/issue18795
+    """
+
+    _SortKey = getattr(pstats, 'SortKey', None)
+
+    sort_arg_dict_default = {
+        "calls"       : (((1,-1),              ), "call count"),
+        "ncalls"      : (((1,-1),              ), "call count"),
+        "cumtime"     : (((4,-1),              ), "cumulative time"),
+        "cumulative"  : (((4,-1),              ), "cumulative time"),
+        "filename"    : (((6, 1),              ), "file name"),
+        "line"        : (((7, 1),              ), "line number"),
+        "module"      : (((6, 1),              ), "file name"),
+        "name"        : (((8, 1),              ), "function name"),
+        "nfl"         : (((8, 1),(6, 1),(7, 1),), "name/file/line"),
+        "pcalls"      : (((0,-1),              ), "primitive call count"),
+        "stdname"     : (((9, 1),              ), "standard name"),
+        "time"        : (((2,-1),              ), "internal time"),
+        "tottime"     : (((2,-1),              ), "internal time"),
+        "cumpercall"  : (((5,-1),              ), "cumulative time per call"),
+        "totalpercall": (((3,-1),              ), "total time per call"),
+    }
+
+    def sort_stats(self, *field):
+        if not field:
+            self.fcn_list = 0
+            return self
+        if len(field) == 1 and isinstance(field[0], int):
+            # Be compatible with old profiler
+            field = [{-1: "stdname",
+                      0: "calls",
+                      1: "time",
+                      2: "cumulative"}[field[0]]]
+        elif len(field) >= 2:
+            for arg in field[1:]:
+                if type(arg) != type(field[0]):
+                    raise TypeError("Can't have mixed argument type")
+
+        sort_arg_defs = self.get_sort_arg_defs()
+
+        sort_tuple = ()
+        self.sort_type = ""
+        connector = ""
+        for word in field:
+            if self._SortKey and isinstance(word, self._SortKey):
+                word = word.value
+            sort_tuple = sort_tuple + sort_arg_defs[word][0]
+            self.sort_type += connector + sort_arg_defs[word][1]
+            connector = ", "
+
+        stats_list = []
+        for func, (cc, nc, tt, ct, callers) in self.stats.items():
+            if nc == 0:
+                npc = 0
+            else:
+                npc = float(tt) / nc
+
+            if cc == 0:
+                cpc = 0
+            else:
+                cpc = float(ct) / cc
+
+            stats_list.append((cc, nc, tt, npc, ct, cpc) + func +
+                              (pstats.func_std_string(func), func))
+
+        stats_list.sort(key=pstats.cmp_to_key(pstats.TupleComp(sort_tuple).compare))
+
+        self.fcn_list = fcn_list = []
+        for tuple in stats_list:
+            fcn_list.append(tuple[-1])
+        return self
+
+
+class ExecTimeout(object):
+    log = logging.getLogger('__name__')
+    src_file = None
+
+    def __init__(self,
+                 seconds,
+                 log_only=False,
+                 trace_opcodes=False,
+                 trace_threads=False,
+                 log_locals=False,
+                 callback=None,
+                 skip_paths=('\\python\\lib\\',
+                             '\\logging.py',
+                             '\\addons\\script.')):
+        self._interval = seconds
+        self._log_only = log_only
+        self._last_event = (None, None, None)
+        self._timed_out = False
+
+        self._trace_opcodes = trace_opcodes
+        self._trace_threads = trace_threads
+        self._log_locals = log_locals
+        self._callback = callback if callable(callback) else None
+
+        self._skip_paths = skip_paths
+
+    def __call__(self, function):
+        @wraps(function)
+        def wrapper(*args, **kwargs):
+            timer = threading.Timer(self._interval, self.set_timed_out)
+            timer.daemon = True
+
+            if self._trace_threads:
+                threading.settrace(self.timeout_trace)
+            sys.settrace(self.timeout_trace)
+            timer.start()
+            try:
+                return function(*args, **kwargs)
+            finally:
+                timer.cancel()
+                if self._trace_threads:
+                    threading.settrace(None)
+                sys.settrace(None)
+                if self._callback:
+                    self._callback()
+                self._last_event = (None, None, None)
+
+        return wrapper
+
+    def timeout_trace(self, frame, event, arg):
+        if self._trace_opcodes and hasattr(frame, 'f_trace_opcodes'):
+            frame.f_trace_opcodes = True
+        if self._timed_out:
+            if not self._log_only:
+                raise RuntimeError('Python execution timed out')
+        else:
+            filename = normpath(frame.f_code.co_filename).lower()
+            skip_event = (
+                    filename == self.src_file
+                    or (self._skip_paths
+                        and any(skip_path in filename
+                                for skip_path in self._skip_paths))
+            )
+            if not skip_event:
+                self._last_event = (event, frame, arg)
+        return self.timeout_trace
+
+    def set_timed_out(self):
+        msg, kwargs = self._get_msg(to_log=True)
+        self.log.error(msg, **kwargs)
+        self._timed_out = True
+
+    def _get_msg(self, to_log=False):
+        event, frame, arg = self._last_event
+        out = (
+            'Python execution timed out',
+            'Event:  {event!r}',
+            'Frame:  {frame!r}',
+            'Arg:    {arg!r}',
+            'Locals: {locals!r}',
+            '',
+            'Stack (most recent call last):',
+            '{stack_trace}',
+        )
+        log_locals = self._log_locals
+        if log_locals:
+            _locals = getargvalues(frame).locals
+            if log_locals is not True:
+                _locals = dict(tuple(_locals.items())[slice(*log_locals)])
+        else:
+            _locals = None
+        kwargs = {
+            'event': event,
+            'frame': frame,
+            'arg': arg,
+            'locals': _locals,
+            'stack_trace': ''.join(format_list(extract_stack(frame))),
+        }
+        if to_log:
+            return out, kwargs
+        return '\n'.join(out).format(**kwargs)
+
+
+ExecTimeout.src_file = normpath(
+    ExecTimeout.__init__.__code__.co_filename
+).lower()

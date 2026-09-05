@@ -2,7 +2,7 @@
 """
 
     Copyright (C) 2014-2016 bromix (plugin.video.youtube)
-    Copyright (C) 2016-2018 plugin.video.youtube
+    Copyright (C) 2016-2025 plugin.video.youtube
 
     SPDX-License-Identifier: GPL-2.0-only
     See LICENSES/GPL-2.0-only for more information.
@@ -12,28 +12,58 @@ from __future__ import absolute_import, division, unicode_literals
 
 from . import menu_items
 from .directory_item import DirectoryItem
-from ..constants import PATHS
+from ..constants import ITEMS_PER_PAGE, PAGE, PATHS
 
 
 class NextPageItem(DirectoryItem):
-    def __init__(self, context, params, image=None, fanart=None):
-        if 'refresh' in params:
-            del params['refresh']
+    NEXT_PAGE_PARAM_EXCLUSIONS = (
+        'refresh',
+    )
+    JUMP_PAGE_PARAM_EXCLUSIONS = (
+        'click_tracking',
+        'exclude',
+        'filtered',
+        'page',
+        'refresh',
+        'visitor',
+    )
 
+    def __init__(self, context, params, image=None, fanart=None):
         path = context.get_path()
-        page = params.get('page', 2)
-        items_per_page = params.get('items_per_page', 50)
+
+        page = params.get(PAGE) or 2
+        is_first_page_link = page < 2
+
+        items_per_page = params.get(ITEMS_PER_PAGE) or 50
         can_jump = ('next_page_token' not in params
                     and not path.startswith(('/channel',
                                              PATHS.RECOMMENDATIONS,
-                                             PATHS.RELATED_VIDEOS)))
-        can_search = not path.startswith(PATHS.SEARCH)
-        if 'page_token' not in params and can_jump:
+                                             PATHS.RELATED_VIDEOS,
+                                             PATHS.VIRTUAL_PLAYLIST)))
+        if can_jump and not is_first_page_link and 'page_token' not in params:
             params['page_token'] = self.create_page_token(page, items_per_page)
 
-        name = context.localize('page.next') % page
-        if page != context.get_param('page', 1) + 1:
-            name = ''.join((name, ' (', context.localize('filtered'), ')'))
+        can_search = not path.startswith(PATHS.SEARCH)
+
+        for param in (
+                self.JUMP_PAGE_PARAM_EXCLUSIONS
+                if is_first_page_link else
+                self.NEXT_PAGE_PARAM_EXCLUSIONS
+        ):
+            if param in params:
+                del params[param]
+
+        name = context.localize('page.next', page)
+        filtered = params.get('filtered')
+        if filtered:
+            name = ''.join((
+                name,
+                ' (',
+                str(filtered),
+                ' ',
+                context.localize('filtered'),
+                ')',
+            ))
 
         super(NextPageItem, self).__init__(
             name,
@@ -41,13 +71,14 @@ class NextPageItem(DirectoryItem):
             image=image,
             fanart=fanart,
             category_label='__inherit__',
+            special_sort='bottom',
         )
 
         self.next_page = page
         self.items_per_page = items_per_page
 
         context_menu = [
-            menu_items.refresh(context),
+            menu_items.refresh_listing(context),
             menu_items.goto_page(context, params) if can_jump else None,
             menu_items.goto_home(context),
             menu_items.goto_quick_search(context) if can_search else None,

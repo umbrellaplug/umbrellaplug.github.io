@@ -2,7 +2,7 @@
 """
 
     Copyright (C) 2014-2016 bromix (plugin.video.youtube)
-    Copyright (C) 2016-2018 plugin.video.youtube
+    Copyright (C) 2016-2025 plugin.video.youtube
 
     SPDX-License-Identifier: GPL-2.0-only
     See LICENSES/GPL-2.0-only for more information.
@@ -11,15 +11,17 @@
 from __future__ import absolute_import, division, unicode_literals
 
 from re import (
-    UNICODE as re_UNICODE,
+    UNICODE,
     compile as re_compile,
 )
 
+from . import logging
+from .compatibility import string_type
 from .constants import (
     CHECK_SETTINGS,
-    CONTAINER_ID,
-    CONTAINER_POSITION,
     CONTENT,
+    FOLDER_URI,
+    ITEMS_PER_PAGE,
     PATHS,
     REROUTE_PATH,
     WINDOW_CACHE,
@@ -27,6 +29,7 @@ from .constants import (
     WINDOW_REPLACE,
     WINDOW_RETURN,
 )
+from .debug import ExecTimeout
 from .exceptions import KodionException
 from .items import (
     DirectoryItem,
@@ -35,15 +38,20 @@ from .items import (
     SearchHistoryItem,
     UriItem,
 )
-from .utils import to_unicode
 
 
 class AbstractProvider(object):
-    RESULT_CACHE_TO_DISC = 'result_cache_to_disc'  # (bool)
-    RESULT_FALLBACK = 'result_fallback'  # (bool)
-    RESULT_FORCE_PLAY = 'result_force_play'  # (bool)
-    RESULT_FORCE_RESOLVE = 'result_force_resolve'  # (bool)
-    RESULT_UPDATE_LISTING = 'result_update_listing'  # (bool)
+    log = logging.getLogger(__name__)
+
+    CACHE_TO_DISC = 'provider_cache_to_disc'  # type: bool
+    FALLBACK = 'provider_fallback'  # type: bool | str
+    FORCE_PLAY = 'provider_force_play'  # type: bool
+    FORCE_REFRESH = 'provider_force_refresh'  # type: bool
+    FORCE_RESOLVE = 'provider_force_resolve'  # type: bool
+    FORCE_RETURN = 'provider_force_return'  # type: bool
+    POST_RUN = 'provider_post_run'  # type: bool
+    UPDATE_LISTING = 'provider_update_listing'  # type: bool
+    CONTENT_TYPE = 'provider_content_type'  # type: tuple[str, str, str]
 
     # map for regular expression (path) to method (names)
     _dict_path = {}
@@ -77,13 +85,13 @@ class AbstractProvider(object):
         self.register_path(r''.join((
             '^',
             PATHS.WATCH_LATER,
-            '/(?P<command>add|clear|list|play|remove)/?$'
+            '/(?P<command>add|clear|list|play|remove)?/?$'
         )), self.on_watch_later)
 
         self.register_path(r''.join((
             '^',
             PATHS.BOOKMARKS,
-            '/(?P<command>add|clear|list|play|remove)/?$'
+            '/(?P<command>add|add_custom|clear|edit|list|play|remove)?/?$'
         )), self.on_bookmarks)
 
         self.register_path(r''.join((
@@ -95,7 +103,7 @@ class AbstractProvider(object):
         self.register_path(r''.join((
             '^',
             PATHS.HISTORY,
-            '/(?P<command>clear|list|mark_unwatched|mark_watched|play|remove|reset_resume)/?$'
+            '/(?P<command>clear|list|mark_as|mark_unwatched|mark_watched|play|remove|reset_resume)?/?$'
         )), self.on_playback_history)
 
         self.register_path(r'(?P<path>.*\/)extrafanart\/([\?#].+)?$',
@@ -118,21 +126,23 @@ class AbstractProvider(object):
                 if not callable(func):
                     return None
 
-            cls._dict_path[re_compile(re_path, re_UNICODE)] = func
+            cls._dict_path[re_compile(re_path, UNICODE)] = func
             return command
 
         if command:
             return wrapper(command)
         return wrapper
 
-    def run_wizard(self, context):
+    def run_wizard(self, context, last_run=None):
         localize = context.localize
         # ui local variable used for ui.get_view_manager() in unofficial version
         ui = context.get_ui()
 
         settings_state = {'state': 'defer'}
-        context.wakeup(CHECK_SETTINGS, timeout=5, payload=settings_state)
+        context.ipc_exec(CHECK_SETTINGS, timeout=5, payload=settings_state)
 
+        if last_run and last_run > 1:
+            self.pre_run_wizard_step(provider=self, context=context)
         wizard_steps = self.get_wizard_steps()
 
         step = 0
@@ -141,8 +151,8 @@ class AbstractProvider(object):
         try:
             if wizard_steps and ui.on_yes_no_input(
                     ' - '.join((localize('youtube'), localize('setup_wizard'))),
-                    (localize('setup_wizard.prompt')
-                     % localize('setup_wizard.prompt.settings'))
+                    localize(('setup_wizard.prompt.x',
+                              'setup_wizard.prompt.settings')),
             ):
                 for wizard_step in wizard_steps:
                     if callable(wizard_step):
@@ -156,12 +166,17 @@ class AbstractProvider(object):
             settings = context.get_settings(refresh=True)
             settings.setup_wizard_enabled(False)
             settings_state['state'] = 'process'
-            context.wakeup(CHECK_SETTINGS, timeout=5, payload=settings_state)
+            context.ipc_exec(CHECK_SETTINGS, timeout=5, payload=settings_state)
 
     @staticmethod
     def get_wizard_steps():
         # can be overridden by the derived class
         return []
+
+    @staticmethod
+    def pre_run_wizard_step(provider, context):
+        # can be overridden by the derived class
+        pass
 
     def navigate(self, context):
         path = context.get_path()
@@ -170,9 +185,20 @@ class AbstractProvider(object):
             if not re_match:
                 continue
 
+            exec_limit = context.get_settings().exec_limit()
+            if exec_limit:
+                handler = ExecTimeout(
+                    seconds=exec_limit,
+                    # log_only=True,
+                    # trace_opcodes=True,
+                    # trace_threads=True,
+                    log_locals=(-15, None),
+                    callback=None,
+                )(handler)
+
             options = {
-                self.RESULT_CACHE_TO_DISC: True,
-                self.RESULT_UPDATE_LISTING: False,
+                self.CACHE_TO_DISC: True,
+                self.UPDATE_LISTING: False,
             }
             result = handler(provider=self, context=context, re_match=re_match)
             if isinstance(result, tuple):
@@ -180,9 +206,9 @@ class AbstractProvider(object):
                 if new_options:
                     options.update(new_options)
 
-            if context.get_param('refresh', 0) > 0:
-                options[self.RESULT_CACHE_TO_DISC] = True
-                options[self.RESULT_UPDATE_LISTING] = True
+            if context.refresh_requested():
+                options[self.CACHE_TO_DISC] = True
+                options[self.UPDATE_LISTING] = True
 
             return result, options
 
@@ -230,27 +256,33 @@ class AbstractProvider(object):
         params = context.get_params()
         if 'page_token' in params:
             page_token = NextPageItem.create_page_token(
-                page, params.get('items_per_page', 50)
+                page, params.get(ITEMS_PER_PAGE, 50)
             )
         else:
             page_token = ''
+        for param in NextPageItem.JUMP_PAGE_PARAM_EXCLUSIONS:
+            if param in params:
+                del params[param]
         params = dict(params, page=page, page_token=page_token)
 
         if (not ui.busy_dialog_active()
-                and context.is_plugin_path(
-                    context.get_infolabel('Container.FolderPath'),
-                    partial=True,
-                )):
+                and ui.get_container_info(FOLDER_URI)):
             return provider.reroute(context=context, path=path, params=params)
         return provider.navigate(context.clone(path, params))
 
     @staticmethod
     def on_reroute(provider, context, re_match):
-        return provider.reroute(context=context, path=re_match.group('path'))
+        return provider.reroute(
+            context=context,
+            path=re_match.group('path'),
+            params=context.get_params(),
+        )
 
     def reroute(self, context, path=None, params=None, uri=None):
-        current_path = context.get_path()
-        current_params = context.get_params()
+        ui = context.get_ui()
+        current_path, current_params = context.parse_uri(
+            ui.get_container_info(FOLDER_URI, container_id=None)
+        )
 
         if uri is None:
             if path is None:
@@ -264,8 +296,10 @@ class AbstractProvider(object):
             path, params = uri
 
         if not path:
-            context.log_error('Rerouting - No route path')
+            self.log.error_trace('No route path')
             return False
+        elif path.startswith(PATHS.ROUTE):
+            path = path[len(PATHS.ROUTE):]
 
         window_cache = params.pop(WINDOW_CACHE, True)
         window_fallback = params.pop(WINDOW_FALLBACK, False)
@@ -273,76 +307,89 @@ class AbstractProvider(object):
         window_return = params.pop(WINDOW_RETURN, True)
 
         if window_fallback:
-            container_uri = context.get_infolabel('Container.FolderPath')
-            if context.is_plugin_path(container_uri):
-                context.log_debug('Rerouting - Fallback route not required')
-                return False, {self.RESULT_FALLBACK: False}
+            if ui.get_container_info(FOLDER_URI):
+                self.log.debug('Rerouting - Fallback route not required')
+                return False, {self.FALLBACK: False}
 
-        container = None
-        position = None
-        refresh = params.get('refresh', 0)
-        if refresh:
-            if refresh < 0:
+        new_context = context.clone(
+            new_path=path,
+            new_params=params,
+        )
+
+        refresh = new_context.refresh_requested()
+        if (refresh or (
+                params == current_params
+                and path.rstrip('/') == current_path.rstrip('/')
+        )):
+            if refresh and refresh < 0:
                 del params['refresh']
             else:
-                container = context.get_infolabel('System.CurrentControlId')
-                position = context.get_infolabel('Container.CurrentItem')
-                params['refresh'] = refresh + 1
-        elif (params == current_params
-              and path.rstrip('/') == current_path.rstrip('/')):
-            context.log_error('Rerouting - Unable to reroute to current path')
-            return False
+                params['refresh'] = new_context.refresh_requested(
+                    force=True,
+                    on=True,
+                )
+        else:
+            params['refresh'] = 0
 
         result = None
-        try:
-            if window_cache:
-                function_cache = context.get_function_cache()
+        uri = new_context.get_uri()
+        if window_cache:
+            function_cache = context.get_function_cache()
+            with ui.on_busy():
                 result, options = function_cache.run(
                     self.navigate,
                     _refresh=True,
                     _scope=function_cache.SCOPE_NONE,
-                    context=context.clone(path, params),
+                    context=new_context,
                 )
-        except Exception as exc:
-            context.log_error('Rerouting - Error'
-                              '\n\tException: {exc!r}'.format(exc=exc))
-        finally:
-            uri = context.create_uri(path, params)
-            if result or not window_cache:
-                context.log_debug('Rerouting - Success'
-                                  '\n\tURI:      {uri}'
-                                  '\n\tCache:    |{window_cache}|'
-                                  '\n\tFallback: |{window_fallback}|'
-                                  '\n\tReplace:  |{window_replace}|'
-                                  '\n\tReturn:   |{window_return}|'
-                                  .format(uri=uri,
-                                          window_cache=window_cache,
-                                          window_fallback=window_fallback,
-                                          window_replace=window_replace,
-                                          window_return=window_return))
-            else:
-                context.log_debug('Rerouting - No results'
-                                  '\n\tURI: {uri}'
-                                  .format(uri=uri))
+            if not result and not isinstance(result, (tuple, list)):
+                self.log.debug(('No results', 'URI: %s'), uri)
                 return False
 
-            ui = context.get_ui()
-            reroute_path = ui.get_property(REROUTE_PATH)
-            if reroute_path:
-                return True
+        self.log.debug(('Success',
+                        'URI:      {uri}',
+                        'Cache:    {window_cache!r}',
+                        'Fallback: {window_fallback!r}',
+                        'Replace:  {window_replace!r}',
+                        'Return:   {window_return!r}'),
+                       uri=uri,
+                       window_cache=window_cache,
+                       window_fallback=window_fallback,
+                       window_replace=window_replace,
+                       window_return=window_return)
 
-            if window_cache:
-                ui.set_property(REROUTE_PATH, path)
-                if container and position:
-                    ui.set_property(CONTAINER_ID, container)
-                    ui.set_property(CONTAINER_POSITION, position)
+        reroute_path = ui.get_property(REROUTE_PATH)
+        if reroute_path:
+            return True
 
-            context.execute(''.join((
-                'ReplaceWindow' if window_replace else 'ActivateWindow',
-                '(Videos,',
-                uri,
-                ',return)' if window_return else ')',
-            )))
+        if window_cache:
+            ui.set_property(REROUTE_PATH, path)
+
+        timeout = 30
+        while ui.busy_dialog_active():
+            timeout -= 1
+            if timeout < 0:
+                self.log.warning('Multiple busy dialogs active'
+                                 ' - Rerouting workaround')
+                defer = True
+                break
+            context.sleep(0.1)
+        else:
+            defer = False
+
+        action = context.create_uri(
+            uri,
+            window={
+                'name': 'Videos',
+                'replace': window_replace,
+                'return': window_return,
+            },
+            command=defer,
+        )
+
+        if defer:
+            return UriItem(action)
+        context.execute(action)
         return True
 
     @staticmethod
@@ -366,57 +413,59 @@ class AbstractProvider(object):
         search_history = context.get_search_history()
 
         if not command or command == 'query':
-            query = to_unicode(params.get('q', ''))
+            query = params.get('q', '')
             if query:
-                return provider.on_search_run(context=context, query=query)
+                result, options = provider.on_search_run(context, query=query)
+                if not options:
+                    options = {provider.CACHE_TO_DISC: False}
+                if result:
+                    fallback = options.setdefault(
+                        provider.FALLBACK, context.get_uri()
+                    )
+                    if fallback and isinstance(fallback, string_type):
+                        ui.set_property(provider.FALLBACK, fallback)
+                return result, options
             command = 'list'
             context.set_path(PATHS.SEARCH, command)
 
         if command == 'remove':
-            query = to_unicode(params.get('q', ''))
+            query = params.get('q', '')
             if not ui.on_yes_no_input(
                     localize('content.remove'),
-                    localize('content.remove.check') % query,
+                    localize('content.remove.check.x', query),
             ):
                 return False, None
 
             search_history.del_item(query)
-            ui.refresh_container()
-
-            ui.show_notification(
-                localize('removed') % query,
-                time_ms=2500,
-                audible=False,
-            )
-            return True, None
+            ui.show_notification(localize('removed.name.x', query),
+                                 time_ms=2500,
+                                 audible=False)
+            return True, {provider.FORCE_REFRESH: True}
 
         if command == 'rename':
-            query = to_unicode(params.get('q', ''))
+            query = params.get('q', '')
             result, new_query = ui.on_keyboard_input(
                 localize('search.rename'), query
             )
-            if result:
-                search_history.del_item(query)
-                search_history.add_item(new_query)
-                ui.refresh_container()
-            return True, None
+            if not result:
+                return False, None
+
+            search_history.del_item(query)
+            search_history.add_item(new_query)
+            return True, {provider.FORCE_REFRESH: True}
 
         if command == 'clear':
             if not ui.on_yes_no_input(
                     localize('search.clear'),
-                    localize('content.clear.check') % localize('search.history')
+                    localize(('content.clear.check.x', 'search.history'))
             ):
                 return False, None
 
             search_history.clear()
-            ui.refresh_container()
-
-            ui.show_notification(
-                localize('completed'),
-                time_ms=2500,
-                audible=False,
-            )
-            return True, None
+            ui.show_notification(localize('completed'),
+                                 time_ms=2500,
+                                 audible=False)
+            return True, {provider.FORCE_REFRESH: True}
 
         if command == 'links':
             return provider.on_specials_x(
@@ -426,86 +475,43 @@ class AbstractProvider(object):
             )
 
         if command.startswith('input'):
-            query = None
-            #  came from page 1 of search query by '..'/back
-            #  user doesn't want to input on this path
-            fallback = True
-            old_path, old_params = context.parse_uri(
-                context.get_infolabel('Container.FolderPath')
+            result, query = ui.on_keyboard_input(
+                localize('search.title')
             )
-            old_uri = context.create_uri(old_path, old_params)
-            if (not params.get('refresh', 0) > 0
-                    and context.is_plugin_folder()
-                    and context.is_plugin_path(old_uri,
-                                               PATHS.SEARCH,
-                                               partial=True)):
-
-                query = old_params.get('q')
-                if not query:
-                    fallback = ui.pop_property(provider.RESULT_FALLBACK)
-                    if fallback:
-                        history_blacklist = (
-                            context.create_path(PATHS.SEARCH, 'input'),
-                            context.create_path(PATHS.SEARCH, 'query'),
-                            context.create_path(PATHS.SEARCH, 'list'),
-                        )
-                    else:
-                        fallback = old_uri
-                        history_blacklist = (
-                            context.create_path(PATHS.SEARCH, 'input'),
-                            context.create_path(PATHS.SEARCH, 'query'),
-                        )
-                    if old_path.startswith(history_blacklist):
-                        query = False
-
-            if query:
-                query = to_unicode(query)
-            elif query is None:
-                result, input_query = ui.on_keyboard_input(
-                    localize('search.title')
-                )
-                if result:
-                    query = input_query
-
-            if query:
-                # Race conditions with other addons creating busy dialogs can
-                # prevent opening a new window
-                # fallback = old_uri
-                # ui.set_property(provider.RESULT_FALLBACK, fallback)
-                # return UriItem(context.create_uri(
-                #     (PATHS.SEARCH, 'query'),
-                #     dict(params, q=query),
-                #     window={'replace': False, 'return': True},
-                # )), {provider.RESULT_FALLBACK: False}
-
-                # Alternate method is faster/smoother but means that history is
-                # not properly modified to prevent navigating back to input
-                # dialog
-                context.set_params(q=query)
-                context.set_path(PATHS.SEARCH, 'query')
-                result, options = provider.on_search_run(context, query=query)
-                if not options:
-                    options = {provider.RESULT_CACHE_TO_DISC: False}
-                fallback = options.setdefault(
-                    provider.RESULT_FALLBACK,
-                    context.get_uri() if result else old_uri,
-                )
-                if fallback:
-                    ui.set_property(provider.RESULT_FALLBACK, fallback)
+            if result and query:
+                result = []
+                options = {
+                    provider.FALLBACK: context.create_uri(
+                        (PATHS.SEARCH, 'query'),
+                        dict(params, q=query, category_label=query),
+                        window={
+                            'replace': False,
+                            'return': True,
+                        },
+                    ),
+                    provider.FORCE_RETURN: True,
+                    provider.POST_RUN: True,
+                    provider.CACHE_TO_DISC: True,
+                    provider.UPDATE_LISTING: False,
+                }
             else:
-                fallback = ui.pop_property(provider.RESULT_FALLBACK) or fallback
                 result = False
                 options = {
-                    provider.RESULT_CACHE_TO_DISC: False,
-                    provider.RESULT_FALLBACK: fallback,
+                    provider.FALLBACK: True,
                 }
             return result, options
 
-        context.set_content(CONTENT.LIST_CONTENT,
-                            category_label=localize('search'))
-        result = []
-
         location = context.get_param('location', False)
+
+        result = []
+        options = {
+            provider.CACHE_TO_DISC: False,
+            provider.CONTENT_TYPE: {
+                'content_type': CONTENT.LIST_CONTENT,
+                'sub_type': None,
+                'category_label': localize('search'),
+            },
+        }
 
         # 'New Search...'
         new_search_item = NewSearchItem(
@@ -524,7 +530,7 @@ class AbstractProvider(object):
             )
             result.append(search_history_item)
 
-        return result, {provider.RESULT_CACHE_TO_DISC: False}
+        return result, options
 
     @staticmethod
     def on_command(re_match, **_kwargs):

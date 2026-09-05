@@ -2,7 +2,7 @@
 """
 
     Copyright (C) 2014-2016 bromix (plugin.video.youtube)
-    Copyright (C) 2016-2018 plugin.video.youtube
+    Copyright (C) 2016-2025 plugin.video.youtube
 
     SPDX-License-Identifier: GPL-2.0-only
     See LICENSES/GPL-2.0-only for more information.
@@ -11,380 +11,486 @@
 from __future__ import absolute_import, division, unicode_literals
 
 from ..constants import (
+    ARTIST,
+    BOOKMARK_ID,
+    CHANNEL_ID,
+    CONTEXT_MENU,
+    INCOGNITO,
+    MARK_AS_LABEL,
+    ORDER,
     PATHS,
+    PLAYLIST_ITEM_ID,
+    PLAYLIST_ID,
     PLAY_FORCE_AUDIO,
     PLAY_PROMPT_QUALITY,
     PLAY_PROMPT_SUBTITLES,
     PLAY_TIMESHIFT,
-    PLAY_WITH,
+    PLAY_USING,
+    PROPERTY_AS_LABEL,
+    SUBSCRIPTION_ID,
+    TITLE,
+    URI,
+    VIDEO_ID,
     WINDOW_RETURN,
 )
 
 
-def more_for_video(context,
-                   video_id,
-                   video_name=None,
+ARTIST_INFOLABEL = PROPERTY_AS_LABEL % ARTIST
+BOOKMARK_ID_INFOLABEL = PROPERTY_AS_LABEL % BOOKMARK_ID
+CHANNEL_ID_INFOLABEL = PROPERTY_AS_LABEL % CHANNEL_ID
+PLAYLIST_ID_INFOLABEL = PROPERTY_AS_LABEL % PLAYLIST_ID
+PLAYLIST_ITEM_ID_INFOLABEL = PROPERTY_AS_LABEL % PLAYLIST_ITEM_ID
+SUBSCRIPTION_ID_INFOLABEL = PROPERTY_AS_LABEL % SUBSCRIPTION_ID
+TITLE_INFOLABEL = PROPERTY_AS_LABEL % TITLE
+URI_INFOLABEL = PROPERTY_AS_LABEL % URI
+VIDEO_ID_INFOLABEL = PROPERTY_AS_LABEL % VIDEO_ID
+
+
+def context_menu_uri(context, path, params=None, run=True, play=False):
+    if params is None:
+        params = {CONTEXT_MENU: True}
+    else:
+        params[CONTEXT_MENU] = True
+    return context.create_uri(path, params, run=run, play=play)
+
+
+def video_more_for(context,
+                   video_id=VIDEO_ID_INFOLABEL,
+                   video_name=TITLE_INFOLABEL,
                    logged_in=False,
                    refresh=False):
     params = {
-        'video_id': video_id,
+        VIDEO_ID: video_id,
         'item_name': video_name,
         'logged_in': logged_in,
     }
-    _refresh = context.get_param('refresh', 0)
-    if refresh or _refresh:
-        if _refresh < 0:
-            _refresh = -_refresh
-        params['refresh'] = _refresh + 1
+    _refresh = context.refresh_requested(force=True, on=refresh)
+    if _refresh:
+        params['refresh'] = _refresh
     return (
         context.localize('video.more'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             ('video', 'more',),
             params,
-            run=True,
         ),
     )
 
 
-def related_videos(context, video_id):
+def video_related(context,
+                  video_id=VIDEO_ID_INFOLABEL,
+                  video_name=TITLE_INFOLABEL):
     return (
-        context.localize('related_videos'),
-        context.create_uri(
+        context.localize('video.related'),
+        context_menu_uri(
+            context,
             (PATHS.ROUTE, PATHS.RELATED_VIDEOS,),
             {
-                'video_id': video_id,
-            },
-            run=True,
-        ),
-    )
-
-
-def video_comments(context, video_id, video_name=None):
-    return (
-        context.localize('video.comments'),
-        context.create_uri(
-            (PATHS.ROUTE, PATHS.VIDEO_COMMENTS),
-            {
-                'video_id': video_id,
+                VIDEO_ID: video_id,
                 'item_name': video_name,
             },
-            run=True,
+        ),
+    )
+
+
+def video_comments(context,
+                   video_id=VIDEO_ID_INFOLABEL,
+                   video_name=TITLE_INFOLABEL):
+    return (
+        context.localize('video.comments'),
+        context_menu_uri(
+            context,
+            (PATHS.ROUTE, PATHS.VIDEO_COMMENTS),
+            {
+                VIDEO_ID: video_id,
+                'item_name': video_name,
+            },
         )
     )
 
 
-def content_from_description(context, video_id):
+def video_description_links(context,
+                            video_id=VIDEO_ID_INFOLABEL,
+                            video_name=TITLE_INFOLABEL):
     return (
-        context.localize('video.description.links'),
-        context.create_uri(
+        context.localize('video.description_links'),
+        context_menu_uri(
+            context,
             (PATHS.ROUTE, PATHS.DESCRIPTION_LINKS),
             {
-                'video_id': video_id,
+                VIDEO_ID: video_id,
+                'item_name': video_name,
             },
-            run=True,
         )
     )
 
 
-def play_with(context, video_id):
+def media_play_using(context, video_id=VIDEO_ID_INFOLABEL):
     return (
-        context.localize('video.play.with'),
-        context.create_uri(
+        context.localize('video.play.using'),
+        context_menu_uri(
+            context,
             (PATHS.PLAY,),
             {
-                'video_id': video_id,
-                PLAY_WITH: True,
+                VIDEO_ID: video_id,
+                PLAY_USING: True,
             },
-            run=True,
         ),
     )
 
 
-def refresh(context):
-    params = context.get_params()
-    refresh = params.get('refresh', 0)
-    if refresh < 0:
-        refresh = -refresh
+def refresh_listing(context, path=None, params=None):
+    if path is None:
+        path = (PATHS.ROUTE, context.get_path(),)
+    elif isinstance(path, tuple):
+        path = (PATHS.ROUTE,) + path
+    else:
+        path = (PATHS.ROUTE, path,)
+    if params is None:
+        params = context.get_params()
     return (
         context.localize('refresh'),
-        context.create_uri(
-            (PATHS.ROUTE, context.get_path(),),
-            dict(params, refresh=refresh + 1),
-            run=True,
+        context_menu_uri(
+            context,
+            path,
+            dict(params,
+                 refresh=context.refresh_requested(
+                     force=True,
+                     on=True,
+                     params=params,
+                 )),
         ),
     )
 
 
-def play_all_from(context, path, order='normal'):
+def folder_play(context, path, order='normal'):
     return (
         context.localize('playlist.play.shuffle')
         if order == 'shuffle' else
         context.localize('playlist.play.all'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (path, 'play',),
             {
                 'order': order,
             },
-            run=True,
         ),
     )
 
 
-def play_video(context):
+def media_play(context, video_id=VIDEO_ID_INFOLABEL):
     return (
         context.localize('video.play'),
-        'Action(Play)'
+        context_menu_uri(
+            context,
+            (PATHS.PLAY,),
+            {
+                VIDEO_ID: video_id,
+            },
+        ),
     )
 
 
-def queue_video(context):
+def media_queue(context):
     return (
         context.localize('video.queue'),
         'Action(Queue)'
     )
 
 
-def play_playlist(context, playlist_id):
+def playlist_play(context, playlist_id=PLAYLIST_ID_INFOLABEL):
     return (
         context.localize('playlist.play.all'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.PLAY,),
             {
-                'playlist_id': playlist_id,
+                PLAYLIST_ID: playlist_id,
                 'order': 'ask',
             },
-            run=True,
         ),
     )
 
 
-def play_playlist_from(context, playlist_id, video_id):
+def playlist_play_from(context,
+                       playlist_id=PLAYLIST_ID_INFOLABEL,
+                       video_id=VIDEO_ID_INFOLABEL):
     return (
         context.localize('playlist.play.from_here'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.PLAY,),
             {
-                'playlist_id': playlist_id,
-                'video_id': video_id,
+                PLAYLIST_ID: playlist_id,
+                VIDEO_ID: video_id,
             },
-            run=True,
         ),
     )
 
 
-def play_playlist_recently_added(context, playlist_id):
+def playlist_play_recently_added(context, playlist_id=PLAYLIST_ID_INFOLABEL):
     return (
         context.localize('playlist.play.recently_added'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.PLAY,),
             {
-                'playlist_id': playlist_id,
+                PLAYLIST_ID: playlist_id,
                 'recent_days': 1,
             },
-            run=True,
         ),
     )
 
 
-def view_playlist(context, playlist_id):
+def playlist_view(context, playlist_id=PLAYLIST_ID_INFOLABEL):
     return (
         context.localize('playlist.view.all'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.ROUTE, PATHS.PLAY,),
             {
-                'playlist_id': playlist_id,
+                PLAYLIST_ID: playlist_id,
                 'order': 'normal',
                 'action': 'list',
             },
-            run=True,
         ),
     )
 
 
-def shuffle_playlist(context, playlist_id):
+def playlist_shuffle(context, playlist_id=PLAYLIST_ID_INFOLABEL):
     return (
         context.localize('playlist.play.shuffle'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.PLAY,),
             {
-                'playlist_id': playlist_id,
+                PLAYLIST_ID: playlist_id,
                 'order': 'shuffle',
                 'action': 'play',
             },
-            run=True,
         ),
     )
 
 
-def add_video_to_playlist(context, video_id):
+def playlist_add_to(context,
+                    playlist_id,
+                    name_id='playlist',
+                    video_id=VIDEO_ID_INFOLABEL):
+    return (
+        context.localize(('add.to.x', name_id)),
+        context_menu_uri(
+            context,
+            (PATHS.PLAYLIST, 'add', 'video',),
+            {
+                PLAYLIST_ID: playlist_id,
+                VIDEO_ID: video_id,
+            },
+        ),
+    )
+
+
+def playlist_add_to_selected(context, video_id=VIDEO_ID_INFOLABEL):
     return (
         context.localize('video.add_to_playlist'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.PLAYLIST, 'select', 'playlist',),
             {
-                'video_id': video_id,
+                VIDEO_ID: video_id,
             },
-            run=True,
         ),
     )
 
 
-def remove_video_from_playlist(context, playlist_id, video_id, video_name):
+def playlist_remove_from(context,
+                         playlist_id=PLAYLIST_ID_INFOLABEL,
+                         playlist_item_id=PLAYLIST_ITEM_ID_INFOLABEL,
+                         video_id=VIDEO_ID_INFOLABEL,
+                         video_name=TITLE_INFOLABEL):
     return (
         context.localize('remove'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.PLAYLIST, 'remove', 'video',),
             dict(
                 context.get_params(),
-                playlist_id=playlist_id,
-                video_id=video_id,
-                item_name=video_name,
-                reload_path=context.get_path(),
+                **{
+                    PLAYLIST_ID: playlist_id,
+                    PLAYLIST_ITEM_ID: playlist_item_id,
+                    VIDEO_ID: video_id,
+                    'item_name': video_name,
+                    'reload_path': context.get_path(),
+                }
             ),
-            run=True,
         ),
     )
 
 
-def rename_playlist(context, playlist_id, playlist_name):
+def playlist_rename(context,
+                    playlist_id=PLAYLIST_ID_INFOLABEL,
+                    playlist_name=TITLE_INFOLABEL):
     return (
         context.localize('rename'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.PLAYLIST, 'rename', 'playlist',),
             {
-                'playlist_id': playlist_id,
+                PLAYLIST_ID: playlist_id,
                 'item_name': playlist_name
             },
-            run=True,
         ),
     )
 
 
-def delete_playlist(context, playlist_id, playlist_name):
+def playlist_delete(context,
+                    playlist_id=PLAYLIST_ID_INFOLABEL,
+                    playlist_name=TITLE_INFOLABEL):
     return (
         context.localize('delete'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.PLAYLIST, 'remove', 'playlist',),
             {
-                'playlist_id': playlist_id,
+                PLAYLIST_ID: playlist_id,
                 'item_name': playlist_name
             },
-            run=True,
         ),
     )
 
 
-def remove_as_watch_later(context, playlist_id, playlist_name):
+def playlist_save_to_library(context, playlist_id=PLAYLIST_ID_INFOLABEL):
     return (
-        context.localize('watch_later.list.remove'),
-        context.create_uri(
-            (PATHS.PLAYLIST, 'remove', 'watch_later',),
+        context.localize('save'),
+        context_menu_uri(
+            context,
+            (PATHS.PLAYLIST, 'like', 'playlist',),
             {
-                'playlist_id': playlist_id,
-                'item_name': playlist_name
+                PLAYLIST_ID: playlist_id,
             },
-            run=True,
         ),
     )
 
 
-def set_as_watch_later(context, playlist_id, playlist_name):
+def playlist_remove_from_library(context,
+                                 playlist_id=PLAYLIST_ID_INFOLABEL,
+                                 playlist_name=TITLE_INFOLABEL):
     return (
-        context.localize('watch_later.list.set'),
-        context.create_uri(
-            (PATHS.PLAYLIST, 'set', 'watch_later',),
+        context.localize('remove'),
+        context_menu_uri(
+            context,
+            (PATHS.PLAYLIST, 'unlike', 'playlist',),
             {
-                'playlist_id': playlist_id,
-                'item_name': playlist_name
+                PLAYLIST_ID: playlist_id,
+                'item_name': playlist_name,
+                'reload_path': context.get_path(),
             },
-            run=True,
         ),
     )
 
 
-def remove_as_history(context, playlist_id, playlist_name):
+def watch_later_list_unassign(context,
+                              playlist_id=PLAYLIST_ID_INFOLABEL,
+                              playlist_name=TITLE_INFOLABEL):
     return (
-        context.localize('history.list.remove'),
-        context.create_uri(
-            (PATHS.PLAYLIST, 'remove', 'history',),
+        context.localize('watch_later.list.unassign'),
+        context_menu_uri(
+            context,
+            (PATHS.PLAYLIST, 'unassign', 'watch_later',),
             {
-                'playlist_id': playlist_id,
+                PLAYLIST_ID: playlist_id,
                 'item_name': playlist_name
             },
-            run=True,
         ),
     )
 
 
-def set_as_history(context, playlist_id, playlist_name):
+def watch_later_list_assign(context,
+                            playlist_id=PLAYLIST_ID_INFOLABEL,
+                            playlist_name=TITLE_INFOLABEL):
     return (
-        context.localize('history.list.set'),
-        context.create_uri(
-            (PATHS.PLAYLIST, 'set', 'history',),
+        context.localize('watch_later.list.assign'),
+        context_menu_uri(
+            context,
+            (PATHS.PLAYLIST, 'assign', 'watch_later',),
             {
-                'playlist_id': playlist_id,
+                PLAYLIST_ID: playlist_id,
                 'item_name': playlist_name
             },
-            run=True,
         ),
     )
 
 
-def remove_my_subscriptions_filter(context, channel_name):
+def history_list_unassign(context,
+                          playlist_id=PLAYLIST_ID_INFOLABEL,
+                          playlist_name=TITLE_INFOLABEL):
     return (
-        context.localize('my_subscriptions.filter.remove'),
-        context.create_uri(
+        context.localize('history.list.unassign'),
+        context_menu_uri(
+            context,
+            (PATHS.PLAYLIST, 'unassign', 'history',),
+            {
+                PLAYLIST_ID: playlist_id,
+                'item_name': playlist_name
+            },
+        ),
+    )
+
+
+def history_list_assign(context,
+                        playlist_id=PLAYLIST_ID_INFOLABEL,
+                        playlist_name=TITLE_INFOLABEL):
+    return (
+        context.localize('history.list.assign'),
+        context_menu_uri(
+            context,
+            (PATHS.PLAYLIST, 'assign', 'history',),
+            {
+                PLAYLIST_ID: playlist_id,
+                'item_name': playlist_name
+            },
+        ),
+    )
+
+
+def my_subscriptions_filter_remove(context, channel_name=ARTIST_INFOLABEL):
+    return (
+        context.localize(('remove.from.x', 'my_subscriptions.filtered')),
+        context_menu_uri(
+            context,
             ('my_subscriptions', 'filter', 'remove'),
             {
                 'item_name': channel_name,
             },
-            run=True,
         ),
     )
 
 
-def add_my_subscriptions_filter(context, channel_name):
+def my_subscriptions_filter_add(context, channel_name=ARTIST_INFOLABEL):
     return (
-        context.localize('my_subscriptions.filter.add'),
-        context.create_uri(
+        context.localize(('add.to.x', 'my_subscriptions.filtered')),
+        context_menu_uri(
+            context,
             ('my_subscriptions', 'filter', 'add',),
             {
                 'item_name': channel_name,
             },
-            run=True,
         ),
     )
 
 
-def rate_video(context, video_id, refresh=False):
+def video_rate(context, video_id=VIDEO_ID_INFOLABEL, refresh=False):
     params = {
-        'video_id': video_id,
+        VIDEO_ID: video_id,
     }
-    _refresh = context.get_param('refresh', 0)
-    if refresh or _refresh:
-        if _refresh < 0:
-            _refresh = -_refresh
-        params['refresh'] = _refresh + 1
+    _refresh = context.refresh_requested(force=True, on=refresh)
+    if _refresh:
+        params['refresh'] = _refresh
     return (
         context.localize('video.rate'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             ('video', 'rate',),
             params,
-            run=True,
-        ),
-    )
-
-
-def watch_later_add(context, playlist_id, video_id):
-    return (
-        context.localize('watch_later.add'),
-        context.create_uri(
-            (PATHS.PLAYLIST, 'add', 'video',),
-            {
-                'playlist_id': playlist_id,
-                'video_id': video_id,
-            },
-            run=True,
         ),
     )
 
@@ -392,27 +498,29 @@ def watch_later_add(context, playlist_id, video_id):
 def watch_later_local_add(context, item):
     return (
         context.localize('watch_later.add'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.WATCH_LATER, 'add',),
             {
-                'video_id': item.video_id,
+                VIDEO_ID: item.video_id,
                 'item': repr(item),
             },
-            run=True,
         ),
     )
 
 
-def watch_later_local_remove(context, video_id, video_name=''):
+def watch_later_local_remove(context,
+                             video_id=VIDEO_ID_INFOLABEL,
+                             video_name=TITLE_INFOLABEL):
     return (
         context.localize('watch_later.remove'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.WATCH_LATER, 'remove',),
             {
-                'video_id': video_id,
+                VIDEO_ID: video_id,
                 'item_name': video_name,
             },
-            run=True,
         ),
     )
 
@@ -420,173 +528,199 @@ def watch_later_local_remove(context, video_id, video_name=''):
 def watch_later_local_clear(context):
     return (
         context.localize('watch_later.clear'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.WATCH_LATER, 'clear',),
-            run=True,
         ),
     )
 
 
-def go_to_channel(context, channel_id, channel_name):
+def channel_go_to(context,
+                  channel_id=CHANNEL_ID_INFOLABEL,
+                  channel_name=ARTIST_INFOLABEL):
     return (
-        context.localize('go_to_channel') % context.get_ui().bold(channel_name),
-        context.create_uri(
+        context.localize('go_to.x', context.get_ui().bold(channel_name)),
+        context_menu_uri(
+            context,
             (PATHS.ROUTE, PATHS.CHANNEL, channel_id,),
-            run=True,
+            {
+                'category_label': channel_name,
+            }
         ),
     )
 
 
-def subscribe_to_channel(context, channel_id, channel_name=''):
+def channel_subscribe_to(context,
+                         channel_id=CHANNEL_ID_INFOLABEL,
+                         channel_name=ARTIST_INFOLABEL):
     return (
-        context.localize('subscribe_to') % context.get_ui().bold(channel_name)
+        context.localize('subscribe.to.x', context.get_ui().bold(channel_name))
         if channel_name else
         context.localize('subscribe'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             ('subscriptions', 'add',),
             {
-                'subscription_id': channel_id,
+                SUBSCRIPTION_ID: channel_id,
             },
-            run=True,
         ),
     )
 
 
-def unsubscribe_from_channel(context, channel_id=None, subscription_id=None):
+def channel_unsubscribe_from(context, channel_id=None, subscription_id=None):
     return (
         context.localize('unsubscribe'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             ('subscriptions', 'remove',),
             {
-                'subscription_id': subscription_id,
+                SUBSCRIPTION_ID: subscription_id,
             },
-            run=True,
         ) if subscription_id else
-        context.create_uri(
+        context_menu_uri(
+            context,
             ('subscriptions', 'remove',),
             {
-                'channel_id': channel_id,
+                CHANNEL_ID: channel_id,
             },
-            run=True,
         ),
     )
 
 
-def play_with_subtitles(context, video_id):
+def media_play_with_subtitles(context,
+                              video_id=VIDEO_ID_INFOLABEL):
     return (
         context.localize('video.play.with_subtitles'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.PLAY,),
             {
-                'video_id': video_id,
+                VIDEO_ID: video_id,
                 PLAY_PROMPT_SUBTITLES: True,
             },
-            run=True,
         ),
     )
 
 
-def play_audio_only(context, video_id):
+def media_play_audio_only(context,
+                          video_id=VIDEO_ID_INFOLABEL):
     return (
         context.localize('video.play.audio_only'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.PLAY,),
             {
-                'video_id': video_id,
+                VIDEO_ID: video_id,
                 PLAY_FORCE_AUDIO: True,
             },
-            run=True,
         ),
     )
 
 
-def play_ask_for_quality(context, video_id):
+def media_play_ask_for_quality(context,
+                               video_id=VIDEO_ID_INFOLABEL):
     return (
         context.localize('video.play.ask_for_quality'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.PLAY,),
             {
-                'video_id': video_id,
+                VIDEO_ID: video_id,
                 PLAY_PROMPT_QUALITY: True,
             },
-            run=True,
         ),
     )
 
 
-def play_timeshift(context, video_id):
+def media_play_timeshift(context,
+                         video_id=VIDEO_ID_INFOLABEL):
     return (
         context.localize('video.play.timeshift'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.PLAY,),
             {
-                'video_id': video_id,
+                VIDEO_ID: video_id,
                 PLAY_TIMESHIFT: True,
             },
-            run=True,
         ),
     )
 
 
-def history_remove(context, video_id, video_name=''):
+def history_local_remove(context,
+                         video_id=VIDEO_ID_INFOLABEL,
+                         video_name=TITLE_INFOLABEL):
     return (
         context.localize('history.remove'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.HISTORY, 'remove',),
             {
-                'video_id': video_id,
+                VIDEO_ID: video_id,
                 'item_name': video_name,
             },
-            run=True,
         ),
     )
 
 
-def history_clear(context):
+def history_local_clear(context):
     return (
         context.localize('history.clear'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.HISTORY, 'clear',),
-            run=True,
         ),
     )
 
 
-def history_mark_watched(context, video_id):
+def history_local_mark_as(context, video_id=VIDEO_ID_INFOLABEL):
+    return (
+        PROPERTY_AS_LABEL % MARK_AS_LABEL,
+        context_menu_uri(
+            context,
+            (PATHS.HISTORY, 'mark_as',),
+            {
+                VIDEO_ID: video_id,
+            },
+        ),
+    )
+
+
+def history_local_mark_watched(context, video_id=VIDEO_ID_INFOLABEL):
     return (
         context.localize('history.mark.watched'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.HISTORY, 'mark_watched',),
             {
-                'video_id': video_id,
+                VIDEO_ID: video_id,
             },
-            run=True,
         ),
     )
 
 
-def history_mark_unwatched(context, video_id):
+def history_local_mark_unwatched(context, video_id=VIDEO_ID_INFOLABEL):
     return (
         context.localize('history.mark.unwatched'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.HISTORY, 'mark_unwatched',),
             {
-                'video_id': video_id,
+                VIDEO_ID: video_id,
             },
-            run=True,
         ),
     )
 
 
-def history_reset_resume(context, video_id):
+def history_local_reset_resume(context, video_id=VIDEO_ID_INFOLABEL):
     return (
         context.localize('history.reset.resume_point'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.HISTORY, 'reset_resume',),
             {
-                'video_id': video_id,
+                VIDEO_ID: video_id,
             },
-            run=True,
         ),
     )
 
@@ -594,44 +728,66 @@ def history_reset_resume(context, video_id):
 def bookmark_add(context, item):
     return (
         context.localize('bookmark'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.BOOKMARKS, 'add',),
             {
                 'item_id': item.get_id(),
                 'item': repr(item),
             },
-            run=True,
         ),
     )
 
 
-def bookmark_add_channel(context, channel_id, channel_name=''):
+def bookmark_add_channel(context,
+                         channel_id=CHANNEL_ID_INFOLABEL,
+                         channel_name=ARTIST_INFOLABEL):
     return (
-        (context.localize('bookmark.channel') % (
-            context.get_ui().bold(channel_name) if channel_name else
-            context.localize('channel')
-        )),
-        context.create_uri(
+        context.localize('bookmark.x',
+                         context.get_ui().bold(channel_name)
+                         if channel_name else
+                         context.localize('channel')),
+        context_menu_uri(
+            context,
             (PATHS.BOOKMARKS, 'add',),
             {
                 'item_id': channel_id,
                 'item': None,
             },
-            run=True,
         ),
     )
 
 
-def bookmark_remove(context, item_id, item_name=''):
+def bookmark_edit(context,
+                  item_id=BOOKMARK_ID_INFOLABEL,
+                  item_name=TITLE_INFOLABEL,
+                  item_uri=URI_INFOLABEL):
+    return (
+        context.localize(('edit.x', 'bookmark')),
+        context_menu_uri(
+            context,
+            (PATHS.BOOKMARKS, 'edit',),
+            {
+                'item_id': item_id,
+                'item_name': item_name,
+                'uri': item_uri,
+            },
+        ),
+    )
+
+
+def bookmark_remove(context,
+                    item_id=BOOKMARK_ID_INFOLABEL,
+                    item_name=TITLE_INFOLABEL):
     return (
         context.localize('bookmark.remove'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.BOOKMARKS, 'remove',),
             {
                 'item_id': item_id,
                 'item_name': item_name,
             },
-            run=True,
         ),
     )
 
@@ -639,9 +795,9 @@ def bookmark_remove(context, item_id, item_name=''):
 def bookmarks_clear(context):
     return (
         context.localize('bookmarks.clear'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.BOOKMARKS, 'clear',),
-            run=True,
         ),
     )
 
@@ -649,12 +805,12 @@ def bookmarks_clear(context):
 def search_remove(context, query):
     return (
         context.localize('search.remove'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.SEARCH, 'remove',),
             {
                 'q': query,
             },
-            run=True,
         ),
     )
 
@@ -662,12 +818,12 @@ def search_remove(context, query):
 def search_rename(context, query):
     return (
         context.localize('search.rename'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.SEARCH, 'rename',),
             {
                 'q': query,
             },
-            run=True,
         ),
     )
 
@@ -675,22 +831,23 @@ def search_rename(context, query):
 def search_clear(context):
     return (
         context.localize('search.clear'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.SEARCH, 'clear',),
-            run=True,
         ),
     )
 
 
 def search_sort_by(context, params, order):
-    selected = params.get('order', 'relevance') == order
+    selected = params.get(ORDER, 'relevance') == order
     order_label = context.localize('search.sort.' + order)
     return (
         context.localize('search.sort').format(
             context.get_ui().bold(order_label) if selected else order_label
         ),
-        context.create_uri(
-            (PATHS.ROUTE, PATHS.SEARCH, 'query',),
+        context_menu_uri(
+            context,
+            (PATHS.ROUTE, context.get_path(),),
             params=dict(params,
                         order=order,
                         page=1,
@@ -698,7 +855,6 @@ def search_sort_by(context, params, order):
                         pageToken='',
                         window_replace=True,
                         window_return=False),
-            run=True,
         ),
     )
 
@@ -713,12 +869,12 @@ def separator():
 def goto_home(context):
     return (
         context.localize('home'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.ROUTE, PATHS.HOME,),
             {
                 WINDOW_RETURN: False,
             },
-            run=True,
         ),
     )
 
@@ -727,17 +883,17 @@ def goto_quick_search(context, params=None, incognito=None):
     if params is None:
         params = {}
     if incognito is None:
-        incognito = params.get('incognito')
+        incognito = params.get(INCOGNITO)
     else:
-        params['incognito'] = incognito
+        params[INCOGNITO] = incognito
     return (
         context.localize('search.quick.incognito'
                          if incognito else
                          'search.quick'),
-        context.create_uri(
-            (PATHS.SEARCH, 'input',),
+        context_menu_uri(
+            context,
+            (PATHS.ROUTE, PATHS.SEARCH, 'input',),
             params,
-            run=True,
         ),
     )
 
@@ -745,9 +901,29 @@ def goto_quick_search(context, params=None, incognito=None):
 def goto_page(context, params=None):
     return (
         context.localize('page.choose'),
-        context.create_uri(
+        context_menu_uri(
+            context,
             (PATHS.GOTO_PAGE, context.get_path(),),
             params or context.get_params(),
-            run=True,
+        ),
+    )
+
+
+def open_settings(context):
+    return (
+        context.localize('settings'),
+        context_menu_uri(
+            context,
+            PATHS.SETTINGS,
+        ),
+    )
+
+
+def open_setup_wizard(context):
+    return (
+        context.localize('setup_wizard'),
+        context_menu_uri(
+            context,
+            PATHS.SETUP_WIZARD,
         ),
     )

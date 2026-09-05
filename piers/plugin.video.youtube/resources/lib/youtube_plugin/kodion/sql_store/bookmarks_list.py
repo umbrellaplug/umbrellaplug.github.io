@@ -2,7 +2,7 @@
 """
 
     Copyright (C) 2014-2016 bromix (plugin.video.youtube)
-    Copyright (C) 2016-2018 plugin.video.youtube
+    Copyright (C) 2016-2025 plugin.video.youtube
 
     SPDX-License-Identifier: GPL-2.0-only
     See LICENSES/GPL-2.0-only for more information.
@@ -38,5 +38,5 @@ class BookmarksList(Storage):
     def _optimize_item_count(self, limit=-1, defer=False):
         return False
 
-    def _optimize_file_size(self, limit=-1, defer=False):
+    def _optimize_file_size(self, defer=False, db=None):
         return False

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 
-    Copyright (C) 2017-2019 plugin.video.youtube
+    Copyright (C) 2017-2025 plugin.video.youtube
 
     SPDX-License-Identifier: GPL-2.0-only
     See LICENSES/GPL-2.0-only for more information.
@@ -53,7 +53,7 @@ def resolve(video_id, sort=True, addon_id=None):
             break
 
     if matched_id:
-        streams, _ = client.get_streams(context=context, video_id=matched_id)
+        streams, _ = client.load_stream_info(video_id=matched_id)
 
     if sort and streams:
         streams = sorted(streams, key=lambda x: x.get('sort', (0, 0)))
