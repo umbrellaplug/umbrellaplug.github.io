@@ -607,6 +607,9 @@ class Episodes:
 			control.sleep(200)
 			return control.refresh()
 		if url == 'mdbprogress':
+			# Refresh the local watched snapshot as well as the rendered list cache;
+			# otherwise cross-device changes remain invisible after this action.
+			mdblist.sync_watchedProgress(forced=True)
 			cache.remove(self.mdblist_progress_list, '/upnext', self.mdblist_directProgressScrape)
 			cache.remove(self.mdblist_progress_list, url, self.mdblist_directProgressScrape)
 			control.sleep(200)
@@ -819,7 +822,11 @@ class Episodes:
 	def mdblist_calendar(self, url, folderName=''):
 		self.list = []
 		try:
-			if mdblist.getWatchedActivity() > cache.timeout(self.mdblist_progress_list, url, self.mdblist_directProgressScrape):
+			activities = mdblist.getActivities()
+			if mdblist.getWatchedActivity(activities) > cache.timeout(self.mdblist_progress_list, url, self.mdblist_directProgressScrape):
+				# The progress list is reconstructed from mdbsync's local episode rows.
+				# Pull remote changes before rebuilding that cache.
+				mdblist.sync_watchedProgress(activities)
 				self.list = cache.get(self.mdblist_progress_list, 0, url, self.mdblist_directProgressScrape)
 			else:
 				self.list = cache.get(self.mdblist_progress_list, self.mdblist_hours, url, self.mdblist_directProgressScrape)
@@ -1687,7 +1694,7 @@ class Episodes:
 			next_up = scrob.get_next_up()
 			if not next_up: return self.list
 			items = []
-			for item in next_up:
+			for position, item in enumerate(next_up):
 				try:
 					show = item.get('show') or item.get('series') or {}
 					next_episode = item.get('next_episode') or item.get('episode') or item.get('media') or {}
@@ -1704,7 +1711,8 @@ class Episodes:
 						or item.get('series_tvdb_id') or item.get('show_tvdb') or item.get('series_tvdb'))
 					items.append({'imdb': str(imdb_id or ''), 'tmdb': str(tmdb_id or ''), 'tvdb': str(tvdb_id or ''),
 						'season': int(season), 'episode': int(episode),
-						'lastplayed': item.get('last_watched_at') or item.get('updated_at') or ''})
+						'lastplayed': item.get('last_watched_at') or item.get('updated_at') or '',
+						'_scrob_position': position})
 				except: pass
 			if not items: return self.list
 
@@ -1777,6 +1785,7 @@ class Episodes:
 						if extended_art: values.update(extended_art)
 					if not direct: values['action'] = 'episodes'
 					values['extended'] = True
+					values['_scrob_position'] = i['_scrob_position']
 					self.list.append(values)
 				except:
 					from resources.lib.modules import log_utils
@@ -1793,6 +1802,10 @@ class Episodes:
 				batch = threads[i:i + _chunk]
 				[t.start() for t in batch]
 				[t.join() for t in batch]
+			# Restore server order before the caller applies the user's sorting and pagination.
+			# This also makes tied or missing sort values independent of worker completion order.
+			self.list.sort(key=lambda item: item['_scrob_position'])
+			for item in self.list: item.pop('_scrob_position', None)
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()

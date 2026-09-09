@@ -528,12 +528,23 @@ def getMenuEnabled(menu_title):
 
 def trigger_widget_refresh():
 	import time
+	# Provider callbacks and background syncs can request this while Kodi still
+	# owns the video/player window. UpdateLibrary during that transition can race
+	# Container.Refresh and leave the underlying episode directory empty or doubled.
+	try:
+		playback_cleanup = homeWindow.getProperty('umbrella.playback_cleanup') == 'true'
+		player_window_active = condVisibility('Window.IsActive(fullscreenvideo)')
+		if player.isPlaying() or player_window_active or playback_cleanup:
+			homeWindow.setProperty('umbrella.widget_refresh_pending', 'true')
+			return
+	except: pass
 	now = time.time()
 	try: last_refresh = float(homeWindow.getProperty('umbrella.widget_refresh_at') or 0)
 	except: last_refresh = 0
 	if now - last_refresh < 2:
 		return
 	homeWindow.setProperty('umbrella.widget_refresh_at', str(now))
+	homeWindow.clearProperty('umbrella.widget_refresh_pending')
 	timestr = time.strftime("%Y%m%d%H%M%S", time.gmtime())
 	homeWindow.setProperty('widgetreload', timestr)
 	homeWindow.setProperty('widgetreload-episodes', timestr)

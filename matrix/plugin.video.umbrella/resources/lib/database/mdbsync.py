@@ -319,7 +319,7 @@ def delete_mdb_tables(tables):
 				log_utils.error()
 		# Reset service timestamps so next sync is treated as first-run
 		epoch = '1970-01-01T00:00:00.000Z'
-		for key in ('last_watched_at', 'last_watched_movies_at', 'last_watched_episodes_at', 'last_watchlisted_at', 'last_collected_at', 'last_dropped_at'):
+		for key in ('last_watched_at', 'last_watched_sync_at_v2', 'last_watched_movies_at', 'last_watched_episodes_at', 'last_watchlisted_at', 'last_collected_at', 'last_dropped_at'):
 			dbcur.execute('''INSERT OR REPLACE INTO service Values (?, ?)''', (key, epoch))
 		dbcur.connection.commit()
 		dbcur.execute('''VACUUM''')
@@ -519,12 +519,15 @@ def get_watched_movies_full():
 		except: pass
 	return result
 
-def update_last_watched_at(key='last_watched_at'):
+def update_last_watched_at(key='last_watched_at', timestamp=None):
 	try:
 		dbcon = get_connection()
 		dbcur = get_connection_cursor(dbcon)
 		_ensure_watched_tables(dbcur)
-		timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
+		if timestamp is None:
+			timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
+		elif isinstance(timestamp, (int, float)):
+			timestamp = datetime.utcfromtimestamp(timestamp).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 		dbcur.execute('''INSERT OR REPLACE INTO service Values (?, ?)''', (key, timestamp))
 		dbcur.connection.commit()
 	except:

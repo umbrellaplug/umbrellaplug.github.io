@@ -1,3 +1,10 @@
+[B]Update - v6.7.87 - Sept 9th, 2026 [/B]
+--[Fix] Stabilized Scrob Progress episode ordering while preserving sorting options.
+--[Fix] Removed guard for scrobble in first 3 minutes so immediate stops no longer continue to show as playing.
+--[Fix] Fix for progress episodes refreshing episodes with duplicates or none.
+--[Fix] Fix for mdblist getting out of sync on multiple device environments.
+--[Fix] Reduced container refreshes to improve performance.
+
 [B]Update - v6.7.86 - Sept 3rd, 2026 [/B]
 --[Enhancement] Added support for Scrob dropped.
 --[Enhancement] Added support for Scrob device authorization using device token.

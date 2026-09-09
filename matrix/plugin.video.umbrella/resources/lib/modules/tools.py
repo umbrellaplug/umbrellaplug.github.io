@@ -324,7 +324,8 @@ def services_syncs():
 						trakt.sync_popular_lists()
 						trakt.sync_trending_lists()
 		if control.monitor.abortRequested(): break
-		if internets and simkl.getSimKLCredentialsInfo():
+		video_playing = control.condVisibility('Player.HasVideo')
+		if internets and not video_playing and simkl.getSimKLCredentialsInfo():
 			current_time = time.time()
 			if (current_time - last_simkl_sync) >= (60 * simkl_syncInterval):
 				activities = simkl.get_request('/sync/activities')
@@ -341,7 +342,7 @@ def services_syncs():
 					simkl.sync_all_watchlists(activities)
 				last_simkl_sync = current_time
 		if control.monitor.abortRequested(): break
-		if internets and mdblist.getMDBListCredentialsInfo():
+		if internets and not video_playing and mdblist.getMDBListCredentialsInfo():
 			current_time = time.time()
 			if (current_time - last_mdblist_sync) >= (60 * mdblist_syncInterval):
 				activities = mdblist.getActivities()
@@ -353,16 +354,20 @@ def services_syncs():
 					# from regardless of whether MDBList is the active indicators source.
 					# Gating it behind indicators.alt=='3' left that table stale for anyone
 					# using the widget with a different indicators source selected.
-					mdblist.sync_watchedProgress(activities)
+					mdb_history_changed = mdblist.sync_watchedProgress(activities)
 					mdblist.sync_watch_list(activities)
 					mdblist.sync_collection(activities)
 					mdblist.sync_dropped(activities)
+					# Updating Kodi's UI during playback can overlap the final player
+					# callback refresh and leave a directory duplicated or empty.
+					if mdb_history_changed and not control.player.isPlaying():
+						control.trigger_widget_refresh()
 				if not control.monitor.abortRequested():
 					if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '3':
 						mdblist.sync_playbackProgress()
 				last_mdblist_sync = current_time
 		if control.monitor.abortRequested(): break
-		if internets and customtrakt.getCustomCredentialsInfo():
+		if internets and not video_playing and customtrakt.getCustomCredentialsInfo():
 			current_time = time.time()
 			if (current_time - last_custom_sync) >= (60 * custom_syncInterval):
 				activities = customtrakt.getActivities()
@@ -378,7 +383,7 @@ def services_syncs():
 					customtrakt.sync_dropped(activities, forced=True)
 				last_custom_sync = current_time
 		if control.monitor.abortRequested(): break
-		if internets and floppy.getFloppyCredentialsInfo():
+		if internets and not video_playing and floppy.getFloppyCredentialsInfo():
 			current_time = time.time()
 			if (current_time - last_floppy_sync) >= (60 * floppy_syncInterval):
 				from resources.lib.modules import log_utils
@@ -392,7 +397,7 @@ def services_syncs():
 					floppy.sync_collection(forced=True)
 				last_floppy_sync = current_time
 		if control.monitor.abortRequested(): break
-		if internets and scrob.getScrobCredentialsInfo():
+		if internets and not video_playing and scrob.getScrobCredentialsInfo():
 			current_time = time.time()
 			if (current_time - last_scrob_sync) >= (60 * scrob_syncInterval):
 				from resources.lib.modules import log_utils

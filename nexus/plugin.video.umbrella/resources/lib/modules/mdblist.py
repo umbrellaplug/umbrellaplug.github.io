@@ -907,16 +907,31 @@ def get_calendar(start, end):
 	except: log_utils.error()
 	return []
 
-def getWatchedActivity(activities=None):
+def _activities_dict(activities=None):
 	try:
 		i = activities if activities else getActivities()
-		if not i: return 0
+		if not i: return {}
 		if isinstance(i, str):
 			import json as _json
 			i = _json.loads(i)
-		val = i.get('watched_at') or i.get('history_at') or None
-		if not val: return 0
-		return int(cleandate.iso_2_utc(_mdb_ts(val)) or 0)
+		return i if isinstance(i, dict) else {}
+	except: log_utils.error()
+	return {}
+
+def _activity_timestamp(value):
+	try: return int(cleandate.iso_2_utc(_mdb_ts(value)) or 0) if value else 0
+	except: return 0
+
+def getWatchedActivity(activities=None):
+	try:
+		i = _activities_dict(activities)
+		return max(_activity_timestamp(i.get(key)) for key in
+			('watched_at', 'season_watched_at', 'episode_watched_at', 'history_at'))
+	except: log_utils.error()
+	return 0
+
+def getServerTime(activities=None):
+	try: return _activity_timestamp(_activities_dict(activities).get('server_time'))
 	except: log_utils.error()
 	return 0
 
@@ -942,16 +957,23 @@ def timeoutsyncSeasons(imdb, tvdb):
 
 def sync_watchedProgress(activities=None, forced=False):
 	try:
-		db_last = mdbsync.last_sync('last_watched_at')
+		# A new cursor key forces one complete snapshot on upgrade. Legacy builds
+		# stored a device wall-clock value which could be ahead of MDBList forever.
+		db_last = mdbsync.last_sync('last_watched_sync_at_v2')
 		api_last = getWatchedActivity(activities)
-		if not forced and db_last and (api_last - db_last) < 60: return
+		if not forced and db_last and api_last <= db_last: return
 		from datetime import datetime as _dt
 		since = _dt.utcfromtimestamp(db_last).strftime('%Y-%m-%dT%H:%M:%SZ') if db_last else '1970-01-01T00:00:00Z'
 		offset = 0
 		limit = 1000
+		movie_count = 0
+		episode_count = 0
 		while True:
 			url = f"/sync/watched?since={since}&limit={limit}&offset={offset}"
 			data = get_request(url)
+			# Do not advance the cursor when the request failed; the next service
+			# pass must retry the same activity window.
+			if data is None: return
 			if not data: break
 			for item in data.get('movies', []):
 				ids = item.get('movie', {}).get('ids', {})
@@ -964,6 +986,7 @@ def sync_watchedProgress(activities=None, forced=False):
 					year=str(item.get('movie', {}).get('year', '')),
 					last_watched_at=item.get('last_watched_at', '')
 				)
+				movie_count += 1
 			for item in data.get('episodes', []):
 				ep = item.get('episode', {})
 				show_ids = ep.get('show', {}).get('ids', {})
@@ -977,17 +1000,23 @@ def sync_watchedProgress(activities=None, forced=False):
 					episode=ep.get('number', 0),
 					last_watched_at=item.get('last_watched_at', '')
 				)
+				episode_count += 1
 			pagination = data.get('pagination', {})
 			if not pagination.get('has_more', False): break
 			offset += limit
-		mdbsync.update_last_watched_at('last_watched_at')
-		mdbsync.update_last_watched_at('last_watched_movies_at')
-		mdbsync.update_last_watched_at('last_watched_episodes_at')
+		# MDBList explicitly documents server_time as the safe sync cursor.
+		checkpoint = getServerTime(activities) or api_last or None
+		mdbsync.update_last_watched_at('last_watched_sync_at_v2', checkpoint)
+		mdbsync.update_last_watched_at('last_watched_at', checkpoint)
 		# invalidate indicator caches so next access fetches fresh data
 		mdbsync.cache_delete(mdbsync._hash_function(syncMovies, ()))
 		mdbsync.cache_delete(mdbsync._hash_function(syncTVShows, ()))
-		control.trigger_widget_refresh()
+		_clr_episode_progress_cache()
+		log_utils.log('MDBList watched sync applied %s movies and %s episodes (activity=%s, cursor=%s)' %
+			(movie_count, episode_count, api_last, checkpoint), level=log_utils.LOGDEBUG)
+		return True
 	except: log_utils.error()
+	return False
 
 
 def syncMovies():
@@ -1222,7 +1251,6 @@ def scrobbleReset(imdb, tmdb='', tvdb='', season=None, episode=None, refresh=Fal
 		else:
 			mdbsync.delete_bookmark(imdb, tvdb or '', '', '')
 		sync_watchedProgress(forced=True)
-		control.trigger_widget_refresh()
 		if refresh: control.refresh()
 		if getSetting('scrobble.notify') == 'true':
 			control.notification(title='MDBList', message='Successfully Removed MDBList playback progress')
@@ -1352,12 +1380,18 @@ def markMovieAsNotWatched(imdb):
 
 def markEpisodeAsWatched(imdb, tvdb, season, episode, tmdb=''):
 	try:
-		_post_sync_watched(show_ids={'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb},
+		result = _post_sync_watched(show_ids={'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb},
 			seasons_dict={int(season) if season else 1: [int(episode) if episode else 1]})
+		if result is None:
+			log_utils.log('MDBList markEpisodeAsWatched failed: imdb=%s S%sE%s' %
+				(imdb, season, episode), level=log_utils.LOGDEBUG)
+			return False
 		mdbsync.upsert_watched_episode(show_imdb=imdb, show_tvdb=str(tvdb), season=season, episode=episode,
 			last_watched_at=__import__('datetime').datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z"))
 		mdbsync.cache_delete(mdbsync._hash_function(syncTVShows, ()))
 		_clr_episode_progress_cache()
+		log_utils.log('MDBList markEpisodeAsWatched imdb: %s S%sE%s' %
+			(imdb, season, episode), level=log_utils.LOGDEBUG)
 		return True
 	except: log_utils.error()
 
