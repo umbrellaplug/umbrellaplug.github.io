@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol always="true">40501</defaultcontrol>
+	<controls>
+		<control type="group">
+			<left>80</left><top>80</top><width>430</width><height>168</height>
+			<animation effect="fade" start="0" end="100" time="300">WindowOpen</animation>
+			<animation effect="fade" start="100" end="0" time="200">WindowClose</animation>
+			<control type="image"><width>430</width><height>168</height><texture border="14" colordiffuse="dd101010">common/umbwhite.png</texture></control>
+			<control type="label"><left>22</left><top>8</top><width>386</width><height>34</height><font>font13</font><align>center</align><aligny>center</aligny><label>$INFO[Window().Property(umbrella.skipintro.label)]</label><textcolor>ffffffff</textcolor></control>
+			<control type="button" id="40501"><left>22</left><top>54</top><width>188</width><height>70</height><onright>40502</onright><label>$INFO[Window().Property(umbrella.skipintro.yes)]</label><font>font13</font><align>center</align><aligny>center</aligny><textcolor>ffffffff</textcolor><focusedcolor>ffffffff</focusedcolor><texturefocus border="10" colordiffuse="$INFO[Window().Property(umbrella.skipintro.highlight)]">common/umbwhite.png</texturefocus><texturenofocus border="10" colordiffuse="00303030">common/umbwhite.png</texturenofocus></control>
+			<control type="button" id="40502"><left>220</left><top>54</top><width>188</width><height>70</height><onleft>40501</onleft><label>$INFO[Window().Property(umbrella.skipintro.no)]</label><font>font13</font><align>center</align><aligny>center</aligny><textcolor>ffffffff</textcolor><focusedcolor>ffffffff</focusedcolor><texturefocus border="10" colordiffuse="$INFO[Window().Property(umbrella.skipintro.highlight)]">common/umbwhite.png</texturefocus><texturenofocus border="10" colordiffuse="00303030">common/umbwhite.png</texturenofocus></control>
+			<control type="label"><left>22</left><top>134</top><width>386</width><height>24</height><font>font10</font><align>center</align><label>$INFO[Window().Property(umbrella.skipintro.countdown)]</label><textcolor>ffa0a0a0</textcolor></control>
+		</control>
+	</controls>
+</window>

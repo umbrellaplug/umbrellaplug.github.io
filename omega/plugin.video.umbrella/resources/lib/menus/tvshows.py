@@ -10,7 +10,7 @@ import re
 import xbmc
 from threading import Thread
 from urllib.parse import quote_plus, urlencode, parse_qsl, urlparse, urlsplit
-from resources.lib.database import cache, metacache, fanarttv_cache, traktsync, simklsync, customtraktsync, floppysync, scrobsync
+from resources.lib.database import cache, metacache, fanarttv_cache, traktsync, simklsync, customtraktsync, floppysync, scrobsync, punchplaysync
 from resources.lib.indexers.tmdb import TVshows as tmdb_indexer
 from resources.lib.indexers.fanarttv import FanartTv
 from resources.lib.modules import cleangenre, log_utils
@@ -24,6 +24,7 @@ from resources.lib.modules import simkl
 from resources.lib.modules import customtrakt
 from resources.lib.modules import floppy
 from resources.lib.modules import scrob
+from resources.lib.modules import punchplay
 from resources.lib.database import artwork as customArtwork
 
 getLS = control.lang
@@ -174,6 +175,7 @@ class TVshows:
 		self.customCredentials = customtrakt.getCustomCredentialsInfo()
 		self.floppyCredentials = floppy.getFloppyCredentialsInfo()
 		self.scrobCredentials = scrob.getScrobCredentialsInfo()
+		self.punchplayCredentials = punchplay.getPunchPlayCredentialsInfo()
 		from resources.lib.modules import tmdb4
 		self.tmdbv4Credentials = tmdb4.getTMDbV4CredentialsInfo()
 
@@ -660,6 +662,27 @@ class TVshows:
 			del window
 			if selected_items:
 				scrob.remove_dropped_items(selected_items, 'shows')
+				control.trigger_widget_refresh()
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
+	def punchplayDroppedManager(self):
+		try:
+			from resources.lib.modules import punchplay
+			control.busy()
+			self.list = punchplay.get_dropped('shows')
+			for item in self.list: item['trakt'] = item.get('tmdb', '')
+			self.worker()
+			self.sort(type='shows.watchlist')
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				punchplay.remove_dropped_items(selected_items, 'shows')
 				control.trigger_widget_refresh()
 		except:
 			from resources.lib.modules import log_utils
@@ -1328,6 +1351,7 @@ class TVshows:
 					values = {
 						'name': '%s (%s)' % (name, count),
 						'action': 'custom_list_shows&list_id=%s' % quote_plus(list_id),
+						'context': 'custom://lists/%s' % list_id,
 						'image': 'icon.png', 'icon': 'DefaultVideoPlaylists.png', 'url': '',
 					}
 					self.list.append(values)
@@ -1411,6 +1435,7 @@ class TVshows:
 					values = {
 						'name': '%s (%s)' % (name, count),
 						'action': 'floppy_list_shows&list_id=%s' % quote_plus(list_id),
+						'context': 'floppy://lists/%s' % list_id,
 						'image': lst.get('image') or 'icon.png', 'icon': 'DefaultVideoPlaylists.png', 'url': '',
 					}
 					self.list.append(values)
@@ -3044,6 +3069,42 @@ class TVshows:
 				control.hide()
 				if self.notifications and self.is_widget != True: control.notification(title=32326, message=33049)
 
+	def punchplay_progress(self, url, folderName=''):
+		self.list = []
+		try:
+			try:
+				if '?' not in url:
+					url = 'punchplayshowsprogress?limit=%s&page=1' % self.page_limit
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q.get('page', 1)) - 1
+			except:
+				q = {'limit': self.page_limit, 'page': '1'}
+				index = 0
+			cache.get(self.punchplay_tvshow_progress, 0, folderName)
+			self.sort(type='progress')
+			if self.list is None: self.list = []
+			next = ''
+			if getSetting('punchplay.paginate.lists') == 'true' and self.list:
+				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+				total_pages = len(paginated_ids)
+				self.list = paginated_ids[index] if index < total_pages else []
+				try:
+					if index + 1 >= total_pages: raise Exception()
+					next_page = index + 2
+					next = 'plugin://plugin.video.umbrella/?action=punchplay_shows_progress&url=%s&page=%s&folderName=%s' % (
+						quote_plus('punchplayshowsprogress?limit=%s&page=%s' % (self.page_limit, next_page)),
+						str(next_page), quote_plus(folderName))
+				except: pass
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			hasNext = bool(next)
+			self.tvshowDirectory(self.list, next=hasNext, isProgress=True, folderName=folderName)
+			return self.list
+		except:
+			log_utils.error()
+			if not self.list:
+				control.hide()
+				if self.notifications and self.is_widget != True: control.notification(title=32326, message=33049)
+
 	def scrob_tvshow_progress(self, create_directory=True, folderName=''):
 		# Same local-reconstruction shape as scrob_progress_list() in episodes.py (and
 		# floppy_tvshow_progress() before it) — a show belongs on this list if it has a
@@ -3095,6 +3156,50 @@ class TVshows:
 			log_utils.error()
 		return self.list
 
+	def punchplay_tvshow_progress(self, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			indicators = punchplay.syncTVShows()
+			if not indicators: return self.list
+			last_watched_by_tmdb = {str(r[1]): r[3] for r in punchplaysync.get_watched_shows() if r[1]}
+
+			def check_show(ids):
+				try:
+					imdb, tmdb, tvdb = ids.get('imdb', ''), ids.get('tmdb', ''), ids.get('tvdb', '')
+					if not tmdb: return
+					progress = punchplay.getShowProgress(tmdb)
+					if progress and len(progress) > 1:
+						counts = progress[1] or {}
+						total = sum(v.get('total', 0) for v in counts.values())
+						watched = sum(v.get('watched', 0) for v in counts.values())
+						if total and watched >= total: return  # fully watched, not "in progress"
+					values = {}
+					values['next'] = ''
+					values['progress'] = ''
+					values['imdb'] = imdb
+					values['tmdb'] = tmdb
+					values['tvdb'] = tvdb
+					values['lastplayed'] = last_watched_by_tmdb.get(str(tmdb), '')
+					values['mediatype'] = 'tvshows'
+					values['has_next_episode'] = True
+					self.list.append(values)
+				except: log_utils.error()
+
+			threads = [Thread(target=check_show, args=(ids,)) for (ids, watched_count, ep_ranges) in indicators]
+			_unlimited = getSetting('dev.batch.unlimited') == 'true'
+			_bs = max(int(getSetting('dev.batch.size') or '10'), 1)
+			_chunk = max(len(threads), 1) if _unlimited else _bs
+			for i in range(0, len(threads), _chunk):
+				if control.monitor.abortRequested(): break
+				batch = threads[i:i + _chunk]
+				[t.start() for t in batch]
+				[t.join() for t in batch]
+			self.worker()
+			if self.list is None: self.list = []
+		except:
+			log_utils.error()
+		return self.list
+
 	def scrob_user_lists(self, create_directory=True, folderName=''):
 		self.list = []
 		try:
@@ -3108,7 +3213,31 @@ class TVshows:
 					values = {
 						'name': '%s (%s)' % (name, count),
 						'action': 'scrob_list_shows&list_id=%s' % list_id,
+						'context': 'scrob://lists/%s' % list_id,
 						'image': 'scrob.png', 'icon': 'scrob.png', 'url': '',
+					}
+					self.list.append(values)
+				except: log_utils.error()
+			if create_directory: self.addDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			log_utils.error()
+
+	def punchplay_user_lists(self, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			lists = punchplaysync.fetch_user_lists('series')
+			for lst in lists:
+				try:
+					list_id = lst.get('id')
+					if list_id is None: continue
+					name = lst.get('name', '')
+					count = lst.get('item_count', 0)
+					values = {
+						'name': '%s (%s)' % (name, count),
+						'action': 'punchplay_list_shows&list_id=%s' % list_id,
+						'context': 'punchplay://lists/%s' % list_id,
+						'image': 'punchplay.png', 'icon': 'punchplay.png', 'url': '',
 					}
 					self.list.append(values)
 				except: log_utils.error()
@@ -3157,6 +3286,100 @@ class TVshows:
 				next_page = index + 2
 				next = 'plugin://plugin.video.umbrella/?action=scrob_list_shows&list_id=%s&url=%s&folderName=%s' % (
 					list_id, quote_plus('scroblistshows?list_id=%s&limit=%s&page=%s' % (list_id, self.page_limit, next_page)), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			if self.list is None: self.list = []
+			self.worker()
+			if create_directory: self.tvshowDirectory(self.list, next=bool(next), folderName=folderName)
+			return self.list
+		except:
+			log_utils.error()
+
+	def punchplay_list_shows(self, list_id, url=None, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			url = url or ('punchplaylistshows?list_id=%s&limit=%s&page=1' % (list_id, self.page_limit))
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q.get('page', 1)) - 1
+			except:
+				index = 0
+			items = punchplaysync.fetch_list_items(list_id, 'series')
+			for i in items:
+				try:
+					values = {}
+					values['tmdb'] = i.get('tmdb', '')
+					values['imdb'] = ''
+					values['tvdb'] = ''
+					values['tvshowtitle'] = i.get('title', '')
+					values['title'] = values['tvshowtitle']
+					values['year'] = i.get('year', '')
+					values['mediatype'] = 'tvshows'
+					self.list.append(values)
+				except: log_utils.error()
+			useNext = True
+			if create_directory:
+				self.sort()
+				if getSetting('punchplay.paginate.lists') == 'true' and self.list:
+					if len(self.list) <= int(self.page_limit):
+						useNext = False
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					if index >= len(paginated_ids) - 1: useNext = False
+					self.list = paginated_ids[index] if 0 <= index < len(paginated_ids) else []
+				else:
+					useNext = False
+			try:
+				if useNext == False: raise Exception()
+				next_page = index + 2
+				next = 'plugin://plugin.video.umbrella/?action=punchplay_list_shows&list_id=%s&url=%s&folderName=%s' % (
+					list_id, quote_plus('punchplaylistshows?list_id=%s&limit=%s&page=%s' % (list_id, self.page_limit, next_page)), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			if self.list is None: self.list = []
+			self.worker()
+			if create_directory: self.tvshowDirectory(self.list, next=bool(next), folderName=folderName)
+			return self.list
+		except:
+			log_utils.error()
+
+	def punchplay_library(self, category, url=None, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			url = url or ('punchplaylistshows?category=%s&limit=%s&page=1' % (category, self.page_limit))
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q.get('page', 1)) - 1
+			except:
+				index = 0
+			items = punchplay.get_library_items(category, 'show')
+			for i in items:
+				try:
+					values = {}
+					values['tmdb'] = i.get('tmdb', '')
+					values['imdb'] = ''
+					values['tvdb'] = ''
+					values['tvshowtitle'] = i.get('title', '')
+					values['title'] = values['tvshowtitle']
+					values['year'] = i.get('year', '')
+					values['mediatype'] = 'tvshows'
+					self.list.append(values)
+				except: log_utils.error()
+			useNext = True
+			if create_directory:
+				self.sort()
+				if getSetting('punchplay.paginate.lists') == 'true' and self.list:
+					if len(self.list) <= int(self.page_limit):
+						useNext = False
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					if index >= len(paginated_ids) - 1: useNext = False
+					self.list = paginated_ids[index] if 0 <= index < len(paginated_ids) else []
+				else:
+					useNext = False
+			try:
+				if useNext == False: raise Exception()
+				next_page = index + 2
+				next = 'plugin://plugin.video.umbrella/?action=punchplay_shows_library&category=%s&url=%s&folderName=%s' % (
+					category, quote_plus('punchplaylistshows?category=%s&limit=%s&page=%s' % (category, self.page_limit, next_page)), quote_plus(folderName))
 			except: next = ''
 			for i in range(len(self.list)): self.list[i]['next'] = next
 			if self.list is None: self.list = []
@@ -3479,6 +3702,7 @@ class TVshows:
 		customManagerMenu = '[COLOR %s]%s Manager[/COLOR]' % (self.highlight_color, customtrakt.getCustomServiceName())
 		floppyManagerMenu = '[COLOR %s]Floppy Manager[/COLOR]' % self.highlight_color
 		scrobManagerMenu = '[COLOR %s]Scrob Manager[/COLOR]' % self.highlight_color
+		punchplayManagerMenu = '[COLOR %s]PunchPlay Manager[/COLOR]' % self.highlight_color
 		showPlaylistMenu, clearPlaylistMenu = getLS(35517), getLS(35516)
 		playRandom, addToLibrary, addToFavourites, removeFromFavourites = getLS(32535), getLS(32551), getLS(40463), getLS(40468)
 		nextMenu, findSimilarMenu, trailerMenu = getLS(32053), getLS(32184), getLS(40431)
@@ -3609,6 +3833,8 @@ class TVshows:
 						cm.append((floppyManagerMenu, 'RunPlugin(%s?action=tools_floppyManager&name=%s&imdb=%s&tvdb=%s&watched=%s&tvshow=tvshow)' % (sysaddon, systitle, imdb, tvdb, watched)))
 					if self.scrobCredentials:
 						cm.append((scrobManagerMenu, 'RunPlugin(%s?action=tools_scrobManager&name=%s&imdb=%s&tvdb=%s&tmdb=%s&watched=%s&tvshow=tvshow)' % (sysaddon, systitle, imdb, tvdb, tmdb, watched)))
+					if self.punchplayCredentials:
+						cm.append((punchplayManagerMenu, 'RunPlugin(%s?action=tools_punchplayManager&name=%s&imdb=%s&tvdb=%s&tmdb=%s&watched=%s&tvshow=tvshow)' % (sysaddon, systitle, imdb, tvdb, tmdb, watched)))
 					if watched:
 						meta.update({'playcount': 1, 'overlay': 5})
 						cm.append((unwatchedMenu, 'RunPlugin(%s?action=playcount_TVShow&name=%s&imdb=%s&tvdb=%s&query=4)' % (sysaddon, systitle, imdb, tvdb)))
@@ -3649,7 +3875,7 @@ class TVshows:
 				item.setArt(art)
 				try: 
 					count = getShowCount(indicators[1], imdb, tvdb) if indicators else None # if indicators and no matching imdb_id in watched items then it returns None and we use TMDb meta to avoid Trakt request
-					if count and meta.get('has_next_episode'):
+					if count and meta.get('has_next_episode') and not customtrakt.getCustomIndicatorsInfo():
 						tmdb_total = int(meta.get('total_aired_episodes') or 0)
 						if tmdb_total > count['total']:
 							count['total'] = tmdb_total
@@ -3665,7 +3891,7 @@ class TVshows:
 							count['unwatched'] = max(1, trakt_aired - trakt_watched) if trakt_aired > trakt_watched else 1
 					# Stale Trakt progress data (syncSeasons returned 0 watched/total): fall back to
 					# the more reliable watched/shows endpoint count before display.
-					if count is not None and count['watched'] == 0:
+					if count is not None and count['watched'] == 0 and trakt.getTraktIndicatorsInfo():
 						_trakt_watched = int(meta.get('trakt_watched_episodes') or 0)
 						_trakt_aired = int(meta.get('trakt_aired_episodes') or 0)
 						if _trakt_watched > 0:
@@ -3820,7 +4046,7 @@ class TVshows:
 				if queue: cm.append((queueMenu, 'RunPlugin(%s?action=playlist_QueueItem)' % sysaddon))
 				try:
 					if getSetting('library.service.update') == 'true':
-						cm.append((addToLibrary, 'RunPlugin(%s?action=library_tvshowsToLibrary&url=%s&name=%s)' % (sysaddon, quote_plus(i['context']), name)))
+						cm.append((addToLibrary, 'RunPlugin(%s?action=library_tvshowsToLibrary&url=%s&name=%s)' % (sysaddon, quote_plus(i['context']), quote_plus(name))))
 				except: pass
 				cm.append(('[COLOR %s]Umbrella Settings[/COLOR]' % self.highlight_color, 'RunPlugin(%s?action=tools_openSettings)' % sysaddon))
 				item = control.item(label=name, offscreen=True)

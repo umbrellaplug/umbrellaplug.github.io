@@ -309,25 +309,31 @@ class TorBox:
 			data = result['data']
 			device_code = data['device_code']
 			user_code = data['code']
-			verify_url = data.get('friendly_verification_url', data.get('verification_url', 'https://torbox.app/oauth/device'))
+			# TorBox returns two URLs for different purposes. The friendly URL is the
+			# short address users should type, while verification_url carries the app
+			# context and is the correct QR/direct-link target.
+			verification_url = (data.get('verification_url') or data.get('verification_uri')
+					or 'https://torbox.app/oauth/device?app=Umbrella')
+			friendly_url = (data.get('friendly_verification_url') or data.get('friendly_url')
+					or verification_url)
 			interval = int(data.get('interval', 5))
 			token_ttl = 600
 			expiry = token_ttl
 			if getSetting('dialogs.useumbrelladialog') == 'true':
 				from resources.lib.modules import tools
-				tb_qr = tools.make_qr(verify_url, 'tb_qr.png')
+				tb_qr = tools.make_qr(verification_url, 'tb_qr.png')
 				self.progressDialog = control.getProgressWindow('TorBox', tb_qr, 1 if tb_qr else 0)
 				self.progressDialog.set_controls()
 			else:
 				self.progressDialog = control.progressDialog
 				self.progressDialog.create('TorBox')
-			self.progressDialog.update(0, line % (getLS(32513) % (highlight_color, verify_url), getLS(32514) % (highlight_color, user_code), getLS(40390)))
+			self.progressDialog.update(0, line % (getLS(32513) % (highlight_color, friendly_url), getLS(32514) % (highlight_color, user_code), getLS(40390)))
 			access_token = None
 			while not access_token and token_ttl > 0 and not self.progressDialog.iscanceled():
 				control.sleep(interval * 1000)
 				token_ttl -= interval
 				progress_percent = 100 - int(float(expiry - token_ttl) / expiry * 100)
-				self.progressDialog.update(progress_percent, line % (getLS(32513) % (highlight_color, verify_url), getLS(32514) % (highlight_color, user_code), getLS(40390)))
+				self.progressDialog.update(progress_percent, line % (getLS(32513) % (highlight_color, friendly_url), getLS(32514) % (highlight_color, user_code), getLS(40390)))
 				try:
 					poll = requests.post('%s/user/auth/device/token' % base_url, json={'device_code': device_code}, timeout=self.timeout)
 					poll_result = poll.json()
@@ -359,29 +365,6 @@ class TorBox:
 			control.notification(title='TorBox', message=40009, icon=tb_icon)
 			control.openSettings('6.6', 'plugin.video.umbrella')
 		except: log_utils.error()
-
-	def referral_link(self):
-		highlight_color = getSetting('highlight.color')
-		referral_url = 'https://torbox.app/subscription?referral=e8eb3e56-0e32-4553-91cc-c9aec3b7366e'
-		progressDialog = None
-		try:
-			if getSetting('dialogs.useumbrelladialog') == 'true':
-				from resources.lib.modules import tools
-				tb_qr = tools.make_qr(referral_url, 'tb_referral_qr.png')
-				progressDialog = control.getProgressWindow(getLS(40671), tb_qr, 1 if tb_qr else 0)
-				progressDialog.set_controls()
-			else:
-				progressDialog = control.progressDialog
-				progressDialog.create(getLS(40671))
-			line = '%s\n%s' % ('[COLOR %s][B]Umbrella TorBox Referral Link[/B][/COLOR]' % highlight_color, referral_url)
-			progressDialog.update(0, line)
-			while not progressDialog.iscanceled():
-				control.sleep(500)
-			progressDialog.close()
-		except:
-			log_utils.error('TorBox referral_link: ')
-			try: progressDialog.close()
-			except: pass
 
 	def account_info_to_dialog(self):
 		try:

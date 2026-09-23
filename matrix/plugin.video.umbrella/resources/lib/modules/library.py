@@ -69,9 +69,9 @@ class lib_tools:
 		tvdb_url = 'https://thetvdb.com/?tab=series&id=%s'
 		imdb_url = 'https://www.imdb.com/title/%s/'
 		tmdb_url = 'https://www.themoviedb.org/%s/%s'
-		if 'tvdb' in ids: return tvdb_url % (str(ids['tvdb']))
-		elif 'imdb' in ids: return imdb_url % (str(ids['imdb']))
-		elif 'tmdb' in ids: return tmdb_url % (media_string, str(ids['tmdb']))
+		if ids.get('tvdb'): return tvdb_url % (str(ids['tvdb']))
+		elif ids.get('imdb'): return imdb_url % (str(ids['imdb']))
+		elif ids.get('tmdb'): return tmdb_url % (media_string, str(ids['tmdb']))
 		else: return ''
 
 	@staticmethod
@@ -229,7 +229,7 @@ class lib_tools:
 			except:
 				log_utils.error()
     
-	def importNow(self, selected_items, select=True, service='Trakt'):
+	def importNow(self, selected_items, select=True, service='Trakt', source_service=None):
 
 		if control.setting('library.autoimportlists_last') == getLS(40224):
 			from resources.lib.modules.control import lang
@@ -238,8 +238,13 @@ class lib_tools:
 		if service_notification:
 			control.notification(message='Updating library from %s List(s).' % service)
 		try:
-			allTraktItems = lib_tools().getAllTraktLists()
-			if select: lib_tools().updateLists(selected_items, allTraktItems)
+			if source_service in ('custom', 'scrob', 'floppy'):
+				if select: self.updateTrackingLists(selected_items, source_service, replace=False)
+			elif service == 'PunchPlay':
+				if select: self.updatePunchPlayLists(selected_items, replace=False)
+			else:
+				allTraktItems = lib_tools().getAllTraktLists()
+				if select: lib_tools().updateLists(selected_items, allTraktItems)
 			libepisodes().update()
 			libmovies().list_update()
 			libtvshows().list_update()
@@ -373,13 +378,81 @@ class lib_tools:
 			from resources.lib.modules import log_utils
 			log_utils.error()
 
+	def importListsPunchPlay(self, fromSettings=False, mode='now'):
+		return self.importListsTracking('punchplay', fromSettings, mode)
+
+	def importListsTracking(self, provider_id, fromSettings=False, mode='now'):
+		label = provider_id.capitalize()
+		try:
+			from resources.lib.modules import punchplay
+			from resources.lib.modules import library_tracking
+			from resources.lib.windows.mdblistimportlists_now import MDBListsImportListsNowXML
+			if provider_id not in library_tracking.SERVICES + ('punchplay',):
+				raise ValueError('Unknown library service')
+			label = 'PunchPlay' if provider_id == 'punchplay' else library_tracking.service_label(provider_id)
+			control.busy()
+			items = punchplay.get_export_lists() if provider_id == 'punchplay' else library_tracking.get_sources(provider_id)
+			if not items and mode != 'manager':
+				control.notification(title=label, message='No lists found.')
+				return
+			if mode == 'manager':
+				dbcon = database.connect(control.libcacheFile)
+				try:
+					dbcon.execute('CREATE TABLE IF NOT EXISTS lists (type TEXT, list_name TEXT, url TEXT, UNIQUE(type, list_name, url))')
+					selected = {row[0] for row in dbcon.execute('SELECT url FROM lists WHERE url LIKE ?', (provider_id + '://%',))}
+				finally:
+					dbcon.close()
+				for item in items:
+					item['selected'] = 'true' if item['url'] in selected else ''
+			control.hide()
+			window = MDBListsImportListsNowXML('mdblistmportlists_now.xml', control.addonPath(control.addonId()),
+				results=items, mode=mode, service_label=label, source_service=provider_id,
+				service_icon=control.joinPath(control.artPath(), 'icon.png' if provider_id == 'custom' else provider_id + '.png'))
+			selected_items = window.run()
+			del window
+			if mode == 'manager' and selected_items is not None:
+				self.updateTrackingLists(selected_items, provider_id)
+				self.updateSettings()
+		except Exception as exc:
+			log_utils.error()
+			control.notification(title=label, message='Library import failed: %s' % exc)
+		finally:
+			control.hide()
+			if fromSettings: control.openSettings('9.2', 'plugin.video.umbrella')
+
+	def updatePunchPlayLists(self, items, replace=True):
+		return self.updateTrackingLists(items, 'punchplay', replace)
+
+	def updateTrackingLists(self, items, provider_id, replace=True):
+		if items is None: return
+		if provider_id not in ('custom', 'scrob', 'floppy', 'punchplay'):
+			raise ValueError('Unknown library service')
+		control.makeFile(control.dataPath)
+		dbcon = database.connect(control.libcacheFile)
+		try:
+			with dbcon:
+				dbcon.execute('CREATE TABLE IF NOT EXISTS lists (type TEXT, list_name TEXT, url TEXT, UNIQUE(type, list_name, url))')
+				if replace: dbcon.execute('DELETE FROM lists WHERE url LIKE ?', (provider_id + '://%',))
+				for item in items:
+					if not item['url'].startswith(provider_id + '://'):
+						raise ValueError('Invalid library source')
+					# Renamed lists keep their identity without leaving duplicate saved entries.
+					dbcon.execute('DELETE FROM lists WHERE url=?', (item['url'],))
+					dbcon.execute('INSERT INTO lists VALUES (?, ?, ?)', (item['type'], item['list_name'], item['url']))
+		finally:
+			dbcon.close()
+
 	def importListsNowMulti(self, fromSettings=False):
 		try:
 			items = []
 			isTraktEnabled = control.setting('trakt.user.token') != ''
 			isMDBListEnable = control.setting('mdblist.token') != ''
 			isTMDbV4Enabled = control.setting('tmdb.v4.accesstoken') != ''
-			if not isTraktEnabled and not isMDBListEnable and not isTMDbV4Enabled:
+			from resources.lib.modules import punchplay
+			isPunchPlayEnabled = punchplay.getPunchPlayCredentialsInfo()
+			from resources.lib.modules import library_tracking
+			tracking_services = library_tracking.available_services()
+			if not isTraktEnabled and not isMDBListEnable and not isTMDbV4Enabled and not isPunchPlayEnabled and not tracking_services:
 				control.notification(message=32113)
 				return
 			if isTraktEnabled:
@@ -388,6 +461,9 @@ class lib_tools:
 				items.append({'name': 'MDBLists', 'url': 'mdb'})
 			if isTMDbV4Enabled:
 				items.append({'name': 'TMDb Lists', 'url': 'tmdb4'})
+			if isPunchPlayEnabled:
+				items.append({'name': 'PunchPlay', 'url': 'punchplay'})
+			items.extend(tracking_services)
 			if len(items) == 1:
 				selected_url = items[0].get('url')
 			else:
@@ -403,6 +479,10 @@ class lib_tools:
 				self.importListsNowMdbList(fromSettings)
 			elif selected_url == 'tmdb4':
 				self.importListsNowTMDbV4(fromSettings)
+			elif selected_url == 'punchplay':
+				self.importListsPunchPlay(fromSettings)
+			elif selected_url in library_tracking.SERVICES:
+				self.importListsTracking(selected_url, fromSettings)
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()
@@ -956,7 +1036,11 @@ class lib_tools:
 			isTraktEnabled = control.setting('trakt.user.token') != ''
 			isMDBListEnabled = control.setting('mdblist.token') != ''
 			isTMDbV4Enabled = control.setting('tmdb.v4.accesstoken') != ''
-			if not isTraktEnabled and not isMDBListEnabled and not isTMDbV4Enabled:
+			from resources.lib.modules import punchplay
+			isPunchPlayEnabled = punchplay.getPunchPlayCredentialsInfo()
+			from resources.lib.modules import library_tracking
+			tracking_services = library_tracking.available_services()
+			if not isTraktEnabled and not isMDBListEnabled and not isTMDbV4Enabled and not isPunchPlayEnabled and not tracking_services:
 				control.notification(message=32113)
 				return
 			if isTraktEnabled:
@@ -965,6 +1049,9 @@ class lib_tools:
 				items.append({'name': 'MDBLists', 'url': 'mdb'})
 			if isTMDbV4Enabled:
 				items.append({'name': 'TMDb Lists', 'url': 'tmdb4'})
+			if isPunchPlayEnabled:
+				items.append({'name': 'PunchPlay', 'url': 'punchplay'})
+			items.extend(tracking_services)
 			if len(items) == 1:
 				selected_url = items[0].get('url')
 			else:
@@ -980,6 +1067,10 @@ class lib_tools:
 				self.importListsManagerMdbList(fromSettings)
 			elif selected_url == 'tmdb4':
 				self.importListsManagerTMDbV4(fromSettings)
+			elif selected_url == 'punchplay':
+				self.importListsPunchPlay(fromSettings, mode='manager')
+			elif selected_url in library_tracking.SERVICES:
+				self.importListsTracking(selected_url, fromSettings, mode='manager')
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()
@@ -1123,6 +1214,7 @@ class libmovies:
 			dbcur.close() ; dbcon.close()
 		total_added = 0
 		for list in results:
+			items = []
 			type, list_name, url = list[0].split("&")[0], list[1], list[2]
 			try:
 				url = url.split('&page')[0]
@@ -1130,6 +1222,12 @@ class libmovies:
 			except:
 				url = url
 			try:
+				if url.startswith('punchplay://'):
+					from resources.lib.modules import punchplay
+					items = punchplay.get_export_items(url, None if type == 'mixed' else 'movie')
+				elif url.startswith(('custom://', 'scrob://', 'floppy://')):
+					from resources.lib.modules import library_tracking
+					items = library_tracking.get_items(url, None if type == 'mixed' else 'movie')
 				if 'trakt' in url and type=="mixed":
 					from resources.lib.modules import trakt as trakt_api
 					raw_movies = trakt_api.get_all_pages(url) or []
@@ -1378,6 +1476,12 @@ class libmovies:
 				control.notification(message=message)
 		items = []
 		try:
+			if url.startswith('punchplay://'):
+				from resources.lib.modules import punchplay
+				items = punchplay.get_export_items(url, 'movie')
+			elif url.startswith(('custom://', 'scrob://', 'floppy://')):
+				from resources.lib.modules import library_tracking
+				items = library_tracking.get_items(url, 'movie')
 			if 'trakt' in url:
 				if 'traktcollection' in url: url = 'https://api.trakt.tv/users/me/collection/movies'
 				if 'traktwatchlist' in url: url = 'https://api.trakt.tv/users/me/watchlist/movies'
@@ -1500,6 +1604,7 @@ class libtvshows:
 			dbcur.close() ; dbcon.close()
 		total_added = 0 ; items = []
 		for list in results:
+			items = []
 			type, list_name, url = list[0].split("&")[0], list[1], list[2]
 			try:
 				url = url.split('&page')[0]
@@ -1507,6 +1612,12 @@ class libtvshows:
 			except:
 				url = url
 			try:
+				if url.startswith('punchplay://'):
+					from resources.lib.modules import punchplay
+					items = punchplay.get_export_items(url, 'show')
+				elif url.startswith(('custom://', 'scrob://', 'floppy://')):
+					from resources.lib.modules import library_tracking
+					items = library_tracking.get_items(url, 'show')
 				if 'trakt' in url and 'watchlist' not in url and 'me/collection' not in url:
 					from resources.lib.modules import trakt as trakt_api
 					raw_items = trakt_api.get_all_pages(url) or []
@@ -1682,6 +1793,12 @@ class libtvshows:
 				control.notification(message=message)
 		items = []
 		try:
+			if url.startswith('punchplay://'):
+				from resources.lib.modules import punchplay
+				items = punchplay.get_export_items(url, 'show')
+			elif url.startswith(('custom://', 'scrob://', 'floppy://')):
+				from resources.lib.modules import library_tracking
+				items = library_tracking.get_items(url, 'show')
 			if 'trakt' in url:
 				if 'traktcollection' in url: url = 'https://api.trakt.tv/users/me/collection/shows'
 				if 'traktwatchlist' in url: url = 'https://api.trakt.tv/users/me/watchlist/shows'

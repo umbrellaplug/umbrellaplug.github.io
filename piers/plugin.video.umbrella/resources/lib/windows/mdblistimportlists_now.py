@@ -17,6 +17,7 @@ class MDBListsImportListsNowXML(BaseDialog):
 		self.mode = kwargs.get('mode', 'now')
 		self.service_icon = kwargs.get('service_icon', joinPath(artPath(), 'mdblist.png'))
 		self.service_label = kwargs.get('service_label', '')
+		self.source_service = kwargs.get('source_service')
 		self.highlight_color = getSetting('highlight.color')
 		self.total_results = str(len(self.results))
 		self.selected_items = []
@@ -60,7 +61,10 @@ class MDBListsImportListsNowXML(BaseDialog):
 					itemtopass = self.selected_items
 					self.close()
 					if self.mode == 'now' and len(itemtopass) > 0:
-						lib_tools().importNow(itemtopass, service=self.service_label)
+						if self.source_service:
+							lib_tools().importNow(itemtopass, service=self.service_label, source_service=self.source_service)
+						else:
+							lib_tools().importNow(itemtopass, service=self.service_label)
 				elif focus_id == 2052: # Cancel Button
 					self.selected_items = None
 					self.close()

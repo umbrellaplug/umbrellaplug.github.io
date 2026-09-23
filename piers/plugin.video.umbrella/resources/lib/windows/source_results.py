@@ -71,9 +71,20 @@ class SourceResultsXML(BaseDialog):
 					return self.close()
 				chosen_source = self.item_list[self.get_position(self.window_id)]
 				source = chosen_source.getProperty('umbrella.source')
+				source_dict = chosen_source.getProperty('umbrella.source_dict')
+				try: is_tb_cloud_folder = bool(jsloads(source_dict)[0].get('cloud_folder'))
+				except: is_tb_cloud_folder = False
+				if is_tb_cloud_folder:
+					try:
+						folder_id, _, mediatype = chosen_source.getProperty('umbrella.url').split(',', 2)
+					except ValueError:
+						return notification(message='Unable to identify the TorBox cloud folder')
+					self.execute_code('RunPlugin(plugin://plugin.video.umbrella/?action=browseTorboxCloudPack&id=%s&mediatype=%s&name=%s)' %
+							(quote_plus(folder_id), quote_plus(mediatype), quote_plus(chosen_source.getProperty('umbrella.name'))))
+					self.selected = (None, '')
+					return self.close()
 				if 'UNCACHED' in source:
 					debrid = chosen_source.getProperty('umbrella.debrid')
-					source_dict = chosen_source.getProperty('umbrella.source_dict')
 					link_type = 'pack' if 'package' in source_dict else 'single'
 					sysname = quote_plus(self.meta.get('title'))
 					if 'tvshowtitle' in self.meta and 'season' in self.meta and 'episode' in self.meta:
@@ -97,6 +108,8 @@ class SourceResultsXML(BaseDialog):
 					cm_list += [('[B]Browse Debrid Pack[/B]', 'showDebridPack')]
 				if 'unchecked (pack)' in source_dict:
 					cm_list += [('[B]Browse Debrid Pack[/B]', 'showDebridPack')]
+				if chosen_source.getProperty('umbrella.provider').upper() == 'TB_CLOUD':
+					cm_list += [('[B]Browse TorBox Cloud Folder[/B]', 'browseTorboxCloudPack')]
 				source = chosen_source.getProperty('umbrella.source')
 				if not 'UNCACHED' in source and self.dnlds_enabled:
 					cm_list += [('[B]Download[/B]', 'download')]
@@ -122,6 +135,14 @@ class SourceResultsXML(BaseDialog):
 					hash = chosen_source.getProperty('umbrella.hash')
 					self.execute_code('RunPlugin(plugin://plugin.video.umbrella/?action=showDebridPack&caller=%s&name=%s&url=%s&source=%s)' %
 									(quote_plus(debrid), quote_plus(name), quote_plus(chosen_source.getProperty('umbrella.url')), quote_plus(hash)))
+					self.selected = (None, '')
+				elif cm_action == 'browseTorboxCloudPack':
+					try:
+						folder_id, _, mediatype = chosen_source.getProperty('umbrella.url').split(',', 2)
+					except ValueError:
+						return notification(message='Unable to identify the TorBox cloud folder')
+					self.execute_code('RunPlugin(plugin://plugin.video.umbrella/?action=browseTorboxCloudPack&id=%s&mediatype=%s&name=%s)' %
+							(quote_plus(folder_id), quote_plus(mediatype), quote_plus(chosen_source.getProperty('umbrella.name'))))
 					self.selected = (None, '')
 				elif cm_action == 'download':
 					sysname = quote_plus(self.meta.get('title'))

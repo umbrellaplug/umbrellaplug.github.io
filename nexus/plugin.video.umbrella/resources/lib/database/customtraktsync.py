@@ -549,6 +549,27 @@ def get_watched_episodes():
 		except: pass
 	return result
 
+def is_watched_episode(imdb, tmdb='', tvdb='', season=0, episode=0):
+	"""Return whether the local custom-service history marks this episode watched."""
+	try:
+		dbcon = get_connection()
+		dbcur = get_connection_cursor(dbcon)
+		_ensure_watched_tables(dbcur)
+		match = dbcur.execute('''SELECT 1 FROM custom_watched_episodes
+			WHERE season=? AND episode=? AND ((show_imdb!='' AND show_imdb=?)
+			OR (show_tmdb!='' AND show_tmdb=?) OR (show_tvdb!='' AND show_tvdb=?)) LIMIT 1''',
+			(int(season), int(episode), str(imdb or ''), str(tmdb or ''), str(tvdb or ''))).fetchone()
+		return bool(match)
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+		return False
+	finally:
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
+
 def get_watched_shows():
 	result = []
 	try:

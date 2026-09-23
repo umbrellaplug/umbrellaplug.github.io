@@ -92,6 +92,7 @@ simKLSyncFile = joinPath(dataPath, 'simKLSync.db')
 customTraktSyncFile = joinPath(dataPath, 'customTraktSync.db')
 floppySyncFile = joinPath(dataPath, 'floppySync.db')
 scrobSyncFile = joinPath(dataPath, 'scrobSync.db')
+punchplaySyncFile = joinPath(dataPath, 'punchplaySync.db')
 subsFile = joinPath(dataPath, 'substitute.db')
 fanarttvCacheFile = joinPath(dataPath, 'fanarttv.db')
 metaInternalCacheFile = joinPath(dataPath, 'video_cache.db')
@@ -410,7 +411,29 @@ def closeAll():
 def closeOk():
 	return execute('Dialog.Close(okdialog,true)')
 
+def log_refresh_diagnostic(event, detail=''):
+	"""Trace refresh ordering without logging container URLs or credentials."""
+	try:
+		if setting('debug.enabled') != 'true' or setting('debug.level') != '1': return
+		import os
+		import threading
+		from resources.lib.modules import log_utils
+		log_utils.log('RefreshDiag event=%s pid=%s thread=%s container=%s items=%s playing=%s fullscreen=%s cleanup=%s request=%s %s' % (
+			event, os.getpid(), threading.get_ident(), infoLabel('Container.PluginName'),
+			infoLabel('Container.NumItems'), player.isPlaying(), condVisibility('Window.IsActive(fullscreenvideo)'),
+			homeWindow.getProperty('umbrella.playback_cleanup'),
+			homeWindow.getProperty('umbrella.container_refresh_request'), detail), level=log_utils.LOGDEBUG)
+	except: pass
+
+
 def refresh():
+	try:
+		import sys
+		caller = sys._getframe(1)
+		log_refresh_diagnostic('Container.Refresh', 'caller=%s.%s:%s' % (
+			caller.f_globals.get('__name__', ''), caller.f_code.co_name, caller.f_lineno))
+		del caller
+	except: pass
 	return execute('Container.Refresh')
 
 def folderPath():
@@ -526,7 +549,7 @@ def getMenuEnabled(menu_title):
 	if (is_enabled == '' or is_enabled == 'false'): return False
 	return True
 
-def trigger_widget_refresh():
+def trigger_widget_refresh(update_library=True, force=False):
 	import time
 	# Provider callbacks and background syncs can request this while Kodi still
 	# owns the video/player window. UpdateLibrary during that transition can race
@@ -535,13 +558,15 @@ def trigger_widget_refresh():
 		playback_cleanup = homeWindow.getProperty('umbrella.playback_cleanup') == 'true'
 		player_window_active = condVisibility('Window.IsActive(fullscreenvideo)')
 		if player.isPlaying() or player_window_active or playback_cleanup:
+			log_refresh_diagnostic('widget-refresh-deferred')
 			homeWindow.setProperty('umbrella.widget_refresh_pending', 'true')
 			return
 	except: pass
 	now = time.time()
 	try: last_refresh = float(homeWindow.getProperty('umbrella.widget_refresh_at') or 0)
 	except: last_refresh = 0
-	if now - last_refresh < 2:
+	if not force and now - last_refresh < 2:
+		log_refresh_diagnostic('widget-refresh-throttled')
 		return
 	homeWindow.setProperty('umbrella.widget_refresh_at', str(now))
 	homeWindow.clearProperty('umbrella.widget_refresh_pending')
@@ -549,7 +574,19 @@ def trigger_widget_refresh():
 	homeWindow.setProperty('widgetreload', timestr)
 	homeWindow.setProperty('widgetreload-episodes', timestr)
 	homeWindow.setProperty('widgetreload-movies', timestr)
-	if xbmc.getSkinDir() != 'skin.arctic.fuse.3':
+	if update_library and xbmc.getSkinDir() != 'skin.arctic.fuse.3':
+		# Several enabled account services can finish one after another. Each one
+		# updates the widget properties above, but using UpdateLibrary for every
+		# completion makes Kodi visibly reload the home container several times per
+		# sync pass. Coalesce only the expensive/global Kodi refresh; callers using
+		# force=True (explicit user actions) still refresh immediately.
+		try: last_library_refresh = float(homeWindow.getProperty('umbrella.widget_library_refresh_at') or 0)
+		except: last_library_refresh = 0
+		if not force and now - last_library_refresh < 300:
+			log_refresh_diagnostic('library-refresh-throttled')
+			return
+		homeWindow.setProperty('umbrella.widget_library_refresh_at', str(now))
+		log_refresh_diagnostic('UpdateLibrary', 'force=%s' % force)
 		execute('UpdateLibrary(video,/fake/path/to/force/refresh/on/home)')
 
 def refresh_playAction(): # for umbrella global CM play actions
@@ -580,6 +617,7 @@ def refresh_contextProperties():
 		'context.umbrella.customManager',
 		'context.umbrella.floppyManager',
 		'context.umbrella.scrobManager',
+		'context.umbrella.punchplayManager',
 		'context.umbrella.tmdbListManager',
 		'context.umbrella.tmdbWatchlist',
 		'context.umbrella.clearProviders',
@@ -608,10 +646,21 @@ def metadataClean(metadata):
 	return {k: v for k, v in iter(metadata.items()) if k in allowed}
 
 def set_info(item, meta, setUniqueIDs=None, resumetime='', fileNameandPath=None):
+	# ResumeTime and TotalTime are deprecated ListItem properties on Kodi 20+.
+	# Keep the custom progress property for skins, and use VideoInfoTag's resume
+	# point below on supported Kodi versions.
+	if resumetime:
+		try:
+			total_time = float(meta.get('duration') or 2700)
+			resume_time = float(resumetime)
+			item.setProperty('WatchedProgress', str(int((resume_time / total_time) * 100)) if total_time > 0 else '0')
+		except:
+			pass
 	if getKodiVersion() >= 20:
 		try:
 			meta_get = meta.get
 			info_tag = item.getVideoInfoTag()
+			if resumetime: info_tag.setResumePoint(float(resumetime), float(meta_get('duration') or 2700))
 			info_tag.setMediaType(meta_get('mediatype'))
 			if setUniqueIDs:
 				info_tag.setUniqueIDs(setUniqueIDs)
@@ -656,7 +705,6 @@ def set_info(item, meta, setUniqueIDs=None, resumetime='', fileNameandPath=None)
 			info_tag.setDirectors(to_list(meta_get('director', [])))
 			if setUniqueIDs:
 				info_tag.setIMDBNumber(setUniqueIDs.get('imdb'))
-			if resumetime: info_tag.setResumePoint(float(resumetime), float(meta.get('duration') or 2700))
 			if meta_get('mediatype') in ['tvshow', 'season']:
 				info_tag.setTvShowTitle(meta_get('tvshowtitle'))
 				info_tag.setTvShowStatus(meta_get('status'))

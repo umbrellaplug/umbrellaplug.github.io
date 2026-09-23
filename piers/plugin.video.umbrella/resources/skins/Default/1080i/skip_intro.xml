@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol always="true">40501</defaultcontrol>
+	<controls>
+		<control type="group">
+			<left>0</left><top>0</top><width>520</width><height>161</height>
+			<animation effect="slide" start="0,-161" end="0,0" time="400">WindowOpen</animation>
+			<animation effect="slide" start="0,0" end="0,-161" time="400">WindowClose</animation>
+			<control type="image"><width>520</width><height>161</height><texture colordiffuse="$INFO[Window().Property(umbrella.skipintro.background)]">common/bg.png</texture></control>
+			<control type="label"><left>35</left><top>18</top><width>450</width><height>30</height><font>font13</font><align>center</align><label>$INFO[Window().Property(umbrella.skipintro.label)]</label><textcolor>ffffffff</textcolor></control>
+			<control type="label"><left>35</left><top>47</top><width>450</width><height>22</height><font>font10</font><align>center</align><label>$INFO[Window().Property(umbrella.skipintro.countdown)]</label><textcolor>ffa0a0a0</textcolor></control>
+			<control type="button" id="40501"><left>52</left><top>78</top><width>200</width><height>52</height><onright>40502</onright><label>$INFO[Window().Property(umbrella.skipintro.yes)]</label><font>font12</font><align>center</align><aligny>center</aligny><textcolor>ffffffff</textcolor><focusedcolor>ffffffff</focusedcolor><texturefocus border="8" colordiffuse="$INFO[Window().Property(umbrella.skipintro.highlight)]">common/umbwhite.png</texturefocus><texturenofocus border="8" colordiffuse="aa303030">common/umbwhite.png</texturenofocus></control>
+			<control type="button" id="40502"><left>267</left><top>78</top><width>200</width><height>52</height><onleft>40501</onleft><label>$INFO[Window().Property(umbrella.skipintro.no)]</label><font>font12</font><align>center</align><aligny>center</aligny><textcolor>ffffffff</textcolor><focusedcolor>ffffffff</focusedcolor><texturefocus border="8" colordiffuse="$INFO[Window().Property(umbrella.skipintro.highlight)]">common/umbwhite.png</texturefocus><texturenofocus border="8" colordiffuse="aa303030">common/umbwhite.png</texturenofocus></control>
+		</control>
+	</controls>
+</window>

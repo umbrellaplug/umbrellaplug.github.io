@@ -17,6 +17,7 @@ from resources.lib.modules import mdblist
 from resources.lib.modules import customtrakt
 from resources.lib.modules import floppy
 from resources.lib.modules import scrob
+from resources.lib.modules import punchplay
 from resources.lib.database import traktsync
 
 ZoneUtc = 'utc'
@@ -31,6 +32,7 @@ mdblist_syncInterval = int(getSetting('mdblist.service.syncInterval')) if getSet
 custom_syncInterval = int(getSetting('custom.service.syncInterval')) if getSetting('custom.service.syncInterval') else 30
 floppy_syncInterval = int(getSetting('floppy.service.syncInterval')) if getSetting('floppy.service.syncInterval') else 30
 scrob_syncInterval = int(getSetting('scrob.service.syncInterval')) if getSetting('scrob.service.syncInterval') else 30
+punchplay_syncInterval = int(getSetting('punchplay.service.syncInterval')) if getSetting('punchplay.service.syncInterval') else 30
 
 # def datetime_from_string(self, string, format=FormatDateTime):
 	# try:
@@ -196,6 +198,8 @@ def setIndicatorService():
 			service_map.append(('Floppy', control.themedIcon('floppy.png'), '5'))
 		if scrob.getScrobCredentialsInfo():
 			service_map.append(('Scrob', control.themedIcon('scrob.png'), '6'))
+		if punchplay.getPunchPlayCredentialsInfo():
+			service_map.append(('PunchPlay', control.themedIcon('punchplay.png'), '7'))
 		current_index = next((i for i, (_, _, v) in enumerate(service_map) if v == currentSetting), -1)
 		items = []
 		for i, (label, icon, _) in enumerate(service_map):
@@ -232,6 +236,8 @@ def setIndicatorService():
 					floppy.sync_watched(forced=True, progress_callback=_progress)
 				if optionVal == '6':
 					scrob.sync_watched(forced=True, progress_callback=_progress)
+				if optionVal == '7':
+					punchplay.sync_watched(forced=True, progress_callback=_progress)
 			finally:
 				dialog.close()
 		control.homeWindow.setProperty('umbrella.updateSettings', 'false')
@@ -260,6 +266,8 @@ def setScrobbleService():
 			service_map.append(('Floppy', control.themedIcon('floppy.png'), '5'))
 		if scrob.getScrobCredentialsInfo():
 			service_map.append(('Scrob', control.themedIcon('scrob.png'), '6'))
+		if punchplay.getPunchPlayCredentialsInfo():
+			service_map.append(('PunchPlay', control.themedIcon('punchplay.png'), '7'))
 		current_index = next((i for i, (_, _, v) in enumerate(service_map) if v == currentSetting), -1)
 		items = []
 		for i, (label, icon, _) in enumerate(service_map):
@@ -284,6 +292,7 @@ def services_syncs():
 	last_custom_sync = 0
 	last_floppy_sync = 0
 	last_scrob_sync = 0
+	last_punchplay_sync = 0
 	while not control.monitor.abortRequested():
 		control.sleep(5000) # wait 5sec in case of device wake from sleep
 		try:
@@ -312,6 +321,8 @@ def services_syncs():
 					if not control.monitor.abortRequested():
 						if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '1':
 							trakt.sync_playbackProgress(activities)
+						if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '1':
+							trakt.sync_playbackProgress(activities)
 						trakt.sync_watchedProgress(activities, trigger_refresh=False)
 					if not control.monitor.abortRequested():
 						if getSetting('indicators.alt') == '1':
@@ -333,6 +344,8 @@ def services_syncs():
 				from resources.lib.modules import log_utils
 				log_utils.log('SimKl Sync Service is running.', 1)
 				if not control.monitor.abortRequested():
+					if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '2':
+						simkl.sync_playbackProgress(forced=True)
 					if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '2':
 						simkl.sync_playbackProgress(forced=True)
 					simkl.sync_watchedProgress(activities)
@@ -365,6 +378,8 @@ def services_syncs():
 				if not control.monitor.abortRequested():
 					if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '3':
 						mdblist.sync_playbackProgress()
+					if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '3':
+						mdblist.sync_playbackProgress()
 				last_mdblist_sync = current_time
 		if control.monitor.abortRequested(): break
 		if internets and not video_playing and customtrakt.getCustomCredentialsInfo():
@@ -374,6 +389,8 @@ def services_syncs():
 				from resources.lib.modules import log_utils
 				log_utils.log('%s Service Sync is running.' % customtrakt.getCustomServiceName(), 1)
 				if not control.monitor.abortRequested():
+					if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '4':
+						customtrakt.sync_playbackProgress(activities, forced=True)
 					if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '4':
 						customtrakt.sync_playbackProgress(activities, forced=True)
 					customtrakt.sync_watchedProgress(activities)
@@ -389,6 +406,8 @@ def services_syncs():
 				from resources.lib.modules import log_utils
 				log_utils.log('Floppy Service Sync is running.', 1)
 				if not control.monitor.abortRequested():
+					if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '5':
+						floppy.sync_playbackProgress()
 					if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '5':
 						floppy.sync_playbackProgress()
 					floppy.sync_watchedProgress(forced=True)
@@ -409,6 +428,15 @@ def services_syncs():
 				if not control.monitor.abortRequested():
 					scrob.sync_user_lists(forced=True)
 				last_scrob_sync = current_time
+		if internets and not video_playing and punchplay.getPunchPlayCredentialsInfo():
+			current_time = time.time()
+			if (current_time - last_punchplay_sync) >= (60 * punchplay_syncInterval):
+				try:
+					punchplay.sync_account()
+					last_punchplay_sync = current_time
+				except Exception:
+					from resources.lib.modules import log_utils
+					log_utils.log('PunchPlay background sync failed; cached state retained.', 1)
 		if control.monitor.waitForAbort(60*service_syncInterval): break
 
 def originCountry_Select():

@@ -799,13 +799,70 @@ def scrobbleStopEpisode(imdb, tmdb, tvdb, season, episode, watched_percent, comp
 			control.trigger_widget_refresh()
 	except: log_utils.error()
 
-def scrobbleReset(imdb, tmdb=None, tvdb=None, season=None, episode=None, refresh=True, widgetRefresh=False, clear_local=True):
-	if not getScrobCredentialsInfo(): return
+def removePlaybackProgress(imdb='', tmdb='', tvdb='', season=None, episode=None, clear_local=True):
 	try:
-		if clear_local: scrobsync.delete_bookmark(imdb or '', tvdb=tvdb or '', tmdb=str(tmdb or ''), season=season or '', episode=episode or '')
+		if not getScrobCredentialsInfo(): return False
+		is_episode = episode not in (None, '')
+		if not is_episode and season not in (None, ''): return False
+		tmdb = tmdb or _resolve_tmdb('show' if is_episode else 'movie', imdb, tvdb)
+		if not tmdb: return False
+		response = getScrob('/history/continue-watching?limit=2147483647&include_hidden=true', auth='api_key')
+		if response is None or response.status_code != 200: return False
+		data = response.json()
+		if not isinstance(data, dict) or not isinstance(data.get('continue_watching'), list): return False
+		for item in data['continue_watching']:
+			media = item.get('media') or {}
+			if is_episode:
+				match = (media.get('type') == 'episode' and str(media.get('show_tmdb_id')) == str(tmdb)
+					and int(media.get('season_number', -1)) == int(season) and int(media.get('episode_number', -1)) == int(episode))
+			else:
+				match = media.get('type') == 'movie' and str(media.get('tmdb_id')) == str(tmdb)
+			if not match: continue
+			response = getScrob('/history/continue-watching?media_id=%s' % int(media['id']), method='DELETE', auth='api_key')
+			status = response.status_code if response is not None else None
+			log_utils.log('SCROB: clear playback progress HTTP=%s' % status, level=log_utils.LOGDEBUG)
+			if status not in (200, 204): return False
+		if clear_local:
+			scrobsync.delete_bookmark(imdb or '', tvdb=tvdb or '', tmdb=str(tmdb),
+				season='' if not is_episode else str(season), episode='' if not is_episode else str(episode))
+		return True
+	except:
+		log_utils.error()
+		return False
+
+
+def finishProgressRemoval(succeeded, total):
+	failed = total - succeeded
+	message = 'Removed playback progress for %s item(s).' % succeeded
+	if failed: message += ' Failed to remove %s item(s); check the log and Scrob authorization.' % failed
+	control.notification(title='Scrob', message=message)
+	if succeeded:
+		control.trigger_widget_refresh(force=True)
+		if 'plugin.video.umbrella' in control.infoLabel('Container.PluginName'): control.refresh()
+
+
+def scrobbleReset(imdb, tmdb=None, tvdb=None, season=None, episode=None, refresh=True, widgetRefresh=False, clear_local=True, remote=True):
+	try:
+		# Explicit resets clear the provider record. Player lifecycle cleanup opts
+		# out: playback start must not erase remote resume, and stop owns completion.
+		if remote:
+			if not removePlaybackProgress(imdb, tmdb, tvdb, season, episode, clear_local=clear_local):
+				control.notification(title='Scrob', message='Failed to clear playback progress. Check the log and Scrob authorization.')
+				return False
+			if refresh or widgetRefresh:
+				control.notification(title='Scrob', message='Playback progress cleared.')
+				control.trigger_widget_refresh(force=True)
+		else:
+			if not getScrobCredentialsInfo(): return False
+			if clear_local:
+				scrobsync.delete_bookmark(imdb or '', tvdb=tvdb or '', tmdb=str(tmdb or ''),
+					season='' if season is None else str(season), episode='' if episode is None else str(episode))
 		if refresh: control.refresh()
-		if widgetRefresh: control.trigger_widget_refresh()
-	except: log_utils.error()
+		if widgetRefresh and not remote: control.trigger_widget_refresh()
+		return True
+	except:
+		log_utils.error()
+		return False
 
 
 #### Ratings (bonus — works API-key-only, confirmed via the same webhook auth tier) ####

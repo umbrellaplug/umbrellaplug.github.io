@@ -55,6 +55,11 @@ def getFloppyIndicatorsInfo():
 	return getSetting('indicators.alt') == '5'
 
 
+def isReadOnly():
+	"""True when another add-on owns automatic Floppy playback reporting."""
+	return getSetting('floppy.readonly') == 'true'
+
+
 #### Core request plumbing (mirrors customtrakt.py's getCustom, minus the reauth loop) ####
 
 def getFloppy(url, post=None, method=None, silent=False):
@@ -461,6 +466,7 @@ def _scrobble_seconds(watched_percent, current_time, total_time):
 	return int(watched_percent), 100
 
 def scrobbleStart(media_type, title='', tvshowtitle='', year='0', imdb='', tmdb='', tvdb='', season='', episode='', watched_percent=0, current_time=0, total_time=0):
+	if isReadOnly(): return
 	try:
 		ids = {}
 		if tmdb: ids['tmdb'] = str(tmdb)
@@ -475,6 +481,7 @@ def scrobbleStart(media_type, title='', tvshowtitle='', year='0', imdb='', tmdb=
 	except: log_utils.error()
 
 def scrobbleMovie(imdb, tmdb, watched_percent, current_time=0, total_time=0):
+	if isReadOnly(): return
 	try:
 		ids = {}
 		if tmdb: ids['tmdb'] = str(tmdb)
@@ -488,6 +495,7 @@ def scrobbleMovie(imdb, tmdb, watched_percent, current_time=0, total_time=0):
 	except: log_utils.error()
 
 def scrobbleEpisode(imdb, tmdb, tvdb, season, episode, watched_percent, current_time=0, total_time=0):
+	if isReadOnly(): return
 	try:
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
 		ids = {}
@@ -504,6 +512,7 @@ def scrobbleEpisode(imdb, tmdb, tvdb, season, episode, watched_percent, current_
 	except: log_utils.error()
 
 def scrobbleStopMovie(imdb, tmdb, watched_percent, completed=False, current_time=0, total_time=0, already_watched=False):
+	if isReadOnly(): return
 	try:
 		ids = {}
 		if tmdb: ids['tmdb'] = str(tmdb)
@@ -523,6 +532,7 @@ def scrobbleStopMovie(imdb, tmdb, watched_percent, completed=False, current_time
 	except: log_utils.error()
 
 def scrobbleStopEpisode(imdb, tmdb, tvdb, season, episode, watched_percent, completed=False, current_time=0, total_time=0, already_watched=False):
+	if isReadOnly(): return
 	try:
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
 		ids = {}
@@ -545,13 +555,64 @@ def scrobbleStopEpisode(imdb, tmdb, tvdb, season, episode, watched_percent, comp
 			control.trigger_widget_refresh()
 	except: log_utils.error()
 
-def scrobbleReset(imdb, tmdb=None, tvdb=None, season=None, episode=None, refresh=True, widgetRefresh=False, clear_local=True):
-	if not getFloppyCredentialsInfo(): return
+def removePlaybackProgress(imdb='', tmdb='', tvdb='', season=None, episode=None, clear_local=True):
+	"""Explicit manager action; automatic playback resets remain local-only."""
 	try:
-		if clear_local: floppysync.delete_bookmark(imdb or '', tvdb=tvdb or '', tmdb=str(tmdb or ''), season=season or '', episode=episode or '')
+		if not getFloppyCredentialsInfo(): return False
+		ids = {key: str(value) for key, value in [('imdb', imdb), ('tmdb', tmdb), ('tvdb', tvdb)]
+			if value not in (None, '', '0', 0, 'None')}
+		if not ids: return False
+		is_episode = episode not in (None, '')
+		if not is_episode and season not in (None, ''): return False
+		post = {'media_type': 'episode' if is_episode else 'movie', 'ids': ids, 'position_seconds': None}
+		if is_episode:
+			post.update(season_number=int(season), episode_number=int(episode))
+		response = getFloppy('/playback/progress/', post=post, method='PUT')
+		status = response.status_code if response is not None else None
+		log_utils.log('FLOPPY: remove playback progress type=%s tmdb=%s season=%s episode=%s HTTP=%s' %
+			(post['media_type'], tmdb, season, episode, status), level=log_utils.LOGDEBUG)
+		if status not in (200, 204): return False
+		if clear_local:
+			floppysync.delete_bookmark(imdb or '', tvdb=tvdb or '', tmdb=str(tmdb or ''),
+				season='' if not is_episode else str(season), episode='' if not is_episode else str(episode))
+		return True
+	except:
+		log_utils.error()
+		return False
+
+
+def finishProgressRemoval(succeeded, total):
+	failed = total - succeeded
+	message = 'Removed playback progress for %s item(s).' % succeeded
+	if failed: message += ' Failed to remove %s item(s); check the log and Floppy authorization.' % failed
+	control.notification(title='Floppy', message=message)
+	if succeeded:
+		control.trigger_widget_refresh(force=True)
+		if 'plugin.video.umbrella' in control.infoLabel('Container.PluginName'): control.refresh()
+
+
+def scrobbleReset(imdb, tmdb=None, tvdb=None, season=None, episode=None, refresh=True, widgetRefresh=False, clear_local=True, remote=True):
+	try:
+		# Explicit resets clear the provider record. Player lifecycle cleanup opts
+		# out: playback start must not erase remote resume, and stop owns completion.
+		if remote:
+			if not removePlaybackProgress(imdb, tmdb, tvdb, season, episode, clear_local=clear_local):
+				control.notification(title='Floppy', message='Failed to clear playback progress. Check the log and Floppy authorization.')
+				return False
+			if refresh or widgetRefresh:
+				control.notification(title='Floppy', message='Playback progress cleared.')
+				control.trigger_widget_refresh(force=True)
+		else:
+			if not getFloppyCredentialsInfo(): return False
+			if clear_local:
+				floppysync.delete_bookmark(imdb or '', tvdb=tvdb or '', tmdb=str(tmdb or ''),
+					season='' if season is None else str(season), episode='' if episode is None else str(episode))
 		if refresh: control.refresh()
-		if widgetRefresh: control.trigger_widget_refresh()
-	except: log_utils.error()
+		if widgetRefresh and not remote: control.trigger_widget_refresh()
+		return True
+	except:
+		log_utils.error()
+		return False
 
 
 #### Status-bucket sync (Watchlist/Watching/On Hold/Completed/Dropped/Collection) ####

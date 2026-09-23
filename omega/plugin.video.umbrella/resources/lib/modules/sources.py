@@ -32,6 +32,9 @@ show_expiry = timedelta(hours=48)
 video_extensions = supported_video_extensions()
 internal_scrapers_clouds_list = [('realdebrid', 'rd_cloud', 'rd'), ('premiumize', 'pm_cloud', 'pm'), ('alldebrid', 'ad_cloud', 'ad'),('torbox', 'tb_cloud', 'tb'),('offcloud', 'oc_cloud', 'oc')]
 
+def _natural_sort_key(value):
+	return [int(part) if part.isdigit() else part.lower() for part in re.split(r'(\d+)', value or '')]
+
 class Sources:
 	def __init__(self, all_providers=False, custom_query=False, filterless_scrape=False, rescrapeAll=False):
 		self.sources = []
@@ -827,6 +830,7 @@ class Sources:
 
 	def preResolve(self, next_sources, next_meta):
 		try:
+			next_sources = [i for i in next_sources if not i.get('cloud_folder')]
 			if not next_sources: raise Exception()
 			homeWindow.setProperty(self.metaProperty, jsdumps(next_meta))
 			if getSetting('autoplay.sd') == 'true': next_sources = [i for i in next_sources if not i['quality'] in ('4K', '1080p', '720p')]
@@ -1357,6 +1361,8 @@ class Sources:
 	def sourcesAutoPlay(self, items):
 		#control.hide()
 		#control.sleep(200)
+		items = [i for i in items if not i.get('cloud_folder')]
+		if not items: return None
 		if getSetting('autoplay.sd') == 'true': items = [i for i in items if not i['quality'] in ('4K', '1080p', '720p')]
 		header = homeWindow.getProperty(self.labelProperty) + ': Resolving...'
 		try:
@@ -1563,6 +1569,54 @@ class Sources:
 		except:
 			log_utils.error('Error debridPackDialog: ')
 			control.hide()
+
+	def torboxCloudPackDialog(self, folder_id, mediatype, name):
+		"""Browse the parent folder of a TorBox Cloud result and retain selected-item metadata."""
+		try:
+			from resources.lib.debrid.torbox import TorBox
+			torbox = TorBox()
+			control.busy()
+			if mediatype == 'usenet': response = torbox.user_cloud_usenet(folder_id, bypass_cache=True)
+			elif mediatype == 'webdl': response = torbox.user_cloud_webdl(folder_id, bypass_cache=True)
+			else: response = torbox.user_cloud(folder_id, bypass_cache=True)
+			folder = response.get('data') if isinstance(response, dict) else None
+			if not isinstance(folder, dict): raise ValueError('TorBox folder was not returned')
+			files = [item for item in (folder.get('files') or [])
+					if item.get('short_name', '').lower().endswith(tuple(video_extensions))]
+			files.sort(key=lambda item: _natural_sort_key(item.get('short_name', '')))
+			if not files:
+				control.hide()
+				return control.notification(message=32399)
+			display_list = []
+			for count, item in enumerate(files, 1):
+				size = float(item.get('size') or 0) / 1073741824
+				display_list.append('%02d | [B]%.2f GB[/B] | [I]%s[/I]' %
+						(count, size, item.get('short_name', '').upper()))
+			control.hide()
+			chosen = control.selectDialog(display_list, heading=folder.get('name') or name or 'TorBox')
+			if chosen < 0: return None
+			chosen_file = files[chosen]
+			file_key = '%s,%s' % (folder_id, chosen_file['id'])
+			if mediatype == 'usenet': resolved_url = torbox.unrestrict_usenet(file_key)
+			elif mediatype == 'webdl': resolved_url = torbox.unrestrict_webdl(file_key)
+			else: resolved_url = torbox.unrestrict_link(file_key)
+			if not resolved_url: raise ValueError('TorBox did not return a playback URL')
+			meta_value = homeWindow.getProperty(self.metaProperty)
+			meta = jsloads(unquote(meta_value.replace('%22', '\\"'))) if meta_value else {}
+			if not meta: raise ValueError('Selected episode metadata is unavailable')
+			if control.condVisibility('Window.IsActive(source_results.xml)'):
+				control.closeAll()
+			control.busy()
+			from resources.lib.modules import player
+			title = meta.get('tvshowtitle') or meta.get('title')
+			return player.Player().play_source(
+				title, meta.get('year'), meta.get('season'), meta.get('episode'),
+				meta.get('imdb'), meta.get('tmdb'), meta.get('tvdb'), resolved_url, meta,
+				debridPackCall=True)
+		except:
+			log_utils.error('Error torboxCloudPackDialog: ')
+			control.hide()
+			return control.notification(message='Unable to browse the TorBox cloud folder')
 
 	def sourceInfo(self, item):
 		try:

@@ -1,3 +1,20 @@
+[B]Update - v6.7.88 - Sept 23rd, 2026 [/B]
+--[Enhancement] Added PunchPlay as an optional tracking provider. (Addon Settings > Online Services > PunchPlay)
+--[Change] Moved PunchPlay public categories into Discover Movies and Discover TV Shows alongside the other providers.
+--[Enhancement] Added Skip Intro (credit to kodifitzwell) and Skip Recap options using the continuous playback theme.
+--[Enhancement] Added TorBox cloud folders to source selection with metadata for watched-episode tracking.
+--[Change] Moved continuous playback settings to the Playback tab.
+--[Change] Added import to library from Floppy, Scrob, and Punchplay.
+--[Change] Added Disable Floppy Writes under Umbrella Settings > Online Services > Floppy for users who track playback through other addons.
+--[Change] Incomplete rewatches now show as partially watched.
+--[Change] Removed the TorBox referral option and window.
+--[Fix] Fixed duplicate MDBList Progress Episodes and reduced blank-list delays after playback.
+--[Fix] Improved playback monitoring and reduced unnecessary background and post-playback refreshes.
+--[Fix] Fixed episode counts, including multiple services counts, and cursor sync across devices.
+--[Fix] Fixed duplicate resume prompts and reduced Kodi resume-point warnings.
+--[Fix] Clear Scrobble Progress and unfinished managers now clear remote Scrob/Floppy playback progress and report Scrob, Floppy, and PunchPlay removal failures.
+--[Logging] Reduced logging and restricted playback and refresh diagnostics to Umbrella debug logging.
+
 [B]Update - v6.7.87 - Sept 9th, 2026 [/B]
 --[Fix] Stabilized Scrob Progress episode ordering while preserving sorting options.
 --[Fix] Removed guard for scrobble in first 3 minutes so immediate stops no longer continue to show as playing.

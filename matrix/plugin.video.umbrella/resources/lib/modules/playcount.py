@@ -10,6 +10,7 @@ from resources.lib.modules import mdblist
 from resources.lib.modules import customtrakt
 from resources.lib.modules import floppy
 from resources.lib.modules import scrob
+from resources.lib.modules import punchplay
 tmdb_api_key = 'edde6b5e41246ab79a2697cd125e1781'
 omdb_api_key = 'd4daa2b'
 tvdb_api_key = '06cff30690f9b9622957044f2159ffae'
@@ -19,12 +20,14 @@ mdblistIndicators = mdblist.getMDBListIndicatorsInfo()
 customIndicators = customtrakt.getCustomIndicatorsInfo()
 floppyIndicators = floppy.getFloppyIndicatorsInfo()
 scrobIndicators = scrob.getScrobIndicatorsInfo()
+punchplayIndicators = punchplay.getPunchPlayIndicatorsInfo()
 traktCredentials = trakt.getTraktCredentialsInfo()
 simklCredentials = simkl.getSimKLCredentialsInfo()
 mdblistCredentials = mdblist.getMDBListCredentialsInfo()
 customCredentials = customtrakt.getCustomCredentialsInfo()
 floppyCredentials = floppy.getFloppyCredentialsInfo()
 scrobCredentials = scrob.getScrobCredentialsInfo()
+punchplayCredentials = punchplay.getPunchPlayCredentialsInfo()
 #if not traktIndicators:
 #	try:
 #		if not condVisibility('System.HasAddon(script.module.metahandler)'): execute('InstallAddon(script.module.metahandler)', wait=True)
@@ -33,6 +36,8 @@ scrobCredentials = scrob.getScrobCredentialsInfo()
 
 def getMovieIndicators(refresh=False):
 	try:
+		if punchplay.getPunchPlayIndicatorsInfo():
+			return punchplay.cachesyncMovies(timeout=0 if refresh else 720)
 		if traktIndicators:
 			if not refresh: timeout = 720
 			elif trakt.getMoviesWatchedActivity() < trakt.timeoutsyncMovies(): timeout = 720
@@ -69,6 +74,12 @@ def getMovieIndicators(refresh=False):
 			else: timeout = 0
 			indicators = scrob.cachesyncMovies(timeout=timeout)
 			return indicators
+		elif punchplayIndicators:
+			if not refresh: timeout = 720
+			elif punchplay.getMoviesWatchedActivity() < punchplay.timeoutsyncMovies(): timeout = 720
+			else: timeout = 0
+			indicators = punchplay.cachesyncMovies(timeout=timeout)
+			return indicators
 		else:
 #			from metahandler import metahandlers
 #			indicators = metahandlers.MetaData(tmdb_api_key, omdb_api_key, tvdb_api_key)
@@ -81,6 +92,8 @@ def getMovieIndicators(refresh=False):
 
 def getTVShowIndicators(refresh=False):
 	try:
+		if punchplay.getPunchPlayIndicatorsInfo():
+			return punchplay.syncTVShows()
 		if traktIndicators:
 			if not refresh: timeout = 720
 			elif trakt.getEpisodesWatchedActivity() < trakt.timeoutsyncTVShows(): timeout = 720
@@ -116,6 +129,12 @@ def getTVShowIndicators(refresh=False):
 			elif scrob.getEpisodesWatchedActivity() < scrob.timeoutsyncTVShows(): timeout = 720
 			else: timeout = 0
 			indicators = scrob.cachesyncTVShows(timeout=timeout)
+			return indicators
+		elif punchplayIndicators:
+			if not refresh: timeout = 720
+			elif punchplay.getEpisodesWatchedActivity() < punchplay.timeoutsyncTVShows(): timeout = 720
+			else: timeout = 0
+			indicators = punchplay.cachesyncTVShows(timeout=timeout)
 			return indicators
 		else:
 #			from metahandler import metahandlers
@@ -256,6 +275,26 @@ def getSeasonIndicators(imdb, tvdb, refresh=False, has_next_episode=False, tmdb_
 						from resources.lib.modules import log_utils
 						log_utils.error()
 			return indicators
+		elif punchplayIndicators:
+			# syncSeasons derives totals from TMDb season meta (96h cache) — always fetch fresh from local DB
+			indicators = punchplay.cachesyncSeasons(imdb, tvdb, timeout=0)
+			counts = indicators[1] if indicators and len(indicators) > 1 else {}
+			cached_total = sum(v.get('total', 0) for v in counts.values()) if counts else 0
+			stale = has_next_episode or (tmdb_total_aired and int(tmdb_total_aired) > cached_total)
+			if stale and indicators:
+				if counts and sum(v.get('watched', 0) for v in counts.values()) == cached_total:
+					try:
+						from resources.lib.database import cache as _cache
+						from resources.lib.indexers import tmdb as _tmdb
+						tmdb_result = _cache.get(_tmdb.TVshows().IdLookup, 96, imdb, tvdb)
+						tmdb_id = str(tmdb_result.get('id', '')) if tmdb_result else ''
+						if tmdb_id:
+							_cache.get(_tmdb.TVshows().get_showSeasons_meta, 0, tmdb_id)  # force fresh, updates cache
+							indicators = punchplay.cachesyncSeasons(imdb, tvdb, timeout=0)  # re-run with fresh totals
+					except:
+						from resources.lib.modules import log_utils
+						log_utils.error()
+			return indicators
 		else:
 			from resources.lib.database import watchedcache
 			return [watchedcache, watchedcache]
@@ -264,6 +303,9 @@ def getSeasonIndicators(imdb, tvdb, refresh=False, has_next_episode=False, tmdb_
 		log_utils.error()
 
 def getMovieOverlay(indicators, imdb):
+	# Kodi can reuse Python modules after the user changes the selected provider.
+	if punchplay.getPunchPlayIndicatorsInfo():
+		return '5' if imdb in (indicators or punchplay.cachesyncMovies() or []) else '4'
 	if not indicators: return '4'
 	try:
 		if traktIndicators:
@@ -274,7 +316,7 @@ def getMovieOverlay(indicators, imdb):
 			playcount = [i for i in indicators if i == imdb]
 			playcount = '5' if len(playcount) > 0 else '4'
 			return playcount
-		elif mdblistIndicators or customIndicators or floppyIndicators or scrobIndicators:
+		elif mdblistIndicators or customIndicators or floppyIndicators or scrobIndicators or punchplayIndicators:
 			playcount = [i for i in indicators if i == imdb]
 			playcount = '5' if len(playcount) > 0 else '4'
 			return playcount
@@ -303,7 +345,7 @@ def getTVShowOverlay(indicators, imdb, tvdb): # tvdb no longer used
 				playcount['watched'] += value['watched']
 			playcount = '5' if playcount['total'] == playcount['watched'] else '4'
 			return playcount
-		elif mdblistIndicators or customIndicators or floppyIndicators or scrobIndicators:
+		elif mdblistIndicators or customIndicators or floppyIndicators or scrobIndicators or punchplayIndicators:
 			playcount = {'total': 0, 'watched': 0}
 			for key, value in iter(indicators.items()):
 				playcount['total'] += value['total']
@@ -329,7 +371,7 @@ def getSeasonOverlay(indicators, imdb, tvdb, season): # tvdb no longer used
 			playcount = [i for i in indicators if int(season) == int(i)]
 			playcount = '5' if len(playcount) > 0 else '4'
 			return playcount
-		elif mdblistIndicators or customIndicators or floppyIndicators or scrobIndicators:
+		elif mdblistIndicators or customIndicators or floppyIndicators or scrobIndicators or punchplayIndicators:
 			playcount = [i for i in indicators if int(season) == int(i)]
 			playcount = '5' if len(playcount) > 0 else '4'
 			return playcount
@@ -342,9 +384,24 @@ def getSeasonOverlay(indicators, imdb, tvdb, season): # tvdb no longer used
 		return '4'
 
 def getEpisodeOverlay(indicators, imdb, tvdb, season, episode):
+	# Custom season indicators use server progress. Use that same snapshot for
+	# episodes, since the incremental local history may be incomplete or stale.
+	if customIndicators and imdb:
+		progress = customtrakt.getShowProgress(imdb)
+		if progress:
+			for s in progress.get('seasons', []):
+				if int(s.get('number', -1)) != int(season): continue
+				for e in s.get('episodes', []):
+					if int(e.get('number', -1)) == int(episode):
+						return '5' if e.get('completed') else '4'
+				# Do not mix an authoritative progress snapshot with stale history.
+				if not s.get('episodes') and int(s.get('aired', 0)) > 0 and int(s.get('completed', 0)) == int(s.get('aired', 0)):
+					return '5' if 0 < int(episode) <= int(s['aired']) else '4'
+				return '4'
+			return '4'
 	if not indicators: return '4'
 	try:
-		if traktIndicators or simklIndicators or mdblistIndicators or customIndicators or floppyIndicators or scrobIndicators:
+		if traktIndicators or simklIndicators or mdblistIndicators or customIndicators or floppyIndicators or scrobIndicators or punchplayIndicators:
 			eps_data = [i[2] for i in indicators if (i[0].get('imdb') == imdb or str(i[0].get('tvdb')) == tvdb)]
 			eps_data = eps_data[0] if eps_data else []
 			if isinstance(eps_data, dict): # range format: {season: [(start_ep, end_ep), ...]}
@@ -379,7 +436,7 @@ def getShowCount(indicators, imdb, tvdb): # ID's currently not used. totals from
 				result['watched'] += value['watched']
 				result['unwatched'] += value['unwatched']
 			return result
-		elif mdblistIndicators or customIndicators or floppyIndicators or scrobIndicators:
+		elif mdblistIndicators or customIndicators or floppyIndicators or scrobIndicators or punchplayIndicators:
 			if not indicators: return None
 			result = {'total': 0, 'watched': 0, 'unwatched': 0}
 			for key, value in iter(indicators.items()):
@@ -419,6 +476,7 @@ def getSeasonCount(imdb, tvdb, season=None):
 		elif customIndicators: result = customtrakt.seasonCount(imdb, tvdb)
 		elif floppyIndicators: result = floppy.seasonCount(imdb, tvdb)
 		elif scrobIndicators: result = scrob.seasonCount(imdb, tvdb)
+		elif punchplayIndicators: result = punchplay.seasonCount(imdb, tvdb)
 		else:
 			try:
 				from resources.lib.database import watchedcache as wc
@@ -470,7 +528,7 @@ def markMovieDuringPlayback(imdb, watched):
 			if int(watched) == 5: customtrakt.markMovieAsWatched(imdb)
 			else: customtrakt.markMovieAsNotWatched(imdb)
 			if customIndicators: customtrakt.cachesyncMovies()
-		elif watch_history_service == '5' and floppyCredentials:
+		elif watch_history_service == '5' and floppyCredentials and not floppy.isReadOnly():
 			if int(watched) == 5: floppy.markMovieAsWatched(imdb)
 			else: floppy.markMovieAsNotWatched(imdb)
 			if floppyIndicators: floppy.cachesyncMovies()
@@ -478,6 +536,8 @@ def markMovieDuringPlayback(imdb, watched):
 			if int(watched) == 5: scrob.markMovieAsWatched(imdb)
 			else: scrob.markMovieAsNotWatched(imdb)
 			if scrobIndicators: scrob.cachesyncMovies()
+		elif watch_history_service == '7' and punchplayCredentials:
+			punchplay.markMovieDuringPlayback(imdb, watched)
 		else:
 			from resources.lib.database import watchedcache
 			watchedcache.change_watched('movie', imdb, '', watched=int(watched))
@@ -493,12 +553,14 @@ def markMovieDuringPlayback(imdb, watched):
 		if watch_history_service != '4' and getSetting('custom.markwatched') == 'true' and customCredentials:
 			if int(watched) == 5: customtrakt.markMovieAsWatched(imdb)
 			else: customtrakt.markMovieAsNotWatched(imdb)
-		if watch_history_service != '5' and getSetting('floppy.markwatched') == 'true' and floppyCredentials:
+		if watch_history_service != '5' and getSetting('floppy.markwatched') == 'true' and floppyCredentials and not floppy.isReadOnly():
 			if int(watched) == 5: floppy.markMovieAsWatched(imdb)
 			else: floppy.markMovieAsNotWatched(imdb)
 		if watch_history_service != '6' and getSetting('scrob.markwatched') == 'true' and scrobCredentials:
 			if int(watched) == 5: scrob.markMovieAsWatched(imdb)
 			else: scrob.markMovieAsNotWatched(imdb)
+		if watch_history_service != '7' and getSetting('punchplay.markwatched') == 'true' and punchplayCredentials:
+			punchplay.markMovieDuringPlayback(imdb, watched)
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()
@@ -522,7 +584,7 @@ def markEpisodeDuringPlayback(imdb, tvdb, season, episode, watched):
 			if int(watched) == 5: customtrakt.markEpisodeAsWatched(imdb, tvdb, season, episode)
 			else: customtrakt.markEpisodeAsNotWatched(imdb, tvdb, season, episode)
 			if customIndicators: customtrakt.cachesyncTV(imdb, tvdb)
-		elif watch_history_service == '5' and floppyCredentials:
+		elif watch_history_service == '5' and floppyCredentials and not floppy.isReadOnly():
 			if int(watched) == 5: floppy.markEpisodeAsWatched(imdb, tvdb, season, episode)
 			else: floppy.markEpisodeAsNotWatched(imdb, tvdb, season, episode)
 			if floppyIndicators: floppy.cachesyncTV(imdb, tvdb)
@@ -530,6 +592,8 @@ def markEpisodeDuringPlayback(imdb, tvdb, season, episode, watched):
 			if int(watched) == 5: scrob.markEpisodeAsWatched(imdb, tvdb, season, episode)
 			else: scrob.markEpisodeAsNotWatched(imdb, tvdb, season, episode)
 			if scrobIndicators: scrob.cachesyncTV(imdb, tvdb)
+		elif watch_history_service == '7' and punchplayCredentials:
+			punchplay.markEpisodeDuringPlayback(imdb, tvdb, season, episode, watched)
 		else:
 			from resources.lib.database import watchedcache
 			watchedcache.change_watched('episode', imdb, '', season=season, episode=episode, watched=int(watched))
@@ -545,12 +609,14 @@ def markEpisodeDuringPlayback(imdb, tvdb, season, episode, watched):
 		if watch_history_service != '4' and getSetting('custom.markwatched') == 'true' and customCredentials:
 			if int(watched) == 5: customtrakt.markEpisodeAsWatched(imdb, tvdb, season, episode)
 			else: customtrakt.markEpisodeAsNotWatched(imdb, tvdb, season, episode)
-		if watch_history_service != '5' and getSetting('floppy.markwatched') == 'true' and floppyCredentials:
+		if watch_history_service != '5' and getSetting('floppy.markwatched') == 'true' and floppyCredentials and not floppy.isReadOnly():
 			if int(watched) == 5: floppy.markEpisodeAsWatched(imdb, tvdb, season, episode)
 			else: floppy.markEpisodeAsNotWatched(imdb, tvdb, season, episode)
 		if watch_history_service != '6' and getSetting('scrob.markwatched') == 'true' and scrobCredentials:
 			if int(watched) == 5: scrob.markEpisodeAsWatched(imdb, tvdb, season, episode)
 			else: scrob.markEpisodeAsNotWatched(imdb, tvdb, season, episode)
+		if watch_history_service != '7' and getSetting('punchplay.markwatched') == 'true' and punchplayCredentials:
+			punchplay.markEpisodeDuringPlayback(imdb, tvdb, season, episode, watched)
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()
@@ -576,6 +642,9 @@ def movies(name, imdb, watched):
 		elif watch_history_service == '6' and scrobCredentials:
 			if int(watched) == 5: scrob.watch(content_type='movie', name=name, imdb=imdb, refresh=True)
 			else: scrob.unwatch(content_type='movie', name=name, imdb=imdb, refresh=True)
+		elif watch_history_service == '7' and punchplayCredentials:
+			if int(watched) == 5: punchplay.watch(content_type='movie', name=name, imdb=imdb, refresh=True)
+			else: punchplay.unwatch(content_type='movie', name=name, imdb=imdb, refresh=True)
 		else:
 			from resources.lib.database import watchedcache
 			watchedcache.change_watched('movie', imdb, '', title=name, watched=int(watched))
@@ -598,6 +667,9 @@ def movies(name, imdb, watched):
 		if watch_history_service != '6' and getSetting('scrob.markwatched') == 'true' and scrobCredentials:
 			if int(watched) == 5: scrob.watch(content_type='movie', name=name, imdb=imdb, refresh=False)
 			else: scrob.unwatch(content_type='movie', name=name, imdb=imdb, refresh=False)
+		if watch_history_service != '7' and getSetting('punchplay.markwatched') == 'true' and punchplayCredentials:
+			if int(watched) == 5: punchplay.watch(content_type='movie', name=name, imdb=imdb, refresh=False)
+			else: punchplay.unwatch(content_type='movie', name=name, imdb=imdb, refresh=False)
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()
@@ -624,6 +696,9 @@ def tvshows(tvshowtitle, imdb, tvdb, season, watched):
 		elif watch_history_service == '6' and scrobCredentials:
 			if int(watched) == 5: scrob.watch(content_type=content_type, name=tvshowtitle, imdb=imdb, tvdb=tvdb, season=season, refresh=True)
 			else: scrob.unwatch(content_type=content_type, name=tvshowtitle, imdb=imdb, tvdb=tvdb, season=season, refresh=True)
+		elif watch_history_service == '7' and punchplayCredentials:
+			if int(watched) == 5: punchplay.watch(content_type=content_type, name=tvshowtitle, imdb=imdb, tvdb=tvdb, season=season, refresh=True)
+			else: punchplay.unwatch(content_type=content_type, name=tvshowtitle, imdb=imdb, tvdb=tvdb, season=season, refresh=True)
 		else:
 			from resources.lib.database import watchedcache as wc
 			from resources.lib.indexers import tmdb as tmdb_indexer
@@ -663,7 +738,10 @@ def tvshows(tvshowtitle, imdb, tvdb, season, watched):
 		if watch_history_service != '6' and getSetting('scrob.markwatched') == 'true' and scrobCredentials:
 			if int(watched) == 5: scrob.watch(content_type=content_type, name=tvshowtitle, imdb=imdb, tvdb=tvdb, season=season, refresh=False)
 			else: scrob.unwatch(content_type=content_type, name=tvshowtitle, imdb=imdb, tvdb=tvdb, season=season, refresh=False)
-		if watch_history_service != '0' and not (traktCredentials or simklCredentials or mdblistCredentials or customCredentials or floppyCredentials or scrobCredentials):
+		if watch_history_service != '7' and getSetting('punchplay.markwatched') == 'true' and punchplayCredentials:
+			if int(watched) == 5: punchplay.watch(content_type=content_type, name=tvshowtitle, imdb=imdb, tvdb=tvdb, season=season, refresh=False)
+			else: punchplay.unwatch(content_type=content_type, name=tvshowtitle, imdb=imdb, tvdb=tvdb, season=season, refresh=False)
+		if watch_history_service != '0' and not (traktCredentials or simklCredentials or mdblistCredentials or customCredentials or floppyCredentials or scrobCredentials or punchplayCredentials):
 			from metahandler import metahandlers
 			from resources.lib.menus import episodes
 			from sys import exit as sysexit
@@ -724,6 +802,9 @@ def episodes(name, imdb, tvdb, season, episode, watched):
 		elif watch_history_service == '6' and scrobCredentials:
 			if int(watched) == 5: scrob.watch(content_type='episode', name=name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=True)
 			else: scrob.unwatch(content_type='episode', name=name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=True)
+		elif watch_history_service == '7' and punchplayCredentials:
+			if int(watched) == 5: punchplay.watch(content_type='episode', name=name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=True)
+			else: punchplay.unwatch(content_type='episode', name=name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=True)
 		else:
 			from resources.lib.database import watchedcache
 			watchedcache.change_watched('episode', imdb, '', season=season, episode=episode, title=name, watched=int(watched))
@@ -746,6 +827,9 @@ def episodes(name, imdb, tvdb, season, episode, watched):
 		if watch_history_service != '6' and getSetting('scrob.markwatched') == 'true' and scrobCredentials:
 			if int(watched) == 5: scrob.watch(content_type='episode', name=name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=False)
 			else: scrob.unwatch(content_type='episode', name=name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=False)
+		if watch_history_service != '7' and getSetting('punchplay.markwatched') == 'true' and punchplayCredentials:
+			if int(watched) == 5: punchplay.watch(content_type='episode', name=name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=False)
+			else: punchplay.unwatch(content_type='episode', name=name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=False)
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()
@@ -758,6 +842,7 @@ def tvshowsUpdate(imdb, tvdb):
 		if customCredentials: return
 		if floppyCredentials: return
 		if scrobCredentials: return
+		if punchplayCredentials: return
 		from metahandler import metahandlers
 		from resources.lib.menus import seasons, episodes
 		from resources.lib.indexers import tmdb as tmdb_indexer

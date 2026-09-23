@@ -16,6 +16,40 @@ import os
 import fnmatch
 
 
+def get_coalesced(function, duration, *args):
+	"""Share overlapping progress rebuilds across Kodi Python invocations.
+
+	The coordination database is separate from the metadata cache: no metadata
+	write lock is held while fetching remote data. Only overlapping callers use
+	its result, so normal cache expiration/invalidation still applies.
+	"""
+	started = time()
+	key = _hash_function(function, args)
+	if not control.existsPath(control.dataPath): control.makeFile(control.dataPath)
+	path = control.cacheFile + '.build-' + _generate_md5(key)
+	con = db.connect(path, timeout=0.25)
+	try:
+		while True:
+			try:
+				con.execute('BEGIN IMMEDIATE')
+				break
+			except db.OperationalError as exc:
+				if 'locked' not in str(exc).lower() and 'busy' not in str(exc).lower(): raise
+				if control.monitor.waitForAbort(0.1): return None
+		con.execute('CREATE TABLE IF NOT EXISTS result (id INTEGER PRIMARY KEY, completed REAL, value TEXT)')
+		row = con.execute('SELECT completed, value FROM result WHERE id=1').fetchone()
+		if row and row[0] >= started:
+			control.log_refresh_diagnostic('mdb-build-shared-result')
+			return literal_eval(row[1])
+		result = get(function, duration, *args)
+		if result is not None:
+			con.execute('INSERT OR REPLACE INTO result VALUES (1, ?, ?)', (time(), repr(result)))
+		con.commit()
+		return result
+	finally:
+		con.close()
+
+
 def get(function, duration, *args):
 	"""
 	:param function: Function to be executed
@@ -107,7 +141,9 @@ def cache_insert(key, value):
 	dbcon = None
 	dbcur = None
 	try:
-		dbcon = get_connection()
+		# Cache persistence is optional: return fetched data promptly when another
+		# plugin invocation holds the database, rather than waiting a minute.
+		dbcon = get_connection(timeout=0.25)
 		dbcur = get_connection_cursor(dbcon)
 		now = int(time())
 		dbcur.execute('''CREATE TABLE IF NOT EXISTS cache (key TEXT, value TEXT, date INTEGER, UNIQUE(key));''')
@@ -188,14 +224,18 @@ def clearMovieCache():
 		cleared = False
 	return cleared
 
-def get_connection():
+def get_connection(timeout=60):
 	if not control.existsPath(control.dataPath): control.makeFile(control.dataPath)
-	dbcon = db.connect(control.cacheFile, timeout=60) # added timeout 3/23/21 for concurrency with threads
-	dbcon.execute('''PRAGMA page_size = 32768''')
-	dbcon.execute('''PRAGMA journal_mode = OFF''')
-	dbcon.execute('''PRAGMA synchronous = OFF''')
-	dbcon.execute('''PRAGMA temp_store = memory''')
-	dbcon.execute('''PRAGMA mmap_size = 30000000000''')
+	dbcon = db.connect(control.cacheFile, timeout=timeout)
+	try:
+		dbcon.execute('''PRAGMA page_size = 32768''')
+		dbcon.execute('''PRAGMA journal_mode = OFF''')
+		dbcon.execute('''PRAGMA synchronous = OFF''')
+		dbcon.execute('''PRAGMA temp_store = memory''')
+		dbcon.execute('''PRAGMA mmap_size = 30000000000''')
+	except:
+		dbcon.close()
+		raise
 	dbcon.row_factory = _dict_factory
 	return dbcon
 

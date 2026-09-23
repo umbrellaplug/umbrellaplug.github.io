@@ -14,6 +14,54 @@ from resources.lib.modules.source_utils import supported_video_extensions
 from resources.lib.modules import scrape_utils as sc_utils
 
 
+def _folder_matches_show(title, aliases, folder_name, year=None):
+	"""Conservative folder match: exact title or title-prefixed release name."""
+	try:
+		folder = cloud_utils.release_title_format(folder_name).strip('.')
+		if not folder: return False
+		candidates = [title] + cloud_utils.aliases_to_array(aliases)
+		matched = False
+		for candidate in candidates:
+			candidate = cloud_utils.release_title_format(candidate).strip('.')
+			if candidate and (folder == candidate or folder.startswith(candidate + '.')):
+				matched = True
+				break
+		if not matched: return False
+		folder_years = re.findall(r'(?<!\d)((?:19|20)\d{2})(?!\d)', folder_name)
+		if folder_years and year and str(year) not in folder_years: return False
+		return True
+	except:
+		return False
+
+
+def _folder_contains_episode(folder_name, video_files, season, episode):
+	"""Reject explicit season conflicts without excluding irregular generic packs."""
+	try:
+		season = int(season)
+		episode = int(episode)
+		normalize = lambda value: re.sub(r'[^a-z0-9]+', '.', value.lower()).strip('.')
+		folder = normalize(folder_name)
+		folder_seasons = {int(value) for value in re.findall(
+			r'(?:^|\.)(?:s|season)[.-]?0*(\d{1,2})(?=\.|$)', folder)}
+		# An explicitly labelled season pack must never leak into another season's scrape.
+		if folder_seasons and season not in folder_seasons: return False
+		# Generic/complete packs often use absolute episode numbers or titles rather than
+		# SxxExx. Their strong show-title match is sufficient because the row is browse-only.
+		if not folder_seasons: return True
+		season_episode = re.compile(
+			r'(?:^|\.)(?:s0*%d[.-]?e(?:p)?[.-]?0*%d|0*%dx0*%d|season[.-]?0*%d[.-]?episode[.-]?0*%d)(?=\.|$)'
+			% (season, episode, season, episode, season, episode))
+		if any(season_episode.search(normalize(item.get('short_name', ''))) for item in video_files):
+			return True
+		# A season-labelled folder may contain files named only by episode number.
+		if season in folder_seasons:
+			episode_only = re.compile(r'(?:^|\.)(?:e(?:p)?|episode)[.-]?0*%d(?=\.|$)' % episode)
+			return any(episode_only.search(normalize(item.get('short_name', ''))) for item in video_files)
+		return False
+	except:
+		return False
+
+
 class source:
 	priority = 0
 	pack_capable = False # to avoid being added to pack scrape threads
@@ -71,11 +119,34 @@ class source:
 				log_utils.error('TB_CLOUD: ')
 				continue
 
-			for file in folder_files:
+			video_files = [item for item in folder_files
+					if item.get('short_name', '').lower().endswith(tuple(supported_video_extensions()))]
+			if ('tvshowtitle' in data and len(video_files) > 1
+					and _folder_matches_show(title, aliases, folder_name, self.year)
+					and _folder_contains_episode(folder_name, video_files, self.season, self.episode)):
+				try:
+					total_size = sum(float(item.get('size') or 0) for item in video_files)
+					dsize, isize = sc_utils.convert_size(total_size, to='GB')
+					average_size = dsize / len(video_files)
+				except: average_size, isize = 0, ''
+				quality, info = sc_utils.get_release_quality(folder_name, folder_name)
+				info = [isize, 'CLOUD FOLDER', '%d FILES' % len(video_files)] + info
+				sources.append({
+					'provider': 'tb_cloud', 'source': 'cloud folder', 'debrid': 'TorBox',
+					# A folder row is navigation, not a cache-check result. Do not attach the
+					# torrent hash or direct-source dedupe can replace the matched episode.
+					'seeders': '', 'hash': '', 'name': folder_name,
+					'name_info': folder_name, 'quality': quality, 'language': 'en',
+					'url': '%s,,%s' % (request_id, mediatype), 'info': ' / '.join(filter(None, info)),
+					# Source size filters are per episode. Using the total pack size here would
+					# hide large, valid show folders; the total remains visible in info above.
+					'direct': True, 'debridonly': True, 'size': average_size, 'cloud_folder': True
+				})
+
+			for file in video_files:
 				try:
 					name = file['short_name']
 					rt = cloud_utils.release_title_format(name)
-					if not name.lower().endswith(tuple(supported_video_extensions())): continue
 					if any(value in rt for value in extras_filter): continue
 					if name.endswith('m2ts'):
 						continue

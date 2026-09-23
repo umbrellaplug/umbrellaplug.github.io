@@ -71,6 +71,11 @@ _MOVIES_DEFAULTS = [
 	('mv_fav_movies',          '40465', 'getFavouritesMovies&url=favourites_movies',          'movies.png',      'movies.png',        1, 1, 1, 36, 0, 'favorite_movie', 0, None),
 	('mv_person_search',       '33044', 'moviePerson',                                        'imdb.png',        'people-search.png', 0, 1, 1, 37, 0, 'not_lite',       0, None),
 	('mv_movie_search',        '33042', 'movieSearch',                                        'trakt.png',       'search.png',        1, 1, 1, 38, 0, 'not_lite',       0, None),
+	('mv_punchplay_trending', 'Trending (PunchPlay)', 'punchplay_catalog&media_type=movie&category=trending', 'punchplay.png', 'trending.png', 1, 1, 1, 12, 0, None, 0, '32442'),
+	('mv_punchplay_popular', 'Popular (PunchPlay)', 'punchplay_catalog&media_type=movie&category=popular', 'punchplay.png', 'most-popular.png', 1, 1, 1, 7, 0, None, 0, '32430'),
+	('mv_punchplay_top_rated', 'Top Rated (PunchPlay)', 'punchplay_catalog&media_type=movie&category=top_rated', 'punchplay.png', 'most-voted.png', 1, 1, 1, 11, 0, None, 0, '32440'),
+	('mv_punchplay_now_playing', 'Now Playing (PunchPlay)', 'punchplay_catalog&media_type=movie&category=now_playing', 'punchplay.png', 'in-theaters.png', 1, 1, 1, 0, 0, None, 0, '32422'),
+	('mv_punchplay_upcoming', 'Upcoming (PunchPlay)', 'punchplay_catalog&media_type=movie&category=upcoming', 'punchplay.png', 'in-theaters.png', 1, 1, 1, 2, 0, None, 0, '32426'),
 ]
 
 _TVSHOWS_DEFAULTS = [
@@ -105,6 +110,11 @@ _TVSHOWS_DEFAULTS = [
 	('tv_fav_tvshows',        '40466', 'getFavouritesTVShows&url=favourites_tvshows','tvshows.png','tvshows.png',    1, 1, 1, 28, 0, 'favorite_tvshows', 0, None),
 	('tv_person_search',      '33045', 'tvPerson',                                'imdb.png',    'people-search.png',0, 1, 1, 29, 0, 'not_lite',        0, None),
 	('tv_search',             '33043', 'tvSearch',                                'trakt.png',   'search.png',       1, 1, 1, 30, 0, 'not_lite',        0, None),
+	('tv_punchplay_trending', 'Trending (PunchPlay)', 'punchplay_catalog&media_type=show&category=trending', 'punchplay.png', 'trending.png', 1, 1, 1, 4, 0, None, 0, '32442'),
+	('tv_punchplay_popular', 'Popular (PunchPlay)', 'punchplay_catalog&media_type=show&category=popular', 'punchplay.png', 'most-popular.png', 1, 1, 1, 1, 0, None, 0, '32430'),
+	('tv_punchplay_top_rated', 'Top Rated (PunchPlay)', 'punchplay_catalog&media_type=show&category=top_rated', 'punchplay.png', 'most-voted.png', 1, 1, 1, 3, 0, None, 0, '32440'),
+	('tv_punchplay_now_playing', 'Now Playing (PunchPlay)', 'punchplay_catalog&media_type=show&category=now_playing', 'punchplay.png', 'in-theaters.png', 1, 1, 1, 18, 0, None, 0, '32422'),
+	('tv_punchplay_upcoming', 'Upcoming (PunchPlay)', 'punchplay_catalog&media_type=show&category=upcoming', 'punchplay.png', 'in-theaters.png', 1, 1, 1, 20, 0, None, 0, '32426'),
 ]
 
 _MYMOVIES_DEFAULTS = [
@@ -117,10 +127,12 @@ _MYMOVIES_DEFAULTS = [
 	('mymv_trakt_folder',     'Trakt',    'mymovies_traktNavigator',                       'trakt.png',     'trakt.png',     1, 1, 1,  6, 0, 'trakt_credentials',    0, None),
 	('mymv_floppy_folder',  'Floppy', 'mymovies_floppyNavigator',                    'floppy.png',  'floppy.png',  1, 1, 1,  7, 0, 'floppy_credentials', 0, None),
 	('mymv_local_folder',   'Local',    'mymovies_localNavigator',                       'icon.png',      'icon.png',      1, 1, 1,  8, 0, 'local_scrobble',       0, None),
+	('mymv_local_folder',   'Local',    'mymovies_localNavigator',                       'icon.png',      'icon.png',      1, 1, 1,  8, 0, 'local_scrobble',       0, None),
 	('mymv_movies_menu',      '32031', 'movieliteNavigator',                               'movies.png',    'movies.png',    1, 1, 1,  9, 0, 'not_lite',             0, None),
 	('mymv_person_search',    '33044', 'moviePerson',                                      'imdb.png',      'people-search.png', 0, 1, 1, 10, 0, 'not_lite',         0, None),
 	('mymv_movie_search',     '33042', 'movieSearch',                                      'search.png',    'search.png',    1, 1, 1, 11, 0, 'not_lite',             0, None),
 	('mymv_scrob_folder',     'Scrob',    'mymovies_scrobNavigator',                      'scrob.png',     'scrob.png',     1, 1, 1, 12, 0, 'scrob_credentials',    0, None),
+	('mymv_punchplay_folder',     'PunchPlay',    'mymovies_punchplayNavigator',                      'punchplay.png',     'punchplay.png',     1, 1, 1, 12, 0, 'punchplay_credentials',    0, None),
 ]
 
 _MYMOVIES_MDBLIST_DEFAULTS = [
@@ -181,6 +193,19 @@ _MYMOVIES_SCROB_DEFAULTS = [
 	('mymv_scrob_userlists', '40781', 'scrob_movies_userlists', 'scrob.png', 'scrob.png', 1, 1, 1, 2, 0, 'scrob_credentials', 1, None),
 ]
 
+_MYMOVIES_PUNCHPLAY_DEFAULTS = [
+	('mymv_punchplay_watched', 'Watched (PunchPlay)', 'punchplay_movies_watched&url=punchplaymovieswatched', 'punchplay.png', 'punchplay.png', 1, 1, 1, 0, 0, 'punchplay_with_indicators', 1, None),
+	('mymv_punchplay_unfinished', 'Unfinished (PunchPlay)', 'punchplay_movies_unfinished&url=punchplaymoviesunfinished', 'punchplay.png', 'punchplay.png', 1, 1, 1, 1, 0, 'punchplay_credentials', 1, '35308'),
+	('mymv_punchplay_userlists', 'User Lists (PunchPlay)', 'punchplay_movies_userlists', 'punchplay.png', 'punchplay.png', 1, 1, 1, 2, 0, 'punchplay_credentials', 1, None),
+	('mymv_punchplay_planning', 'Planning (PunchPlay)', 'punchplay_movies_library&category=planning', 'punchplay.png', 'punchplay.png', 1, 1, 1, 10, 0, 'punchplay_credentials', 1, None),
+	('mymv_punchplay_watching', 'Watching (PunchPlay)', 'punchplay_movies_library&category=watching', 'punchplay.png', 'punchplay.png', 1, 1, 1, 11, 0, 'punchplay_credentials', 1, None),
+	('mymv_punchplay_hold', 'On Hold (PunchPlay)', 'punchplay_movies_library&category=hold', 'punchplay.png', 'punchplay.png', 1, 1, 1, 12, 0, 'punchplay_credentials', 1, None),
+	('mymv_punchplay_dropped', 'Dropped (PunchPlay)', 'punchplay_movies_library&category=dropped', 'punchplay.png', 'punchplay.png', 1, 1, 1, 13, 0, 'punchplay_credentials', 1, None),
+	('mymv_punchplay_collection', 'Collection (PunchPlay)', 'punchplay_movies_library&category=collection', 'punchplay.png', 'punchplay.png', 1, 1, 1, 14, 0, 'punchplay_credentials', 1, None),
+	('mymv_punchplay_favourites', 'Favourites (PunchPlay)', 'punchplay_movies_library&category=favourites', 'punchplay.png', 'punchplay.png', 1, 1, 1, 15, 0, 'punchplay_credentials', 1, None),
+	('mymv_punchplay_calendar', 'My Calendar (PunchPlay)', 'punchplay_calendar_menu&media_type=movie', 'punchplay.png', 'calendar.png', 1, 1, 1, 16, 0, 'punchplay_credentials', 0, None),
+]
+
 _MYMOVIES_LOCAL_DEFAULTS = [
 	('mymv_local_finish', 'Local: Finish Watching', 'local_finish_watching_movies', 'icon.png', 'icon.png', 1, 1, 1, 0, 0, 'local_scrobble', 1, None),
 ]
@@ -192,6 +217,7 @@ _MYTVSHOWS_DEFAULTS = [
 	('mytv_mdblist_folder',    'MDBList',  'mytvshows_mdblistNavigator',                        'mdblist.png',   'mdblist.png',   1, 1, 1,  3, 0, 'mdblist_token',         0, None),
 	('mytv_custom_folder',     'Custom',   'mytvshows_customNavigator',                         'icon.png',      'icon.png',      1, 1, 1,  4, 0, 'custom_token',          0, None),
 	('mytv_local_folder',      'Local',    'mytvshows_localNavigator',                          'icon.png',      'icon.png',      1, 1, 1,  5, 0, 'local_scrobble',        0, None),
+	('mytv_local_folder',      'Local',    'mytvshows_localNavigator',                          'icon.png',      'icon.png',      1, 1, 1,  5, 0, 'local_scrobble',        0, None),
 	('mytv_tmdb_folder',       'TMDb',     'mytvshows_tmdbNavigator',                           'tmdb.png',      'tmdb.png',      1, 1, 1,  8, 0, 'tmdb_v4_token',         0, None),
 	('mytv_simkl_folder',      'Simkl',    'mytvshows_simklNavigator',                          'simkl.png',     'simkl.png',     1, 1, 1,  9, 0, 'simkl_credentials',     0, None),
 	('mytv_trakt_folder',      'Trakt',    'mytvshows_traktNavigator',                          'trakt.png',     'trakt.png',     1, 1, 1, 10, 0, 'trakt_credentials',     0, None),
@@ -200,6 +226,7 @@ _MYTVSHOWS_DEFAULTS = [
 	('mytv_person_search',     '33045', 'tvPerson',                                            'imdb.png',      'people-search.png', 0, 1, 1, 13, 0, 'not_lite',          0, None),
 	('mytv_tv_search',         '33043', 'tvSearch',                                            'trakt.png',     'search.png',    1, 1, 1, 14, 0, 'not_lite',              0, None),
 	('mytv_scrob_folder',      'Scrob',    'mytvshows_scrobNavigator',                         'scrob.png',     'scrob.png',     1, 1, 1, 15, 0, 'scrob_credentials',     0, None),
+	('mytv_punchplay_folder',      'PunchPlay',    'mytvshows_punchplayNavigator',                         'punchplay.png',     'punchplay.png',     1, 1, 1, 15, 0, 'punchplay_credentials',     0, None),
 ]
 
 _MYTVSHOWS_MDBLIST_DEFAULTS = [
@@ -285,6 +312,21 @@ _MYTVSHOWS_SCROB_DEFAULTS = [
 	('mytv_scrob_userlists', '40781', 'scrob_tvshows_userlists', 'scrob.png', 'scrob.png', 1, 1, 1,  4, 0, 'scrob_credentials', 1, None),
 ]
 
+_MYTVSHOWS_PUNCHPLAY_DEFAULTS = [
+	('mytv_punchplay_show_prog',  'Progress Shows (PunchPlay)', 'punchplay_shows_progress&url=punchplayshowsprogress',     'punchplay.png', 'punchplay.png', 1, 1, 1,  0, 0, 'punchplay_with_indicators', 1, None),
+	('mytv_punchplay_ep_prog',    'Progress Episodes (PunchPlay)', 'punchplay_episodes_progress&url=punchplayepisodesprogress', 'punchplay.png', 'punchplay.png', 1, 1, 1,  1, 0, 'punchplay_with_indicators', 1, None),
+	('mytv_punchplay_upcoming',   'Upcoming Progress (PunchPlay)', 'punchplay_upcoming_progress&url=punchplayupcomingprogress', 'punchplay.png', 'punchplay.png', 1, 1, 1,  2, 0, 'punchplay_with_indicators', 1, None),
+	('mytv_punchplay_unfinished', 'Unfinished (PunchPlay)', 'punchplay_episodes_unfinished&url=punchplayepisodesunfinished', 'punchplay.png', 'punchplay.png', 1, 1, 1,  3, 0, 'punchplay_credentials', 1, '35308'),
+	('mytv_punchplay_userlists', 'User Lists (PunchPlay)', 'punchplay_tvshows_userlists', 'punchplay.png', 'punchplay.png', 1, 1, 1,  4, 0, 'punchplay_credentials', 1, None),
+	('mytv_punchplay_planning', 'Planning (PunchPlay)', 'punchplay_shows_library&category=planning', 'punchplay.png', 'punchplay.png', 1, 1, 1, 10, 0, 'punchplay_credentials', 1, None),
+	('mytv_punchplay_watching', 'Watching (PunchPlay)', 'punchplay_shows_library&category=watching', 'punchplay.png', 'punchplay.png', 1, 1, 1, 11, 0, 'punchplay_credentials', 1, None),
+	('mytv_punchplay_hold', 'On Hold (PunchPlay)', 'punchplay_shows_library&category=hold', 'punchplay.png', 'punchplay.png', 1, 1, 1, 12, 0, 'punchplay_credentials', 1, None),
+	('mytv_punchplay_dropped', 'Dropped (PunchPlay)', 'punchplay_shows_library&category=dropped', 'punchplay.png', 'punchplay.png', 1, 1, 1, 13, 0, 'punchplay_credentials', 1, None),
+	('mytv_punchplay_collection', 'Collection (PunchPlay)', 'punchplay_shows_library&category=collection', 'punchplay.png', 'punchplay.png', 1, 1, 1, 14, 0, 'punchplay_credentials', 1, None),
+	('mytv_punchplay_favourites', 'Favourites (PunchPlay)', 'punchplay_shows_library&category=favourites', 'punchplay.png', 'punchplay.png', 1, 1, 1, 15, 0, 'punchplay_credentials', 1, None),
+	('mytv_punchplay_calendar', 'My Calendar (PunchPlay)', 'punchplay_calendar_menu&media_type=episode', 'punchplay.png', 'calendar.png', 1, 1, 1, 16, 0, 'punchplay_credentials', 0, None),
+]
+
 _MYTVSHOWS_LOCAL_DEFAULTS = [
 	('mytv_local_shows_prog', '40658', 'local_shows_progress&url=localprogress', 'icon.png', 'icon.png', 1, 1, 1, 0, 0, 'local_scrobble', 1, None),
 	('mytv_local_calendar',   '40659', 'local_calendar&url=localprogress',       'icon.png', 'icon.png', 1, 1, 1, 1, 0, 'local_scrobble', 1, None),
@@ -304,6 +346,7 @@ MENU_DEFAULTS = {
 	'mymovies_trakt':    _MYMOVIES_TRAKT_DEFAULTS,
 	'mymovies_floppy': _MYMOVIES_FLOPPY_DEFAULTS,
 	'mymovies_scrob': _MYMOVIES_SCROB_DEFAULTS,
+	'mymovies_punchplay': _MYMOVIES_PUNCHPLAY_DEFAULTS,
 	'mymovies_local': _MYMOVIES_LOCAL_DEFAULTS,
 	'mytvshows_mdblist':  _MYTVSHOWS_MDBLIST_DEFAULTS,
 	'mytvshows_custom':   _MYTVSHOWS_CUSTOM_DEFAULTS,
@@ -312,6 +355,7 @@ MENU_DEFAULTS = {
 	'mytvshows_trakt':    _MYTVSHOWS_TRAKT_DEFAULTS,
 	'mytvshows_floppy': _MYTVSHOWS_FLOPPY_DEFAULTS,
 	'mytvshows_scrob': _MYTVSHOWS_SCROB_DEFAULTS,
+	'mytvshows_punchplay': _MYTVSHOWS_PUNCHPLAY_DEFAULTS,
 	'mytvshows_local': _MYTVSHOWS_LOCAL_DEFAULTS,
 }
 
@@ -330,7 +374,7 @@ _defaults_version_file = control.joinPath(control.dataPath, 'menu_defaults.v')
 # regardless of addon version (e.g. to fix a migration bug) — the on-disk marker below
 # is keyed on addonVersion+this, not addonVersion alone, so incrementing it forces one
 # more sync pass even for users already marked up to date on the current addon version.
-_MENU_SCHEMA_REVISION = '13'
+_MENU_SCHEMA_REVISION = '16'
 
 
 def _read_synced_version():
@@ -392,6 +436,8 @@ def _migrate_schema(dbcon):
 
 
 def _sync_defaults(dbcon):
+	# Replace the old public catalog folders without touching user-created shortcuts.
+	dbcon.execute("DELETE FROM menu_items WHERE is_custom=0 AND ((menu_name='movies' AND item_id='mv_punchplay_catalog') OR (menu_name='tvshows' AND item_id='tv_punchplay_catalog'))")
 	# Full defaults resync.
 	_field_sync = {
 		row[0]: (row[1], row[3], row[4], row[12])
@@ -520,6 +566,18 @@ def _sync_defaults(dbcon):
 	dbcon.commit()
 	# Insert items added after initial release for existing users
 	_NEW_DEFAULT_ITEMS = [
+		('movies', 'mv_punchplay_trending', 'Trending (PunchPlay)', 'punchplay_catalog&media_type=movie&category=trending', 'punchplay.png', 'trending.png', 1, 1, 1, 12, 0, None, 0, '32442'),
+		('movies', 'mv_punchplay_popular', 'Popular (PunchPlay)', 'punchplay_catalog&media_type=movie&category=popular', 'punchplay.png', 'most-popular.png', 1, 1, 1, 7, 0, None, 0, '32430'),
+		('movies', 'mv_punchplay_top_rated', 'Top Rated (PunchPlay)', 'punchplay_catalog&media_type=movie&category=top_rated', 'punchplay.png', 'most-voted.png', 1, 1, 1, 11, 0, None, 0, '32440'),
+		('movies', 'mv_punchplay_now_playing', 'Now Playing (PunchPlay)', 'punchplay_catalog&media_type=movie&category=now_playing', 'punchplay.png', 'in-theaters.png', 1, 1, 1, 0, 0, None, 0, '32422'),
+		('movies', 'mv_punchplay_upcoming', 'Upcoming (PunchPlay)', 'punchplay_catalog&media_type=movie&category=upcoming', 'punchplay.png', 'in-theaters.png', 1, 1, 1, 2, 0, None, 0, '32426'),
+		('tvshows', 'tv_punchplay_trending', 'Trending (PunchPlay)', 'punchplay_catalog&media_type=show&category=trending', 'punchplay.png', 'trending.png', 1, 1, 1, 4, 0, None, 0, '32442'),
+		('tvshows', 'tv_punchplay_popular', 'Popular (PunchPlay)', 'punchplay_catalog&media_type=show&category=popular', 'punchplay.png', 'most-popular.png', 1, 1, 1, 1, 0, None, 0, '32430'),
+		('tvshows', 'tv_punchplay_top_rated', 'Top Rated (PunchPlay)', 'punchplay_catalog&media_type=show&category=top_rated', 'punchplay.png', 'most-voted.png', 1, 1, 1, 3, 0, None, 0, '32440'),
+		('tvshows', 'tv_punchplay_now_playing', 'Now Playing (PunchPlay)', 'punchplay_catalog&media_type=show&category=now_playing', 'punchplay.png', 'in-theaters.png', 1, 1, 1, 18, 0, None, 0, '32422'),
+		('tvshows', 'tv_punchplay_upcoming', 'Upcoming (PunchPlay)', 'punchplay_catalog&media_type=show&category=upcoming', 'punchplay.png', 'in-theaters.png', 1, 1, 1, 20, 0, None, 0, '32426'),
+		('mymovies_punchplay', 'mymv_punchplay_calendar', 'My Calendar (PunchPlay)', 'punchplay_calendar_menu&media_type=movie', 'punchplay.png', 'calendar.png', 1, 1, 1, 16, 0, 'punchplay_credentials', 0, None),
+		('mytvshows_punchplay', 'mytv_punchplay_calendar', 'My Calendar (PunchPlay)', 'punchplay_calendar_menu&media_type=episode', 'punchplay.png', 'calendar.png', 1, 1, 1, 16, 0, 'punchplay_credentials', 0, None),
 		('mymovies', 'mymv_mdblist_folder',  'MDBList',  'mymovies_mdblistNavigator',  'mdblist.png',  'mdblist.png',  1, 1, 1, 2, 0, 'mdblist_token',        0, None),
 		('mymovies', 'mymv_custom_folder',   'Custom',   'mymovies_customNavigator',   'icon.png',     'icon.png',     1, 1, 1, 3, 0, 'custom_token',         0, None),
 		('mymovies', 'mymv_tmdb_folder',     'TMDb',     'mymovies_tmdbNavigator',     'tmdb.png',     'tmdb.png',     1, 1, 1, 4, 0, 'tmdb_v4_token',        0, None),
@@ -533,7 +591,9 @@ def _sync_defaults(dbcon):
 		('mytvshows', 'mytv_trakt_folder',    'Trakt',    'mytvshows_traktNavigator',    'trakt.png',    'trakt.png',    1, 1, 1, 10, 0, 'trakt_credentials',    0, None),
 		('mytvshows', 'mytv_floppy_folder', 'Floppy', 'mytvshows_floppyNavigator', 'floppy.png', 'floppy.png', 1, 1, 1, 11, 0, 'floppy_credentials', 0, None),
 		('mymovies', 'mymv_scrob_folder', 'Scrob', 'mymovies_scrobNavigator', 'scrob.png', 'scrob.png', 1, 1, 1, 12, 0, 'scrob_credentials', 0, None),
+		('mymovies', 'mymv_punchplay_folder', 'PunchPlay', 'mymovies_punchplayNavigator', 'punchplay.png', 'punchplay.png', 1, 1, 1, 12, 0, 'punchplay_credentials', 0, None),
 		('mytvshows', 'mytv_scrob_folder', 'Scrob', 'mytvshows_scrobNavigator', 'scrob.png', 'scrob.png', 1, 1, 1, 15, 0, 'scrob_credentials', 0, None),
+		('mytvshows', 'mytv_punchplay_folder', 'PunchPlay', 'mytvshows_punchplayNavigator', 'punchplay.png', 'punchplay.png', 1, 1, 1, 15, 0, 'punchplay_credentials', 0, None),
 		('mymovies_scrob', 'mymv_scrob_unfinished', 'Unfinished (Scrob)', 'scrob_movies_unfinished&url=scrobmoviesunfinished', 'scrob.png', 'scrob.png', 1, 1, 1, 99, 0, 'scrob_credentials', 1, '35308'),
 		('mytvshows_scrob', 'mytv_scrob_unfinished', 'Unfinished (Scrob)', 'scrob_episodes_unfinished&url=scrobepisodesunfinished', 'scrob.png', 'scrob.png', 1, 1, 1, 99, 0, 'scrob_credentials', 1, '35308'),
 		('mymovies_scrob', 'mymv_scrob_userlists', '40781', 'scrob_movies_userlists', 'scrob.png', 'scrob.png', 1, 1, 1, 100, 0, 'scrob_credentials', 1, None),
@@ -545,6 +605,8 @@ def _sync_defaults(dbcon):
 		('mymovies_mdblist',  'mymv_mdb_unfinished',  '40686',  'mdblistMoviesUnfinished',          'mdblist.png', 'mdblist.png', 1, 1, 1, 99, 0, 'mdblist_with_indicators', 1, '35308'),
 		('mytvshows_mdblist', 'mytv_mdb_unfinished',  '40686',  'mdblistEpisodesUnfinished',         'mdblist.png', 'mdblist.png', 1, 1, 1, 99, 0, 'mdblist_with_indicators', 1, '35308'),
 		('mymovies',  'mymv_local_folder',    'Local', 'mymovies_localNavigator',  'icon.png',    'icon.png',    1, 1, 1, 99, 0, 'local_scrobble',          0, None),
+		('mymovies',  'mymv_local_folder',    'Local', 'mymovies_localNavigator',  'icon.png',    'icon.png',    1, 1, 1, 99, 0, 'local_scrobble',          0, None),
+		('mytvshows', 'mytv_local_folder',    'Local', 'mytvshows_localNavigator', 'icon.png',    'icon.png',    1, 1, 1, 99, 0, 'local_scrobble',          0, None),
 		('mytvshows', 'mytv_local_folder',    'Local', 'mytvshows_localNavigator', 'icon.png',    'icon.png',    1, 1, 1, 99, 0, 'local_scrobble',          0, None),
 		('mymovies_mdblist',  'mymv_mdb_collection',  '40706',  'mdbUserCollectionMovies',           'mdblist.png', 'mdblist.png', 1, 1, 1, 100, 0, 'mdblist_token',           0, None),
 		('mytvshows_mdblist', 'mytv_mdb_collection',  '40706',  'mdbUserCollectionTVShows',          'mdblist.png', 'mdblist.png', 1, 1, 1, 100, 0, 'mdblist_token',           0, None),

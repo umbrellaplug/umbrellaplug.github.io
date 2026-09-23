@@ -12,7 +12,7 @@ import xbmc
 #from threading import Thread
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import quote_plus, urlencode, parse_qsl, urlparse, urlsplit
-from resources.lib.database import cache, metacache, fanarttv_cache, traktsync, simklsync, customtraktsync, floppysync, scrobsync
+from resources.lib.database import cache, metacache, fanarttv_cache, traktsync, simklsync, customtraktsync, floppysync, scrobsync, punchplaysync
 from resources.lib.indexers.tmdb import Movies as tmdb_indexer
 from resources.lib.indexers.fanarttv import FanartTv
 from resources.lib.modules import simkl
@@ -27,6 +27,7 @@ from resources.lib.modules import mdblist
 from resources.lib.modules import customtrakt
 from resources.lib.modules import floppy
 from resources.lib.modules import scrob
+from resources.lib.modules import punchplay
 from resources.lib.database import artwork as customArtwork
 from sqlite3 import dbapi2 as database
 from json import loads as jsloads
@@ -195,6 +196,7 @@ class Movies:
 		self.customCredentials = customtrakt.getCustomCredentialsInfo()
 		self.floppyCredentials = floppy.getFloppyCredentialsInfo()
 		self.scrobCredentials = scrob.getScrobCredentialsInfo()
+		self.punchplayCredentials = punchplay.getPunchPlayCredentialsInfo()
 		from resources.lib.modules import tmdb4
 		self.tmdbv4Credentials = tmdb4.getTMDbV4CredentialsInfo()
 
@@ -1031,6 +1033,57 @@ class Movies:
 			from resources.lib.modules import log_utils
 			log_utils.error()
 
+	def punchplay_movies_watched(self, url=None, idx=True, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			url = url or 'punchplaymovieswatched'
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q['page']) - 1
+			except:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = 0
+			rows = punchplay.watchedMovies()
+			if not rows: return self.list
+			for (imdb, tmdb, title, year, last_watched_at) in rows:
+				try:
+					values = {}
+					values['imdb'] = imdb or ''
+					values['tmdb'] = tmdb or ''
+					values['title'] = title or ''
+					values['year'] = year or ''
+					values['lastplayed'] = last_watched_at or ''
+					values['mediatype'] = 'movies'
+					self.list.append(values)
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+			useNext = True
+			if create_directory:
+				self.sort(type='watched')
+				if getSetting('punchplay.paginate.lists') == 'true' and self.list:
+					if len(self.list) <= int(self.page_limit):
+						useNext = False
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					if index >= len(paginated_ids) - 1: useNext = False
+					self.list = paginated_ids[index] if 0 <= index < len(paginated_ids) else []
+			try:
+				if useNext == False: raise Exception()
+				if len(self.list) < int(self.page_limit): raise Exception()
+				q.update({'page': str(index + 2), 'limit': str(self.page_limit)})
+				q = (urlencode(q)).replace('%2C', ',')
+				continuation = url.replace('?' + urlparse(url).query, '') + '?' + q
+				next = 'plugin://plugin.video.umbrella/?action=punchplay_movies_watched&url=%s&folderName=%s' % (quote_plus(continuation), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			if idx: self.worker()
+			if self.list is None: self.list = []
+			if create_directory: self.movieDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
 	def scrob_user_lists(self, create_directory=True, folderName=''):
 		self.list = []
 		try:
@@ -1044,7 +1097,34 @@ class Movies:
 					values = {
 						'name': '%s (%s)' % (name, count),
 						'action': 'scrob_list_movies&list_id=%s' % list_id,
+						'context': 'scrob://lists/%s' % list_id,
 						'image': 'scrob.png', 'icon': 'scrob.png', 'url': '',
+					}
+					self.list.append(values)
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+			if create_directory: self.addDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def punchplay_user_lists(self, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			lists = punchplaysync.fetch_user_lists('movie')
+			for lst in lists:
+				try:
+					list_id = lst.get('id')
+					if list_id is None: continue
+					name = lst.get('name', '')
+					count = lst.get('item_count', 0)
+					values = {
+						'name': '%s (%s)' % (name, count),
+						'action': 'punchplay_list_movies&list_id=%s' % list_id,
+						'context': 'punchplay://lists/%s' % list_id,
+						'image': 'punchplay.png', 'icon': 'punchplay.png', 'url': '',
 					}
 					self.list.append(values)
 				except:
@@ -1096,6 +1176,102 @@ class Movies:
 				next_page = index + 2
 				next = 'plugin://plugin.video.umbrella/?action=scrob_list_movies&list_id=%s&url=%s&folderName=%s' % (
 					list_id, quote_plus('scroblistmovies?list_id=%s&limit=%s&page=%s' % (list_id, self.page_limit, next_page)), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			if self.list is None: self.list = []
+			self.worker()
+			if create_directory: self.movieDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def punchplay_list_movies(self, list_id, url=None, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			url = url or ('punchplaylistmovies?list_id=%s&limit=%s&page=1' % (list_id, self.page_limit))
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q.get('page', 1)) - 1
+			except:
+				index = 0
+			items = punchplaysync.fetch_list_items(list_id, 'movie')
+			for i in items:
+				try:
+					values = {}
+					values['tmdb'] = i.get('tmdb', '')
+					values['imdb'] = ''
+					values['title'] = i.get('title', '')
+					values['year'] = i.get('year', '')
+					values['mediatype'] = 'movies'
+					self.list.append(values)
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+			useNext = True
+			if create_directory:
+				self.sort(type='movies.watchlist')
+				if getSetting('punchplay.paginate.lists') == 'true' and self.list:
+					if len(self.list) <= int(self.page_limit):
+						useNext = False
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					if index >= len(paginated_ids) - 1: useNext = False
+					self.list = paginated_ids[index] if 0 <= index < len(paginated_ids) else []
+				else:
+					useNext = False
+			try:
+				if useNext == False: raise Exception()
+				next_page = index + 2
+				next = 'plugin://plugin.video.umbrella/?action=punchplay_list_movies&list_id=%s&url=%s&folderName=%s' % (
+					list_id, quote_plus('punchplaylistmovies?list_id=%s&limit=%s&page=%s' % (list_id, self.page_limit, next_page)), quote_plus(folderName))
+			except: next = ''
+			for i in range(len(self.list)): self.list[i]['next'] = next
+			if self.list is None: self.list = []
+			self.worker()
+			if create_directory: self.movieDirectory(self.list, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
+	def punchplay_library(self, category, url=None, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			url = url or ('punchplaylistmovies?category=%s&limit=%s&page=1' % (category, self.page_limit))
+			try:
+				q = dict(parse_qsl(urlsplit(url).query))
+				index = int(q.get('page', 1)) - 1
+			except:
+				index = 0
+			items = punchplay.get_library_items(category, 'movie')
+			for i in items:
+				try:
+					values = {}
+					values['tmdb'] = i.get('tmdb', '')
+					values['imdb'] = ''
+					values['title'] = i.get('title', '')
+					values['year'] = i.get('year', '')
+					values['mediatype'] = 'movies'
+					self.list.append(values)
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+			useNext = True
+			if create_directory:
+				self.sort(type='movies.watchlist')
+				if getSetting('punchplay.paginate.lists') == 'true' and self.list:
+					if len(self.list) <= int(self.page_limit):
+						useNext = False
+					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
+					if index >= len(paginated_ids) - 1: useNext = False
+					self.list = paginated_ids[index] if 0 <= index < len(paginated_ids) else []
+				else:
+					useNext = False
+			try:
+				if useNext == False: raise Exception()
+				next_page = index + 2
+				next = 'plugin://plugin.video.umbrella/?action=punchplay_movies_library&category=%s&url=%s&folderName=%s' % (
+					category, quote_plus('punchplaylistmovies?category=%s&limit=%s&page=%s' % (category, self.page_limit, next_page)), quote_plus(folderName))
 			except: next = ''
 			for i in range(len(self.list)): self.list[i]['next'] = next
 			if self.list is None: self.list = []
@@ -1917,6 +2093,27 @@ class Movies:
 			log_utils.error()
 			control.hide()
 
+	def punchplayDroppedManager(self):
+		try:
+			from resources.lib.modules import punchplay
+			control.busy()
+			self.list = punchplay.get_dropped('movies')
+			for item in self.list: item['trakt'] = item.get('tmdb', '')
+			self.worker()
+			self.sort()
+			control.hide()
+			from resources.lib.windows.traktbasic_manager import TraktBasicManagerXML
+			window = TraktBasicManagerXML('traktbasic_manager.xml', control.addonPath(control.addonId()), results=self.list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				punchplay.remove_dropped_items(selected_items, 'movies')
+				control.trigger_widget_refresh()
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
 	def customUnfinishedManager(self):
 		try:
 			control.busy()
@@ -1953,6 +2150,7 @@ class Movies:
 					values = {
 						'name': '%s (%s)' % (name, count),
 						'action': 'custom_list_movies&list_id=%s' % quote_plus(list_id),
+						'context': 'custom://lists/%s' % list_id,
 						'image': 'icon.png', 'icon': 'DefaultVideoPlaylists.png', 'url': '',
 					}
 					self.list.append(values)
@@ -2241,6 +2439,7 @@ class Movies:
 					values = {
 						'name': '%s (%s)' % (name, count),
 						'action': 'floppy_list_movies&list_id=%s' % quote_plus(list_id),
+						'context': 'floppy://lists/%s' % list_id,
 						'image': lst.get('image') or 'icon.png', 'icon': 'DefaultVideoPlaylists.png', 'url': '',
 					}
 					self.list.append(values)
@@ -2365,11 +2564,11 @@ class Movies:
 			selected_items = window.run()
 			del window
 			if selected_items:
+				succeeded = 0
 				for imdb in selected_items:
 					item = next((i for i in list if i.get('imdb') == imdb), {})
-					floppy.scrobbleReset(imdb=imdb, tmdb=item.get('tmdb', ''), refresh=False)
-				control.trigger_widget_refresh()
-				if 'plugin.video.umbrella' in control.infoLabel('Container.PluginName'): control.refresh()
+					succeeded += bool(floppy.removePlaybackProgress(imdb=imdb, tmdb=item.get('tmdb', '')))
+				floppy.finishProgressRemoval(succeeded, len(selected_items))
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()
@@ -2408,6 +2607,35 @@ class Movies:
 			from resources.lib.modules import log_utils
 			log_utils.error()
 
+	def punchplay_unfinished(self, url=None, idx=True, create_directory=True, folderName=''):
+		self.list = []
+		try:
+			items = punchplay.get_continue_watching()
+			for item in items:
+				try:
+					media = item.get('media') or {}
+					if media.get('type') != 'movie': continue
+					tmdb = str(media.get('tmdb_id') or '')
+					if not tmdb: continue
+					imdb = punchplay._resolve_movie_imdb(tmdb)
+					values = {}
+					values['imdb'] = imdb
+					values['tmdb'] = tmdb
+					values['progress'] = str(round(float(item.get('progress_percent') or 0) * 100, 1))
+					values['paused_at'] = item.get('watched_at', '') or ''
+					self.list.append(values)
+				except:
+					from resources.lib.modules import log_utils
+					log_utils.error()
+			if idx: self.worker()
+			self.list = sorted(self.list, key=lambda k: k['paused_at'], reverse=True)
+			if self.list is None: self.list = []
+			if create_directory: self.movieDirectory(self.list, unfinished=True, next=False, folderName=folderName)
+			return self.list
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+
 	def scrobUnfinishedManager(self):
 		try:
 			control.busy()
@@ -2418,11 +2646,31 @@ class Movies:
 			selected_items = window.run()
 			del window
 			if selected_items:
+				succeeded = 0
 				for imdb in selected_items:
 					item = next((i for i in list if i.get('imdb') == imdb), {})
-					scrob.scrobbleReset(imdb=imdb, tmdb=item.get('tmdb', ''), refresh=False)
-				control.trigger_widget_refresh()
-				if 'plugin.video.umbrella' in control.infoLabel('Container.PluginName'): control.refresh()
+					succeeded += bool(scrob.scrobbleReset(imdb=imdb, tmdb=item.get('tmdb', ''), refresh=False))
+				scrob.finishProgressRemoval(succeeded, len(selected_items))
+		except:
+			from resources.lib.modules import log_utils
+			log_utils.error()
+			control.hide()
+
+	def punchplayUnfinishedManager(self):
+		try:
+			control.busy()
+			list = self.punchplay_unfinished(create_directory=False)
+			control.hide()
+			from resources.lib.windows.traktmovieprogress_manager import TraktMovieProgressManagerXML
+			window = TraktMovieProgressManagerXML('traktmovieprogress_manager.xml', control.addonPath(control.addonId()), results=list)
+			selected_items = window.run()
+			del window
+			if selected_items:
+				succeeded = 0
+				for imdb in selected_items:
+					item = next((i for i in list if i.get('imdb') == imdb), {})
+					succeeded += bool(punchplay.scrobbleReset(imdb=imdb, tmdb=item.get('tmdb', ''), refresh=False))
+				punchplay.finishProgressRemoval(succeeded, len(selected_items))
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()
@@ -3389,6 +3637,7 @@ class Movies:
 		customManagerMenu = '[COLOR %s]%s Manager[/COLOR]' % (self.highlight_color, customtrakt.getCustomServiceName())
 		floppyManagerMenu = '[COLOR %s]Floppy Manager[/COLOR]' % self.highlight_color
 		scrobManagerMenu = '[COLOR %s]Scrob Manager[/COLOR]' % self.highlight_color
+		punchplayManagerMenu = '[COLOR %s]PunchPlay Manager[/COLOR]' % self.highlight_color
 		from resources.lib.modules import favourites
 		favoriteItems = favourites.getFavourites(content='movies')
 		favoriteItems = [x[1].get('imdb') for x in favoriteItems]
@@ -3415,6 +3664,8 @@ class Movies:
 					label = '%s' % title
 				try: labelProgress = label + '[COLOR %s]  [%s][/COLOR]' % (self.highlight_color, str(round(float(i['progress']), 1)) + '%')
 				except: labelProgress = label
+				if i.get('punchplay_date'):
+					labelProgress += ' [%s - %s]' % (i['punchplay_date'], i.get('punchplay_release', 'Release'))
 				try:
 					if int(re.sub(r'[^0-9]', '', str(i['premiered']))) > int(re.sub(r'[^0-9]', '', str(self.today_date))): 
 						if self.hidecinema:
@@ -3502,6 +3753,8 @@ class Movies:
 						cm.append((floppyManagerMenu, 'RunPlugin(%s?action=tools_floppyManager&name=%s&imdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, watched, unfinished)))
 					if self.scrobCredentials:
 						cm.append((scrobManagerMenu, 'RunPlugin(%s?action=tools_scrobManager&name=%s&imdb=%s&tmdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, tmdb, watched, unfinished)))
+					if self.punchplayCredentials:
+						cm.append((punchplayManagerMenu, 'RunPlugin(%s?action=tools_punchplayManager&name=%s&imdb=%s&tmdb=%s&watched=%s&unfinished=%s)' % (sysaddon, sysname, imdb, tmdb, watched, unfinished)))
 					if self.tmdbv4Credentials:
 						cm.append((getLS(40606) if getLS(40606) else 'TMDB List Manager', 'RunPlugin(%s?action=tools_tmdbListManager&name=%s&tmdb=%s&mediatype=movie)' % (sysaddon, sysname, tmdb)))
 						if tmdb:
@@ -3671,7 +3924,7 @@ class Movies:
 				if queue: cm.append((queueMenu, 'RunPlugin(%s?action=playlist_QueueItem)' % sysaddon))
 				try:
 					if getSetting('library.service.update') == 'true':
-						cm.append((addToLibrary, 'RunPlugin(%s?action=library_moviesToLibrary&url=%s&name=%s)' % (sysaddon, quote_plus(i['context']), name)))
+						cm.append((addToLibrary, 'RunPlugin(%s?action=library_moviesToLibrary&url=%s&name=%s)' % (sysaddon, quote_plus(i['context']), quote_plus(name))))
 				except: pass
 				cm.append(('[COLOR %s]Umbrella Settings[/COLOR]' % self.highlight_color, 'RunPlugin(%s?action=tools_openSettings)' % sysaddon))
 				item = control.item(label=name, offscreen=True)

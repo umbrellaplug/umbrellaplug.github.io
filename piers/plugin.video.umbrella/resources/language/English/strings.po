@@ -5616,10 +5616,6 @@ msgctxt "#40670"
 msgid "Revoke MDBList Authorization"
 msgstr ""
 
-msgctxt "#40671"
-msgid "Umbrella TorBox Referral Link"
-msgstr ""
-
 msgctxt "#40672"
 msgid "Source Sort Order"
 msgstr ""
@@ -6102,4 +6098,100 @@ msgstr ""
 
 msgctxt "#40793"
 msgid "Prefer forced subtitles"
+msgstr ""
+
+msgctxt "#40800"
+msgid "PunchPlay"
+msgstr ""
+
+msgctxt "#40801"
+msgid "PunchPlay client ID"
+msgstr ""
+
+msgctxt "#40802"
+msgid "PunchPlay client secret (optional for public clients)"
+msgstr ""
+
+msgctxt "#40803"
+msgid "Authorize PunchPlay"
+msgstr ""
+
+msgctxt "#40804"
+msgid "Revoke PunchPlay"
+msgstr ""
+
+msgctxt "#40805"
+msgid "PunchPlay username"
+msgstr ""
+
+msgctxt "#40806"
+msgid "Also mark watched on PunchPlay"
+msgstr ""
+
+msgctxt "#40807"
+msgid "PunchPlay Manager"
+msgstr ""
+
+msgctxt "#40808"
+msgid "Force PunchPlay sync"
+msgstr ""
+
+msgctxt "#40809"
+msgid "PunchPlay sync interval (minutes)"
+msgstr ""
+
+msgctxt "#40810"
+msgid "Show unaired progress episodes"
+msgstr ""
+
+msgctxt "#40811"
+msgid "PunchPlay notifications"
+msgstr ""
+
+msgctxt "#40812"
+msgid "Enable Skip Intro"
+msgstr ""
+
+msgctxt "#40813"
+msgid "Skip Intro"
+msgstr ""
+
+msgctxt "#40814"
+msgid "Shows a Skip Intro button when community-provided timing data is available for the playing episode."
+msgstr ""
+
+msgctxt "#40815"
+msgid "Online Credits Timestamp"
+msgstr ""
+
+msgctxt "#40816"
+msgid "Fallback Time Before End (Seconds)"
+msgstr ""
+
+msgctxt "#40817"
+msgid "When the online services have no credits timestamp, show Play Next this many seconds before the episode ends."
+msgstr ""
+
+msgctxt "#40818"
+msgid "Closes in %s seconds"
+msgstr ""
+
+msgctxt "#40819"
+msgid "Enable Skip Recap"
+msgstr ""
+
+msgctxt "#40820"
+msgid "Skip Recap?"
+msgstr ""
+
+msgctxt "#40821"
+msgid "Shows a Skip Recap button when community-provided timing data is available for the playing episode."
+msgstr ""
+
+msgctxt "#40822"
+msgid "Read-only integration (another add-on reports playback)"
+msgstr ""
+
+msgctxt "#40823"
+msgid "Allows Umbrella to read Floppy indicators, lists, and resume information while preventing Umbrella from reporting playback or automatically marking items watched during playback."
 msgstr ""

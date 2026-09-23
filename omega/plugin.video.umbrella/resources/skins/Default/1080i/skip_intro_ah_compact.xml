@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol always="true">40501</defaultcontrol>
+	<controls>
+		<control type="group">
+			<right>55</right><bottom>110</bottom><width>430</width><height>104</height>
+			<animation effect="slide" start="485,0" end="0,0" time="350" tween="cubic" easing="out">WindowOpen</animation>
+			<animation effect="fade" start="100" end="0" time="180">WindowClose</animation>
+			<control type="image"><left>-12</left><top>-12</top><width>454</width><height>128</height><texture border="24" colordiffuse="99000000">common/shadow-24.png</texture></control>
+			<control type="image"><width>430</width><height>104</height><texture border="22" colordiffuse="dd151515">common/umbwhite.png</texture></control>
+			<control type="image"><left>0</left><top>18</top><width>5</width><height>68</height><texture colordiffuse="$INFO[Window().Property(umbrella.skipintro.highlight)]">common/umbwhite.png</texture></control>
+			<control type="image"><left>24</left><top>27</top><width>50</width><height>50</height><aspectratio>keep</aspectratio><texture colordiffuse="$INFO[Window().Property(umbrella.skipintro.highlight)]">common/umbplayround.png</texture></control>
+			<control type="label"><left>94</left><top>20</top><width>240</width><height>34</height><font>font13</font><label>$INFO[Window().Property(umbrella.skipintro.label)]</label><textcolor>ffffffff</textcolor><shadowcolor>cc000000</shadowcolor></control>
+			<control type="label"><left>94</left><top>57</top><width>240</width><height>25</height><font>font10</font><label>$INFO[Window().Property(umbrella.skipintro.countdown)]</label><textcolor>ffaaaaaa</textcolor></control>
+			<control type="button" id="40501"><left>350</left><top>7</top><width>68</width><height>42</height><ondown>40502</ondown><label>$INFO[Window().Property(umbrella.skipintro.yes)]</label><font>font10</font><align>center</align><aligny>center</aligny><textcolor>ffffffff</textcolor><focusedcolor>ffffffff</focusedcolor><texturefocus border="10" colordiffuse="$INFO[Window().Property(umbrella.skipintro.highlight)]">common/umbwhite.png</texturefocus><texturenofocus border="10" colordiffuse="ff303030">common/umbwhite.png</texturenofocus></control>
+			<control type="button" id="40502"><left>350</left><top>55</top><width>68</width><height>42</height><onup>40501</onup><label>$INFO[Window().Property(umbrella.skipintro.no)]</label><font>font10</font><align>center</align><aligny>center</aligny><textcolor>ffffffff</textcolor><focusedcolor>ffffffff</focusedcolor><texturefocus border="10" colordiffuse="$INFO[Window().Property(umbrella.skipintro.highlight)]">common/umbwhite.png</texturefocus><texturenofocus border="10" colordiffuse="ff303030">common/umbwhite.png</texturenofocus></control>
+		</control>
+	</controls>
+</window>

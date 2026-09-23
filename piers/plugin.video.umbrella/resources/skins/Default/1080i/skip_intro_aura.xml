@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol always="true">40501</defaultcontrol>
+	<controls>
+		<control type="group">
+			<right>48</right><bottom>90</bottom><width>470</width><height>112</height>
+			<animation effect="slide" start="520,0" end="0,0" time="320" tween="cubic" easing="out">WindowOpen</animation>
+			<animation effect="fade" start="100" end="0" time="180">WindowClose</animation>
+			<control type="image"><left>-12</left><top>-12</top><width>494</width><height>136</height><texture border="24" colordiffuse="99000000">common/shadow-24.png</texture></control>
+			<control type="image"><width>470</width><height>112</height><texture border="20" colordiffuse="ee111111">common/umbwhite.png</texture></control>
+			<control type="label"><left>24</left><top>9</top><width>422</width><height>27</height><font>font12</font><align>center</align><label>$INFO[Window().Property(umbrella.skipintro.label)]</label><textcolor>ffffffff</textcolor></control>
+			<control type="label"><left>24</left><top>34</top><width>422</width><height>22</height><font>font10</font><align>center</align><label>$INFO[Window().Property(umbrella.skipintro.countdown)]</label><textcolor>ffaaaaaa</textcolor></control>
+			<control type="button" id="40501"><left>28</left><top>62</top><width>200</width><height>38</height><onright>40502</onright><label>$INFO[Window().Property(umbrella.skipintro.yes)]</label><font>font10</font><align>center</align><aligny>center</aligny><textcolor>ffffffff</textcolor><focusedcolor>ffffffff</focusedcolor><texturefocus border="19" colordiffuse="$INFO[Window().Property(umbrella.skipintro.highlight)]">common/umbwhite.png</texturefocus><texturenofocus border="19" colordiffuse="ff303030">common/umbwhite.png</texturenofocus></control>
+			<control type="button" id="40502"><left>242</left><top>62</top><width>200</width><height>38</height><onleft>40501</onleft><label>$INFO[Window().Property(umbrella.skipintro.no)]</label><font>font10</font><align>center</align><aligny>center</aligny><textcolor>ffffffff</textcolor><focusedcolor>ffffffff</focusedcolor><texturefocus border="19" colordiffuse="$INFO[Window().Property(umbrella.skipintro.highlight)]">common/umbwhite.png</texturefocus><texturenofocus border="19" colordiffuse="ff303030">common/umbwhite.png</texturenofocus></control>
+		</control>
+	</controls>
+</window>

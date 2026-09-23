@@ -860,7 +860,9 @@ def get_request(url, post=None, method='GET', _retried=False):
 					response = session.get(full_url, timeout=20)
 				break
 			except requests.exceptions.ConnectionError:
-				if _attempt == 0:
+				# The server may have committed a watched POST before the connection
+				# failed. Replaying it can create a second history entry.
+				if _attempt == 0 and post is None and method == 'GET':
 					log_utils.log('MDBList get_request: connection reset, retrying with fresh connection...', level=log_utils.LOGDEBUG)
 					session.close()
 				else:

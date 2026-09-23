@@ -24,6 +24,10 @@ properties = [
 	'context.umbrella.traktManager',
 	'context.umbrella.mdblistManager',
 	'context.umbrella.simklManager',
+	'context.umbrella.customManager',
+	'context.umbrella.floppyManager',
+	'context.umbrella.scrobManager',
+	'context.umbrella.punchplayManager',
 	'context.umbrella.tmdbListManager',
 	'context.umbrella.tmdbWatchlist',
 	'context.umbrella.clearProviders',
@@ -68,6 +72,8 @@ class SettingsMonitor(control.monitor_class):
 			if control.setting(id) == 'true':
 				window.setProperty(id, 'true')
 				#xbmc.log('[ plugin.video.umbrella.context ]  menu item enabled: {0}'.format(id), LOGINFO)
+			else:
+				window.clearProperty(id)
 		control.log('[ plugin.video.umbrella ]  Settings Monitor Service Starting...', LOGINFO)
 
 	def onSettingsChanged(self):
@@ -282,12 +288,12 @@ try:
 	testUmbrella = False
 	if control.setting('indicators') == '0':
 		control.setSetting('indicators', 'Local') #fix for making this setting a string.
-	_alt_map = {'0': 'Local', '1': 'Trakt', '2': 'Simkl', '3': 'MDBList', '4': 'Custom', '5': 'Floppy', '6': 'Scrob'}
+	_alt_map = {'0': 'Local', '1': 'Trakt', '2': 'Simkl', '3': 'MDBList', '4': 'Custom', '5': 'Floppy', '6': 'Scrob', '7': 'PunchPlay'}
 	_alt_val = control.setting('indicators.alt')
 	_ind_val = control.setting('indicators')
 	if _alt_val in _alt_map and _ind_val != _alt_map[_alt_val]:
 		control.setSetting('indicators', _alt_map[_alt_val]) # sync display label with backing integer on upgrade
-	_scrobble_map = {'0': 'Local', '1': 'Trakt', '2': 'Simkl', '3': 'MDBList', '4': 'Custom', '5': 'Floppy', '6': 'Scrob'}
+	_scrobble_map = {'0': 'Local', '1': 'Trakt', '2': 'Simkl', '3': 'MDBList', '4': 'Custom', '5': 'Floppy', '6': 'Scrob', '7': 'PunchPlay'}
 	_scrobble_val = control.setting('scrobble.source')
 	_scrobble_disp = control.setting('scrobble')
 	if _scrobble_val in _scrobble_map and _scrobble_disp != _scrobble_map[_scrobble_val]:
@@ -320,8 +326,8 @@ except Exception:
 
 try:
 	_custom_name = control.setting('custom.servicename').strip() or 'Custom'
-	_ind_map = {'0': 'Local Only', '1': 'Trakt', '2': 'Simkl', '3': 'MDBList', '4': _custom_name, '5': 'Floppy', '6': 'Scrob'}
-	_scr_map = {'0': 'Off', '1': 'Trakt', '2': 'Simkl', '3': 'MDBList', '4': _custom_name, '5': 'Floppy', '6': 'Scrob'}
+	_ind_map = {'0': 'Local Only', '1': 'Trakt', '2': 'Simkl', '3': 'MDBList', '4': _custom_name, '5': 'Floppy', '6': 'Scrob', '7': 'PunchPlay'}
+	_scr_map = {'0': 'Off', '1': 'Trakt', '2': 'Simkl', '3': 'MDBList', '4': _custom_name, '5': 'Floppy', '6': 'Scrob', '7': 'PunchPlay'}
 	_ind = control.setting('indicators.alt')
 	_scr = control.setting('scrobble.source')
 	_trakt_authed = bool(control.setting('trakt.user.token') and control.setting('trakt.refreshtoken') and control.setting('trakt.user.name'))
