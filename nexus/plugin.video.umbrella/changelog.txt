@@ -1,4 +1,5 @@
-[B]Update - v6.7.88 - Sept 23rd, 2026 [/B]
+[B]Update - v6.7.89 - Sept 24th, 2026 [/B]
+--[Fix] Sorting change to stop rounding on sizes.
 --[Enhancement] Added PunchPlay as an optional tracking provider. (Addon Settings > Online Services > PunchPlay)
 --[Change] Moved PunchPlay public categories into Discover Movies and Discover TV Shows alongside the other providers.
 --[Enhancement] Added Skip Intro (credit to kodifitzwell) and Skip Recap options using the continuous playback theme.
