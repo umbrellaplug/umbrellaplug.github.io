@@ -1,3 +1,7 @@
+[B]Update - v6.7.90 - Sept 25th, 2026 [/B]
+--[Fix] Fixed redundant per-show requests during SIMKL season sync by reusing batch responses. Sync should be much faster.
+--[Fix] Changes made for when scrobble is set to local to allow for items to still be marked as watched with online services.
+
 [B]Update - v6.7.89 - Sept 24th, 2026 [/B]
 --[Fix] Sorting change to stop rounding on sizes.
 

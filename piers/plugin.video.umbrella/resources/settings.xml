@@ -2910,7 +2910,7 @@
 					<dependencies>
 						<dependency type="visible">
 							<and>
-								<condition operator="!is" setting="punchplay.isauthed"/>
+								<condition operator="is" setting="punchplay.isauthed">true</condition>
 								<condition operator="!is" setting="indicators.alt">7</condition>
 							</and>
 						</dependency>
@@ -3318,6 +3318,16 @@
 						<minimum>5</minimum>
 						<maximum>60</maximum>
 					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="trakt.isauthed">true</condition>
+								<condition operator="!is" setting="trakt.user.token"/>
+								<condition operator="!is" setting="trakt.refreshtoken"/>
+								<condition operator="!is" setting="trakt.user.name"/>
+							</and>
+						</dependency>
+					</dependencies>
 					<control type="slider" format="integer">
 						<popup>false</popup>
 					</control>
@@ -4462,18 +4472,33 @@
 					<enable>false</enable>
 					<default></default>
 					<constraints><allowempty>true</allowempty></constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="punchplay.isauthed">true</condition>
+						</dependency>
+					</dependencies>
 					<control type="edit" format="string"></control>
 				</setting>
 				<setting id="punchplay.forceSync" type="action" label="40808" help="">
 					<level>0</level>
 					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_forcePunchPlaySync)</data>
 					<constraints><allowempty>true</allowempty></constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="punchplay.isauthed">true</condition>
+						</dependency>
+					</dependencies>
 					<control type="button" format="action"/>
 				</setting>
 				<setting id="punchplay.service.syncInterval" type="integer" label="40809" help="">
 					<level>0</level>
 					<default>30</default>
 					<constraints><minimum>5</minimum><step>5</step><maximum>120</maximum></constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="punchplay.isauthed">true</condition>
+						</dependency>
+					</dependencies>
 					<control type="spinner" format="integer"/>
 				</setting>
 				<setting id="punchplay.general.notifications" type="boolean" label="40811" help="">
@@ -4489,16 +4514,31 @@
 				<setting id="punchplay.paginate.lists" type="boolean" label="32188" help="">
 					<level>0</level>
 					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="punchplay.isauthed">true</condition>
+						</dependency>
+					</dependencies>
 					<control type="toggle"/>
 				</setting>
 				<setting id="punchplay.directProgress.scrape" type="boolean" label="35492" help="">
 					<level>0</level>
 					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="punchplay.isauthed">true</condition>
+						</dependency>
+					</dependencies>
 					<control type="toggle"/>
 				</setting>
 				<setting id="punchplay.progress.showunaired" type="boolean" label="40810" help="">
 					<level>0</level>
 					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="punchplay.isauthed">true</condition>
+						</dependency>
+					</dependencies>
 					<control type="toggle"/>
 				</setting>
 				<setting id="punchplay.accesstoken" type="string" label="" help="">

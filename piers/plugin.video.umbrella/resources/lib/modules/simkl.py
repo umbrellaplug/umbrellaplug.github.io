@@ -11,7 +11,7 @@ from resources.lib.database import simklsync, cache
 from resources.lib.modules import log_utils
 from datetime import datetime
 from threading import Thread, Lock
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import urljoin
 from resources.lib.modules import cleandate
 import json
@@ -849,13 +849,12 @@ def batchCacheSyncSeason(data, progress_callback=None):
 
     total = len(data)
     done = 0
+    if progress_callback:
+        try: progress_callback('Syncing season progress', done, total)
+        except: pass
     for chunk in chunked_iterator(data, 100):  # Process chunks sequentially to avoid request bursts
         formatted_data = [show for show in chunk]
         results = post_request(f'/sync/watched?extended={extended_param}', data=formatted_data)
-        done += len(chunk)
-        if progress_callback:
-            try: progress_callback('Syncing season progress', done, total)
-            except: pass
         if not results:
             continue
         # cachesyncSeasons()->syncSeasons() also does a TMDb lookup + cache write per show
@@ -868,11 +867,23 @@ def batchCacheSyncSeason(data, progress_callback=None):
         _unlimited = getSetting('dev.batch.unlimited') == 'true'
         _max_workers = len(chunk) if _unlimited else max(int(getSetting('dev.batch.size') or '10'), 1)
         with ThreadPoolExecutor(max_workers=_max_workers) as executor:
+            futures = []
             for show in chunk:
                 imdb = show.get('imdb')
                 tvdb = show.get('tvdb')
                 simkl_id = show.get('simkl')
-                executor.submit(cachesyncSeasons, imdb, tvdb, simkl_id, 0, results)
+                futures.append(executor.submit(cachesyncSeasons, imdb, tvdb, simkl_id, 0, results))
+            # Report finished processing, not merely the batch API response.
+            # Update the dialog from this thread, never from the pool workers.
+            for future in as_completed(futures):
+                try: future.result()
+                except:
+                    log_utils.error()
+                    continue
+                done += 1
+                if progress_callback:
+                    try: progress_callback('Syncing season progress', done, total)
+                    except: pass
 
 def cachesyncSeasons(imdb, tvdb, simkl_id=None, timeout=0, data=None):
 	try:

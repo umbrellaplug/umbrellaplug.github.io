@@ -54,6 +54,11 @@ class CheckSettingsFile:
 			else: control.log('%s : already exists' % profile_dir, LOGINFO)
 			settings_xml = control.joinPath(profile_dir, 'settings.xml')
 			if not control.existsPath(settings_xml):
+				# Initialize both service selectors and their labels for a new profile.
+				control.setSetting('indicators.alt', '0')
+				control.setSetting('indicators', 'Local')
+				control.setSetting('scrobble.source', '0')
+				control.setSetting('scrobble', 'Local')
 				control.setSetting('trakt.message2', '')
 				control.log('%s : created successfully' % settings_xml, LOGINFO)
 			else: control.log('%s : already exists' % settings_xml, LOGINFO)

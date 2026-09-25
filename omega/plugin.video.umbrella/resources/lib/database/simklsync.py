@@ -906,8 +906,11 @@ def get(function, duration, *args, simkl_id=None, data=None):
 			try: result = literal_eval(cache_result['value'])
 			except: result = None
 			if is_cache_valid(cache_result['date'], duration): return result
-		if simkl_id: fresh_result = repr(function(*args, simkl_id=simkl_id)) # may need a try-except block for server timeouts
-		else: fresh_result = repr(function(*args))
+		kwargs = {}
+		if simkl_id: kwargs['simkl_id'] = simkl_id
+		# Reuse the batch response without including it in the persistent cache key.
+		if data is not None: kwargs['data'] = data
+		fresh_result = repr(function(*args, **kwargs))
 
 		if cache_result and (result and len(result) == 1) and fresh_result == '[]': # fix for syncSeason mark unwatched season when it's the last item remaining
 			if result[0].isdigit():

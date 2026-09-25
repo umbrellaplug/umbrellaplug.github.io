@@ -41,7 +41,7 @@ playerWindow = control.playerWindow
 
 
 def _remote_playback_enabled(scrobble_source, provider_source, markwatched_setting):
-	"""Local playback tracking never fans out to an indicator provider."""
+	"""Local resume tracking does not send remote progress/scrobble events."""
 	return (scrobble_source != '0'
 		and (scrobble_source == provider_source or getSetting(markwatched_setting) == 'true'))
 
@@ -627,11 +627,7 @@ class Player(xbmc.Player):
 							homeWindow.setProperty(pname, '5')
 							if self.debuglog:
 								log_utils.log('Sending Movie to be marked as watched. IMDB: %s Title: %s Watch Percentage Used: %s Current Percentage: %s' % (self.imdb, self.title, self.markwatched_percentage, self.getWatchedPercent()), level=log_utils.LOGDEBUG)
-							if getSetting('scrobble.source') == '0':
-								from resources.lib.database import watchedcache as _wc
-								_wc.change_watched('movie', self.imdb, '', watched=5)
-							else:
-								playcount.markMovieDuringPlayback(self.imdb, '5')
+							playcount.markMovieDuringPlayback(self.imdb, '5')
 							self.watched_during_playback = True
 					except: pass
 					xbmc.sleep(2000)
@@ -641,11 +637,7 @@ class Player(xbmc.Player):
 							homeWindow.setProperty(pname, '5')
 							if self.debuglog:
 								log_utils.log('Sending Episode to be marked as watched. IMDB: %s TVDB: %s Season: %s Episode: %s Title: %s Watch Percentage Used: %s Current Percentage: %s' % (self.imdb, self.tvdb, self.season, self.episode, self.title, self.markwatched_percentage, self.getWatchedPercent()), level=log_utils.LOGDEBUG)
-							if getSetting('scrobble.source') == '0':
-								from resources.lib.database import watchedcache as _wc
-								self.watched_update_thread = Thread(target=_wc.change_watched, args=('episode', self.imdb, ''), kwargs={'season': self.season, 'episode': self.episode, 'watched': 5})
-							else:
-								self.watched_update_thread = Thread(target=playcount.markEpisodeDuringPlayback, args=(self.imdb, self.tvdb, self.season, self.episode, '5'))
+							self.watched_update_thread = Thread(target=playcount.markEpisodeDuringPlayback, args=(self.imdb, self.tvdb, self.season, self.episode, '5'))
 							self.watched_update_thread.start()
 							self.watched_during_playback = True
 						if self.enable_playnext and not self.play_next_triggered:
@@ -1004,11 +996,12 @@ class Player(xbmc.Player):
 			if _scrobble_source == '0':
 				if getSetting('localnotify') == 'true': control.notification(title=self.title, message=getLS(35510))
 				if not self.watched_during_playback:
-					from resources.lib.database import watchedcache as _wc
+					# Watched history is independent of the resume/scrobble source.
 					if self.media_type == 'episode':
-						_wc.change_watched('episode', self.imdb, '', season=self.season, episode=self.episode, watched=5)
+						playcount.markEpisodeDuringPlayback(self.imdb, self.tvdb, self.season, self.episode, '5')
 					elif self.media_type == 'movie':
-						_wc.change_watched('movie', self.imdb, '', watched=5)
+						playcount.markMovieDuringPlayback(self.imdb, '5')
+					self.watched_during_playback = True
 				if self.imdb:
 					from resources.lib.database import watchedcache as _wc
 					_wc.delete_progress(self.media_type, self.imdb, self.tmdb or '', self.season or 0, self.episode or 0)
@@ -1108,11 +1101,12 @@ class Player(xbmc.Player):
 				if not self.watched_during_playback and self.media_length > 0:
 					_pct = float(self.current_time / self.media_length) * 100
 					if _pct >= int(self.markwatched_percentage):
-						from resources.lib.database import watchedcache as _wc
+						# Watched history is independent of the resume/scrobble source.
 						if self.media_type == 'episode':
-							_wc.change_watched('episode', self.imdb, '', season=self.season, episode=self.episode, watched=5)
+							playcount.markEpisodeDuringPlayback(self.imdb, self.tvdb, self.season, self.episode, '5')
 						elif self.media_type == 'movie':
-							_wc.change_watched('movie', self.imdb, '', watched=5)
+							playcount.markMovieDuringPlayback(self.imdb, '5')
+						self.watched_during_playback = True
 				if self.imdb:
 					from resources.lib.database import watchedcache as _wc
 					_wc.delete_progress(self.media_type, self.imdb, self.tmdb or '', self.season or 0, self.episode or 0)

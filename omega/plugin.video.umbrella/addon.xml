@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.89">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.90">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -270,8 +270,9 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.89 - Sept 24th, 2026 [/B]
---[Fix] Sorting change to stop rounding on sizes.
+[B]Update - v6.7.90 - Sept 25th, 2026 [/B]
+--[Fix] Fixed redundant per-show requests during SIMKL season sync by reusing batch responses. Sync should be much faster.
+--[Fix] Changes made for when scrobble is set to local to allow for items to still be marked as watched with online services.
 		</news>
 	</extension>
 
