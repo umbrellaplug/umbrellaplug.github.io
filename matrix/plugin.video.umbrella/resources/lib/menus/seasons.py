@@ -180,7 +180,7 @@ class Seasons:
 		multi = True if len([x for y,x in enumerate(multi) if x not in multi[:y]]) > 1 else False
 		if items:
 			imdb, tmdb, tvdb = items[0]['imdb'], items[0]['tmdb'], items[0]['tvdb']
-			try: indicators = getSeasonIndicators(imdb, tvdb, tmdb_total_aired=items[0].get('total_aired_episodes'))
+			try: indicators = getSeasonIndicators(imdb, tvdb, tmdb=tmdb, tmdb_total_aired=items[0].get('total_aired_episodes'))
 			except: indicators = None
 		for i in items:
 			try:
@@ -243,9 +243,9 @@ class Seasons:
 				try:
 					watched = getSeasonOverlay(indicators[0], imdb, tvdb, season) == '5' if indicators else False
 					if self.traktCredentials:
-						cm.append((traktManagerMenu, 'RunPlugin(%s?action=tools_traktManager&name=%s&imdb=%s&tvdb=%s&season=%s&watched=%s)' % (sysaddon, systitle, imdb, tvdb, season, watched)))
+						cm.append((traktManagerMenu, 'RunPlugin(%s?action=tools_traktManager&name=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&watched=%s)' % (sysaddon, systitle, imdb, tmdb, tvdb, season, watched)))
 					if self.simklCredentials:
-						cm.append((simklManagerMenu, 'RunPlugin(%s?action=tools_simklManager&name=%s&imdb=%s&tvdb=%s&season=%s&watched=%s)' % (sysaddon, systitle, imdb, tvdb, season, watched)))
+						cm.append((simklManagerMenu, 'RunPlugin(%s?action=tools_simklManager&name=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&watched=%s)' % (sysaddon, systitle, imdb, tmdb, tvdb, season, watched)))
 					if self.mdblist_authed:
 						cm.append((mdblistManagerMenu, 'RunPlugin(%s?action=tools_mdbWatchlist&name=%s&imdb=%s&tvdb=%s&tmdb=%s&season=%s&watched=%s)' % (sysaddon, systitle, imdb, tvdb, tmdb, season, watched)))
 					if self.customCredentials:
@@ -258,10 +258,10 @@ class Seasons:
 						cm.append((punchplayManagerMenu, 'RunPlugin(%s?action=tools_punchplayManager&name=%s&imdb=%s&tvdb=%s&season=%s&watched=%s)' % (sysaddon, systitle, imdb, tvdb, season, watched)))
 					if watched:
 						meta.update({'playcount': 1, 'overlay': 5})
-						cm.append((unwatchedMenu, 'RunPlugin(%s?action=playcount_TVShow&name=%s&imdb=%s&tvdb=%s&season=%s&query=4)' % (sysaddon, systitle, imdb, tvdb, season)))
+						cm.append((unwatchedMenu, 'RunPlugin(%s?action=playcount_TVShow&name=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&query=4)' % (sysaddon, systitle, imdb, tmdb, tvdb, season)))
 					else: 
 						meta.update({'playcount': 0, 'overlay': 4})
-						cm.append((watchedMenu, 'RunPlugin(%s?action=playcount_TVShow&name=%s&imdb=%s&tvdb=%s&season=%s&query=5)' % (sysaddon, systitle, imdb, tvdb, season)))
+						cm.append((watchedMenu, 'RunPlugin(%s?action=playcount_TVShow&name=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&query=5)' % (sysaddon, systitle, imdb, tmdb, tvdb, season)))
 				except: pass
 				cm.append(('Customize Artwork', 'RunPlugin(%s?action=customizeArt&mediatype=%s&imdb=%s&tmdb=%s&tvdb=%s&poster=%s&fanart=%s&landscape=%s&banner=%s&clearart=%s&clearlogo=%s&season=%s)' % (sysaddon, 'season', imdb, tmdb, tvdb, poster, fanart, landscape, banner, clearart, clearlogo, season)))
 				cm.append((playRandom, 'RunPlugin(%s?action=play_Random&rtype=episode&tvshowtitle=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&meta=%s&season=%s)' % (sysaddon, systitle, year, imdb, tmdb, tvdb, sysmeta, season)))
@@ -276,7 +276,7 @@ class Seasons:
 				if 'castandart' in i: meta.update({"cast": ['castandart']}) #changed for kodi20 setinfo method
 				item.setArt(art)
 				try:
-					count = getSeasonCount(imdb, tvdb, season)
+					count = getSeasonCount(imdb, tvdb, season, tmdb=tmdb)
 					if count:
 						item.setProperties({'WatchedEpisodes': str(count['watched']), 'UnWatchedEpisodes': str(count['unwatched'])})
 						item.setProperties({'TotalSeasons': str(meta.get('total_seasons', '')), 'TotalEpisodes': str(count['total'])})

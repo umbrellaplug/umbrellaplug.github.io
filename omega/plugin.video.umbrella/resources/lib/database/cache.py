@@ -149,6 +149,11 @@ def cache_insert(key, value):
 		dbcur.execute('''CREATE TABLE IF NOT EXISTS cache (key TEXT, value TEXT, date INTEGER, UNIQUE(key));''')
 		dbcur.execute('''INSERT OR REPLACE INTO cache Values (?, ?, ?)''', (key, value, now))
 		dbcur.connection.commit()
+	except db.OperationalError as exc:
+		# A contended optional write must not flood the log with tracebacks.
+		if 'locked' not in str(exc).lower() and 'busy' not in str(exc).lower():
+			from resources.lib.modules import log_utils
+			log_utils.error()
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()

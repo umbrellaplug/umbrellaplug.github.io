@@ -8,6 +8,7 @@ from resources.lib.modules import control
 from xml.dom.minidom import parse as mdParse
 
 def clean_settings():
+	control.migrate_service_settings()
 	def _make_content(dict_object):
 		content = '<settings version="2">'
 		for item in dict_object:

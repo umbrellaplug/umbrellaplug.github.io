@@ -343,9 +343,9 @@ def markTVShowAsNotWatched(imdb, tvdb):
 		log_utils.error()
 		return False
 
-def markSeasonAsWatched(imdb, tvdb, season):
+def markSeasonAsWatched(imdb, tvdb, season, tmdb=''):
 	try:
-		tmdb = _resolve_tmdb('tv', imdb=imdb, tvdb=tvdb)
+		tmdb = str(tmdb) if tmdb else _resolve_tmdb('tv', imdb=imdb, tvdb=tvdb)
 		if not tmdb: return False
 		season = int('%01d' % int(season))
 		success = _patch_or_create(_season_url(tmdb, season), 'season', tmdb, {'status': STATUS_COMPLETED}, season_number=season)
@@ -360,9 +360,9 @@ def markSeasonAsWatched(imdb, tvdb, season):
 		log_utils.error()
 		return False
 
-def markSeasonAsNotWatched(imdb, tvdb, season):
+def markSeasonAsNotWatched(imdb, tvdb, season, tmdb=''):
 	try:
-		tmdb = _resolve_tmdb('tv', imdb=imdb, tvdb=tvdb)
+		tmdb = str(tmdb) if tmdb else _resolve_tmdb('tv', imdb=imdb, tvdb=tvdb)
 		if not tmdb: return False
 		season = int('%01d' % int(season))
 		response = getFloppy(_season_url(tmdb, season), post={'status': STATUS_PLANNING}, method='PATCH', silent=True)
@@ -379,9 +379,9 @@ def markSeasonAsNotWatched(imdb, tvdb, season):
 		log_utils.error()
 		return False
 
-def markEpisodeAsWatched(imdb, tvdb, season, episode):
+def markEpisodeAsWatched(imdb, tvdb, season, episode, tmdb=''):
 	try:
-		tmdb = _resolve_tmdb('tv', imdb=imdb, tvdb=tvdb)
+		tmdb = str(tmdb) if tmdb else _resolve_tmdb('tv', imdb=imdb, tvdb=tvdb)
 		if not tmdb: return False
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
 		response = getFloppy(_episode_watch_url(tmdb, season, episode), post={}, method='POST', silent=True)
@@ -397,9 +397,9 @@ def markEpisodeAsWatched(imdb, tvdb, season, episode):
 		log_utils.error()
 		return False
 
-def markEpisodeAsNotWatched(imdb, tvdb, season, episode):
+def markEpisodeAsNotWatched(imdb, tvdb, season, episode, tmdb=''):
 	try:
-		tmdb = _resolve_tmdb('tv', imdb=imdb, tvdb=tvdb)
+		tmdb = str(tmdb) if tmdb else _resolve_tmdb('tv', imdb=imdb, tvdb=tvdb)
 		if not tmdb: return False
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
 		response = getFloppy(_episode_url(tmdb, season, episode), method='DELETE', silent=True)
@@ -416,7 +416,11 @@ def markEpisodeAsNotWatched(imdb, tvdb, season, episode):
 		return False
 
 
-def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True):
+def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, tmdb=''):
+	if content_type != 'movie' and tmdb:
+		from resources.lib.modules import episode_mapping, anthology_tracking
+		if episode_mapping.supported(tmdb):
+			return anthology_tracking.manager_write('floppy', tmdb, season, episode, False, refresh)
 	control.busy()
 	success = False
 	if content_type == 'movie': success = markMovieAsWatched(imdb)
@@ -428,11 +432,15 @@ def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, r
 	control.trigger_widget_refresh()
 	if season and not episode: name = '%s-Season%s...' % (name, season)
 	if season and episode: name = '%s-S%sxE%02d...' % (name, season, int(episode))
-	if getSetting('floppy.general.notifications') == 'true':
+	if getSetting('services.general.notifications') == 'true':
 		if success is True: control.notification(title='Floppy', message='%s Marked as Watched on Floppy' % name)
 		else: control.notification(title='Floppy', message='%s Failed to Mark as Watched on Floppy' % name)
 
-def unwatch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True):
+def unwatch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, tmdb=''):
+	if content_type != 'movie' and tmdb:
+		from resources.lib.modules import episode_mapping, anthology_tracking
+		if episode_mapping.supported(tmdb):
+			return anthology_tracking.manager_write('floppy', tmdb, season, episode, True, refresh)
 	control.busy()
 	success = False
 	if content_type == 'movie': success = markMovieAsNotWatched(imdb)
@@ -444,7 +452,7 @@ def unwatch(content_type, name, imdb=None, tvdb=None, season=None, episode=None,
 	control.trigger_widget_refresh()
 	if season and not episode: name = '%s-Season%s...' % (name, season)
 	if season and episode: name = '%s-S%sxE%02d...' % (name, season, int(episode))
-	if getSetting('floppy.general.notifications') == 'true':
+	if getSetting('services.general.notifications') == 'true':
 		if success is True: control.notification(title='Floppy', message='%s Marked as Unwatched on Floppy' % name)
 		else: control.notification(title='Floppy', message='%s Failed to Mark as Unwatched on Floppy' % name)
 
@@ -466,6 +474,9 @@ def _scrobble_seconds(watched_percent, current_time, total_time):
 	return int(watched_percent), 100
 
 def scrobbleStart(media_type, title='', tvshowtitle='', year='0', imdb='', tmdb='', tvdb='', season='', episode='', watched_percent=0, current_time=0, total_time=0):
+	if tmdb and media_type != 'movie':
+		from resources.lib.modules.episode_mapping import supported
+		if supported(tmdb): imdb, tvdb = '', ''
 	if isReadOnly(): return
 	try:
 		ids = {}
@@ -495,6 +506,9 @@ def scrobbleMovie(imdb, tmdb, watched_percent, current_time=0, total_time=0):
 	except: log_utils.error()
 
 def scrobbleEpisode(imdb, tmdb, tvdb, season, episode, watched_percent, current_time=0, total_time=0):
+	if tmdb and True:
+		from resources.lib.modules.episode_mapping import supported
+		if supported(tmdb): imdb, tvdb = '', ''
 	if isReadOnly(): return
 	try:
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
@@ -532,6 +546,9 @@ def scrobbleStopMovie(imdb, tmdb, watched_percent, completed=False, current_time
 	except: log_utils.error()
 
 def scrobbleStopEpisode(imdb, tmdb, tvdb, season, episode, watched_percent, completed=False, current_time=0, total_time=0, already_watched=False):
+	if tmdb and True:
+		from resources.lib.modules.episode_mapping import supported
+		if supported(tmdb): imdb, tvdb = '', ''
 	if isReadOnly(): return
 	try:
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
@@ -1204,9 +1221,9 @@ def manager(name, imdb=None, tvdb=None, tmdb=None, season=None, episode=None, re
 		if select == -1: return
 		action_key = items[select][1]
 		if action_key == 'watch':
-			watch(content_type, name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
+			watch(content_type, name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
 		elif action_key == 'unwatch':
-			unwatch(content_type, name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
+			unwatch(content_type, name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
 		elif action_key == 'scrobbleReset':
 			scrobbleReset(imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=True)
 		elif action_key == 'watchlist_add':
@@ -1231,7 +1248,7 @@ def manager(name, imdb=None, tvdb=None, tmdb=None, season=None, episode=None, re
 				sync_collection(forced=True)
 				if refresh: control.refresh()
 		elif action_key == 'list_add':
-			notify = getSetting('floppy.general.notifications') == 'true'
+			notify = getSetting('services.general.notifications') == 'true'
 			resolved_tmdb = tmdb or _resolve_tmdb(media_type, imdb=imdb, tvdb=tvdb)
 			if not resolved_tmdb: return
 			lists = get_user_lists()
@@ -1253,7 +1270,7 @@ def manager(name, imdb=None, tvdb=None, tmdb=None, season=None, episode=None, re
 			else:
 				if notify: control.notification(title='Floppy', message='Failed to add to list')
 		elif action_key == 'list_remove':
-			notify = getSetting('floppy.general.notifications') == 'true'
+			notify = getSetting('services.general.notifications') == 'true'
 			resolved_tmdb = tmdb or _resolve_tmdb(media_type, imdb=imdb, tvdb=tvdb)
 			if not resolved_tmdb: return
 			lists = get_user_lists()

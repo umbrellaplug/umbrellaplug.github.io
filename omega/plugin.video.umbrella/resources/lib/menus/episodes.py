@@ -104,16 +104,16 @@ class Episodes:
 		self.floppyCredentials = floppy.getFloppyCredentialsInfo()
 		self.scrobCredentials = scrob.getScrobCredentialsInfo()
 		self.punchplayCredentials = punchplay.getPunchPlayCredentialsInfo()
-		self.trakt_directProgressScrape = getSetting('trakt.directProgress.scrape') == 'true'
-		self.simkl_directProgressScrape = getSetting('simkl.directProgress.scrape') == 'true'
-		self.mdblist_directProgressScrape = getSetting('mdblist.directProgress.scrape') == 'true'
-		self.custom_directProgressScrape = getSetting('custom.directProgress.scrape') == 'true'
-		self.floppy_directProgressScrape = getSetting('floppy.directProgress.scrape') == 'true'
-		self.scrob_directProgressScrape = getSetting('scrob.directProgress.scrape') == 'true'
-		self.punchplay_directProgressScrape = getSetting('punchplay.directProgress.scrape') == 'true'
-		self.trakt_progressFlatten = getSetting('trakt.progressFlatten') == 'true'
-		self.simkl_progressFlatten = getSetting('simkl.progressFlatten') == 'true'
-		self.mdblist_progressFlatten = getSetting('mdblist.progressFlatten') == 'true'
+		self.trakt_directProgressScrape = getSetting('services.directProgress.scrape') == 'true'
+		self.simkl_directProgressScrape = getSetting('services.directProgress.scrape') == 'true'
+		self.mdblist_directProgressScrape = getSetting('services.directProgress.scrape') == 'true'
+		self.custom_directProgressScrape = getSetting('services.directProgress.scrape') == 'true'
+		self.floppy_directProgressScrape = getSetting('services.directProgress.scrape') == 'true'
+		self.scrob_directProgressScrape = getSetting('services.directProgress.scrape') == 'true'
+		self.punchplay_directProgressScrape = getSetting('services.directProgress.scrape') == 'true'
+		self.trakt_progressFlatten = getSetting('services.progressFlatten') == 'true'
+		self.simkl_progressFlatten = getSetting('services.progressFlatten') == 'true'
+		self.mdblist_progressFlatten = getSetting('services.progressFlatten') == 'true'
 		self.trakt_link = 'https://api.trakt.tv'
 		self.trakthistory_link = 'https://api.trakt.tv/users/me/history/shows?limit=%s&page=1' % self.count
 		self.progress_link = 'https://api.trakt.tv/users/me/watched/shows'
@@ -186,7 +186,7 @@ class Episodes:
 					from resources.lib.modules.playcount import getTVShowIndicators, getEpisodeOverlay
 					_progress_ind = getTVShowIndicators()
 					if _progress_ind:
-						while self.list and getEpisodeOverlay(_progress_ind, self.list[0].get('imdb', ''), str(self.list[0].get('tvdb', '')), self.list[0].get('season', 0), self.list[0].get('episode', 0)) == '5':
+						while self.list and getEpisodeOverlay(_progress_ind, self.list[0].get('imdb', ''), str(self.list[0].get('tvdb', '')), self.list[0].get('season', 0), self.list[0].get('episode', 0), tmdb=self.list[0].get('tmdb', '')) == '5':
 							self.list = self.list[1:]
 				except: pass
 				if self.trakt_progressFlatten or self.mdblist_progressFlatten:
@@ -258,7 +258,7 @@ class Episodes:
 			useNext = True
 			next_url = ''
 			page_limit = max(1, int(self.count) if self.count else 20)
-			if create_directory and getSetting('trakt.paginate.lists') == 'true' and self.list and len(self.list) > page_limit:
+			if create_directory and getSetting('services.paginate.lists') == 'true' and self.list and len(self.list) > page_limit:
 				try:
 					q = dict(parse_qsl(urlsplit(url).query)) if '?' in url else {}
 					index = int(q.get('page', 1)) - 1
@@ -841,7 +841,7 @@ class Episodes:
 				self.list = [i for i in self.list if i.get('unaired', '') != 'true']
 			hasNext = True if isTraktHistory else False
 			next_url = ''
-			if isProgressView and getSetting('trakt.paginate.lists') == 'true' and self.list:
+			if isProgressView and getSetting('services.paginate.lists') == 'true' and self.list:
 				paginated_ids = [self.list[x:x + page_limit] for x in range(0, len(self.list), page_limit)]
 				total_pages = len(paginated_ids)
 				self.list = paginated_ids[index] if index < total_pages else []
@@ -880,9 +880,10 @@ class Episodes:
 			if '/sync/all-items/shows/watching' in api_url:
 				if simkl.getProgressActivity() > cache.timeout(self.simkl_progress_list, api_url, self.simkl_directProgressScrape):
 					self.list = cache.get(self.simkl_progress_list, 0, api_url, self.simkl_directProgressScrape)
-				else: self.list = cache.get(self.simkl_progress_list, self.simkl_hours, api_url, self.simkl_directProgressScrape)
+				else: self.list = cache.get(self.simkl_progress_list, min(self.simkl_hours, simkl.progress_cache_hours()), api_url, self.simkl_directProgressScrape)
 				# Rebuild progress rows cached before air-schedule enrichment.
-				if self.list and any(not i.get('airinfo_enriched') for i in self.list):
+				from resources.lib.modules.episode_mapping import combined
+				if self.list and any(not i.get('airinfo_enriched') or (combined(i) and not i.get('anthology_mapping')) for i in self.list):
 					cache.remove(self.simkl_progress_list, api_url, self.simkl_directProgressScrape)
 					self.list = []
 					self.list = cache.get(self.simkl_progress_list, 0, api_url, self.simkl_directProgressScrape)
@@ -911,7 +912,7 @@ class Episodes:
 				self.list = [i for i in self.list if i.get('unaired', '') != 'true']
 			hasNext = False
 			next_url = ''
-			if getSetting('simkl.paginate.lists') == 'true' and self.list:
+			if getSetting('services.paginate.lists') == 'true' and self.list:
 				paginated_ids = [self.list[x:x + page_limit] for x in range(0, len(self.list), page_limit)]
 				total_pages = len(paginated_ids)
 				self.list = paginated_ids[index] if index < total_pages else []
@@ -988,7 +989,7 @@ class Episodes:
 				self.list = [i for i in self.list if i.get('unaired', '') != 'true']
 			hasNext = False
 			next_url = ''
-			if getSetting('mdblist.paginate.lists') == 'true' and self.list:
+			if getSetting('services.paginate.lists') == 'true' and self.list:
 				try:
 					q = dict(parse_qsl(urlsplit(url).query)) if '?' in url else {}
 					index = int(q.get('page', 1)) - 1
@@ -1277,9 +1278,9 @@ class Episodes:
 		try:
 			from resources.lib.database import watchedcache as wc
 			show_ids = wc.get_in_progress_show_imdb_ids()
-			if not show_ids: return self.list
 			items = []
 			for imdb_id, last_played in show_ids:
+				if not imdb_id: continue
 				try:
 					watched_eps = wc.get_watched_episode_ids(imdb_id)
 					if not watched_eps: continue
@@ -1292,14 +1293,21 @@ class Episodes:
 					watched_set = {(ep[0], ep[1]) for ep in watched_eps}
 					items.append({'imdb': imdb_id, 'watched_set': watched_set, 'lastplayed': lp})
 				except: pass
+			from resources.lib.modules.episode_mapping import titles
+			for story in titles():
+				rows = wc.get_episodes_watched('episode', '', story)
+				watched_set = {(int(r['season']), int(r['episode'])) for r in rows if int(r['overlay']) == 5}
+				if watched_set: items.append({'imdb': '', 'tmdb': story, 'watched_set': watched_set, 'lastplayed': ''})
 			if not items: return self.list
 
 			def items_list(i):
 				imdb_id = i.get('imdb', '')
 				watched_set = i.get('watched_set', set())
 				try:
-					tmdb_result = cache.get(tmdb_indexer().IdLookup, 96, imdb_id, '')
-					tmdb_id = str(tmdb_result.get('id')) if tmdb_result else ''
+					tmdb_id = i.get('tmdb', '')
+					if not tmdb_id:
+						tmdb_result = cache.get(tmdb_indexer().IdLookup, 96, imdb_id, '')
+						tmdb_id = str(tmdb_result.get('id')) if tmdb_result else ''
 					if not tmdb_id: return
 					showSeasons = cache.get(tmdb_indexer().get_showSeasons_meta, 96, tmdb_id)
 					if not showSeasons: return
@@ -1417,15 +1425,10 @@ class Episodes:
 		try:
 			episodes = customtraktsync.get_watched_episodes()
 			if not episodes: return self.list
-			shows = {}
-			for (show_imdb, show_tmdb, show_tvdb, season, episode) in episodes:
-				shows.setdefault(show_imdb, {'imdb': show_imdb, 'tmdb': show_tmdb, 'tvdb': show_tvdb, 'watched_set': set()})
-				shows[show_imdb]['watched_set'].add((int(season), int(episode)))
-			try:
-				for (show_imdb, show_tmdb, show_tvdb, last_watched_at) in customtraktsync.get_watched_shows():
-					if show_imdb in shows: shows[show_imdb]['lastplayed'] = last_watched_at
-			except: pass
-			items = list(shows.values())
+			from resources.lib.modules.progress_identity import group_watched_shows
+			try: watched_shows = customtraktsync.get_watched_shows() or []
+			except: watched_shows = []
+			items = group_watched_shows(episodes, watched_shows)
 			if not items: return self.list
 
 			def items_list(i):
@@ -1574,7 +1577,7 @@ class Episodes:
 				self.list = [i for i in self.list if i.get('unaired', '') != 'true']
 			next_url = ''
 			hasNext = False
-			if getSetting('floppy.paginate.lists') == 'true' and self.list:
+			if getSetting('services.paginate.lists') == 'true' and self.list:
 				paginated_ids = [self.list[x:x + page_limit] for x in range(0, len(self.list), page_limit)]
 				total_pages = len(paginated_ids)
 				self.list = paginated_ids[index] if index < total_pages else []
@@ -1772,7 +1775,7 @@ class Episodes:
 			self.list = [i for i in self.list if i.get('unaired', '') != 'true']
 			next_url = ''
 			hasNext = False
-			if getSetting('scrob.paginate.lists') == 'true' and self.list:
+			if getSetting('services.paginate.lists') == 'true' and self.list:
 				paginated_ids = [self.list[x:x + page_limit] for x in range(0, len(self.list), page_limit)]
 				total_pages = len(paginated_ids)
 				self.list = paginated_ids[index] if index < total_pages else []
@@ -1819,7 +1822,7 @@ class Episodes:
 			self.list = [i for i in self.list if i.get('unaired', '') != 'true']
 			next_url = ''
 			hasNext = False
-			if getSetting('punchplay.paginate.lists') == 'true' and self.list:
+			if getSetting('services.paginate.lists') == 'true' and self.list:
 				paginated_ids = [self.list[x:x + page_limit] for x in range(0, len(self.list), page_limit)]
 				total_pages = len(paginated_ids)
 				self.list = paginated_ids[index] if index < total_pages else []
@@ -2767,8 +2770,13 @@ class Episodes:
 		if not result: return
 		items = []
 		# progress_showunaired = getSetting('trakt.progress.showunaired') == 'true'
+		from resources.lib.modules.episode_mapping import progress_stories
 		for item in result:
 			try:
+				mapped = progress_stories(item)
+				if mapped is not None:
+					items.extend(mapped)
+					continue
 				values = {} ; num_1 = 0
 				#season_sort = sorted(item['seasons'][:], key=lambda k: k['number'], reverse=False) # simkl sometimes places season0 at end and episodes out of order. So we sort it to be sure.
 				season_sort = sorted(item.get('seasons', []), key=lambda k: k.get('number', 0), reverse=False)
@@ -2809,7 +2817,7 @@ class Episodes:
 						from resources.lib.modules import log_utils
 						return log_utils.log('tvshowtitle: (%s) missing tmdb_id: ids={imdb: %s, tmdb: %s, tvdb: %s}' % (i['tvshowtitle'], imdb, tmdb, tvdb), __name__, log_utils.LOGDEBUG) # log TMDb shows that they do not have
 			try:
-				showSeasons = cache.get(tmdb_indexer().get_showSeasons_meta, 96, tmdb)
+				showSeasons = cache.get(tmdb_indexer().get_showSeasons_meta, simkl.progress_cache_hours(), tmdb)
 				if not showSeasons: return
 				key = i['snum'] - 1 if showSeasons['seasons'][0]['season_number'] != 0 else i['snum']
 				try: next_episode_num = i['enum'] + 1 if showSeasons['seasons'][key]['episode_count'] > i['enum'] else 1
@@ -2817,7 +2825,7 @@ class Episodes:
 				next_season_num = i['snum'] if next_episode_num == i['enum'] + 1 else i['snum'] + 1
 				if next_season_num > showSeasons['total_seasons']: return
 				if not self.showspecials and next_season_num == 0: return
-				seasonEpisodes = tmdb_indexer().get_seasonEpisodes_meta_checked(tmdb, next_season_num)
+				seasonEpisodes = cache.get(tmdb_indexer().get_seasonEpisodes_meta, simkl.progress_cache_hours(), tmdb, next_season_num)
 				if not seasonEpisodes: return
 				seasonEpisodes = dict((k,v) for k, v in iter(seasonEpisodes.items()) if v is not None and v != '') # remove empty keys so .update() doesn't over-write good meta with empty values.
 				try: episode_meta = [x for x in seasonEpisodes.get('episodes') if x.get('episode') == next_episode_num][0] # to pull just the episode meta we need
@@ -3196,11 +3204,11 @@ class Episodes:
 ####-Context Menu and Overlays-####
 				cm = []
 				try:
-					watched = getEpisodeOverlay(indicators, imdb, tvdb, season, episode) == '5'
+					watched = getEpisodeOverlay(indicators, imdb, tvdb, season, episode, tmdb=tmdb) == '5'
 					if self.traktCredentials:
-						cm.append((traktManagerMenu, 'RunPlugin(%s?action=tools_traktManager&name=%s&imdb=%s&tvdb=%s&season=%s&episode=%s&watched=%s&unfinished=%s)' % (sysaddon, systvshowtitle, imdb, tvdb, season, episode, watched, unfinished)))
+						cm.append((traktManagerMenu, 'RunPlugin(%s?action=tools_traktManager&name=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&watched=%s&unfinished=%s)' % (sysaddon, systvshowtitle, imdb, tmdb, tvdb, season, episode, watched, unfinished)))
 					if self.simklCredentials:
-						cm.append((simklManagerMenu, 'RunPlugin(%s?action=tools_simklManager&name=%s&imdb=%s&tvdb=%s&season=%s&episode=%s&watched=%s)' % (sysaddon, systvshowtitle, imdb, tvdb, season, episode, watched)))
+						cm.append((simklManagerMenu, 'RunPlugin(%s?action=tools_simklManager&name=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&watched=%s)' % (sysaddon, systvshowtitle, imdb, tmdb, tvdb, season, episode, watched)))
 					if self.mdblist_authed:
 						cm.append((mdblistManagerMenu, 'RunPlugin(%s?action=tools_mdbWatchlist&name=%s&imdb=%s&tvdb=%s&tmdb=%s&season=%s&episode=%s&watched=%s)' % (sysaddon, systvshowtitle, imdb, tvdb, tmdb, season, episode, watched)))
 					if self.customCredentials:
@@ -3213,10 +3221,10 @@ class Episodes:
 						cm.append((punchplayManagerMenu, 'RunPlugin(%s?action=tools_punchplayManager&name=%s&imdb=%s&tvdb=%s&tmdb=%s&season=%s&episode=%s&watched=%s&unfinished=%s)' % (sysaddon, systvshowtitle, imdb, tvdb, tmdb, season, episode, watched, unfinished)))
 					if watched:
 						meta.update({'playcount': 1, 'overlay': 5})
-						cm.append((unwatchedMenu, 'RunPlugin(%s?action=playcount_Episode&name=%s&imdb=%s&tvdb=%s&season=%s&episode=%s&query=4)' % (sysaddon, systvshowtitle, imdb, tvdb, season, episode)))
+						cm.append((unwatchedMenu, 'RunPlugin(%s?action=playcount_Episode&name=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&query=4)' % (sysaddon, systvshowtitle, imdb, tmdb, tvdb, season, episode)))
 					else:
 						meta.update({'playcount': 0, 'overlay': 4})
-						cm.append((watchedMenu, 'RunPlugin(%s?action=playcount_Episode&name=%s&imdb=%s&tvdb=%s&season=%s&episode=%s&query=5)' % (sysaddon, systvshowtitle, imdb, tvdb, season, episode)))
+						cm.append((watchedMenu, 'RunPlugin(%s?action=playcount_Episode&name=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&query=5)' % (sysaddon, systvshowtitle, imdb, tmdb, tvdb, season, episode)))
 				except: pass
 				Folderurl = '%s?action=episodes&tvshowtitle=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&meta=%s&season=%s&episode=%s&art=%s' % (sysaddon, systvshowtitle, year, imdb, tmdb, tvdb, sysmeta, season, episode, sysart)
 				if traktProgress and is_widget == False:
@@ -3283,7 +3291,7 @@ class Episodes:
 				if isMultiList and multi_unwatchedEnabled:
 					if 'ForceAirEnabled' not in i:
 						try:
-							try: count = getShowCount(getSeasonIndicators(imdb, tvdb, has_next_episode=i.get('has_next_episode', False), tmdb_total_aired=meta.get('total_aired_episodes'))[1], imdb, tvdb) # if indicators and no matching imdb_id in watched items then it returns None and we use TMDb meta to avoid Trakt request
+							try: count = getShowCount(getSeasonIndicators(imdb, tvdb, tmdb=tmdb, has_next_episode=i.get('has_next_episode', False), tmdb_total_aired=meta.get('total_aired_episodes'))[1], imdb, tvdb) # if indicators and no matching imdb_id in watched items then it returns None and we use TMDb meta to avoid Trakt request
 							except: count = None
 							if count:
 								total_aired = int(meta.get('total_aired_episodes') or 0)

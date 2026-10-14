@@ -17,6 +17,7 @@ from resources.lib.modules import control
 from resources.lib.modules import debrid
 from resources.lib.modules import log_utils
 from resources.lib.modules import string_tools
+from resources.lib.modules import source_preferences
 from resources.lib.modules.source_utils import supported_video_extensions, getFileType, aliases_check
 from resources.lib.cloud_scrapers import cloudSources
 from resources.lib.internal_scrapers import internalSources
@@ -66,6 +67,7 @@ class Sources:
 		self.useTitleSubs = getSetting('sources.useTitleSubs') == 'true'
 
 	def play(self, title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, meta, select, rescrape=None):
+		force_selection = select == '0' or rescrape == 'true'
 		if not self.prem_providers:
 			control.sleep(200) ; control.hide()
 			return control.notification(message=33034)
@@ -76,16 +78,20 @@ class Sources:
 				playerWindow.clearProperty('umbrella.preResolved_season')
 				playerWindow.clearProperty('umbrella.preResolved_episode')
 				playerWindow.clearProperty('umbrella.preResolved_imdb')
+				playerWindow.clearProperty('umbrella.preResolved_tmdb')
 			preResolved_nextUrl = playerWindow.getProperty('umbrella.preResolved_nextUrl')
-			if preResolved_nextUrl != '' and (episode is None or getSetting('play.mode.tv') != '0'):
+			if preResolved_nextUrl != '' and not force_selection:
 				preResolved_season = playerWindow.getProperty('umbrella.preResolved_season')
 				preResolved_episode = playerWindow.getProperty('umbrella.preResolved_episode')
 				preResolved_imdb = playerWindow.getProperty('umbrella.preResolved_imdb')
-				_match = preResolved_imdb == str(imdb) and preResolved_season == str(season) and preResolved_episode == str(episode)
+				preResolved_tmdb = playerWindow.getProperty('umbrella.preResolved_tmdb')
+				from resources.lib.modules.episode_mapping import preresolved_matches
+				_match = preresolved_matches(imdb, tmdb, season, episode, preResolved_imdb, preResolved_tmdb, preResolved_season, preResolved_episode)
 				playerWindow.clearProperty('umbrella.preResolved_nextUrl')
 				playerWindow.clearProperty('umbrella.preResolved_season')
 				playerWindow.clearProperty('umbrella.preResolved_episode')
 				playerWindow.clearProperty('umbrella.preResolved_imdb')
+				playerWindow.clearProperty('umbrella.preResolved_tmdb')
 				if _match:
 					control.sleep(500)
 					try: meta = jsloads(unquote(meta.replace('%22', '\\"')))
@@ -255,10 +261,15 @@ class Sources:
 			self.season = season ; self.episode = episode
 			self.ids = {'imdb': self.imdb, 'tmdb': self.tmdb, 'tvdb': self.tvdb}
 			if len(items) > 0:
-				if select == '0':
+				preference = source_preferences.get(self.meta) if not force_selection else None
+				url = None
+				if preference:
+					matches = source_preferences.matching(items, preference)
+					if matches: url = self.sourcesAutoPlay(matches)
+				if (preference and not url) or (not preference and select == '0'):
 					control.sleep(200)
 					return self.sourceSelect(title, items, uncached_items, self.meta)
-				else: url = self.sourcesAutoPlay(items)
+				elif not preference: url = self.sourcesAutoPlay(items)
 			if url == 'close://' or url is None:
 				self.url = url
 				return self.errorForSources()
@@ -530,6 +541,7 @@ class Sources:
 		except: log_utils.error('Error playItem: ')
 
 	def getSources(self, title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered, meta=None, preScrape=False):
+		self.scrape_tmdb = tmdb
 		self.window = None
 		if preScrape:
 			self.isPrescrape = True
@@ -653,9 +665,14 @@ class Sources:
 				progressDialog = control.progressDialogBG
 				progressDialog.create(header, '')
 				debrid_message = '[COLOR %s][B]Please wait...  Checking Providers[/B][/COLOR]' % self.highlight_color
-			self.prepareSources()
-			sourceDict = self.sourceDict
 			progressDialog.update(0, getLS(32600)) # preparing sources
+			trakt_aliases = self.prepareSources_dialog(progressDialog, imdb, content)
+			if trakt_aliases is None:
+				homeWindow.clearProperty('umbrella.window_keep_alive')
+				homeWindow.clearProperty('fs_filterless_search')
+				progressDialog.close()
+				return []
+			sourceDict = self.sourceDict
 			if content == 'movie': sourceDict = [(i[0], i[1]) for i in sourceDict if i[1].hasMovies]
 			else: sourceDict = [(i[0], i[1]) for i in sourceDict if i[1].hasEpisodes]
 			if getSetting('cf.disable') == 'true': sourceDict = [(i[0], i[1]) for i in sourceDict if not any(x in i[0] for x in self.sourcecfDict)]
@@ -667,7 +684,6 @@ class Sources:
 			threads = [] ; threads_append = threads.append
 
 			if content == 'movie':
-				trakt_aliases = self.getAliasTitles(imdb, content) # cached for 7 days in trakt module called
 				try: aliases.extend([i for i in trakt_aliases if not i in aliases]) # combine TMDb and Trakt aliases
 				except: pass
 				data = {'title': title, 'aliases': aliases, 'year': year, 'imdb': imdb}
@@ -678,7 +694,6 @@ class Sources:
 				if self.season_isAiring == 'false':
 					if (not self.dev_mode) or (not self.dev_disable_season_packs): scraperDict.extend([(i[0], i[1], 'season') for i in sourceDict if i[1].pack_capable])
 					if (not self.dev_mode) or (not self.dev_disable_show_packs): scraperDict.extend([(i[0], i[1], 'show') for i in sourceDict if i[1].pack_capable])
-				trakt_aliases = self.getAliasTitles(imdb, content) # cached for 7 days in trakt module called
 				try: aliases.extend([i for i in trakt_aliases if not i in aliases]) # combine TMDb and Trakt aliases
 				except: pass
 				try: country_codes = self.meta.get('country_codes', [])
@@ -740,8 +755,11 @@ class Sources:
 			try:
 				if control.monitor.abortRequested(): return sysexit()
 				try:
-					if progressDialog.iscanceled(): 
-						break
+					if progressDialog.iscanceled():
+						homeWindow.clearProperty('umbrella.window_keep_alive')
+						homeWindow.clearProperty('fs_filterless_search')
+						progressDialog.close()
+						return []
 				except: pass
 
 				if terminate_onCloud:
@@ -821,7 +839,7 @@ class Sources:
 		self.tvshowtitle = tvshowtitle
 		self.year = year
 		homeWindow.clearProperty('fs_filterless_search')
-		if len(self.sources) > 0: self.sourcesFilter()
+		if len(self.sources) > 0: self.sourcesFilter(progressDialog)
 		if homeWindow.getProperty('umbrella.window_keep_alive') != 'true':
 			try: progressDialog.close()
 			except: pass
@@ -829,7 +847,10 @@ class Sources:
 		return self.sources
 
 	def preResolve(self, next_sources, next_meta):
+		playerWindow.clearProperty('umbrella.preResolved_nextUrl')
 		try:
+			preference = source_preferences.get(next_meta)
+			if preference: next_sources = source_preferences.matching(next_sources, preference)
 			next_sources = [i for i in next_sources if not i.get('cloud_folder')]
 			if not next_sources: raise Exception()
 			homeWindow.setProperty(self.metaProperty, jsdumps(next_meta))
@@ -865,6 +886,7 @@ class Sources:
 								playerWindow.setProperty('umbrella.preResolved_season', str(next_meta.get('season', '')))
 								playerWindow.setProperty('umbrella.preResolved_episode', str(next_meta.get('episode', '')))
 								playerWindow.setProperty('umbrella.preResolved_imdb', str(next_meta.get('imdb', '')))
+								playerWindow.setProperty('umbrella.preResolved_tmdb', str(next_meta.get('tmdb', '')))
 								if self.debuglog:
 									log_utils.log('preResolved_nextUrl : %s' % url, level=log_utils.LOGDEBUG)
 							else:
@@ -876,6 +898,29 @@ class Sources:
 		finally:
 			homeWindow.clearProperty('umbrella.preResolving')
 		control.sleep(200)
+
+	def prepareSources_dialog(self, progressDialog, imdb, content, timeout=30):
+		# Keep cache locks and optional Trakt alias requests off the dialog thread.
+		result = []
+		def prepare():
+			try:
+				self.prepareSources()
+				result.append(self.getAliasTitles(imdb, content) or [])
+			except: log_utils.error()
+		worker = Thread(target=prepare)
+		worker.daemon = True
+		worker.start()
+		deadline = time() + timeout
+		while worker.is_alive():
+			if control.monitor.abortRequested(): return None
+			try:
+				if progressDialog.iscanceled(): return None
+			except: pass # Background dialogs do not expose cancellation.
+			if time() >= deadline:
+				log_utils.log('Source preparation timed out; continuing without Trakt aliases', level=log_utils.LOGWARNING)
+				return []
+			control.sleep(50)
+		return result[0] if result else []
 
 	def prepareSources(self):
 		try:
@@ -925,6 +970,15 @@ class Sources:
 		except: log_utils.error()
 
 	def getEpisodeSource(self, imdb, season, episode, data, source, call, pack):
+		from resources.lib.modules.episode_mapping import scrape_variants
+		variants = [data] if self.custom_query == 'true' else scrape_variants(getattr(self, 'scrape_tmdb', ''), data)
+		for variant in variants:
+			if control.monitor.abortRequested(): return
+			cache_id = ('anthology-v1:%s:%s' % (variant['_scrape_tmdb'], variant['_scrape_convention'])) if variant.get('_scrape_tmdb') else imdb
+			self._getEpisodeSource(cache_id, variant['season'], variant['episode'], variant, source, call, pack)
+
+	def _getEpisodeSource(self, imdb, season, episode, data, source, call, pack):
+		from resources.lib.modules.episode_mapping import tag_sources
 		try:
 			dbcon = database.connect(sourceFile, timeout=60)
 			dbcon.execute('''PRAGMA page_size = 32768''')
@@ -949,7 +1003,7 @@ class Sources:
 					db_singleEpisodes_valid = abs(self.time - timestamp) < single_expiry
 					if db_singleEpisodes_valid:
 						sources = eval(db_singleEpisodes[4])
-						return self.scraper_sources.extend(sources)
+						return self.scraper_sources.extend(tag_sources(sources, data))
 			except: log_utils.error()
 		elif pack == 'season': # seasonPacks db check
 			try:
@@ -960,7 +1014,7 @@ class Sources:
 					if db_seasonPacks_valid:
 						sources = eval(db_seasonPacks[4])
 						sources = [i for i in sources if not 'episode_start' in i or i['episode_start'] <= int(episode) <= i['episode_end']] # filter out range items that do not apply to current episode for return
-						return self.scraper_sources.extend(sources)
+						return self.scraper_sources.extend(tag_sources(sources, data))
 			except: log_utils.error()
 		elif pack == 'show': # showPacks db check
 			try:
@@ -971,7 +1025,7 @@ class Sources:
 					if db_showPacks_valid:
 						sources = eval(db_showPacks[4])
 						sources = [i for i in sources if i.get('last_season') >= int(season)] # filter out range items that do not apply to current season for return
-						return self.scraper_sources.extend(sources)
+						return self.scraper_sources.extend(tag_sources(sources, data))
 			except: log_utils.error()
 
 		try: #dummy write or threads wait till return from scrapers...write for each is needed
@@ -985,7 +1039,7 @@ class Sources:
 				if sources:
 					dbcur.execute('''INSERT OR REPLACE INTO rel_src Values (?, ?, ?, ?, ?, ?)''', (source, imdb, season, episode, repr(sources), datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")))
 					dbcur.connection.commit()
-					return self.scraper_sources.extend(sources)
+					return self.scraper_sources.extend(tag_sources(sources, data))
 				return
 			except: return log_utils.error()
 		elif pack == 'season': # seasonPacks scraper call
@@ -996,21 +1050,21 @@ class Sources:
 					dbcur.execute('''INSERT OR REPLACE INTO rel_src Values (?, ?, ?, ?, ?, ?)''', (source, imdb, season,'', repr(sources), datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")))
 					dbcur.connection.commit()
 					sources = [i for i in sources if not 'episode_start' in i or i['episode_start'] <= int(episode) <= i['episode_end']] # filter out range items that do not apply to current episode for return
-					return self.scraper_sources.extend(sources)
+					return self.scraper_sources.extend(tag_sources(sources, data))
 				return
 			except: return log_utils.error()
 		elif pack == 'show': # showPacks scraper call
 			try:
 				sources = []
-				sources = call().sources_packs(data, self.hostprDict, search_series=True, total_seasons=self.total_seasons, bypass_filter=self.dev_disable_show_filter)
+				sources = call().sources_packs(data, self.hostprDict, search_series=True, total_seasons=data.get('_scrape_total_seasons', self.total_seasons), bypass_filter=self.dev_disable_show_filter)
 				if sources:
 					dbcur.execute('''INSERT OR REPLACE INTO rel_src Values (?, ?, ?, ?, ?, ?)''', (source, imdb, '', '', repr(sources), datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")))
 					dbcur.connection.commit()
 					sources = [i for i in sources if i.get('last_season') >= int(season)] # filter out range items that do not apply to current season for return
-					return self.scraper_sources.extend(sources)
+					return self.scraper_sources.extend(tag_sources(sources, data))
 			except: log_utils.error()
 
-	def sourcesFilter(self):
+	def sourcesFilter(self, progressDialog=None):
 		if not self.isPrescrape: control.busy()
 		if getSetting('remove.duplicates') == 'true': self.sources = self.filter_dupes()
 		if self.mediatype == 'movie':
@@ -1190,15 +1244,18 @@ class Sources:
 		deepcopy_sources = [i for i in deepcopy_sources if 'magnet:' in i['url']]
 		if deepcopy_sources: hashList = [i['hash'] for i in deepcopy_sources]
 		threads = [] ; self.filter = []
+		cache_results = []
+		hoster_sources = [dict(i) for i in self.sources if 'magnet:' not in i['url']]
 		valid_hosters = set([i['source'] for i in self.sources if 'magnet:' not in i['url']])
 		control.hide()
 
 		def checkStatus(function, debrid_name, valid_hoster):
 			try:
 				cached = None
-				if deepcopy_sources: cached = function(deepcopy_sources, hashList)
-				if cached: self.filter += [dict(list(i.items()) + [('debrid', debrid_name)]) for i in cached] # this makes a new instance so no need for deepcopy beyond the one time done now
-				if valid_hoster: self.filter += [dict(list(i.items()) + [('debrid', debrid_name)]) for i in self.sources if i['source'] in valid_hoster and 'magnet:' not in i['url']]
+				if deepcopy_sources: cached = function(deepcopy(deepcopy_sources), hashList)
+				results = [dict(i, debrid=debrid_name) for i in cached] if cached else []
+				if valid_hoster: results += [dict(i, debrid=debrid_name) for i in hoster_sources if i['source'] in valid_hoster]
+				cache_results.append(results)
 			except: log_utils.error()
 		for d in self.debrid_resolvers:
 			if d.name == 'Real-Debrid' and getSetting('realdebrid.enable') == 'true':
@@ -1233,8 +1290,25 @@ class Sources:
 					threads.append(Thread(target=checkStatus, args=(self.tb_cache_chk_list, d.name, valid_hoster)))
 				except: log_utils.error()
 		if threads:
-			[i.start() for i in threads]
-			[i.join() for i in threads]
+			for worker in threads:
+				worker.daemon = True
+				worker.start()
+			deadline = time() + 60
+			while any(worker.is_alive() for worker in threads):
+				cancelled = control.monitor.abortRequested()
+				try:
+					cancelled = cancelled or (progressDialog is not None and progressDialog.iscanceled())
+				except: pass
+				if cancelled:
+					self.sources = []
+					homeWindow.clearProperty('umbrella.window_keep_alive')
+					return
+				if time() >= deadline:
+					log_utils.log('Provider cache checks timed out; using completed results', level=log_utils.LOGWARNING)
+					break
+				control.sleep(50)
+		# Workers only publish to their local result list, never the active source list.
+		for results in list(cache_results): self.filter.extend(results)
 		#self.filter += direct # add direct links in to be considered in priority sorting
 		self.filter += directstart
 		try:
@@ -1359,6 +1433,7 @@ class Sources:
 		return filter
 
 	def sourcesAutoPlay(self, items):
+		url = None
 		#control.hide()
 		#control.sleep(200)
 		items = [i for i in items if not i.get('cloud_folder')]
@@ -1437,6 +1512,8 @@ class Sources:
 						season = homeWindow.getProperty(self.seasonProperty)
 						episode = homeWindow.getProperty(self.episodeProperty)
 						title = homeWindow.getProperty(self.titleProperty)
+					from resources.lib.modules.episode_mapping import source_coordinates
+					season, episode = source_coordinates(item, meta if isinstance(meta, dict) else {}, season, episode)
 					if debrid_provider == 'Real-Debrid':
 						from resources.lib.debrid.realdebrid import RealDebrid as debrid_function
 					elif debrid_provider == 'Premiumize.me':
@@ -1841,7 +1918,14 @@ class Sources:
 				if 'package' in i:
 					dsize = i.get('size')
 					if not dsize: continue
-					if i['package'] == 'season':
+					from resources.lib.modules.episode_mapping import MONSTER, bake_off_pack_count
+					mapped_count = bake_off_pack_count(i)
+					if mapped_count is not None: divider = mapped_count
+					elif i.get('scrape_convention') == 'anthology' and i.get('scrape_tmdb') in MONSTER:
+						if i['package'] == 'season': divider = MONSTER[i['scrape_tmdb']][1]
+						else: divider = sum(v[1] for v in MONSTER.values() if v[0] <= int(i['last_season']))
+						if not divider: continue
+					elif i['package'] == 'season':
 						divider = int(seasoncount)
 						if not divider: continue
 					else:
@@ -1962,6 +2046,9 @@ class Sources:
 			dbcur.execute('''SELECT count(name) FROM sqlite_master WHERE type='table' AND name='rel_src';''') # table exists so both will
 			if dbcur.fetchone()[0] == 1:
 				dbcur.execute('''DELETE FROM rel_src WHERE imdb_id=?''', (imdb,)) # DEL the "rel_src" list of cached links
+				from resources.lib.modules.episode_mapping import supported
+				if supported(tmdb):
+					dbcur.execute('DELETE FROM rel_src WHERE imdb_id IN (?, ?)', ('anthology-v1:%s:anthology' % tmdb, 'anthology-v1:%s:split' % tmdb))
 				dbcur.connection.commit()
 		except: log_utils.error()
 		finally: dbcur.close() ; dbcon.close()

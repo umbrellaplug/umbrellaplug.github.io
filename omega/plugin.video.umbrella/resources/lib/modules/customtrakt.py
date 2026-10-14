@@ -347,7 +347,7 @@ def customAuth(fromSettings=0):
 	try:
 		deviceCode = getCustomDeviceCode()
 		if not deviceCode:
-			if fromSettings == 1: control.openSettings('5.5', 'plugin.video.umbrella')
+			if fromSettings == 1: control.openSettings('14.2', 'plugin.video.umbrella')
 			control.notification(message='%s Service Authorization Error' % getCustomServiceName(), icon=custom_icon)
 			return False
 		tokenResponse = getCustomDeviceToken(deviceCode)
@@ -373,7 +373,7 @@ def customAuth(fromSettings=0):
 					control.setSetting('custom.user.name', str(account_info['user']['username']))
 			except: pass
 			control.notification(message='%s Service Authorized Successfully' % getCustomServiceName(), icon=custom_icon)
-			if fromSettings == 1: control.openSettings('5.5', 'plugin.video.umbrella')
+			if fromSettings == 1: control.openSettings('14.2', 'plugin.video.umbrella')
 			if not control.yesnoDialog('Do you want to set %s as your service for your watched and unwatched indicators?' % getCustomServiceName(), '', '', 'Indicators', 'No', 'Yes'): return True
 			global _reauth_failed
 			_reauth_failed = False
@@ -388,7 +388,7 @@ def customAuth(fromSettings=0):
 			from threading import Thread
 			Thread(target=sync_watched, kwargs={'forced': True}).start()
 			return True
-		if fromSettings == 1: control.openSettings('5.5', 'plugin.video.umbrella')
+		if fromSettings == 1: control.openSettings('14.2', 'plugin.video.umbrella')
 		control.notification(message='%s Service Authorization Error' % getCustomServiceName(), icon=custom_icon)
 		return False
 	except:
@@ -421,7 +421,7 @@ def customRevoke(fromSettings=0):
 		control.homeWindow.setProperty(_REAUTH_BUSY_PROP, '')
 		control.homeWindow.setProperty(_CUSTOM_TOKEN_PROP, '')
 		if fromSettings == 1:
-			control.openSettings('5.5', 'plugin.video.umbrella')
+			control.openSettings('14.2', 'plugin.video.umbrella')
 			control.dialog.ok(getCustomServiceName(), '%s Service Authorization Revoked' % getCustomServiceName())
 	except:
 		log_utils.error()
@@ -602,7 +602,11 @@ def markEpisodeAsNotWatched(imdb, tvdb, season, episode):
 	except: log_utils.error()
 
 
-def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True):
+def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, tmdb=''):
+	if content_type != 'movie' and tmdb:
+		from resources.lib.modules import episode_mapping, anthology_tracking
+		if episode_mapping.supported(tmdb):
+			return anthology_tracking.manager_write('customtrakt', tmdb, season, episode, False, refresh)
 	control.busy()
 	success = False
 	if content_type == 'movie': success = markMovieAsWatched(imdb)
@@ -614,11 +618,15 @@ def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, r
 	control.trigger_widget_refresh()
 	if season and not episode: name = '%s-Season%s...' % (name, season)
 	if season and episode: name = '%s-S%sxE%02d...' % (name, season, int(episode))
-	if getSetting('custom.general.notifications') == 'true':
+	if getSetting('services.general.notifications') == 'true':
 		if success is True: control.notification(title=getCustomServiceName(), message=getLS(40729) % ('[COLOR %s]%s[/COLOR]' % (getSetting('highlight.color'), name), getCustomServiceName()))
 		else: control.notification(title=getCustomServiceName(), message=getLS(40730) % ('[COLOR %s]%s[/COLOR]' % (getSetting('highlight.color'), name), getCustomServiceName()))
 
-def unwatch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True):
+def unwatch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, tmdb=''):
+	if content_type != 'movie' and tmdb:
+		from resources.lib.modules import episode_mapping, anthology_tracking
+		if episode_mapping.supported(tmdb):
+			return anthology_tracking.manager_write('customtrakt', tmdb, season, episode, True, refresh)
 	control.busy()
 	success = False
 	if content_type == 'movie': success = markMovieAsNotWatched(imdb)
@@ -630,7 +638,7 @@ def unwatch(content_type, name, imdb=None, tvdb=None, season=None, episode=None,
 	control.trigger_widget_refresh()
 	if season and not episode: name = '%s-Season%s...' % (name, season)
 	if season and episode: name = '%s-S%sxE%02d...' % (name, season, int(episode))
-	if getSetting('custom.general.notifications') == 'true':
+	if getSetting('services.general.notifications') == 'true':
 		if success is True: control.notification(title=getCustomServiceName(), message=getLS(40731) % ('[COLOR %s]%s[/COLOR]' % (getSetting('highlight.color'), name), getCustomServiceName()))
 		else: control.notification(title=getCustomServiceName(), message=getLS(40732) % ('[COLOR %s]%s[/COLOR]' % (getSetting('highlight.color'), name), getCustomServiceName()))
 
@@ -650,7 +658,10 @@ def scrobbleMovie(imdb, tmdb, watched_percent):
 def scrobbleEpisode(imdb, tmdb, tvdb, season, episode, watched_percent):
 	try:
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
-		success = getCustom('/scrobble/pause', {'show': {'ids': {'tvdb': tvdb, 'imdb': imdb}}, 'episode': {'season': season, 'number': episode}, 'progress': watched_percent})
+		post = {'show': {'ids': {'tvdb': tvdb, 'imdb': imdb}}, 'episode': {'season': season, 'number': episode}, 'progress': watched_percent}
+		from resources.lib.modules.episode_mapping import scrobble_payload
+		post = scrobble_payload(post, 'customtrakt', tmdb)
+		success = getCustom('/scrobble/pause', post)
 		if success:
 			control.sleep(1000)
 			sync_playbackProgress(forced=True)
@@ -664,6 +675,8 @@ def scrobbleStart(media_type, title='', tvshowtitle='', year='0', imdb='', tmdb=
 		else:
 			post = {'show': {'title': tvshowtitle or title, 'year': int(year) if year else 0, 'ids': {'tvdb': int(tvdb) if tvdb else None, 'imdb': imdb}},
 					'episode': {'season': int(season) if season else 1, 'number': int(episode) if episode else 1}, 'progress': float(watched_percent)}
+		from resources.lib.modules.episode_mapping import scrobble_payload
+		post = scrobble_payload(post, 'customtrakt', tmdb)
 		getCustom('/scrobble/start', post)
 	except: log_utils.error()
 
@@ -677,7 +690,7 @@ def scrobbleReset(imdb, tmdb=None, tvdb=None, season=None, episode=None, refresh
 		success = getCustom('/sync/playback/%s' % resume_info[1]) is not None
 		control.hide()
 		if success:
-			if clear_local: customtraktsync.delete_bookmark(imdb, tvdb or '', season or '', episode or '')
+			if clear_local: customtraktsync.delete_bookmark(imdb, tvdb or '', season or '', episode or '', tmdb=tmdb)
 			if refresh: control.refresh()
 			if widgetRefresh: control.trigger_widget_refresh()
 	except: log_utils.error()
@@ -729,7 +742,7 @@ def sync_watchedProgress(activities=None, forced=False, progress_callback=None):
 						show = item.get('show', {})
 						show_ids = show.get('ids', {})
 						show_imdb = str(show_ids.get('imdb') or '')
-						if not show_imdb: continue
+						if not show_imdb and not show_ids.get('tmdb'): continue
 						customtraktsync.upsert_watched_episode(show_imdb=show_imdb, show_tmdb=str(show_ids.get('tmdb') or ''), show_tvdb=str(show_ids.get('tvdb') or ''),
 							season=ep.get('season', 0), episode=ep.get('number', 0), last_watched_at=item.get('watched_at', ''))
 				except: pass
@@ -776,17 +789,15 @@ def syncTVShows():
 		if not getCustomCredentialsInfo(): return None
 		episodes = customtraktsync.get_watched_episodes()
 		if not episodes: return []
-		shows = {}
-		for (show_imdb, show_tmdb, show_tvdb, season, episode) in episodes:
-			if show_imdb not in shows:
-				shows[show_imdb] = {'ids': {'imdb': show_imdb, 'tmdb': show_tmdb, 'tvdb': show_tvdb}, 'by_season': {}}
-			s = int(season)
-			shows[show_imdb]['by_season'].setdefault(s, []).append(int(episode))
+		from resources.lib.modules.progress_identity import group_watched_shows
 		indicators = []
-		for v in shows.values():
-			ep_ranges = {s: _make_episode_ranges(sorted(eps)) for s, eps in v['by_season'].items()}
-			total = sum(e - s + 1 for ranges in ep_ranges.values() for s, e in ranges)
-			indicators.append((v['ids'], total, ep_ranges))
+		for show in group_watched_shows(episodes):
+			by_season = {}
+			for season, episode in show['watched_set']:
+				by_season.setdefault(season, []).append(episode)
+			ep_ranges = {s: _make_episode_ranges(sorted(eps)) for s, eps in by_season.items()}
+			ids = {field: show[field] for field in ('imdb', 'tmdb', 'tvdb')}
+			indicators.append((ids, len(show['watched_set']), ep_ranges))
 		return indicators
 	except: log_utils.error()
 
@@ -855,14 +866,14 @@ def _fetchShowProgress(imdb):
 	except: log_utils.error()
 
 
-def syncSeasons(imdb, tvdb):
+def syncSeasons(imdb, tvdb, tmdb=''):
 	try:
 		if not getCustomCredentialsInfo(): return None
-		if not imdb and not tvdb: return None
+		if not imdb and not tvdb and not tmdb: return None
 		if imdb:
 			progress = getShowProgress(imdb)
 			if progress: return _seasons_from_progress(progress)
-		return _local_syncSeasons(imdb, tvdb)
+		return _local_syncSeasons(imdb, tvdb, tmdb)
 	except: log_utils.error()
 
 
@@ -887,23 +898,23 @@ def _seasons_from_progress(progress):
 	return [['%01d' % int(s) for s in sorted(fully_watched)], counts]
 
 
-def _local_syncSeasons(imdb, tvdb):
+def _local_syncSeasons(imdb, tvdb, tmdb=''):
 	try:
 		episodes = customtraktsync.get_watched_episodes()
-		if not episodes: return [[], {}]
-		show_eps = [(s, e) for (si, st, sv, s, e) in episodes if si == imdb or sv == tvdb]
-		if not show_eps: return [[], {}]
-		from collections import defaultdict
-		by_season = defaultdict(list)
-		for (s, e) in show_eps: by_season[int(s)].append(int(e))
 		from resources.lib.database import cache as _cache
 		from resources.lib.indexers import tmdb as _tmdb
-		tmdb_id = ''
-		if imdb or tvdb:
+		tmdb_id = str(tmdb or '')
+		if not tmdb_id and (imdb or tvdb):
 			try:
 				result = _cache.get(_tmdb.TVshows().IdLookup, 96, imdb, tvdb)
 				tmdb_id = str(result.get('id', '')) if result else ''
 			except: pass
+		from resources.lib.modules.progress_identity import group_watched_shows, matches_show
+		from collections import defaultdict
+		by_season = defaultdict(list)
+		for show in group_watched_shows(episodes or []):
+			if matches_show(show, imdb, tmdb_id, tvdb):
+				for s, e in show['watched_set']: by_season[s].append(e)
 		season_counts = {}
 		if tmdb_id:
 			try:
@@ -914,12 +925,13 @@ def _local_syncSeasons(imdb, tvdb):
 			except: pass
 		result_counts = {}
 		fully_watched = []
-		for s, watched_eps in by_season.items():
+		for s in sorted(set(by_season) | set(season_counts)):
+			watched_eps = by_season.get(s, [])
 			if s == 0 and getSetting('tv.specials') != 'true': continue
 			total = season_counts.get(s, len(set(watched_eps)))
 			watched = len(set(watched_eps))
 			result_counts[s] = {'total': total, 'watched': watched, 'unwatched': max(total - watched, 0)}
-			if watched >= total: fully_watched.append(s)
+			if total > 0 and watched >= total: fully_watched.append(s)
 		return [[str(s) for s in sorted(fully_watched)], result_counts]
 	except: log_utils.error()
 
@@ -960,11 +972,11 @@ def cachesyncTV(imdb, tvdb):
 		[i.join() for i in threads]
 	except: log_utils.error()
 
-def cachesyncSeasons(imdb, tvdb='', timeout=720):
+def cachesyncSeasons(imdb, tvdb='', timeout=720, tmdb=''):
 	try:
 		imdb = imdb or ''
 		tvdb = tvdb or ''
-		return customtraktsync.get(syncSeasons, timeout, imdb, tvdb)
+		return customtraktsync.get(syncSeasons, timeout, imdb, tvdb, tmdb) if tmdb else customtraktsync.get(syncSeasons, timeout, imdb, tvdb)
 	except: log_utils.error()
 
 def seasonCount(imdb, tvdb):
@@ -1236,9 +1248,9 @@ def manager(name, imdb=None, tvdb=None, tmdb=None, season=None, episode=None, re
 		if select == -1: return
 		action_key = items[select][1]
 		if action_key == 'watch':
-			watch(content_type, name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
+			watch(content_type, name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
 		elif action_key == 'unwatch':
-			unwatch(content_type, name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
+			unwatch(content_type, name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
 		elif action_key == 'scrobbleReset':
 			scrobbleReset(imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=True)
 		elif action_key == 'watchlist_add':
@@ -1266,7 +1278,7 @@ def manager(name, imdb=None, tvdb=None, tmdb=None, season=None, episode=None, re
 				sync_dropped(forced=True)
 				if refresh: control.refresh()
 		elif action_key == 'list_add':
-			notify = getSetting('custom.general.notifications') == 'true'
+			notify = getSetting('services.general.notifications') == 'true'
 			lists = get_user_lists()
 			options = [l.get('name', '') for l in lists] + ['[COLOR %s]+ New List[/COLOR]' % hc]
 			list_select = control.selectDialog(options, heading=control.addonInfo('name') + ' - %s Lists' % getCustomServiceName())
@@ -1286,7 +1298,7 @@ def manager(name, imdb=None, tvdb=None, tmdb=None, season=None, episode=None, re
 			else:
 				if notify: control.notification(title=getCustomServiceName(), message='Failed to add to list')
 		elif action_key == 'list_remove':
-			notify = getSetting('custom.general.notifications') == 'true'
+			notify = getSetting('services.general.notifications') == 'true'
 			lists = get_user_lists()
 			if not lists:
 				if notify: control.notification(title=getCustomServiceName(), message='No lists found')

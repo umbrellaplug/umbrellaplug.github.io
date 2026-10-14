@@ -136,8 +136,23 @@ _UNSET = object()
 _settings_cache = _UNSET
 _settings_cache_raw = None
 
+_shared_settings_checked = False
+
+def migrate_service_settings():
+	global _shared_settings_checked, _settings_cache, _settings_cache_raw
+	if _shared_settings_checked: return
+	_shared_settings_checked = True
+	try:
+		from resources.lib.modules.service_settings import migrate
+		migrate(addon(), dataPath)
+		homeWindow.clearProperty('umbrella_settings')
+		_settings_cache, _settings_cache_raw = _UNSET, None
+	except Exception:
+		_shared_settings_checked = False
+
 def setting(id, fallback=None):
 	global _settings_cache, _settings_cache_raw
+	if id.startswith('services.'): migrate_service_settings()
 	raw = homeWindow.getProperty('umbrella_settings')
 	if raw and raw == _settings_cache_raw:
 		settings_dict = _settings_cache
@@ -151,6 +166,8 @@ def setting(id, fallback=None):
 		_settings_cache, _settings_cache_raw = settings_dict, raw
 	if settings_dict is None: settings_dict = settings_fallback(id)
 	value = settings_dict.get(id, '')
+	if value == '' and id.startswith('services.'):
+		value = xbmcaddon.Addon().getSetting(id)
 	if fallback is None: return value
 	if value == '': return fallback
 	return value

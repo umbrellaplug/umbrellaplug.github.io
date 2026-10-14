@@ -1389,6 +1389,16 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="skip.intro.auto" type="boolean" label="40824" help="40825">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="skip.recap.auto" type="boolean" label="40826" help="40827">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
 			</group>
 			<group id="3" label="32372">
 				<setting id="crefresh" type="boolean" label="32373" help="">
@@ -2739,28 +2749,6 @@
 		</category>
 		<category id="online_services" label="40622">
 			<group id="1" label="40633">
-				<setting id="indicators.alt" type="integer" label="40634" help="">
-					<level>0</level>
-					<default>0</default>
-					<constraints>
-						<options>
-							<option label="32314">0</option>
-							<option label="32315">1</option>
-							<option label="40342">2</option>
-							<option label="40621">3</option>
-							<option label="40718">4</option>
-							<option label="40754">5</option>
-							<option label="40767">6</option>
-							<option label="40800">7</option>
-						</options>
-					</constraints>
-					<dependencies>
-					<dependency type="visible">
-						<condition on="property" name="InfoBool">false</condition>
-					</dependency>
-				</dependencies>
-				<control type="spinner" format="string"/>
-				</setting>
 				<setting id="indicators" type="string" label="40634" help="">
 					<level>0</level>
 					<default>Local</default>
@@ -2782,28 +2770,6 @@
 						<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_scrobble)</data>
 						<close>true</close>
 					</control>
-				</setting>
-				<setting id="scrobble.source" type="integer" label="40623" help="">
-					<level>0</level>
-					<default>0</default>
-					<constraints>
-						<options>
-							<option label="40624">0</option>
-							<option label="32315">1</option>
-							<option label="40342">2</option>
-							<option label="40621">3</option>
-							<option label="40718">4</option>
-							<option label="40754">5</option>
-							<option label="40767">6</option>
-							<option label="40800">7</option>
-						</options>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="spinner" format="string"/>
 				</setting>
 				<setting id="scrobble.notify" type="boolean" label="40628" help="">
 					<level>0</level>
@@ -2918,6 +2884,31 @@
 					<control type="toggle"/>
 				</setting>
 			</group>
+			<group id="9" label="40828">
+				<setting id="services.directProgress.scrape" type="boolean" label="35492">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="services.directProgress.help" type="action" label="32137"><level>0</level><data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=directProgress)</data><control type="button" format="action"/></setting>
+				<setting id="services.progressFlatten" type="boolean" label="32017">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="services.progressFlatten.help" type="action" label="32137"><level>0</level><data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=progressFlatten)</data><control type="button" format="action"/></setting>
+				<setting id="services.paginate.lists" type="boolean" label="32188">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="services.general.notifications" type="boolean" label="40644">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+			</group>
+
 			<group id="2" label="40342">
 				<setting id="authorizeSIMKLbutton" type="action" label="40121" help="">
 					<level>0</level>
@@ -2934,21 +2925,6 @@
 						<close>true</close>
 					</control>
 				</setting>
-				<setting id="simkltoken" type="string" label="40345" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>40345</heading>
-					</control>
-				</setting>
 				<setting id="showSimKLAccountInfo" type="action" label="32153" help="">
 					<level>0</level>
 					<data>RunPlugin(plugin://plugin.video.umbrella/?action=simklAccountInfo)</data>
@@ -2962,77 +2938,10 @@
 					</dependencies>
 					<control type="button" format="action"/>
 				</setting>
-				<setting id="simklusername" type="string" label="40006" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>40006</heading>
-					</control>
-				</setting>
-				<setting id="simkljoindate" type="string" label="40006" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>40006</heading>
-					</control>
-				</setting>
-				<setting id="simkl.general.notifications" type="boolean" label="40644" help="">
-					<level>0</level>
+<setting id="simkl.progressFlatten" type="boolean" label="32017">
+					<level>4</level>
 					<default>false</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="simkltoken"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="simkl.directProgress.scrape" type="boolean" label="35492" help="">
-					<level>0</level>
-					<default>false</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="simkltoken"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="simkldirectprogress" type="action" label="32137" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=directProgressSimkl)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="simkltoken"/>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action"/>
-				</setting>
-				<setting id="simkl.progressFlatten" type="boolean" label="32017" help="">
-					<level>0</level>
-					<default>false</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="simkltoken"/>
-						</dependency>
-					</dependencies>
+					<visible>false</visible>
 					<control type="toggle"/>
 				</setting>
 				<setting id="simkl.progress.showunaired" type="boolean" label="40557" help="">
@@ -3067,16 +2976,6 @@
 						</dependency>
 					</dependencies>
 					<control type="button" format="action"/>
-				</setting>
-				<setting id="simkl.paginate.lists" type="boolean" label="32188" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="simkltoken"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
 				</setting>
 				<setting id="simkl.service.syncInterval" type="integer" label="40610" help="">
 					<level>0</level>
@@ -3190,36 +3089,6 @@
 						<hidden>true</hidden>
 					</control>
 				</setting>
-				<setting id="trakt.user.token" type="string" label="" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading/>
-					</control>
-				</setting>
-				<setting id="trakt.authed.clientid" type="string" label="" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading/>
-					</control>
-				</setting>
 				<setting id="trakt.user.name" type="string" label="40062" help="">
 					<level>0</level>
 					<default/>
@@ -3296,21 +3165,6 @@
 						<heading/>
 					</control>
 				</setting>
-				<setting id="trakt.refreshtoken" type="string" label="" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading/>
-					</control>
-				</setting>
 				<setting id="background.service.syncInterval" type="integer" label="40232" help="">
 					<level>0</level>
 					<default>15</default>
@@ -3358,27 +3212,7 @@
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
-				<setting id="trakt.general.notifications" type="boolean" label="40644" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="trakt.user.token"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
 				<setting id="trakt.useLanguage" type="boolean" label="40526" help="">
-					<level>0</level>
-					<default>false</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="trakt.user.token"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="trakt.directProgress.scrape" type="boolean" label="35492" help="">
 					<level>0</level>
 					<default>false</default>
 					<dependencies>
@@ -3401,33 +3235,7 @@
 					</dependencies>
 					<control type="button" format="action"/>
 				</setting>
-				<setting id="trakt.progressFlatten" type="boolean" label="32017" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="enable">
-							<condition operator="!is" setting="trakt.user.token"/>
-						</dependency>
-						<dependency type="visible">
-							<condition operator="!is" setting="trakt.user.token"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="showHelpprogressFlatten" type="action" label="32137" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=progressFlatten)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="trakt.user.token"/>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action"/>
-				</setting>
-				<setting id="trakt.rating" type="integer" label="35187" help="">
+<setting id="trakt.rating" type="integer" label="35187" help="">
 					<level>0</level>
 					<default>0</default>
 					<constraints>
@@ -3476,16 +3284,6 @@
 					</dependencies>
 					<control type="button" format="action"/>
 				</setting>
-				<setting id="trakt.paginate.lists" type="boolean" label="32188" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="trakt.user.token"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
 				<setting id="trakt.collection.hideWatched" type="boolean" label="40655" help="">
 					<level>0</level>
 					<default>false</default>
@@ -3505,42 +3303,6 @@
 						</dependency>
 					</dependencies>
 					<control type="toggle"/>
-				</setting>
-				<setting id="trakt.HiddenManager.hideWatched" type="boolean" label="32183" help="">
-					<level>0</level>
-					<default>false</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="autoTraktOnStart" type="boolean" label="32646" help="">
-					<level>0</level>
-					<default>False</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="schedTraktTime" type="integer" label="" help="">
-					<level>0</level>
-					<default>0</default>
-					<constraints>
-						<minimum>0</minimum>
-						<maximum>24</maximum>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="slider" format="integer">
-						<popup>false</popup>
-					</control>
 				</setting>
 				<setting id="trakt.progress.episodes" type="boolean" label="40653" help="">
 					<level>0</level>
@@ -3574,53 +3336,8 @@
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
-				<setting id="trakt.message2" type="string" label="" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>32648</heading>
-					</control>
-				</setting>
 			</group>
 			<group id="4" label="40172">
-				<setting id="mdblist.token" type="string" label="" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading/>
-					</control>
-				</setting>
-				<setting id="mdblist.refresh.token" type="string" label="" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading/>
-					</control>
-				</setting>
 				<setting id="showMDBListAuth" type="action" label="40669" help="">
 					<level>0</level>
 					<data>RunPlugin(plugin://plugin.video.umbrella/?action=mdblistAuth)</data>
@@ -3651,16 +3368,6 @@
 						<close>true</close>
 					</control>
 				</setting>
-				<setting id="mdblist.general.notifications" type="boolean" label="40644" help="">
-					<level>0</level>
-					<default>false</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="mdblist.token"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
 				<setting id="mdblist.service.syncInterval" type="integer" label="40630" help="">
 					<level>0</level>
 					<default>30</default>
@@ -3677,47 +3384,10 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="mdblist.paginate.lists" type="boolean" label="32188" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="mdblist.token"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="mdblist.directProgress.scrape" type="boolean" label="35492" help="">
-					<level>0</level>
+<setting id="mdblist.progressFlatten" type="boolean" label="32017">
+					<level>4</level>
 					<default>false</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="mdblist.token"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="mdblistdirectprogress" type="action" label="32137" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=directProgressMDBList)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="mdblist.token"/>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action"/>
-				</setting>
-				<setting id="mdblist.progressFlatten" type="boolean" label="32017" help="">
-					<level>0</level>
-					<default>false</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="mdblist.token"/>
-						</dependency>
-					</dependencies>
+					<visible>false</visible>
 					<control type="toggle"/>
 				</setting>
 				<setting id="mdblist.progress.showunaired" type="boolean" label="40651" help="">
@@ -3766,333 +3436,6 @@
 								<or>
 									<condition operator="is" setting="indicators.alt">3</condition>
 									<condition operator="is" setting="mdblist.markwatched">true</condition>
-								</or>
-							</and>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-			</group>
-			<group id="5" label="40718">
-				<setting id="custom.servicename" type="string" label="40751" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="dev.enable.custom">true</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>40751</heading>
-					</control>
-				</setting>
-				<setting id="custom.baseurl" type="string" label="40719" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="dev.enable.custom">true</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>40719</heading>
-					</control>
-				</setting>
-				<setting id="custom.clientid" type="string" label="40720" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="dev.enable.custom">true</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>40720</heading>
-					</control>
-				</setting>
-				<setting id="custom.clientsecret" type="string" label="40721" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="dev.enable.custom">true</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>40721</heading>
-						<hidden>true</hidden>
-					</control>
-				</setting>
-				<setting id="custom.user.token" type="string" label="" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading/>
-					</control>
-				</setting>
-				<setting id="custom.user.name" type="string" label="40722" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="enable">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-						<dependency type="visible">
-							<and>
-								<condition operator="is" setting="dev.enable.custom">true</condition>
-								<condition operator="!is" setting="custom.user.token"/>
-							</and>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading>40722</heading>
-					</control>
-				</setting>
-				<setting id="showCustomAuth" type="action" label="32306" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=customAuth)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<and>
-								<condition operator="is" setting="dev.enable.custom">true</condition>
-								<condition operator="is" setting="custom.user.token"/>
-							</and>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action">
-						<close>true</close>
-					</control>
-				</setting>
-				<setting id="showCustomRevoke" type="action" label="40724" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=customRevoke)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<and>
-								<condition operator="is" setting="dev.enable.custom">true</condition>
-								<condition operator="!is" setting="custom.user.token"/>
-							</and>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action">
-						<close>true</close>
-					</control>
-				</setting>
-				<setting id="custom.token.expires" type="string" label="" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading/>
-					</control>
-				</setting>
-				<setting id="custom.refreshtoken" type="string" label="" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading/>
-					</control>
-				</setting>
-				<setting id="custom.isauthed" type="string" label="" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading/>
-					</control>
-				</setting>
-				<setting id="custom.general.notifications" type="boolean" label="40644" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<and>
-								<condition operator="is" setting="dev.enable.custom">true</condition>
-								<condition operator="!is" setting="custom.user.token"/>
-							</and>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="custom.service.syncInterval" type="integer" label="40726" help="">
-					<level>0</level>
-					<default>30</default>
-					<constraints>
-						<minimum>5</minimum>
-						<maximum>120</maximum>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<and>
-								<condition operator="is" setting="dev.enable.custom">true</condition>
-								<condition operator="!is" setting="custom.user.token"/>
-							</and>
-						</dependency>
-					</dependencies>
-					<control type="slider" format="integer">
-						<popup>false</popup>
-					</control>
-				</setting>
-				<setting id="custom.directProgress.scrape" type="boolean" label="35492" help="">
-					<level>0</level>
-					<default>false</default>
-					<dependencies>
-						<dependency type="visible">
-							<and>
-								<condition operator="is" setting="dev.enable.custom">true</condition>
-								<condition operator="!is" setting="custom.user.token"/>
-							</and>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="customdirectprogress" type="action" label="32137" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=directProgressCustom)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<and>
-								<condition operator="is" setting="dev.enable.custom">true</condition>
-								<condition operator="!is" setting="custom.user.token"/>
-							</and>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action"/>
-				</setting>
-				<setting id="custom.progressFlatten" type="boolean" label="32017" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<and>
-								<condition operator="is" setting="dev.enable.custom">true</condition>
-								<condition operator="!is" setting="custom.user.token"/>
-							</and>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="custom.paginate.lists" type="boolean" label="32188" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<and>
-								<condition operator="is" setting="dev.enable.custom">true</condition>
-								<condition operator="!is" setting="custom.user.token"/>
-							</and>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="custom.progress.showunaired" type="boolean" label="40727" help="">
-					<level>0</level>
-					<default>false</default>
-					<dependencies>
-						<dependency type="visible">
-							<and>
-								<condition operator="is" setting="dev.enable.custom">true</condition>
-								<condition operator="!is" setting="custom.user.token"/>
-							</and>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="custom.UpcomingProgress.prependDate" type="boolean" label="40728" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<and>
-								<condition operator="is" setting="dev.enable.custom">true</condition>
-								<condition operator="!is" setting="custom.user.token"/>
-							</and>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="custom.progress.episodes" type="boolean" label="40653" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<and>
-								<condition operator="is" setting="dev.enable.custom">true</condition>
-								<condition operator="!is" setting="custom.user.token"/>
-								<or>
-									<condition operator="is" setting="indicators.alt">4</condition>
-									<condition operator="is" setting="custom.markwatched">true</condition>
-								</or>
-							</and>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="custom.progress.shows" type="boolean" label="40654" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<and>
-								<condition operator="is" setting="dev.enable.custom">true</condition>
-								<condition operator="!is" setting="custom.user.token"/>
-								<or>
-									<condition operator="is" setting="indicators.alt">4</condition>
-									<condition operator="is" setting="custom.markwatched">true</condition>
 								</or>
 							</and>
 						</dependency>
@@ -4162,31 +3505,6 @@
 						<close>true</close>
 					</control>
 				</setting>
-				<setting id="floppy.isauthed" type="string" label="" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading/>
-					</control>
-				</setting>
-				<setting id="floppy.general.notifications" type="boolean" label="40760" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="floppy.token"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
 				<setting id="floppy.readonly" type="boolean" label="40822" help="40823">
 					<level>0</level>
 					<default>false</default>
@@ -4213,16 +3531,6 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="floppy.paginate.lists" type="boolean" label="32188" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="floppy.token"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
 				<setting id="floppy.progress.showunaired" type="boolean" label="40764" help="">
 					<level>0</level>
 					<default>false</default>
@@ -4243,30 +3551,7 @@
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
-				<setting id="floppy.directProgress.scrape" type="boolean" label="35492" help="">
-					<level>0</level>
-					<default>false</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="floppy.token"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="floppydirectprogress" type="action" label="32137" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=directProgressFloppy)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="floppy.token"/>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action"/>
-				</setting>
-			</group>
+</group>
 			<group id="7" label="40767">
 				<setting id="scrob.baseurl" type="string" label="40768" help="">
 					<level>0</level>
@@ -4284,11 +3569,6 @@
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
 					<control type="edit" format="string">
 						<heading>40769</heading>
 						<hidden>true</hidden>
@@ -4324,76 +3604,6 @@
 						<close>true</close>
 					</control>
 				</setting>
-				<setting id="scrob.accesstoken" type="string" label="" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading/>
-					</control>
-				</setting>
-				<setting id="scrob.refreshtoken" type="string" label="" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading/>
-					</control>
-				</setting>
-				<setting id="scrob.tokenexpiry" type="string" label="" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading/>
-					</control>
-				</setting>
-				<setting id="scrob.isauthed" type="string" label="" help="">
-					<level>0</level>
-					<default/>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition on="property" name="InfoBool">false</condition>
-						</dependency>
-					</dependencies>
-					<control type="edit" format="string">
-						<heading/>
-					</control>
-				</setting>
-				<setting id="scrob.general.notifications" type="boolean" label="40774" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="scrob.isauthed"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
 				<setting id="scrob.service.syncInterval" type="integer" label="40775" help="">
 					<level>0</level>
 					<default>30</default>
@@ -4410,40 +3620,7 @@
 						<popup>false</popup>
 					</control>
 				</setting>
-				<setting id="scrob.paginate.lists" type="boolean" label="32188" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="scrob.isauthed"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="scrob.directProgress.scrape" type="boolean" label="35492" help="">
-					<level>0</level>
-					<default>false</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="scrob.isauthed"/>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="scrobdirectprogress" type="action" label="32137" help="">
-					<level>0</level>
-					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_ShowHelp&amp;name=directProgressScrob)</data>
-					<constraints>
-						<allowempty>true</allowempty>
-					</constraints>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="!is" setting="scrob.isauthed"/>
-						</dependency>
-					</dependencies>
-					<control type="button" format="action"/>
-				</setting>
-			</group>
+</group>
 			<group id="8" label="40800">
 				<setting id="punchplay.authorize" type="action" label="40803" help="">
 					<level>0</level>
@@ -4501,36 +3678,6 @@
 					</dependencies>
 					<control type="spinner" format="integer"/>
 				</setting>
-				<setting id="punchplay.general.notifications" type="boolean" label="40811" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="punchplay.isauthed">true</condition>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="punchplay.paginate.lists" type="boolean" label="32188" help="">
-					<level>0</level>
-					<default>true</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="punchplay.isauthed">true</condition>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
-				<setting id="punchplay.directProgress.scrape" type="boolean" label="35492" help="">
-					<level>0</level>
-					<default>false</default>
-					<dependencies>
-						<dependency type="visible">
-							<condition operator="is" setting="punchplay.isauthed">true</condition>
-						</dependency>
-					</dependencies>
-					<control type="toggle"/>
-				</setting>
 				<setting id="punchplay.progress.showunaired" type="boolean" label="40810" help="">
 					<level>0</level>
 					<default>false</default>
@@ -4540,41 +3687,6 @@
 						</dependency>
 					</dependencies>
 					<control type="toggle"/>
-				</setting>
-				<setting id="punchplay.accesstoken" type="string" label="" help="">
-					<level>0</level>
-					<default></default>
-					<constraints><allowempty>true</allowempty></constraints>
-					<dependencies><dependency type="visible"><condition on="property" name="InfoBool">false</condition></dependency></dependencies>
-					<control type="edit" format="string"></control>
-				</setting>
-				<setting id="punchplay.refreshtoken" type="string" label="" help="">
-					<level>0</level>
-					<default></default>
-					<constraints><allowempty>true</allowempty></constraints>
-					<dependencies><dependency type="visible"><condition on="property" name="InfoBool">false</condition></dependency></dependencies>
-					<control type="edit" format="string"></control>
-				</setting>
-				<setting id="punchplay.tokenexpiry" type="string" label="" help="">
-					<level>0</level>
-					<default></default>
-					<constraints><allowempty>true</allowempty></constraints>
-					<dependencies><dependency type="visible"><condition on="property" name="InfoBool">false</condition></dependency></dependencies>
-					<control type="edit" format="string"></control>
-				</setting>
-				<setting id="punchplay.isauthed" type="string" label="" help="">
-					<level>0</level>
-					<default></default>
-					<constraints><allowempty>true</allowempty></constraints>
-					<dependencies><dependency type="visible"><condition on="property" name="InfoBool">false</condition></dependency></dependencies>
-					<control type="edit" format="string"></control>
-				</setting>
-				<setting id="punchplay.deviceid" type="string" label="" help="">
-					<level>0</level>
-					<default></default>
-					<constraints><allowempty>true</allowempty></constraints>
-					<dependencies><dependency type="visible"><condition on="property" name="InfoBool">false</condition></dependency></dependencies>
-					<control type="edit" format="string"></control>
 				</setting>
 			</group>
 		</category>
@@ -6599,6 +5711,525 @@
 					<control type="toggle"/>
 				</setting>
 			</group>
+			<group id="99">
+				<setting id="indicators.alt" type="integer" label="40634" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="32314">0</option>
+							<option label="32315">1</option>
+							<option label="40342">2</option>
+							<option label="40621">3</option>
+							<option label="40718">4</option>
+							<option label="40754">5</option>
+							<option label="40767">6</option>
+							<option label="40800">7</option>
+						</options>
+					</constraints>
+					<dependencies>
+					<dependency type="visible">
+						<condition on="property" name="InfoBool">false</condition>
+					</dependency>
+				</dependencies>
+				<control type="spinner" format="string"/>
+				</setting>
+				<setting id="scrobble.source" type="integer" label="40623" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<options>
+							<option label="40624">0</option>
+							<option label="32315">1</option>
+							<option label="40342">2</option>
+							<option label="40621">3</option>
+							<option label="40718">4</option>
+							<option label="40754">5</option>
+							<option label="40767">6</option>
+							<option label="40800">7</option>
+						</options>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting id="simkltoken" type="string" label="40345" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40345</heading>
+					</control>
+				</setting>
+				<setting id="simklusername" type="string" label="40006" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40006</heading>
+					</control>
+				</setting>
+				<setting id="simkljoindate" type="string" label="40006" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40006</heading>
+					</control>
+				</setting>
+				<setting id="simkl.general.notifications" type="boolean" label="40644">
+					<level>4</level>
+					<default>false</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="simkl.directProgress.scrape" type="boolean" label="35492">
+					<level>4</level>
+					<default>false</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="simkl.paginate.lists" type="boolean" label="32188">
+					<level>4</level>
+					<default>true</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="trakt.user.token" type="string" label="" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="trakt.authed.clientid" type="string" label="" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="trakt.refreshtoken" type="string" label="" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="trakt.general.notifications" type="boolean" label="40644">
+					<level>4</level>
+					<default>true</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="trakt.directProgress.scrape" type="boolean" label="35492">
+					<level>4</level>
+					<default>false</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="trakt.progressFlatten" type="boolean" label="32017">
+					<level>4</level>
+					<default>true</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="trakt.paginate.lists" type="boolean" label="32188">
+					<level>4</level>
+					<default>true</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="trakt.HiddenManager.hideWatched" type="boolean" label="32183" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="autoTraktOnStart" type="boolean" label="32646" help="">
+					<level>0</level>
+					<default>False</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="schedTraktTime" type="integer" label="" help="">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<minimum>0</minimum>
+						<maximum>24</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="trakt.message2" type="string" label="" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>32648</heading>
+					</control>
+				</setting>
+				<setting id="mdblist.token" type="string" label="" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="mdblist.refresh.token" type="string" label="" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="mdblist.general.notifications" type="boolean" label="40644">
+					<level>4</level>
+					<default>false</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="mdblist.paginate.lists" type="boolean" label="32188">
+					<level>4</level>
+					<default>true</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="mdblist.directProgress.scrape" type="boolean" label="35492">
+					<level>4</level>
+					<default>false</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="custom.user.token" type="string" label="" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="custom.token.expires" type="string" label="" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="custom.refreshtoken" type="string" label="" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="custom.isauthed" type="string" label="" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="custom.general.notifications" type="boolean" label="40644">
+					<level>4</level>
+					<default>true</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="custom.directProgress.scrape" type="boolean" label="35492">
+					<level>4</level>
+					<default>false</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="custom.paginate.lists" type="boolean" label="32188">
+					<level>4</level>
+					<default>true</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="floppy.isauthed" type="string" label="" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="floppy.general.notifications" type="boolean" label="40644">
+					<level>4</level>
+					<default>true</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="floppy.paginate.lists" type="boolean" label="32188">
+					<level>4</level>
+					<default>true</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="floppy.directProgress.scrape" type="boolean" label="35492">
+					<level>4</level>
+					<default>false</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="scrob.accesstoken" type="string" label="" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="scrob.refreshtoken" type="string" label="" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="scrob.tokenexpiry" type="string" label="" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="scrob.isauthed" type="string" label="" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading/>
+					</control>
+				</setting>
+				<setting id="scrob.general.notifications" type="boolean" label="40644">
+					<level>4</level>
+					<default>true</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="scrob.paginate.lists" type="boolean" label="32188">
+					<level>4</level>
+					<default>true</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="scrob.directProgress.scrape" type="boolean" label="35492">
+					<level>4</level>
+					<default>false</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="punchplay.general.notifications" type="boolean" label="40644">
+					<level>4</level>
+					<default>true</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="punchplay.paginate.lists" type="boolean" label="32188">
+					<level>4</level>
+					<default>true</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="punchplay.directProgress.scrape" type="boolean" label="35492">
+					<level>4</level>
+					<default>false</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="punchplay.accesstoken" type="string" label="" help="">
+					<level>0</level>
+					<default></default>
+					<constraints><allowempty>true</allowempty></constraints>
+					<dependencies><dependency type="visible"><condition on="property" name="InfoBool">false</condition></dependency></dependencies>
+					<control type="edit" format="string"></control>
+				</setting>
+				<setting id="punchplay.refreshtoken" type="string" label="" help="">
+					<level>0</level>
+					<default></default>
+					<constraints><allowempty>true</allowempty></constraints>
+					<dependencies><dependency type="visible"><condition on="property" name="InfoBool">false</condition></dependency></dependencies>
+					<control type="edit" format="string"></control>
+				</setting>
+				<setting id="punchplay.tokenexpiry" type="string" label="" help="">
+					<level>0</level>
+					<default></default>
+					<constraints><allowempty>true</allowempty></constraints>
+					<dependencies><dependency type="visible"><condition on="property" name="InfoBool">false</condition></dependency></dependencies>
+					<control type="edit" format="string"></control>
+				</setting>
+				<setting id="punchplay.isauthed" type="string" label="" help="">
+					<level>0</level>
+					<default></default>
+					<constraints><allowempty>true</allowempty></constraints>
+					<dependencies><dependency type="visible"><condition on="property" name="InfoBool">false</condition></dependency></dependencies>
+					<control type="edit" format="string"></control>
+				</setting>
+				<setting id="punchplay.deviceid" type="string" label="" help="">
+					<level>0</level>
+					<default></default>
+					<constraints><allowempty>true</allowempty></constraints>
+					<dependencies><dependency type="visible"><condition on="property" name="InfoBool">false</condition></dependency></dependencies>
+					<control type="edit" format="string"></control>
+				</setting>
+			</group>
 		</category>
 		<category id="subtitles" label="32353" help="40194">
 			<group id="1">
@@ -7390,6 +7021,210 @@
 					<dependencies>
 						<dependency type="visible">
 							<condition operator="is" setting="dev.mode.enable">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+
+				<setting id="custom.servicename" type="string" label="40751" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="dev.enable.custom">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40751</heading>
+					</control>
+				</setting>
+				<setting id="custom.baseurl" type="string" label="40719" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="dev.enable.custom">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40719</heading>
+					</control>
+				</setting>
+				<setting id="custom.clientid" type="string" label="40720" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="dev.enable.custom">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40720</heading>
+					</control>
+				</setting>
+				<setting id="custom.clientsecret" type="string" label="40721" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="is" setting="dev.enable.custom">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40721</heading>
+						<hidden>true</hidden>
+					</control>
+				</setting>
+				<setting id="custom.user.name" type="string" label="40722" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="enable">
+							<condition on="property" name="InfoBool">false</condition>
+						</dependency>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="dev.enable.custom">true</condition>
+								<condition operator="!is" setting="custom.user.token"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>40722</heading>
+					</control>
+				</setting>
+				<setting id="showCustomAuth" type="action" label="32306" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=customAuth)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="dev.enable.custom">true</condition>
+								<condition operator="is" setting="custom.user.token"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="showCustomRevoke" type="action" label="40724" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=customRevoke)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="dev.enable.custom">true</condition>
+								<condition operator="!is" setting="custom.user.token"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action">
+						<close>true</close>
+					</control>
+				</setting>
+				<setting id="custom.service.syncInterval" type="integer" label="40726" help="">
+					<level>0</level>
+					<default>30</default>
+					<constraints>
+						<minimum>5</minimum>
+						<maximum>120</maximum>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="dev.enable.custom">true</condition>
+								<condition operator="!is" setting="custom.user.token"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+<setting id="custom.progressFlatten" type="boolean" label="32017">
+					<level>4</level>
+					<default>true</default>
+					<visible>false</visible>
+					<control type="toggle"/>
+				</setting>
+				<setting id="custom.progress.showunaired" type="boolean" label="40727" help="">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="dev.enable.custom">true</condition>
+								<condition operator="!is" setting="custom.user.token"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="custom.UpcomingProgress.prependDate" type="boolean" label="40728" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="dev.enable.custom">true</condition>
+								<condition operator="!is" setting="custom.user.token"/>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="custom.progress.episodes" type="boolean" label="40653" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="dev.enable.custom">true</condition>
+								<condition operator="!is" setting="custom.user.token"/>
+								<or>
+									<condition operator="is" setting="indicators.alt">4</condition>
+									<condition operator="is" setting="custom.markwatched">true</condition>
+								</or>
+							</and>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
+				<setting id="custom.progress.shows" type="boolean" label="40654" help="">
+					<level>0</level>
+					<default>true</default>
+					<dependencies>
+						<dependency type="visible">
+							<and>
+								<condition operator="is" setting="dev.enable.custom">true</condition>
+								<condition operator="!is" setting="custom.user.token"/>
+								<or>
+									<condition operator="is" setting="indicators.alt">4</condition>
+									<condition operator="is" setting="custom.markwatched">true</condition>
+								</or>
+							</and>
 						</dependency>
 					</dependencies>
 					<control type="toggle"/>

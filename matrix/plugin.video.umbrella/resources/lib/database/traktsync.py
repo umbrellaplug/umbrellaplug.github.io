@@ -25,6 +25,9 @@ def fetch_bookmarks(imdb, tmdb='', tvdb='', season=None, episode=None, ret_all=N
 									studio TEXT, duration TEXT, percent_played TEXT, paused_at TEXT, UNIQUE(resume_id, imdb, tmdb, tvdb, season, episode));''')
 			dbcur.connection.commit()
 			return progress
+		from resources.lib.modules import episode_mapping
+		if not ret_all and episode and episode_mapping.supported(tmdb):
+			return episode_mapping.bookmark(dbcur, 'trakt', tmdb, season, episode, ret_type)
 		if ret_all:
 			if ret_type == 'movies':
 				match = dbcur.execute('''SELECT * FROM bookmarks WHERE (tvshowtitle='')''').fetchall()
@@ -127,7 +130,11 @@ def delete_bookmark(items):
 				ids = i.get('movie').get('ids')
 				imdb = str(ids.get('imdb', ''))
 			try:
-				dbcur.execute('''DELETE FROM bookmarks WHERE (imdb=? AND tvdb=? AND season=? AND episode=?)''', (imdb, tvdb, season, episode))
+				from resources.lib.modules.episode_mapping import supported
+				if i.get('type') == 'episode' and supported(ids.get('tmdb')):
+					dbcur.execute('DELETE FROM bookmarks WHERE tmdb=? AND season=? AND episode=?', (str(ids['tmdb']), season, episode))
+				else:
+					dbcur.execute('''DELETE FROM bookmarks WHERE (imdb=? AND tvdb=? AND season=? AND episode=?)''', (imdb, tvdb, season, episode))
 				dbcur.execute('''INSERT OR REPLACE INTO service Values (?, ?)''', ('last_paused_at', i.get('paused_at', '')))
 				dbcur.connection.commit()
 			except: pass

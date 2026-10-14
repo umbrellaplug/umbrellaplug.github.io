@@ -115,25 +115,28 @@ def insert_user_lists(rows):
 	# Always a full replace — see module-level comment above for why (no activity signal to diff against).
 	try:
 		dbcon = get_connection()
+		dbcon.execute('PRAGMA journal_mode = DELETE')
+		dbcon.execute('PRAGMA synchronous = NORMAL')
 		dbcur = get_connection_cursor(dbcon)
 		dbcur.execute('''CREATE TABLE IF NOT EXISTS scrob_lists (list_id TEXT, list_name TEXT, item_id TEXT, tmdb TEXT, title TEXT, year TEXT, media_type TEXT, listed_at TEXT, UNIQUE(list_id, tmdb, media_type));''')
+		dbcon.execute('BEGIN')
 		dbcur.execute('''DELETE FROM scrob_lists''')
-		dbcur.connection.commit()
 		for r in rows:
 			try:
 				dbcur.execute('''INSERT OR REPLACE INTO scrob_lists Values (?, ?, ?, ?, ?, ?, ?, ?)''',
 					(r['list_id'], r['list_name'], r['item_id'], r['tmdb'], r['title'], r['year'], r['media_type'], r['listed_at']))
-			except:
-				from resources.lib.modules import log_utils
-				log_utils.error()
+			except: raise
 		dbcur.execute('''CREATE TABLE IF NOT EXISTS service (setting TEXT, value TEXT, UNIQUE(setting));''')
 		timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
 		dbcur.execute('''INSERT OR REPLACE INTO service Values (?, ?)''', ('last_lists_sync_at', timestamp))
 		dbcur.connection.commit()
-		dbcur.execute('''VACUUM''')
+		return True
 	except:
+		try: dbcon.rollback()
+		except: pass
 		from resources.lib.modules import log_utils
 		log_utils.error()
+		return False
 	finally:
 		try: dbcur.close()
 		except: pass
@@ -592,3 +595,32 @@ def clear_bookmarks():
 		except: pass
 		try: dbcon.close()
 		except: pass
+
+
+def store_watched_history(movies, episodes, replace=False):
+	"""Commit a complete history fetch together; roll back failed replacements."""
+	connection = None
+	try:
+		connection = get_connection()
+		connection.execute('PRAGMA journal_mode = DELETE')
+		connection.execute('PRAGMA synchronous = NORMAL')
+		cursor = connection.cursor()
+		_ensure_watched_tables(cursor)
+		connection.execute('BEGIN')
+		if replace:
+			cursor.execute('DELETE FROM scrob_watched_movies')
+			cursor.execute('DELETE FROM scrob_watched_episodes')
+		cursor.executemany('INSERT OR REPLACE INTO scrob_watched_movies VALUES (?, ?, ?, ?, ?)', movies)
+		cursor.executemany('INSERT OR REPLACE INTO scrob_watched_episodes VALUES (?, ?, ?, ?, ?, ?)', episodes)
+		cursor.execute('CREATE TABLE IF NOT EXISTS service (setting TEXT, value TEXT, UNIQUE(setting))')
+		cursor.execute('INSERT OR REPLACE INTO service VALUES (?, ?)',
+			('last_history_at', datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.000Z')))
+		connection.commit()
+		return True
+	except:
+		if connection is not None: connection.rollback()
+		from resources.lib.modules import log_utils
+		log_utils.error()
+		return False
+	finally:
+		if connection is not None: connection.close()

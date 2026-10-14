@@ -429,6 +429,8 @@ def _ensure_watched_tables(dbcur):
 	dbcur.execute('''CREATE TABLE IF NOT EXISTS custom_watched_movies (imdb TEXT, tmdb TEXT, title TEXT, year TEXT, last_watched_at TEXT, UNIQUE(imdb));''')
 	dbcur.execute('''CREATE TABLE IF NOT EXISTS custom_watched_episodes (show_imdb TEXT, show_tmdb TEXT, show_tvdb TEXT, season INTEGER, episode INTEGER, last_watched_at TEXT, UNIQUE(show_imdb, season, episode));''')
 	dbcur.execute('''CREATE TABLE IF NOT EXISTS service (setting TEXT, value TEXT, UNIQUE(setting));''')
+	from resources.lib.database.episode_identity import ensure
+	ensure(dbcur, 'custom_watched_episodes')
 
 def upsert_watched_movie(imdb, tmdb='', title='', year='', last_watched_at=''):
 	try:
@@ -577,7 +579,7 @@ def get_watched_shows():
 		dbcur = get_connection_cursor(dbcon)
 		_ensure_watched_tables(dbcur)
 		rows = dbcur.execute('''SELECT show_imdb, show_tmdb, show_tvdb, MAX(last_watched_at) AS last_watched_at
-			FROM custom_watched_episodes GROUP BY show_imdb ORDER BY last_watched_at DESC''').fetchall()
+			FROM custom_watched_episodes GROUP BY COALESCE(NULLIF(show_tmdb, ''), show_imdb) ORDER BY last_watched_at DESC''').fetchall()
 		result = [(r[0], r[1], r[2], r[3]) for r in rows]
 	except:
 		from resources.lib.modules import log_utils
@@ -744,6 +746,9 @@ def fetch_bookmarks(imdb, tmdb='', tvdb='', season=None, episode=None, ret_all=N
 		dbcur = get_connection_cursor(dbcon)
 		_ensure_bookmarks_table(dbcur)
 		dbcur.connection.commit()
+		from resources.lib.modules import episode_mapping
+		if not ret_all and episode and episode_mapping.supported(tmdb):
+			return episode_mapping.bookmark(dbcur, 'customtrakt', tmdb, season, episode, ret_type)
 		if ret_all:
 			if ret_type == 'movies':
 				match = dbcur.execute('''SELECT * FROM bookmarks WHERE (tvshowtitle='')''').fetchall()
@@ -846,12 +851,16 @@ def delete_synced_bookmarks_not_in(server_ids):
 		try: dbcon.close()
 		except: pass
 
-def delete_bookmark(imdb, tvdb='', season='', episode=''):
+def delete_bookmark(imdb, tvdb='', season='', episode='', tmdb=''):
 	try:
 		dbcon = get_connection()
 		dbcur = get_connection_cursor(dbcon)
 		_ensure_bookmarks_table(dbcur)
-		dbcur.execute('''DELETE FROM bookmarks WHERE (imdb=? AND tvdb=? AND season=? AND episode=?)''', (imdb, tvdb, str(season) if season else '', str(episode) if episode else ''))
+		from resources.lib.modules.episode_mapping import supported
+		if supported(tmdb) and episode:
+			dbcur.execute('DELETE FROM bookmarks WHERE tmdb=? AND season=? AND episode=?', (str(tmdb), str(season), str(episode)))
+		else:
+			dbcur.execute('''DELETE FROM bookmarks WHERE (imdb=? AND tvdb=? AND season=? AND episode=?)''', (imdb, tvdb, str(season) if season else '', str(episode) if episode else ''))
 		timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
 		dbcur.execute('''INSERT OR REPLACE INTO service Values (?, ?)''', ('last_paused_at', timestamp))
 		dbcur.connection.commit()

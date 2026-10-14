@@ -138,6 +138,11 @@ def _get_watched(media_type, imdb_id, tmdb_id, season=''):
 def change_watched(media_type, imdb_id, tmdb_id, season='', episode='', title='', watched=''):
 	def _update_watched(media_type, imdb_id, tmdb_id, season='', episode='', title='', watched=''):
 		last_played = get_current_time()
+		if watched == 4 and media_type == 'episode' and tmdb_id:
+			from resources.lib.modules.episode_mapping import supported
+			if supported(tmdb_id):
+				watched_cache.insert('DELETE FROM watched WHERE media_type=? AND tmdb_id=? AND season=? AND episode=?', (media_type, str(tmdb_id), season, episode))
+				return
 		if watched == 4:
 			if media_type == 'movie':
 				sql_update = "DELETE FROM watched WHERE media_type = ? AND imdb_id = ?"

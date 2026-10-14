@@ -52,7 +52,7 @@ class TVshows:
 		self.tvdb_key = getSetting('tvdb.apikey')
 		self.user = str(self.tvdb_key)
 		self.useContainerTitles = getSetting('enable.containerTitles') == 'true'
-		self.trakt_directProgressScrape = getSetting('trakt.directProgress.scrape') == 'true'
+		self.trakt_directProgressScrape = getSetting('services.directProgress.scrape') == 'true'
 		self.trakt_progress_hours = int(getSetting('cache.traktprogress'))
 		self.watched_progress = getSetting('tvshows.progress.watched') == 'true'
 		if datetime.today().month > 6:
@@ -512,7 +512,7 @@ class TVshows:
 		if self.list is None: self.list = []
 		for i in self.list:
 			imdb, tvdb = i.get('imdb'), i.get('tvdb')
-			try: indicators = getSeasonIndicators(imdb, tvdb)
+			try: indicators = getSeasonIndicators(imdb, tvdb, tmdb=i.get('tmdb', ''))
 			except: indicators = None
 			count = getShowCount(indicators[1], imdb, tvdb) if indicators else None
 			i.update({'watched_count': count})
@@ -1103,7 +1103,7 @@ class TVshows:
 			useNext = True
 			if create_directory:
 				self.sort() # sort before local pagination
-				if getSetting('trakt.paginate.lists') == 'true' and self.list:
+				if getSetting('services.paginate.lists') == 'true' and self.list:
 					if len(self.list) == int(self.page_limit):
 						useNext = False
 					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
@@ -1139,7 +1139,7 @@ class TVshows:
 			useNext = True
 			if create_directory:
 				self.sort(type='shows.watchlist') # sort before local pagination
-				if getSetting('trakt.paginate.lists') == 'true' and self.list:
+				if getSetting('services.paginate.lists') == 'true' and self.list:
 					if len(self.list) == int(self.page_limit):
 						useNext = False
 					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
@@ -1175,7 +1175,7 @@ class TVshows:
 			useNext = True
 			if create_directory:
 				self.sort()
-				if getSetting('custom.paginate.lists') == 'true' and self.list:
+				if getSetting('services.paginate.lists') == 'true' and self.list:
 					if len(self.list) <= int(self.page_limit):
 						useNext = False
 					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
@@ -1214,7 +1214,7 @@ class TVshows:
 			useNext = True
 			if create_directory:
 				self.sort(type='shows.watchlist')
-				if getSetting('custom.paginate.lists') == 'true' and self.list:
+				if getSetting('services.paginate.lists') == 'true' and self.list:
 					if len(self.list) <= int(self.page_limit):
 						useNext = False
 					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
@@ -1250,7 +1250,7 @@ class TVshows:
 			useNext = True
 			if create_directory:
 				self.sort()
-				if getSetting('custom.paginate.lists') == 'true' and self.list:
+				if getSetting('services.paginate.lists') == 'true' and self.list:
 					if len(self.list) <= int(self.page_limit):
 						useNext = False
 					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
@@ -1388,7 +1388,7 @@ class TVshows:
 			useNext = True
 			if create_directory:
 				self.sort()
-				if getSetting('custom.paginate.lists') == 'true' and self.list:
+				if getSetting('services.paginate.lists') == 'true' and self.list:
 					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
 					# useNext must reflect whether there's a page AFTER this one, not just
 					# whether the list needed paginating at all — checking total length
@@ -1467,7 +1467,7 @@ class TVshows:
 			useNext = True
 			if create_directory:
 				self.sort()
-				if getSetting('floppy.paginate.lists') == 'true' and self.list:
+				if getSetting('services.paginate.lists') == 'true' and self.list:
 					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
 					if index >= len(paginated_ids) - 1: useNext = False
 					self.list = paginated_ids[index] if index < len(paginated_ids) else []
@@ -1501,7 +1501,7 @@ class TVshows:
 			useNext = True
 			if create_directory:
 				self.sort()
-				if getSetting('floppy.paginate.lists') == 'true' and self.list:
+				if getSetting('services.paginate.lists') == 'true' and self.list:
 					if len(self.list) <= int(self.page_limit):
 						useNext = False
 					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
@@ -1533,10 +1533,12 @@ class TVshows:
 			except:
 				q = dict(parse_qsl(urlsplit(url).query))
 			self.list = simklsync.fetch_plantowatch('shows_plantowatch')
+			from resources.lib.modules.episode_mapping import display_shows
+			self.list = display_shows(self.list)
 			useNext = True
 			if create_directory:
 				self.sort(type='shows.plantowatch') # sort before local pagination
-				if getSetting('simkl.paginate.lists') == 'true' and self.list:
+				if getSetting('services.paginate.lists') == 'true' and self.list:
 					if len(self.list) == int(self.page_limit):
 						useNext = False
 					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
@@ -1567,10 +1569,12 @@ class TVshows:
 			except:
 				q = dict(parse_qsl(urlsplit(url).query))
 			self.list = simklsync.fetch_completed('shows_completed')
+			from resources.lib.modules.episode_mapping import display_shows
+			self.list = display_shows(self.list)
 			useNext = True
 			if create_directory:
 				self.sort() # sort before local pagination
-				if getSetting('simkl.paginate.lists') == 'true' and self.list:
+				if getSetting('services.paginate.lists') == 'true' and self.list:
 					if len(self.list) == int(self.page_limit):
 						useNext = False
 					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
@@ -1601,10 +1605,12 @@ class TVshows:
 			except:
 				q = dict(parse_qsl(urlsplit(url).query))
 			self.list = simklsync.fetch_dropped('shows_dropped')
+			from resources.lib.modules.episode_mapping import display_shows
+			self.list = display_shows(self.list)
 			useNext = True
 			if create_directory:
 				self.sort() # sort before local pagination
-				if getSetting('simkl.paginate.lists') == 'true' and self.list:
+				if getSetting('services.paginate.lists') == 'true' and self.list:
 					if len(self.list) == int(self.page_limit):
 						useNext = False
 					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
@@ -1635,10 +1641,12 @@ class TVshows:
 			except:
 				q = dict(parse_qsl(urlsplit(url).query))
 			self.list = simklsync.fetch_hold('shows_hold')
+			from resources.lib.modules.episode_mapping import display_shows
+			self.list = display_shows(self.list)
 			useNext = True
 			if create_directory:
 				self.sort() # sort before local pagination
-				if getSetting('simkl.paginate.lists') == 'true' and self.list:
+				if getSetting('services.paginate.lists') == 'true' and self.list:
 					if len(self.list) == int(self.page_limit):
 						useNext = False
 					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
@@ -1669,10 +1677,12 @@ class TVshows:
 			except:
 				q = dict(parse_qsl(urlsplit(url).query))
 			self.list = simklsync.fetch_watching('shows_watching')
+			from resources.lib.modules.episode_mapping import display_shows
+			self.list = display_shows(self.list)
 			useNext = True
 			if create_directory:
 				self.sort(type='progress')
-				if getSetting('simkl.paginate.lists') == 'true' and self.list:
+				if getSetting('services.paginate.lists') == 'true' and self.list:
 					if len(self.list) == int(self.page_limit):
 						useNext = False
 					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
@@ -1703,10 +1713,12 @@ class TVshows:
 			except:
 				q = dict(parse_qsl(urlsplit(url).query))
 			self.list = simklsync.fetch_hold('shows_dropped')
+			from resources.lib.modules.episode_mapping import display_shows
+			self.list = display_shows(self.list)
 			useNext = True
 			if create_directory:
 				self.sort() # sort before local pagination
-				if getSetting('simkl.paginate.lists') == 'true' and self.list:
+				if getSetting('services.paginate.lists') == 'true' and self.list:
 					if len(self.list) == int(self.page_limit):
 						useNext = False
 					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
@@ -1831,7 +1843,7 @@ class TVshows:
 	def trakt_list(self, url, user, folderName):
 		self.list = []
 		if ',return' in url: url = url.split(',return')[0]
-		if getSetting('trakt.paginate.lists') != 'true':
+		if getSetting('services.paginate.lists') != 'true':
 			if '/trending' in url or '/popular' in url:
 				items = trakt.getTraktAsJson(url)
 			else:
@@ -1969,7 +1981,7 @@ class TVshows:
 		self.sort() # sort before local pagination
 		total_pages = 1
 		useNext = True
-		if getSetting('trakt.paginate.lists') == 'true':
+		if getSetting('services.paginate.lists') == 'true':
 			if len(self.list) == int(self.page_limit):
 				useNext = False
 			paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
@@ -2107,7 +2119,7 @@ class TVshows:
 		if not self.list: return
 		self.sort() # sort before local pagination
 		next = ''
-		if getSetting('mdblist.paginate.lists') == 'true':
+		if getSetting('services.paginate.lists') == 'true':
 			total_pages = 1
 			if len(self.list) == int(self.page_limit):
 				useNext = False
@@ -2285,7 +2297,7 @@ class TVshows:
 			self.worker()
 			self.sort(type='shows.watchlist')
 			next = ''
-			if getSetting('mdblist.paginate.lists') == 'true' and self.list:
+			if getSetting('services.paginate.lists') == 'true' and self.list:
 				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
 				total_pages = len(paginated_ids)
 				self.list = paginated_ids[index] if index < total_pages else []
@@ -2319,7 +2331,7 @@ class TVshows:
 			self.worker()
 			self.sort(type='shows.watchlist')
 			next = ''
-			if getSetting('mdblist.paginate.lists') == 'true' and self.list:
+			if getSetting('services.paginate.lists') == 'true' and self.list:
 				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
 				total_pages = len(paginated_ids)
 				self.list = paginated_ids[index] if index < total_pages else []
@@ -2491,14 +2503,14 @@ class TVshows:
 				filtered = []
 				for i in self.list:
 					try:
-						indicators = getSeasonIndicators(i.get('imdb', ''), i.get('tvdb', ''), has_next_episode=i.get('has_next_episode', False))
+						indicators = getSeasonIndicators(i.get('imdb', ''), i.get('tvdb', ''), tmdb=i.get('tmdb', ''), has_next_episode=i.get('has_next_episode', False))
 						watched = (getTVShowOverlay(indicators[1] if indicators else None, i.get('imdb', ''), i.get('tvdb', '')) == '5') if indicators else False
 						if watched and i.get('has_next_episode'):
 							watched = False
 							trakt.cachesyncSeasons(i.get('imdb', ''), i.get('tvdb', ''), timeout=0) # refresh cache so counts reflect new episodes
 							# Re-check local count (no augmentation): if 0 unwatched, has_next_episode is stale; restore watched=True
 							try:
-								re_indicators = getSeasonIndicators(i.get('imdb', ''), i.get('tvdb', ''), has_next_episode=True)
+								re_indicators = getSeasonIndicators(i.get('imdb', ''), i.get('tvdb', ''), tmdb=i.get('tmdb', ''), has_next_episode=True)
 								if re_indicators:
 									re_count = getShowCount(re_indicators[1], i.get('imdb', ''), i.get('tvdb', ''))
 									if re_count is not None and int(re_count.get('unwatched', 0)) == 0:
@@ -2514,7 +2526,7 @@ class TVshows:
 				self.list = filtered
 			useNext = True
 			next = ''
-			if getSetting('trakt.paginate.lists') == 'true' and self.list:
+			if getSetting('services.paginate.lists') == 'true' and self.list:
 				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
 				total_pages = len(paginated_ids)
 				self.list = paginated_ids[index] if index < total_pages else []
@@ -2576,7 +2588,7 @@ class TVshows:
 			if self.list is None: self.list = []
 			next_url = ''
 			hasNext = False
-			if getSetting('simkl.paginate.lists') == 'true' and self.list:
+			if getSetting('services.paginate.lists') == 'true' and self.list:
 				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
 				total_pages = len(paginated_ids)
 				self.list = paginated_ids[index] if index < total_pages else []
@@ -2642,7 +2654,7 @@ class TVshows:
 			self.sort(type='progress')
 			if self.list is None: self.list = []
 			next = ''
-			if getSetting('mdblist.paginate.lists') == 'true' and self.list:
+			if getSetting('services.paginate.lists') == 'true' and self.list:
 				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
 				total_pages = len(paginated_ids)
 				self.list = paginated_ids[index] if index < total_pages else []
@@ -2791,7 +2803,7 @@ class TVshows:
 			self.sort(type='progress')
 			if self.list is None: self.list = []
 			next = ''
-			if getSetting('custom.paginate.lists') == 'true' and self.list:
+			if getSetting('services.paginate.lists') == 'true' and self.list:
 				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
 				total_pages = len(paginated_ids)
 				self.list = paginated_ids[index] if index < total_pages else []
@@ -2822,11 +2834,26 @@ class TVshows:
 		try:
 			indicators = customtrakt.syncTVShows()
 			if not indicators: return self.list
+			from resources.lib.modules.progress_identity import group_watched_shows
+			try: watched_shows = customtraktsync.get_watched_shows() or []
+			except: watched_shows = []
+			# Reconcile partial IDs just as episode progress does, keeping split
+			# catalog stories separate when they share an IMDb ID.
+			show_ids = [(ids.get('imdb', ''), ids.get('tmdb', ''), ids.get('tvdb', ''), 1, 1)
+				for ids, _, _ in indicators]
+			progress_shows = group_watched_shows(show_ids, watched_shows)
+			last_watched = {tuple(show[field] for field in ('imdb', 'tmdb', 'tvdb')): show.get('lastplayed', '')
+				for show in progress_shows}
+			last_watched_by_tmdb = {show['tmdb']: show.get('lastplayed', '')
+				for show in progress_shows if show['tmdb']}
 
-			def check_show(ids):
+			from resources.lib.modules.episode_mapping import supported
+
+			def check_show(ids, ep_ranges):
 				try:
 					imdb, tmdb, tvdb = ids.get('imdb', ''), ids.get('tmdb', ''), ids.get('tvdb', '')
-					progress = customtrakt.getShowProgress(imdb) if imdb else None
+					# Shared IMDb IDs cannot identify an individual split-catalog story.
+					progress = customtrakt.getShowProgress(imdb) if imdb and not supported(tmdb) else None
 					if progress:
 						aired, completed = int(progress.get('aired', 0)), int(progress.get('completed', 0))
 						if aired and completed >= aired: return  # fully watched, not "in progress"
@@ -2839,7 +2866,7 @@ class TVshows:
 					if not progress:
 						# no server-side progress data for this show yet — fall back to
 						# comparing local watched count against TMDb's total episode count
-						watched_count = sum(e - s + 1 for ranges in ep_ranges_by_imdb.get(imdb, {}).values() for s, e in ranges)
+						watched_count = sum(e - s + 1 for season, ranges in ep_ranges.items() if int(season) > 0 for s, e in ranges)
 						showSeasons = cache.get(tmdb_indexer().get_showSeasons_meta, 96, tmdb)
 						total = sum(s.get('episode_count', 0) for s in (showSeasons or {}).get('seasons', []) if s.get('season_number', 0) > 0)
 						if total and watched_count >= total: return
@@ -2849,13 +2876,14 @@ class TVshows:
 					values['imdb'] = imdb
 					values['tmdb'] = tmdb
 					values['tvdb'] = tvdb
+					values['lastplayed'] = last_watched_by_tmdb.get(str(tmdb),
+						last_watched.get((imdb, ids.get('tmdb', ''), tvdb), ''))
 					values['mediatype'] = 'tvshows'
 					values['has_next_episode'] = True
 					self.list.append(values)
 				except: log_utils.error()
 
-			ep_ranges_by_imdb = {ids.get('imdb', ''): ep_ranges for (ids, watched_count, ep_ranges) in indicators}
-			threads = [Thread(target=check_show, args=(ids,)) for (ids, watched_count, ep_ranges) in indicators]
+			threads = [Thread(target=check_show, args=(ids, ep_ranges)) for (ids, watched_count, ep_ranges) in indicators]
 			# Throttled: each thread makes a blocking GET /shows/{imdb}/progress/watched
 			# call — starting all of them at once can overwhelm a single-worker Custom
 			# server and stall the whole directory listing until Kodi kills the script.
@@ -2901,7 +2929,7 @@ class TVshows:
 			self.sort(type='progress')
 			if self.list is None: self.list = []
 			next = ''
-			if getSetting('floppy.paginate.lists') == 'true' and self.list:
+			if getSetting('services.paginate.lists') == 'true' and self.list:
 				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
 				total_pages = len(paginated_ids)
 				self.list = paginated_ids[index] if index < total_pages else []
@@ -3048,7 +3076,7 @@ class TVshows:
 			self.sort(type='progress')
 			if self.list is None: self.list = []
 			next = ''
-			if getSetting('scrob.paginate.lists') == 'true' and self.list:
+			if getSetting('services.paginate.lists') == 'true' and self.list:
 				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
 				total_pages = len(paginated_ids)
 				self.list = paginated_ids[index] if index < total_pages else []
@@ -3084,7 +3112,7 @@ class TVshows:
 			self.sort(type='progress')
 			if self.list is None: self.list = []
 			next = ''
-			if getSetting('punchplay.paginate.lists') == 'true' and self.list:
+			if getSetting('services.paginate.lists') == 'true' and self.list:
 				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
 				total_pages = len(paginated_ids)
 				self.list = paginated_ids[index] if index < total_pages else []
@@ -3274,7 +3302,7 @@ class TVshows:
 			useNext = True
 			if create_directory:
 				self.sort()
-				if getSetting('scrob.paginate.lists') == 'true' and self.list:
+				if getSetting('services.paginate.lists') == 'true' and self.list:
 					if len(self.list) <= int(self.page_limit):
 						useNext = False
 					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
@@ -3320,7 +3348,7 @@ class TVshows:
 			useNext = True
 			if create_directory:
 				self.sort()
-				if getSetting('punchplay.paginate.lists') == 'true' and self.list:
+				if getSetting('services.paginate.lists') == 'true' and self.list:
 					if len(self.list) <= int(self.page_limit):
 						useNext = False
 					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
@@ -3367,7 +3395,7 @@ class TVshows:
 			useNext = True
 			if create_directory:
 				self.sort()
-				if getSetting('punchplay.paginate.lists') == 'true' and self.list:
+				if getSetting('services.paginate.lists') == 'true' and self.list:
 					if len(self.list) <= int(self.page_limit):
 						useNext = False
 					paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
@@ -3491,7 +3519,7 @@ class TVshows:
 				except: log_utils.error()
 			useNext = True
 			self.sort(type='watched')
-			if getSetting('mdblist.paginate.lists') == 'true' and self.list:
+			if getSetting('services.paginate.lists') == 'true' and self.list:
 				if len(self.list) <= int(self.page_limit):
 					useNext = False
 				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
@@ -3545,7 +3573,7 @@ class TVshows:
 				except: log_utils.error()
 			useNext = True
 			self.sort(type='watched')
-			if getSetting('custom.paginate.lists') == 'true' and self.list:
+			if getSetting('services.paginate.lists') == 'true' and self.list:
 				if len(self.list) <= int(self.page_limit):
 					useNext = False
 				paginated_ids = [self.list[x:x + int(self.page_limit)] for x in range(0, len(self.list), int(self.page_limit))]
@@ -3667,7 +3695,7 @@ class TVshows:
 		if self.useContainerTitles: control.setContainerName(folderName)
 		returnHome = control.folderPath()
 		control.setHomeWindowProperty('umbrella.returnhome', returnHome)
-		if getSetting('trakt.directProgress.scrape') == 'true' and getSetting('enable.playnext') == 'true':
+		if getSetting('services.directProgress.scrape') == 'true' and getSetting('enable.playnext') == 'true':
 			pass
 		else:
 			control.playlist.clear()
@@ -3737,7 +3765,7 @@ class TVshows:
 							else: continue
 					except: pass
 				
-				try: indicators = getSeasonIndicators(imdb, tvdb, has_next_episode=i.get('has_next_episode', False), tmdb_total_aired=i.get('total_aired_episodes'), force_lookup=(isCollection and self.collection_hideWatched))
+				try: indicators = getSeasonIndicators(imdb, tvdb, tmdb=tmdb, has_next_episode=i.get('has_next_episode', False), tmdb_total_aired=i.get('total_aired_episodes'), force_lookup=(isCollection and self.collection_hideWatched))
 				except: indicators = None
 				meta = dict((k, v) for k, v in iter(i.items()) if v is not None and v != '')
 				meta.update({'code': imdb, 'imdbnumber': imdb, 'mediatype': 'tvshow', 'tag': [imdb, tmdb]}) # "tag" and "tagline" for movies only, but works in my skin mod so leave
@@ -3817,16 +3845,16 @@ class TVshows:
 						# whichever provider is the active indicators source internally.
 						watched = False
 						try:
-							re_indicators = getSeasonIndicators(imdb, tvdb, has_next_episode=True, tmdb_total_aired=meta.get('total_aired_episodes'))
+							re_indicators = getSeasonIndicators(imdb, tvdb, tmdb=tmdb, has_next_episode=True, tmdb_total_aired=meta.get('total_aired_episodes'))
 							re_count = getShowCount(re_indicators[1], imdb, tvdb) if re_indicators else None
 							if re_count and int(re_count.get('unwatched', 0)) == 0: watched = True
 						except: pass
 					if self.traktCredentials:
-						cm.append((traktManagerMenu, 'RunPlugin(%s?action=tools_traktManager&name=%s&imdb=%s&tvdb=%s&watched=%s&tvshow=tvshow)' % (sysaddon, systitle, imdb, tvdb, watched)))
+						cm.append((traktManagerMenu, 'RunPlugin(%s?action=tools_traktManager&name=%s&imdb=%s&tmdb=%s&tvdb=%s&watched=%s&tvshow=tvshow)' % (sysaddon, systitle, imdb, tmdb, tvdb, watched)))
 					if self.simklCredentials:
-						cm.append((simklManagerMenu, 'RunPlugin(%s?action=tools_simklManager&name=%s&imdb=%s&tvdb=%s&watched=%s&tvshow=tvshow)' % (sysaddon, systitle, imdb, tvdb, watched)))
+						cm.append((simklManagerMenu, 'RunPlugin(%s?action=tools_simklManager&name=%s&imdb=%s&tmdb=%s&tvdb=%s&watched=%s&tvshow=tvshow)' % (sysaddon, systitle, imdb, tmdb, tvdb, watched)))
 					if self.mdblist_authed:
-						cm.append((mdblistManagerMenu, 'RunPlugin(%s?action=tools_mdbWatchlist&name=%s&imdb=%s&tvdb=%s&tmdb=%s&watched=%s)' % (sysaddon, systitle, imdb, tvdb, tmdb, watched)))
+						cm.append((mdblistManagerMenu, 'RunPlugin(%s?action=tools_mdbWatchlist&name=%s&imdb=%s&tvdb=%s&tmdb=%s&watched=%s&tvshow=tvshow)' % (sysaddon, systitle, imdb, tvdb, tmdb, watched)))
 					if self.customCredentials:
 						cm.append((customManagerMenu, 'RunPlugin(%s?action=tools_customManager&name=%s&imdb=%s&tvdb=%s&watched=%s&tvshow=tvshow)' % (sysaddon, systitle, imdb, tvdb, watched)))
 					if self.floppyCredentials:
@@ -3837,10 +3865,10 @@ class TVshows:
 						cm.append((punchplayManagerMenu, 'RunPlugin(%s?action=tools_punchplayManager&name=%s&imdb=%s&tvdb=%s&tmdb=%s&watched=%s&tvshow=tvshow)' % (sysaddon, systitle, imdb, tvdb, tmdb, watched)))
 					if watched:
 						meta.update({'playcount': 1, 'overlay': 5})
-						cm.append((unwatchedMenu, 'RunPlugin(%s?action=playcount_TVShow&name=%s&imdb=%s&tvdb=%s&query=4)' % (sysaddon, systitle, imdb, tvdb)))
+						cm.append((unwatchedMenu, 'RunPlugin(%s?action=playcount_TVShow&name=%s&imdb=%s&tmdb=%s&tvdb=%s&query=4)' % (sysaddon, systitle, imdb, tmdb, tvdb)))
 					else:
 						meta.update({'playcount': 0, 'overlay': 4})
-						cm.append((watchedMenu, 'RunPlugin(%s?action=playcount_TVShow&name=%s&imdb=%s&tvdb=%s&query=5)' % (sysaddon, systitle, imdb, tvdb)))
+						cm.append((watchedMenu, 'RunPlugin(%s?action=playcount_TVShow&name=%s&imdb=%s&tmdb=%s&tvdb=%s&query=5)' % (sysaddon, systitle, imdb, tmdb, tvdb)))
 				except: pass
 				if self.tmdbv4Credentials:
 					cm.append((getLS(40606) if getLS(40606) else 'TMDB List Manager', 'RunPlugin(%s?action=tools_tmdbListManager&name=%s&tmdb=%s&mediatype=tv)' % (sysaddon, systitle, tmdb)))

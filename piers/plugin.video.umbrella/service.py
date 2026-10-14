@@ -4,6 +4,7 @@
 """
 
 from resources.lib.modules import control, log_utils
+control.migrate_service_settings()
 from sys import version_info, platform as sys_platform
 from threading import Thread
 import time

@@ -104,6 +104,13 @@ class SourceResultsXML(BaseDialog):
 				chosen_source = self.item_list[self.get_position(self.window_id)]
 				source_dict = chosen_source.getProperty('umbrella.source_dict')
 				cm_list = [('[B]Additional Link Info[/B]', 'sourceInfo')]
+				from resources.lib.modules import source_preferences
+				preference_item = jsloads(source_dict)[0]
+				if source_preferences.scope(self.meta):
+					if source_preferences.eligible(preference_item):
+						cm_list += [('[B]Use this pack for this season[/B]', 'preferPack')]
+					if source_preferences.get(self.meta):
+						cm_list += [('[B]Clear preferred pack for this season[/B]', 'clearPack')]
 				if 'cached (pack)' in source_dict:
 					cm_list += [('[B]Browse Debrid Pack[/B]', 'showDebridPack')]
 				if 'unchecked (pack)' in source_dict:
@@ -127,6 +134,14 @@ class SourceResultsXML(BaseDialog):
 				chosen_cm_item = dialog.contextmenu([i[0] for i in cm_list])
 				if chosen_cm_item == -1: return
 				cm_action = cm_list[chosen_cm_item][1]
+				if cm_action in ('preferPack', 'clearPack'):
+					if cm_action == 'preferPack': source_preferences.save(self.meta, preference_item)
+					else: source_preferences.clear(self.meta)
+					# Discard any next episode resolved before the preference changed.
+					from resources.lib.modules import control
+					control.playerWindow.clearProperty('umbrella.preResolved_nextUrl')
+					notification(message='Preferred pack saved' if cm_action == 'preferPack' else 'Preferred pack cleared')
+					return
 				if cm_action == 'sourceInfo':
 					self.execute_code('RunPlugin(plugin://plugin.video.umbrella/?action=sourceInfo&source=%s)' % quote_plus(source_dict))
 				elif cm_action == 'showDebridPack':

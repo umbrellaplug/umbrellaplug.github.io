@@ -26,6 +26,9 @@ def fetch_bookmarks(imdb, tmdb='', tvdb='', season=None, episode=None, ret_all=N
 									studio TEXT, duration TEXT, percent_played TEXT, paused_at TEXT, UNIQUE(resume_id, imdb, tmdb, tvdb, season, episode));''')
 			dbcur.connection.commit()
 			return [] if ret_all else progress
+		from resources.lib.modules import episode_mapping
+		if not ret_all and episode and episode_mapping.supported(tmdb):
+			return episode_mapping.bookmark(dbcur, 'simkl', tmdb, season, episode, ret_type)
 		if ret_all:
 			if ret_type == 'movies':
 				match = dbcur.execute('''SELECT * FROM bookmarks WHERE (tvshowtitle='')''').fetchall()
@@ -103,6 +106,9 @@ def fetch_bookmarks(imdb, tmdb='', tvdb='', season=None, episode=None, ret_all=N
 		except: pass
 		try: dbcon.close()
 		except: pass
+	if isinstance(progress, list) and ret_type != 'movies':
+		from resources.lib.modules.episode_mapping import display_episode
+		progress = [display_episode(row) for row in progress]
 	return progress
 
 def insert_bookmarks(items):
@@ -771,6 +777,52 @@ def set_sync_time(service_key):
 		try: dbcon.close()
 		except: pass
 
+def queue_season_refresh(imdb, tvdb):
+	if not imdb and not tvdb: return
+	con = get_connection()
+	try:
+		con.execute('CREATE TABLE IF NOT EXISTS season_refresh (imdb TEXT, tvdb TEXT, refreshed INTEGER DEFAULT 0, pending INTEGER DEFAULT 1, PRIMARY KEY (imdb, tvdb))')
+		con.execute('INSERT OR IGNORE INTO season_refresh (imdb, tvdb) VALUES (?, ?)', (imdb, str(tvdb)))
+		# Persistent metadata disagreement must not re-request the same show on every render.
+		con.execute('UPDATE season_refresh SET pending=1 WHERE imdb=? AND tvdb=? AND refreshed<?', (imdb, str(tvdb), int(time()) - 86400))
+		con.commit()
+	finally:
+		con.close()
+
+
+def pending_season_refreshes():
+	con = get_connection()
+	try:
+		if not con.execute("SELECT 1 FROM sqlite_master WHERE name='season_refresh'").fetchone(): return []
+		return [{'imdb': row[0], 'tvdb': row[1]} for row in con.execute('SELECT imdb,tvdb FROM season_refresh WHERE pending=1 LIMIT 100')]
+	finally:
+		con.close()
+
+
+def complete_season_refreshes(batch):
+	con = get_connection()
+	try:
+		if not con.execute("SELECT 1 FROM sqlite_master WHERE name='season_refresh'").fetchone(): return
+		con.executemany('UPDATE season_refresh SET refreshed=?,pending=0 WHERE imdb=? AND tvdb=?',
+			[(int(time()), show.get('imdb') or '', str(show.get('tvdb') or '')) for show in batch])
+		con.commit()
+	finally:
+		con.close()
+
+
+def clear_account():
+	"""Discard all account-specific caches on a successful sign-in or sign-out."""
+	dbcon = get_connection()
+	try:
+		for table in ('movies_plantowatch', 'shows_plantowatch', 'shows_watching',
+			'shows_hold', 'movies_dropped', 'shows_dropped', 'movies_completed',
+			'shows_completed', 'watched', 'bookmarks', 'next_episodes', 'service', 'season_refresh'):
+			dbcon.execute('DROP TABLE IF EXISTS %s' % table)
+		dbcon.commit()
+	finally:
+		dbcon.close()
+
+
 def delete_tables(tables):
 	cleared = False
 	try:
@@ -805,6 +857,58 @@ def delete_tables(tables):
 		try: dbcon.close()
 		except: pass
 	return cleared
+
+def replace_watchlists(response):
+	"""Atomically reconcile a validated full account response; keep data on failure."""
+	if not isinstance(response, dict) or any(not isinstance(response.get(k), list) for k in ('movies', 'shows')):
+		return False
+	dbcon = None
+	try:
+		statuses = {'movies': ('plantowatch', 'completed', 'dropped'),
+			'shows': ('plantowatch', 'completed', 'watching', 'hold', 'dropped')}
+		buckets = {category + '_' + status: [] for category, values in statuses.items() for status in values}
+		for category in statuses:
+			for row in response[category]:
+				item = row.get('movie' if category == 'movies' else 'show')
+				if not isinstance(item, dict) or not isinstance(item.get('ids'), dict) or not any(item['ids'].get(k) for k in ('imdb', 'tmdb', 'tvdb', 'simkl')):
+					return False
+				status = row.get('status')
+				# Movie watching/on-hold entries have no corresponding menu table.
+				if status not in ('plantowatch', 'completed', 'watching', 'hold', 'dropped'): return False
+				if status in statuses[category]: buckets[category + '_' + status].append(row)
+		dbcon = get_connection()
+		# The legacy connection disables journaling; snapshots need rollback.
+		dbcon.execute('PRAGMA journal_mode = DELETE')
+		dbcon.execute('PRAGMA synchronous = NORMAL')
+		dbcon.execute('BEGIN')
+		dbcon.execute('CREATE TABLE IF NOT EXISTS service (setting TEXT, value TEXT, UNIQUE(setting))')
+		stamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.000Z')
+		for table, rows in buckets.items():
+			extra = ', last_watched_at TEXT' if table.endswith('_completed') else ''
+			dbcon.execute('CREATE TABLE IF NOT EXISTS %s (title TEXT, year TEXT, premiered TEXT, imdb TEXT, tmdb TEXT, tvdb TEXT, simkl TEXT, rating FLOAT, votes INTEGER, listed_at TEXT%s, UNIQUE(imdb, tmdb, tvdb, simkl))' % (table, extra))
+			columns = 'title, year, premiered, imdb, tmdb, tvdb, simkl, rating, votes, listed_at'
+			has_watched = any(col[1] == 'last_watched_at' for col in dbcon.execute('PRAGMA table_info(%s)' % table))
+			if has_watched: columns += ', last_watched_at'
+			dbcon.execute('DELETE FROM %s' % table)
+			for row in rows:
+				item = row.get('movie') or row.get('show')
+				ids = item['ids']
+				values = [item.get('title') or '', str(item.get('year') or ''), (item.get('first_aired') or '').split('T')[0]]
+				values.extend(str(ids.get(k) or '') for k in ('imdb', 'tmdb', 'tvdb', 'simkl'))
+				values.extend([item.get('rating') or '', item.get('votes') or '', row.get('added_to_watchlist_at') or stamp])
+				if has_watched: values.append(row.get('last_watched_at') or '')
+				dbcon.execute('INSERT OR REPLACE INTO %s (%s) VALUES (%s)' % (table, columns, ','.join('?' for _ in values)), values)
+		for status in ('plantowatch', 'completed', 'watching', 'hold', 'dropped'):
+			dbcon.execute('INSERT OR REPLACE INTO service VALUES (?, ?)', ('last_%s_at' % status, stamp))
+		dbcon.commit()
+		return True
+	except Exception:
+		if dbcon: dbcon.rollback()
+		log_utils.error()
+		return False
+	finally:
+		if dbcon: dbcon.close()
+
 
 def upsert_items(items, table, service_key, table_type='plantowatch'):
 	"""Delete each item by ID from ALL status tables, then insert into target table.
@@ -913,14 +1017,15 @@ def get(function, duration, *args, simkl_id=None, data=None):
 		fresh_result = repr(function(*args, **kwargs))
 
 		if cache_result and (result and len(result) == 1) and fresh_result == '[]': # fix for syncSeason mark unwatched season when it's the last item remaining
-			if result[0].isdigit():
+			if isinstance(result[0], str) and result[0].isdigit():
 				remove(function, *args)
 				return []
 
 		invalid = False
 		try: # Sometimes None is returned as a string instead of None type for "fresh_result"
 			if not fresh_result: invalid = True
-			elif fresh_result == 'None' or fresh_result == '' or fresh_result == '[]' or fresh_result == '{}': invalid = True
+			elif fresh_result in ('None', '', '{}'): invalid = True
+			elif fresh_result == '[]' and getattr(function, '__name__', '') not in ('syncMovies', 'syncTVShows'): invalid = True
 			elif len(fresh_result) == 0: invalid = True
 		except: pass
 

@@ -397,7 +397,7 @@ def sync_dropped(activities=None, forced=False):
                 if items is not None: mdbsync.insert_dropped(items, 'shows_dropped')
     except: log_utils.error()
 
-def manager(name, imdb=None, tvdb=None, tmdb=None, watched=None, season=None, episode=None):
+def manager(name, imdb=None, tvdb=None, tmdb=None, watched=None, season=None, episode=None, tvshow=False):
     lists = []
     try:
         if season: season = int(season)
@@ -406,7 +406,7 @@ def manager(name, imdb=None, tvdb=None, tmdb=None, watched=None, season=None, ep
             content_type = 'episode'
         elif season:
             content_type = 'season'
-        elif tvdb and tvdb != 'None':
+        elif tvshow or (tvdb and tvdb != 'None'):
             content_type = 'tvshow'
         else:
             content_type = 'movie'
@@ -992,8 +992,8 @@ def sync_watchedProgress(activities=None, forced=False):
 			for item in data.get('episodes', []):
 				ep = item.get('episode', {})
 				show_ids = ep.get('show', {}).get('ids', {})
-				show_imdb = str(show_ids.get('imdb', ''))
-				if not show_imdb: continue
+				show_imdb = str(show_ids.get('imdb') or '')
+				if not show_imdb and not show_ids.get('tmdb'): continue
 				mdbsync.upsert_watched_episode(
 					show_imdb=show_imdb,
 					show_tmdb=str(show_ids.get('tmdb', '')),
@@ -1053,10 +1053,11 @@ def syncTVShows():
 		if not episodes: return []
 		shows = {}
 		for (show_imdb, show_tmdb, show_tvdb, season, episode) in episodes:
-			if show_imdb not in shows:
-				shows[show_imdb] = {'ids': {'imdb': show_imdb, 'tmdb': show_tmdb, 'tvdb': show_tvdb}, 'by_season': {}}
+			key = ('tmdb', str(show_tmdb)) if show_tmdb else ('imdb', show_imdb)
+			if key not in shows:
+				shows[key] = {'ids': {'imdb': show_imdb, 'tmdb': show_tmdb, 'tvdb': show_tvdb}, 'by_season': {}}
 			s = int(season)
-			shows[show_imdb]['by_season'].setdefault(s, []).append(int(episode))
+			shows[key]['by_season'].setdefault(s, []).append(int(episode))
 		indicators = []
 		for v in shows.values():
 			ep_ranges = {s: _make_episode_ranges(sorted(eps)) for s, eps in v['by_season'].items()}
@@ -1176,6 +1177,9 @@ def _clr_episode_progress_cache():
 
 
 def _scrobble(endpoint, media_type, imdb, tmdb, tvdb, season, episode, percent):
+	if tmdb and media_type != 'movie':
+		from resources.lib.modules.episode_mapping import supported
+		if supported(tmdb): imdb, tvdb = '', ''
 	try:
 		percent = round(float(percent), 2)
 		if media_type == 'movie':
@@ -1222,7 +1226,7 @@ def scrobbleEpisode(tvshowtitle, year, imdb, tmdb, tvdb, season, episode, watche
 		log_utils.log('MDBList Scrobble Episode. imdb: %s S%sE%s percent: %s' % (imdb, season, episode, watched_percent), level=log_utils.LOGDEBUG)
 	except: log_utils.error()
 
-def scrobbleReset(imdb, tmdb='', tvdb='', season=None, episode=None, refresh=False, clear_local=True, already_watched=False):
+def scrobbleReset(imdb, tmdb='', tvdb='', season=None, episode=None, refresh=False, clear_local=True, already_watched=False, completed=False):
 	if not getMDBListCredentialsInfo(): return
 	try:
 		if episode:
@@ -1237,7 +1241,9 @@ def scrobbleReset(imdb, tmdb='', tvdb='', season=None, episode=None, refresh=Fal
 			if tmdb: ids['tmdb'] = int(tmdb)
 			post = {'movie': {'ids': ids}, 'progress': 0}
 		get_request('/scrobble/clear', post=post)
-		if not already_watched:
+		# Manual resets clear resume progress without adding watch history.
+		# Only completed playback may need to submit a watched update.
+		if completed and not already_watched:
 			if episode:
 				_post_sync_watched(show_ids={'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb},
 					seasons_dict={int(season) if season else 1: [int(episode)]})
@@ -1247,11 +1253,11 @@ def scrobbleReset(imdb, tmdb='', tvdb='', season=None, episode=None, refresh=Fal
 			else:
 				_post_sync_watched(movies=[{'imdb': imdb, 'tmdb': tmdb}])
 		if episode:
-			mdbsync.delete_bookmark(imdb, tvdb or '', season or '', episode)
+			mdbsync.delete_bookmark(imdb, tvdb or '', season or '', episode, tmdb=tmdb)
 		elif season:
 			mdbsync.delete_bookmarks_for_season(imdb, tvdb or '', season)
 		else:
-			mdbsync.delete_bookmark(imdb, tvdb or '', '', '')
+			mdbsync.delete_bookmark(imdb, tvdb or '', '', '', tmdb=tmdb)
 		sync_watchedProgress(forced=True)
 		if refresh: control.refresh()
 		if getSetting('scrobble.notify') == 'true':
@@ -1488,6 +1494,10 @@ def update_syncMovies(imdb, remove_id=False):
 	except: log_utils.error()
 
 def watch(content_type, name, imdb=None, tvdb=None, tmdb=None, season=None, episode=None, refresh=True):
+	if content_type != 'movie' and tmdb:
+		from resources.lib.modules import episode_mapping, anthology_tracking
+		if episode_mapping.supported(tmdb):
+			return anthology_tracking.manager_write('mdblist', tmdb, season, episode, False, refresh)
 	control.busy()
 	success = False
 	if content_type == 'movie':
@@ -1509,12 +1519,16 @@ def watch(content_type, name, imdb=None, tvdb=None, tmdb=None, season=None, epis
 	control.trigger_widget_refresh()
 	if season and not episode: name = '%s-Season%s...' % (name, season)
 	if season and episode: name = '%s-S%sxE%02d...' % (name, season, int(episode))
-	if getSetting('mdblist.general.notifications') == 'true':
+	if getSetting('services.general.notifications') == 'true':
 		if success is True: control.notification(title='MDBList', message=getLS(40641) % ('[COLOR %s]%s[/COLOR]' % (highlightColor, name)))
 		else: control.notification(title='MDBList', message=getLS(40640) % ('[COLOR %s]%s[/COLOR]' % (highlightColor, name)))
 	if not success: log_utils.log(getLS(40640) % name + ' : ids={imdb: %s, tvdb: %s}' % (imdb, tvdb), __name__, level=log_utils.LOGDEBUG)
 
 def unwatch(content_type, name, imdb=None, tvdb=None, tmdb=None, season=None, episode=None, refresh=True):
+	if content_type != 'movie' and tmdb:
+		from resources.lib.modules import episode_mapping, anthology_tracking
+		if episode_mapping.supported(tmdb):
+			return anthology_tracking.manager_write('mdblist', tmdb, season, episode, True, refresh)
 	control.busy()
 	success = False
 	if content_type == 'movie':
@@ -1534,6 +1548,6 @@ def unwatch(content_type, name, imdb=None, tvdb=None, tmdb=None, season=None, ep
 	control.trigger_widget_refresh()
 	if season and not episode: name = '%s-Season%s...' % (name, season)
 	if season and episode: name = '%s-S%sxE%02d...' % (name, season, int(episode))
-	if getSetting('mdblist.general.notifications') == 'true':
+	if getSetting('services.general.notifications') == 'true':
 		if success is True: control.notification(title='MDBList', message=getLS(40643) % ('[COLOR %s]%s[/COLOR]' % (highlightColor, name)))
 		else: control.notification(title='MDBList', message=getLS(40642) % ('[COLOR %s]%s[/COLOR]' % (highlightColor, name)))

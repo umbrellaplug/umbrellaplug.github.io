@@ -128,7 +128,7 @@ def getPunchPlayIndicatorsInfo():
 
 
 def _notify(message):
-    if getSetting('punchplay.general.notifications') == 'true':
+    if getSetting('services.general.notifications') == 'true':
         control.notification(title='PunchPlay', message=message)
 
 
@@ -309,7 +309,16 @@ def punchplayAuth(fromSettings=0):
         expires = time.time() + int(device.get('expires_in') or 600)
         interval = max(int(device.get('interval') or 5), 5)
         message = 'Visit %s\nEnter code: [B]%s[/B]' % (device['verification_uri'], device['user_code'])
-        dialog.create('Umbrella - PunchPlay', message)
+        qr = None
+        if getSetting('dialogs.useumbrelladialog') == 'true':
+            from resources.lib.modules import tools
+            qr = tools.make_qr(device.get('verification_uri_complete') or device['verification_uri'], 'punchplay_qr.png')
+        if qr:
+            dialog = control.getProgressWindow('Umbrella - PunchPlay', qr, 1)
+            dialog.set_controls()
+            dialog.update(0, message)
+        else:
+            dialog.create('Umbrella - PunchPlay', message)
         result = None
         while time.time() < expires and not dialog.iscanceled():
             if control.monitor.waitForAbort(interval):
@@ -427,6 +436,9 @@ def _title(kind, tmdb='', imdb='', tvdb=''):
 
 
 def _identity(kind, imdb='', tmdb='', tvdb=''):
+    if tmdb and kind != 'movie':
+        from resources.lib.modules.episode_mapping import supported
+        if supported(tmdb): imdb, tvdb = '', ''
     body = {}
     if tmdb and str(tmdb).isdigit() and int(tmdb) > 0:
         body['tmdb_id'] = int(tmdb)
@@ -686,11 +698,19 @@ def markSeasonAsNotWatched(imdb, tvdb, season):
     return _season_watch(imdb, tvdb, season, remove=True)
 
 
-def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True):
+def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, tmdb=''):
+    if content_type != 'movie' and tmdb:
+        from resources.lib.modules import episode_mapping, anthology_tracking
+        if episode_mapping.supported(tmdb):
+            return anthology_tracking.manager_write('punchplay', tmdb, season, episode, False, refresh)
     return _watch(content_type, name, imdb, tvdb, season, episode, refresh, False)
 
 
-def unwatch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True):
+def unwatch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, tmdb=''):
+    if content_type != 'movie' and tmdb:
+        from resources.lib.modules import episode_mapping, anthology_tracking
+        if episode_mapping.supported(tmdb):
+            return anthology_tracking.manager_write('punchplay', tmdb, season, episode, True, refresh)
     return _watch(content_type, name, imdb, tvdb, season, episode, refresh, True)
 
 

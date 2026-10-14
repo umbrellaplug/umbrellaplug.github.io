@@ -91,8 +91,8 @@ def fetch(items, lang='en', user=''):
 										from resources.lib.modules.trakt import cachesyncSeasons
 										cachesyncSeasons(imdb, timeout=int(getSetting('background.service.syncInterval') or 15) / 60)
 									elif simkl.getSimKLIndicatorsInfo():
-										from resources.lib.modules.simkl import cachesyncSeasons
-										cachesyncSeasons(imdb, timeout=int(getSetting('simkl.service.syncInterval') or 30) / 60)
+										from resources.lib.modules.simkl import cachedSeasonIndicators
+										cachedSeasonIndicators(imdb, item.get('tvdb', ''), has_next_episode=True)
 									elif getSetting('indicators.alt') == '3':
 										from resources.lib.modules.mdblist import cachesyncSeasons
 										cachesyncSeasons(imdb, timeout=int(getSetting('mdblist.service.syncInterval') or 30) / 60)

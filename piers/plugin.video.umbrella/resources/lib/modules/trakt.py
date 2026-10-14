@@ -391,7 +391,7 @@ def traktRevoke(fromSettings=0):
 		# Capture before clearing so we can invalidate the correct cache entries below
 		_revoke_user = getSetting('trakt.user.name').strip()
 		_revoke_lang = control.apiLanguage()['tmdb']
-		_revoke_direct = getSetting('trakt.directProgress.scrape') == 'true'
+		_revoke_direct = getSetting('services.directProgress.scrape') == 'true'
 		control.homeWindow.setProperty('umbrella.updateSettings', 'false')
 		control.setSetting('trakt.user.name', '')
 		control.setSetting('trakt.token.expires', '')
@@ -587,7 +587,11 @@ def getTraktAddonEpisodeInfo():
 		return True
 	else: return False
 
-def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True):
+def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, tmdb=''):
+	if content_type != 'movie' and tmdb:
+		from resources.lib.modules import episode_mapping, anthology_tracking
+		if episode_mapping.supported(tmdb):
+			return anthology_tracking.manager_write('trakt', tmdb, season, episode, False, refresh)
 	control.busy()
 	success = False
 	if content_type == 'movie':
@@ -608,12 +612,16 @@ def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, r
 	control.trigger_widget_refresh()
 	if season and not episode: name = '%s-Season%s...' % (name, season)
 	if season and episode: name = '%s-S%sxE%02d...' % (name, season, int(episode))
-	if getSetting('trakt.general.notifications') == 'true':
+	if getSetting('services.general.notifications') == 'true':
 		if success is True: control.notification(title=32315, message=getLS(35502) % ('[COLOR %s]%s[/COLOR]' % (highlight_color, name)))
 		else: control.notification(title=32315, message=getLS(35504) % ('[COLOR %s]%s[/COLOR]' % (highlight_color, name)))
 	if not success: log_utils.log(getLS(35504) % name + ' : ids={imdb: %s, tvdb: %s}' % (imdb, tvdb), __name__, level=log_utils.LOGDEBUG)
 
-def unwatch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True):
+def unwatch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, tmdb=''):
+	if content_type != 'movie' and tmdb:
+		from resources.lib.modules import episode_mapping, anthology_tracking
+		if episode_mapping.supported(tmdb):
+			return anthology_tracking.manager_write('trakt', tmdb, season, episode, True, refresh)
 	control.busy()
 	success = False
 	if content_type == 'movie':
@@ -634,7 +642,7 @@ def unwatch(content_type, name, imdb=None, tvdb=None, season=None, episode=None,
 	control.trigger_widget_refresh()
 	if season and not episode: name = '%s-Season%s...' % (name, season)
 	if season and episode: name = '%s-S%sxE%02d...' % (name, season, int(episode))
-	if getSetting('trakt.general.notifications') == 'true':
+	if getSetting('services.general.notifications') == 'true':
 		if success is True: control.notification(title=32315, message=getLS(35503) % ('[COLOR %s]%s[/COLOR]' % (highlight_color, name)))
 		else: control.notification(title=32315, message=getLS(35505) % ('[COLOR %s]%s[/COLOR]' % (highlight_color, name)))
 	if not success: log_utils.log(getLS(35505) % name + ' : ids={imdb: %s, tvdb: %s}' % (imdb, tvdb), __name__, level=log_utils.LOGDEBUG)
@@ -776,7 +784,7 @@ def hideItem(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True
 			sync_hidden_progress(forced=True)
 			if refresh: control.refresh()
 			control.trigger_widget_refresh()
-			if getSetting('trakt.general.notifications') == 'true':
+			if getSetting('services.general.notifications') == 'true':
 				control.notification(title=32315, message=getLS(33053) % name)
 	except: log_utils.error()
 
@@ -794,7 +802,7 @@ def removeCollectionItems(type, id_list):
 			control.trigger_widget_refresh()
 			if type == 'movies': traktsync.delete_collection_items(id_list, 'movies_collection')
 			else: traktsync.delete_collection_items(id_list, 'shows_collection')
-			if getSetting('trakt.general.notifications') == 'true':
+			if getSetting('services.general.notifications') == 'true':
 				control.notification(title='Trakt Collection Manager', message='Successfuly Removed %s Item%s' % (total_items, 's' if total_items >1 else ''))
 	except: log_utils.error()
 
@@ -812,16 +820,16 @@ def removeWatchlistItems(type, id_list):
 			control.trigger_widget_refresh()
 			if type == 'movies': traktsync.delete_watchList_items(id_list, 'movies_watchlist')
 			else: traktsync.delete_watchList_items(id_list, 'shows_watchlist')
-			if getSetting('trakt.general.notifications') == 'true':
+			if getSetting('services.general.notifications') == 'true':
 				control.notification(title='Trakt Watch List Manager', message='Successfuly Removed %s Item%s' % (total_items, 's' if total_items >1 else ''))
 	except: log_utils.error()
 
-def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, watched=None, unfinished=False, tvshow=None):
+def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, watched=None, unfinished=False, tvshow=None, tmdb=''):
 	lists = []
 	try:
 		if season: season = int(season)
 		if episode: episode = int(episode)
-		media_type = 'Show' if tvdb else 'Movie'
+		media_type = 'Show' if tvdb or season or episode or tvshow else 'Movie'
 		if watched is not None:
 			if watched is True:
 				items = [(getLS(33652) % highlight_color, 'unwatch')]
@@ -867,9 +875,9 @@ def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True,
 		if select == -1: return
 		if select >= 0:
 			if items[select][1] == 'watch':
-				watch(control.infoLabel('Container.ListItem.DBTYPE'), name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
+				watch(control.infoLabel('Container.ListItem.DBTYPE'), name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
 			elif items[select][1] == 'unwatch':
-				unwatch(control.infoLabel('Container.ListItem.DBTYPE'), name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
+				unwatch(control.infoLabel('Container.ListItem.DBTYPE'), name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
 			elif items[select][1] == 'rate':
 				rate(imdb=imdb, tvdb=tvdb, season=season, episode=episode)
 			elif items[select][1] == 'unrate':
@@ -883,7 +891,7 @@ def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True,
 			elif items[select][1] == 'unfinishedMovieManager':
 				control.execute('RunPlugin(plugin://plugin.video.umbrella/?action=movies_traktUnfinishedManager)')
 			elif items[select][1] == 'scrobbleReset':
-				scrobbleReset(imdb=imdb, tmdb='', tvdb=tvdb, season=season, episode=episode, widgetRefresh=True, clear_local=getSetting('indicators.alt') == '1')
+				scrobbleReset(imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, widgetRefresh=True, clear_local=getSetting('indicators.alt') == '1')
 			else:
 				if not tvdb: post = {"movies": [{"ids": {"imdb": imdb}}]}
 				else:
@@ -925,7 +933,7 @@ def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True,
 				control.hide()
 				if refresh: control.refresh()
 				control.trigger_widget_refresh()
-				if getSetting('trakt.general.notifications') == 'true': control.notification(title=name, message=message + ' (%s)' % list)
+				if getSetting('services.general.notifications') == 'true': control.notification(title=name, message=message + ' (%s)' % list)
 	except:
 		log_utils.error()
 		control.hide()
@@ -1853,6 +1861,8 @@ def scrobbleEpisode(imdb, tmdb, tvdb, season, episode, watched_percent):
 	try:
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
 		post = {"show": {"ids": {"tvdb": tvdb}}, "episode": {"season": season, "number": episode}, "progress": watched_percent}
+		from resources.lib.modules.episode_mapping import scrobble_payload
+		post = scrobble_payload(post, 'trakt', tmdb)
 		success = getTrakt('/scrobble/pause', post)
 		if not success:
 			# Single bounded retry — see scrobbleMovie() for rationale.
@@ -1881,6 +1891,8 @@ def scrobbleStart(media_type, title='', tvshowtitle='', year='0', imdb='', tmdb=
 			        'episode': {'season': int(season) if season else 1,
 			                    'number': int(episode) if episode else 1},
 			        'progress': float(watched_percent)}
+		from resources.lib.modules.episode_mapping import scrobble_payload
+		post = scrobble_payload(post, 'trakt', tmdb)
 		success = getTrakt('/scrobble/start', post)
 		if not success:
 			# Single bounded retry — see scrobbleMovie() for rationale.
@@ -1903,7 +1915,7 @@ def scrobbleReset(imdb, tmdb=None, tvdb=None, season=None, episode=None, refresh
 			items = [{'type': 'movie', 'movie': {'ids': {'imdb': imdb}}}]
 			label_string = resume_info[0]
 		else:
-			items = [{'type': 'episode', 'episode': {'season': season, 'number': episode}, 'show': {'ids': {'imdb': imdb, 'tvdb': tvdb}}}]
+			items = [{'type': 'episode', 'episode': {'season': season, 'number': episode}, 'show': {'ids': {'imdb': imdb, 'tvdb': tvdb, 'tmdb': tmdb}}}]
 			label_string = resume_info[0] + ' - ' + 'S%02dE%02d' % (int(season), int(episode))
 		control.hide()
 		if success:
@@ -1956,7 +1968,7 @@ def scrobbleResetItems(imdb_ids, tvdb_dicts=None, refresh=True, widgetRefresh=Fa
 					headers['Authorization'] = 'Bearer %s' % trakt_token
 					success = session.delete('https://api.trakt.tv/sync/playback/%s' % resume_id, headers=headers).status_code == 204
 					if not success: raise Exception()
-					items = [{'type': 'episode', 'episode': {'season': season, 'number': episode}, 'show': {'ids': {'imdb': imdb, 'tvdb': tvdb}}}]
+					items = [{'type': 'episode', 'episode': {'season': season, 'number': episode}, 'show': {'ids': {'imdb': imdb, 'tvdb': tvdb, 'tmdb': resume_dict.get('tmdb', '')}}}]
 					timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
 					items[0].update({'paused_at': timestamp})
 					traktsync.delete_bookmark(items)
@@ -2080,7 +2092,7 @@ def sync_watchedProgress(activities=None, forced=False, trigger_refresh=True):
 		from resources.lib.menus import episodes
 		trakt_user = getSetting('trakt.user.name').strip()
 		lang = control.apiLanguage()['tmdb']
-		direct = getSetting('trakt.directProgress.scrape') == 'true'
+		direct = getSetting('services.directProgress.scrape') == 'true'
 		url = 'https://api.trakt.tv/users/me/watched/shows'
 		progressActivity = getProgressActivity(activities)
 		local_listCache = cache.timeout(episodes.Episodes().trakt_progress_list, url, trakt_user, lang, direct)

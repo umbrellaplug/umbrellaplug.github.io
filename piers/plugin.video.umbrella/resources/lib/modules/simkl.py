@@ -33,6 +33,7 @@ highlightColor = control.setting('highlight.color')
 headers = {}
 last_request_time = 0.0
 request_lock = Lock()
+_sync_failed = False
 
 class SIMKL:
 	name = "Simkl"
@@ -104,6 +105,10 @@ class SIMKL:
 			self.token = self.secret
 			control.sleep(500)
 			control.setSetting('simkltoken', self.token)
+			# A newly approved sign-in may be a different account. Do not retain its
+			# predecessor's watched/library data if the subsequent import fails.
+			simklsync.clear_account()
+			control.make_settings_dict()
 			username, joindate = self.get_account_info(self.token)
 			control.notification(message="Simkl Authorized", icon=simkl_icon)
 			if not control.yesnoDialog('Do you want to set Simkl as your service for your watched and unwatched indicators?','','','Indicators', 'No', 'Yes'):
@@ -133,18 +138,8 @@ class SIMKL:
 			control.setSetting('simklusername', '')
 			control.setSetting('simkljoindate', '')
 			from resources.lib.database import simklsync
-			clr_simklsync = {
-                    'movies_plantowatch': True,
-                    'shows_plantowatch': True,
-                    'shows_watching': True,
-                    'shows_hold': True,
-                    'movies_dropped': True,
-                    'shows_dropped': True,
-                    'watched': True,
-                    'movies_completed': True,
-                    'shows_completed': True
-                }
-			simklsync.delete_tables(clr_simklsync)
+			simklsync.clear_account()
+			control.make_settings_dict()
 			if getSetting('indicators.alt') == '2':
 				control.setSetting('indicators.alt', '0')
 				control.setSetting('indicators', 'Local')
@@ -159,16 +154,8 @@ class SIMKL:
 
 	def get_account_info(self, token=None):
 		try:
-			url = "https://api.simkl.com/users/settings"
-			if token:
-				headers['Authorization'] = 'Bearer %s' % token
-			else:
-				headers['Authorization'] = 'Bearer %s' % getSetting('simkltoken')
-			headers['simkl-api-key'] = simklclientid
-			headers['User-Agent'] = 'Umbrella/%s' % control.addon('plugin.video.umbrella').getAddonInfo('version')
-			response = session.post(url, headers=headers, timeout=20)
-			if response.status_code == 200:
-				response = response.json()
+			response = post_request('/users/settings')
+			if isinstance(response, dict):
 				account_info = response.get('user')
 				joined = account_info.get('joined_at')
 				user = account_info.get('name','')
@@ -205,43 +192,31 @@ def throttle():
 			time.sleep(wait)
 		last_request_time = time.time()
 
-def get_request(url):
+def _api_request(method, url, data=None):
+	"""Use the original SIMKL app and PIN token for all authenticated requests."""
+	global _sync_failed
 	throttle()
 	try:
-		if not url.startswith(BASE_URL): url = urljoin(BASE_URL, url)
-		_version = control.addon('plugin.video.umbrella').getAddonInfo('version')
-		if '?' not in url:
-			url += '?client_id=%s&app-name=umbrella&app-version=%s' % (simklclientid, _version)
-		else:
-			url += '&client_id=%s&app-name=umbrella&app-version=%s' % (simklclientid, _version)
-		headers['Authorization'] = 'Bearer %s' % getSetting('simkltoken')
-		headers['simkl-api-key'] = simklclientid
-		headers['User-Agent'] = 'Umbrella/%s' % _version
-		try: response = session.get(url, headers=headers, timeout=20)
-		except requests.exceptions.SSLError:
-			response = session.get(url, headers=headers, verify=False)
-	except requests.exceptions.ConnectionError:
-		control.notification(message=40349)
-		log_utils.error()
-		return None
-	try:
+		url = urljoin(BASE_URL, url)
+		version = control.addon('plugin.video.umbrella').getAddonInfo('version')
+		request_headers = {'Authorization': 'Bearer %s' % getSetting('simkltoken'),
+			'simkl-api-key': simklclientid, 'User-Agent': 'Umbrella/%s' % version}
+		params = {'client_id': simklclientid, 'app-name': 'umbrella', 'app-version': version}
+		response = session.request(method, url, headers=request_headers, params=params, json=data, timeout=20)
 		if response.status_code in (200, 201): return response.json()
-		elif response.status_code == 404:
-			if getSetting('debug.level') == '1':
-				log_utils.log('Simkl get_request() failed: (404:NOT FOUND) - URL: %s' % url, level=log_utils.LOGDEBUG)
-			return '404:NOT FOUND'
-		elif 'Retry-After' in response.headers: # API REQUESTS ARE BEING THROTTLED, INTRODUCE WAIT TIME (TMDb removed rate-limit on 12-6-20)
-			throttleTime = response.headers['Retry-After']
-			control.notification(message='SIMKL Throttling Applied, Sleeping for %s seconds' % throttleTime)
-			control.sleep((int(throttleTime) + 1) * 1000)
-			return get_request(url)
-		else:
-			if getSetting('debug.level') == '1':
-				log_utils.log('SIMKL get_request() failed: URL: %s\n                       msg : SIMKL Response: %s' % (url, response.text), __name__, log_utils.LOGDEBUG)
-			return None
-	except:
-		log_utils.error()
-		return None
+		if response.status_code == 204: return True
+		_sync_failed = True
+		log_utils.log('SIMKL request failed: HTTP %s' % response.status_code, level=log_utils.LOGDEBUG)
+		if response.status_code == 404 and method == 'GET': return '404:NOT FOUND'
+	except (requests.exceptions.RequestException, ValueError):
+		_sync_failed = True
+		log_utils.log('SIMKL network request or response failed', level=log_utils.LOGDEBUG)
+	return None
+
+
+def get_request(url):
+	return _api_request('GET', url)
+
 
 def getSimklAsJson(url, post=None, silent=False):
 	# get_request()/post_request() already return parsed JSON (dict/list), never a raw
@@ -359,7 +334,11 @@ def simklPlantowatch(url):
 	return simkllist
 
 
-def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True):
+def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, tmdb=''):
+	if content_type != 'movie' and tmdb:
+		from resources.lib.modules import episode_mapping, anthology_tracking
+		if episode_mapping.supported(tmdb):
+			return anthology_tracking.manager_write('simkl', tmdb, season, episode, False, refresh)
 	control.busy()
 	success = False
 	if content_type == 'movie':
@@ -380,12 +359,16 @@ def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, r
 	control.trigger_widget_refresh()
 	if season and not episode: name = '%s-Season%s...' % (name, season)
 	if season and episode: name = '%s-S%sxE%02d...' % (name, season, int(episode))
-	if getSetting('simkl.general.notifications') == 'true':
+	if getSetting('services.general.notifications') == 'true':
 		if success is True: control.notification(title=40342, message=getLS(40561) % ('[COLOR %s]%s[/COLOR]' % (highlightColor, name)))
 		else: control.notification(title=40342, message=getLS(40560) % ('[COLOR %s]%s[/COLOR]' % (highlightColor, name)))
 	if not success: log_utils.log(getLS(40560) % name + ' : ids={imdb: %s, tvdb: %s}' % (imdb, tvdb), __name__, level=log_utils.LOGDEBUG)
 
-def unwatch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True):
+def unwatch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, tmdb=''):
+	if content_type != 'movie' and tmdb:
+		from resources.lib.modules import episode_mapping, anthology_tracking
+		if episode_mapping.supported(tmdb):
+			return anthology_tracking.manager_write('simkl', tmdb, season, episode, True, refresh)
 	control.busy()
 	success = False
 	if content_type == 'movie':
@@ -406,7 +389,7 @@ def unwatch(content_type, name, imdb=None, tvdb=None, season=None, episode=None,
 	control.trigger_widget_refresh()
 	if season and not episode: name = '%s-Season%s...' % (name, season)
 	if season and episode: name = '%s-S%sxE%02d...' % (name, season, int(episode))
-	if getSetting('simkl.general.notifications') == 'true':
+	if getSetting('services.general.notifications') == 'true':
 		if success is True: control.notification(title=40342, message=getLS(40563) % ('[COLOR %s]%s[/COLOR]' % (highlightColor, name)))
 		else: control.notification(title=40342, message=getLS(40562) % ('[COLOR %s]%s[/COLOR]' % (highlightColor, name)))
 	if not success: log_utils.log(getLS(40562) % name + ' : ids={imdb: %s, tvdb: %s}' % (imdb, tvdb), __name__, level=log_utils.LOGDEBUG)
@@ -426,33 +409,9 @@ def getSimKLIndicatorsInfo():
 	return indicators
 
 def post_request(url, data=None):
-	throttle()
-	if type(data) == dict or type(data) == list: data = json.dumps(data)
-	if not url.startswith(BASE_URL): url = urljoin(BASE_URL, url)
-	_version = control.addon('plugin.video.umbrella').getAddonInfo('version')
-	if '?' not in url:
-		url += '?client_id=%s&app-name=umbrella&app-version=%s' % (simklclientid, _version)
-	else:
-		url += '&client_id=%s&app-name=umbrella&app-version=%s' % (simklclientid, _version)
-	headers['Authorization'] = 'Bearer %s' % getSetting('simkltoken')
-	headers['simkl-api-key'] = simklclientid
-	headers['User-Agent'] = 'Umbrella/%s' % _version
-	try:
-		response = session.post(url, data=data, headers=headers, timeout=20)
-	except requests.exceptions.ConnectionError:
-		control.notification(message=40349)
-		log_utils.error()
-		return None
-	try:
-		if response.status_code in (200, 201): 
-			return response.json()
-		else:
-			if getSetting('debug.level') == '1':
-				log_utils.log('SIMKL post_request() failed: URL: %s\n                       msg : SIMKL Response: %s' % (url, response.text), __name__, log_utils.LOGDEBUG)
-			return None
-	except:
-		log_utils.error()
-		return None
+	if isinstance(data, str): data = json.loads(data)
+	return _api_request('POST', url, data)
+
 
 def markMovieAsWatched(imdb):
 	try:
@@ -749,9 +708,37 @@ def update_syncMovies(imdb, remove_id=False):
 		indicators = simklsync.cache_existing(syncMovies)
 		if remove_id: indicators.remove(imdb)
 		else: indicators.append(imdb)
-		key = simklsync._hash_function(syncMovies, ())
+		key = simklsync.hash_function(syncMovies, ())
 		simklsync.cache_insert(key, repr(indicators))
 	except: log_utils.error()
+
+def cachedMovieIndicators():
+	return simklsync.cache_existing(syncMovies) or []
+
+
+def cachedTVShowIndicators():
+	return simklsync.cache_existing(syncTVShows) or []
+
+
+def cachedSeasonIndicators(imdb, tvdb, has_next_episode=False, tmdb_total_aired=None, force_lookup=False):
+	"""Read indicators without HTTP; queue stale counts for a batched service update."""
+	indicators = simklsync.cache_existing(syncSeasons, imdb or '', tvdb or '')
+	counts = indicators[1] if indicators and len(indicators) > 1 else {}
+	total = sum(value.get('total', 0) for value in counts.values())
+	watched = sum(value.get('watched', 0) for value in counts.values())
+	if (not indicators and force_lookup) or (counts and (
+		(has_next_episode and total == watched) or (tmdb_total_aired and int(tmdb_total_aired) > total))):
+		simklsync.queue_season_refresh(imdb or '', tvdb or '')
+	return indicators
+
+
+def sync_pending_seasons():
+	"""Service-only: coalesce display-time stale hints into requests of up to 100 shows."""
+	batch = simklsync.pending_season_refreshes()
+	if batch and batchCacheSyncSeason(batch):
+		simklsync.complete_season_refreshes(batch)
+		control.trigger_widget_refresh()
+
 
 def cachesyncMovies(timeout=0):
 	indicators = simklsync.get(syncMovies, timeout)
@@ -853,10 +840,10 @@ def batchCacheSyncSeason(data, progress_callback=None):
         try: progress_callback('Syncing season progress', done, total)
         except: pass
     for chunk in chunked_iterator(data, 100):  # Process chunks sequentially to avoid request bursts
-        formatted_data = [show for show in chunk]
+        formatted_data = [{key: value for key, value in show.items() if key in ('imdb', 'tvdb') and value} for show in chunk]
         results = post_request(f'/sync/watched?extended={extended_param}', data=formatted_data)
         if not results:
-            continue
+            return False
         # cachesyncSeasons()->syncSeasons() also does a TMDb lookup + cache write per show
         # (last-aired-boundary capping, added after this was written) — no longer "cache
         # writes only" as the comment used to say. An unbounded default ThreadPoolExecutor
@@ -884,6 +871,8 @@ def batchCacheSyncSeason(data, progress_callback=None):
                 if progress_callback:
                     try: progress_callback('Syncing season progress', done, total)
                     except: pass
+
+    return done == total
 
 def cachesyncSeasons(imdb, tvdb, simkl_id=None, timeout=0, data=None):
 	try:
@@ -946,7 +935,7 @@ def syncSeasons(imdb, tvdb, simkl_id=None, data=None): # season indicators and c
 		for show in show_data:
 			show_imdb = show.get('imdb')
 			show_tvdb = str(show.get('tvdb', ''))
-			if show_imdb != imdb and show_tvdb != str(tvdb or ''):
+			if not ((imdb and show_imdb == imdb) or (tvdb and show_tvdb == str(tvdb))):
 				continue
 			seasons = show.get('seasons', [])
 
@@ -1171,14 +1160,19 @@ def getDroppedActivity(activities=None):
 	except: 
 		return 0
 
+def progress_cache_hours():
+	try: return max(5, int(getSetting('simkl.service.syncInterval') or '30')) / 60.0
+	except (TypeError, ValueError): return 0.5
+
+
 def sync_watchedProgress(activities=None, forced=False):
 	try:
 		from resources.lib.menus import episodes
-		direct = getSetting('simkl.directProgress.scrape') == 'true'
+		direct = getSetting('services.directProgress.scrape') == 'true'
 		url = '/sync/all-items/shows/watching'
 		progressActivity = getProgressActivity(activities)
 		local_listCache = cache.timeout(episodes.Episodes().simkl_progress_list, url, direct)
-		if forced or (progressActivity > local_listCache) or progressActivity == 0:
+		if forced or (progressActivity > local_listCache) or progressActivity == 0 or time.time() - local_listCache >= progress_cache_hours() * 3600:
 			cache.get(episodes.Episodes().simkl_progress_list, 0, url, direct)
 			if forced: log_utils.log('Forced - SimKl Progress List Sync Complete', __name__, log_utils.LOGDEBUG)
 			else:
@@ -1187,19 +1181,27 @@ def sync_watchedProgress(activities=None, forced=False):
 			control.trigger_widget_refresh()
 	except: log_utils.error()
 
+def _full_watchlist(status, pairs):
+    # Fetch all categories before removing anything: a quota/network failure is
+    # not an empty library, and must not erase the user's cached lists.
+    fetched = []
+    for category, table in pairs:
+        response = get_request('/sync/all-items/%s/%s' % (category, status))
+        if not isinstance(response, dict) or not isinstance(response.get(category), list):
+            return False
+        fetched.append((table, response[category]))
+    simklsync.delete_tables({table: True for table, items in fetched})
+    insert = getattr(simklsync, 'insert_' + status)
+    for table, items in fetched:
+        if items: insert(items, table, new_sync=False)
+    simklsync.set_sync_time('last_%s_at' % status)
+    return True
+
+
 def sync_plantowatch(activities=None, forced=False):
     try:
         def full_sync():
-            clr = {'movies_plantowatch': True, 'shows_plantowatch': True, 'shows_watching': False,
-                   'shows_hold': False, 'movies_dropped': False, 'shows_dropped': False,
-                   'watched': False, 'movies_completed': False, 'shows_completed': False}
-            simklsync.delete_tables(clr)
-            for category, table in [('movies', 'movies_plantowatch'), ('shows', 'shows_plantowatch')]:
-                response = get_request('/sync/all-items/%s/plantowatch' % category)
-                if response and isinstance(response, dict):
-                    items = response.get(category, [])
-                    if items:
-                        simklsync.insert_plantowatch(items, table, new_sync=False)
+            return _full_watchlist('plantowatch', [('movies', 'movies_plantowatch'), ('shows', 'shows_plantowatch')])
 
         def delta_sync(db_ts):
             date_from = _ts_to_iso(db_ts)
@@ -1227,16 +1229,7 @@ def sync_plantowatch(activities=None, forced=False):
 def sync_completed(activities=None, forced=False):
     try:
         def full_sync():
-            clr = {'movies_plantowatch': False, 'shows_plantowatch': False, 'shows_watching': False,
-                   'shows_hold': False, 'movies_dropped': False, 'shows_dropped': False,
-                   'watched': False, 'movies_completed': True, 'shows_completed': True}
-            simklsync.delete_tables(clr)
-            for category, table in [('movies', 'movies_completed'), ('shows', 'shows_completed')]:
-                response = get_request('/sync/all-items/%s/completed' % category)
-                if response and isinstance(response, dict):
-                    items = response.get(category, [])
-                    if items:
-                        simklsync.insert_completed(items, table, new_sync=False)
+            return _full_watchlist('completed', [('movies', 'movies_completed'), ('shows', 'shows_completed')])
 
         def delta_sync(db_ts):
             date_from = _ts_to_iso(db_ts)
@@ -1264,15 +1257,7 @@ def sync_completed(activities=None, forced=False):
 def sync_watching(activities=None, forced=False):
     try:
         def full_sync():
-            clr = {'movies_plantowatch': False, 'shows_plantowatch': False, 'shows_watching': True,
-                   'shows_hold': False, 'movies_dropped': False, 'shows_dropped': False,
-                   'watched': False, 'movies_completed': False, 'shows_completed': False}
-            simklsync.delete_tables(clr)
-            response = get_request('/sync/all-items/shows/watching')
-            if response and isinstance(response, dict):
-                items = response.get('shows', [])
-                if items:
-                    simklsync.insert_watching(items, 'shows_watching', new_sync=False)
+            return _full_watchlist('watching', [('shows', 'shows_watching')])
 
         def delta_sync(db_ts):
             date_from = _ts_to_iso(db_ts)
@@ -1299,15 +1284,7 @@ def sync_watching(activities=None, forced=False):
 def sync_hold(activities=None, forced=False):
     try:
         def full_sync():
-            clr = {'movies_plantowatch': False, 'shows_plantowatch': False, 'shows_watching': False,
-                   'shows_hold': True, 'movies_dropped': False, 'shows_dropped': False,
-                   'watched': False, 'movies_completed': False, 'shows_completed': False}
-            simklsync.delete_tables(clr)
-            response = get_request('/sync/all-items/shows/hold')
-            if response and isinstance(response, dict):
-                items = response.get('shows', [])
-                if items:
-                    simklsync.insert_hold(items, 'shows_hold', new_sync=False)
+            return _full_watchlist('hold', [('shows', 'shows_hold')])
 
         def delta_sync(db_ts):
             date_from = _ts_to_iso(db_ts)
@@ -1358,96 +1335,21 @@ def _get_all_watchlists_activity(activities=None):
 
 
 def sync_all_watchlists(activities=None, forced=False):
-	"""Unified watchlist sync. Delta path: 1 request to /sync/all-items/?date_from instead of 8.
-	Forced/full path delegates to individual sync functions unchanged."""
+	"""Reconcile a full snapshot, including removals, once per service interval."""
 	try:
-		if forced:
-			sync_plantowatch(forced=True)
-			sync_completed(forced=True)
-			sync_watching(forced=True)
-			sync_hold(forced=True)
-			sync_dropped(forced=True)
-			return
-
-		last_syncs = {
-			'last_plantowatch_at': simklsync.last_sync('last_plantowatch_at'),
-			'last_completed_at':   simklsync.last_sync('last_completed_at'),
-			'last_watching_at':    simklsync.last_sync('last_watching_at'),
-			'last_hold_at':        simklsync.last_sync('last_hold_at'),
-			'last_dropped_at':     simklsync.last_sync('last_dropped_at'),
-		}
-
-		# Any table that has never been synced needs a full sync first
-		needs_full = [k for k, v in last_syncs.items() if v == 0]
-		if needs_full:
-			if 'last_plantowatch_at' in needs_full: sync_plantowatch(forced=True)
-			if 'last_completed_at' in needs_full:   sync_completed(forced=True)
-			if 'last_watching_at' in needs_full:    sync_watching(forced=True)
-			if 'last_hold_at' in needs_full:        sync_hold(forced=True)
-			if 'last_dropped_at' in needs_full:     sync_dropped(forced=True)
-			# Advance timestamps for empty-category cases so 1970 never persists
-			for k in needs_full:
-				simklsync.set_sync_time(k)
-			return
-
-		# All tables have existing data; check if anything changed
-		api_latest = _get_all_watchlists_activity(activities)
-		date_from_ts = min(last_syncs.values())
-		if api_latest <= date_from_ts:
-			return  # Nothing changed since our oldest sync
-
-		date_from = _ts_to_iso(date_from_ts)
-		log_utils.log('Simkl watchlists delta sync (1 request from %s)' % date_from, __name__, log_utils.LOGINFO)
-		response = get_request('/sync/all-items/?date_from=%s' % date_from)
-		if response is None: return
-
-		# Map (media_type, status) → (table, timestamp_col)
-		dispatch = {
-			('movies', 'plantowatch'): ('movies_plantowatch', 'last_plantowatch_at'),
-			('movies', 'completed'):   ('movies_completed',   'last_completed_at'),
-			('movies', 'dropped'):     ('movies_dropped',     'last_dropped_at'),
-			('shows',  'plantowatch'): ('shows_plantowatch',  'last_plantowatch_at'),
-			('shows',  'completed'):   ('shows_completed',    'last_completed_at'),
-			('shows',  'watching'):    ('shows_watching',     'last_watching_at'),
-			('shows',  'hold'):        ('shows_hold',         'last_hold_at'),
-			('shows',  'dropped'):     ('shows_dropped',      'last_dropped_at'),
-		}
-
-		from collections import defaultdict
-		buckets = defaultdict(list)
-		for item in response.get('movies', []):
-			status = item.get('status')
-			if ('movies', status) in dispatch: buckets[('movies', status)].append(item)
-		for item in response.get('shows', []):
-			status = item.get('status')
-			if ('shows', status) in dispatch: buckets[('shows', status)].append(item)
-
-		for key, items in buckets.items():
-			if items:
-				table, ts_col = dispatch[key]
-				simklsync.upsert_items(items, table, ts_col, key[1])
-
-		# Advance every service timestamp so min() never regresses on next sync
-		for ts_col in last_syncs:
-			simklsync.set_sync_time(ts_col)
-
-	except Exception as e:
-		log_utils.error('Error in sync_all_watchlists: %s' % str(e))
+		# A delta cannot identify entries removed entirely from the account.
+		# One unfiltered request replaces the previous delta request.
+		response = get_request('/sync/all-items/')
+		if simklsync.replace_watchlists(response):
+			control.trigger_widget_refresh()
+	except Exception:
+		log_utils.error()
 
 
 def sync_dropped(activities=None, forced=False):
     try:
         def full_sync():
-            clr = {'movies_plantowatch': False, 'shows_plantowatch': False, 'shows_watching': False,
-                   'shows_hold': False, 'movies_dropped': True, 'shows_dropped': True,
-                   'watched': False, 'movies_completed': False, 'shows_completed': False}
-            simklsync.delete_tables(clr)
-            for category, table in [('shows', 'shows_dropped'), ('movies', 'movies_dropped')]:
-                response = get_request('/sync/all-items/%s/dropped' % category)
-                if response and isinstance(response, dict):
-                    items = response.get(category, [])
-                    if items:
-                        simklsync.insert_dropped(items, table, new_sync=False)
+            return _full_watchlist('dropped', [('shows', 'shows_dropped'), ('movies', 'movies_dropped')])
 
         def delta_sync(db_ts):
             date_from = _ts_to_iso(db_ts)
@@ -1473,21 +1375,24 @@ def sync_dropped(activities=None, forced=False):
         log_utils.error('Error in sync_dropped: %s' % str(e))
 
 
-def service_syncSeasons(progress_callback=None): # season indicators and counts for watched shows ex. [['1', '2', '3'], {1: {'total': 8, 'watched': 8, 'unwatched': 0}, 2: {'total': 10, 'watched': 10, 'unwatched': 0}}]
+def service_syncSeasons(progress_callback=None, indicators=None):
 	try:
 		log_utils.log('Service - Simkl Watched Shows Season Sync...', __name__, log_utils.LOGDEBUG)
-		indicators = simklsync.cache_existing(syncTVShows) # use cached data from service cachesyncTVShows() just written fresh
+		if indicators is None: indicators = simklsync.cache_existing(syncTVShows)
+		if indicators is None: return False
 		batch = []
 		for indicator in indicators:
 			imdb = indicator[0].get('imdb', '') if indicator[0].get('imdb') else ''
 			tvdb = str(indicator[0].get('tvdb', '')) if indicator[0].get('tvdb') else ''
 			simkl_id = str(indicator[0].get('simkl', '')) if indicator[0].get('simkl') else ''
-			batch.append({'imdb': imdb, 'tvdb': tvdb})
+			batch.append({'imdb': imdb, 'tvdb': tvdb, 'simkl': simkl_id})
 			#threads.append(Thread(target=cachesyncSeasons, args=(imdb, tvdb, simkl_id))) # season indicators and counts for an entire show
 		#[i.start() for i in threads]
 		#[i.join() for i in threads]
 		#cachesyncSeasons('tt2152112', None, None)
-		batchCacheSyncSeason(batch, progress_callback=progress_callback)
+		success = batchCacheSyncSeason(batch, progress_callback=progress_callback)
+		if success: simklsync.complete_season_refreshes(batch)
+		return success
 	except: log_utils.error()
 
 def _merge_watched_movies(db_ts):
@@ -1502,7 +1407,7 @@ def _merge_watched_movies(db_ts):
 		existing = simklsync.cache_existing(syncMovies) or []
 		merged = [imdb for imdb in existing if imdb not in delta_imdb]
 		merged.extend(str(i['movie']['ids']['imdb']) for i in delta_movies if i.get('movie', {}).get('ids', {}).get('imdb'))
-		key = simklsync._hash_function(syncMovies, ())
+		key = simklsync.hash_function(syncMovies, ())
 		simklsync.cache_insert(key, repr(merged))
 	except: log_utils.error()
 
@@ -1518,7 +1423,8 @@ def _merge_watched_tvshows(db_ts):
 				{'imdb': s['show']['ids'].get('imdb'), 'tvdb': str(s['show']['ids'].get('tvdb', '')),
 				 'tmdb': str(s['show']['ids'].get('tmdb', '')), 'simkl': str(s['show']['ids'].get('simkl', ''))},
 				s['total_episodes_count'] - s['not_aired_episodes_count'],
-				[(season['number'], ep['number']) for season in s.get('seasons', []) for ep in season.get('episodes', [])]
+				{season['number']: _make_episode_ranges(sorted(ep['number'] for ep in season.get('episodes', [])))
+				 for season in s.get('seasons', []) if season.get('episodes')}
 			)
 			for s in delta.get('shows', []) if s.get('status') in valid_statuses
 		]
@@ -1526,8 +1432,9 @@ def _merge_watched_tvshows(db_ts):
 		existing = simklsync.cache_existing(syncTVShows) or []
 		merged = [i for i in existing if i[0].get('imdb') not in delta_imdb]
 		merged.extend(delta_indicators)
-		key = simklsync._hash_function(syncTVShows, ())
+		key = simklsync.hash_function(syncTVShows, ())
 		simklsync.cache_insert(key, repr(merged))
+		return delta_indicators
 	except: log_utils.error()
 
 def sync_watched(activities=None, forced=False, progress_callback=None):
@@ -1545,8 +1452,8 @@ def sync_watched(activities=None, forced=False, progress_callback=None):
 				try: progress_callback('Syncing season indicators')
 				except: pass
 			control.sleep(5000)
-			service_syncSeasons(progress_callback=progress_callback)
-			simklsync.insert_syncSeasons_at()
+			if service_syncSeasons(progress_callback=progress_callback):
+				simklsync.insert_syncSeasons_at()
 		else:
 			moviesWatchedActivity = getMoviesWatchedActivity(activities)
 			db_movies_last_watched = timeoutsyncMovies()
@@ -1567,23 +1474,22 @@ def sync_watched(activities=None, forced=False, progress_callback=None):
 				if older_ts == 0:
 					cachesyncTVShows()
 					control.sleep(5000)
-					service_syncSeasons()
+					seasons_synced = service_syncSeasons()
 				else:
-					_merge_watched_tvshows(older_ts)
-					control.sleep(2000)
-					service_syncSeasons()
-				simklsync.insert_syncSeasons_at()
+					changed = _merge_watched_tvshows(older_ts)
+					seasons_synced = changed is not None and service_syncSeasons(indicators=changed)
+				if seasons_synced: simklsync.insert_syncSeasons_at()
 	except: log_utils.error()
 
 def timeoutsyncMovies():
 	timeout = simklsync.timeout(syncMovies)
 	return timeout
 
-def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, watched=None, unfinished=False, tvshow=None):
+def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, watched=None, unfinished=False, tvshow=None, tmdb=''):
 	try:
 		if season: season = int(season)
 		if episode: episode = int(episode)
-		media_type = 'Show' if tvdb else 'Movie'
+		media_type = 'Show' if tvdb or season or episode or tvshow else 'Movie'
 		if watched is not None:
 			if watched is True:
 				items = [(getLS(33652) % highlightColor, 'unwatch')]
@@ -1619,16 +1525,16 @@ def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True,
 					content_type = 'episode'
 				elif season:
 					content_type = 'season'
-				elif tvdb:
+				elif tvdb or tvshow:
 					content_type = 'tvshow'
 				else:
 					content_type = 'movie'
 				if items[select][1] == 'watch':
-					watch(content_type, name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
+					watch(content_type, name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
 				else:
-					unwatch(content_type, name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
+					unwatch(content_type, name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
 			elif items[select][1] == 'scrobbleReset':
-				scrobbleReset(imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=True, clear_local=getSetting('indicators.alt') == '2')
+				scrobbleReset(imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=True, clear_local=getSetting('indicators.alt') == '2')
 			else:
 				if items[select][1] == '/sync/plantowatch':
 					listname = "Plan to Watch"
@@ -1679,7 +1585,7 @@ def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True,
 				control.hide()
 				if refresh: control.refresh()
 				control.trigger_widget_refresh()
-				if getSetting('simkl.general.notifications') == 'true': control.notification(title=name, message=message + ' (%s)' % listname)
+				if getSetting('services.general.notifications') == 'true': control.notification(title=name, message=message + ' (%s)' % listname)
 	except:
 		log_utils.error()
 		control.hide()
@@ -1739,6 +1645,8 @@ def scrobbleEpisode(tvshowtitle, year, imdb, tmdb, tvdb, season, episode, watche
 	try:
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
 		data = {'progress': watched_percent, 'show': {'title': tvshowtitle, 'year': int(year) if year else 0, 'ids': {'imdb': imdb}}, 'episode': {'season': season, 'number': episode}}
+		from resources.lib.modules.episode_mapping import scrobble_payload
+		data = scrobble_payload(data, 'simkl', tmdb)
 		success = post_request('/scrobble/pause', data)
 		if success:
 			log_utils.log('Simkl Scrobble Episode Success: imdb: %s S%02dE%02d' % (imdb, season, episode), level=log_utils.LOGDEBUG)
@@ -1756,6 +1664,8 @@ def scrobbleStart(media_type, title='', tvshowtitle='', year='0', imdb='', tmdb=
 			data = {'id': 0, 'progress': watched_percent, 'movie': {'title': title, 'year': int(year) if year else 0, 'ids': {'imdb': imdb, 'tmdb': int(tmdb) if tmdb else None}}}
 		else:
 			data = {'id': 0, 'progress': watched_percent, 'show': {'title': tvshowtitle, 'year': int(year) if year else 0, 'ids': {'imdb': imdb}}, 'episode': {'season': int('%01d' % int(season)) if season else 0, 'number': int('%01d' % int(episode)) if episode else 0}}
+		from resources.lib.modules.episode_mapping import scrobble_payload
+		data = scrobble_payload(data, 'simkl', tmdb)
 		success = post_request('/scrobble/start', data)
 		if success:
 			log_utils.log('Simkl Scrobble Start Success: imdb: %s' % imdb, level=log_utils.LOGDEBUG)
@@ -1773,14 +1683,7 @@ def scrobbleReset(imdb, tmdb='', tvdb='', season=None, episode=None, refresh=Fal
 			return
 		label_string, resume_id = resume_info[0], resume_info[1]
 		if episode: label_string = label_string + ' - ' + 'S%02dE%02d' % (int(season), int(episode))
-		_version = control.addon('plugin.video.umbrella').getAddonInfo('version')
-		delete_headers = {
-			'Authorization': 'Bearer %s' % getSetting('simkltoken'),
-			'simkl-api-key': simklclientid,
-			'User-Agent': 'Umbrella/%s' % _version
-		}
-		url = '%s/sync/playback/%s?client_id=%s' % (BASE_URL, resume_id, simklclientid)
-		success = session.delete(url, headers=delete_headers, timeout=20).status_code == 204
+		success = _api_request('DELETE', '/sync/playback/%s' % resume_id) is not None
 		control.hide()
 		if success:
 			if clear_local: simklsync.delete_bookmark(resume_id)
@@ -1807,6 +1710,8 @@ def sync_playbackProgress(activities=None, forced=False):
 	except: log_utils.error()
 
 def force_simklSync(silent=False):
+	global _sync_failed
+	_sync_failed = False
 	dialog = None
 	if not silent:
 		if not control.yesnoDialog(getLS(32056), '', ''): return
@@ -1825,10 +1730,7 @@ def force_simklSync(silent=False):
 		except: pass
 
 	try:
-		# wipe all tables and start fresh
-		clr_simkl = {'movies_plantowatch': True, 'shows_plantowatch': True, 'shows_watching': True, 'shows_hold': True, 'movies_dropped': True, 'shows_dropped': True, 'watched': True, 'movies_completed': True, 'shows_completed': True}
-		simklsync.delete_tables(clr_simkl)
-
+		# Each full-list fetch replaces its cache only after a successful response.
 		if dialog: dialog.update(0, 'Syncing plan-to-watch...')
 		sync_plantowatch(forced=True)
 		if dialog: dialog.update(15, 'Syncing completed...')
@@ -1845,4 +1747,4 @@ def force_simklSync(silent=False):
 	finally:
 		if dialog: dialog.close()
 	if not silent:
-		control.notification(message='Forced Simkl Sync Complete')
+		control.notification(message='SIMKL sync incomplete; check Account Info or your connection.' if _sync_failed else 'Forced Simkl Sync Complete')

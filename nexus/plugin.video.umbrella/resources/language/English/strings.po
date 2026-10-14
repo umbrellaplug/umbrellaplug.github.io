@@ -6195,3 +6195,27 @@ msgstr ""
 msgctxt "#40823"
 msgid "Allows Umbrella to read Floppy indicators, lists, and resume information while preventing Umbrella from reporting playback or automatically marking items watched during playback."
 msgstr ""
+
+msgctxt "#40824"
+msgid "Automatically skip intro"
+msgstr ""
+
+msgctxt "#40825"
+msgid "Automatically skips intros without prompting when timing data is available. Works independently of the Skip Intro button setting."
+msgstr ""
+
+msgctxt "#40826"
+msgid "Automatically skip recap"
+msgstr ""
+
+msgctxt "#40827"
+msgid "Automatically skips recaps without prompting when timing data is available. Works independently of the Skip Recap button setting."
+msgstr ""
+
+
+
+
+
+msgctxt "#40828"
+msgid "Shared service options"
+msgstr ""

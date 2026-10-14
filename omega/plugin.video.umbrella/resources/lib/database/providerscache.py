@@ -141,6 +141,11 @@ def _dict_factory(cursor, row):
 	return d
 
 def _hash_function(function_instance, *args):
+	from resources.lib.modules.episode_mapping import supported
+	if getattr(function_instance, '__name__', '') == 'getSources' and args and len(args[0]) >= 9:
+		values = args[0]
+		if values[7] is not None and supported(values[3]):
+			args = (tuple(values[:9]) + ('anthology-v1',),)
 	return _get_function_name(function_instance) + _generate_md5(args)
 
 def _get_function_name(function_instance):

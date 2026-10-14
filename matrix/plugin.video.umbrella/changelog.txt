@@ -1,24 +1,24 @@
+[B]Update - v6.7.91 - Oct 14th, 2026 [/B]
+--[Fix] Soure Prepare Cancel now stops before provider checks.
+--[Feature] Added TV season pack preferences through the source context menu. Source-select, auto-play, and next-episode pre-scrapes try the chosen pack and debrid service, falling back to source selection when unavailable. Explicit source selection bypasses the preference so it can be replaced or cleared.
+--[Change] Added Scrob api key back due to issues with device code authorization.
+--[Change] Moved all similar settings from different providers into a single shared settings section at top of online services.
+--[Change] Progress shows to display properly with the split-id series.
+--[Logging] Handle temporary contention during optional metadata cache writes without repeated error tracebacks. Other database failures remain logged.
+--[Enhancement] Added separate Automatically skip intro and Automatically skip recap settings under Playback. Both default to off and skip without prompting when segment timing data is available.
+--[Fix] SIMKL Progress Episodes and related episode metadata now refresh on the SIMKL service interval even when account activity has not changed.
+--[Fix] SIMKL watchlist sync now reconciles additions, removals and status changes, refreshes widgets after successful updates, and preserves cached lists if a response or database update fails.
+--[Fix] Trakt, SIMKL, MDBList, Floppy, Scrob and PunchPlay now honor their own service intervals with scheduling checks every 30 seconds. Interval changes take effect without restarting; background sync still pauses during video playback.
+--[Fix] Removed duplicate background playback-sync requests for Trakt, MDBList, and Floppy.
+--[Fix] Apply embedded subtitle preferences before accepting the current language. Detect SDH and forced tracks using Kodi track flags and names, including when only the HI or forced preference is enabled.
+--[Fix] MDBList Scrobble Reset no longer marks items watched. Completed playback still updates watched status.
+--[Fix] Made changes for mdblist marking episodes.
+--[Fix] Corrected Monster anthology watched status, season actions, playback resume and progress across tracking providers. Preserved separate TMDB stories and mapped SIMKL seasons correctly. Added anthology-numbered scraping and pack resolution for normal and continuous playback.
+--[Fix] Handle duplicate episode records when upgrading MDBList and custom tracking watched caches.
+
 [B]Update - v6.7.90 - Sept 25th, 2026 [/B]
 --[Fix] Fixed redundant per-show requests during SIMKL season sync by reusing batch responses. Sync should be much faster.
 --[Fix] Changes made for when scrobble is set to local to allow for items to still be marked as watched with online services.
 
 [B]Update - v6.7.89 - Sept 24th, 2026 [/B]
 --[Fix] Sorting change to stop rounding on sizes.
-
-[B]Update - v6.7.88 - Sept 23rd, 2026 [/B]
---[Enhancement] Added PunchPlay as an optional tracking provider. (Addon Settings > Online Services > PunchPlay)
---[Change] Moved PunchPlay public categories into Discover Movies and Discover TV Shows alongside the other providers.
---[Enhancement] Added Skip Intro (credit to kodifitzwell) and Skip Recap options using the continuous playback theme.
---[Enhancement] Added TorBox cloud folders to source selection with metadata for watched-episode tracking.
---[Change] Moved continuous playback settings to the Playback tab.
---[Change] Added import to library from Floppy, Scrob, and Punchplay.
---[Change] Added Disable Floppy Writes under Umbrella Settings > Online Services > Floppy for users who track playback through other addons.
---[Change] Incomplete rewatches now show as partially watched.
---[Change] Removed the TorBox referral option and window.
---[Fix] Fixed duplicate MDBList Progress Episodes and reduced blank-list delays after playback.
---[Fix] Improved playback monitoring and reduced unnecessary background and post-playback refreshes.
---[Fix] Fixed episode counts, including multiple services counts, and cursor sync across devices.
---[Fix] Fixed duplicate resume prompts and reduced Kodi resume-point warnings.
---[Fix] Clear Scrobble Progress and unfinished managers now clear remote Scrob/Floppy playback progress and report Scrob, Floppy, and PunchPlay removal failures.
---[Logging] Reduced logging and restricted playback and refresh diagnostics to Umbrella debug logging.
-

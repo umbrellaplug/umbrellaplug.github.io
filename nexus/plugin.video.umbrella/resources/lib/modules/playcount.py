@@ -45,11 +45,7 @@ def getMovieIndicators(refresh=False):
 			indicators = trakt.cachesyncMovies(timeout=timeout)
 			return indicators
 		elif simklIndicators:
-			if not refresh: timeout = 720
-			elif simkl.getMoviesWatchedActivity() < simkl.timeoutsyncMovies(): timeout = 720
-			else: timeout = 0
-			indicators = simkl.cachesyncMovies(timeout=timeout)
-			return indicators
+			return simkl.cachedMovieIndicators()
 		elif mdblistIndicators:
 			if not refresh: timeout = 720
 			elif mdblist.getMoviesWatchedActivity() < mdblist.timeoutsyncMovies(): timeout = 720
@@ -101,11 +97,7 @@ def getTVShowIndicators(refresh=False):
 			indicators = trakt.cachesyncTVShows(timeout=timeout)
 			return indicators
 		elif simklIndicators:
-			if not refresh: timeout = 720
-			elif simkl.getEpisodesWatchedActivity() < simkl.timeoutsyncTVShows(): timeout = 720
-			else: timeout = 0
-			indicators = simkl.cachesyncTVShows(timeout=timeout)
-			return indicators
+			return simkl.cachedTVShowIndicators()
 		elif mdblistIndicators:
 			if not refresh: timeout = 720
 			elif mdblist.getEpisodesWatchedActivity() < mdblist.timeoutsyncTVShows(): timeout = 720
@@ -146,7 +138,11 @@ def getTVShowIndicators(refresh=False):
 		from resources.lib.modules import log_utils
 		log_utils.error()
 
-def getSeasonIndicators(imdb, tvdb, refresh=False, has_next_episode=False, tmdb_total_aired=None, force_lookup=False):
+def getSeasonIndicators(imdb, tvdb, refresh=False, has_next_episode=False, tmdb_total_aired=None, force_lookup=False, tmdb=''):
+	if tmdb:
+		from resources.lib.modules import episode_mapping, anthology_tracking
+		if episode_mapping.supported(tmdb):
+			return anthology_tracking.season_indicators(anthology_tracking.PROVIDERS.get(getSetting('indicators.alt'), 'local'), tmdb)
 	try:
 		if traktIndicators:
 			timeoutsyncSeasons = trakt.timeoutsyncSeasons(imdb, tvdb)
@@ -171,27 +167,9 @@ def getSeasonIndicators(imdb, tvdb, refresh=False, has_next_episode=False, tmdb_
 						indicators = trakt.cachesyncSeasons(imdb, tvdb, timeout=0)
 			return indicators
 		elif simklIndicators:
-			timeoutsyncSeasons = simkl.timeoutsyncSeasons(imdb, tvdb)
-			if timeoutsyncSeasons is None:
-				if not force_lookup: return # if no entry means no completed season watched so do not make needless requests
-				return simkl.cachesyncSeasons(imdb, tvdb, timeout=0) # caller needs an authoritative answer (e.g. Collection hide-watched filter), do a one-off live lookup
-			if not refresh: timeout = 720
-			elif simkl.getEpisodesWatchedActivity() < timeoutsyncSeasons: timeout = 720
-			else: timeout = 0
-			indicators = simkl.cachesyncSeasons(imdb, tvdb, timeout=timeout)
-			# Simkl progress confirmed a new episode (has_next_episode) but cache shows all watched, or
-			# TMDb's aired-episode count is higher than our cached total (tmdb_total_aired) — either way
-			# the cached counts are stale. Force a refresh so this read and all subsequent reads across
-			# all views see the correct count.
-			if timeout != 0 and indicators:
-				counts = indicators[1] if len(indicators) > 1 else {}
-				if counts:
-					cached_total = sum(v.get('total', 0) for v in counts.values())
-					stale = (has_next_episode and cached_total == sum(v.get('watched', 0) for v in counts.values())) or \
-						(tmdb_total_aired and int(tmdb_total_aired) > cached_total)
-					if stale:
-						indicators = simkl.cachesyncSeasons(imdb, tvdb, timeout=0)
-			return indicators
+			# Rendering (including widget refresh and collection filters) is local-only.
+			# A next-episode flag or metadata mismatch must not trigger one API call per item.
+			return simkl.cachedSeasonIndicators(imdb, tvdb, has_next_episode, tmdb_total_aired, force_lookup)
 		elif mdblistIndicators:
 			# syncSeasons derives totals from TMDb season meta (96h cache) — always fetch fresh from local DB
 			indicators = mdblist.cachesyncSeasons(imdb, tvdb, timeout=0)
@@ -217,7 +195,7 @@ def getSeasonIndicators(imdb, tvdb, refresh=False, has_next_episode=False, tmdb_
 			return indicators
 		elif customIndicators:
 			# syncSeasons derives totals from TMDb season meta (96h cache) — always fetch fresh from local DB
-			indicators = customtrakt.cachesyncSeasons(imdb, tvdb, timeout=0)
+			indicators = customtrakt.cachesyncSeasons(imdb, tvdb, timeout=0, tmdb=tmdb)
 			counts = indicators[1] if indicators and len(indicators) > 1 else {}
 			cached_total = sum(v.get('total', 0) for v in counts.values()) if counts else 0
 			stale = has_next_episode or (tmdb_total_aired and int(tmdb_total_aired) > cached_total)
@@ -329,6 +307,9 @@ def getMovieOverlay(indicators, imdb):
 		return '4'
 
 def getTVShowOverlay(indicators, imdb, tvdb): # tvdb no longer used
+	if isinstance(indicators, dict):
+		total = sum(v.get('total', 0) for v in indicators.values())
+		return '5' if total > 0 and total == sum(v.get('watched', 0) for v in indicators.values()) else '4'
 	if not indicators: return '4'
 	try: #{1: {'total': 10, 'watched': 10, 'unwatched': 0}, 2: {'total': 2, 'watched': 2, 'unwatched': 0}}
 		if traktIndicators:
@@ -361,6 +342,8 @@ def getTVShowOverlay(indicators, imdb, tvdb): # tvdb no longer used
 		return '4'
 
 def getSeasonOverlay(indicators, imdb, tvdb, season): # tvdb no longer used
+	if isinstance(indicators, (list, tuple)):
+		return '5' if str(season) in [str(s) for s in indicators] else '4'
 	if not indicators: return '4'
 	try:
 		if traktIndicators:
@@ -383,7 +366,13 @@ def getSeasonOverlay(indicators, imdb, tvdb, season): # tvdb no longer used
 		log_utils.error()
 		return '4'
 
-def getEpisodeOverlay(indicators, imdb, tvdb, season, episode):
+def getEpisodeOverlay(indicators, imdb, tvdb, season, episode, tmdb=''):
+	if tmdb:
+		from resources.lib.modules import episode_mapping, anthology_tracking
+		if episode_mapping.supported(tmdb):
+			provider = anthology_tracking.PROVIDERS.get(getSetting('indicators.alt'), 'local')
+			if provider == 'local': indicators = anthology_tracking.local_indicators(tmdb)
+			return '5' if int(episode) in episode_mapping.watched_episodes(indicators, provider, tmdb, season) else '4'
 	# Custom season indicators use server progress. Use that same snapshot for
 	# episodes, since the incremental local history may be incomplete or stale.
 	if customIndicators and imdb:
@@ -402,7 +391,8 @@ def getEpisodeOverlay(indicators, imdb, tvdb, season, episode):
 	if not indicators: return '4'
 	try:
 		if traktIndicators or simklIndicators or mdblistIndicators or customIndicators or floppyIndicators or scrobIndicators or punchplayIndicators:
-			eps_data = [i[2] for i in indicators if (i[0].get('imdb') == imdb or str(i[0].get('tvdb')) == tvdb)]
+			from resources.lib.modules.progress_identity import matches_show
+			eps_data = [i[2] for i in indicators if matches_show(i[0], imdb, tmdb, tvdb)]
 			eps_data = eps_data[0] if eps_data else []
 			if isinstance(eps_data, dict): # range format: {season: [(start_ep, end_ep), ...]}
 				s_ranges = eps_data.get(int(season), [])
@@ -419,6 +409,8 @@ def getEpisodeOverlay(indicators, imdb, tvdb, season, episode):
 		return '4'
 
 def getShowCount(indicators, imdb, tvdb): # ID's currently not used. totals from indicators
+	if isinstance(indicators, dict):
+		return {key: sum(v.get(key, 0) for v in indicators.values()) for key in ('total', 'watched', 'unwatched')}
 	try:
 		if traktIndicators:
 			if not indicators: return None
@@ -466,7 +458,12 @@ def getShowCount(indicators, imdb, tvdb): # ID's currently not used. totals from
 		log_utils.error()
 		return None
 
-def getSeasonCount(imdb, tvdb, season=None):
+def getSeasonCount(imdb, tvdb, season=None, tmdb=''):
+	if tmdb:
+		from resources.lib.modules import episode_mapping, anthology_tracking
+		if episode_mapping.supported(tmdb):
+			counts = anthology_tracking.season_indicators(anthology_tracking.PROVIDERS.get(getSetting('indicators.alt'), 'local'), tmdb)[1]
+			return counts.get(int(season)) if season is not None else counts
 	try:
 		if all(not value for value in (imdb, tvdb)): return
 		#if not traktIndicators or not simklIndicators: return None # metahandler does not currently provide counts
@@ -565,7 +562,11 @@ def markMovieDuringPlayback(imdb, watched):
 		from resources.lib.modules import log_utils
 		log_utils.error()
 
-def markEpisodeDuringPlayback(imdb, tvdb, season, episode, watched):
+def markEpisodeDuringPlayback(imdb, tvdb, season, episode, watched, tmdb=''):
+	if tmdb:
+		from resources.lib.modules import episode_mapping, anthology_tracking
+		if episode_mapping.supported(tmdb):
+			return anthology_tracking.mark(tmdb, season, episode, watched, refresh=False)
 	try:
 		watch_history_service = getSetting('indicators.alt')
 		if watch_history_service == '1' and traktCredentials:
@@ -674,7 +675,11 @@ def movies(name, imdb, watched):
 		from resources.lib.modules import log_utils
 		log_utils.error()
 
-def tvshows(tvshowtitle, imdb, tvdb, season, watched):
+def tvshows(tvshowtitle, imdb, tvdb, season, watched, tmdb=''):
+	if tmdb:
+		from resources.lib.modules import episode_mapping, anthology_tracking
+		if episode_mapping.supported(tmdb):
+			return anthology_tracking.mark(tmdb, season, None, watched, refresh=True)
 	try:
 		watch_history_service = getSetting('indicators.alt')
 		content_type = 'season' if season else 'tvshow'
@@ -781,7 +786,11 @@ def tvshows(tvshowtitle, imdb, tvdb, season, watched):
 def seasons(tvshowtitle, imdb, tvdb, season, watched):
 	tvshows(tvshowtitle=tvshowtitle, imdb=imdb, tvdb=tvdb, season=season, watched=watched)
 
-def episodes(name, imdb, tvdb, season, episode, watched):
+def episodes(name, imdb, tvdb, season, episode, watched, tmdb=''):
+	if tmdb:
+		from resources.lib.modules import episode_mapping, anthology_tracking
+		if episode_mapping.supported(tmdb):
+			return anthology_tracking.mark(tmdb, season, episode, watched, refresh=True)
 	try:
 		watch_history_service = getSetting('indicators.alt')
 		if watch_history_service == '1' and traktCredentials:

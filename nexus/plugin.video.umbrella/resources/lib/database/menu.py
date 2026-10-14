@@ -374,7 +374,7 @@ _defaults_version_file = control.joinPath(control.dataPath, 'menu_defaults.v')
 # regardless of addon version (e.g. to fix a migration bug) — the on-disk marker below
 # is keyed on addonVersion+this, not addonVersion alone, so incrementing it forces one
 # more sync pass even for users already marked up to date on the current addon version.
-_MENU_SCHEMA_REVISION = '16'
+_MENU_SCHEMA_REVISION = '18'
 
 
 def _read_synced_version():
@@ -436,6 +436,8 @@ def _migrate_schema(dbcon):
 
 
 def _sync_defaults(dbcon):
+	# Remove retired SIMKL list shortcuts when existing menu databases resync.
+	dbcon.execute("DELETE FROM menu_items WHERE is_custom=0 AND item_id IN ('mymv_simkl_customlists', 'mytv_simkl_customlists')")
 	# Replace the old public catalog folders without touching user-created shortcuts.
 	dbcon.execute("DELETE FROM menu_items WHERE is_custom=0 AND ((menu_name='movies' AND item_id='mv_punchplay_catalog') OR (menu_name='tvshows' AND item_id='tv_punchplay_catalog'))")
 	# Full defaults resync.

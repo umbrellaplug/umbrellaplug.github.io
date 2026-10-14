@@ -9,7 +9,7 @@ import time
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-from urllib.parse import urljoin, urlencode, quote_plus
+from urllib.parse import urljoin, urlencode, quote_plus, urlsplit
 from json import dumps as jsdumps
 from resources.lib.database import scrobsync
 from resources.lib.modules import control
@@ -114,41 +114,54 @@ def getScrob(url, post=None, method=None, auth='api_key', silent=False, _retried
 
 
 def getScrobAsJson(url, post=None, method=None, auth='api_key', silent=False):
+	response = getScrob(url, post=post, method=method, auth=auth, silent=silent)
+	if response is None:
+		log_utils.log_force('SCROB: JSON request failed path=%s (no response)' % urlsplit(url).path, level=log_utils.LOGWARNING)
+		return None
 	try:
-		response = getScrob(url, post=post, method=method, auth=auth, silent=silent)
-		if response is None or response.status_code not in (200, 201): return None
+		if response.status_code not in (200, 201): raise ValueError('HTTP failure')
 		return response.json()
-	except Exception as e:
-		if not silent: log_utils.log('SCROB: Error in getScrobAsJson: %s' % str(e), level=log_utils.LOGWARNING)
+	except Exception:
+		# Paths only: never log API keys, tokens, response bodies or query strings.
+		redirects = [str(r.status_code) for r in getattr(response, 'history', [])]
+		log_utils.log_force('SCROB: unreadable JSON path=%s status=%s redirects=%s final_path=%s content_type=%s' % (
+			urlsplit(url).path, response.status_code, ','.join(redirects) or 'none',
+			urlsplit(getattr(response, 'url', '')).path, response.headers.get('Content-Type', 'unknown')),
+			level=log_utils.LOGWARNING)
 		return None
 
 
 def get_all_pages(url, silent=False):
-	# GET /history's confirmed response shape: {'page','page_size','total_results','total_pages','results':[...]}
+	# None means a failed/incomplete fetch; [] means valid empty history.
 	try:
 		sep = '&' if '?' in url else '?'
-		page = 1
-		page_size = 100
-		results = []
-		while True:
-			page_url = url + sep + 'page=%d&page_size=%d' % (page, page_size)
-			data = getScrobAsJson(page_url, auth='api_key', silent=silent)
-			if not data: break
-			page_results = data.get('results', []) if isinstance(data, dict) else data
-			if not page_results: break
-			results.extend(page_results)
-			total_pages = data.get('total_pages') if isinstance(data, dict) else None
+		page, page_size, results = 1, 100, []
+		while page <= 1000:
+			data = getScrobAsJson(url + sep + 'page=%d&page_size=%d' % (page, page_size), auth='api_key', silent=silent)
+			if data is None: return None
+			if isinstance(data, dict):
+				page_results = data.get('results')
+				total_pages = data.get('total_pages')
+			else:
+				page_results, total_pages = data, None
+			if not isinstance(page_results, list) or any(not isinstance(item, dict) for item in page_results):
+				raise ValueError('Invalid history response shape')
 			if total_pages is not None:
-				if page >= total_pages: break
-			elif len(page_results) < page_size:
-				break
+				total_pages = int(total_pages)
+				if total_pages < 0: raise ValueError('Invalid page count')
+			if not page_results:
+				if total_pages is not None and page <= total_pages:
+					if page != 1 or total_pages > 1 or data.get('total_results', 0) != 0:
+						raise ValueError('History ended before advertised pages')
+				return results
+			results.extend(page_results)
+			if total_pages is not None:
+				if page >= total_pages: return results
+			elif len(page_results) < page_size: return results
 			page += 1
-			if page > 1000:
-				log_utils.log('SCROB: get_all_pages reached safety limit for URL: %s' % url, level=log_utils.LOGWARNING)
-				break
-		return results
+		raise ValueError('History pagination safety limit reached')
 	except Exception as e:
-		log_utils.log('SCROB: Error in get_all_pages: %s' % str(e), level=log_utils.LOGWARNING)
+		log_utils.log_force('SCROB: history fetch incomplete: %s' % str(e), level=log_utils.LOGWARNING)
 		return None
 
 
@@ -423,6 +436,9 @@ def _now_iso():
 #### Mark watched — API-key-only, via a Kodi scrobble webhook payload ####
 
 def _webhook_event(method, media_type, imdb='', tmdb='', tvdb='', title='', tvshowtitle='', year='0', season=None, episode=None, time_seconds=0, total_seconds=0, end=None):
+	if tmdb and media_type != 'movie':
+		from resources.lib.modules.episode_mapping import supported
+		if supported(tmdb): imdb, tvdb = '', ''
 	try:
 		unique_id = {}
 		if tmdb: unique_id['tmdb'] = str(tmdb)
@@ -472,9 +488,9 @@ def markMovieAsWatched(imdb, tmdb=''):
 		log_utils.error()
 		return False
 
-def markEpisodeAsWatched(imdb, tvdb, season, episode):
+def markEpisodeAsWatched(imdb, tvdb, season, episode, tmdb=''):
 	try:
-		tmdb = _resolve_tmdb('tv', imdb=imdb, tvdb=tvdb)
+		tmdb = str(tmdb) if tmdb else _resolve_tmdb('tv', imdb=imdb, tvdb=tvdb)
 		if not tmdb: return False
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
 		success = _webhook_mark_watched('episode', imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode)
@@ -531,9 +547,9 @@ def markTVShowAsWatched(imdb, tvdb):
 		log_utils.error()
 		return False
 
-def markSeasonAsWatched(imdb, tvdb, season):
+def markSeasonAsWatched(imdb, tvdb, season, tmdb=''):
 	try:
-		tmdb = _resolve_tmdb('tv', imdb=imdb, tvdb=tvdb)
+		tmdb = str(tmdb) if tmdb else _resolve_tmdb('tv', imdb=imdb, tvdb=tvdb)
 		if not tmdb: return False
 		season = int('%01d' % int(season))
 		if getScrobWriteCredentialsInfo():
@@ -604,12 +620,12 @@ def markMovieAsNotWatched(imdb, tmdb=''):
 		log_utils.error()
 		return False
 
-def markEpisodeAsNotWatched(imdb, tvdb, season, episode):
+def markEpisodeAsNotWatched(imdb, tvdb, season, episode, tmdb=''):
 	try:
 		if not getScrobWriteCredentialsInfo():
 			log_utils.log('SCROB: unwatch requires a Scrob username/password (JWT) — API key alone cannot unwatch', level=log_utils.LOGWARNING)
 			return False
-		tmdb = _resolve_tmdb('tv', imdb=imdb, tvdb=tvdb)
+		tmdb = str(tmdb) if tmdb else _resolve_tmdb('tv', imdb=imdb, tvdb=tvdb)
 		if not tmdb: return False
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
 		response = getScrob('/history/item?tmdb_id=%s&media_type=episode' % tmdb, method='DELETE', auth='jwt', silent=True)
@@ -643,12 +659,12 @@ def markTVShowAsNotWatched(imdb, tvdb):
 		log_utils.error()
 		return False
 
-def markSeasonAsNotWatched(imdb, tvdb, season):
+def markSeasonAsNotWatched(imdb, tvdb, season, tmdb=''):
 	try:
 		if not getScrobWriteCredentialsInfo():
 			log_utils.log('SCROB: unwatch requires a Scrob username/password (JWT) — API key alone cannot unwatch', level=log_utils.LOGWARNING)
 			return False
-		tmdb = _resolve_tmdb('tv', imdb=imdb, tvdb=tvdb)
+		tmdb = str(tmdb) if tmdb else _resolve_tmdb('tv', imdb=imdb, tvdb=tvdb)
 		if not tmdb: return False
 		season = int('%01d' % int(season))
 		response = getScrob('/history/season?series_tmdb_id=%s&season_number=%s' % (tmdb, season), method='DELETE', auth='jwt', silent=True)
@@ -664,7 +680,11 @@ def markSeasonAsNotWatched(imdb, tvdb, season):
 		return False
 
 
-def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True):
+def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, tmdb=''):
+	if content_type != 'movie' and tmdb:
+		from resources.lib.modules import episode_mapping, anthology_tracking
+		if episode_mapping.supported(tmdb):
+			return anthology_tracking.manager_write('scrob', tmdb, season, episode, False, refresh)
 	control.busy()
 	success = False
 	if content_type == 'movie': success = markMovieAsWatched(imdb)
@@ -676,11 +696,15 @@ def watch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, r
 	control.trigger_widget_refresh()
 	if season and not episode: name = '%s-Season%s...' % (name, season)
 	if season and episode: name = '%s-S%sxE%02d...' % (name, season, int(episode))
-	if getSetting('scrob.general.notifications') == 'true':
+	if getSetting('services.general.notifications') == 'true':
 		if success is True: control.notification(title='Scrob', message='%s Marked as Watched on Scrob' % name)
 		else: control.notification(title='Scrob', message='%s Failed to Mark as Watched on Scrob' % name)
 
-def unwatch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True):
+def unwatch(content_type, name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, tmdb=''):
+	if content_type != 'movie' and tmdb:
+		from resources.lib.modules import episode_mapping, anthology_tracking
+		if episode_mapping.supported(tmdb):
+			return anthology_tracking.manager_write('scrob', tmdb, season, episode, True, refresh)
 	control.busy()
 	has_write = getScrobWriteCredentialsInfo()
 	success = False
@@ -696,7 +720,7 @@ def unwatch(content_type, name, imdb=None, tvdb=None, season=None, episode=None,
 	if season and episode: name = '%s-S%sxE%02d...' % (name, season, int(episode))
 	if not has_write:
 		control.notification(title='Scrob', message='Unwatch requires a Scrob username/password (see settings)')
-	elif getSetting('scrob.general.notifications') == 'true':
+	elif getSetting('services.general.notifications') == 'true':
 		if success is True: control.notification(title='Scrob', message='%s Marked as Unwatched on Scrob' % name)
 		else: control.notification(title='Scrob', message='%s Failed to Mark as Unwatched on Scrob' % name)
 
@@ -907,7 +931,11 @@ def _threaded_resolve(unique_ids, resolver):
 def sync_watchedProgress(activities=None, forced=False, progress_callback=None):
 	try:
 		if not getScrobCredentialsInfo(): return
-		movies = get_all_pages('/history?type=movie', silent=True) or []
+		movies = get_all_pages('/history?type=movie', silent=True)
+		episodes = get_all_pages('/history?type=episode', silent=True)
+		if movies is None or episodes is None:
+			log_utils.log_force('SCROB: history sync failed; existing watched cache preserved', level=log_utils.LOGWARNING)
+			return False
 		completed_movies = [item for item in movies if (item.get('media') or {}).get('tmdb_id') and item.get('completed')]
 		unique_movie_tmdbs = list({str((item.get('media') or {}).get('tmdb_id')) for item in completed_movies})
 		movie_imdb_map = _threaded_resolve(unique_movie_tmdbs, _resolve_movie_imdb)
@@ -926,10 +954,8 @@ def sync_watchedProgress(activities=None, forced=False, progress_callback=None):
 			if progress_callback:
 				try: progress_callback('Syncing watched movies', idx + 1, total)
 				except: pass
-		scrobsync.bulk_upsert_watched_movies(movie_rows)
 		log_utils.log('SCROB: movie sync — %s completed movies, %s resolved to imdb, %s could not be resolved' % (len(movies), resolved, unresolved), level=log_utils.LOGINFO)
 
-		episodes = get_all_pages('/history?type=episode', silent=True) or []
 		completed_episodes = [item for item in episodes if item.get('completed') and (item.get('media') or {}).get('show_tmdb_id')
 			and (item.get('media') or {}).get('season_number') is not None and (item.get('media') or {}).get('episode_number') is not None]
 		unique_show_tmdbs = list({str((item.get('media') or {}).get('show_tmdb_id')) for item in completed_episodes})
@@ -951,13 +977,15 @@ def sync_watchedProgress(activities=None, forced=False, progress_callback=None):
 			if progress_callback:
 				try: progress_callback('Syncing watched shows', idx + 1, total)
 				except: pass
-		scrobsync.bulk_upsert_watched_episodes(episode_rows)
+		if not scrobsync.store_watched_history(movie_rows, episode_rows, replace=forced): return False
 		log_utils.log('SCROB: episode sync — %s watched episodes across %s shows' % (len(episodes), len(shows_seen)), level=log_utils.LOGINFO)
 
-		scrobsync.update_last_watched_at('last_history_at')
 		scrobsync.clear_cache()
 		control.trigger_widget_refresh()
-	except: log_utils.error()
+		return True
+	except:
+		log_utils.error()
+		return False
 
 def sync_watched(activities=None, forced=False, progress_callback=None):
 	sync_watchedProgress(activities=activities, forced=forced, progress_callback=progress_callback)
@@ -972,7 +1000,8 @@ def sync_playbackProgress(activities=None, forced=False):
 	# a safety net for the gap between sync intervals, but this is now the primary path.
 	try:
 		if not getScrobCredentialsInfo(): return
-		items = get_continue_watching()
+		items = get_continue_watching(strict=True)
+		if items is None: return False
 		scrobsync.clear_bookmarks()
 		for item in items:
 			try:
@@ -1006,13 +1035,15 @@ def force_scrobSync():
 				dialog.update(0, '%s...' % phase)
 		except: pass
 	try:
-		scrobsync.delete_scrob_tables(('scrob_watched_movies', 'scrob_watched_episodes', 'scrob_lists'))
-		sync_watchedProgress(forced=True, progress_callback=_progress)
+		history_ok = sync_watchedProgress(forced=True, progress_callback=_progress)
 		_progress('Syncing user lists')
-		sync_user_lists(forced=True)
+		lists_ok = sync_user_lists(forced=True)
+	except:
+		log_utils.error()
+		history_ok = lists_ok = False
 	finally:
 		dialog.close()
-	control.notification(title='Scrob', message='Forced Scrob Sync Complete')
+	control.notification(title='Scrob', message='Forced Scrob Sync Complete' if history_ok and lists_ok else 'Scrob sync incomplete; failed reads preserve cached data. Check the log.')
 
 
 #### Indicators (movies/shows watched state, seasons/episodes progress) ####
@@ -1191,14 +1222,17 @@ def seasonCount(imdb, tvdb):
 
 #### Continue-watching / next-up — real server-side support, simpler than Floppy's local reconstruction ####
 
-def get_continue_watching():
+def get_continue_watching(strict=False):
 	try:
-		if not getScrobCredentialsInfo(): return []
+		if not getScrobCredentialsInfo(): return None if strict else []
 		data = getScrobAsJson('/history/continue-watching', auth='api_key', silent=True)
-		return (data or {}).get('continue_watching', []) if isinstance(data, dict) else []
+		items = data.get('continue_watching') if isinstance(data, dict) else None
+		if not isinstance(items, list) or any(not isinstance(item, dict) for item in items):
+			return None if strict else []
+		return items
 	except:
 		log_utils.error()
-		return []
+		return None if strict else []
 
 def get_resume_percent(tmdb, season=None, episode=None):
 	# Local bookmarks (scrobsync.fetch_bookmarks) only cover the device that actually
@@ -1312,14 +1346,17 @@ def remove_dropped_items(tmdb_ids, media_type):
 			if info: undrop_show(info['show_id'])
 
 
-def get_lists():
+def get_lists(strict=False):
 	try:
-		if not getScrobCredentialsInfo(): return []
+		if not getScrobCredentialsInfo(): return None if strict else []
 		data = getScrobAsJson('/lists', auth='api_key', silent=True)
-		return (data or {}).get('lists', []) if isinstance(data, dict) else []
+		items = data.get('lists') if isinstance(data, dict) else None
+		if not isinstance(items, list) or any(not isinstance(item, dict) for item in items):
+			return None if strict else []
+		return items
 	except:
 		log_utils.error()
-		return []
+		return None if strict else []
 
 def create_list(name, description=''):
 	try:
@@ -1348,14 +1385,17 @@ def remove_from_list(list_id, item_id):
 		log_utils.error()
 		return False
 
-def get_list_items(list_id):
+def get_list_items(list_id, strict=False):
 	try:
-		if not getScrobCredentialsInfo(): return []
+		if not getScrobCredentialsInfo(): return None if strict else []
 		data = getScrobAsJson('/lists/%s' % list_id, auth='api_key', silent=True)
-		return (data or {}).get('items', []) if isinstance(data, dict) else []
+		items = data.get('items') if isinstance(data, dict) else None
+		if not isinstance(items, list) or any(not isinstance(item, dict) for item in items):
+			return None if strict else []
+		return items
 	except:
 		log_utils.error()
-		return []
+		return None if strict else []
 
 def sync_user_lists(forced=False):
 	# Locally caches every list's items (movies_watched()'s "same local-history pagination
@@ -1365,15 +1405,18 @@ def sync_user_lists(forced=False):
 	# (both already locally cached). No activity/last-modified endpoint exists for /lists, so
 	# this is a full poll-and-replace on scrob_syncInterval, same as sync_watchedProgress().
 	try:
-		if not getScrobCredentialsInfo(): return
+		if not getScrobCredentialsInfo(): return False
 		rows = []
-		lists = get_lists()
+		lists = get_lists(strict=True)
+		if lists is None: return False
 		for lst in lists:
 			try:
 				list_id = lst.get('id')
-				if list_id is None: continue
+				if list_id is None: return False
 				list_name = lst.get('name', '')
-				for item in get_list_items(list_id):
+				items = get_list_items(list_id, strict=True)
+				if items is None: return False
+				for item in items:
 					try:
 						media = item.get('media') or {}
 						media_type = media.get('type')
@@ -1386,11 +1429,14 @@ def sync_user_lists(forced=False):
 							'year': str(media.get('release_date', '') or '')[:4],
 							'media_type': media_type, 'listed_at': item.get('added_at') or item.get('created_at') or '',
 						})
-					except: log_utils.error()
-			except: log_utils.error()
-		scrobsync.insert_user_lists(rows)
+					except: return False
+			except: return False
+		if not scrobsync.insert_user_lists(rows): return False
 		log_utils.log('SCROB: user lists sync — %s lists, %s items cached' % (len(lists), len(rows)), level=log_utils.LOGINFO)
-	except: log_utils.error()
+		return True
+	except:
+		log_utils.error()
+		return False
 
 def get_lists_containing(tmdb, media_type):
 	try:
@@ -1456,9 +1502,9 @@ def manager(name, imdb=None, tvdb=None, tmdb=None, season=None, episode=None, re
 		if select == -1: return
 		action_key = items[select][1]
 		if action_key == 'watch':
-			watch(content_type, name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
+			watch(content_type, name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
 		elif action_key == 'unwatch':
-			unwatch(content_type, name, imdb=imdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
+			unwatch(content_type, name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
 		elif action_key == 'scrobbleReset':
 			scrobbleReset(imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=True)
 		elif action_key in ('drop', 'undrop'):

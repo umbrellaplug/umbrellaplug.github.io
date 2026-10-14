@@ -154,8 +154,10 @@ class Player(xbmc.Player):
 		self.playnext_method = getSetting('playnext.method')
 		self.playnext_theme = getSetting('playnext.theme')
 		self.playnext_min = getSetting('playnext.min.seconds')
-		self.skip_intro_enabled = getSetting('skip.intro.enable') == 'true'
-		self.skip_recap_enabled = getSetting('skip.recap.enable') == 'true'
+		self.skip_intro_auto = getSetting('skip.intro.auto') == 'true'
+		self.skip_recap_auto = getSetting('skip.recap.auto') == 'true'
+		self.skip_intro_enabled = getSetting('skip.intro.enable') == 'true' or self.skip_intro_auto
+		self.skip_recap_enabled = getSetting('skip.recap.enable') == 'true' or self.skip_recap_auto
 		self.skip_intro = None
 		self.skip_recaps = []
 		self.segment_credits = None
@@ -637,7 +639,7 @@ class Player(xbmc.Player):
 							homeWindow.setProperty(pname, '5')
 							if self.debuglog:
 								log_utils.log('Sending Episode to be marked as watched. IMDB: %s TVDB: %s Season: %s Episode: %s Title: %s Watch Percentage Used: %s Current Percentage: %s' % (self.imdb, self.tvdb, self.season, self.episode, self.title, self.markwatched_percentage, self.getWatchedPercent()), level=log_utils.LOGDEBUG)
-							self.watched_update_thread = Thread(target=playcount.markEpisodeDuringPlayback, args=(self.imdb, self.tvdb, self.season, self.episode, '5'))
+							self.watched_update_thread = Thread(target=playcount.markEpisodeDuringPlayback, args=(self.imdb, self.tvdb, self.season, self.episode, '5', self.tmdb))
 							self.watched_update_thread.start()
 							self.watched_during_playback = True
 						if self.enable_playnext and not self.play_next_triggered:
@@ -749,7 +751,7 @@ class Player(xbmc.Player):
 			self.skip_intro_prompted = True
 			return
 		if self.current_time < intro_start: return
-		if self._show_skip_segment(running_path, intro_end, 40813):
+		if self._skip_segment(running_path, intro_start, intro_end, 40813, self.skip_intro_auto):
 			self.skip_intro_prompted = True
 
 	def _maybe_show_skip_recap(self, running_path):
@@ -761,9 +763,24 @@ class Player(xbmc.Player):
 				self.skip_recaps_prompted.add(index)
 				continue
 			if self.current_time < recap_start: return
-			if self._show_skip_segment(running_path, recap_end, 40820):
+			if self._skip_segment(running_path, recap_start, recap_end, 40820, self.skip_recap_auto):
 				self.skip_recaps_prompted.add(index)
 			return
+
+	def _skip_segment(self, running_path, segment_start, segment_end, label_id, automatic):
+		if not automatic:
+			return self._show_skip_segment(running_path, segment_end, label_id)
+		try:
+			if not self.isPlayingVideo() or self.getPlayingFile() != running_path: return False
+			current = self.getTime()
+			if current >= segment_end: return True
+			if current < segment_start: return False
+			self.seekTime(segment_end)
+			self.current_time = segment_end
+			return True
+		except Exception:
+			log_utils.error()
+			return False
 
 	def _show_skip_segment(self, running_path, segment_end, label_id):
 		if playerWindow.getProperty('umbrella.skipintro.dialog') == 'true': return False
@@ -998,7 +1015,7 @@ class Player(xbmc.Player):
 				if not self.watched_during_playback:
 					# Watched history is independent of the resume/scrobble source.
 					if self.media_type == 'episode':
-						playcount.markEpisodeDuringPlayback(self.imdb, self.tvdb, self.season, self.episode, '5')
+						playcount.markEpisodeDuringPlayback(self.imdb, self.tvdb, self.season, self.episode, '5', tmdb=self.tmdb)
 					elif self.media_type == 'movie':
 						playcount.markMovieDuringPlayback(self.imdb, '5')
 					self.watched_during_playback = True
@@ -1020,6 +1037,7 @@ class Player(xbmc.Player):
 				playerWindow.clearProperty('umbrella.preResolved_season')
 				playerWindow.clearProperty('umbrella.preResolved_episode')
 				playerWindow.clearProperty('umbrella.preResolved_imdb')
+				playerWindow.clearProperty('umbrella.preResolved_tmdb')
 				playerWindow.clearProperty('umbrella.playlistStart_position')
 			homeWindow.clearProperty('umbrella.window_keep_alive')
 			clear_local_bookmarks()
@@ -1103,7 +1121,7 @@ class Player(xbmc.Player):
 					if _pct >= int(self.markwatched_percentage):
 						# Watched history is independent of the resume/scrobble source.
 						if self.media_type == 'episode':
-							playcount.markEpisodeDuringPlayback(self.imdb, self.tvdb, self.season, self.episode, '5')
+							playcount.markEpisodeDuringPlayback(self.imdb, self.tvdb, self.season, self.episode, '5', tmdb=self.tmdb)
 						elif self.media_type == 'movie':
 							playcount.markMovieDuringPlayback(self.imdb, '5')
 						self.watched_during_playback = True
@@ -1359,7 +1377,9 @@ class PlayNext(xbmc.Player):
 
 	def prescrapeNext(self):
 		try:
-			if getSetting('play.mode.tv') == '0': return
+			if getSetting('play.mode.tv') == '0':
+				from resources.lib.modules import source_preferences
+				if not source_preferences.get(self.getNext_meta()): return
 			playlist_pos = control.playlist.getposition()
 			playlist_size = control.playlist.size()
 			if playlist_size > 0 and playlist_pos != (playlist_size - 1):
@@ -1409,24 +1429,32 @@ class Subtitles:
 		return aliases.get(language[:3], language[:3])
 
 	def _select_embedded(self, preferred_language):
-		if getSetting('subtitles.prefer.embedded') != 'true': return False
 		preferred_code = self._language_code(preferred_language)
 		prefer_hi = getSetting('subtitles.prefer.hearing_impaired') == 'true'
 		prefer_forced = getSetting('subtitles.prefer.forced') == 'true'
+		if getSetting('subtitles.prefer.embedded') != 'true' and not (prefer_hi or prefer_forced): return False
 		# Some input streams report their tracks shortly after onAVStarted.
 		for attempt in range(5):
-			try: streams = xbmc.Player().getAvailableSubtitleStreams() or []
+			# JSON-RPC includes track names and flags; the Python player API may
+			# return only language codes, hiding the distinction between SDH tracks.
+			try:
+				response = jsloads(control.jsonrpc(jsdumps({'jsonrpc': '2.0', 'id': 1,
+					'method': 'Player.GetProperties', 'params': {'playerid': 1, 'properties': ['subtitles']}})))
+				streams = response.get('result', {}).get('subtitles') or []
 			except: streams = []
+			if not streams:
+				try: streams = [{'index': i, 'language': s, 'name': s} for i, s in enumerate(xbmc.Player().getAvailableSubtitleStreams() or [])]
+				except: streams = []
 			matches = []
-			for index, stream in enumerate(streams):
-				if self._language_code(stream) != preferred_code: continue
-				label = str(stream).lower()
-				is_hi = any(token in label for token in ('hearing impaired', 'hearing-impaired', 'sdh', '[cc]', ' closed caption'))
-				is_forced = 'forced' in label or 'foreign parts' in label
+			for stream in streams:
+				if self._language_code(stream.get('language') or stream.get('name')) != preferred_code: continue
+				label = str(stream.get('name') or '').lower()
+				is_hi = bool(stream.get('isimpaired')) or bool(re.search(r'\b(sdh|cc|hi)\b|hearing[ -]impaired|closed caption', label))
+				is_forced = bool(stream.get('isforced')) or 'forced' in label or 'foreign parts' in label
 				score = (20 if is_hi == prefer_hi else -20) + (30 if is_forced == prefer_forced else -30)
-				matches.append((score, index))
+				matches.append((score, stream['index']))
 			if matches:
-				xbmc.Player().setSubtitleStream(max(matches)[1])
+				xbmc.Player().setSubtitleStream(max(matches, key=lambda item: item[0])[1])
 				return True
 			if attempt < 4: control.sleep(250)
 		return False
@@ -1455,13 +1483,14 @@ class Subtitles:
 
 			try: subLang = xbmc.Player().getSubtitles()
 			except: subLang = ''
-			if self._language_code(subLang) == self._language_code(langs[0]):
+			embedded_selected = self._select_embedded(langs[0])
+			if not embedded_selected and self._language_code(subLang) == self._language_code(langs[0]):
 				if getSetting('subtitles.notification') == 'true':
 					if Player().isPlayback():
 						control.sleep(1000)
 						control.notification(message=getLS(32393) % subLang.upper(), time=5000)
 				return log_utils.log(getLS(32393) % subLang.upper(), level=log_utils.LOGDEBUG)
-			if self._select_embedded(langs[0]):
+			if embedded_selected:
 				if getSetting('subtitles.notification') == 'true':
 					if Player().isPlayback():
 						control.sleep(1000)
@@ -1820,7 +1849,7 @@ class Bookmarks:
 				from resources.lib.database import customtraktsync
 				if episode and customtraktsync.is_watched_episode(imdb, tmdb, tvdb, season, episode):
 					# Clear progress from the completed watch and start a distinct rewatch cycle.
-					customtraktsync.delete_bookmark(imdb, tvdb or '', season, episode)
+					customtraktsync.delete_bookmark(imdb, tvdb or '', season, episode, tmdb=tmdb)
 					self.custom_rewatch = True
 					return '0'
 				if not runtime or runtime == 'None': return offset
@@ -1971,7 +2000,7 @@ class Bookmarks:
 				# final pause point is synced back and leaves the episode in progress.
 				if not skip_scrobble and percent < markwatched_percentage:
 					mdblist.scrobbleMovie(title, year, imdb, tmdb, percent) if media_type == 'movie' else mdblist.scrobbleEpisode(tvshowtitle or title, year, imdb, tmdb, tvdb, season, episode, percent)
-				if percent >= int(markwatched_percentage): mdblist.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False, already_watched=skip_scrobble)
+				if percent >= int(markwatched_percentage): mdblist.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False, already_watched=skip_scrobble, completed=True)
 			elif service == 'custom':
 				if not skip_scrobble:
 					customtrakt.scrobbleMovie(imdb, tmdb, percent) if media_type == 'movie' else customtrakt.scrobbleEpisode(imdb, tmdb, tvdb, season, episode, percent)
@@ -2009,7 +2038,7 @@ class Bookmarks:
 						item = {'type': 'movie', 'movie': {'ids': {'imdb': imdb}}}
 					else:
 						item = {'type': 'episode', 'episode': {'season': season, 'number': episode},
-								'show': {'ids': {'imdb': imdb, 'tvdb': tvdb}}}
+								'show': {'ids': {'imdb': imdb, 'tvdb': tvdb, 'tmdb': tmdb}}}
 					from resources.lib.database import traktsync as _traktsync
 					_traktsync.delete_bookmark([item])
 		except:

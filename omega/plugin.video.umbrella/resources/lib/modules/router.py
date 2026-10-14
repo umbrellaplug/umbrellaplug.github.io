@@ -951,7 +951,7 @@ def router(argv2):
 			simkl.SIMKL().auth(fromSettings=1)
 		if action == 'simkl_Revoke':
 			from resources.lib.modules import simkl
-			simkl.SIMKL().reset_authorization(fromSettings=1) #new simkl revoke - pointless simkl never clears access tokens
+			simkl.SIMKL().reset_authorization(fromSettings=1)
 
 	elif action and action.startswith('ad_'):
 		if action == 'ad_ServiceNavigator':
@@ -1475,7 +1475,7 @@ def router(argv2):
 			watched = (params.get('watched') == 'True') if params.get('watched') else None
 			unfinished = (params.get('unfinished') == 'True') if params.get('unfinished') else False
 			tvshow = (params.get('tvshow') == 'tvshow')
-			trakt.manager(name, imdb, tvdb, season, episode, watched=watched, unfinished=unfinished,tvshow=tvshow)
+			trakt.manager(name, imdb, tvdb, season, episode, tmdb=tmdb, watched=watched, unfinished=unfinished,tvshow=tvshow)
 		elif action == 'tools_tmdbListManager':
 			from resources.lib.modules import tmdb4
 			mediatype = params.get('mediatype', 'movie')
@@ -1483,13 +1483,13 @@ def router(argv2):
 		elif action == 'tools_mdbWatchlist':
 			watched = (params.get('watched') == 'True') if params.get('watched') else None
 			from resources.lib.modules import mdblist
-			mdblist.manager(name, imdb, tvdb, tmdb, watched=watched, season=season, episode=episode)
+			mdblist.manager(name, imdb, tvdb, tmdb, watched=watched, season=season, episode=episode, tvshow=params.get('tvshow') == 'tvshow')
 		elif action == 'tools_simklManager':
 			watched = (params.get('watched') == 'True') if params.get('watched') else None
 			unfinished = (params.get('unfinished') == 'True') if params.get('unfinished') else False
 			tvshow = (params.get('tvshow') == 'tvshow')
 			from resources.lib.modules import simkl
-			simkl.manager(name, imdb, tvdb, season, episode, watched=watched, unfinished=unfinished,tvshow=tvshow)
+			simkl.manager(name, imdb, tvdb, season, episode, tmdb=tmdb, watched=watched, unfinished=unfinished,tvshow=tvshow)
 		elif action == 'tools_customManager':
 			watched = (params.get('watched') == 'True') if params.get('watched') else None
 			unfinished = (params.get('unfinished') == 'True') if params.get('unfinished') else False
@@ -1796,10 +1796,10 @@ def router(argv2):
 			playcount.movies(name, imdb, query)
 		elif action == 'playcount_Episode':
 			from resources.lib.modules import playcount
-			playcount.episodes(name, imdb, tvdb, season, episode, query)
+			playcount.episodes(name, imdb, tvdb, season, episode, query, tmdb=tmdb)
 		elif action == 'playcount_TVShow':
 			from resources.lib.modules import playcount
-			playcount.tvshows(name, imdb, tvdb, season, query)
+			playcount.tvshows(name, imdb, tvdb, season, query, tmdb=tmdb)
 
 	####################################################
 	#---Source Actions
