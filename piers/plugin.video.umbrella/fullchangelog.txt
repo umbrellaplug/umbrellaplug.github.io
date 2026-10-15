@@ -1,3 +1,6 @@
+[B]Update - v6.7.92 - Oct 15th, 2026 [/B]
+--[Fix] Fix for incorrect spacing in language string files.
+
 [B]Update - v6.7.91 - Oct 14th, 2026 [/B]
 --[Fix] Soure Prepare Cancel now stops before provider checks.
 --[Feature] Added TV season pack preferences through the source context menu. Source-select, auto-play, and next-episode pre-scrapes try the chosen pack and debrid service, falling back to source selection when unavailable. Explicit source selection bypasses the preference so it can be replaced or cleared.

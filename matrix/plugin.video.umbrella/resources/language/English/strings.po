@@ -6212,10 +6212,6 @@ msgctxt "#40827"
 msgid "Automatically skips recaps without prompting when timing data is available. Works independently of the Skip Recap button setting."
 msgstr ""
 
-
-
-
-
 msgctxt "#40828"
 msgid "Shared service options"
 msgstr ""
