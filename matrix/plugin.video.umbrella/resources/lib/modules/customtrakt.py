@@ -11,7 +11,7 @@ from threading import Lock
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit, urlunsplit, parse_qsl, urlencode
 from resources.lib.database import cache, customtraktsync
 from resources.lib.modules import control
 from resources.lib.modules import log_utils
@@ -309,10 +309,10 @@ def getCustomDeviceToken(deviceCode):
 		user_code = control.lang(32514) % (getSetting('highlight.color'), str(deviceCode['user_code']))
 		if control.setting('dialogs.useumbrelladialog') == 'true':
 			from resources.lib.modules import tools
-			# Assumes the activation page accepts the code as a ?code= query param,
-			# matching Trakt's own https://trakt.tv/activate?code=... convention —
-			# adjust here if this clone's verification page uses a different shape.
-			qr_target = '%s?code=%s' % (verification_url_raw.rstrip('/'), str(deviceCode['user_code']))
+			parts = urlsplit(verification_url_raw)
+			query = [(key, value) for key, value in parse_qsl(parts.query, keep_blank_values=True) if key != 'user_code']
+			query.append(('user_code', str(deviceCode['user_code'])))
+			qr_target = urlunsplit(parts._replace(query=urlencode(query)))
 			custom_qr = tools.make_qr(qr_target, 'custom_qr.png')
 			progressDialog = control.getProgressWindow('%s Service' % getCustomServiceName(), custom_qr, 1)
 			progressDialog.set_controls()

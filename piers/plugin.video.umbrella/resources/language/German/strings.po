@@ -7102,3 +7102,55 @@ msgstr ""
 msgctxt "#40828"
 msgid "Shared service options"
 msgstr ""
+
+msgctxt "#40829"
+msgid "Search Movies & TV Shows"
+msgstr ""
+
+msgctxt "#40830"
+msgid "Export Settings"
+msgstr ""
+
+msgctxt "#40831"
+msgid "Import Settings"
+msgstr ""
+
+msgctxt "#40832"
+msgid "Settings exported. Only accounts selected in the export wizard are included."
+msgstr ""
+
+msgctxt "#40833"
+msgid "Apply this settings backup? Accounts not included in the backup will be kept. A preference-only rollback copy will be saved before importing."
+msgstr ""
+
+msgctxt "#40834"
+msgid "Settings imported. Restart Kodi to apply all changes. Transferred accounts may need authorization again if the service rejects their saved session."
+msgstr ""
+
+msgctxt "#40835"
+msgid "Could not complete the preference backup or import. Check the file and destination permissions."
+msgstr ""
+
+msgctxt "#40836"
+msgid "This backup will contain readable credentials for: %s. Store it privately. Continue?"
+msgstr ""
+
+msgctxt "#40837"
+msgid "Include account and dependent settings"
+msgstr ""
+
+msgctxt "#40838"
+msgid "Leave out account and dependent settings"
+msgstr ""
+
+msgctxt "#40839"
+msgid "Cancel export"
+msgstr ""
+
+msgctxt "#40840"
+msgid "Replace account information for: %s. Continue only if you trust this backup."
+msgstr ""
+
+msgctxt "#40841"
+msgid "This account is not configured. Its dependent settings will be left out of the backup."
+msgstr ""

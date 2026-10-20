@@ -1051,18 +1051,19 @@ def syncTVShows():
 		if not getMDBListCredentialsInfo(): return None
 		episodes = mdbsync.get_watched_episodes()
 		if not episodes: return []
-		shows = {}
-		for (show_imdb, show_tmdb, show_tvdb, season, episode) in episodes:
-			key = ('tmdb', str(show_tmdb)) if show_tmdb else ('imdb', show_imdb)
-			if key not in shows:
-				shows[key] = {'ids': {'imdb': show_imdb, 'tmdb': show_tmdb, 'tvdb': show_tvdb}, 'by_season': {}}
-			s = int(season)
-			shows[key]['by_season'].setdefault(s, []).append(int(episode))
+		from resources.lib.modules.progress_identity import group_watched_shows
+		# Older history can lack TMDb IDs that later playback supplies. Reconcile
+		# those aliases before building indicators, preserving split TMDb stories.
+		shows = group_watched_shows(episodes)
 		indicators = []
-		for v in shows.values():
-			ep_ranges = {s: _make_episode_ranges(sorted(eps)) for s, eps in v['by_season'].items()}
+		for show in shows:
+			by_season = {}
+			for season, episode in show['watched_set']:
+				by_season.setdefault(season, []).append(episode)
+			ep_ranges = {s: _make_episode_ranges(sorted(eps)) for s, eps in by_season.items()}
 			total = sum(e - s + 1 for ranges in ep_ranges.values() for s, e in ranges)
-			indicators.append((v['ids'], total, ep_ranges))
+			ids = {field: show[field] for field in ('imdb', 'tmdb', 'tvdb')}
+			indicators.append((ids, total, ep_ranges))
 		return indicators
 	except: log_utils.error()
 

@@ -151,6 +151,18 @@ def router(argv2):
 	elif action == 'tmdbmoviePage':
 		from resources.lib.menus import movies
 		movies.Movies().getTMDb(url, folderName=folderName)
+	elif action == 'combinedSearch':
+		from resources.lib.modules import search
+		search.Search().combined_search()
+	elif action == 'combinedSearchResults':
+		from resources.lib.modules import search
+		search.Search().combined_results(name, url)
+	elif action == 'combinedSearchHistory':
+		from resources.lib.modules import search
+		search.Search().combined_history()
+	elif action == 'combinedSearchnew':
+		from resources.lib.modules import search
+		search.Search().combined_search_new()
 	elif action == 'movieSearch':
 		from resources.lib.menus import movies
 		movies.Movies().search(folderName=folderName)
@@ -1457,6 +1469,12 @@ def router(argv2):
 		elif action == 'tools_resetViewTypes':
 			from resources.lib.modules import views
 			views.clearViews()
+		elif action == 'tools_exportSettings':
+			from resources.lib.modules import settings_backup
+			settings_backup.export_settings()
+		elif action == 'tools_importSettings':
+			from resources.lib.modules import settings_backup
+			settings_backup.import_settings()
 		elif action == 'tools_cleanSettings':
 			from resources.lib.modules import clean_settings
 			clean_settings.clean_settings()

@@ -75,6 +75,8 @@ class Navigator:
 			if not self.indexLabels and item.get('alt_label'):
 				raw_label = item['alt_label']
 			label = getLS(int(raw_label)) if raw_label.isdigit() else raw_label
+			if item['item_id'] == 'searchCombined' and not label:
+				label = 'Search Movies & TV Shows...'
 			icon_file = item['icon'] if self.iconLogos else item['poster']
 			action = '%s&folderName=%s' % (item['action'], quote_plus(label)) if item['is_folder'] else item['action']
 			self.addDirectoryItem(label, action, icon_file, icon_file,
@@ -686,6 +688,8 @@ class Navigator:
 			self.addDirectoryItem(40179, 'tools_LanguageInvoker&name=False', 'settings.png', 'DefaultAddonProgram.png', isFolder=False)
 		else:
 			self.addDirectoryItem(40180, 'tools_LanguageInvoker&name=False', 'settings.png', 'DefaultAddonProgram.png', isFolder=False)
+		self.addDirectoryItem(40830, 'tools_exportSettings', 'settings.png', 'DefaultAddonProgram.png', isFolder=False)
+		self.addDirectoryItem(40831, 'tools_importSettings', 'settings.png', 'DefaultAddonProgram.png', isFolder=False)
 		self.addDirectoryItem(32083, 'tools_cleanSettings', 'settings.png', 'DefaultAddonProgram.png', isFolder=False)
 		self.addDirectoryItem(40334, 'tools_deleteSettings', 'settings.png', 'DefaultAddonProgram.png', isFolder=False)
 		self.addDirectoryItem(32523, 'tools_loggingNavigator&folderName=%s' % quote_plus(getLS(40460)), 'tools.png', 'DefaultAddonService.png')		
@@ -930,6 +934,7 @@ class Navigator:
 
 	def search(self, folderName=''):
 		if self.useContainerTitles: control.setContainerName(folderName)
+		self.addDirectoryItem(getLS(40829) or 'Search Movies & TV Shows...', 'combinedSearch', 'search.png', 'DefaultAddonsSearch.png', isFolder=False)
 		self.addDirectoryItem(33042, 'movieSearch&folderName=%s' % quote_plus(getLS(33042)), 'trakt.png' if self.iconLogos else 'search.png', 'DefaultAddonsSearch.png')
 		self.addDirectoryItem(33043, 'tvSearch&folderName=%s' % quote_plus(getLS(33043)), 'trakt.png' if self.iconLogos else 'search.png', 'DefaultAddonsSearch.png')
 		self.addDirectoryItem(33044, 'moviePerson', 'imdb.png' if self.iconLogos else 'people-search.png', 'DefaultAddonsSearch.png', isFolder=False)

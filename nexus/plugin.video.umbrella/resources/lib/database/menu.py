@@ -16,6 +16,7 @@ menuFile = control.joinPath(control.dataPath, 'menu.db')
 _ROOT_DEFAULTS = [
 	('searchMovies',    '33042', 'movieSearch',                            'trakt.png',        'searchmovies.png', 1, 1, 1, 0,  0, None, 0, None),
 	('searchTVShows',   '33043', 'tvSearch',                               'trakt.png',        'searchtv.png',     1, 1, 1, 1,  0, None, 0, None),
+	('searchCombined', '40829', 'combinedSearch', 'search.png', 'search.png', 0, 1, 1, 1, 0, None, 0, None),
 	('movies',          '33046', 'movieNavigator',                         'movies.png',       'movies.png',       1, 1, 1, 2,  0, None, 0, None),
 	('tvshows',         '33047', 'tvNavigator',                            'tvshows.png',      'tvshows.png',      1, 1, 1, 3,  0, None, 0, None),
 	('anime',           'Anime', 'anime_Navigator',                        'boxsets.png',      'boxsets.png',      1, 1, 1, 4,  0, None, 0, None),
@@ -374,7 +375,7 @@ _defaults_version_file = control.joinPath(control.dataPath, 'menu_defaults.v')
 # regardless of addon version (e.g. to fix a migration bug) — the on-disk marker below
 # is keyed on addonVersion+this, not addonVersion alone, so incrementing it forces one
 # more sync pass even for users already marked up to date on the current addon version.
-_MENU_SCHEMA_REVISION = '18'
+_MENU_SCHEMA_REVISION = '19'
 
 
 def _read_synced_version():
@@ -568,6 +569,7 @@ def _sync_defaults(dbcon):
 	dbcon.commit()
 	# Insert items added after initial release for existing users
 	_NEW_DEFAULT_ITEMS = [
+		('root', 'searchCombined', '40829', 'combinedSearch', 'search.png', 'search.png', 0, 1, 1, 1, 0, None, 0, None),
 		('movies', 'mv_punchplay_trending', 'Trending (PunchPlay)', 'punchplay_catalog&media_type=movie&category=trending', 'punchplay.png', 'trending.png', 1, 1, 1, 12, 0, None, 0, '32442'),
 		('movies', 'mv_punchplay_popular', 'Popular (PunchPlay)', 'punchplay_catalog&media_type=movie&category=popular', 'punchplay.png', 'most-popular.png', 1, 1, 1, 7, 0, None, 0, '32430'),
 		('movies', 'mv_punchplay_top_rated', 'Top Rated (PunchPlay)', 'punchplay_catalog&media_type=movie&category=top_rated', 'punchplay.png', 'most-voted.png', 1, 1, 1, 11, 0, None, 0, '32440'),

@@ -3596,7 +3596,7 @@ class Movies:
 			from resources.lib.modules import log_utils
 			log_utils.error(f"Error in super_info for index {i}: {e}")
 
-	def movieDirectory(self, items, unfinished=False, next=True, isCollection=False, folderName=''):
+	def movieDirectory(self, items, unfinished=False, next=True, isCollection=False, folderName='', finalize=True, label_media=False):
 		from sys import argv # some functions like ActivateWindow() throw invalid handle less this is imported here.
 		is_widget = 'plugin' not in control.infoLabel('Container.PluginName')
 		if not items: # with reuselanguageinvoker on an empty directory must be loaded, do not use sys.exit()
@@ -3808,6 +3808,7 @@ class Movies:
 ####################################
 				if trailer: meta.update({'trailer': trailer}) # removed temp so it's not passed to CM items, only infoLabels for skin
 				else: meta.update({'trailer': '%s?action=play_Trailer&type=%s&name=%s&year=%s&imdb=%s' % (sysaddon, 'movie', sysname, year, imdb)})
+				if label_media: labelProgress += ' [I](%s)[/I]' % getLS(32001)
 				item = control.item(label=labelProgress, offscreen=True)
 				#if 'castandart' in i: item.setCast(i['castandart'])#changed for kodi20 setinfo method
 				if 'castandart' in i: meta.update({'castandart':i['castandart']})
@@ -3869,6 +3870,7 @@ class Movies:
 			except:
 				from resources.lib.modules import log_utils
 				log_utils.error()
+		if not finalize: return
 		control.content(syshandle, 'movies')
 		control.directory(syshandle, cacheToDisc=True)
 		control.sleep(200)

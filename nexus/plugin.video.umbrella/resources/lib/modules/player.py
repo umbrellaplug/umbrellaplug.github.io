@@ -489,7 +489,9 @@ class Player(xbmc.Player):
 		#just checking here for an empty playlist.
 		try:
 			#check if no playlist is currently added.
-			if control.playlist.getposition() == -1 and self.media_type == 'episode':
+			# Kodi can report position 0 for an empty video playlist after source
+			# selection. Seed the current episode before appending the next one.
+			if self.media_type == 'episode' and (control.playlist.size() == 0 or control.playlist.getposition() == -1):
 				control.player.stop()
 				control.playlist.clear()
 				if getSetting('play.mode.tv') == '0' and self.enable_playnext:
@@ -499,7 +501,7 @@ class Player(xbmc.Player):
 						episodelabel = '%sx%02d %s' % (int(self.season), int(self.episode), self.meta.get('title', ''))
 						if self.meta.get('title'):
 							item.setLabel(episodelabel)
-						newurl = item.getVideoInfoTag().getFilenameAndPath()
+						newurl = item.getPath() or item.getVideoInfoTag().getFilenameAndPath()
 						if newurl:
 							control.playlist.add(url=newurl, listitem=item)
 							return True

@@ -3134,50 +3134,22 @@ class TVshows:
 				if self.notifications and self.is_widget != True: control.notification(title=32326, message=33049)
 
 	def scrob_tvshow_progress(self, create_directory=True, folderName=''):
-		# Same local-reconstruction shape as scrob_progress_list() in episodes.py (and
-		# floppy_tvshow_progress() before it) — a show belongs on this list if it has a
-		# real "next episode" pending per the synced watched-episode set + TMDb season
-		# metadata, aggregated to one row per show rather than one row per next episode.
+		# Next Up is authoritative for aired progress, including remote activity
+		# and rewatches that may not be represented in the local history cache.
 		self.list = []
 		try:
-			indicators = scrob.syncTVShows()
-			if not indicators: return self.list
-			last_watched_by_tmdb = {str(r[1]): r[3] for r in scrobsync.get_watched_shows() if r[1]}
-
-			def check_show(ids):
-				try:
-					imdb, tmdb, tvdb = ids.get('imdb', ''), ids.get('tmdb', ''), ids.get('tvdb', '')
-					if not tmdb: return
-					progress = scrob.getShowProgress(tmdb)
-					if progress and len(progress) > 1:
-						counts = progress[1] or {}
-						total = sum(v.get('total', 0) for v in counts.values())
-						watched = sum(v.get('watched', 0) for v in counts.values())
-						if total and watched >= total: return  # fully watched, not "in progress"
-					values = {}
-					values['next'] = ''
-					values['progress'] = ''
-					values['imdb'] = imdb
-					values['tmdb'] = tmdb
-					values['tvdb'] = tvdb
-					values['lastplayed'] = last_watched_by_tmdb.get(str(tmdb), '')
-					values['mediatype'] = 'tvshows'
-					values['has_next_episode'] = True
-					self.list.append(values)
-				except: log_utils.error()
-
-			threads = [Thread(target=check_show, args=(ids,)) for (ids, watched_count, ep_ranges) in indicators]
-			# getShowProgress() can block on TMDb season metadata for every uncached
-			# show. Run those independent lookups in the same bounded batches used by
-			# the other metadata-heavy progress providers.
-			_unlimited = getSetting('dev.batch.unlimited') == 'true'
-			_bs = max(int(getSetting('dev.batch.size') or '10'), 1)
-			_chunk = max(len(threads), 1) if _unlimited else _bs
-			for i in range(0, len(threads), _chunk):
-				if control.monitor.abortRequested(): break
-				batch = threads[i:i + _chunk]
-				[t.start() for t in batch]
-				[t.join() for t in batch]
+			seen = set()
+			for item in scrob.get_next_up() or []:
+				show = item.get('show') or item.get('series') or {}
+				episode = item.get('next_episode') or item.get('episode') or item.get('media') or item
+				tmdb = str(show.get('tmdb_id') or show.get('tmdb') or episode.get('show_tmdb_id') or item.get('show_tmdb_id') or '')
+				if not tmdb or tmdb in seen: continue
+				seen.add(tmdb)
+				self.list.append({'imdb': show.get('imdb_id') or show.get('imdb') or '',
+					'tmdb': tmdb, 'tvdb': str(show.get('tvdb_id') or show.get('tvdb') or episode.get('show_tvdb_id') or ''),
+					'title': show.get('title') or episode.get('show_title') or '', 'year': '',
+					'lastplayed': item.get('last_watched_at') or item.get('updated_at') or '',
+					'next': '', 'progress': '', 'mediatype': 'tvshows', 'has_next_episode': True})
 			self.worker()
 			if self.list is None: self.list = []
 		except:
@@ -3690,7 +3662,7 @@ class TVshows:
 			
 			log_utils.error()
 
-	def tvshowDirectory(self, items, next=True, isProgress=False, isWatched=False, isCollection=False, folderName='Umbrella'):
+	def tvshowDirectory(self, items, next=True, isProgress=False, isWatched=False, isCollection=False, folderName='Umbrella', finalize=True, label_media=False):
 		from sys import argv # some functions like ActivateWindow() throw invalid handle less this is imported here.
 		if self.useContainerTitles: control.setContainerName(folderName)
 		returnHome = control.folderPath()
@@ -3897,6 +3869,7 @@ class TVshows:
 ####################################
 				if trailer: meta.update({'trailer': trailer}) # removed temp so it's not passed to CM items, only skin
 				else: meta.update({'trailer': '%s?action=play_Trailer&type=%s&name=%s&year=%s&imdb=%s' % (sysaddon, 'show', systitle, year, imdb)})
+				if label_media: label += ' [I](%s)[/I]' % getLS(32002)
 				item = control.item(label=label, offscreen=True)
 				#if 'castandart' in i: item.setCast(i['castandart'])
 				if 'castandart' in i: meta.update({"cast": ['castandart']}) #changed for kodi20 setinfo method
@@ -4026,6 +3999,7 @@ class TVshows:
 			except:
 				
 				log_utils.error()
+		if not finalize: return
 		control.content(syshandle, 'tvshows')
 		control.directory(syshandle, cacheToDisc=False) # disable cacheToDisc so unwatched counts loads fresh data counts if changes made
 		views.setView('tvshows', {'skin.estuary': 55, 'skin.confluence': 500})

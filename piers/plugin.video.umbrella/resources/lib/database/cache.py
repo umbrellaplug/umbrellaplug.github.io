@@ -259,7 +259,7 @@ def cache_clear_search():
 	try:
 		dbcon = get_connection_search()
 		dbcur = dbcon.cursor()
-		for t in ('movies', 'tvshow', 'collections', 'furk', 'easynews'):
+		for t in ('movies', 'tvshow', 'combined', 'collections', 'furk', 'easynews'):
 			dbcur.execute('''DROP TABLE IF EXISTS {}'''.format(t))
 			dbcur.execute('''VACUUM''')
 			dbcur.connection.commit()

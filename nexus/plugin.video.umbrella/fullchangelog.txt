@@ -1,3 +1,10 @@
+[B]Update - v6.7.93 - Oct 20th, 2026 [/B]
+--[Fix] Changes to introdb api to version 4.
+--[Enhancement] Added option to export and import Umbrella settings due to the number of settings. location: Settings > Umbrella Settings > Export/Import Settings.
+--[Fix] Fix for mdblist in progress shows duplicating.
+--[Change] Made change to allow code to be passed in url when authenticating when possible.
+--[Feature] Added a combined movie and TV search option to the Search menu.
+
 [B]Update - v6.7.92 - Oct 15th, 2026 [/B]
 --[Fix] Fix for incorrect spacing in language string files.
 

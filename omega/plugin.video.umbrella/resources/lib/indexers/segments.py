@@ -91,7 +91,7 @@ class SegmentScraper:
 		return self._request('IntroDB.app', 'https://api.introdb.app/segments', self._parse_introdb)
 
 	def fetch_theintrodb(self):
-		return self._request('TheIntroDB', 'https://api.theintrodb.org/v3/media', self._parse_theintrodb)
+		return self._request('TheIntroDB', 'https://api.theintrodb.org/v4/media', self._parse_theintrodb)
 
 	def run(self):
 		# Neither provider should make playback wait for the other's timeout.
