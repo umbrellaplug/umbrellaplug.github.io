@@ -488,11 +488,14 @@ class Player(xbmc.Player):
 	def checkPlaylist(self, item):
 		#just checking here for an empty playlist.
 		try:
+			from sys import argv
+			# Kodi owns playback for a valid plugin handle. Resolve that request
+			# in play_source instead of stopping it to launch another playlist.
+			if int(argv[1]) >= 0: return False
 			#check if no playlist is currently added.
 			# Kodi can report position 0 for an empty video playlist after source
 			# selection. Seed the current episode before appending the next one.
 			if self.media_type == 'episode' and (control.playlist.size() == 0 or control.playlist.getposition() == -1):
-				control.player.stop()
 				control.playlist.clear()
 				if getSetting('play.mode.tv') == '0' and self.enable_playnext:
 					# Source select + playnext: add directly without cancelPlayback() to avoid
@@ -516,13 +519,11 @@ class Player(xbmc.Player):
 	def singleItemPlaylist(self, item):
 		log_utils.log('singleItemPlaylist() started.', level=log_utils.LOGDEBUG)
 		try:
-			control.cancelPlayback()
+			newurl = item.getPath() or item.getVideoInfoTag().getFilenameAndPath()
+			if not newurl: return False
 			episodelabel = '%sx%02d %s' % (int(self.season), int(self.episode), self.meta.get('title'))
 			if self.meta.get('title'):
 				item.setLabel(episodelabel)
-			from sys import argv
-			newurl = item.getVideoInfoTag().getFilenameAndPath()
-			log_utils.log('singleItemPlaylist() url: %s' % str(newurl), level=log_utils.LOGDEBUG)
 			control.playlist.add(url=newurl, listitem=item)
 			log_utils.log('singleItemPlaylist() returning true.', level=log_utils.LOGDEBUG)
 			return True

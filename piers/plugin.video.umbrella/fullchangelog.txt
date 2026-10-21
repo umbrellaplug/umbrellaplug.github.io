@@ -1,3 +1,6 @@
+[B]Update - v6.7.94 - Oct 21st, 2026 [/B]
+--[Fix] Fix for playlist creation clearing playback.
+
 [B]Update - v6.7.93 - Oct 20th, 2026 [/B]
 --[Fix] Changes to introdb api to version 4.
 --[Enhancement] Added option to export and import Umbrella settings due to the number of settings. location: Settings > Umbrella Settings > Export/Import Settings.

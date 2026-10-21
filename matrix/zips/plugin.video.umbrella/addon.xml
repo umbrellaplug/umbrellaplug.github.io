@@ -1,4 +1,4 @@
-<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.93">
+<addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.94">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -270,12 +270,8 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.93 - Oct 20th, 2026 [/B]
---[Fix] Changes to introdb api to version 4.
---[Enhancement] Added option to export and import Umbrella settings due to the number of settings. location: Settings > Umbrella Settings > Export/Import Settings.
---[Fix] Fix for mdblist in progress shows duplicating.
---[Change] Made change to allow code to be passed in url when authenticating when possible.
---[Feature] Added a combined movie and TV search option to the Search menu.
+[B]Update - v6.7.94 - Oct 21st, 2026 [/B]
+--[Fix] Fix for playlist creation clearing playback.
 		</news>
 	</extension>
 
