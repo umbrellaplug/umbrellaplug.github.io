@@ -43,8 +43,9 @@ class StillWatchingXML(BaseDialog):
 			self.doClose()
 
 	def onClick(self, control_id):
-		if control_id == 3011: # Play Now, skip to end of current
-			xbmc.executebuiltin('PlayerControl(BigSkipForward)')
+		if control_id == 3011: # Play Now
+			playerWindow.setProperty('umbrella.playnext.transition', 'true')
+			xbmc.Player().playnext()
 			self.doClose()
 		if control_id == 3012: # Stop playback
 			xbmc.executebuiltin('PlayerControl(Playlist.Clear)')
