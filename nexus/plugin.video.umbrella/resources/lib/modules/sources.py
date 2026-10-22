@@ -208,7 +208,20 @@ class Sources:
 					log_utils.error()
 					meta = {}
 			if self.meta is None or 'videodb' in control.infoLabel('ListItem.FolderPath'):
-				self.meta = checkLibMeta()
+				self.meta = checkLibMeta() or (meta if isinstance(meta, dict) else {})
+			if not isinstance(self.meta, dict):
+				self.meta = {}
+			for key, value in {
+				'title': title, 'year': year, 'imdb': imdb, 'tmdb': tmdb,
+				'tvdb': tvdb, 'season': season, 'episode': episode,
+				'tvshowtitle': tvshowtitle, 'premiered': premiered,
+				'mediatype': self.mediatype
+			}.items():
+				if self.meta.get(key) in (None, '') and value not in (None, ''):
+					self.meta[key] = value
+			meta = self.meta
+			homeWindow.clearProperty(self.metaProperty)
+			homeWindow.setProperty(self.metaProperty, jsdumps(self.meta))
 			if self.mediatype == 'movie':
 				if getSetting('imdb.Moviemeta.check') == 'true': # check IMDB. TMDB and Trakt differ on a ratio of 1 in 20 and year is off by 1, some meta titles mismatch
 					title, year = self.imdb_meta_chk(imdb, title, year)
@@ -1075,7 +1088,7 @@ class Sources:
 				except: log_utils.error()
 			if getSetting('source.filtermbysize') == '2':
 				try:
-					duration = self.meta['duration'] or 5400
+					duration = self.meta.get('duration') or 5400
 					max_size = (0.125 * (0.90 * float(getSetting('source.movie.linespeed', '20'))) * duration)/1000
 					self.sources = [i for i in self.sources if (i.get('size', 0) <= max_size)]
 				except: log_utils.error()
@@ -1096,7 +1109,7 @@ class Sources:
 				except: log_utils.error()
 			if getSetting('source.filterebysize') == '2':
 				try:
-					duration = self.meta['duration'] or 2400
+					duration = self.meta.get('duration') or 2400
 					max_size = (0.125 * (0.90 * float(getSetting('source.episode.linespeed', '20'))) * duration)/1000
 					self.sources = [i for i in self.sources if (i.get('size', 0) <= max_size)]
 				except: log_utils.error()
