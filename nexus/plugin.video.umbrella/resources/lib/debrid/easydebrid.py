@@ -59,7 +59,7 @@ class EasyDebrid:
 		if not 'files' in result: return ''
 		return result.get('files', '')
 
-	def resolve_magnet(self, magnet_url, info_hash, season, episode, title):
+	def resolve_magnet(self, magnet_url, info_hash, season, episode, title, premiered=None):
 		from resources.lib.modules.source_utils import seas_ep_filter, extras_filter
 		try:
 			file_url, match = None, False
@@ -73,7 +73,7 @@ class EasyDebrid:
 			selected_files = [i for i in torrent_files if i['filename'].lower().endswith(tuple(extensions))]
 			if not selected_files: return None
 			if season:
-				selected_files = [i for i in selected_files if seas_ep_filter(season, episode, i['filename'])]
+				selected_files = [i for i in selected_files if seas_ep_filter(season, episode, i['filename'], premiered=premiered) and not any(x in i['filename'].lower() for x in extras_filtering_list)]
 			else:
 				if self._m2ts_check(selected_files): raise Exception('_m2ts_check failed')
 				selected_files = [i for i in selected_files if not any(x in i['filename'] for x in extras_filtering_list)]

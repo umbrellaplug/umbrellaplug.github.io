@@ -203,7 +203,7 @@ class Premiumize:
 			except: return None
 		except: log_utils.error()
 
-	def resolve_magnet(self, magnet_url, info_hash, season, episode, ep_title):
+	def resolve_magnet(self, magnet_url, info_hash, season, episode, ep_title, premiered=None):
 		from resources.lib.modules.source_utils import seas_ep_filter, extras_filter
 		try:
 			failed_reason, file_url, correct_files = 'Unknown', None, []
@@ -223,13 +223,13 @@ class Premiumize:
 					if '.m2ts' in str(item.get('path')):
 						failed_reason = 'Can not resolve .m2ts season disk episode'
 						continue
-					if seas_ep_filter(season, episode, item['path'].split('/')[-1]):
+					if seas_ep_filter(season, episode, item['path'].split('/')[-1], premiered=premiered):
 						# log_utils.log('item[path].split(/)[-1]=%s' %  item['path'].split('/')[-1])
 						append(item)
 					else: failed_reason = 'no matching season/episode found'
 					if len(correct_files) == 0: continue
 					for i in correct_files:
-						compare_link = seas_ep_filter(season, episode, i['path'], split=True)
+						compare_link = seas_ep_filter(season, episode, i['path'], split=True, premiered=premiered)
 						compare_link = re.sub(episode_title, '', compare_link)
 						if not any(x in compare_link for x in extras_filtering_list):
 							file_url = i['link']
@@ -418,14 +418,17 @@ class Premiumize:
 			sysaddon, syshandle = 'plugin://plugin.video.umbrella/', int(argv[1])
 			extensions = supported_video_extensions()
 			cloud_files = self.my_files(folder_id)
-			if not cloud_files:
-				if self.server_notifications: control.notification(message='Request Failure-Empty Content', icon=pm_icon)
-				log_utils.log('Premiumize.me: Request Failure-Empty Content', __name__, log_utils.LOGDEBUG)
+			if cloud_files is None:
+				# Complete failed requests too, so Kodi does not wait for a timeout.
+				control.directory(syshandle, succeeded=False, cacheToDisc=False)
 				return
 			cloud_files = [i for i in cloud_files if ('link' in i and i['link'].lower().endswith(tuple(extensions))) or i['type'] == 'folder']
 			cloud_files = sorted(cloud_files, key=lambda k: k['name'])
 			cloud_files = sorted(cloud_files, key=lambda k: k['type'], reverse=True)
-		except: return log_utils.error()
+		except:
+			log_utils.error()
+			control.directory(syshandle, succeeded=False, cacheToDisc=False)
+			return
 		folder_str, file_str, downloadMenu, renameMenu, deleteMenu = getLS(40046).upper(), getLS(40047).upper(), getLS(40048), getLS(40049), getLS(40050)
 		for count, item in enumerate(cloud_files, 1):
 			try:
@@ -460,7 +463,8 @@ class Premiumize:
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=isFolder)
 			except: log_utils.error()
 		control.content(syshandle, 'files')
-		control.directory(syshandle, cacheToDisc=True)
+		# A successful empty folder is normal after deleting its last item.
+		control.directory(syshandle, cacheToDisc=False)
 
 	def user_transfers(self):
 		try:

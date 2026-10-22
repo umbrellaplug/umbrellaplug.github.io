@@ -394,7 +394,7 @@ class RealDebrid:
 		response = self._get("torrents/instantAvailability" + hashString)
 		return response
 
-	def resolve_magnet(self, magnet_url, info_hash, season, episode, title):
+	def resolve_magnet(self, magnet_url, info_hash, season, episode, title, premiered=None):
 		from resources.lib.modules.source_utils import seas_ep_filter, extras_filter
 		# from resources.lib.cloud_scrapers.cloud_utils import cloud_check_title # alias and title checking no longer used
 		with _rd_magnet_semaphore:
@@ -431,12 +431,12 @@ class RealDebrid:
 					correct_files = []
 					correct_file_check = False
 					for value in selected_files:
-						correct_file_check = seas_ep_filter(season, episode, value[1]['path'])
+						correct_file_check = seas_ep_filter(season, episode, value[1]['path'], premiered=premiered)
 						if correct_file_check: correct_files.append(value[1]); break
 					if len(correct_files) == 0: match = False
 					else:
 						for i in correct_files:
-							compare_link = seas_ep_filter(season, episode, i['path'], split=True)
+							compare_link = seas_ep_filter(season, episode, i['path'], split=True, premiered=premiered)
 							compare_link = re.sub(compare_title, '', compare_link)
 							if any(x in compare_link for x in extras_filtering_list): continue
 							else: match = True; break
@@ -709,8 +709,8 @@ class RealDebrid:
 	def video_only(self, storage_variant, extensions):
 		return False if len([i for i in storage_variant.values() if not i['filename'].lower().endswith(tuple(extensions))]) > 0 else True
 
-	def name_check(self, storage_variant, season, episode, seas_ep_filter):
-		return len([i for i in storage_variant.values() if seas_ep_filter(season, episode, i['filename'].lower())]) > 0
+	def name_check(self, storage_variant, season, episode, seas_ep_filter, premiered=None):
+		return len([i for i in storage_variant.values() if seas_ep_filter(season, episode, i['filename'].lower(), premiered=premiered)]) > 0
 
 	def m2ts_check(self, folder_details):
 		for item in folder_details:

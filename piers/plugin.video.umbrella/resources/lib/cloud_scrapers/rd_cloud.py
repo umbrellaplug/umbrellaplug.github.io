@@ -9,7 +9,7 @@ from resources.lib.cloud_scrapers import cloud_utils
 from resources.lib.database import cache
 from resources.lib.debrid.realdebrid import RealDebrid
 from resources.lib.modules.control import setting as getSetting
-from resources.lib.modules.source_utils import supported_video_extensions
+from resources.lib.modules.source_utils import supported_video_extensions, episode_airdate_pattern
 from resources.lib.modules import scrape_utils as sc_utils
 
 
@@ -34,6 +34,8 @@ class source:
 			self.season = str(data['season']) if 'tvshowtitle' in data else None
 			self.episode = str(data['episode']) if 'tvshowtitle' in data else None
 			query_list = self.episode_query_list() if 'tvshowtitle' in data else self.year_query_list()
+			date_pattern = episode_airdate_pattern(data.get('premiered')) if 'tvshowtitle' in data else None
+			if date_pattern: query_list.append(date_pattern)
 			# log_utils.log('query_list = %s' % query_list)
 			
 			cloud_folders = RealDebrid().user_torrents()
@@ -70,12 +72,14 @@ class source:
 				try:
 					name = file.get('path').lstrip('/')
 					rt = cloud_utils.release_title_format(name)
+					if date_pattern and re.search(r'(?<!\d)\d{4}[.-]\d{2}[.-]\d{2}(?!\d)', rt) and not re.search(date_pattern, rt): continue
 					if not name.lower().endswith(tuple(supported_video_extensions())): continue
 					if any(value in rt for value in extras_filter): continue
 					if name.endswith('m2ts'):
 						if ignoreM2ts: continue
 						name = folder_name
 						rt = cloud_utils.release_title_format(name)
+						if date_pattern and re.search(r'(?<!\d)\d{4}[.-]\d{2}[.-]\d{2}(?!\d)', rt) and not re.search(date_pattern, rt): continue
 						if name in str(sources): continue
 						if all(not bool(re.search(i, rt)) for i in query_list): continue  # check if this newly added causes any movie titles that do not have the year to get dropped
 						is_m2ts = True

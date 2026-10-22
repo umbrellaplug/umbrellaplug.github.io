@@ -78,20 +78,16 @@ def get_current_time():
 
 
 def get_watched(media_type, imdb_id, tmdb_id):
-	sql_select = ''
-	if media_type == 'movie':
-		if imdb_id:
-			sql_select = "SELECT * FROM watched WHERE imdb_id = '%s'" % imdb_id
-		else:
-			sql_select = "SELECT * FROM watched WHERE tmdb_id = '%s'" % tmdb_id
-	elif media_type == 'tvshow':
-		sql_select = "SELECT * FROM watched WHERE imdb_id = '%s'" % imdb_id
-	elif media_type == 'season':
-		sql_select = "SELECT * FROM watched WHERE imdb_id = '%s' AND season = %s" % (imdb_id, season)
-
-	matchedrow = watched_cache.select_single(sql_select)
-	if matchedrow: return dict(matchedrow)['overlay']
-	else: return 4
+	# Search results may have no IMDb ID. Never match another title's empty ID.
+	if imdb_id and str(imdb_id) != '0':
+		id_column, title_id = 'imdb_id', imdb_id
+	elif tmdb_id and str(tmdb_id) != '0':
+		id_column, title_id = 'tmdb_id', tmdb_id
+	else:
+		return 4
+	sql_select = 'SELECT overlay FROM watched WHERE media_type = ? AND %s = ?' % id_column
+	matchedrows = watched_cache.select_all(sql_select, (media_type, title_id))
+	return 5 if matchedrows and any(dict(row)['overlay'] == 5 for row in matchedrows) else 4
 
 
 def get_watched_episode(media_type, imdb_id, tmdb_id, season='', episode=''):
@@ -118,6 +114,7 @@ def get_episodes_watched(media_type, imdb_id, tmdb_id):
 
 
 def _get_watched(media_type, imdb_id, tmdb_id, season=''):
+	if not imdb_id or str(imdb_id) == '0': return '4'
 	try:
 		if media_type == 'tvshow':
 			sql_select = "SELECT overlay FROM watched WHERE media_type = 'tvshow' AND imdb_id = ?"

@@ -77,7 +77,7 @@ class Offcloud:
 		if result.get('status') not in ('created', 'downloaded'): return None
 		return result
 
-	def resolve_magnet(self, magnet_url, info_hash, season, episode, title):
+	def resolve_magnet(self, magnet_url, info_hash, season, episode, title, premiered=None):
 		from resources.lib.modules.source_utils import seas_ep_filter, extras_filter
 		try:
 			extensions = supported_video_extensions()
@@ -89,7 +89,7 @@ class Offcloud:
 			selected = [f for f in files if f.get('filename', '').lower().endswith(tuple(extensions))]
 			if not selected: return None
 			if season:
-				selected = [f for f in selected if seas_ep_filter(season, episode, f['filename'])]
+				selected = [f for f in selected if seas_ep_filter(season, episode, f['filename'], premiered=premiered) and not any(x in f['filename'].lower() for x in extras_filtering_list)]
 			else:
 				if self._m2ts_check(selected): raise Exception('_m2ts_check failed')
 				selected = [f for f in selected if not any(x in f['filename'] for x in extras_filtering_list)]

@@ -1528,7 +1528,8 @@ class Sources:
 						from resources.lib.debrid.torbox import TorBox as debrid_function
 					else: return
 					
-					url = debrid_function().resolve_magnet(url, item['hash'], season, episode, title)
+					premiered = meta.get('premiered') or meta.get('firstaired') if isinstance(meta, dict) else None
+					url = debrid_function().resolve_magnet(url, item['hash'], season, episode, title, premiered=premiered)
 					self.url = url
 					return url
 				except:
@@ -1639,7 +1640,7 @@ class Sources:
 			release_title = chosen_result['filename']
 			control.hide()
 			from resources.lib.modules import source_utils
-			if source_utils.seas_ep_filter(season, episode, release_title):
+			if source_utils.seas_ep_filter(season, episode, release_title, premiered=meta.get('premiered') or meta.get('firstaired')):
 				return player.Player().play_source(title, year, season, episode, imdb, tmdb, tvdb, self.url, meta, debridPackCall=True) # hack fix for setResolvedUrl issue
 			else:
 				return player.Player().play(self.url)

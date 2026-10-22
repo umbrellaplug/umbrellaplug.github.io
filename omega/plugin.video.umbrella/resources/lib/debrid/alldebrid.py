@@ -422,7 +422,7 @@ class AllDebrid:
 
 
 
-	def resolve_magnet(self, magnet_url, info_hash, season, episode, ep_title):
+	def resolve_magnet(self, magnet_url, info_hash, season, episode, ep_title, premiered=None):
 		from resources.lib.modules.source_utils import seas_ep_filter, extras_filter
 		try:
 			failed_reason, media_id, file_url = 'Unknown', None, None
@@ -469,7 +469,7 @@ class AllDebrid:
 						failed_reason = 'Can not resolve .m2ts season disk episode'
 						continue
 
-					if seas_ep_filter(season, episode, name):
+					if seas_ep_filter(season, episode, name, premiered=premiered):
 						norm = {'filename': name, 'link': link, 'size': item.get('s', 0)}
 						append(norm)
 						continue
@@ -477,7 +477,7 @@ class AllDebrid:
 						link_info = cache.get(self.unrestrict_link, 168, link, True)  # returnAll=True path
 						if not link_info: continue
 						resolved_name = link_info.get('filename', name)
-						if seas_ep_filter(season, episode, resolved_name):
+						if seas_ep_filter(season, episode, resolved_name, premiered=premiered):
 							norm = {'filename': resolved_name, 'link': link, 'size': item.get('s', 0)}
 							append(norm)
 					except:
@@ -489,7 +489,7 @@ class AllDebrid:
 					episode_title = re.sub(r'[^A-Za-z0-9-]+', '.', ep_title.replace("'", '')).lower()
 					for i in correct_files:
 						try:
-							compare_link = seas_ep_filter(season, episode, i['filename'], split=True)
+							compare_link = seas_ep_filter(season, episode, i['filename'], split=True, premiered=premiered)
 							compare_link = re.sub(episode_title, '', compare_link)
 							if not any(x in compare_link for x in extras_filtering_list):
 								media_id = i['link']

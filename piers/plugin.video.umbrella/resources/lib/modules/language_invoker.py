@@ -30,16 +30,14 @@ def set_reuselanguageinvoker(fromSettings=False):
 			tree.getElementsByTagName("reuselanguageinvoker")[0].firstChild.data = new_value
 			hash_start = gen_file_hash(addon_xml)
 			newxml = str(tree.toxml())[22:] #for some reason to xml adds this so we remove it."<?xml version="1.0" ?>"
-			with open(addon_xml, "w") as f:
+			with open(addon_xml, "w", encoding='utf-8') as f:
 				f.write(newxml)
 			hash_end = gen_file_hash(addon_xml)
 			if hash_start != hash_end:
 				control.setSetting('reuse.languageinvoker', new_value)
-				control.okDialog(message='%s\n%s' % (control.lang(33017) % new_value, control.lang(33020)))
+				control.okDialog(message='%s\n%s' % (control.lang(33017) % new_value, control.lang(32110)))
 			else:
 				return control.okDialog(message=33021)
-			current_profile = control.infoLabel('system.profilename')
-			control.execute('LoadProfile(%s)' % current_profile)
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()

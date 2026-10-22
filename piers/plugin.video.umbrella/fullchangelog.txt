@@ -1,3 +1,17 @@
+[B]Update - v6.7.95 - Oct 22nd, 2026 [/B]
+--[Change] Changes made to allow for results scraped by date. Updated version of cocoscrapers will be required for this to work.
+--[Change] Removed reuselanguageinvoker popup on update.
+--[Fix] Fix for instances where playnext window was not popping up as expected.
+--[Fix] Fix for error when deleting a file from premiumize cloud.
+--[Fix] More adjustments for Kodi 22.
+--[Fix] Restructure of language folders for Kodi 22 support.
+
+[B]Update - v6.7.728 - Oct 21st, 2026 [/B]
+--[Change] Changes made to allow for results scraped by date.
+
+[B]Update - v6.7.727 - Oct 21st, 2026 [/B]
+--[Fix] Restructure of language folders for Kodi 22 support.
+
 [B]Update - v6.7.94 - Oct 21st, 2026 [/B]
 --[Fix] Fix for playlist creation clearing playback.
 

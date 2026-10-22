@@ -161,7 +161,6 @@ class ReuseLanguageInvokerCheck:
 		control.log('[ plugin.video.umbrella ]  ReuseLanguageInvokerCheck Service Starting...', LOGINFO)
 		try:
 			import xml.etree.ElementTree as ET
-			from resources.lib.modules.language_invoker import gen_file_hash
 			addon_xml = control.joinPath(control.addonPath('plugin.video.umbrella'), 'addon.xml')
 			tree = ET.parse(addon_xml)
 			root = tree.getroot()
@@ -169,21 +168,16 @@ class ReuseLanguageInvokerCheck:
 			try: current_xml_setting = [str(i.text) for i in root.iter('reuselanguageinvoker')][0]
 			except Exception: return control.log('[ plugin.video.umbrella ]  ReuseLanguageInvokerCheck failed to get settings.xml value', LOGINFO)
 			if current_addon_setting == '':
-				current_addon_setting = 'true'
+				current_addon_setting = current_xml_setting
 				control.setSetting('reuse.languageinvoker', current_addon_setting)
 			if current_xml_setting == current_addon_setting:
 				return control.log('[ plugin.video.umbrella ]  ReuseLanguageInvokerCheck Service Finished', LOGINFO)
-			control.okDialog(message='%s\n%s' % (control.lang(33023), control.lang(33020)))
 			for item in root.iter('reuselanguageinvoker'):
 				item.text = current_addon_setting
-				hash_start = gen_file_hash(addon_xml)
-				tree.write(addon_xml)
-				hash_end = gen_file_hash(addon_xml)
-				control.log('[ plugin.video.umbrella ]  ReuseLanguageInvokerCheck Service Finished', LOGINFO)
-				if hash_start != hash_end:
-					current_profile = control.infoLabel('system.profilename')
-					control.execute('LoadProfile(%s)' % current_profile)
-				else: control.okDialog(title='default', message=33022)
+			# Updates replace the manifest. Restore the saved preference silently;
+			# Kodi can pick it up on its next normal restart without a profile reload.
+			tree.write(addon_xml, encoding='utf-8')
+			control.log('[ plugin.video.umbrella ]  ReuseLanguageInvokerCheck restored saved preference: %s' % current_addon_setting, LOGINFO)
 			return
 		except Exception:
 			log_utils.error()

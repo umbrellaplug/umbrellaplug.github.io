@@ -63,9 +63,33 @@ ADS = ('1xbet', 'betwin')
 
 APPLE_TV = ('atvp',)
 
-def seas_ep_filter(season, episode, release_title, split=False):
+def episode_airdate_pattern(premiered):
+	"""Validate the selected episode's date and match common release separators."""
+	from datetime import datetime
+	if not isinstance(premiered, str) or not re.fullmatch(r'\d{4}[-.]\d{2}[-.]\d{2}', premiered): return None
 	try:
+		date = datetime.strptime(premiered.replace('.', '-'), '%Y-%m-%d')
+	except ValueError:
+		return None
+	return r'(?<!\d)' + r'[. -]'.join(date.strftime('%Y.%m.%d').split('.')) + r'(?!\d)'
+
+
+def seas_ep_filter(season, episode, release_title, split=False, premiered=None):
+	try:
+		filename = unquote(release_title).replace('\\', '/').rsplit('/', 1)[-1]
+		filename = re.sub(r'[^A-Za-z0-9-]+', '.', filename.replace("'", '')).lower()
 		release_title = re.sub(r'[^A-Za-z0-9-]+', '.', unquote(release_title).replace('\'', '')).replace('&', 'and').replace('%', '.percent').lower()
+		# Inspect only the filename: a dated parent folder must not select another file.
+		date_in_name = re.search(r'(?<!\d)\d{4}[.-]\d{2}[.-]\d{2}(?!\d)', filename)
+		explicit_episode = re.search(r'(?:s\d+[.-]?e|\d+x\d+|episode[.-]?\d+)', filename)
+		if date_in_name and not explicit_episode:
+			date_pattern = episode_airdate_pattern(premiered)
+			date_match = re.search(date_pattern, filename) if date_pattern else None
+			if date_match:
+				return filename[date_match.end():] if split else True
+			return None if split else False
+		# Parent-folder dates must not satisfy the legacy loose episode patterns.
+		release_title = re.sub(r'(?<!\d)\d{4}[.-]\d{2}[.-]\d{2}(?!\d)', '', release_title)
 		season = str(season)
 		season_fill = season.zfill(2)
 		episode = str(episode)

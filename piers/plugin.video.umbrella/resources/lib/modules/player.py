@@ -129,6 +129,7 @@ class Player(xbmc.Player):
 		self.media_type = None
 		self.DBID = None
 		self.offset = '0'
+		self.trakt_resume_percent = None
 		self.media_length = 0
 		self.current_time = 0
 		self.meta = {}
@@ -221,6 +222,7 @@ class Player(xbmc.Player):
 			poster, thumb, season_poster, fanart, banner, clearart, clearlogo, discart, meta = self.getMeta(meta)
 			try:
 				bookmark = Bookmarks()
+				self.trakt_resume_percent = None
 				# Kodi passes the result of its native Resume/Start from beginning
 				# dialog as a fourth plugin argument. Respect it instead of displaying
 				# Umbrella's legacy bookmark dialog a second time.
@@ -228,6 +230,7 @@ class Player(xbmc.Player):
 				if len(argv) > 3 and str(argv[3]).lower() in ('resume:true', 'resume:false'):
 					kodi_resume = str(argv[3]).lower() == 'resume:true'
 				self.offset = bookmark.get(name=self.name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, year=self.year, runtime=meta.get('duration') if meta else 0, kodi_resume=kodi_resume)
+				self.trakt_resume_percent = bookmark.trakt_resume_percent
 				self.custom_rewatch = bookmark.custom_rewatch
 			except:
 				if self.debuglog:
@@ -491,7 +494,13 @@ class Player(xbmc.Player):
 			from sys import argv
 			# Kodi owns playback for a valid plugin handle. Resolve that request
 			# in play_source instead of stopping it to launch another playlist.
-			if int(argv[1]) >= 0: return False
+			if int(argv[1]) >= 0:
+				# Resolving a standalone episode does not necessarily put it in
+				# Kodi's playlist (notably when launched from a skin widget).
+				# Seed it without launching a second player or cancelling the handle.
+				if self.media_type == 'episode' and self.enable_playnext and control.playlist.size() == 0:
+					self.singleItemPlaylist(item)
+				return False
 			#check if no playlist is currently added.
 			# Kodi can report position 0 for an empty video playlist after source
 			# selection. Seed the current episode before appending the next one.
@@ -647,7 +656,7 @@ class Player(xbmc.Player):
 							self.watched_during_playback = True
 						if self.enable_playnext and not self.play_next_triggered:
 							playlist_size = int(control.playlist.size())
-							if playlist_size > 1:
+							if 0 <= control.playlist.getposition() < playlist_size - 1:
 								if self.preScrape_triggered == False:
 									xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_preScrapeNext)')
 									self.preScrape_triggered = True
@@ -666,7 +675,7 @@ class Player(xbmc.Player):
 										self.play_next_triggered = True
 								elif self.playnext_method== '2':
 									if self.subtitletime is None:
-										self.subtitletime = Subtitles().downloadForPlayNext(self.title, self.year, self.imdb, self.season, self.episode, self.media_length)
+										self.subtitletime = Subtitles().downloadForPlayNext(self.title, self.year, self.imdb, self.season, self.episode, self.media_length, premiered=self.meta.get('premiered') or self.meta.get('firstaired'))
 									if str(self.subtitletime) == 'default':
 										if getSetting('playnext.sub.backupmethod')== '0': #subtitle failed use seconds as backup
 											subtitletimeumb = int(getSetting('playnext.sub.seconds'))
@@ -884,7 +893,11 @@ class Player(xbmc.Player):
 			if self.traktCredentials and _resume_source == '1': # re-adjust the resume point since dialog is based on meta runtime vs. getTotalTime() and inaccurate
 				try:
 					total_time = self.getTotalTime()
-					progress = float(fetch_bookmarks(self.imdb, self.tmdb, self.tvdb, self.season, self.episode))
+					# Keep the resume point accepted before playback; startup sync or
+					# another callback may have cleared the cached bookmark since then.
+					progress = self.trakt_resume_percent
+					if progress is None:
+						progress = float(fetch_bookmarks(self.imdb, self.tmdb, self.tvdb, self.season, self.episode))
 					self.offset = (progress / 100) * total_time
 				except: pass
 			elif self.simklCredentials and _resume_source == '2':
@@ -933,7 +946,7 @@ class Player(xbmc.Player):
 			except:
 				log_utils.log('Exception trying to seekTime() offset: %s'% self.offset, level=log_utils.LOGDEBUG)
 			self.playback_resumed = True
-		if getSetting('subtitles') == 'true': Subtitles().get(self.title, self.year, self.imdb, self.season, self.episode)
+		if getSetting('subtitles') == 'true': Subtitles().get(self.title, self.year, self.imdb, self.season, self.episode, premiered=self.meta.get('premiered') or self.meta.get('firstaired'))
 		if self.onPlayBackStopped_ran or self.scrobble_sent or not self.isPlayingVideo(): return
 		try:
 			self.current_time = self.getTime()
@@ -1260,7 +1273,7 @@ class PlayNext(xbmc.Player):
 			log_utils.error("Kodi did not return a playing file, killing playnext xml's")
 			return
 		# Only show playnext if next episode meta is valid
-		next_meta = self.getNext_meta() if control.playlist.size() > 0 and control.playlist.getposition() != (control.playlist.size() - 1) else None
+		next_meta = self.getNext_meta() if 0 <= control.playlist.getposition() < control.playlist.size() - 1 else None
 		if next_meta:
 			if self.isStill_watching(): target = self.show_stillwatching_xml
 			elif self.enable_playnext: target = self.show_playnext_xml
@@ -1283,6 +1296,7 @@ class PlayNext(xbmc.Player):
 			
 			from urllib.parse import parse_qsl
 			current_position = control.playlist.getposition()
+			if not 0 <= current_position < control.playlist.size() - 1: return None
 			next_url = control.playlist[current_position + 1].getPath()
 			# next_url=videodb://tvshows/titles/16/2/571?season=2&tvshowid=16 # library playback returns this
 			params = dict(parse_qsl(next_url.replace('?', '')))
@@ -1385,7 +1399,7 @@ class PlayNext(xbmc.Player):
 				if not source_preferences.get(self.getNext_meta()): return
 			playlist_pos = control.playlist.getposition()
 			playlist_size = control.playlist.size()
-			if playlist_size > 0 and playlist_pos != (playlist_size - 1):
+			if 0 <= playlist_pos < playlist_size - 1:
 				from resources.lib.modules import sources
 				from resources.lib.database import providerscache
 				next_meta=self.getNext_meta()
@@ -1477,7 +1491,7 @@ class Subtitles:
 		score += 30 if bool(item.get('foreign_parts_only')) == prefer_forced else -30
 		return score
 
-	def get(self, title, year, imdb, season, episode):
+	def get(self, title, year, imdb, season, episode, premiered=None):
 		try:
 			quality = ['bluray', 'hdrip', 'brrip', 'bdrip', 'dvdrip', 'webrip', 'hdtv']
 			langs = []
@@ -1528,7 +1542,7 @@ class Subtitles:
 			if result:
 				for j in result:
 					if season:
-							if seas_ep_filter(season, episode, j['fileName']):
+							if seas_ep_filter(season, episode, j['fileName'], premiered=premiered):
 								j['score'] = self._subtitle_score(j, pFileName)
 								matches.append(j)
 					else:
@@ -1586,7 +1600,7 @@ class Subtitles:
 					for count, i in enumerate(subtitles):
 						sFileName = unquote(os.path.basename(i))
 						sFileName = os.path.splitext(sFileName)[0]
-						if seas_ep_filter(season, episode, sFileName.lower()):
+						if seas_ep_filter(season, episode, sFileName.lower(), premiered=premiered):
 							seq = SequenceMatcher(None, pFileName.lower(), sFileName.lower())
 							subtitle_matches.append({'fullPath': subtitles[count], 'matchRatio': seq.ratio()})
 				else:
@@ -1616,7 +1630,7 @@ class Subtitles:
 					control.notification(title=filename, message=getLS(40506) % lang.upper())
 		except: log_utils.error()
 
-	def downloadForPlayNext(self,  title, year, imdb, season, episode, media_length):
+	def downloadForPlayNext(self,  title, year, imdb, season, episode, media_length, premiered=None):
 		try:
 			try:
 				import re
@@ -1691,7 +1705,7 @@ class Subtitles:
 				if result:
 					for j in result:
 						if season:
-								if seas_ep_filter(season, episode, j['fileName']):
+								if seas_ep_filter(season, episode, j['fileName'], premiered=premiered):
 									j['score'] = self._subtitle_score(j, pFileName)
 									matches.append(j)
 						else:
@@ -1741,7 +1755,7 @@ class Subtitles:
 						for count, i in enumerate(subtitles):
 							sFileName = unquote(os.path.basename(i))
 							sFileName = os.path.splitext(sFileName)[0]
-							if seas_ep_filter(season, episode, sFileName.lower()):
+							if seas_ep_filter(season, episode, sFileName.lower(), premiered=premiered):
 								seq = SequenceMatcher(None, pFileName.lower(), sFileName.lower())
 								subtitle_matches.append({'fullPath': subtitles[count], 'matchRatio': seq.ratio()})
 					else:
@@ -1799,6 +1813,7 @@ class Bookmarks:
 		self.punchplayCredentials = punchplay.getPunchPlayCredentialsInfo()
 		self.custom_rewatch = False
 	def get(self, name, imdb=None, tmdb=None, tvdb=None, season=None, episode=None, year='0', runtime=None, ck=False, kodi_resume=None):
+		self.trakt_resume_percent = None
 		markwatched_percentage = int(getSetting('markwatched.percent')) or 85
 		offset = '0'
 		scrobbble = 'Local Bookmark'
@@ -1815,6 +1830,7 @@ class Bookmarks:
 				display_offset = offset * 60
 				seekable = (2 <= progress <= int(markwatched_percentage))
 				if not seekable: return '0'
+				self.trakt_resume_percent = progress
 			except:
 				log_utils.error()
 				return '0'
