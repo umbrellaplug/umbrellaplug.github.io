@@ -43,10 +43,12 @@ class StillWatchingXML(BaseDialog):
 			self.doClose()
 
 	def onClick(self, control_id):
-		if control_id == 3011: # Play Now, skip to end of current
-			xbmc.executebuiltin('PlayerControl(BigSkipForward)')
+		if control_id == 3011: # Play Now
+			from resources.lib.modules.player import advance_playnext
+			advance_playnext(self.playing_file)
 			self.doClose()
 		if control_id == 3012: # Stop playback
+			playerWindow.clearProperty('umbrella.standalone.next')
 			xbmc.executebuiltin('PlayerControl(Playlist.Clear)')
 			xbmc.executebuiltin('PlayerControl(Stop)')
 			playerWindow.clearProperty('umbrella.preResolved_nextUrl')
@@ -91,7 +93,11 @@ class StillWatchingXML(BaseDialog):
 					progress_bar.setPercent(self.calculate_percent())
 
 			if self.closed: return
+			if self.default_action == 0 and self.playing_file == self.getPlayingFile():
+				from resources.lib.modules.player import advance_playnext
+				advance_playnext(self.playing_file)
 			if (self.default_action == 1 and self.playing_file == self.getPlayingFile()):
+				playerWindow.clearProperty('umbrella.standalone.next')
 				xbmc.executebuiltin('PlayerControl(Playlist.Clear)')
 				xbmc.executebuiltin('PlayerControl(Stop)')
 

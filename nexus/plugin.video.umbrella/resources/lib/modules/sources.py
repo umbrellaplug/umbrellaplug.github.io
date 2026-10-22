@@ -18,6 +18,7 @@ from resources.lib.modules import debrid
 from resources.lib.modules import log_utils
 from resources.lib.modules import string_tools
 from resources.lib.modules import source_preferences
+from resources.lib.modules.playback_metadata import normalize as normalize_playback_meta
 from resources.lib.modules.source_utils import supported_video_extensions, getFileType, aliases_check
 from resources.lib.cloud_scrapers import cloudSources
 from resources.lib.internal_scrapers import internalSources
@@ -94,8 +95,11 @@ class Sources:
 				playerWindow.clearProperty('umbrella.preResolved_tmdb')
 				if _match:
 					control.sleep(500)
-					try: meta = jsloads(unquote(meta.replace('%22', '\\"')))
-					except: pass
+					meta = normalize_playback_meta(meta, title=title, year=year, imdb=imdb, tmdb=tmdb,
+						tvdb=tvdb, season=season, episode=episode, tvshowtitle=tvshowtitle,
+						premiered=premiered, mediatype='movie' if tvshowtitle is None else 'episode')
+					self.meta = meta
+					homeWindow.setProperty(self.metaProperty, jsdumps(meta))
 					if self.debuglog:
 						log_utils.log('Playing preResolved_nextUrl = %s' % preResolved_nextUrl, level=log_utils.LOGDEBUG)
 					from resources.lib.modules import player
@@ -106,7 +110,7 @@ class Sources:
 			if title: title = self.getTitle(title)
 			if tvshowtitle: tvshowtitle = self.getTitle(tvshowtitle)
 			homeWindow.clearProperty(self.metaProperty)
-			homeWindow.setProperty(self.metaProperty, meta)
+			homeWindow.setProperty(self.metaProperty, jsdumps(normalize_playback_meta(meta)))
 			homeWindow.clearProperty(self.seasonProperty)
 			homeWindow.setProperty(self.seasonProperty, season)
 			homeWindow.clearProperty(self.episodeProperty)
@@ -208,7 +212,12 @@ class Sources:
 					log_utils.error()
 					meta = {}
 			if self.meta is None or 'videodb' in control.infoLabel('ListItem.FolderPath'):
-				self.meta = checkLibMeta()
+				self.meta = checkLibMeta() or meta
+			self.meta = normalize_playback_meta(self.meta, title=title, year=year, imdb=imdb, tmdb=tmdb,
+				tvdb=tvdb, season=season, episode=episode, tvshowtitle=tvshowtitle,
+				premiered=premiered, mediatype=self.mediatype)
+			meta = self.meta
+			homeWindow.setProperty(self.metaProperty, jsdumps(meta))
 			if self.mediatype == 'movie':
 				if getSetting('imdb.Moviemeta.check') == 'true': # check IMDB. TMDB and Trakt differ on a ratio of 1 in 20 and year is off by 1, some meta titles mismatch
 					title, year = self.imdb_meta_chk(imdb, title, year)
@@ -1075,7 +1084,7 @@ class Sources:
 				except: log_utils.error()
 			if getSetting('source.filtermbysize') == '2':
 				try:
-					duration = self.meta['duration'] or 5400
+					duration = self.meta.get('duration') or 5400
 					max_size = (0.125 * (0.90 * float(getSetting('source.movie.linespeed', '20'))) * duration)/1000
 					self.sources = [i for i in self.sources if (i.get('size', 0) <= max_size)]
 				except: log_utils.error()
@@ -1096,7 +1105,7 @@ class Sources:
 				except: log_utils.error()
 			if getSetting('source.filterebysize') == '2':
 				try:
-					duration = self.meta['duration'] or 2400
+					duration = self.meta.get('duration') or 2400
 					max_size = (0.125 * (0.90 * float(getSetting('source.episode.linespeed', '20'))) * duration)/1000
 					self.sources = [i for i in self.sources if (i.get('size', 0) <= max_size)]
 				except: log_utils.error()

@@ -1,3 +1,10 @@
+[B]Update - v6.7.96 - Oct 22nd, 2026 [/B]
+--[Fix] Further Play Next adjustments for standalone playback, Play Now, automatic countdowns and Still Watching prompts.
+--[Fix] Handle stale Umbrella playback queues and prevent duplicate episode transitions from delayed callbacks.
+--[Fix] Preserve selected Trakt and MDBList resume points and retry seeking briefly when a stream is not ready.
+--[Fix] Preserve queued episode metadata and fill missing details from playback arguments when library metadata is unavailable.
+--[Fix] Apply existing source speed-filter duration defaults when movie or episode runtime is missing.
+
 [B]Update - v6.7.95 - Oct 22nd, 2026 [/B]
 --[Change] Changes made to allow for results scraped by date. Updated version of cocoscrapers will be required for this to work.
 --[Change] Removed reuselanguageinvoker popup on update.

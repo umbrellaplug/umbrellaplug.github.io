@@ -44,14 +44,15 @@ class PlayNextXML(BaseDialog):
 			self.doClose()
 
 	def onClick(self, control_id):
-		if control_id == 3011: # Play Now, skip to end of current
+		if control_id == 3011: # Play Now
 			playerWindow.setProperty('umbrella.playnextPlayPressed', str(1))
-			playerWindow.setProperty('umbrella.playnext.transition', 'true')
 			from resources.lib.modules import log_utils
 			log_utils.log('PlayNext Play Button! Playlist Position: %s Playlist Count: %s ' % (control.playlist.getposition(), control.playlist.size()), log_utils.LOGDEBUG)
-			xbmc.executebuiltin('PlayerControl(BigSkipForward)')
+			from resources.lib.modules.player import advance_playnext
+			advance_playnext(self.playing_file)
 			self.doClose()
 		if control_id == 3012: # Stop playback
+			playerWindow.clearProperty('umbrella.standalone.next')
 			playerWindow.clearProperty('umbrella.playnext.transition')
 			xbmc.executebuiltin('PlayerControl(Playlist.Clear)')
 			xbmc.executebuiltin('PlayerControl(Stop)')
@@ -100,9 +101,10 @@ class PlayNextXML(BaseDialog):
 			if self.closed: return
 
 			if self.default_action == 0 and self.playing_file == self.getPlayingFile():
-				playerWindow.setProperty('umbrella.playnext.transition', 'true')
-
+				from resources.lib.modules.player import advance_playnext
+				advance_playnext(self.playing_file)
 			if (self.default_action == 1 and self.playing_file == self.getPlayingFile()):
+				playerWindow.clearProperty('umbrella.standalone.next')
 				playerWindow.clearProperty('umbrella.playnext.transition')
 				xbmc.executebuiltin('PlayerControl(Playlist.Clear)')
 				xbmc.executebuiltin('PlayerControl(Stop)')

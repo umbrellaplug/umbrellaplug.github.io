@@ -114,6 +114,38 @@ def _refresh_after_player_closes(request_id, watched_update_thread=None):
 			homeWindow.clearProperty('umbrella.playback_cleanup')
 
 
+def _playlist_position():
+	position = control.playlist.getposition()
+	if position == -1 and control.playlist.size() > 1:
+		# Only treat our own detached queue as current + next.
+		next_url = playerWindow.getProperty('umbrella.standalone.next')
+		if next_url and control.playlist[1].getPath() == next_url: return 0
+	return position
+
+
+def advance_playnext(expected_path=None):
+	"""Select one next item, including a queue not attached to Kodi's player."""
+	if playerWindow.getProperty('umbrella.playnext.transition') == 'true': return False
+	if expected_path:
+		try:
+			if control.player.getPlayingFile() != expected_path: return False
+		except Exception: return False
+	position = _playlist_position()
+	if not 0 <= position < control.playlist.size() - 1: return False
+	playerWindow.setProperty('umbrella.playnext.transition', 'true')
+	try:
+		if control.playlist.getposition() == -1:
+			playerWindow.clearProperty('umbrella.standalone.next')
+			control.player.play(control.playlist, startpos=position + 1)
+		else:
+			control.player.playnext()
+		return True
+	except Exception:
+		playerWindow.clearProperty('umbrella.playnext.transition')
+		log_utils.error()
+		return False
+
+
 class Player(xbmc.Player):
 	def __init__(self):
 		xbmc.Player.__init__(self)
@@ -130,6 +162,7 @@ class Player(xbmc.Player):
 		self.DBID = None
 		self.offset = '0'
 		self.trakt_resume_percent = None
+		self.mdblist_resume_percent = None
 		self.media_length = 0
 		self.current_time = 0
 		self.meta = {}
@@ -223,6 +256,7 @@ class Player(xbmc.Player):
 			try:
 				bookmark = Bookmarks()
 				self.trakt_resume_percent = None
+				self.mdblist_resume_percent = None
 				# Kodi passes the result of its native Resume/Start from beginning
 				# dialog as a fourth plugin argument. Respect it instead of displaying
 				# Umbrella's legacy bookmark dialog a second time.
@@ -231,6 +265,7 @@ class Player(xbmc.Player):
 					kodi_resume = str(argv[3]).lower() == 'resume:true'
 				self.offset = bookmark.get(name=self.name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, year=self.year, runtime=meta.get('duration') if meta else 0, kodi_resume=kodi_resume)
 				self.trakt_resume_percent = bookmark.trakt_resume_percent
+				self.mdblist_resume_percent = bookmark.mdblist_resume_percent
 				self.custom_rewatch = bookmark.custom_rewatch
 			except:
 				if self.debuglog:
@@ -346,7 +381,7 @@ class Player(xbmc.Player):
 				if self.debuglog: log_utils.log('addEpisodetoPlaylist: next episode is S%sE%s but multi_season is disabled - not adding to playlist' % (item_season, item.get('episode')), level=log_utils.LOGWARNING)
 				return
 			try:
-				current_pos = control.playlist.getposition()
+				current_pos = _playlist_position()
 				if current_pos != -1 and control.playlist.size() > current_pos + 1:
 					if self.debuglog: log_utils.log('addEpisodetoPlaylist: playlist already has an item queued at position %s (size=%s) - not adding a duplicate' % (current_pos + 1, control.playlist.size()), level=log_utils.LOGDEBUG)
 					return
@@ -356,6 +391,8 @@ class Player(xbmc.Player):
 			for url, li, folder in playlist_items:
 				if url and li:
 					control.playlist.add(url=url, listitem=li)
+					if getattr(self, '_standalone_playlist', False):
+						playerWindow.setProperty('umbrella.standalone.next', url)
 					added = True
 					if self.debuglog: log_utils.log('addEpisodetoPlaylist: successfully added S%sE%s to playlist (playlist size now: %s)' % (item.get('season'), item.get('episode'), control.playlist.size()), level=log_utils.LOGDEBUG)
 			if not added:
@@ -498,8 +535,17 @@ class Player(xbmc.Player):
 				# Resolving a standalone episode does not necessarily put it in
 				# Kodi's playlist (notably when launched from a skin widget).
 				# Seed it without launching a second player or cancelling the handle.
+				if self.media_type == 'episode' and self.enable_playnext and control.playlist.getposition() == -1 and control.playlist.size():
+					# Replace only a detached queue we previously created. Other
+					# add-ons and user playlists must retain their entries.
+					owned = playerWindow.getProperty('umbrella.standalone.current')
+					if owned and control.playlist[0].getPath() == owned:
+						control.playlist.clear()
 				if self.media_type == 'episode' and self.enable_playnext and control.playlist.size() == 0:
-					self.singleItemPlaylist(item)
+					playerWindow.clearProperty('umbrella.standalone.next')
+					self._standalone_playlist = self.singleItemPlaylist(item)
+					if self._standalone_playlist:
+						playerWindow.setProperty('umbrella.standalone.current', item.getPath() or item.getVideoInfoTag().getFilenameAndPath())
 				return False
 			#check if no playlist is currently added.
 			# Kodi can report position 0 for an empty video playlist after source
@@ -656,7 +702,7 @@ class Player(xbmc.Player):
 							self.watched_during_playback = True
 						if self.enable_playnext and not self.play_next_triggered:
 							playlist_size = int(control.playlist.size())
-							if 0 <= control.playlist.getposition() < playlist_size - 1:
+							if 0 <= _playlist_position() < playlist_size - 1:
 								if self.preScrape_triggered == False:
 									xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_preScrapeNext)')
 									self.preScrape_triggered = True
@@ -910,7 +956,9 @@ class Player(xbmc.Player):
 				try:
 					from resources.lib.database import mdbsync
 					total_time = self.getTotalTime()
-					progress = float(mdbsync.fetch_bookmarks(self.imdb, self.tmdb, self.tvdb, self.season, self.episode))
+					progress = self.mdblist_resume_percent
+					if progress is None:
+						progress = float(mdbsync.fetch_bookmarks(self.imdb, self.tmdb, self.tvdb, self.season, self.episode))
 					self.offset = (progress / 100) * total_time
 				except: pass
 			elif self.customCredentials and _resume_source == '4':
@@ -941,11 +989,7 @@ class Player(xbmc.Player):
 					resume_item = punchplay.get_resume_item(self.tmdb, self.season, self.episode)
 					if resume_item: self.offset = resume_item['position_seconds']
 				except: pass
-			try:
-				self.seekTime(self.offset)
-			except:
-				log_utils.log('Exception trying to seekTime() offset: %s'% self.offset, level=log_utils.LOGDEBUG)
-			self.playback_resumed = True
+			self.playback_resumed = self._seek_resume()
 		if getSetting('subtitles') == 'true': Subtitles().get(self.title, self.year, self.imdb, self.season, self.episode, premiered=self.meta.get('premiered') or self.meta.get('firstaired'))
 		if self.onPlayBackStopped_ran or self.scrobble_sent or not self.isPlayingVideo(): return
 		try:
@@ -1045,8 +1089,41 @@ class Player(xbmc.Player):
 							  self.name, round(watcher, 2), self.current_time)
 		return resume_available, _scrobble_source
 
+	def _seek_resume(self):
+		# AVStarted can precede a seekable stream or a valid duration. Do not
+		# count a failed seek as a successful resume.
+		for attempt in range(10):
+			try:
+				if self.onPlayBackStopped_ran or self.scrobble_sent: return False
+				if self.isPlayingVideo() and self.getTotalTime() > 0:
+					progress = None
+					if getSetting('scrobble.source') == '1': progress = self.trakt_resume_percent
+					elif getSetting('scrobble.source') == '3': progress = self.mdblist_resume_percent
+					target = float(self.offset) if progress is None else float(progress) * self.getTotalTime() / 100
+					if target <= 0: return False
+					self.seekTime(target)
+					self.offset = target
+					return True
+			except Exception:
+				pass
+			if control.monitor.waitForAbort(0.2): return False
+		log_utils.log('Unable to apply resume point: %s' % self.offset, level=log_utils.LOGWARNING)
+		return False
+
 	def onPlayBackStopped(self):
 		try:
+			# The outgoing Player may receive a delayed stop after the next
+			# episode has started. It no longer owns that episode's queue.
+			if self.scrobble_sent and self.isPlayingVideo(): return
+			# keepAlive's EOF fallback is distinct from Kodi's explicit Stop
+			# callback. Only the fallback may complete a detached episode.
+			if (self.playbackStopped_triggered and not self.onPlayBackStopped_ran
+					and not self.scrobble_sent and getattr(self, '_standalone_playlist', False)
+					and self.media_length > 0 and self.current_time >= self.media_length - 2
+					and _playlist_position() == 0):
+				self.onPlayBackEnded()
+				return
+			playerWindow.clearProperty('umbrella.standalone.next')
 			playnext_transition = playerWindow.getProperty('umbrella.playnext.transition') == 'true'
 			if not playnext_transition:
 				playerWindow.clearProperty('umbrella.preResolved_nextUrl')
@@ -1150,6 +1227,14 @@ class Player(xbmc.Player):
 				playingfile = False
 			playlist_position = control.playlist.getposition()
 			playlist_size = control.playlist.size()
+			if (not playingfile and playlist_position == -1 and self.enable_playnext
+					and getattr(self, '_standalone_playlist', False) and _playlist_position() == 0):
+				# The stream has ended. Start the queued episode now, without ever
+				# stopping/restarting the current stream during initial resolution.
+				if advance_playnext():
+					self._standalone_playlist = False
+					homeWindow.clearProperty('umbrella.playback_cleanup')
+					return
 			has_next_queued = playlist_position >= 0 and playlist_position + 1 < playlist_size
 			log_utils.log('onPlayBackEnded Playlist Position: %s Playlist Count: %s Has Next: %s isPlaying: %s' % (playlist_position, playlist_size, has_next_queued, playingfile), level=log_utils.LOGDEBUG)
 			# Kodi can briefly report position 0 with no active file between plugin
@@ -1171,6 +1256,7 @@ class Player(xbmc.Player):
 		except: log_utils.error()
 
 	def onPlayBackError(self):
+		playerWindow.clearProperty('umbrella.standalone.next')
 		playerWindow.clearProperty('umbrella.playnext.transition')
 		playerWindow.clearProperty('umbrella.preResolved_nextUrl')
 		playerWindow.clearProperty('umbrella.playlistStart_position')
@@ -1273,7 +1359,7 @@ class PlayNext(xbmc.Player):
 			log_utils.error("Kodi did not return a playing file, killing playnext xml's")
 			return
 		# Only show playnext if next episode meta is valid
-		next_meta = self.getNext_meta() if 0 <= control.playlist.getposition() < control.playlist.size() - 1 else None
+		next_meta = self.getNext_meta() if 0 <= _playlist_position() < control.playlist.size() - 1 else None
 		if next_meta:
 			if self.isStill_watching(): target = self.show_stillwatching_xml
 			elif self.enable_playnext: target = self.show_playnext_xml
@@ -1295,7 +1381,7 @@ class PlayNext(xbmc.Player):
 		try:
 			
 			from urllib.parse import parse_qsl
-			current_position = control.playlist.getposition()
+			current_position = _playlist_position()
 			if not 0 <= current_position < control.playlist.size() - 1: return None
 			next_url = control.playlist[current_position + 1].getPath()
 			# next_url=videodb://tvshows/titles/16/2/571?season=2&tvshowid=16 # library playback returns this
@@ -1397,7 +1483,7 @@ class PlayNext(xbmc.Player):
 			if getSetting('play.mode.tv') == '0':
 				from resources.lib.modules import source_preferences
 				if not source_preferences.get(self.getNext_meta()): return
-			playlist_pos = control.playlist.getposition()
+			playlist_pos = _playlist_position()
 			playlist_size = control.playlist.size()
 			if 0 <= playlist_pos < playlist_size - 1:
 				from resources.lib.modules import sources
@@ -1814,6 +1900,7 @@ class Bookmarks:
 		self.custom_rewatch = False
 	def get(self, name, imdb=None, tmdb=None, tvdb=None, season=None, episode=None, year='0', runtime=None, ck=False, kodi_resume=None):
 		self.trakt_resume_percent = None
+		self.mdblist_resume_percent = None
 		markwatched_percentage = int(getSetting('markwatched.percent')) or 85
 		offset = '0'
 		scrobbble = 'Local Bookmark'
@@ -1858,6 +1945,7 @@ class Bookmarks:
 				display_offset = offset * 60
 				seekable = (2 <= progress <= int(markwatched_percentage))
 				if not seekable: return '0'
+				self.mdblist_resume_percent = progress
 			except:
 				log_utils.error()
 				return '0'
