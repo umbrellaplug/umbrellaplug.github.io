@@ -37,11 +37,11 @@ class AllDebrid:
 	def __init__(self):
 		self.token = getSetting('alldebridtoken')
 		self.timeout = 20
-		self.server_notifications = getSetting('alldebrid.server.notifications')
+		self.server_notifications = getSetting('alldebrid.server.notifications') == 'true'
 		self.store_to_cloud = getSetting('alldebrid.saveToCloud') == 'true'
 		self.highlight_color = control.setting('highlight.color')
 
-	def _get(self, url, url_append=''):
+	def _get(self, url, url_append='', silent=False):
 		response = None
 		try:
 			if self.token == '':
@@ -63,11 +63,11 @@ class AllDebrid:
 				if response.get('status') == 'success':
 					if 'data' in response: response = response['data']
 				elif response.get('status') == 'error':
-					if self.server_notifications: control.notification(message=response.get('error').get('message'), icon=ad_icon)
+					if self.server_notifications and not silent: control.notification(message=response.get('error').get('message'), icon=ad_icon)
 					log_utils.log('AllDebrid: %s' % response.get('error').get('message'), __name__, log_utils.LOGWARNING)
 					return None
 		except requests.exceptions.ConnectionError:
-			if self.server_notifications: control.notification(message='Failed to connect to AllDebrid', icon=ad_icon)
+			if self.server_notifications and not silent: control.notification(message='Failed to connect to AllDebrid', icon=ad_icon)
 			log_utils.log('Failed to connect to AllDebrid', __name__, log_utils.LOGWARNING)
 			return None
 		except BaseException:
@@ -242,11 +242,12 @@ class AllDebrid:
 
 	def delete_transfer(self, transfer_id, folder_name=None, silent=True):
 		try:
+			if not transfer_id: return
 			if not silent:
 				if not control.yesnoDialog(getLS(40050) % '?\n' + folder_name, '', ''): return
 			url = 'magnet/delete'
 			url_append = '&id=%s' % transfer_id
-			response = self._get(url, url_append)
+			response = self._get(url, url_append, silent=silent)
 			if silent: return
 			else:
 				if response and 'message' in response:
@@ -425,12 +426,13 @@ class AllDebrid:
 	def resolve_magnet(self, magnet_url, info_hash, season, episode, ep_title, premiered=None):
 		from resources.lib.modules.source_utils import seas_ep_filter, extras_filter
 		try:
-			failed_reason, media_id, file_url = 'Unknown', None, None
+			failed_reason, media_id, file_url, transfer_id = 'Unknown', None, None, None
 			correct_files = []
 			append = correct_files.append
 			extensions = supported_video_extensions()
 			extras_filtering_list = extras_filter()
 			transfer_id = self.create_transfer(magnet_url)
+			if not transfer_id: return None
 			transfer_info = self.list_transfer(transfer_id)
 			if not transfer_info: return log_utils.log('AllDebrid: Error RESOLVE MAGNET "%s" : (Server Failed to respond)' % magnet_url, __name__, log_utils.LOGWARNING)
 			#filenames = [i.get('filename') for i in transfer_info.get('links')]
@@ -498,11 +500,14 @@ class AllDebrid:
 							log_utils.error()
 			else:
 				media_id = max(valid_results, key=lambda x: x.get('s')).get('l', None)
-			if not self.store_to_cloud: self.delete_transfer(transfer_id)
 			if not media_id:
+				if not self.store_to_cloud: self.delete_transfer(transfer_id)
 				log_utils.log('AllDebrid: FAILED TO RESOLVE MAGNET "%s" : (%s)' % (magnet_url, failed_reason), __name__, log_utils.LOGWARNING)
 				return None
 			file_url = self.unrestrict_link(media_id)
+			if not self.store_to_cloud:
+				self.delete_transfer(transfer_id)
+				transfer_id = None
 			if not file_url:
 				log_utils.log('AllDebrid: FAILED TO UNRESTRICT MAGNET "%s" ' % magnet_url, __name__, log_utils.LOGWARNING)
 			return file_url

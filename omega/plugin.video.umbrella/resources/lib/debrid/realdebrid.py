@@ -450,16 +450,15 @@ class RealDebrid:
 				if match:
 					rd_link = torrent_info['links'][index]
 					file_url = self.unrestrict_link(rd_link)
-					if file_url.endswith('rar'):
+					if not isinstance(file_url, str) or not file_url.strip():
+						file_url, failed_reason = None, 'RD did not return a download URL'
+					elif file_url.lower().endswith('.rar'):
 						file_url, failed_reason = None, 'RD returned unsupported .rar file --> %s' % file_url
-					try:
-						if not any(file_url.lower().endswith(x) for x in extensions):
-							file_url, failed_reason = None, 'RD returned unsupported file extension --> %s' % file_url
-					except:
-							file_url, failed_reason = None, 'RD returned unsupported file extension or error getting file extension.'
-					if not self.store_to_cloud: self.delete_torrent(torrent_id)
+					elif not file_url.lower().endswith(tuple(extensions)):
+						file_url, failed_reason = None, 'RD returned unsupported file extension --> %s' % file_url
+					if file_url and not self.store_to_cloud: self.delete_torrent(torrent_id)
 				else:
-					self.delete_torrent(torrent_id)
+					failed_reason = 'No matching video file found'
 				if not file_url:
 					log_utils.log('Real-Debrid: FAILED TO RESOLVE MAGNET "%s" : (%s)' % (magnet_url, failed_reason), __name__, log_utils.LOGWARNING)
 					self.delete_torrent(torrent_id)

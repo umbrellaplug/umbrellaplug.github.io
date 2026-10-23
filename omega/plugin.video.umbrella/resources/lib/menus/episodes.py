@@ -16,6 +16,7 @@ from resources.lib.modules import cleangenre
 from resources.lib.modules import client
 from resources.lib.modules import control
 from resources.lib.modules import tools
+from resources.lib.modules.air_labels import date_label
 from resources.lib.modules import trakt
 from resources.lib.modules import simkl
 from resources.lib.modules import mdblist
@@ -3138,10 +3139,11 @@ class Episodes:
 				try: meta.update({'title': i['label']})
 				except: pass
 				if airEnabled == 'true':
+					airdate_label = date_label(meta, airFormat == '4', airZone, airFormatDay == '1', airFormatTime, tools.convert_time) if airFormat in ('3', '4') else ''
 					air = [] ; airday = None ; airtime = None
 					if 'airday' in meta and not meta['airday'] is None and meta['airday'] != '': 
 						airday = meta['airday']
-					if 'airtime' in meta and not meta['airtime'] is None and meta['airtime'] != '':
+					if airFormat not in ('3', '4') and 'airtime' in meta and not meta['airtime'] is None and meta['airtime'] != '':
 						airtime = meta['airtime']
 						if 'airzone' in meta and not meta['airzone'] is None and meta['airzone'] != '':
 							if airZone == '1': zoneTo = meta['airzone']
@@ -3155,8 +3157,9 @@ class Episodes:
 							if airday: airday, airtime = airtime[1], airtime[0]
 					if airday: air.append(airday)
 					if airtime: air.append(airtime)
-					if len(air) > 0:
-						if airFormat == '0': air = airtime
+					if airdate_label or (airFormat not in ('3', '4') and len(air) > 0):
+						if airFormat in ('3', '4'): air = airdate_label
+						elif airFormat == '0': air = airtime
 						elif airFormat == '1': air = airday
 						elif airFormat == '2': air = air = ' '.join(air)
 						#if airLocation == '0' or airLocation == '1': air = '[COLOR skyblue][%s][/COLOR]' % air

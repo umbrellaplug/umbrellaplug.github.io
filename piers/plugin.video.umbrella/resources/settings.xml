@@ -1298,6 +1298,8 @@
 							<option label="35029">0</option>
 							<option label="35028">1</option>
 							<option label="35030">2</option>
+							<option label="40842">3</option>
+							<option label="40843">4</option>
 						</options>
 					</constraints>
 					<dependencies>
@@ -1323,6 +1325,7 @@
 							<and>
 								<condition operator="is" setting="tvshows.air.enabled">true</condition>
 								<condition operator="!is" setting="tvshows.air.format">0</condition>
+								<condition operator="!is" setting="tvshows.air.format">3</condition>
 							</and>
 						</dependency>
 					</dependencies>
@@ -1343,6 +1346,7 @@
 							<and>
 								<condition operator="is" setting="tvshows.air.enabled">true</condition>
 								<condition operator="!is" setting="tvshows.air.format">1</condition>
+								<condition operator="!is" setting="tvshows.air.format">3</condition>
 							</and>
 						</dependency>
 					</dependencies>

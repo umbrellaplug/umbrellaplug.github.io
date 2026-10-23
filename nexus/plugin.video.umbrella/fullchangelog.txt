@@ -1,3 +1,11 @@
+[B]Update - v6.7.97 - Oct 23rd, 2026 [/B]
+--[Fix] Handle missing Real-Debrid download URLs without a NoneType error and clean up failed magnet resolutions.
+--[Fix] Preserve the original title, IDs, season and episode when retrying failed source resolution.
+--[Fix] Handle missing or malformed Trakt ID lookup responses without an error.
+--[Fix] Prevent provider cache write failures from discarding freshly scraped episode and pack results.
+--[Fix] Prevent an uninitialized playback URL from causing an error when no sources are available.
+--[Fix] Make AllDebrid background magnet cleanup silent, reject empty magnet IDs and resolve playback links before deleting temporary magnets.
+
 [B]Update - v6.7.96 - Oct 22nd, 2026 [/B]
 --[Fix] Further Play Next adjustments for standalone playback, Play Now, automatic countdowns and Still Watching prompts.
 --[Fix] Handle stale Umbrella playback queues and prevent duplicate episode transitions from delayed callbacks.

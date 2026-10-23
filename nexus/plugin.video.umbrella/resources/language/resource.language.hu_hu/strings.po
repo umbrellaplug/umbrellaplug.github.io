@@ -6252,3 +6252,11 @@ msgstr ""
 msgctxt "#40841"
 msgid "This account is not configured. Its dependent settings will be left out of the backup."
 msgstr ""
+
+msgctxt "#40842"
+msgid "Date"
+msgstr ""
+
+msgctxt "#40843"
+msgid "Date, Day and Time"
+msgstr ""
