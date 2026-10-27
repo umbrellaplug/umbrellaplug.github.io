@@ -118,6 +118,14 @@ class FastSyncClientTests(unittest.TestCase):
 		self.assertNotIn('sync_watch_list', block)
 		self.assertNotIn('sync_collection', block)
 		self.assertNotIn('sync_watchedProgress', block)
+		self.assertIn("getSetting('floppy.fastsync.auto') == 'true'", block)
+
+	def test_automatic_fast_sync_has_an_explicit_safe_default_toggle(self):
+		path = kodi_stubs.addon_root('matrix') + '/resources/settings.xml'
+		with open(path, 'r') as handle: source = handle.read()
+		self.assertIn('id="floppy.fastsync.auto"', source)
+		fragment = source.split('id="floppy.fastsync.auto"', 1)[1].split('</setting>', 1)[0]
+		self.assertIn('<default>false</default>', fragment)
 
 	def test_forced_sync_does_not_clear_watched_cache_before_network_success(self):
 		path = kodi_stubs.tree_file('matrix', 'modules/floppy.py')

@@ -3519,6 +3519,16 @@
 					</dependencies>
 					<control type="toggle"/>
 				</setting>
+				<setting id="floppy.fastsync.auto" type="boolean" label="Automatic fast synchronization" help="Enable compact snapshot and incremental Floppy synchronization.">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="floppy.token"/>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
+				</setting>
 				<setting id="floppy.service.syncInterval" type="integer" label="40761" help="">
 					<level>0</level>
 					<default>30</default>

@@ -414,7 +414,7 @@ def services_syncs():
 					customtrakt.sync_dropped(activities, forced=True)
 				last_custom_sync = current_time
 		if control.monitor.abortRequested(): break
-		if internets and not video_playing and floppy.getFloppyCredentialsInfo() and floppy_syncInterval > 0:
+		if internets and not video_playing and floppy.getFloppyCredentialsInfo() and floppy_syncInterval > 0 and getSetting('floppy.fastsync.auto') == 'true':
 			current_time = time.time()
 			if (current_time - last_floppy_sync) >= (60 * floppy_syncInterval):
 				# Failed attempts also respect the interval; fast sync preserves its cache.
