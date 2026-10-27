@@ -16,6 +16,7 @@ from urllib.parse import urljoin
 from json import dumps as jsdumps
 from resources.lib.database import floppysync
 from resources.lib.modules import control
+from resources.lib.modules import floppy_fast_sync as _fast_sync
 from resources.lib.modules import log_utils
 
 getLS = control.lang
@@ -208,6 +209,7 @@ def floppyRevoke(fromSettings=0):
 			'movies_hold', 'shows_hold', 'movies_completed', 'shows_completed',
 			'movies_dropped', 'shows_dropped', 'movies_collection', 'shows_collection')
 		floppysync.delete_floppy_tables(clr_tables)
+		floppysync.clear_sync_state(keep=('instance_key',))
 		if getSetting('indicators.alt') == '5':
 			setSetting('indicators.alt', '0')
 			setSetting('indicators', 'Local')
@@ -776,7 +778,7 @@ def _sync_watched_episodes_from_shows(progress_callback=None):
 		log_utils.log('FLOPPY: episode sync — %s shows checked, %s tracked episodes found, %s shows failed to query' % (len(shows), total_tracked, failed_shows), level=log_utils.LOGINFO)
 	except: log_utils.error()
 
-def sync_watchedProgress(activities=None, forced=False, progress_callback=None):
+def _legacy_sync_watchedProgress(activities=None, forced=False, progress_callback=None):
 	try:
 		if not getFloppyCredentialsInfo(): return
 		items = _fetch_status_bucket('movie', STATUS_COMPLETED)
@@ -803,8 +805,21 @@ def sync_watchedProgress(activities=None, forced=False, progress_callback=None):
 		control.trigger_widget_refresh()
 	except: log_utils.error()
 
+def sync_watchedProgress(activities=None, forced=False, progress_callback=None):
+	if not getFloppyCredentialsInfo(): return 0
+	try:
+		return _fast_sync.sync_watched_fast(force_snapshot=forced)
+	except _fast_sync.FloppyRouteUnavailable:
+		return _legacy_sync_watchedProgress(activities=activities, forced=forced,
+			progress_callback=progress_callback)
+	except Exception as error:
+		log_utils.log('FLOPPY: fast watched sync failed; cached state retained: %s' % error,
+			level=log_utils.LOGWARNING)
+		return 0
+
+
 def sync_watched(activities=None, forced=False, progress_callback=None):
-	sync_watchedProgress(activities=activities, forced=forced, progress_callback=progress_callback)
+	return sync_watchedProgress(activities=activities, forced=forced, progress_callback=progress_callback)
 
 def sync_watch_list(activities=None, forced=False):
 	# Pulls all 5 status buckets (not just Planning) so every My Movies/My TV Shows
@@ -847,7 +862,7 @@ def get_collection_entries(media_type='movie'):
 	except: log_utils.error()
 	return results
 
-def sync_playbackProgress(activities=None, forced=False):
+def _legacy_sync_playbackProgress(activities=None, forced=False):
 	try:
 		if not getFloppyCredentialsInfo(): return
 		items = get_all_pages('/playback/progress/', silent=True) or []
@@ -875,6 +890,23 @@ def sync_playbackProgress(activities=None, forced=False):
 						percent_played=percent_played, paused_at=paused_at)
 			except: log_utils.error()
 	except: log_utils.error()
+
+
+def sync_playbackProgress(activities=None, forced=False):
+	if not getFloppyCredentialsInfo(): return 0
+	try:
+		return _fast_sync.sync_progress_fast(force_snapshot=forced)
+	except _fast_sync.FloppyRouteUnavailable:
+		return _legacy_sync_playbackProgress(activities=activities, forced=forced)
+	except Exception as error:
+		log_utils.log('FLOPPY: fast progress sync failed; cached state retained: %s' % error,
+			level=log_utils.LOGWARNING)
+		return 0
+
+
+def sync_background():
+	return _fast_sync.sync_background()
+
 
 def force_floppySync():
 	if not control.yesnoDialog(control.lang(32056), '', ''): return

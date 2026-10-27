@@ -294,6 +294,13 @@ def _service_interval(setting, default=30):
 	except (TypeError, ValueError): return default
 
 
+def _floppy_service_interval():
+	try:
+		value = int(getSetting('floppy.service.syncInterval') or '30')
+		return 0 if value <= 0 else max(5, value)
+	except (TypeError, ValueError): return 30
+
+
 def services_syncs():
 	last_trakt_sync = 0
 	last_simkl_sync = 0
@@ -308,7 +315,7 @@ def services_syncs():
 		simkl_syncInterval = _service_interval('simkl.service.syncInterval')
 		mdblist_syncInterval = _service_interval('mdblist.service.syncInterval')
 		custom_syncInterval = _service_interval('custom.service.syncInterval')
-		floppy_syncInterval = _service_interval('floppy.service.syncInterval')
+		floppy_syncInterval = _floppy_service_interval()
 		scrob_syncInterval = _service_interval('scrob.service.syncInterval')
 		punchplay_syncInterval = _service_interval('punchplay.service.syncInterval')
 		control.sleep(5000) # wait 5sec in case of device wake from sleep
@@ -407,19 +414,17 @@ def services_syncs():
 					customtrakt.sync_dropped(activities, forced=True)
 				last_custom_sync = current_time
 		if control.monitor.abortRequested(): break
-		if internets and not video_playing and floppy.getFloppyCredentialsInfo():
+		if internets and not video_playing and floppy.getFloppyCredentialsInfo() and floppy_syncInterval > 0:
 			current_time = time.time()
 			if (current_time - last_floppy_sync) >= (60 * floppy_syncInterval):
+				# Failed attempts also respect the interval; fast sync preserves its cache.
+				last_floppy_sync = current_time
 				from resources.lib.modules import log_utils
 				log_utils.log('Floppy Service Sync is running.', 1)
 				if not control.monitor.abortRequested():
-					if getSetting('bookmarks') == 'true' and getSetting('scrobble.source') == '5':
-						floppy.sync_playbackProgress()
-					floppy.sync_watchedProgress(forced=True)
-				if not control.monitor.abortRequested():
-					floppy.sync_watch_list(forced=True)
-					floppy.sync_collection(forced=True)
-				last_floppy_sync = current_time
+					try: floppy.sync_background()
+					except Exception:
+						log_utils.log('Floppy background sync failed; cached state retained.', 1)
 		if control.monitor.abortRequested(): break
 		if internets and not video_playing and scrob.getScrobCredentialsInfo():
 			current_time = time.time()

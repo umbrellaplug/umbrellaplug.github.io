@@ -9,7 +9,12 @@ import unittest
 
 from tests.floppy_fast_sync import kodi_stubs
 
-SHARED = ('database/floppysync.py',)
+SHARED = (
+	'database/floppysync.py',
+	'modules/floppy_fast_sync.py',
+	'modules/floppy.py',
+	'modules/tools.py',
+)
 
 def sha256(path):
 	with open(path, 'rb') as handle: return hashlib.sha256(handle.read()).hexdigest()
