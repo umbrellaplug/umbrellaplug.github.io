@@ -35,23 +35,31 @@ class TxTestCase(unittest.TestCase):
 		self.addCleanup(con.close)
 		return con
 
-	def query(self, sql, args=()):
+	def query(self, sql, args=(), table=None):
+		# An empty result is only legitimate when sqlite_master confirms `table` is absent; any other
+		# error (locked, bad column, corrupt) propagates so state comparisons can't pass vacuously.
 		con = self.raw()
 		try: return con.execute(sql, args).fetchall()
-		except sqlite3.OperationalError: return None
+		except sqlite3.OperationalError:
+			if table and not con.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (table,)).fetchone(): return []
+			raise
 
 	def movies(self):
-		return sorted(self.query('SELECT imdb, tmdb, title, year, last_watched_at FROM floppy_watched_movies') or [])
+		return sorted(self.query('SELECT imdb, tmdb, title, year, last_watched_at FROM floppy_watched_movies', table='floppy_watched_movies'))
 
 	def episodes(self):
-		return sorted(self.query('SELECT show_imdb, show_tmdb, show_tvdb, season, episode, last_watched_at FROM floppy_watched_episodes') or [])
+		return sorted(self.query('SELECT show_imdb, show_tmdb, show_tvdb, season, episode, last_watched_at FROM floppy_watched_episodes', table='floppy_watched_episodes'))
 
 	def service(self, key):
-		rows = self.query('SELECT value FROM service WHERE setting=?', (key,))
+		rows = self.query('SELECT value FROM service WHERE setting=?', (key,), table='service')
+		return rows[0][0] if rows else None
+
+	def state(self, key):
+		rows = self.query('SELECT value FROM floppy_sync_state WHERE key=?', (key,), table='floppy_sync_state')
 		return rows[0][0] if rows else None
 
 	def cursor(self):
-		return floppysync.get_sync_state('watched_cursor')
+		return self.state('watched_cursor')
 
 	def seed_service(self, value=SENTINEL):
 		con = self.raw()
@@ -66,7 +74,7 @@ class TxTestCase(unittest.TestCase):
 		con.commit()
 
 	def cache_rows(self):
-		return self.query('SELECT key FROM watched')
+		return self.query('SELECT key FROM watched', table='watched')
 
 	def add_failure_trigger(self, table, column, value):
 		# Fails inside the transaction, after earlier statements already ran.
@@ -143,8 +151,10 @@ class SnapshotTests(TxTestCase):
 		floppysync.replace_watched_snapshot([movie(1, 'tt1')], [], 5)
 		self.seed_service()
 		before = self.snapshot_state()
-		self.assertFalse(floppysync.replace_watched_snapshot([movie(2)], [], 9, expected_cursor=4))
-		self.assertFalse(floppysync.replace_watched_snapshot([movie(2)], [], 9))  # None expects no stored cursor
+		with self.assertRaises(floppysync.CursorMismatch):
+			floppysync.replace_watched_snapshot([movie(2)], [], 9, expected_cursor=4)
+		with self.assertRaises(floppysync.CursorMismatch):
+			floppysync.replace_watched_snapshot([movie(2)], [], 9)  # None expects no stored cursor
 		self.assertEqual(self.snapshot_state(), before)
 		self.assertTrue(floppysync.replace_watched_snapshot([movie(2)], [], 9, expected_cursor='5'))
 		self.assertEqual(self.cursor(), '9')
@@ -226,8 +236,10 @@ class DeltaTests(TxTestCase):
 
 	def test_delta_compare_and_swap(self):
 		before = self.snapshot_state()
-		self.assertIsNone(floppysync.apply_watched_changes([('delete_movie', 1)], 4, 9))
+		with self.assertRaises(floppysync.CursorMismatch):
+			floppysync.apply_watched_changes([('delete_movie', 1)], 4, 9)
 		self.assertEqual(self.snapshot_state(), before)
+		self.assertEqual(LOG.errors, [])
 
 	def test_delta_requires_baseline_cursor_and_forward_movement(self):
 		before = self.snapshot_state()
@@ -239,7 +251,8 @@ class DeltaTests(TxTestCase):
 
 	def test_delta_without_snapshot_cursor_is_refused(self):
 		os.remove(self.path)
-		self.assertIsNone(floppysync.apply_watched_changes([('upsert_movie', movie(1))], 5, 6))
+		with self.assertRaises(floppysync.CursorMismatch):
+			floppysync.apply_watched_changes([('upsert_movie', movie(1))], 5, 6)
 		self.assertEqual(self.movies(), [])
 
 	def test_empty_delta_advances_cursor_only(self):
@@ -275,8 +288,8 @@ class JournalAndCompatTests(TxTestCase):
 
 	def test_no_vacuum_or_modern_sqlite_syntax_in_new_code(self):
 		import inspect
-		for name in ('_tx_connection', 'get_sync_state', 'set_sync_state', 'reset_sync_cursors',
-				'replace_watched_snapshot', 'apply_watched_changes'):
+		for name in ('_tx_connection', 'get_sync_state', 'set_sync_state', 'get_or_create_sync_state', 'clear_sync_state',
+				'reset_sync_cursors', 'replace_watched_snapshot', 'apply_watched_changes', '_reset_cursor_tables'):
 			source = inspect.getsource(getattr(floppysync, name)).upper()
 			for banned in ('VACUUM', 'ON CONFLICT', 'RETURNING', 'STRICT'):
 				self.assertNotIn(banned, source, '%s uses %s' % (name, banned))
