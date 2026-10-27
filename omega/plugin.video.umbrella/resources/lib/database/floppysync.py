@@ -693,6 +693,132 @@ def apply_watched_changes(ops, from_cursor, to_cursor):
 		dbcon.close()
 
 
+#Progress (bookmarks) cache: the same snapshot/delta contract as the watched cache, with its own cursor (progress_cursor).
+#Rows are bookmarks-table tuples (tvshowtitle, title, resume_id, imdb, tmdb, tvdb, season, episode, genre, mpaa, studio,
+#duration, percent_played, paused_at). A row's identity is (tmdb, season, episode), not the table's UNIQUE key, so an
+#upsert with a blank vs filled imdb replaces the old row instead of duplicating it.
+
+def _progress_connection():
+	dbcon = _tx_connection()
+	try:
+		dbcur = dbcon.cursor()
+		_ensure_bookmarks_table(dbcur)
+		dbcur.close()
+	except:
+		dbcon.close()
+		raise
+	return dbcon
+
+def _season_episode(season, episode):
+	# Both blank (a movie) or both non-negative integers (an episode); one without the other is malformed.
+	blank_season, blank_episode = _id_text(season) == '', _id_text(episode) == ''
+	if blank_season and blank_episode: return ('', '')
+	if blank_season or blank_episode: raise ValueError('season and episode must be given together: %r %r' % (season, episode))
+	return (str(_count(season)), str(_count(episode)))
+
+def _bookmark_row(row):
+	tvshowtitle, title, resume_id, imdb, tmdb, tvdb, season, episode, genre, mpaa, studio, duration, percent_played, paused_at = row
+	season, episode = _season_episode(season, episode)
+	return (_plain_text(tvshowtitle), _plain_text(title), _plain_text(resume_id), _id_text(imdb), _tmdb_id(tmdb), _id_text(tvdb), season, episode,
+		_plain_text(genre), _plain_text(mpaa), _plain_text(studio), _plain_text(duration), _plain_text(percent_played), _plain_text(paused_at))
+
+def _bookmark_key(row):
+	return (row[4], row[6], row[7])
+
+def _progress_op(op):
+	kind, payload = op
+	if kind == 'upsert': return (kind, _bookmark_row(payload))
+	if kind == 'delete':
+		tmdb, season, episode = payload
+		return (kind, (_tmdb_id(tmdb),) + _season_episode(season, episode))
+	raise ValueError('unknown progress op: %r' % (kind,))
+
+def _mark_progress_changed(dbcur):
+	timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
+	dbcur.execute('''INSERT OR REPLACE INTO service Values (?, ?)''', ('last_paused_at', timestamp))
+
+def replace_progress_snapshot(rows, cursor, expected_cursor=None):
+	# Atomically replace the bookmarks table and progress_cursor with a complete snapshot.
+	# Same contract as replace_watched_snapshot: compare-and-swap on expected_cursor inside the write lock
+	# (CursorMismatch, nothing changed), rollback and re-raise on any other failure, returns True.
+	cursor_text = _cursor_text(cursor)
+	if cursor_text is None: raise ValueError('snapshot needs a cursor')
+	expected_text = _cursor_text(expected_cursor)
+	new_rows = {}
+	for row in rows:
+		row = _bookmark_row(row)
+		new_rows[_bookmark_key(row)] = row
+	dbcon = _progress_connection()
+	try:
+		dbcur = dbcon.cursor()
+		dbcon.execute('''BEGIN IMMEDIATE''')
+		try:
+			stored = _read_state(dbcur, _PROGRESS_CURSOR)
+			if stored != expected_text: raise CursorMismatch(expected_text, stored)
+			old_rows = sorted(dbcur.execute('''SELECT * FROM bookmarks''').fetchall())
+			if old_rows != sorted(new_rows.values()):
+				dbcur.execute('''DELETE FROM bookmarks''')
+				dbcur.executemany('''INSERT OR REPLACE INTO bookmarks Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', list(new_rows.values()))
+				_mark_progress_changed(dbcur)
+			_write_state(dbcur, _PROGRESS_CURSOR, cursor_text)
+			dbcon.execute('''COMMIT''')
+			return True
+		except:
+			_rollback(dbcon)
+			raise
+	except CursorMismatch:
+		raise
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+		raise
+	finally:
+		dbcon.close()
+
+def apply_progress_changes(ops, from_cursor, to_cursor):
+	# Atomically apply one ordered page of progress events and advance progress_cursor.
+	# ops: [('upsert', bookmark_row), ('delete', (tmdb, season, episode))] applied in the order given; a movie's
+	# season/episode are ''. Returns the number of rows actually changed (0 is a normal result). Raises
+	# CursorMismatch, changing nothing, if the stored cursor is not from_cursor; any other failure rolls back the page.
+	from_text, to_text = _cursor_text(from_cursor), _cursor_text(to_cursor)
+	if from_text is None or to_text is None: raise ValueError('delta needs from and to cursors')
+	if int(to_text) < int(from_text): raise ValueError('cursor cannot move backwards')
+	ops = [_progress_op(op) for op in ops]
+	dbcon = _progress_connection()
+	try:
+		dbcur = dbcon.cursor()
+		dbcon.execute('''BEGIN IMMEDIATE''')
+		try:
+			stored = _read_state(dbcur, _PROGRESS_CURSOR)
+			if stored != from_text: raise CursorMismatch(from_text, stored)
+			changed = 0
+			for kind, payload in ops:
+				if kind == 'upsert':
+					key = _bookmark_key(payload)
+					if dbcur.execute('''SELECT * FROM bookmarks WHERE tmdb=? AND season=? AND episode=?''', key).fetchall() == [payload]: continue
+					dbcur.execute('''DELETE FROM bookmarks WHERE tmdb=? AND season=? AND episode=?''', key)
+					dbcur.execute('''INSERT OR REPLACE INTO bookmarks Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', payload)
+					changed += 1
+				else:
+					dbcur.execute('''DELETE FROM bookmarks WHERE tmdb=? AND season=? AND episode=?''', payload)
+					if dbcur.rowcount > 0: changed += dbcur.rowcount
+			if changed: _mark_progress_changed(dbcur)
+			_write_state(dbcur, _PROGRESS_CURSOR, to_text)
+			dbcon.execute('''COMMIT''')
+			return changed
+		except:
+			_rollback(dbcon)
+			raise
+	except CursorMismatch:
+		raise
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+		raise
+	finally:
+		dbcon.close()
+
+
 #Cache table (indicator/progress cache — same key/value/date shape used by mdbsync.py/customtraktsync.py)
 
 def _hash_function(function_instance, args=()):
@@ -899,13 +1025,19 @@ def delete_bookmark(imdb, tvdb='', tmdb='', season='', episode=''):
 def clear_bookmarks():
 	# Dedicated to just the bookmarks table — delete_floppy_tables() also resets
 	# last_history_at as a side effect, which is unrelated here and would wrongly make
-	# the watched-history sync think it needs a full resync.
+	# the watched-history sync think it needs a full resync. The progress cursor describes
+	# these rows, so it goes in the same transaction: a delta onto an emptied table is silent data loss.
 	try:
-		dbcon = get_connection()
-		dbcur = get_connection_cursor(dbcon)
-		_ensure_bookmarks_table(dbcur)
-		dbcur.execute('''DELETE FROM bookmarks''')
-		dbcur.connection.commit()
+		dbcon = _progress_connection()
+		dbcur = dbcon.cursor()
+		dbcon.execute('''BEGIN IMMEDIATE''')
+		try:
+			dbcur.execute('''DELETE FROM floppy_sync_state WHERE key=?''', (_PROGRESS_CURSOR,))
+			dbcur.execute('''DELETE FROM bookmarks''')
+			dbcon.execute('''COMMIT''')
+		except:
+			_rollback(dbcon)
+			raise
 	except:
 		from resources.lib.modules import log_utils
 		log_utils.error()
