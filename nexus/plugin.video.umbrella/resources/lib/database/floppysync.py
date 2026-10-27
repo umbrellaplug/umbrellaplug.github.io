@@ -109,6 +109,12 @@ def delete_floppy_tables(tables):
 	try:
 		dbcon = get_connection()
 		dbcur = get_connection_cursor(dbcon)
+		if 'floppy_watched_movies' in tables or 'floppy_watched_episodes' in tables:
+			# Drop the watched cursor first (and commit it): if we die mid-clear, the next sync takes a
+			# fresh snapshot instead of applying a delta onto a half-emptied cache.
+			dbcur.execute(_SYNC_STATE_DDL)
+			dbcur.execute('''DELETE FROM floppy_sync_state WHERE key=?''', (_WATCHED_CURSOR,))
+			dbcur.connection.commit()
 		for table in tables:
 			try:
 				ck_table = dbcur.execute('''SELECT * FROM sqlite_master WHERE type='table' AND name=?;''', (table,)).fetchone()
@@ -321,6 +327,236 @@ def get_watched_shows():
 		try: dbcon.close()
 		except: pass
 	return result
+
+
+#Transactional watched-cache primitives (fast sync).
+#get_connection() runs with journal_mode=OFF, where ROLLBACK is undefined, so these use their own
+#connection with journal_mode=DELETE / synchronous=NORMAL (same switch as scrobsync.store_watched_history()).
+#Rows arrive already normalised as tuples: movies (imdb, tmdb, title, year, last_watched_at), episodes
+#(show_imdb, show_tmdb, show_tvdb, season, episode, last_watched_at). No VACUUM and no modern-SQLite-only
+#syntax (ON CONFLICT DO UPDATE / RETURNING / STRICT) so the oldest Kodi SQLite builds keep working.
+
+_SYNC_STATE_DDL = '''CREATE TABLE IF NOT EXISTS floppy_sync_state (key TEXT PRIMARY KEY, value TEXT);'''
+_WATCHED_CURSOR = 'watched_cursor'
+_SYNC_CURSOR_KEYS = {'watched': _WATCHED_CURSOR}
+
+def _tx_connection():
+	# isolation_level=None: Python never opens an implicit transaction, so BEGIN IMMEDIATE below is ours alone.
+	dbcon = get_connection()
+	try:
+		dbcon.isolation_level = None
+		dbcon.execute('''PRAGMA journal_mode = DELETE''')
+		dbcon.execute('''PRAGMA synchronous = NORMAL''')
+		dbcur = dbcon.cursor()
+		_ensure_watched_tables(dbcur)
+		dbcur.execute(_SYNC_STATE_DDL)
+		dbcur.close()
+	except:
+		dbcon.close()
+		raise
+	return dbcon
+
+def _cursor_text(value):
+	# Cursors are integers on the wire and TEXT in the state table; None means "no cursor".
+	if value is None: return None
+	if isinstance(value, (bool, float)): raise TypeError('invalid cursor: %r' % (value,))
+	number = int(value)
+	if number < 0: raise ValueError('invalid cursor: %r' % (value,))
+	return str(number)
+
+def _required_text(value):
+	value = '' if value is None else str(value)
+	if not value: raise ValueError('missing tmdb id')
+	return value
+
+def _movie_row(row):
+	imdb, tmdb, title, year, last_watched_at = row
+	return ('' if imdb is None else str(imdb), _required_text(tmdb), '' if title is None else title,
+		'' if year is None else str(year), '' if last_watched_at is None else last_watched_at)
+
+def _episode_row(row):
+	show_imdb, show_tmdb, show_tvdb, season, episode, last_watched_at = row
+	return ('' if show_imdb is None else str(show_imdb), _required_text(show_tmdb), '' if show_tvdb is None else str(show_tvdb),
+		int(season), int(episode), '' if last_watched_at is None else last_watched_at)
+
+def _change_op(op):
+	kind, payload = op
+	if kind == 'upsert_movie': return (kind, _movie_row(payload))
+	if kind == 'upsert_episode': return (kind, _episode_row(payload))
+	if kind == 'delete_movie': return (kind, _required_text(payload))
+	if kind == 'delete_episode':
+		show_tmdb, season, episode = payload
+		return (kind, (_required_text(show_tmdb), int(season), int(episode)))
+	raise ValueError('unknown change op: %r' % (kind,))
+
+def _read_state(dbcur, key):
+	row = dbcur.execute('''SELECT value FROM floppy_sync_state WHERE key=?''', (key,)).fetchone()
+	return row[0] if row else None
+
+def _write_state(dbcur, key, value):
+	dbcur.execute('''INSERT OR REPLACE INTO floppy_sync_state VALUES (?, ?)''', (key, value))
+
+def _mark_history_changed(dbcur):
+	# Readers (playcount) only rebuild their indicator cache when last_history_at is newer than the cache row.
+	timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
+	dbcur.execute('''INSERT OR REPLACE INTO service Values (?, ?)''', ('last_history_at', timestamp))
+	if dbcur.execute('''SELECT 1 FROM sqlite_master WHERE type='table' AND name='watched';''').fetchone():
+		dbcur.execute('''DELETE FROM watched''')
+
+def _rollback(dbcon):
+	try: dbcon.execute('''ROLLBACK''')
+	except: pass
+
+def get_sync_state(key, default=None):
+	value = default
+	try:
+		dbcon = get_connection()
+		dbcur = get_connection_cursor(dbcon)
+		if dbcur.execute('''SELECT 1 FROM sqlite_master WHERE type='table' AND name='floppy_sync_state';''').fetchone():
+			row = dbcur.execute('''SELECT value FROM floppy_sync_state WHERE key=?''', (key,)).fetchone()
+			if row: value = row[0]
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+	finally:
+		try: dbcur.close()
+		except: pass
+		try: dbcon.close()
+		except: pass
+	return value
+
+def set_sync_state(key, value):
+	# Raises on failure: callers (instance key, identity) need to know the value was not stored.
+	dbcon = _tx_connection()
+	try:
+		_write_state(dbcon.cursor(), key, None if value is None else str(value))
+	finally:
+		dbcon.close()
+
+def reset_sync_cursors(which=('watched',)):
+	# Next sync must start from a fresh snapshot. Other state (instance key etc.) is kept.
+	keys = [_SYNC_CURSOR_KEYS[name] for name in which]
+	dbcon = _tx_connection()
+	try:
+		dbcur = dbcon.cursor()
+		dbcon.execute('''BEGIN IMMEDIATE''')
+		try:
+			for key in keys: dbcur.execute('''DELETE FROM floppy_sync_state WHERE key=?''', (key,))
+			dbcon.execute('''COMMIT''')
+		except:
+			_rollback(dbcon)
+			raise
+	finally:
+		dbcon.close()
+
+def replace_watched_snapshot(movies, episodes, cursor, expected_cursor=None):
+	# Atomically replace both watched tables and the cursor with a complete snapshot.
+	# expected_cursor is compared with the stored cursor inside the transaction (None = no stored cursor);
+	# returns False, changing nothing, if it differs. Any other failure rolls back and re-raises.
+	cursor_text = _cursor_text(cursor)
+	if cursor_text is None: raise ValueError('snapshot needs a cursor')
+	expected_text = _cursor_text(expected_cursor)
+	new_movies = {}
+	for row in movies:
+		row = _movie_row(row)
+		new_movies[row[1]] = row
+	new_episodes = {}
+	for row in episodes:
+		row = _episode_row(row)
+		new_episodes[(row[1], row[3], row[4])] = row
+	dbcon = _tx_connection()
+	try:
+		dbcur = dbcon.cursor()
+		dbcon.execute('''BEGIN IMMEDIATE''')
+		try:
+			if _read_state(dbcur, _WATCHED_CURSOR) != expected_text:
+				dbcon.execute('''ROLLBACK''')
+				return False
+			old_movies = dict((r[1], r) for r in dbcur.execute('''SELECT imdb, tmdb, title, year, last_watched_at FROM floppy_watched_movies''').fetchall())
+			old_episodes = dict(((r[1], r[3], r[4]), r) for r in dbcur.execute('''SELECT show_imdb, show_tmdb, show_tvdb, season, episode, last_watched_at FROM floppy_watched_episodes''').fetchall())
+			# Carry a known imdb forward when the snapshot has none (Floppy is tmdb-native).
+			movie_imdb = dict((k, r[0]) for k, r in old_movies.items() if r[0])
+			show_imdb = dict((r[1], r[0]) for r in old_episodes.values() if r[0])
+			for key, row in list(new_movies.items()):
+				if not row[0] and key in movie_imdb: new_movies[key] = (movie_imdb[key],) + row[1:]
+			for key, row in list(new_episodes.items()):
+				if not row[0] and row[1] in show_imdb: new_episodes[key] = (show_imdb[row[1]],) + row[1:]
+			changed = new_movies != old_movies or new_episodes != old_episodes
+			if changed:
+				dbcur.execute('''DELETE FROM floppy_watched_movies''')
+				dbcur.execute('''DELETE FROM floppy_watched_episodes''')
+				dbcur.executemany('''INSERT OR REPLACE INTO floppy_watched_movies Values (?, ?, ?, ?, ?)''', list(new_movies.values()))
+				dbcur.executemany('''INSERT OR REPLACE INTO floppy_watched_episodes Values (?, ?, ?, ?, ?, ?)''', list(new_episodes.values()))
+				_mark_history_changed(dbcur)
+			_write_state(dbcur, _WATCHED_CURSOR, cursor_text)
+			dbcon.execute('''COMMIT''')
+			return True
+		except:
+			_rollback(dbcon)
+			raise
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+		raise
+	finally:
+		dbcon.close()
+
+def apply_watched_changes(ops, from_cursor, to_cursor):
+	# Atomically apply one ordered page of feed events and advance the cursor.
+	# ops: [('upsert_movie', movie_row), ('upsert_episode', episode_row), ('delete_movie', tmdb),
+	#       ('delete_episode', (show_tmdb, season, episode))] applied in the order given.
+	# Returns the number of rows actually changed, or None (nothing changed) if the stored cursor is not
+	# from_cursor. Any other failure rolls back the whole page and re-raises.
+	from_text, to_text = _cursor_text(from_cursor), _cursor_text(to_cursor)
+	if from_text is None or to_text is None: raise ValueError('delta needs from and to cursors')
+	if int(to_text) < int(from_text): raise ValueError('cursor cannot move backwards')
+	ops = [_change_op(op) for op in ops]
+	dbcon = _tx_connection()
+	try:
+		dbcur = dbcon.cursor()
+		dbcon.execute('''BEGIN IMMEDIATE''')
+		try:
+			if _read_state(dbcur, _WATCHED_CURSOR) != from_text:
+				dbcon.execute('''ROLLBACK''')
+				return None
+			changed = 0
+			for kind, payload in ops:
+				if kind == 'upsert_movie':
+					existing = dbcur.execute('''SELECT imdb, tmdb, title, year, last_watched_at FROM floppy_watched_movies WHERE tmdb=?''', (payload[1],)).fetchone()
+					if not payload[0] and existing and existing[0]: payload = (existing[0],) + payload[1:]
+					if existing != payload:
+						dbcur.execute('''INSERT OR REPLACE INTO floppy_watched_movies Values (?, ?, ?, ?, ?)''', payload)
+						changed += 1
+				elif kind == 'upsert_episode':
+					existing = dbcur.execute('''SELECT show_imdb, show_tmdb, show_tvdb, season, episode, last_watched_at FROM floppy_watched_episodes WHERE show_tmdb=? AND season=? AND episode=?''', (payload[1], payload[3], payload[4])).fetchone()
+					if not payload[0]:
+						known = existing[0] if existing and existing[0] else None
+						if not known:
+							row = dbcur.execute('''SELECT show_imdb FROM floppy_watched_episodes WHERE show_tmdb=? AND show_imdb != '' LIMIT 1''', (payload[1],)).fetchone()
+							known = row[0] if row else ''
+						payload = (known,) + payload[1:]
+					if existing != payload:
+						dbcur.execute('''INSERT OR REPLACE INTO floppy_watched_episodes Values (?, ?, ?, ?, ?, ?)''', payload)
+						changed += 1
+				elif kind == 'delete_movie':
+					dbcur.execute('''DELETE FROM floppy_watched_movies WHERE tmdb=?''', (payload,))
+					if dbcur.rowcount > 0: changed += dbcur.rowcount
+				else:
+					dbcur.execute('''DELETE FROM floppy_watched_episodes WHERE show_tmdb=? AND season=? AND episode=?''', payload)
+					if dbcur.rowcount > 0: changed += dbcur.rowcount
+			if changed: _mark_history_changed(dbcur)
+			_write_state(dbcur, _WATCHED_CURSOR, to_text)
+			dbcon.execute('''COMMIT''')
+			return changed
+		except:
+			_rollback(dbcon)
+			raise
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+		raise
+	finally:
+		dbcon.close()
 
 
 #Cache table (indicator/progress cache — same key/value/date shape used by mdbsync.py/customtraktsync.py)
