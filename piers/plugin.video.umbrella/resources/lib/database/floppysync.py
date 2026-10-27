@@ -660,7 +660,8 @@ def apply_watched_changes(ops, from_cursor, to_cursor):
 			for kind, payload in ops:
 				if kind == 'upsert_movie':
 					existing = dbcur.execute('''SELECT imdb, tmdb, title, year, last_watched_at FROM floppy_watched_movies WHERE tmdb=?''', (payload[1],)).fetchone()
-					if not payload[0] and existing and _known(existing[0]): payload = (existing[0],) + payload[1:]
+					# Feed events carry no title or year: keep what is stored (imdb, title, year) when the incoming value is blank.
+					if existing: payload = (payload[0] or (existing[0] if _known(existing[0]) else ''), payload[1], payload[2] or _plain_text(existing[2]), payload[3] or (_id_text(existing[3]) if _known(existing[3]) else ''), payload[4])
 					if existing != payload:
 						dbcur.execute('''INSERT OR REPLACE INTO floppy_watched_movies Values (?, ?, ?, ?, ?)''', payload)
 						changed += 1
