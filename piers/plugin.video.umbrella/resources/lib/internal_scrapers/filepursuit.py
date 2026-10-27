@@ -23,6 +23,7 @@ class source:
 		self.base_link = "https://filepursuit.p.rapidapi.com" # 'https://rapidapi.com/azharxes/api/filepursuit' to obtain key
 		self.search_link = "/?type=video&q=%s"
 
+	@scrape_utils.airdate_sources
 	def sources(self, data, hostDict):
 		sources = []
 		if not data: return sources
@@ -37,6 +38,7 @@ class source:
 				title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
 				episode_title = data['title']
 				hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode']))
+				hdlr = scrape_utils.episode_identifier(data, hdlr)
 			else:
 				title = data['title'].replace('&', 'and').replace('/', ' ')
 				episode_title = None

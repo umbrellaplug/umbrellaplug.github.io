@@ -30,6 +30,7 @@ class source:
 		self.base_link = "https://members.easynews.com"
 		self.search_link = "/2.0/search/solr-search/advanced"
 
+	@scrape_utils.airdate_sources
 	def sources(self, data, hostDict):
 		sources = []
 		if not data: return sources
@@ -47,6 +48,7 @@ class source:
 				season = int(data.get('season'))
 				episode = int(data.get('episode'))
 				hdlr = 'S%02dE%02d' % (season, episode)
+				hdlr = scrape_utils.episode_identifier(data, hdlr)
 				query = '%s %s' % (re.sub(r'[^A-Za-z0-9\s\.-]+', '', title), hdlr)
 			else:
 				title = data['title'].replace('&', 'and').replace('/', ' ')
@@ -116,7 +118,7 @@ class source:
 		return auth
 
 	def _translate_search(self, query):
-		params = SEARCH_PARAMS
+		params = SEARCH_PARAMS.copy()
 		params['pby'] = 1000 # Results per Page, increased from 350
 		moderation = 1 if getSetting('easynews.moderation') == 'true' else 0
 		params['safeO'] = moderation # 1 is the moderation (adult filter) ON, 0 is OFF.

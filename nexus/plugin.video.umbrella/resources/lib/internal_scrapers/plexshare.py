@@ -112,7 +112,8 @@ class source:
 							meta_season, meta_episode = parseDOM(result, 'Video', ret='parentIndex')[0], parseDOM(result, 'Video', ret='index')[0]
 							name = '%s.%s' % (meta_title, 'S%02dE%02d' % (int(meta_season), int(meta_episode)))
 
-					if not scrape_utils.check_title(title, aliases, name, hdlr, year, years): continue
+					airdate = scrape_utils.episode_airdate(data) if 'tvshowtitle' in data else None
+					if not scrape_utils.check_title(title, aliases, name, hdlr, year, years, airdate=airdate): continue
 					name_info = scrape_utils.info_from_name(file_name, title, year, hdlr)
 
 					if not name_info or len(name_info) <= 5: # use meta info because file name lacks info, or has video extension only

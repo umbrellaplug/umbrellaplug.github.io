@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.97">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.98">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -271,13 +271,13 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.97 - Oct 23rd, 2026 [/B]
---[Fix] Handle missing Real-Debrid download URLs without a NoneType error and clean up failed magnet resolutions.
---[Fix] Preserve the original title, IDs, season and episode when retrying failed source resolution.
---[Fix] Handle missing or malformed Trakt ID lookup responses without an error.
---[Fix] Prevent provider cache write failures from discarding freshly scraped episode and pack results.
---[Fix] Prevent an uninitialized playback URL from causing an error when no sources are available.
---[Fix] Make AllDebrid background magnet cleanup silent, reject empty magnet IDs and resolve playback links before deleting temporary magnets.
+[B]Update - v6.7.98 - Oct 27th, 2026 [/B]
+--[Fix] Add airdate searches to internal Easynews, FilePursuit and GDrive scrapers while retaining season and episode searches and removing duplicate results.
+--[Fix] Allow internal Plex scraper results to match the selected episode's airdate.
+--[Change] Move Trakt device authentication, token refresh and revocation to auth.trakt.tv ahead of the February 1st, 2027 deadline.
+--[Fix] Use Trakt's returned verification link for the authentication QR code.
+--[Fix] Prevent Premiumize cloud from hanging when refreshing after file deletion with Python invoker reuse enabled.
+
 		</news>
 	</extension>
 

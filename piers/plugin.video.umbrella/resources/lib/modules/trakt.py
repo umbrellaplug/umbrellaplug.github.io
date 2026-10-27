@@ -22,11 +22,13 @@ getLS = control.lang
 getSetting = control.setting
 setSetting = control.setSetting
 BASE_URL = 'https://api.trakt.tv'
+AUTH_URL = 'https://auth.trakt.tv'
 headers = {'Content-Type': 'application/json', 'trakt-api-key': '', 'trakt-api-version': '2'}
 REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
 session = requests.Session()
 retries = Retry(total=4, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504, 520, 521, 522, 524, 530])
 session.mount('https://api.trakt.tv', HTTPAdapter(max_retries=retries, pool_maxsize=100))
+session.mount(AUTH_URL, HTTPAdapter(max_retries=retries, pool_maxsize=100))
 highlight_color = getSetting('highlight.color')
 server_notification = getSetting('trakt.server.notifications') == 'true'
 service_syncInterval = int(getSetting('background.service.syncInterval')) if getSetting('background.service.syncInterval') else 15
@@ -40,12 +42,31 @@ _TRAKT_TOKEN_PROP = 'umbrella.trakt.access_token'
 _last_request_time = 0.0
 control.homeWindow.setProperty(_TRAKT_TOKEN_PROP, getSetting('trakt.user.token') or '')
 
+def traktRequestURL(url):
+	"""Send OAuth requests to Trakt's auth host and data requests to its API."""
+	parsed = urlparse(url)
+	if parsed.path.lstrip('/').startswith('oauth/'):
+		return urlunparse(parsed._replace(scheme='https', netloc=urlparse(AUTH_URL).netloc,
+			path='/' + parsed.path.lstrip('/')))
+	return urljoin(BASE_URL, url)
+
+
+def traktVerificationURL(device_code):
+	"""Prefer Trakt's complete verification link, otherwise add the displayed code."""
+	if device_code.get('verification_url_complete'):
+		return device_code['verification_url_complete']
+	parsed = urlparse(device_code['verification_url'])
+	query = dict(parse_qsl(parsed.query))
+	query['code'] = device_code['user_code']
+	return urlunparse(parsed._replace(query=urlencode(query)))
+
+
 def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0):
 	try:
 		global _last_request_time
 		if time.time() - _last_request_time > 300:  # flush stale pooled connections after 5 min idle
 			session.close()
-		if not url.startswith(BASE_URL): url = urljoin(BASE_URL, url)
+		url = traktRequestURL(url)
 		headers['trakt-api-key'] = traktClientID()
 		# Keep the original object for authenticated/throttled retries. Reusing the
 		# serialized value would encode it twice, while omitting it changes a POST
@@ -271,7 +292,7 @@ def re_auth(headers):
 				control.homeWindow.setProperty('umbrella.updateSettings', 'true')
 				_reauth_failed = True
 				return False
-			oauth = urljoin(BASE_URL, '/oauth/token')
+			oauth = urljoin(AUTH_URL, '/oauth/token')
 			opost = {'client_id': traktClientID(), 'client_secret': traktClientSecret(), 'redirect_uri': REDIRECT_URI, 'grant_type': 'refresh_token', 'refresh_token': getSetting('trakt.refreshtoken')}
 			log_utils.log('TRAKT: Re-Authenticating with refresh token', level=log_utils.LOGINFO)
 			response = session.post(url=oauth, data=jsdumps(opost), headers=headers, timeout=20)
@@ -445,7 +466,7 @@ def getTraktDeviceCode():
 	try:
 		data = jsdumps({'client_id': traktClientID()})
 		request_headers = {'Content-Type': 'application/json', 'trakt-api-key': traktClientID(), 'trakt-api-version': '2'}
-		url = urljoin(BASE_URL, 'oauth/device/code')
+		url = urljoin(AUTH_URL, 'oauth/device/code')
 		response = session.post(url, data=data, headers=request_headers, timeout=20)
 		if response.status_code == 200:
 			return response.json()
@@ -469,7 +490,7 @@ def getTraktDeviceToken(traktDeviceCode):
 		line = '%s\n%s\n%s'
 		if control.setting('dialogs.useumbrelladialog') == 'true':
 			from resources.lib.modules import tools
-			trakt_qr = tools.make_qr(f"https://trakt.tv/activate?code={str(traktDeviceCode['user_code'])}", 'trakt_qr.png')
+			trakt_qr = tools.make_qr(traktVerificationURL(traktDeviceCode), 'trakt_qr.png')
 			progressDialog = control.getProgressWindow(getLS(32073), trakt_qr, 1)
 			progressDialog.set_controls()
 			progressDialog.update(0, control.progress_line % (verification_url, user_code))
@@ -481,7 +502,7 @@ def getTraktDeviceToken(traktDeviceCode):
 			while not progressDialog.iscanceled() and time_passed < expires_in:
 				try:
 					#response = getTrakt('oauth/device/token', post=data, silent=True)
-					url = urljoin(BASE_URL, 'oauth/device/token')
+					url = urljoin(AUTH_URL, 'oauth/device/token')
 					response = requests.post(url, json=data,headers=headers, timeout=20)
 					if response.status_code == 400:
 						time_passed = time.time() - start

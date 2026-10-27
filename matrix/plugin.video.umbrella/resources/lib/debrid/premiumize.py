@@ -4,9 +4,10 @@
 """
 
 import re
+import sys
 import requests
 from requests.adapters import HTTPAdapter
-from sys import argv, exit as sysexit
+from sys import exit as sysexit
 from urllib3.util.retry import Retry
 from urllib.parse import quote_plus, urlencode
 from resources.lib.database import cache
@@ -415,7 +416,8 @@ class Premiumize:
 
 	def my_files_to_listItem(self, folder_id=None, folder_name=None):
 		try:
-			sysaddon, syshandle = 'plugin://plugin.video.umbrella/', int(argv[1])
+			# Kodi replaces sys.argv when reusing the Python invoker.
+			sysaddon, syshandle = 'plugin://plugin.video.umbrella/', int(sys.argv[1])
 			extensions = supported_video_extensions()
 			cloud_files = self.my_files(folder_id)
 			if cloud_files is None:
@@ -474,7 +476,7 @@ class Premiumize:
 
 	def user_transfers_to_listItem(self):
 		try:
-			sysaddon, syshandle = 'plugin://plugin.video.umbrella/', int(argv[1])
+			sysaddon, syshandle = 'plugin://plugin.video.umbrella/', int(sys.argv[1])
 			extensions = supported_video_extensions()
 			transfer_files = self.user_transfers()
 			if not transfer_files:

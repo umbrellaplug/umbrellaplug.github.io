@@ -30,6 +30,7 @@ class source:
 		self.language = ['en']
 		self.title_chk = (getSetting('gdrive.title.chk') == 'true')
 
+	@scrape_utils.airdate_sources
 	def sources(self, data, hostDict):
 		sources = []
 		if not data: return sources
@@ -41,6 +42,7 @@ class source:
 			episode_title = data['title'] if 'tvshowtitle' in data else None
 			year = data['year']
 			hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else year
+			if 'tvshowtitle' in data: hdlr = scrape_utils.episode_identifier(data, hdlr)
 
 			query = '%s %s' % (title, hdlr)
 			query = quote_plus(re.sub(r'[^A-Za-z0-9\s\.-]+', '', query))

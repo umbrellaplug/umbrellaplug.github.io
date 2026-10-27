@@ -107,7 +107,51 @@ def convert_size(size_bytes, to='GB'):
 		log_utils.error()
 		return 0, ''
 
-def check_title(title, aliases, release_title, hdlr, year, years=None): # non pack file title check, single eps and movies
+def episode_airdate(data):
+	"""Return a validated episode date without changing its numbered metadata."""
+	from datetime import date
+	value = data.get('premiered')
+	if not isinstance(value, str) or not re.fullmatch(r'\d{4}[-.]\d{2}[-.]\d{2}', value): return None
+	try:
+		parsed = date(*map(int, value.replace('.', '-').split('-')))
+		return '%04d.%02d.%02d' % (parsed.year, parsed.month, parsed.day)
+	except ValueError:
+		return None
+
+
+def episode_identifier(data, numbered):
+	return data.get('_umbrella_airdate_query') or numbered
+
+
+def airdate_sources(method):
+	"""Search numbered and dated releases, retaining one copy of each URL."""
+	from functools import wraps
+	@wraps(method)
+	def search(self, data, hostDict):
+		results = list(method(self, data, hostDict) or [])
+		airdate = episode_airdate(data) if data and 'tvshowtitle' in data else None
+		if not airdate: return results
+		try:
+			results.extend(method(self, dict(data, _umbrella_airdate_query=airdate), hostDict) or [])
+		except Exception:
+			from resources.lib.modules import source_utils
+			source_utils.scraper_error(method.__module__)
+		merged, seen = [], set()
+		for item in results:
+			key = (item.get('url') or '').lower()
+			if key and key in seen: continue
+			if key: seen.add(key)
+			merged.append(item)
+		return merged
+	return search
+
+
+def check_title(title, aliases, release_title, hdlr, year, years=None, airdate=None): # non pack file title check, single eps and movies
+	if airdate and not years:
+		if check_title(title, aliases, release_title, hdlr, year): return True
+		return check_title(title, aliases, release_title, airdate, year)
+	if re.fullmatch(r'\d{4}\.\d{2}\.\d{2}', str(hdlr)):
+		hdlr = r'(?<!\d)' + r'[. -]'.join(hdlr.split('.')) + r'(?!\d)'
 	if years: # for movies only, scraper to pass None for episodes
 		if not any(value in release_title for value in years): return False
 	else: 
