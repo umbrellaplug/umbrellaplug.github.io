@@ -328,6 +328,21 @@ def services_syncs():
 			from resources.lib.modules import log_utils
 			log_utils.error()
 		if control.monitor.abortRequested(): break
+		video_playing = control.condVisibility('Player.HasVideo')
+		# Poll compact Floppy feeds before heavyweight provider refreshes. A slow
+		# Trakt/Simkl/MDBList sync must not delay watched-state propagation.
+		if internets and not video_playing and floppy.getFloppyCredentialsInfo() and floppy_syncInterval > 0 and getSetting('floppy.fastsync.auto') == 'true':
+			current_time = time.time()
+			if (current_time - last_floppy_sync) >= (60 * floppy_syncInterval):
+				# Failed attempts also respect the interval; fast sync preserves its cache.
+				last_floppy_sync = current_time
+				from resources.lib.modules import log_utils
+				log_utils.log('Floppy Service Sync is running.', 1)
+				if not control.monitor.abortRequested():
+					try: floppy.sync_background()
+					except Exception:
+						log_utils.log('Floppy background sync failed; cached state retained.', 1)
+		if control.monitor.abortRequested(): break
 		if internets and trakt.getTraktCredentialsInfo() and time.time() - last_trakt_sync >= 60 * service_syncInterval:
 			from resources.lib.modules import log_utils
 			if control.condVisibility('Player.HasVideo'):
@@ -413,18 +428,6 @@ def services_syncs():
 					customtrakt.sync_collection(activities, forced=True)
 					customtrakt.sync_dropped(activities, forced=True)
 				last_custom_sync = current_time
-		if control.monitor.abortRequested(): break
-		if internets and not video_playing and floppy.getFloppyCredentialsInfo() and floppy_syncInterval > 0 and getSetting('floppy.fastsync.auto') == 'true':
-			current_time = time.time()
-			if (current_time - last_floppy_sync) >= (60 * floppy_syncInterval):
-				# Failed attempts also respect the interval; fast sync preserves its cache.
-				last_floppy_sync = current_time
-				from resources.lib.modules import log_utils
-				log_utils.log('Floppy Service Sync is running.', 1)
-				if not control.monitor.abortRequested():
-					try: floppy.sync_background()
-					except Exception:
-						log_utils.log('Floppy background sync failed; cached state retained.', 1)
 		if control.monitor.abortRequested(): break
 		if internets and not video_playing and scrob.getScrobCredentialsInfo():
 			current_time = time.time()

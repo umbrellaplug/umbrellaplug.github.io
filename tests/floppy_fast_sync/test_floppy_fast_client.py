@@ -119,6 +119,11 @@ class FastSyncClientTests(unittest.TestCase):
 		self.assertNotIn('sync_collection', block)
 		self.assertNotIn('sync_watchedProgress', block)
 		self.assertIn("getSetting('floppy.fastsync.auto') == 'true'", block)
+		self.assertLess(
+			source.index("Floppy Service Sync is running."),
+			source.index("Trakt Sync Service is running."),
+			'fast Floppy polling must not wait behind heavyweight provider syncs',
+		)
 
 	def test_automatic_fast_sync_has_an_explicit_safe_default_toggle(self):
 		path = kodi_stubs.addon_root('matrix') + '/resources/settings.xml'
