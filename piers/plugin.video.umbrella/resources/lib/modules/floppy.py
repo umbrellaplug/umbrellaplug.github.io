@@ -922,8 +922,7 @@ def force_floppySync():
 				dialog.update(0, '%s...' % phase)
 		except: pass
 	try:
-		clr_tables = ('floppy_watched_movies', 'floppy_watched_episodes',
-			'movies_plantowatch', 'shows_plantowatch', 'movies_watching', 'shows_watching',
+		clr_tables = ('movies_plantowatch', 'shows_plantowatch', 'movies_watching', 'shows_watching',
 			'movies_hold', 'shows_hold', 'movies_completed', 'shows_completed',
 			'movies_dropped', 'shows_dropped', 'movies_collection', 'shows_collection')
 		floppysync.delete_floppy_tables(clr_tables)

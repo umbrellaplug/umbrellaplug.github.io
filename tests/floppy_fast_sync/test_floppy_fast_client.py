@@ -119,6 +119,14 @@ class FastSyncClientTests(unittest.TestCase):
 		self.assertNotIn('sync_collection', block)
 		self.assertNotIn('sync_watchedProgress', block)
 
+	def test_forced_sync_does_not_clear_watched_cache_before_network_success(self):
+		path = kodi_stubs.tree_file('matrix', 'modules/floppy.py')
+		with open(path, 'r') as handle: source = handle.read()
+		block = source.split('def force_floppySync():', 1)[1].split('#### Indicators', 1)[0]
+		self.assertNotIn("'floppy_watched_movies'", block)
+		self.assertNotIn("'floppy_watched_episodes'", block)
+		self.assertIn('sync_watchedProgress(forced=True', block)
+
 
 if __name__ == '__main__':
 	unittest.main()

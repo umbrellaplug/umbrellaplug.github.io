@@ -274,6 +274,7 @@ def _strict_progress_snapshot():
 
 def _progress_op(event):
 	if not isinstance(event, dict): raise ValueError('progress event must be an object')
+	if event.get('numbering') == 'custom' or event.get('episode_order_id') is not None: return None
 	row = _bookmark_row(event)
 	ids = _ids(event)
 	tmdb = str(ids.get('tmdb') or event.get('media_id') or '').strip()
@@ -298,7 +299,10 @@ def _sync_progress_once(force_snapshot=False):
 		data = _sync_request('GET', '/sync/progress-changes/', params={'connection': connection, 'cursor': cursor, 'limit': 500})
 		results = data.get('results')
 		if not isinstance(results, list): raise FloppySyncError('Progress changes are malformed')
-		ops = [_progress_op(event) for event in results]
+		ops = []
+		for event in results:
+			op = _progress_op(event)
+			if op is not None: ops.append(op)
 		next_cursor = _positive_int(data.get('next_cursor'), 'next_cursor')
 		if data.get('has_more') and str(next_cursor) == str(cursor): raise FloppySyncError('Progress cursor did not advance')
 		changed += floppysync.apply_progress_changes(ops, cursor, next_cursor)
