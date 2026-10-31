@@ -100,9 +100,8 @@ class PlayNextXML(BaseDialog):
 
 			if self.closed: return
 
-			if self.default_action == 0 and self.playing_file == self.getPlayingFile():
-				from resources.lib.modules.player import advance_playnext
-				advance_playnext(self.playing_file)
+			# Continue at EOF through Kodi's playlist (or Player's detached-queue
+			# fallback). Issuing PlayNext here races Kodi's own EOF transition.
 			if (self.default_action == 1 and self.playing_file == self.getPlayingFile()):
 				playerWindow.clearProperty('umbrella.standalone.next')
 				playerWindow.clearProperty('umbrella.playnext.transition')

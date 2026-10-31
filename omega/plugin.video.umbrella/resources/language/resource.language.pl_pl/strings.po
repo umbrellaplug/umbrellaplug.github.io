@@ -7374,3 +7374,87 @@ msgstr ""
 msgctxt "#40843"
 msgid "Date, Day and Time"
 msgstr ""
+
+msgctxt "#40844"
+msgid "Prefer Dolby audio"
+msgstr ""
+
+msgctxt "#40845"
+msgid "Prefer Atmos, TrueHD, Dolby Digital Plus and Dolby Digital within quality and provider groups, ahead of file size. Other audio formats remain available as fallback. Audio formats are identified from release names."
+msgstr ""
+
+msgctxt "#40846"
+msgid "Year (IMDb)"
+msgstr ""
+
+msgctxt "#40847"
+msgid "Most voted"
+msgstr ""
+
+msgctxt "#40848"
+msgid "Popular"
+msgstr ""
+
+msgctxt "#40849"
+msgid "Highest rated"
+msgstr ""
+
+msgctxt "#40850"
+msgid "TMDb movie years: minimum votes"
+msgstr ""
+
+msgctxt "#40851"
+msgid "IMDb movie years: minimum votes"
+msgstr ""
+
+msgctxt "#40852"
+msgid "IMDb year browsing is unavailable. Please try again later or use TMDb year browsing."
+msgstr ""
+
+msgctxt "#40853"
+msgid "Higher values favor established movies. Lower values include more recent, older and less widely rated movies. Applies to movie year browsing with any sort order. Original-language and origin-country filters also apply."
+msgstr ""
+
+msgctxt "#40854"
+msgid "Movie year sort order"
+msgstr ""
+
+msgctxt "#40855"
+msgid "Sort both TMDb and IMDb movie year results by Popular, Most voted or Highest rated. Defaults to Popular. Minimum vote counts still apply."
+msgstr ""
+
+msgctxt "#40856"
+msgid "TV year sort order"
+msgstr ""
+
+msgctxt "#40857"
+msgid "TMDb TV years: minimum votes"
+msgstr ""
+
+msgctxt "#40858"
+msgid "IMDb TV years: minimum votes"
+msgstr ""
+
+msgctxt "#40859"
+msgid "IMDb TV year browsing is unavailable. Please try again later or use TMDb year browsing."
+msgstr ""
+
+msgctxt "#40860"
+msgid "Sort both TMDb and IMDb TV year results by Popular, Most voted or Highest rated. Defaults to Popular. Years refer to when a series first premiered, not every year it aired."
+msgstr ""
+
+msgctxt "#40861"
+msgid "Higher values favor established TV shows. Lower values include more recent and less widely rated shows. Original-language and origin-country filters also apply."
+msgstr ""
+
+msgctxt "#40862"
+msgid "Authorize Floppy with OAuth"
+msgstr ""
+
+msgctxt "#40863"
+msgid "Register Umbrella with your Floppy server and approve the displayed code in a browser. Existing API-key credentials remain until authorization succeeds."
+msgstr ""
+
+msgctxt "#40864"
+msgid "Check Floppy API key (legacy)"
+msgstr ""

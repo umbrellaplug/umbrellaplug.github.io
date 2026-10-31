@@ -59,7 +59,7 @@
             <texture>common/umbspinner.gif</texture>
             <animation effect="fade" start="20" end="20" time="0">WindowOpen</animation>
             <aspectratio>keep</aspectratio>
-            <visible>Integer.IsGreater(Window().Property(percent),0)+!String.IsEqual(Window.Property(umbrella.icononly),true)+!String.IsEqual(Window.Property(umbrella.isHidden),true)</visible>
+            <visible>Integer.IsGreater(Window().Property(percent),0)+!String.IsEqual(Window.Property(umbrella.icononly),true)+!String.IsEqual(Window.Property(umbrella.isHidden),true)+String.IsEmpty(Window.Property(umbrella.clearlogo))</visible>
         </control>
         <control type="group">
         <!-- textbox control 2001 for text -->

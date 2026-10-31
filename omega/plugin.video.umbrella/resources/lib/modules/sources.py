@@ -777,15 +777,16 @@ class Sources:
 			del progressDialog
 			return
 
+		scrape_stopped = False
 		while True:
 			try:
 				if control.monitor.abortRequested(): return sysexit()
 				try:
 					if progressDialog.iscanceled():
 						homeWindow.clearProperty('umbrella.window_keep_alive')
-						homeWindow.clearProperty('fs_filterless_search')
-						progressDialog.close()
-						return []
+						# Stop collecting, then validate the sources already found.
+						scrape_stopped = True
+						break
 				except: pass
 
 				if terminate_onCloud:
@@ -865,7 +866,9 @@ class Sources:
 		self.tvshowtitle = tvshowtitle
 		self.year = year
 		homeWindow.clearProperty('fs_filterless_search')
-		if len(self.sources) > 0: self.sourcesFilter(progressDialog)
+		# A stopped scrape leaves the dialog canceled; do not reuse that signal
+		# to cancel the provider checks needed to make collected sources usable.
+		if len(self.sources) > 0: self.sourcesFilter(None if scrape_stopped else progressDialog)
 		if homeWindow.getProperty('umbrella.window_keep_alive') != 'true':
 			try: progressDialog.close()
 			except: pass
@@ -1379,7 +1382,17 @@ class Sources:
 			lambda k: (_srank(k), _qrank(k), _prank(k)),
 			lambda k: (_srank(k), _prank(k), _qrank(k)),
 		)
-		self.sources.sort(key=_sort_keys[_sort_order])
+		if getSetting('source.prefer.dolby.audio') == 'true':
+			# Keep quality and provider precedence, then prefer Dolby before size.
+			def _audio_rank(src):
+				tags = {tag.strip().upper() for tag in (src.get('info') or '').split('/')}
+				return 0 if tags.intersection(('ATMOS', 'DOLBY-TRUEHD', 'DD+', 'DOLBYDIGITAL', 'DD-EX')) else 1
+			def _dolby_sort_key(src):
+				ranks = (_qrank(src), _prank(src)) if _sort_order in (0, 1, 4) else (_prank(src), _qrank(src))
+				return ranks + (_audio_rank(src), _srank(src))
+			self.sources.sort(key=_dolby_sort_key)
+		else:
+			self.sources.sort(key=_sort_keys[_sort_order])
 
 		if getSetting('source.prioritize.av1') == 'true': # filter to place AV1 sources first
 			filter = []

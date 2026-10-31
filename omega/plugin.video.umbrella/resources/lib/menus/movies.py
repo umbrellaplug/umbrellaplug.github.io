@@ -1637,6 +1637,48 @@ class Movies:
 		self.addDirectory(self.list, folderName=folderName)
 		return self.list
 
+	def yearBrowser(self, source='tmdb', url=None, folderName=''):
+		from resources.lib.modules import movie_years
+		sysaddon = 'plugin://plugin.video.umbrella/'
+		if source not in ('imdb', 'tmdb'): return
+		state = jsloads(url) if url else {}
+		def entry(name, value):
+			return {'name': name, 'url': jsdumps(value), 'image': 'years.png',
+				'icon': 'DefaultYear.png', 'action': 'movieYearBrowser&source=%s' % source}
+		if not state:
+			self.addDirectory([entry(str(y), {'year': y}) for y in range(int(self.date_time.strftime('%Y')), 1900, -1)], folderName=folderName)
+			return
+		year = int(state['year'])
+		# Preserve the query order associated with an IMDb pagination cursor.
+		if not state.get('cursor'):
+			state['sort'] = {'0': 'popular', '1': 'votes', '2': 'rating'}.get(getSetting('year.movies.sort'), 'popular')
+		language = self.lang if getSetting('useLanguageforOriginal') == 'true' else ''
+		countries = getSetting('originCountry') if getSetting('useOriginCountries') == 'true' else ''
+		if source == 'tmdb':
+			link = movie_years.tmdb_url(self.tmdb_link, self.today_date, year, state['sort'],
+				getSetting('year.tmdb.minimumVotes'), language, countries)
+			return self.getTMDb(link, folderName=folderName)
+		try:
+			page = cache.get(movie_years.imdb_page, 6, year, state['sort'],
+				movie_years.minimum_votes(getSetting('year.imdb.minimumVotes'), 10000),
+				language, countries, state.get('cursor', ''), self.page_limit)
+			if page is None: raise ValueError('IMDb year search unavailable')
+			self.list, cursor = page
+			imdb_ratings = {item['imdb']: (item['rating'], item['votes']) for item in self.list}
+			self.worker()
+			next_state = dict(state, cursor=cursor, page=int(state.get('page', 1)) + 1)
+			next_url = '%s?action=movieYearBrowser&source=imdb&url=%s&folderName=%s&page=%s' % (
+				sysaddon, quote_plus(jsdumps(next_state)), quote_plus(folderName or ''), next_state['page']) if cursor else ''
+			for item in self.list:
+				item['next'] = next_url
+				if item.get('imdb') in imdb_ratings:
+					item['rating'], item['votes'] = imdb_ratings[item['imdb']]
+			self.movieDirectory(self.list, folderName=folderName)
+		except:
+			log_utils.error('IMDb year browsing failed')
+			control.notification(message=getLS(40852))
+			self.movieDirectory([], folderName=folderName)
+
 	def years(self, url, folderName=''):
 		try: url = getattr(self, url + '_link')
 		except: pass

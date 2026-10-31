@@ -1,4 +1,20 @@
+[B]Update - v6.7.99 - Oct 30th, 2026[/B]
+--[Fix] Fixed continuous playback stopping after multiple episodes and improved automatic Play Next reliability.
+--[Fix] Fixed episode queue issues, including duplicate episodes, interrupted playback, and manually queued episodes being lost.
+--[Fix] Fixed artwork and loading spinner overlapping during source resolution.
+--[Fix] Fixed occasional episode scraping errors.
+--[Feature] Added Floppy OAuth login with QR code authorization and automatic token renewal. API keys are still supported.
+--[Fix] Improved Floppy watched history syncing, including skipped episodes, specials, and rewatched shows.
+--[Enhancement] Improved Floppy syncing speed, reliability, and handling of connection failures.
+--[Feature] Added IMDb TV show browsing by year and improved TMDb year browsing, with new sorting and rating options.
+--[Feature] Added IMDb movie browsing by year and improved movie year sorting for IMDb and TMDb.
+--[Fix] Fixed stopping a scrape early incorrectly showing "No Sources Found" when sources were already available.
+--[Enhancement] Added optional Prefer Dolby Audio setting to prioritize Atmos, TrueHD, Dolby Digital Plus, and Dolby Digital sources.
+--[Fix] Improved Kodi 22 compatibility and reduced metadata warnings.
+--[Fix] Additional Floppy authorization, caching, synchronization, and error-handling improvements.
+
 [B]Update - v6.7.98 - Oct 27th, 2026 [/B]
+--[Fix] Preserve collected sources when stopping a scrape early and complete provider checks before displaying results.
 --[Fix] Add airdate searches to internal Easynews, FilePursuit and GDrive scrapers while retaining season and episode searches and removing duplicate results.
 --[Fix] Allow internal Plex scraper results to match the selected episode's airdate.
 --[Change] Move Trakt device authentication, token refresh and revocation to auth.trakt.tv ahead of the February 1st, 2027 deadline.

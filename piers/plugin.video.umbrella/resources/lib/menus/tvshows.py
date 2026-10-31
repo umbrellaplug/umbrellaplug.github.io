@@ -5,7 +5,7 @@
 
 from datetime import datetime, timedelta
 import time
-from json import dumps as jsdumps
+from json import dumps as jsdumps, loads as jsloads
 import re
 import xbmc
 from threading import Thread
@@ -1006,6 +1006,48 @@ class TVshows:
 			self.list.append({'content': 'tags', 'name': str(i[0]), 'url': self.certification_link % i[1], 'image': 'certificates.png', 'icon': 'certificates.png', 'action': 'tvshows&folderName=%s' % quote_plus(str(i[0]))})
 		self.addDirectory(self.list, folderName=folderName)
 		return self.list
+
+	def yearBrowser(self, source='tmdb', url=None, folderName=''):
+		from resources.lib.modules import movie_years
+		sysaddon = 'plugin://plugin.video.umbrella/'
+		if source not in ('imdb', 'tmdb'): return
+		state = jsloads(url) if url else {}
+		def entry(name, value):
+			return {'name': name, 'url': jsdumps(value), 'image': 'years.png',
+				'icon': 'DefaultYear.png', 'action': 'tvYearBrowser&source=%s' % source}
+		if not state:
+			self.addDirectory([entry(str(y), {'year': y}) for y in range(int(self.date_time.strftime('%Y')), 1900, -1)], folderName=folderName)
+			return
+		year = int(state['year'])
+		# Preserve the query order associated with an IMDb pagination cursor.
+		if not state.get('cursor'):
+			state['sort'] = {'0': 'popular', '1': 'votes', '2': 'rating'}.get(getSetting('year.tv.sort'), 'popular')
+		language = self.traktlang if getSetting('useLanguageforOriginal') == 'true' else ''
+		countries = getSetting('originCountry') if getSetting('useOriginCountries') == 'true' else ''
+		if source == 'tmdb':
+			link = movie_years.tmdb_url(self.tmdb_link, self.today_date, year, state['sort'],
+				movie_years.minimum_votes(getSetting('year.tv.tmdb.minimumVotes'), 20), language, countries, media='tv')
+			return self.getTMDb(link, folderName=folderName)
+		try:
+			page = cache.get(movie_years.imdb_page, 6, year, state['sort'],
+				movie_years.minimum_votes(getSetting('year.tv.imdb.minimumVotes'), 1000),
+				language, countries, state.get('cursor', ''), self.page_limit, 'tv')
+			if page is None: raise ValueError('IMDb year search unavailable')
+			self.list, cursor = page
+			imdb_ratings = {item['imdb']: (item['rating'], item['votes']) for item in self.list}
+			self.worker()
+			next_state = dict(state, cursor=cursor, page=int(state.get('page', 1)) + 1)
+			next_url = '%s?action=tvYearBrowser&source=imdb&url=%s&folderName=%s&page=%s' % (
+				sysaddon, quote_plus(jsdumps(next_state)), quote_plus(folderName or ''), next_state['page']) if cursor else ''
+			for item in self.list:
+				item['next'] = next_url
+				if item.get('imdb') in imdb_ratings:
+					item['rating'], item['votes'] = imdb_ratings[item['imdb']]
+			self.tvshowDirectory(self.list, folderName=folderName)
+		except:
+			log_utils.error('IMDb year browsing failed')
+			control.notification(message=getLS(40859))
+			self.tvshowDirectory([], folderName=folderName)
 
 	def years(self, url, folderName=''):
 		try: url = getattr(self, url + '_link')
@@ -3670,7 +3712,7 @@ class TVshows:
 		if getSetting('services.directProgress.scrape') == 'true' and getSetting('enable.playnext') == 'true':
 			pass
 		else:
-			control.playlist.clear()
+			control.clear_idle_playlist()
 		if not items: # with reuselanguageinvoker on an empty directory must be loaded, do not use sys.exit()
 			control.hide()
 			if self.is_widget != True:
@@ -4006,7 +4048,7 @@ class TVshows:
 
 	def addDirectory(self, items, queue=False, folderName='Umbrella'):
 		from sys import argv # some functions like ActivateWindow() throw invalid handle less this is imported here.
-		control.playlist.clear()
+		control.clear_idle_playlist()
 		if not items: # with reuselanguageinvoker on an empty directory must be loaded, do not use sys.exit()
 			content = ''
 			control.hide()

@@ -116,11 +116,26 @@ def _refresh_after_player_closes(request_id, watched_update_thread=None):
 
 def _playlist_position():
 	position = control.playlist.getposition()
+	current = playerWindow.getProperty('umbrella.queue.current')
+	if current:
+		for index in range(control.playlist.size()):
+			if control.playlist[index].getPath() == current: return index
 	if position == -1 and control.playlist.size() > 1:
 		# Only treat our own detached queue as current + next.
 		next_url = playerWindow.getProperty('umbrella.standalone.next')
 		if next_url and control.playlist[1].getPath() == next_url: return 0
 	return position
+
+
+def _next_playlist_index():
+	"""Locate our queued episode even when Kodi detached the current stream."""
+	next_url = playerWindow.getProperty('umbrella.standalone.next')
+	current = playerWindow.getProperty('umbrella.queue.current')
+	if next_url and next_url != current:
+		for index in range(control.playlist.size()):
+			if control.playlist[index].getPath() == next_url: return index
+	position = _playlist_position()
+	return position + 1 if 0 <= position < control.playlist.size() - 1 else None
 
 
 def advance_playnext(expected_path=None):
@@ -130,13 +145,13 @@ def advance_playnext(expected_path=None):
 		try:
 			if control.player.getPlayingFile() != expected_path: return False
 		except Exception: return False
-	position = _playlist_position()
-	if not 0 <= position < control.playlist.size() - 1: return False
+	next_index = _next_playlist_index()
+	if next_index is None: return False
 	playerWindow.setProperty('umbrella.playnext.transition', 'true')
 	try:
-		if control.playlist.getposition() == -1:
+		if control.playlist.getposition() == -1 or next_index != control.playlist.getposition() + 1:
 			playerWindow.clearProperty('umbrella.standalone.next')
-			control.player.play(control.playlist, startpos=position + 1)
+			control.player.play(control.playlist, startpos=next_index)
 		else:
 			control.player.playnext()
 		return True
@@ -380,19 +395,23 @@ class Player(xbmc.Player):
 			if item_season > season_int and not self.multi_season:
 				if self.debuglog: log_utils.log('addEpisodetoPlaylist: next episode is S%sE%s but multi_season is disabled - not adding to playlist' % (item_season, item.get('episode')), level=log_utils.LOGWARNING)
 				return
-			try:
-				current_pos = _playlist_position()
-				if current_pos != -1 and control.playlist.size() > current_pos + 1:
-					if self.debuglog: log_utils.log('addEpisodetoPlaylist: playlist already has an item queued at position %s (size=%s) - not adding a duplicate' % (current_pos + 1, control.playlist.size()), level=log_utils.LOGDEBUG)
-					return
-			except: pass
+			# Preserve an existing user playlist, using the incoming episode's URL
+			# to locate its successor instead of Kodi's possibly stale position.
+			current_url = getattr(self, '_queue_current', '')
+			if current_url:
+				for position in range(control.playlist.size() - 1):
+					if control.playlist[position].getPath() == current_url:
+						playerWindow.setProperty('umbrella.standalone.next', control.playlist[position + 1].getPath())
+						return
 			playlist_items = episodes.Episodes().episodeDirectory([item], next=False, playlist=True)
 			added = False
 			for url, li, folder in playlist_items:
 				if url and li:
-					control.playlist.add(url=url, listitem=li)
-					if getattr(self, '_standalone_playlist', False):
-						playerWindow.setProperty('umbrella.standalone.next', url)
+					# A stale Kodi position can point behind the episode resolving now.
+					# Check the actual next URL rather than treating any later row as next.
+					if not any(control.playlist[index].getPath() == url for index in range(control.playlist.size())):
+						control.playlist.add(url=url, listitem=li)
+					playerWindow.setProperty('umbrella.standalone.next', url)
 					added = True
 					if self.debuglog: log_utils.log('addEpisodetoPlaylist: successfully added S%sE%s to playlist (playlist size now: %s)' % (item.get('season'), item.get('episode'), control.playlist.size()), level=log_utils.LOGDEBUG)
 			if not added:
@@ -529,6 +548,20 @@ class Player(xbmc.Player):
 		#just checking here for an empty playlist.
 		try:
 			from sys import argv
+			# The request URL identifies the incoming playlist entry before Kodi
+			# updates getposition(). Preserve that entry during plugin resolution.
+			if self.media_type == 'episode' and self.enable_playnext:
+				try:
+					request_url = argv[0] + argv[2]
+					self._queue_current = ''
+					for index in range(control.playlist.size()):
+						if control.playlist[index].getPath() == request_url:
+							self._queue_current = request_url
+							self._standalone_playlist = True
+							playerWindow.setProperty('umbrella.queue.current', request_url)
+							playerWindow.clearProperty('umbrella.standalone.next')
+							return False
+				except: pass
 			# Kodi owns playback for a valid plugin handle. Resolve that request
 			# in play_source instead of stopping it to launch another playlist.
 			if int(argv[1]) >= 0:
@@ -546,6 +579,8 @@ class Player(xbmc.Player):
 					self._standalone_playlist = self.singleItemPlaylist(item)
 					if self._standalone_playlist:
 						playerWindow.setProperty('umbrella.standalone.current', item.getPath() or item.getVideoInfoTag().getFilenameAndPath())
+						self._queue_current = item.getPath() or item.getVideoInfoTag().getFilenameAndPath()
+						playerWindow.setProperty('umbrella.queue.current', self._queue_current)
 				return False
 			#check if no playlist is currently added.
 			# Kodi can report position 0 for an empty video playlist after source
@@ -626,7 +661,7 @@ class Player(xbmc.Player):
 		homeWindow.clearProperty(pname)
 		for i in range(0, 500):
 			if self.isPlayback():
-				# skip closeAll when window_monitor owns the source dialog — avoids "Window id does not exist" crash in skins with timers (e.g. Arctic Fuse 2)
+				# skip closeAll when window_monitor owns the source dialog â€” avoids "Window id does not exist" crash in skins with timers (e.g. Arctic Fuse 2)
 				if homeWindow.getProperty('umbrella.window_keep_alive') != 'true':
 					control.closeAll()
 				break
@@ -702,7 +737,7 @@ class Player(xbmc.Player):
 							self.watched_during_playback = True
 						if self.enable_playnext and not self.play_next_triggered:
 							playlist_size = int(control.playlist.size())
-							if 0 <= _playlist_position() < playlist_size - 1:
+							if _next_playlist_index() is not None:
 								if self.preScrape_triggered == False:
 									xbmc.executebuiltin('RunPlugin(plugin://plugin.video.umbrella/?action=play_preScrapeNext)')
 									self.preScrape_triggered = True
@@ -1112,6 +1147,12 @@ class Player(xbmc.Player):
 
 	def onPlayBackStopped(self):
 		try:
+			current_owner = playerWindow.getProperty('umbrella.queue.current')
+			if (getattr(self, '_queue_current', '') and current_owner
+					and self._queue_current != current_owner):
+				# A newer resolver owns the queue, even before its AVStarted event.
+				if not self.scrobble_sent: self._sendFinishedItemState()
+				return
 			# The outgoing Player may receive a delayed stop after the next
 			# episode has started. It no longer owns that episode's queue.
 			if self.scrobble_sent and self.isPlayingVideo(): return
@@ -1120,7 +1161,7 @@ class Player(xbmc.Player):
 			if (self.playbackStopped_triggered and not self.onPlayBackStopped_ran
 					and not self.scrobble_sent and getattr(self, '_standalone_playlist', False)
 					and self.media_length > 0 and self.current_time >= self.media_length - 2
-					and _playlist_position() == 0):
+					and _next_playlist_index() is not None):
 				self.onPlayBackEnded()
 				return
 			playerWindow.clearProperty('umbrella.standalone.next')
@@ -1178,6 +1219,9 @@ class Player(xbmc.Player):
 
 	def onPlayBackEnded(self):
 		try:
+			# Kodi may deliver the outgoing stream's end to a new resolver before
+			# its own stream starts. It has no completed playback to hand off yet.
+			if not getattr(self, 'av_started_ran', True): return
 			# A delayed end event from the previous playlist item can arrive after
 			# this item's AVStarted. Do not close the session still playing here.
 			if self._playback_path and self.isPlayingVideo():
@@ -1227,15 +1271,21 @@ class Player(xbmc.Player):
 				playingfile = False
 			playlist_position = control.playlist.getposition()
 			playlist_size = control.playlist.size()
+			owner_url = getattr(self, '_queue_current', '')
+			owns_queue = (owner_url == playerWindow.getProperty('umbrella.queue.current')
+				if owner_url else getattr(self, '_standalone_playlist', False))
 			if (not playingfile and playlist_position == -1 and self.enable_playnext
-					and getattr(self, '_standalone_playlist', False) and _playlist_position() == 0):
+					and owns_queue and _next_playlist_index() is not None):
 				# The stream has ended. Start the queued episode now, without ever
 				# stopping/restarting the current stream during initial resolution.
 				if advance_playnext():
 					self._standalone_playlist = False
+					self._queue_current = ''
 					homeWindow.clearProperty('umbrella.playback_cleanup')
 					return
-			has_next_queued = playlist_position >= 0 and playlist_position + 1 < playlist_size
+			has_next_queued = (_next_playlist_index() is not None
+				or playerWindow.getProperty('umbrella.playnext.transition') == 'true'
+				or (playlist_position == -1 and playlist_size > 1))
 			log_utils.log('onPlayBackEnded Playlist Position: %s Playlist Count: %s Has Next: %s isPlaying: %s' % (playlist_position, playlist_size, has_next_queued, playingfile), level=log_utils.LOGDEBUG)
 			# Kodi can briefly report position 0 with no active file between plugin
 			# playlist items. Position 0 is not a reason to clear when position 1 is
@@ -1359,7 +1409,7 @@ class PlayNext(xbmc.Player):
 			log_utils.error("Kodi did not return a playing file, killing playnext xml's")
 			return
 		# Only show playnext if next episode meta is valid
-		next_meta = self.getNext_meta() if 0 <= _playlist_position() < control.playlist.size() - 1 else None
+		next_meta = self.getNext_meta() if _next_playlist_index() is not None else None
 		if next_meta:
 			if self.isStill_watching(): target = self.show_stillwatching_xml
 			elif self.enable_playnext: target = self.show_playnext_xml
@@ -1381,9 +1431,9 @@ class PlayNext(xbmc.Player):
 		try:
 			
 			from urllib.parse import parse_qsl
-			current_position = _playlist_position()
-			if not 0 <= current_position < control.playlist.size() - 1: return None
-			next_url = control.playlist[current_position + 1].getPath()
+			next_index = _next_playlist_index()
+			if next_index is None: return None
+			next_url = control.playlist[next_index].getPath()
 			# next_url=videodb://tvshows/titles/16/2/571?season=2&tvshowid=16 # library playback returns this
 			params = dict(parse_qsl(next_url.replace('?', '')))
 			#next_meta = jsloads(params.get('meta')) if params.get('meta') else '' # not available for library playback
@@ -1485,7 +1535,7 @@ class PlayNext(xbmc.Player):
 				if not source_preferences.get(self.getNext_meta()): return
 			playlist_pos = _playlist_position()
 			playlist_size = control.playlist.size()
-			if 0 <= playlist_pos < playlist_size - 1:
+			if _next_playlist_index() is not None:
 				from resources.lib.modules import sources
 				from resources.lib.database import providerscache
 				next_meta=self.getNext_meta()
@@ -1751,7 +1801,7 @@ class Subtitles:
 				return 'default'
 			if getSetting('subtitles') == 'true':
 				# Auto-download is enabled; get() handles the download and writes the temp file.
-				# Temp file not found yet means get() is still running — don't download twice.
+				# Temp file not found yet means get() is still running â€” don't download twice.
 				return 'default'
 			try:
 				quality = ['bluray', 'hdrip', 'brrip', 'bdrip', 'dvdrip', 'webrip', 'hdtv']
@@ -2116,14 +2166,14 @@ class Bookmarks:
 			elif service == 'floppy':
 				completed = percent >= int(markwatched_percentage)
 				if getSetting('debug.level') == '1':
-					log_utils.log('FLOPPY: set_scrobble stop gate — percent=%.2f current_time=%s media_length=%s seekable=%s completed=%s skip_scrobble=%s' % (percent, current_time, media_length, seekable, completed, skip_scrobble), level=log_utils.LOGDEBUG)
+					log_utils.log('FLOPPY: set_scrobble stop gate â€” percent=%.2f current_time=%s media_length=%s seekable=%s completed=%s skip_scrobble=%s' % (percent, current_time, media_length, seekable, completed, skip_scrobble), level=log_utils.LOGDEBUG)
 				floppy.scrobbleStopMovie(imdb, tmdb, percent, completed=completed, current_time=current_time, total_time=media_length, already_watched=skip_scrobble) if media_type == 'movie' else floppy.scrobbleStopEpisode(imdb, tmdb, tvdb, season, episode, percent, completed=completed, current_time=current_time, total_time=media_length, already_watched=skip_scrobble)
 				if percent >= int(markwatched_percentage):
 					floppy.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False, remote=False)
 			elif service == 'scrob':
 				completed = percent >= int(markwatched_percentage)
 				if getSetting('debug.level') == '1':
-					log_utils.log('SCROB: set_scrobble stop gate — percent=%.2f current_time=%s media_length=%s seekable=%s completed=%s skip_scrobble=%s' % (percent, current_time, media_length, seekable, completed, skip_scrobble), level=log_utils.LOGDEBUG)
+					log_utils.log('SCROB: set_scrobble stop gate â€” percent=%.2f current_time=%s media_length=%s seekable=%s completed=%s skip_scrobble=%s' % (percent, current_time, media_length, seekable, completed, skip_scrobble), level=log_utils.LOGDEBUG)
 				scrob.scrobbleStopMovie(imdb, tmdb, percent, completed=completed, current_time=current_time, total_time=media_length, already_watched=skip_scrobble) if media_type == 'movie' else scrob.scrobbleStopEpisode(imdb, tmdb, tvdb, season, episode, percent, completed=completed, current_time=current_time, total_time=media_length, already_watched=skip_scrobble)
 				if percent >= int(markwatched_percentage):
 					scrob.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False, remote=False)

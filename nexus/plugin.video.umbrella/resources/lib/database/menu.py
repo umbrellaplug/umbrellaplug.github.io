@@ -60,7 +60,8 @@ _MOVIES_DEFAULTS = [
 	('mv_oscar_nominees',      '32452', 'movies&url=oscars',                                  'trakt.png',       'oscar-winners.png', 1, 1, 1, 24, 0, None,             0, '32451'),
 	('mv_tmdb_genres',         '32486', 'movieGenres&url=tmdb_genre',                         'tmdb.png',        'genres.png',        1, 1, 1, 25, 0, None,             0, '32455'),
 	('mv_trakt_genres',        '40493', 'movieGenres&url=trakt_movie_genre',                  'trakt.png',       'genres.png',        1, 1, 1, 26, 0, None,             0, '32455'),
-	('mv_tmdb_years',          '32485', 'movieYears&url=tmdb_year',                           'tmdb.png',        'years.png',         1, 1, 1, 27, 0, None,             0, '32457'),
+	('mv_tmdb_years',          '32485', 'movieYearBrowser&source=tmdb',                       'tmdb.png',        'years.png',         1, 1, 1, 27, 0, None,             0, '32457'),
+	('mv_imdb_years',          '40846', 'movieYearBrowser&source=imdb',                       'imdb.png',        'years.png',         1, 1, 1, 28, 0, None,             0, '40846'),
 	('mv_tmdb_certs',          '32487', 'movieCertificates&url=tmdb_certification',           'tmdb.png',        'certificates.png',  1, 1, 1, 28, 0, None,             0, '32463'),
 	('mv_collections',         '32000', 'collections_Navigator',                              'boxsets.png',     'boxsets.png',       1, 1, 1, 29, 0, None,             0, None),
 	('mv_mdb_top_lists',       '40084', 'mdbTopListMovies',                                   'mdblist.png',     'movies.png',        1, 1, 1, 30, 0, 'mdblist_token',  0, None),
@@ -97,7 +98,8 @@ _TVSHOWS_DEFAULTS = [
 	('tv_tmdb_genres',        '32486', 'tvGenres&url=tmdb_genre',                 'tmdb.png',    'genres.png',       1, 1, 1, 14, 0, None,              0, '32455'),
 	('tv_trakt_genres',       '40493', 'tvGenres&url=trakt_tvshow_genre',         'trakt.png',   'genres.png',       1, 1, 1, 15, 0, None,              0, '32455'),
 	('tv_networks',           '32468', 'tvNetworks',                              'tmdb.png',    'networks.png',     1, 1, 1, 16, 0, None,              0, '32469'),
-	('tv_tmdb_years',         '32485', 'tvYears&url=tmdb_year',                   'tmdb.png',    'years.png',        1, 1, 1, 17, 0, None,              0, '32457'),
+	('tv_tmdb_years',         '32485', 'tvYearBrowser&source=tmdb',               'tmdb.png',    'years.png',        1, 1, 1, 17, 0, None,              0, '32457'),
+	('tv_imdb_years',         '40846', 'tvYearBrowser&source=imdb',               'imdb.png',    'years.png',        1, 1, 1, 18, 0, None,              0, '40846'),
 	('tv_tmdb_airing',        '32467', 'tmdbTvshows&url=tmdb_airingtoday',        'tmdb.png',    'airing-today.png', 1, 1, 1, 18, 0, None,              0, '32465'),
 	('tv_tmdb_onair',         '32472', 'tmdbTvshows&url=tmdb_ontheair',           'tmdb.png',    'new-tvshows.png',  1, 1, 1, 19, 0, None,              0, '32471'),
 	('tv_tmdb_newshows',      '40661', 'tvshows&url=tmdb_newshows',               'tmdb.png',    'new-tvshows.png',  1, 1, 1, 20, 0, None,              0, '32475'),
@@ -375,7 +377,7 @@ _defaults_version_file = control.joinPath(control.dataPath, 'menu_defaults.v')
 # regardless of addon version (e.g. to fix a migration bug) — the on-disk marker below
 # is keyed on addonVersion+this, not addonVersion alone, so incrementing it forces one
 # more sync pass even for users already marked up to date on the current addon version.
-_MENU_SCHEMA_REVISION = '19'
+_MENU_SCHEMA_REVISION = '21'
 
 
 def _read_synced_version():
@@ -437,6 +439,11 @@ def _migrate_schema(dbcon):
 
 
 def _sync_defaults(dbcon):
+	# Upgrade built-in year browsing while preserving enabled state and ordering.
+	dbcon.execute("UPDATE menu_items SET action='movieYearBrowser&source=tmdb' WHERE item_id='mv_tmdb_years' AND is_custom=0 AND action='movieYears&url=tmdb_year'")
+	dbcon.execute("INSERT OR IGNORE INTO menu_items (menu_name, item_id, label, action, icon, poster, is_folder, is_action, enabled, sort_order, is_custom, condition_key, queue, alt_label) VALUES ('movies', 'mv_imdb_years', '40846', 'movieYearBrowser&source=imdb', 'imdb.png', 'years.png', 1, 1, 1, 28, 0, NULL, 0, '40846')")
+	dbcon.execute("UPDATE menu_items SET action='tvYearBrowser&source=tmdb' WHERE item_id='tv_tmdb_years' AND is_custom=0 AND action='tvYears&url=tmdb_year'")
+	dbcon.execute("INSERT OR IGNORE INTO menu_items (menu_name, item_id, label, action, icon, poster, is_folder, is_action, enabled, sort_order, is_custom, condition_key, queue, alt_label) VALUES ('tvshows', 'tv_imdb_years', '40846', 'tvYearBrowser&source=imdb', 'imdb.png', 'years.png', 1, 1, 1, 18, 0, NULL, 0, '40846')")
 	# Remove retired SIMKL list shortcuts when existing menu databases resync.
 	dbcon.execute("DELETE FROM menu_items WHERE is_custom=0 AND item_id IN ('mymv_simkl_customlists', 'mytv_simkl_customlists')")
 	# Replace the old public catalog folders without touching user-created shortcuts.

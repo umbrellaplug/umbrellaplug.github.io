@@ -65,13 +65,14 @@ APPLE_TV = ('atvp',)
 
 def episode_airdate_pattern(premiered):
 	"""Validate the selected episode's date and match common release separators."""
-	from datetime import datetime
+	from datetime import date
 	if not isinstance(premiered, str) or not re.fullmatch(r'\d{4}[-.]\d{2}[-.]\d{2}', premiered): return None
 	try:
-		date = datetime.strptime(premiered.replace('.', '-'), '%Y-%m-%d')
+		# strptime can retain a finalized interpreter's parser in embedded Python.
+		parsed = date(*(int(part) for part in premiered.replace('.', '-').split('-')))
 	except ValueError:
 		return None
-	return r'(?<!\d)' + r'[. -]'.join(date.strftime('%Y.%m.%d').split('.')) + r'(?!\d)'
+	return r'(?<!\d)' + r'[. -]'.join(('%04d.%02d.%02d' % (parsed.year, parsed.month, parsed.day)).split('.')) + r'(?!\d)'
 
 
 def seas_ep_filter(season, episode, release_title, split=False, premiered=None):

@@ -68,7 +68,7 @@
                     <texture>common/umbspinner.gif</texture>
                     <animation effect="fade" start="0" end="70" time="0" tween="sine" easing="in">WindowOpen</animation>
                     <aspectratio aligny="top">stretch</aspectratio>
-                    <visible>Integer.IsGreater(Window().Property(percent),0)+String.IsEqual(Window().Property(umbrella.qr),0)</visible>
+                    <visible>Integer.IsGreater(Window().Property(percent),0)+String.IsEqual(Window().Property(umbrella.qr),0)+String.IsEmpty(Window.Property(umbrella.icon))</visible>
                 </control>
                 <control type="textbox" id="2001">
                     <top>150</top>

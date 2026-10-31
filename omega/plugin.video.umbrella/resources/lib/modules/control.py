@@ -459,6 +459,19 @@ def folderPath():
 def queueItem():
 	return execute('Action(Queue)') # seems broken in 19 for show and season level, works fine in 18
 
+def clear_idle_playlist():
+	"""Directory reloads must not discard a playing or resolving episode chain."""
+	if player.isPlaying() or playerWindow.getProperty('umbrella.playnext.transition') == 'true':
+		log_refresh_diagnostic('browse-playlist-preserved', 'reason=playing-or-resolving')
+		return False
+	next_url = playerWindow.getProperty('umbrella.standalone.next')
+	if next_url and any(playlist[index].getPath() == next_url for index in range(playlist.size())):
+		log_refresh_diagnostic('browse-playlist-preserved', 'reason=queued-next')
+		return False
+	playlist.clear()
+	return True
+
+
 def refreshRepos():
 	return execute('UpdateAddonRepos')
 ########################
@@ -678,7 +691,7 @@ def set_info(item, meta, setUniqueIDs=None, resumetime='', fileNameandPath=None)
 			meta_get = meta.get
 			info_tag = item.getVideoInfoTag()
 			if resumetime: info_tag.setResumePoint(float(resumetime), float(meta_get('duration') or 2700))
-			info_tag.setMediaType(meta_get('mediatype'))
+			info_tag.setMediaType(meta_get('mediatype') or '')
 			if setUniqueIDs:
 				info_tag.setUniqueIDs(setUniqueIDs)
 			#log('unique id title:%s imdb:%s filenameandpath: %s'%(meta_get('title'), setUniqueIDs.get('imdb'), fileNameandPath), 1)
@@ -690,19 +703,19 @@ def set_info(item, meta, setUniqueIDs=None, resumetime='', fileNameandPath=None)
 			else:
 				info_title = meta_get('title')
 			info_tag.setTitle(info_title)
-			info_tag.setSortTitle(meta_get('sorttitle'))
+			info_tag.setSortTitle(meta_get('sorttitle') or '')
 			#info_tag.setSortEpisode(meta_get('sortepisode'))
 			#info_tag.setSortSeason(meta_get('sortseason'))
-			info_tag.setOriginalTitle(meta_get('originaltitle'))
-			info_tag.setPlot(meta_get('plot'))
-			info_tag.setPlotOutline(meta_get('plot'))
-			info_tag.setDateAdded(meta_get('dateadded'))
+			info_tag.setOriginalTitle(meta_get('originaltitle') or '')
+			info_tag.setPlot(meta_get('plot') or '')
+			info_tag.setPlotOutline(meta_get('plot') or '')
+			info_tag.setDateAdded(meta_get('dateadded') or '')
 			info_tag.setPremiered(meta_get('premiered') or '')
 			info_tag.setYear(convert_type(int, meta_get('year', 0)))
 			info_tag.setRating(convert_type(float, meta_get('rating', 0.0)))
-			info_tag.setMpaa(meta_get('mpaa'))
+			info_tag.setMpaa(meta_get('mpaa') or '')
 			if meta_get('duration') != '':
-				info_tag.setDuration(meta_get('duration', 0))
+				info_tag.setDuration(meta_get('duration') or 0)
 			info_tag.setPlaycount(convert_type(int, meta_get('playcount', 0)))
 			if isinstance(meta_get('votes'), str): 
 				meta_votes = str(meta_get('votes')).replace(",","")
@@ -710,26 +723,26 @@ def set_info(item, meta, setUniqueIDs=None, resumetime='', fileNameandPath=None)
 				meta_votes = meta_get('votes')
 			if meta_votes:
 				info_tag.setVotes(convert_type(int, meta_votes))
-			info_tag.setLastPlayed(meta_get('lastplayed'))
-			info_tag.setAlbum(meta_get('album'))
-			info_tag.setGenres(to_list(meta_get('genre', [])))
-			info_tag.setCountries(to_list(meta_get('country', [])))
-			info_tag.setTags(meta_get('tag', []))
-			info_tag.setTrailer(meta_get('trailer'))
-			info_tag.setTagLine(meta_get('tagline'))
-			info_tag.setStudios(to_list(meta_get('studio', [])))
-			info_tag.setWriters(to_list(meta_get('writer', [])))
-			info_tag.setDirectors(to_list(meta_get('director', [])))
+			info_tag.setLastPlayed(meta_get('lastplayed') or '')
+			info_tag.setAlbum(meta_get('album') or '')
+			info_tag.setGenres(to_list(meta_get('genre') or []))
+			info_tag.setCountries(to_list(meta_get('country') or []))
+			info_tag.setTags(meta_get('tag') or [])
+			info_tag.setTrailer(meta_get('trailer') or '')
+			info_tag.setTagLine(meta_get('tagline') or '')
+			info_tag.setStudios(to_list(meta_get('studio') or []))
+			info_tag.setWriters(to_list(meta_get('writer') or []))
+			info_tag.setDirectors(to_list(meta_get('director') or []))
 			if setUniqueIDs:
-				info_tag.setIMDBNumber(setUniqueIDs.get('imdb'))
+				info_tag.setIMDBNumber(setUniqueIDs.get('imdb') or '')
 			if meta_get('mediatype') in ['tvshow', 'season']:
-				info_tag.setTvShowTitle(meta_get('tvshowtitle'))
-				info_tag.setTvShowStatus(meta_get('status'))
+				info_tag.setTvShowTitle(meta_get('tvshowtitle') or '')
+				info_tag.setTvShowStatus(meta_get('status') or '')
 			if meta_get('mediatype') in ['episodes', 'episode']:
-				info_tag.setTvShowTitle(meta_get('tvshowtitle'))
+				info_tag.setTvShowTitle(meta_get('tvshowtitle') or '')
 				info_tag.setEpisode(convert_type(int, meta_get('episode')))
 				info_tag.setSeason(convert_type(int, meta_get('season')))
-			info_tag.setCast([xbmc.Actor(name=item['name'], role=item['role'], thumbnail=item['thumbnail']) for item in meta_get('castandart', [])])
+			info_tag.setCast([xbmc.Actor(name=item.get('name') or '', role=item.get('role') or '', thumbnail=item.get('thumbnail') or '') for item in (meta_get('castandart') or [])])
 		except:
 			from resources.lib.modules import log_utils
 			log_utils.error()

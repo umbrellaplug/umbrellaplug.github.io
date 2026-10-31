@@ -409,7 +409,8 @@ def services_syncs():
 		if control.monitor.abortRequested(): break
 		if internets and not video_playing and floppy.getFloppyCredentialsInfo():
 			current_time = time.time()
-			if (current_time - last_floppy_sync) >= (60 * floppy_syncInterval):
+			if (current_time - last_floppy_sync) >= (60 * floppy_syncInterval) or control.homeWindow.getProperty('umbrella.floppy.syncRequested') == 'true':
+				control.homeWindow.clearProperty('umbrella.floppy.syncRequested')
 				from resources.lib.modules import log_utils
 				log_utils.log('Floppy Service Sync is running.', 1)
 				if not control.monitor.abortRequested():
@@ -419,7 +420,7 @@ def services_syncs():
 				if not control.monitor.abortRequested():
 					floppy.sync_watch_list(forced=True)
 					floppy.sync_collection(forced=True)
-				last_floppy_sync = current_time
+				last_floppy_sync = time.time()
 		if control.monitor.abortRequested(): break
 		if internets and not video_playing and scrob.getScrobCredentialsInfo():
 			current_time = time.time()

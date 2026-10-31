@@ -211,6 +211,9 @@ def router(argv2):
 	elif action == 'movieCertificates':
 		from resources.lib.menus import movies
 		movies.Movies().certifications(url, folderName=folderName)
+	elif action == 'movieYearBrowser':
+		from resources.lib.menus import movies
+		movies.Movies().yearBrowser(source=source or 'tmdb', url=url, folderName=folderName)
 	elif action == 'movieYears':
 		from resources.lib.menus import movies
 		movies.Movies().years(url, folderName=folderName)
@@ -277,6 +280,9 @@ def router(argv2):
 	elif action == 'floppyAuth':
 		from resources.lib.modules import floppy
 		floppy.floppyAuth(fromSettings=1)
+	elif action == 'floppyApiKeyAuth':
+		from resources.lib.modules import floppy
+		floppy.floppyAuth(fromSettings=1, useOAuth=False)
 	elif action == 'floppyRevoke':
 		from resources.lib.modules import floppy
 		floppy.floppyRevoke(fromSettings=1)
@@ -697,6 +703,9 @@ def router(argv2):
 	elif action == 'tvCertificates':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().certifications(folderName=folderName)
+	elif action == 'tvYearBrowser':
+		from resources.lib.menus import tvshows
+		tvshows.TVshows().yearBrowser(source=source or 'tmdb', url=url, folderName=folderName)
 	elif action == 'tvYears':
 		from resources.lib.menus import tvshows
 		tvshows.TVshows().years(url, folderName=folderName)
@@ -1637,6 +1646,13 @@ def router(argv2):
 	elif action and action.startswith('play_'):
 		#control.checkPlayNextEpisodes()
 		if action == 'play_Item':
+			from sys import argv
+			request_url = argv[0] + argv[2]
+			if any(control.playlist[index].getPath() == request_url for index in range(control.playlist.size())):
+				# Claim the incoming entry before scraping so the outgoing Player
+				# cannot launch a second copy while this request is resolving.
+				control.playerWindow.setProperty('umbrella.queue.current', request_url)
+				control.playerWindow.setProperty('umbrella.playnext.transition', 'true')
 			from resources.lib.modules import sources
 			sources.Sources(params.get('all_providers')).play(title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, params.get('premiered'), params.get('meta'), params.get('select'), params.get('rescrape'))
 		elif action == 'play_info':

@@ -93,9 +93,7 @@ class StillWatchingXML(BaseDialog):
 					progress_bar.setPercent(self.calculate_percent())
 
 			if self.closed: return
-			if self.default_action == 0 and self.playing_file == self.getPlayingFile():
-				from resources.lib.modules.player import advance_playnext
-				advance_playnext(self.playing_file)
+			# Continue naturally at EOF; only the Play Now button advances early.
 			if (self.default_action == 1 and self.playing_file == self.getPlayingFile()):
 				playerWindow.clearProperty('umbrella.standalone.next')
 				xbmc.executebuiltin('PlayerControl(Playlist.Clear)')
