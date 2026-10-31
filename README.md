@@ -50,9 +50,8 @@ Currently Supported Other Providers:
 Please do not mention any other addons in issues.
 
 ## Logs
-Enable Logs: Go to Umbrella settings and select Debugging on the left hand side.
-Set your settings like this:
-![Screen Sho](https://user-images.githubusercontent.com/107957815/177895894-eb3f68cb-cd83-4d05-b033-6588579f2ce5.png)
+Information about what how to set up logging and what is needed can be found here:
+https://github.com/umbrellaplug/umbrellaplug.github.io/discussions/649
 
 ## FAQ
 
