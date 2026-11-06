@@ -39,7 +39,6 @@ def get_coalesced(function, duration, *args):
 		con.execute('CREATE TABLE IF NOT EXISTS result (id INTEGER PRIMARY KEY, completed REAL, value TEXT)')
 		row = con.execute('SELECT completed, value FROM result WHERE id=1').fetchone()
 		if row and row[0] >= started:
-			control.log_refresh_diagnostic('mdb-build-shared-result')
 			return literal_eval(row[1])
 		result = get(function, duration, *args)
 		if result is not None:
@@ -189,6 +188,10 @@ def _generate_md5(*args):
 	return str(md5_hash.hexdigest())
 
 def cache_clear(flush_only=False):
+	try:
+		from resources.lib.modules import trakt_activities
+		trakt_activities.invalidate()
+	except Exception: pass
 	cleared = False
 	dbcon = None
 	dbcur = None

@@ -103,7 +103,9 @@ class Search:
 			control.addItem(handle=handle, url=link, listitem=item, isFolder=True)
 		if not found: control.notification(message=33049)
 		control.hide()
-		control.content(handle, 'videos')
+		# Mixed results keep their individual mediatypes. Use a poster-capable
+		# container so skins such as Nimbus enable their movie/TV artwork views.
+		control.content(handle, 'movies')
 		control.directory(handle, cacheToDisc=False)
 
 	def init(self):

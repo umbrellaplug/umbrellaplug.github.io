@@ -217,7 +217,9 @@ class Premiumize:
 			if not 'status' in response or response['status'] != 'success': raise Exception()
 			# valid_results = [i for i in response.get('content') if any(i.get('path').lower().endswith(x) for x in extensions) and not i.get('link', '') == '']
 			valid_results = [i for i in response.get('content') if not any(i.get('path').lower().endswith(x) for x in invalid_extensions) and not i.get('link', '') == '']
-			if not valid_results: failed_reason = 'No valid video extension found'
+			if not valid_results:
+				log_utils.log('Premiumize.me: No usable file links returned for this magnet.', __name__, log_utils.LOGWARNING)
+				return None
 			if season:
 				episode_title = re.sub(r'[^A-Za-z0-9-]+', '.', ep_title.replace('\'', '')).lower()
 				for item in valid_results:

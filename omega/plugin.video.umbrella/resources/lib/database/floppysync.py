@@ -688,6 +688,7 @@ def reset_for_authorization():
 		cursor = connection.cursor()
 		connection.execute('BEGIN IMMEDIATE')
 		for table in ('bookmarks', 'floppy_watched_movies', 'floppy_watched_episodes', 'watched',
+			'sync_mirror', 'sync_context',
 			'movies_plantowatch', 'shows_plantowatch', 'movies_watching', 'shows_watching',
 			'movies_hold', 'shows_hold', 'movies_completed', 'shows_completed',
 			'movies_dropped', 'shows_dropped', 'movies_collection', 'shows_collection'):
@@ -703,5 +704,56 @@ def reset_for_authorization():
 		from resources.lib.modules import log_utils
 		log_utils.error()
 		return False
+	finally:
+		connection.close()
+
+
+def load_incremental():
+	import json
+	connection = get_connection()
+	try:
+		cursor = connection.cursor()
+		cursor.execute('CREATE TABLE IF NOT EXISTS sync_context (id INTEGER PRIMARY KEY, payload TEXT)')
+		cursor.execute('CREATE TABLE IF NOT EXISTS sync_mirror (resource TEXT, item_id TEXT, payload TEXT, PRIMARY KEY(resource,item_id))')
+		row = cursor.execute('SELECT payload FROM sync_context WHERE id=1').fetchone()
+		mirror = {'watched': {}, 'progress': {}}
+		for resource, item_id, payload in cursor.execute('SELECT * FROM sync_mirror'):
+			mirror[resource][item_id] = json.loads(payload)
+		connection.commit()
+		return json.loads(row[0]) if row else None, mirror
+	finally:
+		connection.close()
+
+
+def store_incremental(state, mirror, movies, episodes, bookmarks, revisions):
+	"""Publish both caught-up resources and their cursors in one durable transaction."""
+	import json
+	connection = get_connection()
+	try:
+		cursor = connection.cursor()
+		_ensure_watched_tables(cursor)
+		_ensure_bookmarks_table(cursor)
+		connection.execute('BEGIN IMMEDIATE')
+		if any(_read_revision(cursor, resource) != revision for resource, revision in revisions.items()):
+			connection.rollback()
+			return False
+		# The raw mirror retains hidden/completed progress. A later unwatched
+		# assertion can make an existing partial resume visible again.
+		rows = [(resource, key, json.dumps(value, sort_keys=True, separators=(',', ':')))
+			for resource, items in mirror.items() for key, value in items.items()]
+		_reconcile_rows(cursor, 'sync_mirror', rows, (0, 1))
+		_reconcile_rows(cursor, 'floppy_watched_movies', movies, (1,))
+		_reconcile_rows(cursor, 'floppy_watched_episodes', episodes, (1, 3, 4))
+		_reconcile_rows(cursor, 'bookmarks', bookmarks, (3, 4, 5, 6, 7))
+		cursor.execute('INSERT OR REPLACE INTO sync_context VALUES (1, ?)', (json.dumps(state),))
+		now = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.000Z')
+		for resource, timestamp in (('history', 'last_history_at'), ('bookmarks', 'last_paused_at')):
+			_bump_revision(cursor, resource)
+			cursor.execute('INSERT OR REPLACE INTO service VALUES (?, ?)', (timestamp, now))
+		connection.commit()
+		return True
+	except Exception:
+		connection.rollback()
+		raise
 	finally:
 		connection.close()

@@ -6359,3 +6359,19 @@ msgstr ""
 msgctxt "#40864"
 msgid "Check Floppy API key (legacy)"
 msgstr ""
+
+msgctxt "#40865"
+msgid "Movie"
+msgstr ""
+
+msgctxt "#40866"
+msgid "TV Show"
+msgstr ""
+
+msgctxt "#40867"
+msgid "Download Manager"
+msgstr ""
+
+msgctxt "#40868"
+msgid "View download progress and recent results. Select a download to cancel, remove or resume it when supported. Resume requires a local partial file and a valid server link, and remains available after Kodi restarts."
+msgstr ""

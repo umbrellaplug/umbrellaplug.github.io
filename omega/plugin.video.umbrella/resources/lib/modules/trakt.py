@@ -61,7 +61,13 @@ def traktVerificationURL(device_code):
 	return urlunparse(parsed._replace(query=urlencode(query)))
 
 
-def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0):
+def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0, method=None):
+	activity_write = post is not None or method == 'DELETE'
+	if activity_write:
+		try:
+			from resources.lib.modules import trakt_activities
+			trakt_activities.invalidate()
+		except Exception: pass
 	try:
 		global _last_request_time
 		if time.time() - _last_request_time > 300:  # flush stale pooled connections after 5 min idle
@@ -80,7 +86,9 @@ def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0):
 		_req_start = time.time()
 		for _attempt in range(2):
 			try:
-				if post_data:
+				if method == 'DELETE':
+					response = session.delete(url, headers=headers, timeout=20)
+				elif post_data:
 					response = session.post(url, data=post_data, headers=headers, timeout=20)
 				else:
 					response = session.get(url, headers=headers, timeout=20)
@@ -99,7 +107,7 @@ def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0):
 					raise
 		status_code = str(response.status_code)
 		error_handler(url, response, status_code, silent=silent)
-		if response and status_code in ('200', '201'):
+		if response is not None and status_code in ('200', '201', '204'):
 			if extended: return response, response.headers
 			else: return response
 		elif status_code == '409': # Item already scrobbled/exists - not a real failure
@@ -116,14 +124,14 @@ def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0):
 				return None
 			log_utils.log('TRAKT: %s Status Code Returned on call to url: %s (attempt %d)' % (status_code, url, reauth_attempts + 1), level=log_utils.LOGINFO)
 			success = re_auth(headers)
-			if success: return getTrakt(url, post=post, extended=extended, silent=silent, reauth_attempts=reauth_attempts + 1)
+			if success: return getTrakt(url, post=post, extended=extended, silent=silent, reauth_attempts=reauth_attempts + 1, method=method)
 		elif status_code == '429':
 			if 'Retry-After' in response.headers: # API REQUESTS ARE BEING THROTTLED, INTRODUCE WAIT TIME (1000 get requests every 5 minutes, 1 post/put/delte every per second)
 				throttleTime = response.headers['Retry-After']
 				if not silent and server_notification and not control.condVisibility('Player.HasVideo'):
 					control.notification(title=32315, message='Trakt Throttling Applied, Sleeping for %s seconds' % throttleTime) # message lang code 33674
 				control.sleep((int(throttleTime) + 1) * 1000)
-				return getTrakt(url, post=post, extended=extended, silent=silent, reauth_attempts=reauth_attempts)
+				return getTrakt(url, post=post, extended=extended, silent=silent, reauth_attempts=reauth_attempts, method=method)
 		else:
 			response_text = response.text[:300] if hasattr(response, 'text') else str(response)[:300]
 			log_utils.log_force('TRAKT: request failed url=%s status=%s response=%s' % (url, status_code, response_text), level=log_utils.LOGWARNING)
@@ -132,6 +140,12 @@ def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0):
 		log_utils.log_force('TRAKT: getTrakt exception url=%s error=%s' % (url, e), level=log_utils.LOGWARNING)
 		try: log_utils.error('getTrakt Error: ')
 		except: pass
+	finally:
+		if activity_write:
+			try:
+				from resources.lib.modules import trakt_activities
+				trakt_activities.invalidate()
+			except Exception: pass
 	return None
 
 def error_handler(url, response, status_code, silent=False):
@@ -176,23 +190,21 @@ def get_all_pages(url, silent=False):
 		limit = 250
 		page = 1
 		results = []
-		_sync_start = time.time()
 
 		while True:
 			page_url = url + sep + 'page=%d&limit=%d' % (page, limit)
 			response = getTrakt(page_url, silent=silent)
 			if not response:
-				if page == 1:
-					log_utils.log('TRAKT: get_all_pages - No response on first page for URL: %s' % url, level=log_utils.LOGWARNING)
-					return None
-				break
+				log_utils.log('TRAKT: get_all_pages - Incomplete response on page %s for URL: %s' % (page, url), level=log_utils.LOGWARNING)
+				return None
 
 			try:
 				page_results = response.json()
 			except Exception as e:
 				log_utils.log('TRAKT: get_all_pages - JSON decode error on page %d: %s' % (page, str(e)), level=log_utils.LOGWARNING)
-				if page == 1: return None
-				break
+				return None
+
+			if not isinstance(page_results, type([])): return None # list() below is a legacy API helper.
 
 			if not page_results:
 				if page == 1: return page_results if page_results is not None else []
@@ -204,12 +216,10 @@ def get_all_pages(url, silent=False):
 				items_this_page = items_count
 			except (TypeError, AttributeError) as e:
 				log_utils.log('TRAKT: get_all_pages - Cannot process as list on page %d: %s' % (page, str(e)), level=log_utils.LOGWARNING)
-				if page == 1: return page_results
-				break
+				return None
 			except Exception as e:
 				log_utils.log('TRAKT: get_all_pages - Error processing page %d: %s' % (page, str(e)), level=log_utils.LOGWARNING)
-				if page == 1: return None
-				break
+				return None
 
 			log_utils.log('TRAKT: get_all_pages page %d: %d items from %s' % (page, items_count, url), level=log_utils.LOGDEBUG)
 
@@ -250,10 +260,8 @@ def get_all_pages(url, silent=False):
 			# Safety limit: 400 pages × 250 = 100,000 items max
 			if page > 400:
 				log_utils.log('TRAKT: get_all_pages reached safety limit of 400 pages for URL: %s' % url, level=log_utils.LOGWARNING)
-				break
+				return None
 
-		if page > 1:
-			log_utils.log('TRAKT: get_all_pages - Fetched %d items across %d pages in %.1fs from %s' % (len(results), page, time.time() - _sync_start, url), level=log_utils.LOGINFO)
 		
 		return results
 	except Exception as e:
@@ -670,6 +678,8 @@ def unwatch(content_type, name, imdb=None, tvdb=None, season=None, episode=None,
 
 def like_list(list_owner, list_name, list_id):
 	try:
+		from resources.lib.modules import trakt_activities
+		trakt_activities.invalidate()
 		headers['Authorization'] = 'Bearer %s' % trakt_token
 		# resp_code = client._basic_request('https://api.trakt.tv/users/%s/lists/%s/like' % (list_owner, list_id), headers=headers, method='POST', ret_code=True)
 		resp_code = session.post('https://api.trakt.tv/users/%s/lists/%s/like' % (list_owner, list_id), headers=headers).status_code
@@ -679,9 +689,14 @@ def like_list(list_owner, list_name, list_id):
 		else: control.notification(title=32315, message='Failed to Like list %s' % list_name)
 		control.refresh()
 	except: log_utils.error()
+	finally:
+		from resources.lib.modules import trakt_activities
+		trakt_activities.invalidate()
 
 def unlike_list(list_owner, list_name, list_id):
 	try:
+		from resources.lib.modules import trakt_activities
+		trakt_activities.invalidate()
 		headers['Authorization'] = 'Bearer %s' % trakt_token
 		# resp_code = client._basic_request('https://api.trakt.tv/users/%s/lists/%s/like' % (list_owner, list_id), headers=headers, method='DELETE', ret_code=True)
 		resp_code = session.delete('https://api.trakt.tv/users/%s/lists/%s/like' % (list_owner, list_id), headers=headers).status_code
@@ -691,11 +706,16 @@ def unlike_list(list_owner, list_name, list_id):
 		else: control.notification(title=32315, message='Failed to UnLike list %s' % list_name)
 		control.refresh()
 	except: log_utils.error()
+	finally:
+		from resources.lib.modules import trakt_activities
+		trakt_activities.invalidate()
 
 def remove_liked_lists(trakt_ids):
 	if not trakt_ids: return
 	success = None
 	try:
+		from resources.lib.modules import trakt_activities
+		trakt_activities.invalidate()
 		headers['Authorization'] = 'Bearer %s' % trakt_token
 		for id in trakt_ids:
 			list_owner = id.get('list_owner')
@@ -710,6 +730,9 @@ def remove_liked_lists(trakt_ids):
 			control.sleep(1000)
 		control.refresh()
 	except: log_utils.error()
+	finally:
+		from resources.lib.modules import trakt_activities
+		trakt_activities.invalidate()
 
 def rate(imdb=None, tvdb=None, season=None, episode=None):
 	return _rating(action='rate', imdb=imdb, tvdb=tvdb, season=season, episode=episode)
@@ -848,8 +871,9 @@ def removeWatchlistItems(type, id_list):
 def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True, watched=None, unfinished=False, tvshow=None, tmdb=''):
 	lists = []
 	try:
-		if season: season = int(season)
-		if episode: episode = int(episode)
+		season = int(season) if season not in (None, '', 'None') else None
+		episode = int(episode) if episode not in (None, '', 'None') else None
+		content_type = 'episode' if episode is not None else 'season' if season is not None else 'tvshow' if tvshow or tvdb not in (None, '', 'None', '0') else 'movie'
 		media_type = 'Show' if tvdb or season or episode or tvshow else 'Movie'
 		if watched is not None:
 			if watched is True:
@@ -896,9 +920,9 @@ def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True,
 		if select == -1: return
 		if select >= 0:
 			if items[select][1] == 'watch':
-				watch(control.infoLabel('Container.ListItem.DBTYPE'), name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
+				watch(content_type, name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
 			elif items[select][1] == 'unwatch':
-				unwatch(control.infoLabel('Container.ListItem.DBTYPE'), name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
+				unwatch(content_type, name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
 			elif items[select][1] == 'rate':
 				rate(imdb=imdb, tvdb=tvdb, season=season, episode=episode)
 			elif items[select][1] == 'unrate':
@@ -912,7 +936,7 @@ def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True,
 			elif items[select][1] == 'unfinishedMovieManager':
 				control.execute('RunPlugin(plugin://plugin.video.umbrella/?action=movies_traktUnfinishedManager)')
 			elif items[select][1] == 'scrobbleReset':
-				scrobbleReset(imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, widgetRefresh=True, clear_local=getSetting('indicators.alt') == '1')
+				scrobbleReset(imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, widgetRefresh=True, clear_local=True)
 			else:
 				if not tvdb: post = {"movies": [{"ids": {"imdb": imdb}}]}
 				else:
@@ -986,9 +1010,51 @@ def slug(name):
 	name = re.sub(r'--+', '-', name)
 	return name
 
-def getActivity():
+def _get_browse_activities(token, client_id, account):
+	"""One short foreground probe; never use the sync transport's retry loop."""
+	from resources.lib.modules import trakt_activities
 	try:
-		i = getTraktAsJson('/sync/last_activities')
+		request_headers = {'Content-Type': 'application/json', 'trakt-api-key': client_id,
+			'trakt-api-version': '2', 'Authorization': 'Bearer %s' % token}
+		with requests.Session() as probe:
+			probe.mount(BASE_URL, HTTPAdapter(max_retries=0))
+			response = probe.get(BASE_URL + '/sync/last_activities', headers=request_headers,
+				timeout=(2, 3), allow_redirects=False)
+			if response.status_code == 429:
+				try: delay = max(0, int(response.headers.get('Retry-After', '15')))
+				except (ValueError, TypeError):
+					try:
+						from email.utils import parsedate_to_datetime
+						from math import ceil
+						delay = max(0, ceil(parsedate_to_datetime(response.headers['Retry-After']).timestamp() - time.time()))
+					except (ValueError, TypeError, KeyError, AttributeError, OverflowError): delay = 15
+				trakt_activities.defer(account, delay)
+				return None
+			if response.status_code != 200:
+				# In particular, do not enter a potentially long OAuth refresh here.
+				# Authenticated sync and explicit authorization retain that behavior.
+				return None
+			result = response.json()
+			return result
+	except (requests.exceptions.RequestException, ValueError):
+		return None
+
+
+def getBrowseActivity(fresh=False):
+	"""Menu-only reuse; sync helpers and direct API calls remain authoritative."""
+	from resources.lib.modules import trakt_activities
+	if not getTraktCredentialsInfo(): return 0
+	token = control.homeWindow.getProperty(_TRAKT_TOKEN_PROP) or getSetting('trakt.user.token')
+	client_id = traktClientID()
+	account = jsdumps([getSetting('trakt.user.name').strip(), token, client_id])
+	fresh = fresh or trakt_activities.is_visible_reload()
+	activities = trakt_activities.get(lambda: _get_browse_activities(token, client_id, account), account, fresh=fresh)
+	return getActivity(activities) if activities else 0
+
+
+def getActivity(activities=None):
+	try:
+		i = activities if activities is not None else getTraktAsJson('/sync/last_activities')
 		if not i: return 0
 		activity = []
 		activity.append(i['movies']['watched_at']) # added 8/30/20
@@ -1594,7 +1660,10 @@ def markMovieAsWatched(imdb):
 
 def markMovieAsNotWatched(imdb):
 	try:
+		from resources.lib.modules.history_result import succeeded
 		result = getTraktAsJson('/sync/history/remove', {"movies": [{"ids": {"imdb": imdb}}]})
+		if succeeded(result, kind='movies'):
+			return True
 		return result['deleted']['movies'] != 0
 	except: log_utils.error()
 
@@ -1610,7 +1679,10 @@ def markTVShowAsWatched(imdb, tvdb):
 
 def markTVShowAsNotWatched(imdb, tvdb):
 	try:
+		from resources.lib.modules.history_result import succeeded
 		result = getTraktAsJson('/sync/history/remove', {"shows": [{"ids": {"imdb": imdb, "tvdb": tvdb}}]})
+		if succeeded(result, kind='episodes'):
+			return True
 		if not result: return False
 		if result['deleted']['episodes'] == 0 and tvdb: # sometimes trakt fails to mark because of imdb_id issues, check tvdb only as fallback if it fails
 			control.sleep(1000) # POST 1 call per sec rate-limit
@@ -1633,8 +1705,11 @@ def markSeasonAsWatched(imdb, tvdb, season):
 
 def markSeasonAsNotWatched(imdb, tvdb, season):
 	try:
+		from resources.lib.modules.history_result import succeeded
 		season = int('%01d' % int(season))
 		result = getTraktAsJson('/sync/history/remove', {"shows": [{"seasons": [{"number": season}], "ids": {"imdb": imdb, "tvdb": tvdb}}]})
+		if succeeded(result, kind='episodes'):
+			return True
 		if not result: return False
 		if result['deleted']['episodes'] == 0 and tvdb: # sometimes trakt fails to mark because of imdb_id issues, check tvdb only as fallback if it fails
 			control.sleep(1000) # POST 1 call per sec rate-limit
@@ -1652,13 +1727,13 @@ def markEpisodeAsWatched(imdb, tvdb, season, episode):
 		if not isinstance(result, dict):
 			log_utils.log('Trakt markEpisodeAsWatched returned unexpected response type: %s' % type(result).__name__, level=log_utils.LOGWARNING)
 			return False
-		added = int((result.get('added') or {}).get('episodes') or 0)
+		int((result.get('added') or {}).get('episodes') or 0)
 		existing = int((result.get('existing') or {}).get('episodes') or 0)
 		if added == 0 and existing == 0 and tvdb:
 			control.sleep(1000)
 			result = getTraktAsJson('/sync/history', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"tvdb": tvdb}}]})
 			if not isinstance(result, dict): return False
-			added = int((result.get('added') or {}).get('episodes') or 0)
+			int((result.get('added') or {}).get('episodes') or 0)
 			existing = int((result.get('existing') or {}).get('episodes') or 0)
 		result = added != 0 or existing != 0
 		if getSetting('debug.level') == '1':
@@ -1668,8 +1743,11 @@ def markEpisodeAsWatched(imdb, tvdb, season, episode):
 
 def markEpisodeAsNotWatched(imdb, tvdb, season, episode):
 	try:
+		from resources.lib.modules.history_result import succeeded
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
 		result = getTraktAsJson('/sync/history/remove', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": imdb, "tvdb": tvdb}}]})
+		if succeeded(result, kind='episodes'):
+			return True
 		if not result: return False
 		if not isinstance(result, dict):
 			log_utils.log('Trakt markEpisodeAsNotWatched returned unexpected response type: %s' % type(result).__name__, level=log_utils.LOGWARNING)
@@ -1845,10 +1923,11 @@ def getGenre(content, type, type_id):
 
 def IdLookup(id_type, id, type): # ("id_type" can be trakt, imdb, tmdb, tvdb) (type can be one of "movie , show , episode , person , list")
 	try:
+		from builtins import list as list_type
 		if id in (None, '', 'None', '0'): return None
 		url = '/search/%s/%s?type=%s' % (id_type, id, type)
 		result = cache.get(getTraktAsJson, 168, url)
-		if not isinstance(result, list) or not result: return None
+		if not isinstance(result, list_type) or not result: return None
 		for entry in result:
 			if not isinstance(entry, dict): continue
 			item = entry.get(type)
@@ -1929,91 +2008,54 @@ def scrobbleStart(media_type, title='', tvshowtitle='', year='0', imdb='', tmdb=
 	except: log_utils.error()
 
 def scrobbleReset(imdb, tmdb=None, tvdb=None, season=None, episode=None, refresh=True, widgetRefresh=False, clear_local=True):
-	if not getTraktCredentialsInfo(): return
+	if not getTraktCredentialsInfo(): return False
 	if not control.player.isPlaying(): control.busy()
-	success = False
 	try:
-		content_type = 'movie' if not episode else 'episode'
-		resume_info = traktsync.fetch_bookmarks(imdb, tmdb, tvdb, season, episode, ret_type='resume_info')
-		if resume_info == '0': return control.hide() # returns string "0" if no data in db
-		headers['Authorization'] = 'Bearer %s' % trakt_token
-		headers['trakt-api-key'] = traktClientID()
-		success = session.delete('https://api.trakt.tv/sync/playback/%s' % resume_info[1], headers=headers).status_code == 204
-		if content_type == 'movie':
+		from resources.lib.modules.playback_progress import matching_sessions
+		items = get_all_pages('/sync/playback', silent=True)
+		matches = matching_sessions(items, imdb, tmdb, tvdb, season, episode)
+		for item in matches:
+			response = getTrakt('/sync/playback/%s' % item['id'], method='DELETE', silent=True)
+			if response is None or response.status_code not in (200, 204):
+				remaining = get_all_pages('/sync/playback', silent=True)
+				if not isinstance(remaining, type([])) or any(str(row.get('id')) == str(item['id']) for row in remaining):
+					if refresh or widgetRefresh: control.notification(title='Trakt', message='Failed to clear playback progress')
+					return False
+		if matches:
+			items = matches
+		elif episode in (None, '', 'None'):
 			items = [{'type': 'movie', 'movie': {'ids': {'imdb': imdb}}}]
-			label_string = resume_info[0]
 		else:
 			items = [{'type': 'episode', 'episode': {'season': season, 'number': episode}, 'show': {'ids': {'imdb': imdb, 'tvdb': tvdb, 'tmdb': tmdb}}}]
-			label_string = resume_info[0] + ' - ' + 'S%02dE%02d' % (int(season), int(episode))
-		control.hide()
-		if success:
-			timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
-			items[0].update({'paused_at': timestamp})
-			if clear_local: traktsync.delete_bookmark(items)
-			if refresh: control.refresh()
-			if widgetRefresh: control.trigger_widget_refresh() # skinshortcuts handles the widget_refresh when plyback ends, but not a manual clear from Trakt Manager
-			if getSetting('scrobble.notify') == 'true': control.notification(title=32315, message='Successfuly Removed playback progress:  [COLOR %s]%s[/COLOR]' % (highlight_color, label_string))
-			log_utils.log('Successfuly Removed Trakt Playback Progress:  %s  with resume_id=%s' % (label_string, str(resume_info[1])), __name__, level=log_utils.LOGDEBUG)
-		else:
-			#if getSetting('scrobble.notify') == 'true': control.notification(title=32315, message='Failed to Remove playback progress:  [COLOR %s]%s[/COLOR]' % (highlight_color, label_string))
-			log_utils.log('Failed to Remove Trakt Playback Progress:  %s  with resume_id=%s' % (label_string, str(resume_info[1])), __name__, level=log_utils.LOGDEBUG)
-	except: log_utils.error()
-
-def scrobbleResetItems(imdb_ids, tvdb_dicts=None, refresh=True, widgetRefresh=False):
-	if control.player.isPlaying(): control.busy()
-	success = False
-	try:
-		content_type = 'movie' if not tvdb_dicts else 'episode'
-		if content_type == 'movie':
-			total_items = len(imdb_ids)
-			resume_info = traktsync.fetch_bookmarks(imdb='', ret_all=True, ret_type='movies')
-			for imdb in imdb_ids:
-				try:
-					resume_info_index = [resume_info.index(i) for i in resume_info if i['imdb'] == imdb][0]
-					resume_dict = resume_info[resume_info_index]
-					resume_id = resume_dict['resume_id']
-					headers['Authorization'] = 'Bearer %s' % trakt_token
-					success = session.delete('https://api.trakt.tv/sync/playback/%s' % resume_id, headers=headers).status_code == 204
-					if not success: raise Exception()
-					items = [{'type': 'movie', 'movie': {'ids': {'imdb': imdb}}}]
-					timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
-					items[0].update({'paused_at': timestamp})
-					traktsync.delete_bookmark(items)
-					log_utils.log('Successfuly Removed Trakt Playback Progress: movie title=%s  with resume_id=%s' % (resume_dict['title'], str(resume_id)), __name__, level=log_utils.LOGDEBUG)
-					control.sleep(1000)
-				except: log_utils.log('Failed to Remove Trakt Playback Progress: movie title=%s  with resume_id=%s' % (resume_dict['title'], str(resume_id)), __name__, level=log_utils.LOGDEBUG)
-		else:
-			total_items = len(tvdb_dicts)
-			resume_info = traktsync.fetch_bookmarks(imdb='', ret_all=True, ret_type='episodes')
-			for dict in tvdb_dicts:
-				try:
-					imdb, tvdb = dict.get('imdb'), dict.get('tvdb')
-					season, episode = dict.get('season'), dict.get('episode')
-					resume_info_index = [resume_info.index(i) for i in resume_info if i['tvdb'] == tvdb and i['season'] == int(season) and i['episode'] == int(episode)][0]
-					resume_dict = resume_info[resume_info_index]
-					label_string = resume_dict['tvshowtitle'] + ' - ' + 'S%02dE%02d' % (int(season), int(episode))
-					resume_id = resume_dict['resume_id']
-					headers['Authorization'] = 'Bearer %s' % trakt_token
-					success = session.delete('https://api.trakt.tv/sync/playback/%s' % resume_id, headers=headers).status_code == 204
-					if not success: raise Exception()
-					items = [{'type': 'episode', 'episode': {'season': season, 'number': episode}, 'show': {'ids': {'imdb': imdb, 'tvdb': tvdb, 'tmdb': resume_dict.get('tmdb', '')}}}]
-					timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
-					items[0].update({'paused_at': timestamp})
-					traktsync.delete_bookmark(items)
-					log_utils.log('Successfuly Removed Trakt Playback Progress:  tvshowtitle=%s  with resume_id=%s' % (label_string, str(resume_id)), __name__, level=log_utils.LOGDEBUG)
-					control.sleep(1000)
-				except: log_utils.log('Failed to Remove Trakt Playback Progress:  tvshowtitle=%s  with resume_id=%s' % (label_string, str(resume_id)), __name__, level=log_utils.LOGDEBUG)
-		control.hide()
-		if success:
-			if refresh: control.refresh()
-			if widgetRefresh: control.trigger_widget_refresh() # skinshortcuts handles the widget_refresh when plyback ends, but not a manual clear from Trakt Manager
-			control.notification(title='Trakt Playback Progress Manager', message='Successfuly Removed %s Item%s' % (total_items, 's' if total_items >1 else ''))
-			return True
-		else: return False
+		for item in items: item['paused_at'] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
+		if clear_local: traktsync.delete_bookmark(items)
+		if refresh: control.refresh()
+		if refresh or widgetRefresh: control.trigger_widget_refresh()
+		if getSetting('scrobble.notify') == 'true': control.notification(title='Trakt', message='Playback progress cleared')
+		return True
 	except:
 		log_utils.error()
-		control.hide()
 		return False
+	finally: control.hide()
+
+def scrobbleResetItems(imdb_ids, tvdb_dicts=None, refresh=True, widgetRefresh=False):
+	try:
+		items = tvdb_dicts if tvdb_dicts else [{'imdb': imdb} for imdb in (imdb_ids or [])]
+		succeeded = 0
+		for item in items:
+			if scrobbleReset(imdb=item.get('imdb', ''), tmdb=item.get('tmdb'), tvdb=item.get('tvdb'),
+				season=item.get('season'), episode=item.get('episode'), refresh=False, widgetRefresh=False):
+				succeeded += 1
+		if succeeded:
+			if refresh: control.refresh()
+			if refresh or widgetRefresh: control.trigger_widget_refresh()
+		control.notification(title='Trakt Playback Progress Manager', message='Removed playback progress for %s of %s items.%s' %
+			(succeeded, len(items), ' Some requests failed; their local progress was retained.' if succeeded < len(items) else ''))
+		return succeeded == len(items)
+	except:
+		log_utils.error()
+		return False
+	finally: control.hide()
 
 
 
@@ -2105,14 +2147,14 @@ def sync_playbackProgress(activities=None, forced=False):
 		link = '/sync/playback/?extended=full'
 		if forced:
 			items = get_all_pages(link, silent=True)
-			if items: traktsync.insert_bookmarks(items)
+			if isinstance(items, type([])): traktsync.insert_bookmarks(items)
 		else:
 			db_last_paused = traktsync.last_sync('last_paused_at')
 			activity = getPausedActivity(activities)
 			#log_utils.log('Trakt Sync Playback db_last_paused: %s  activity: %s difference: %s' % (db_last_paused, activity,(activity - db_last_paused)),log_utils.LOGDEBUG)
-			if activity - db_last_paused >= 120: # do not sync unless 2 min difference or more
+			if activity > db_last_paused:
 				items = get_all_pages(link, silent=True)
-				if items: traktsync.insert_bookmarks(items)
+				if isinstance(items, type([])): traktsync.insert_bookmarks(items)
 	except: log_utils.error()
 
 def sync_watchedProgress(activities=None, forced=False, trigger_refresh=True):

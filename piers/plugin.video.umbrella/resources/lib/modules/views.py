@@ -65,39 +65,42 @@ def addView(content):
 	finally:
 		dbcur.close() ; dbcon.close()
 
+def _view_request_matches():
+	try:
+		from sys import argv
+		from urllib.parse import urlsplit, parse_qsl
+		requested = urlsplit(argv[0] + argv[2])
+		visible = urlsplit(control.infoLabel('Container.FolderPath'))
+		return (requested.scheme == visible.scheme == 'plugin'
+			and requested.netloc == visible.netloc == 'plugin.video.umbrella'
+			and requested.path.rstrip('/') == visible.path.rstrip('/')
+			and sorted(parse_qsl(requested.query)) == sorted(parse_qsl(visible.query)))
+	except Exception:
+		return False
+
+
 def setView(content, viewDict=None):
-	for i in range(0, 200):
-		control.sleep(300)
-		if control.condVisibility('Container.Content(%s)' % content):
-			try:
-				skin = control.skin
-				record = (skin, content)
-				dbcon = db.connect(control.viewsFile)
-				dbcur = dbcon.cursor()
-				view = dbcur.execute('''SELECT * FROM views WHERE (skin=? AND view_type=?)''', (record[0], record[1])).fetchone()
-				if not view: raise Exception()
-				view = view[2]
-				return control.execute('Container.SetViewMode(%s)' % str(view))
-			except:
-				try:
-					control.sleep(100)
-					skin = control.skin
-					record = (skin, content)
-					dbcon = db.connect(control.viewsFile)
-					dbcur = dbcon.cursor()
-					view = dbcur.execute('''SELECT * FROM views WHERE (skin=? AND view_type=?)''', (record[0], record[1])).fetchone()
-					if not view: raise Exception()
-					view = view[2]
-					return control.execute('Container.SetViewMode(%s)' % str(view))
-				except:
-					try:
-						if skin not in viewDict: return
-						else:
-							return control.execute('Container.SetViewMode(%s)' % str(viewDict[skin]))
-					except:
-						from resources.lib.modules import log_utils
-						log_utils.error()
-						return
-			finally:
-				dbcur.close() ; dbcon.close()
-	control.sleep(100)
+	# Resolve the preference first: most skins have no override to wait for.
+	view = (viewDict or {}).get(control.skin)
+	connection = None
+	try:
+		if control.existsPath(control.viewsFile):
+			connection = db.connect(control.viewsFile, timeout=0.25)
+			row = connection.execute('SELECT view_id FROM views WHERE skin=? AND view_type=?',
+				(control.skin, content)).fetchone()
+			if row: view = row[0]
+	except db.Error:
+		pass
+	finally:
+		if connection is not None: connection.close()
+	if view is None: return
+	# endOfDirectory may precede the GUI update. Check immediately, then wait
+	# briefly and cancellably; never set a view on another listing or a widget.
+	for attempt in range(21):
+		if control.monitor.abortRequested(): return
+		if (control.condVisibility('Window.IsActive(videos)') and _view_request_matches()
+				and control.condVisibility('Container.Content(%s)' % content)):
+			if str(control.getCurrentViewId()) != str(view):
+				return control.execute('Container.SetViewMode(%s)' % view)
+			return
+		if attempt < 20 and control.monitor.waitForAbort(0.05): return

@@ -3,6 +3,7 @@
 	Umbrella Add-on
 """
 
+
 from datetime import datetime, timedelta
 import time
 from json import dumps as jsdumps, loads as jsloads
@@ -212,7 +213,7 @@ class TVshows:
 					if '/users/me/' not in url: raise Exception()
 					if '/collection/' in url: return self.traktCollection(url, folderName=folderName)
 					if '/watchlist/' in url: return self.traktWatchlist(url, folderName=folderName)
-					if trakt.getActivity() > cache.timeout(self.trakt_list, url, self.trakt_user, folderName):
+					if trakt.getBrowseActivity() > cache.timeout(self.trakt_list, url, self.trakt_user, folderName):
 						self.list = cache.get(self.trakt_list, 0, url, self.trakt_user, folderName)
 					else: self.list = cache.get(self.trakt_list, 720, url, self.trakt_user, folderName)
 				except: self.list = self.trakt_userList(url, create_directory=False)
@@ -1088,7 +1089,7 @@ class TVshows:
 		userlists = []
 		try:
 			if not self.traktCredentials: raise Exception()
-			activity = trakt.getActivity()
+			activity = trakt.getBrowseActivity()
 			self.list = [] ; lists = []
 			try:
 				if activity > cache.timeout(self.trakt_user_lists, self.traktlists_link, self.trakt_user): raise Exception()
@@ -3622,13 +3623,13 @@ class TVshows:
 				threads = []
 				append = threads.append
 				for i in range(r, r + 40):
-					if i < total: append(Thread(target=self.super_info, args=(i,)))
+					if i < total and not self.list[i].get('metacache'): append(Thread(target=self.super_info, args=(i,)))
 				[i.start() for i in threads]
 				[i.join() for i in threads]
 			if self.meta: metacache.insert(self.meta)
 			self.list = [i for i in self.list if i.get('tmdb')] # to rid missing tmdb_id's because season list can not load without
 		except:
-			
+		
 			log_utils.error()
 
 	def super_info(self, i):
@@ -3778,7 +3779,7 @@ class TVshows:
 							if self.showunaired: label = '[COLOR %s]%s [I][Coming Soon][/I][/COLOR]' % (self.unairedcolor, label)
 							else: continue
 					except: pass
-				
+			
 				try: indicators = getSeasonIndicators(imdb, tvdb, tmdb=tmdb, has_next_episode=i.get('has_next_episode', False), tmdb_total_aired=i.get('total_aired_episodes'), force_lookup=(isCollection and self.collection_hideWatched))
 				except: indicators = None
 				meta = dict((k, v) for k, v in iter(i.items()) if v is not None and v != '')
@@ -3911,7 +3912,7 @@ class TVshows:
 ####################################
 				if trailer: meta.update({'trailer': trailer}) # removed temp so it's not passed to CM items, only skin
 				else: meta.update({'trailer': '%s?action=play_Trailer&type=%s&name=%s&year=%s&imdb=%s' % (sysaddon, 'show', systitle, year, imdb)})
-				if label_media: label += ' [I](%s)[/I]' % getLS(32002)
+				if label_media: label += ' [I](%s)[/I]' % (getLS(40866) or 'TV Show')
 				item = control.item(label=label, offscreen=True)
 				#if 'castandart' in i: item.setCast(i['castandart'])
 				if 'castandart' in i: meta.update({"cast": ['castandart']}) #changed for kodi20 setinfo method
@@ -4008,7 +4009,7 @@ class TVshows:
 					item.addContextMenuItems(cm)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)
 			except:
-				
+			
 				log_utils.error()
 		if next:
 			try:
@@ -4039,7 +4040,7 @@ class TVshows:
 				item.setProperty ('SpecialSort', 'bottom')
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)
 			except:
-				
+			
 				log_utils.error()
 		if not finalize: return
 		control.content(syshandle, 'tvshows')
@@ -4134,3 +4135,4 @@ class TVshows:
 			else: content = ''
 		control.content(syshandle, content) # some skins use their own thumb for things like "genres" when content type is set here
 		control.directory(syshandle, cacheToDisc=True)
+

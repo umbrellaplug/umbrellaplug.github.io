@@ -58,7 +58,6 @@ def _mdblist_restore_started(since):
 		try: started = float(homeWindow.getProperty('umbrella.mdb.build_started') or 0)
 		except (ValueError, TypeError): started = 0
 		if started >= since:
-			control.log_refresh_diagnostic('post-playback-refresh-skipped-mdb-reloading')
 			return True
 		# An existing populated directory still needs the explicit watched refresh.
 		if control.infoLabel('Container.NumItems') not in ('', '0'): return False
@@ -71,7 +70,6 @@ def _refresh_after_player_closes(request_id, watched_update_thread=None):
 	"""Refresh only after Kodi has restored the underlying window."""
 	try:
 		refresh_started = time.time()
-		control.log_refresh_diagnostic('post-playback-worker-start', 'worker=%s' % request_id)
 		# used to detect when the full screen playback window has been destroyed.
 		for _ in range(20):
 			if (not control.player.isPlaying()
@@ -97,9 +95,7 @@ def _refresh_after_player_closes(request_id, watched_update_thread=None):
 		if _mdblist_restore_started(refresh_started): return
 		if control.monitor.waitForAbort(0.5): return
 		if homeWindow.getProperty('umbrella.container_refresh_request') != request_id:
-			control.log_refresh_diagnostic('post-playback-worker-superseded', 'worker=%s' % request_id)
 			return
-		control.log_refresh_diagnostic('post-playback-worker-dispatch', 'worker=%s' % request_id)
 		homeWindow.clearProperty('umbrella.container_refresh_request')
 		homeWindow.clearProperty('umbrella.playback_cleanup')
 		homeWindow.clearProperty('umbrella.widget_refresh_pending')
@@ -159,6 +155,13 @@ def advance_playnext(expected_path=None):
 		playerWindow.clearProperty('umbrella.playnext.transition')
 		log_utils.error()
 		return False
+
+
+def _floppy_completion_reached(current_time, media_length, credits=None, next_episode=False):
+	if next_episode: return True
+	position, duration = float(current_time or 0), float(media_length or 0)
+	if credits is not None and float(credits) > 0 and position >= float(credits): return True
+	return duration > 0 and position >= duration * 0.9
 
 
 class Player(xbmc.Player):
@@ -295,9 +298,10 @@ class Player(xbmc.Player):
 			#item.setUniqueIDs(self.ids) #changed for kodi20 setinfo method
 			setUniqueIDs = self.ids #changed for kodi20 setinfo method
 			if self.media_type == 'episode':
-				item.setArt({'tvshow.clearart': clearart, 'tvshow.clearlogo': clearlogo, 'tvshow.discart': discart, 'thumb': thumb, 'tvshow.poster': season_poster, 'season.poster': season_poster, 'tvshow.fanart': fanart})
+				art = {'tvshow.clearart': clearart, 'tvshow.clearlogo': clearlogo, 'tvshow.discart': discart, 'thumb': thumb, 'tvshow.poster': season_poster, 'season.poster': season_poster, 'tvshow.fanart': fanart}
 			else:
-				item.setArt({'clearart': clearart, 'clearlogo': clearlogo, 'discart': discart, 'thumb': thumb, 'poster': poster, 'fanart': fanart})
+				art = {'clearart': clearart, 'clearlogo': clearlogo, 'discart': discart, 'thumb': thumb, 'poster': poster, 'fanart': fanart}
+			item.setArt({key: value or '' for key, value in art.items()})
 			#if 'castandart' in meta: item.setCast(meta.get('castandart', '')) #changed for kodi20 setinfo method
 			#item.setInfo(type='video', infoLabels=control.metadataClean(meta))
 			control.set_info(item, meta, setUniqueIDs=setUniqueIDs, fileNameandPath=url) #changed for kodi20 setinfo method
@@ -912,6 +916,8 @@ class Player(xbmc.Player):
 			playingvideo = self.isPlayingVideo()
 		except:
 			playingvideo = False
+		if not playing or not playingvideo:
+			return False
 		try:
 			playTime = self.getTime() >= 0
 		except:
@@ -1075,7 +1081,7 @@ class Player(xbmc.Player):
 	def onQueueNextItem(self):
 		log_utils.log('onQueueNextItem callback', level=log_utils.LOGDEBUG)
 
-	def _sendFinishedItemState(self):
+	def _sendFinishedItemState(self, completed=False):
 		Bookmarks().reset(self.current_time, self.media_length, self.name, self.year)
 		self.scrobble_sent = True
 		self.scrobble_sent = True
@@ -1089,7 +1095,8 @@ class Player(xbmc.Player):
 		if self.customCredentials and _remote_playback_enabled(_scrobble_source, '4', 'custom.markwatched'):
 			Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, service='custom', title=self.title, tvshowtitle=self.title, year=self.year, already_watched=self.watched_during_playback)
 		if self.floppyCredentials and not floppy.isReadOnly() and _remote_playback_enabled(_scrobble_source, '5', 'floppy.markwatched'):
-			Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, service='floppy', title=self.title, tvshowtitle=self.title, year=self.year, already_watched=self.watched_during_playback)
+			Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, service='floppy', title=self.title, tvshowtitle=self.title, year=self.year, already_watched=self.watched_during_playback,
+				completed=completed or _floppy_completion_reached(self.current_time, self.media_length, getattr(self, 'segment_credits', None), playerWindow.getProperty('umbrella.playnext.transition') == 'true'))
 		if self.scrobCredentials and _remote_playback_enabled(_scrobble_source, '6', 'scrob.markwatched'):
 			Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, service='scrob', title=self.title, tvshowtitle=self.title, year=self.year, already_watched=self.watched_during_playback)
 		if self.punchplayCredentials and _remote_playback_enabled(_scrobble_source, '7', 'punchplay.markwatched'):
@@ -1151,7 +1158,7 @@ class Player(xbmc.Player):
 			if (getattr(self, '_queue_current', '') and current_owner
 					and self._queue_current != current_owner):
 				# A newer resolver owns the queue, even before its AVStarted event.
-				if not self.scrobble_sent: self._sendFinishedItemState()
+				if not self.scrobble_sent: self._sendFinishedItemState(completed=getattr(self, 'media_type', None) == 'episode')
 				return
 			# The outgoing Player may receive a delayed stop after the next
 			# episode has started. It no longer owns that episode's queue.
@@ -1246,7 +1253,7 @@ class Player(xbmc.Player):
 				if self.customCredentials and _remote_playback_enabled(_scrobble_source, '4', 'custom.markwatched'):
 					Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, service='custom', title=self.title, tvshowtitle=self.title, year=self.year, already_watched=self.watched_during_playback)
 				if self.floppyCredentials and not floppy.isReadOnly() and _remote_playback_enabled(_scrobble_source, '5', 'floppy.markwatched'):
-					Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, service='floppy', title=self.title, tvshowtitle=self.title, year=self.year, already_watched=self.watched_during_playback)
+					Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, service='floppy', title=self.title, tvshowtitle=self.title, year=self.year, already_watched=self.watched_during_playback, completed=True)
 				if self.scrobCredentials and _remote_playback_enabled(_scrobble_source, '6', 'scrob.markwatched'):
 					Bookmarks().set_scrobble(self.current_time, self.media_length, self.media_type, self.imdb, self.tmdb, self.tvdb, self.season, self.episode, service='scrob', title=self.title, tvshowtitle=self.title, year=self.year, already_watched=self.watched_during_playback)
 				if self.punchplayCredentials and _remote_playback_enabled(_scrobble_source, '7', 'punchplay.markwatched'):
@@ -2130,7 +2137,7 @@ class Bookmarks:
 		except:
 			log_utils.error()
 
-	def set_scrobble(self, current_time, media_length, media_type, imdb='', tmdb='', tvdb='', season='', episode='', service='trakt', title='', tvshowtitle='', year='0', already_watched=False):
+	def set_scrobble(self, current_time, media_length, media_type, imdb='', tmdb='', tvdb='', season='', episode='', service='trakt', title='', tvshowtitle='', year='0', already_watched=False, completed=False):
 		# Ensure season and episode are not None
 		season = season if season is not None else ''
 		episode = episode if episode is not None else ''
@@ -2164,11 +2171,11 @@ class Bookmarks:
 				if percent >= int(markwatched_percentage):
 					customtrakt.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False)
 			elif service == 'floppy':
-				completed = percent >= int(markwatched_percentage)
+				completed = bool(completed) or percent >= 90
 				if getSetting('debug.level') == '1':
 					log_utils.log('FLOPPY: set_scrobble stop gate â€” percent=%.2f current_time=%s media_length=%s seekable=%s completed=%s skip_scrobble=%s' % (percent, current_time, media_length, seekable, completed, skip_scrobble), level=log_utils.LOGDEBUG)
 				floppy.scrobbleStopMovie(imdb, tmdb, percent, completed=completed, current_time=current_time, total_time=media_length, already_watched=skip_scrobble) if media_type == 'movie' else floppy.scrobbleStopEpisode(imdb, tmdb, tvdb, season, episode, percent, completed=completed, current_time=current_time, total_time=media_length, already_watched=skip_scrobble)
-				if percent >= int(markwatched_percentage):
+				if completed:
 					floppy.scrobbleReset(imdb, tmdb, tvdb, season, episode, refresh=False, remote=False)
 			elif service == 'scrob':
 				completed = percent >= int(markwatched_percentage)

@@ -473,7 +473,7 @@ def manager(name, imdb=None, tvdb=None, tmdb=None, watched=None, season=None, ep
                 if items[select][1] in ('collection_add', 'collection_remove'):
                     import json as _cjson
                     if not tvdb or tvdb == 'None':
-                        collection_post = _cjson.dumps({"movies": [{"ids": {"imdb": imdb, "tmdb": int(tmdb) if tmdb else None}}]})
+                        collection_post = _cjson.dumps({"movies": [{"ids": {"imdb": imdb, "tmdb": int(tmdb) if tmdb not in (None, '', 'None', '0', 0) else None}}]})
                     else:
                         collection_post = _cjson.dumps({"shows": [{"ids": {"imdb": imdb}}]})
                 if items[select][1] == 'collection_add':
@@ -1184,13 +1184,13 @@ def _scrobble(endpoint, media_type, imdb, tmdb, tvdb, season, episode, percent):
 	try:
 		percent = round(float(percent), 2)
 		if media_type == 'movie':
-			post = {'movie': {'ids': {'imdb': imdb, 'tmdb': int(tmdb) if tmdb else None}}, 'progress': percent}
+			post = {'movie': {'ids': {'imdb': imdb, 'tmdb': int(tmdb) if tmdb not in (None, '', 'None', '0', 0) else None}}, 'progress': percent}
 		else:
 			post = {
 				'show': {
-					'ids': {'imdb': imdb, 'tmdb': int(tmdb) if tmdb else None, 'tvdb': int(tvdb) if tvdb else None},
-					'season': int('%01d' % int(season)) if season else 1,
-					'episode': int('%01d' % int(episode)) if episode else 1
+					'ids': {'imdb': imdb, 'tmdb': int(tmdb) if tmdb not in (None, '', 'None', '0', 0) else None, 'tvdb': int(tvdb) if tvdb not in (None, '', 'None', '0', 0) else None},
+					'season': {'number': int(season) if season not in (None, '', 'None') else 1,
+						'episode': {'number': int(episode) if episode not in (None, '', 'None') else 1}}
 				},
 				'progress': percent
 			}
@@ -1222,49 +1222,63 @@ def scrobbleEpisode(tvshowtitle, year, imdb, tmdb, tvdb, season, episode, watche
 			control.notification(message=40657)
 		from datetime import datetime as _dt
 		paused_at = _dt.utcnow().strftime('%Y-%m-%dT%H:%M:%S.000Z')
-		mdbsync.upsert_bookmark(tvshowtitle=tvshowtitle or '', imdb=str(imdb) if imdb else '', tmdb=str(tmdb) if tmdb else '', tvdb=str(tvdb) if tvdb else '', season=str(season) if season else '', episode=str(episode) if episode else '', percent_played=str(watched_percent), paused_at=paused_at)
+		mdbsync.upsert_bookmark(tvshowtitle=tvshowtitle or '', imdb=str(imdb) if imdb else '', tmdb=str(tmdb) if tmdb else '', tvdb=str(tvdb) if tvdb else '', season=str(season) if season is not None else '', episode=str(episode) if episode else '', percent_played=str(watched_percent), paused_at=paused_at)
 		control.trigger_widget_refresh()
 		log_utils.log('MDBList Scrobble Episode. imdb: %s S%sE%s percent: %s' % (imdb, season, episode, watched_percent), level=log_utils.LOGDEBUG)
 	except: log_utils.error()
 
+def _remove_playback_progress(ids, season=None, episode=None):
+	if not ids: return False
+	items = get_request('/sync/playback')
+	if not isinstance(items, list): return False
+	targets = []
+	for item in items:
+		is_episode = item.get('type') == 'episode'
+		if is_episode != (season not in (None, '', 'None') or episode not in (None, '', 'None')): continue
+		media = item.get('show' if is_episode else 'movie') or {}
+		remote_ids = media.get('ids') or {}
+		shared = [k for k in ('tmdb', 'imdb', 'tvdb') if ids.get(k) and remote_ids.get(k)]
+		if not shared or str(remote_ids[shared[0]]) != str(ids[shared[0]]): continue
+		ep = item.get('episode') or {}
+		if season not in (None, '', 'None') and int(ep.get('season', -1)) != int(season): continue
+		if episode not in (None, '', 'None') and int(ep.get('number', -1)) != int(episode): continue
+		targets.append(item['id'])
+	for playback_id in targets:
+		if get_request('/scrobble/clear', post={'id': playback_id}) is None: return False
+	return True
+
+
+def finishProgressRemoval(succeeded, total):
+	if succeeded < total:
+		control.notification(title='MDBList', message='Removed playback progress for %s of %s items. Some requests failed; their local progress was retained.' % (succeeded, total))
+	return succeeded == total
+
+
 def scrobbleReset(imdb, tmdb='', tvdb='', season=None, episode=None, refresh=False, clear_local=True, already_watched=False, completed=False):
-	if not getMDBListCredentialsInfo(): return
+	if not getMDBListCredentialsInfo(): return False
 	try:
-		if episode:
-			ids = {}
-			if imdb: ids['imdb'] = imdb
-			if tmdb: ids['tmdb'] = int(tmdb)
-			if tvdb: ids['tvdb'] = int(tvdb)
-			post = {'show': {'ids': ids, 'season': int(season) if season else 1, 'episode': int(episode)}, 'progress': 0}
-		else:
-			ids = {}
-			if imdb: ids['imdb'] = imdb
-			if tmdb: ids['tmdb'] = int(tmdb)
-			post = {'movie': {'ids': ids}, 'progress': 0}
-		get_request('/scrobble/clear', post=post)
-		# Manual resets clear resume progress without adding watch history.
-		# Only completed playback may need to submit a watched update.
-		if completed and not already_watched:
-			if episode:
-				_post_sync_watched(show_ids={'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb},
-					seasons_dict={int(season) if season else 1: [int(episode)]})
-				_clr_episode_progress_cache()
-			elif season:
-				pass  # season-level reset clears local resume points only, no re-mark-watched
-			else:
-				_post_sync_watched(movies=[{'imdb': imdb, 'tmdb': tmdb}])
-		if episode:
-			mdbsync.delete_bookmark(imdb, tvdb or '', season or '', episode, tmdb=tmdb)
-		elif season:
-			mdbsync.delete_bookmarks_for_season(imdb, tvdb or '', season)
-		else:
-			mdbsync.delete_bookmark(imdb, tvdb or '', '', '', tmdb=tmdb)
-		sync_watchedProgress(forced=True)
+		ids = {k: v for k, v in {'imdb': imdb, 'tmdb': int(tmdb) if tmdb not in (None, '', 'None', '0', 0) else None, 'tvdb': int(tvdb) if tvdb not in (None, '', 'None', '0', 0) else None}.items() if v}
+		is_episode = episode not in (None, '', 'None')
+		if not completed and not _remove_playback_progress(ids, season, episode):
+			if refresh: control.notification(title='MDBList', message='Failed to remove MDBList playback progress')
+			return False
+		if completed and not already_watched and (is_episode or season in (None, '', 'None')):
+			result = _post_sync_watched(show_ids=ids, seasons_dict={int(season) if season else 1: [int(episode)]}) if is_episode else _post_sync_watched(movies=[ids])
+			if result is None: return False
+		if clear_local:
+			if is_episode: mdbsync.delete_bookmark(imdb, tvdb or '', season if season is not None else '', episode, tmdb=tmdb)
+			elif season not in (None, '', 'None'): mdbsync.delete_bookmarks_for_season(imdb, tvdb or '', season)
+			else: mdbsync.delete_bookmark(imdb, tvdb or '', '', '', tmdb=tmdb)
+		sync_playbackProgress(forced=True)
+		_clr_episode_progress_cache()
+		control.trigger_widget_refresh()
 		if refresh: control.refresh()
-		if getSetting('scrobble.notify') == 'true':
-			control.notification(title='MDBList', message='Successfully Removed MDBList playback progress')
-		log_utils.log('MDBList scrobble reset. imdb: %s' % imdb, level=log_utils.LOGDEBUG)
-	except: log_utils.error()
+		if getSetting('scrobble.notify') == 'true': control.notification(title='MDBList', message='Successfully Removed MDBList playback progress')
+		return True
+	except:
+		log_utils.error()
+		return False
+
 
 def sync_playbackProgress(forced=False):
 	try:
@@ -1365,14 +1379,16 @@ def _post_sync_watched(movies=None, show_ids=None, seasons_dict=None):
 					del show_entry['watched_at']
 			post['shows'] = [show_entry]
 		if not post: return None
-		return get_request('/sync/watched', post=post)
+		result = get_request('/sync/watched', post=post)
+		if isinstance(result, dict) and (result.get('error') or any((result.get('not_found') or {}).values())): return None
+		return result
 	except: log_utils.error()
 	return None
 
 
 def markMovieAsWatched(imdb, tmdb=''):
 	try:
-		_post_sync_watched(movies=[{'imdb': imdb, 'tmdb': tmdb}])
+		if _post_sync_watched(movies=[{'imdb': imdb, 'tmdb': tmdb}]) is None: return False
 		mdbsync.upsert_watched_movie(imdb=imdb, tmdb=str(tmdb),
 			last_watched_at=__import__('datetime').datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z"))
 		mdbsync.cache_delete(mdbsync._hash_function(syncMovies, ()))
@@ -1382,6 +1398,8 @@ def markMovieAsWatched(imdb, tmdb=''):
 
 def markMovieAsNotWatched(imdb):
 	try:
+		result = get_request('/sync/watched/remove', post={'movies': [{'ids': {'imdb': imdb}}]})
+		if result is None or (isinstance(result, dict) and (result.get('error') or any((result.get('not_found') or {}).values()))): return False
 		mdbsync.delete_watched_movie(imdb)
 		mdbsync.cache_delete(mdbsync._hash_function(syncMovies, ()))
 		return True
@@ -1406,6 +1424,8 @@ def markEpisodeAsWatched(imdb, tvdb, season, episode, tmdb=''):
 
 def markEpisodeAsNotWatched(imdb, tvdb, season, episode):
 	try:
+		result = get_request('/sync/watched/remove', post={'shows': [{'ids': {'imdb': imdb, 'tvdb': int(tvdb) if tvdb not in (None, '', 'None', '0', 0) else None}, 'seasons': [{'number': int(season), 'episodes': [{'number': int(episode)}]}]}]})
+		if result is None or (isinstance(result, dict) and (result.get('error') or any((result.get('not_found') or {}).values()))): return False
 		mdbsync.delete_watched_episode(imdb, season, episode)
 		mdbsync.cache_delete(mdbsync._hash_function(syncTVShows, ()))
 		return True
@@ -1413,6 +1433,7 @@ def markEpisodeAsNotWatched(imdb, tvdb, season, episode):
 
 def markTVShowAsWatched(imdb, tvdb, tmdb=''):
 	try:
+		if _post_sync_watched(show_ids={'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb}) is None: return False
 		now = __import__('datetime').datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.000Z')
 		from resources.lib.database import cache as _cache
 		from resources.lib.indexers import tmdb as _tmdb
@@ -1432,13 +1453,14 @@ def markTVShowAsWatched(imdb, tvdb, tmdb=''):
 							mdbsync.upsert_watched_episode(show_imdb=imdb, show_tvdb=str(tvdb),
 								show_tmdb=str(tmdb), season=sn, episode=en, last_watched_at=now)
 			except: pass
-		_post_sync_watched(show_ids={'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb})
 		mdbsync.cache_delete(mdbsync._hash_function(syncTVShows, ()))
 		return True
 	except: log_utils.error()
 
 def markTVShowAsNotWatched(imdb, tvdb):
 	try:
+		result = get_request('/sync/watched/remove', post={'shows': [{'ids': {'imdb': imdb, 'tvdb': int(tvdb) if tvdb not in (None, '', 'None', '0', 0) else None}}]})
+		if result is None or (isinstance(result, dict) and (result.get('error') or any((result.get('not_found') or {}).values()))): return False
 		episodes = mdbsync.get_watched_episodes()
 		# See syncSeasons() above: MDBList's local rows never populate show_tvdb (always
 		# ''), so matching on an empty tvdb matched every other show's rows too and wiped
@@ -1453,6 +1475,8 @@ def markTVShowAsNotWatched(imdb, tvdb):
 
 def markSeasonAsWatched(imdb, tvdb, season, tmdb=''):
 	try:
+		if _post_sync_watched(show_ids={'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb},
+			seasons_dict={int(season): None}) is None: return False
 		now = __import__('datetime').datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.000Z')
 		season = int(season)
 		from resources.lib.database import cache as _cache
@@ -1471,14 +1495,14 @@ def markSeasonAsWatched(imdb, tvdb, season, tmdb=''):
 						mdbsync.upsert_watched_episode(show_imdb=imdb, show_tvdb=str(tvdb),
 							show_tmdb=str(tmdb), season=season, episode=en, last_watched_at=now)
 			except: pass
-		_post_sync_watched(show_ids={'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb},
-			seasons_dict={season: None})
 		mdbsync.cache_delete(mdbsync._hash_function(syncTVShows, ()))
 		return True
 	except: log_utils.error()
 
 def markSeasonAsNotWatched(imdb, tvdb, season):
 	try:
+		result = get_request('/sync/watched/remove', post={'shows': [{'ids': {'imdb': imdb, 'tvdb': int(tvdb) if tvdb not in (None, '', 'None', '0', 0) else None}, 'seasons': [{'number': int(season)}]}]})
+		if result is None or (isinstance(result, dict) and (result.get('error') or any((result.get('not_found') or {}).values()))): return False
 		episodes = mdbsync.get_watched_episodes()
 		for (si, st, sv, s, e) in episodes:
 			if ((imdb and si == imdb) or (tvdb and sv == tvdb)) and int(s) == int(season):

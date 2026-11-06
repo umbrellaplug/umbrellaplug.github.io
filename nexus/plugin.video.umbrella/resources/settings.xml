@@ -5676,6 +5676,15 @@
 		</category>
 		<category id="downloads" label="32347" help="40193">
 			<group id="1">
+				<setting id="downloads.manager" type="string" label="40867" help="40868">
+					<level>0</level>
+					<default/>
+					<constraints><allowempty>true</allowempty></constraints>
+					<control type="button" format="action">
+						<data>RunPlugin(plugin://plugin.video.umbrella/?action=downloadManager)</data>
+						<close>true</close>
+					</control>
+				</setting>
 				<setting id="downloads" type="boolean" label="32348" help="">
 					<level>0</level>
 					<default>false</default>

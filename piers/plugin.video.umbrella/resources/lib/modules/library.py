@@ -1542,8 +1542,8 @@ class libmovies:
 		try:
 			title, year, imdb, tmdb = i['title'], i['year'], i['imdb'], i['tmdb']
 			systitle = quote_plus(title)
-			try: transtitle = title.translate(None, '\/:*?"<>|')
-			except: transtitle = title.translate(title.maketrans('', '', '\/:*?"<>|'))
+			try: transtitle = title.translate(None, r'\/:*?"<>|')
+			except: transtitle = title.translate(title.maketrans('', '', r'\/:*?"<>|'))
 			transtitle = string_tools.normalize(transtitle)
 			if control.setting('library.strm.use_tmdbhelper') == 'true':
 				content = 'plugin://plugin.video.themoviedb.helper/?info=play&tmdb_type=movie&islocal=True&tmdb_id=%s' % tmdb
@@ -1863,8 +1863,8 @@ class libtvshows:
 			title, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, premiered = i['title'], i['year'], i['imdb'], i['tmdb'], i['tvdb'], i['season'], i['episode'], i['tvshowtitle'], i['premiered']
 			systitle = quote_plus(title)
 			systvshowtitle, syspremiered = quote_plus(tvshowtitle), quote_plus(premiered)
-			try: transtitle = tvshowtitle.translate(None, '\/:*?"<>|')
-			except: transtitle = tvshowtitle.translate(tvshowtitle.maketrans('', '', '\/:*?"<>|'))
+			try: transtitle = tvshowtitle.translate(None, r'\/:*?"<>|')
+			except: transtitle = tvshowtitle.translate(tvshowtitle.maketrans('', '', r'\/:*?"<>|'))
 			transtitle = string_tools.normalize(transtitle)
 			if control.setting('library.strm.use_tmdbhelper') == 'true':
 				content = 'plugin://plugin.video.themoviedb.helper/?info=play&tmdb_type=tv&islocal=True&tmdb_id=%s&season=%s&episode=%s&title=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&tvshowtitle=%s&premiered=%s' % (

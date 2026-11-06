@@ -772,7 +772,7 @@ class RealDebrid:
 			self.secret = getSetting('realdebridsecret')
 			self.device_code = getSetting('realdebridrefresh')
 			if not self.client_ID or not self.secret or not self.device_code: return False # avoid if previous refresh attempt revoked accnt, loops twice.
-			log_utils.log('Refreshing Expired Real Debrid Token: | %s | %s |' % (self.client_ID, self.device_code), level=log_utils.LOGDEBUG)
+			log_utils.log('Refreshing Expired Real Debrid Token', level=log_utils.LOGDEBUG)
 			success, error = self.get_token()
 			if not success:
 				if not 'Temporarily Down For Maintenance' in error:

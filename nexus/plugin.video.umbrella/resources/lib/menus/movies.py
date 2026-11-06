@@ -3,6 +3,7 @@
 	Umbrella Add-on
 """
 
+
 from datetime import datetime, timedelta
 import time
 import calendar
@@ -231,7 +232,7 @@ class Movies:
 					if '/users/me/' not in url: raise Exception()
 					if '/collection/' in url: return self.traktCollection(url, folderName=folderName)
 					if '/watchlist/' in url: return self.traktWatchlist(url, folderName=folderName)
-					if trakt.getActivity() > cache.timeout(self.trakt_list, url, self.trakt_user, folderName):
+					if trakt.getBrowseActivity() > cache.timeout(self.trakt_list, url, self.trakt_user, folderName):
 						self.list = cache.get(self.trakt_list, 0, url, self.trakt_user, folderName)
 					else: self.list = cache.get(self.trakt_list, 720, url, self.trakt_user, folderName)
 				except:
@@ -904,7 +905,9 @@ class Movies:
 			selected_items = window.run()
 			del window
 			if selected_items:
-				for imdb in selected_items: mdblist.scrobbleReset(imdb=imdb, refresh=False)
+				succeeded = 0
+				for imdb in selected_items: succeeded += bool(mdblist.scrobbleReset(imdb=imdb, refresh=False))
+				mdblist.finishProgressRemoval(succeeded, len(selected_items))
 				control.trigger_widget_refresh()
 				if 'plugin.video.umbrella' in control.infoLabel('Container.PluginName'): control.refresh()
 		except:
@@ -1823,7 +1826,7 @@ class Movies:
 		userlists = []
 		try:
 			if not self.traktCredentials: raise Exception()
-			activity = trakt.getActivity()
+			activity = trakt.getBrowseActivity()
 			self.list = [] ; lists = []
 			try:
 				if activity > cache.timeout(self.trakt_user_lists, self.traktlists_link, self.trakt_user): raise Exception()
@@ -2166,7 +2169,9 @@ class Movies:
 			selected_items = window.run()
 			del window
 			if selected_items:
-				for imdb in selected_items: customtrakt.scrobbleReset(imdb=imdb, refresh=False)
+				succeeded = 0
+				for imdb in selected_items: succeeded += bool(customtrakt.scrobbleReset(imdb=imdb, refresh=False))
+				customtrakt.finishProgressRemoval(succeeded, len(selected_items))
 				control.trigger_widget_refresh()
 				if 'plugin.video.umbrella' in control.infoLabel('Container.PluginName'): control.refresh()
 		except:
@@ -2372,7 +2377,7 @@ class Movies:
 		# this response's {'pagination':..., 'results':[...]} shape unmodified.
 		self.list = []
 		try:
-			items = floppy.get_all_pages('/playback/progress/', silent=True) or []
+			items = floppy.get_continue_watching('movie') or []
 			for item in items:
 				try:
 					if item.get('media_type') != 'movie': continue
@@ -3517,14 +3522,16 @@ class Movies:
 			self.list = metacache.fetch(self.list, self.lang, self.user)
 
 			# Use ThreadPoolExecutor to process super_info concurrently
-			with ThreadPoolExecutor(max_workers=40) as executor:
-				futures = [executor.submit(self.super_info, i) for i in range(total)]
-				for future in as_completed(futures):
-					try:
-						future.result()  # Ensure exceptions are raised if any
-					except Exception as e:
-						from resources.lib.modules import log_utils
-						log_utils.error(f"Error processing item: {e}")
+			pending = [i for i in range(total) if not self.list[i].get('metacache')]
+			if pending:
+				with ThreadPoolExecutor(max_workers=min(40, len(pending))) as executor:
+					futures = [executor.submit(self.super_info, i) for i in pending]
+					for future in as_completed(futures):
+						try:
+							future.result()  # Ensure exceptions are raised if any
+						except Exception as e:
+							from resources.lib.modules import log_utils
+							log_utils.error(f"Error processing item: {e}")
 
 			# Insert meta data into the cache if available
 			if self.meta:
@@ -3650,7 +3657,7 @@ class Movies:
 		play_mode = getSetting('play.mode.movie')
 		rescrape_useDefault = getSetting('rescrape.default') == 'true'
 		rescrape_method = getSetting('rescrape.default2')
-		
+	
 		settingFanart = getSetting('fanart') == 'true'
 		addonPoster, addonFanart, addonBanner = control.addonPoster(), control.addonFanart(), control.addonBanner()
 		indicators = getMovieIndicators() # refresh not needed now due to service sync
@@ -3850,7 +3857,7 @@ class Movies:
 ####################################
 				if trailer: meta.update({'trailer': trailer}) # removed temp so it's not passed to CM items, only infoLabels for skin
 				else: meta.update({'trailer': '%s?action=play_Trailer&type=%s&name=%s&year=%s&imdb=%s' % (sysaddon, 'movie', sysname, year, imdb)})
-				if label_media: labelProgress += ' [I](%s)[/I]' % getLS(32001)
+				if label_media: labelProgress += ' [I](%s)[/I]' % (getLS(40865) or 'Movie')
 				item = control.item(label=labelProgress, offscreen=True)
 				#if 'castandart' in i: item.setCast(i['castandart'])#changed for kodi20 setinfo method
 				if 'castandart' in i: meta.update({'castandart':i['castandart']})
@@ -3886,7 +3893,7 @@ class Movies:
 			except:
 				from resources.lib.modules import log_utils
 				log_utils.error()
-		
+	
 		if next:
 			try:
 				if not items: raise Exception()
@@ -3915,7 +3922,6 @@ class Movies:
 		if not finalize: return
 		control.content(syshandle, 'movies')
 		control.directory(syshandle, cacheToDisc=True)
-		control.sleep(200)
 		views.setView('movies', {'skin.estuary': 55, 'skin.confluence': 500})
 
 	def addDirectory(self, items, queue=False, folderName=''):
@@ -4012,3 +4018,4 @@ class Movies:
 			else: content = ''
 		control.content(syshandle, content) # some skins use their own thumb for things like "genres" when content type is set here
 		control.directory(syshandle, cacheToDisc=True)
+

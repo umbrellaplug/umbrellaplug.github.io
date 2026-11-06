@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.7.99">
+<addons><addon id="plugin.video.umbrella" name="Umbrella" provider-name="Umbrella" version="6.8.00">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.requests" />
@@ -271,20 +271,21 @@
 			<screenshot>resources/screenshots/screenshot003.jpg</screenshot>
 		</assets>
 		<news>
-[B]Update - v6.7.99 - Oct 30th, 2026[/B]
---[Fix] Fixed continuous playback stopping after multiple episodes and improved automatic Play Next reliability.
---[Fix] Fixed episode queue issues, including duplicate episodes, interrupted playback, and manually queued episodes being lost.
---[Fix] Fixed artwork and loading spinner overlapping during source resolution.
---[Fix] Fixed occasional episode scraping errors.
---[Feature] Added Floppy OAuth login with QR code authorization and automatic token renewal. API keys are still supported.
---[Fix] Improved Floppy watched history syncing, including skipped episodes, specials, and rewatched shows.
---[Enhancement] Improved Floppy syncing speed, reliability, and handling of connection failures.
---[Feature] Added IMDb TV show browsing by year and improved TMDb year browsing, with new sorting and rating options.
---[Feature] Added IMDb movie browsing by year and improved movie year sorting for IMDb and TMDb.
---[Fix] Fixed stopping a scrape early incorrectly showing "No Sources Found" when sources were already available.
---[Enhancement] Added optional Prefer Dolby Audio setting to prioritize Atmos, TrueHD, Dolby Digital Plus, and Dolby Digital sources.
---[Fix] Improved Kodi 22 compatibility and reduced metadata warnings.
---[Fix] Additional Floppy authorization, caching, synchronization, and error-handling improvements.
+[B]Update - v6.8.00 - Nov 6th, 2026[/B]
+--[Enhancement] Faster menus and results through fewer account checks, less repeated metadata work, and reused TMDb IDs.
+--[Feature] Added Download Manager (in Downloads settings, the Downloads page, and Tools) with live progress, transfer speeds, cancellation, resume for interrupted transfers (even after Kodi restarts), and Remove from list for finished entries.
+--[Feature] Floppy now syncs only what changed instead of your full history. Older Floppy servers still work.
+--[Enhancement] Network logos are now bundled with the add-on, so Imgur is no longer needed.
+--[Enhancement] Added debug timings and Floppy sync diagnostics to help troubleshoot issues.
+--[Fix] Watched/unwatched, resume points, and watch history now sync reliably across Trakt, Simkl, MDBList, Scrob, and Floppy.
+--[Fix] MDBList Progress Episodes now respects broadcast times and timezones for unaired episodes.
+--[Fix] Floppy: marking a show or season watched marks every episode, and Continue Watching no longer shows finished items.
+--[Fix] Fixed Trakt login, token renewal, and widget actions, and stopped long waits when Trakt is unavailable.
+--[Fix] Fixed empty Specials folders and related pack-size errors.
+--[Fix] Fixed AllDebrid magnet playback with nested file lists.
+--[Fix] Restored artwork views and correct labels for combined Movie and TV search in skins like Nimbus.
+--[Fix] Backing out of source selection now quietly cancels playback.
+--[Fix] General fixes to downloads, saved views, and startup errors, and removed account credentials from debug logs.
 		</news>
 	</extension>
 

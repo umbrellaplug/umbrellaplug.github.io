@@ -235,7 +235,8 @@ def getSeasonIndicators(imdb, tvdb, refresh=False, has_next_episode=False, tmdb_
 			return indicators
 		elif scrobIndicators:
 			# syncSeasons derives totals from TMDb season meta (96h cache) — always fetch fresh from local DB
-			indicators = scrob.cachesyncSeasons(imdb, tvdb, timeout=0)
+			_scrob_kwargs = {'tmdb': tmdb} if tmdb else {}
+			indicators = scrob.cachesyncSeasons(imdb, tvdb, timeout=0, **_scrob_kwargs)
 			counts = indicators[1] if indicators and len(indicators) > 1 else {}
 			cached_total = sum(v.get('total', 0) for v in counts.values()) if counts else 0
 			stale = has_next_episode or (tmdb_total_aired and int(tmdb_total_aired) > cached_total)
@@ -248,7 +249,7 @@ def getSeasonIndicators(imdb, tvdb, refresh=False, has_next_episode=False, tmdb_
 						tmdb_id = str(tmdb_result.get('id', '')) if tmdb_result else ''
 						if tmdb_id:
 							_cache.get(_tmdb.TVshows().get_showSeasons_meta, 0, tmdb_id)  # force fresh, updates cache
-							indicators = scrob.cachesyncSeasons(imdb, tvdb, timeout=0)  # re-run with fresh totals
+							indicators = scrob.cachesyncSeasons(imdb, tvdb, timeout=0, **_scrob_kwargs)  # re-run with fresh totals
 					except:
 						from resources.lib.modules import log_utils
 						log_utils.error()

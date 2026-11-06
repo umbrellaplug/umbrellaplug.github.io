@@ -444,18 +444,15 @@ class Sources:
 				homeWindow.clearProperty('umbrella.window_keep_alive')
 				try: self.window.close()
 				except: pass
+				# Back/Cancel is an intentional exit, including after a download.
+				# A failed resolver result makes Kodi show Playback Failed.
+				control.playlist.clear()
 				if self.enable_playnext:
-					# During continuous playback Kodi holds a valid plugin handle.
-					# Resolving with False triggers "Playback Failed". Resolve with
-					# True + empty offscreen item instead so no error dialog appears.
-					control.playlist.clear()
 					try: control.player.stop()
 					except: pass
-					from sys import argv
-					control.resolve(int(argv[1]), True, control.item(offscreen=True))
-					control.closeOk()
-				else:
-					control.cancelPlayback()
+				from sys import argv
+				control.resolve(int(argv[1]), True, control.item(offscreen=True))
+				control.closeOk()
 		except:
 			log_utils.error('Error sourceSelect(): ')
 			control.cancelPlayback()
@@ -1003,6 +1000,7 @@ class Sources:
 		variants = [data] if self.custom_query == 'true' else scrape_variants(getattr(self, 'scrape_tmdb', ''), data)
 		for variant in variants:
 			if control.monitor.abortRequested(): return
+			if variant.get('_scrape_convention') == 'movie' and pack: continue
 			cache_id = ('anthology-v1:%s:%s' % (variant['_scrape_tmdb'], variant['_scrape_convention'])) if variant.get('_scrape_tmdb') else imdb
 			self._getEpisodeSource(cache_id, variant['season'], variant['episode'], variant, source, call, pack)
 
@@ -1089,6 +1087,9 @@ class Sources:
 
 	def sourcesFilter(self, progressDialog=None):
 		if not self.isPrescrape: control.busy()
+		from resources.lib.modules.episode_mapping import filter_special_sources
+		self.sources = filter_special_sources(self.sources, getattr(self, 'scrape_tmdb', ''),
+			(getattr(self, 'meta', None) or {}).get('season'), (getattr(self, 'meta', None) or {}).get('episode'))
 		if getSetting('remove.duplicates') == 'true': self.sources = self.filter_dupes()
 		if self.mediatype == 'movie':
 			if getSetting('source.filtermbysize') == '1':
@@ -1930,6 +1931,7 @@ class Sources:
 		self.hostprDict = providerscache.get(cache_prDict, 168)
 		self.sourcecfDict = premium_hosters.sourcecfDict
 	def calc_pack_size(self):
+		if not any(item.get('package') for item in self.sources): return self.sources
 		seasoncount, counts = None, None
 		try:
 			if self.meta: seasoncount, counts = self.meta.get('seasoncount', None), self.meta.get('counts', None)
@@ -1953,7 +1955,8 @@ class Sources:
 				else: season = homeWindow.getProperty(self.seasonProperty)
 				from resources.lib.indexers import tmdb as tmdb_indexer
 				counts = tmdb_indexer.TVshows().get_counts(tmdb)
-				seasoncount = counts[str(season)]
+				seasoncount = (counts or {}).get(str(season))
+				if not seasoncount: return self.sources
 			except:
 				log_utils.error()
 				return self.sources

@@ -519,14 +519,8 @@ def _movie_history_write(imdb, tmdb, remove):
 def _history_write(kind, imdb='', tmdb='', tvdb='', season=None, episode=None, remove=False):
     if kind == 'movie':
         return _movie_history_write(imdb, tmdb, remove)
-    started = time.monotonic()
     with _sync_lock:
-        acquired = time.monotonic()
-        result = _episode_history_write(kind, imdb, tmdb, tvdb, season, episode, remove)
-        log_utils.log('PunchPlay episode %s: sync lock %.2fs, remote/local update %.2fs' %
-                      ('unwatch' if remove else 'watch', acquired - started, time.monotonic() - acquired),
-                      level=log_utils.LOGINFO)
-        return result
+        return _episode_history_write(kind, imdb, tmdb, tvdb, season, episode, remove)
 
 
 def _episode_history_write(kind, imdb, tmdb, tvdb, season, episode, remove):

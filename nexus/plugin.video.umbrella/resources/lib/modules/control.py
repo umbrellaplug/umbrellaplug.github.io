@@ -103,8 +103,14 @@ subtitlesPath = joinPath(dataPath, 'subtitles')
 watchedcacheFile = joinPath(dataPath, 'watched.db')
 
 def getKodiVersion(full=False):
-	if full: return xbmc.getInfoLabel("System.BuildVersion")
-	else: return int(xbmc.getInfoLabel("System.BuildVersion")[:2])
+	# The build cannot change during a Kodi process. Avoid a GUI info-label query
+	# for every ListItem and metadata worker in the same Python invocation.
+	version = getattr(getKodiVersion, '_build_version', None)
+	if version is None:
+		version = xbmc.getInfoLabel("System.BuildVersion")
+		if version[:2].isdigit(): getKodiVersion._build_version = version
+	if full: return version
+	return int(version[:2])
 
 def setContainerName(value):
 	try:
@@ -428,29 +434,13 @@ def closeAll():
 def closeOk():
 	return execute('Dialog.Close(okdialog,true)')
 
-def log_refresh_diagnostic(event, detail=''):
-	"""Trace refresh ordering without logging container URLs or credentials."""
-	try:
-		if setting('debug.enabled') != 'true' or setting('debug.level') != '1': return
-		import os
-		import threading
-		from resources.lib.modules import log_utils
-		log_utils.log('RefreshDiag event=%s pid=%s thread=%s container=%s items=%s playing=%s fullscreen=%s cleanup=%s request=%s %s' % (
-			event, os.getpid(), threading.get_ident(), infoLabel('Container.PluginName'),
-			infoLabel('Container.NumItems'), player.isPlaying(), condVisibility('Window.IsActive(fullscreenvideo)'),
-			homeWindow.getProperty('umbrella.playback_cleanup'),
-			homeWindow.getProperty('umbrella.container_refresh_request'), detail), level=log_utils.LOGDEBUG)
-	except: pass
 
 
 def refresh():
 	try:
-		import sys
-		caller = sys._getframe(1)
-		log_refresh_diagnostic('Container.Refresh', 'caller=%s.%s:%s' % (
-			caller.f_globals.get('__name__', ''), caller.f_code.co_name, caller.f_lineno))
-		del caller
-	except: pass
+		from resources.lib.modules import trakt_activities
+		trakt_activities.invalidate()
+	except Exception: pass
 	return execute('Container.Refresh')
 
 def folderPath():
@@ -462,11 +452,9 @@ def queueItem():
 def clear_idle_playlist():
 	"""Directory reloads must not discard a playing or resolving episode chain."""
 	if player.isPlaying() or playerWindow.getProperty('umbrella.playnext.transition') == 'true':
-		log_refresh_diagnostic('browse-playlist-preserved', 'reason=playing-or-resolving')
 		return False
 	next_url = playerWindow.getProperty('umbrella.standalone.next')
 	if next_url and any(playlist[index].getPath() == next_url for index in range(playlist.size())):
-		log_refresh_diagnostic('browse-playlist-preserved', 'reason=queued-next')
 		return False
 	playlist.clear()
 	return True
@@ -588,7 +576,6 @@ def trigger_widget_refresh(update_library=True, force=False):
 		playback_cleanup = homeWindow.getProperty('umbrella.playback_cleanup') == 'true'
 		player_window_active = condVisibility('Window.IsActive(fullscreenvideo)')
 		if player.isPlaying() or player_window_active or playback_cleanup:
-			log_refresh_diagnostic('widget-refresh-deferred')
 			homeWindow.setProperty('umbrella.widget_refresh_pending', 'true')
 			return
 	except: pass
@@ -596,7 +583,6 @@ def trigger_widget_refresh(update_library=True, force=False):
 	try: last_refresh = float(homeWindow.getProperty('umbrella.widget_refresh_at') or 0)
 	except: last_refresh = 0
 	if not force and now - last_refresh < 2:
-		log_refresh_diagnostic('widget-refresh-throttled')
 		return
 	homeWindow.setProperty('umbrella.widget_refresh_at', str(now))
 	homeWindow.clearProperty('umbrella.widget_refresh_pending')
@@ -613,10 +599,8 @@ def trigger_widget_refresh(update_library=True, force=False):
 		try: last_library_refresh = float(homeWindow.getProperty('umbrella.widget_library_refresh_at') or 0)
 		except: last_library_refresh = 0
 		if not force and now - last_library_refresh < 300:
-			log_refresh_diagnostic('library-refresh-throttled')
 			return
 		homeWindow.setProperty('umbrella.widget_library_refresh_at', str(now))
-		log_refresh_diagnostic('UpdateLibrary', 'force=%s' % force)
 		execute('UpdateLibrary(video,/fake/path/to/force/refresh/on/home)')
 
 def refresh_playAction(): # for umbrella global CM play actions

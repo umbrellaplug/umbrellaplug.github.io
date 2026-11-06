@@ -11,6 +11,7 @@ from threading import Thread
 from urllib3.util.retry import Retry
 from resources.lib.database import cache, metacache, fanarttv_cache
 from resources.lib.indexers.fanarttv import FanartTv
+from resources.lib.modules.network_art import network_icon
 from resources.lib.modules.control import setting as getSetting, notification, sleep, apiLanguage, mpaCountry, openSettings, trailer as control_trailer, yesnoDialog
 
 
@@ -948,6 +949,38 @@ class TVshows(TMDb):
 			log_utils.error()
 		return result
 
+	def _mapped_special_episode(self, tmdb, number):
+		from resources.lib.modules.episode_mapping import SPECIAL_MOVIES
+		movie_id = SPECIAL_MOVIES.get((str(tmdb), 0, number))
+		if not movie_id: return None
+		movie = self.get_request(base_link + 'movie/%s?api_key=%s&language=%s' % (movie_id, self.API_key, self.lang))
+		if not isinstance(movie, dict) or str(movie.get('id')) != movie_id or not movie.get('title'): return None
+		# This is a catalog alias for a real standalone special. A movie ID must
+		# never be published as a TMDB episode ID to tracking providers.
+		return {'id': None, 'season_number': 0, 'episode_number': number,
+			'name': movie['title'], 'air_date': movie.get('release_date') or None,
+			'overview': movie.get('overview') or '', 'runtime': movie.get('runtime'),
+			'crew': [], 'production_code': '', 'still_path': None,
+			'vote_average': movie.get('vote_average') or 0, 'vote_count': movie.get('vote_count') or 0}
+
+
+	def _missing_specials_season(self, tmdb, show):
+		# A newly added special can exist at the episode endpoint before its
+		# season endpoint is available. Follow the catalog's advertised count.
+		specials = next((s for s in show.get('seasons', []) if s.get('season_number') == 0), None)
+		if not specials: return None
+		count = int(specials.get('episode_count') or 0)
+		if not 0 < count <= 100: return None
+		episodes = []
+		for number in range(1, count + 1):
+			episode = self.get_episodes_request(tmdb, 0, number)
+			if episode == '404:NOT FOUND': episode = self._mapped_special_episode(tmdb, number)
+			if not isinstance(episode, dict): return None
+			if episode.get('season_number') != 0 or episode.get('episode_number') != number: return None
+			episodes.append(episode)
+		return dict(specials, season_number=0, episodes=episodes, credits={'cast': []})
+
+
 	def get_seasonEpisodes_meta(self, tmdb, season): # builds episodes meta from "/season/?" request
 		if not tmdb and not season: return None
 		seasonMeta = cache.get(self.get_showSeasons_meta, 96, tmdb)
@@ -956,8 +989,10 @@ class TVshows(TMDb):
 		try:
 			if not tmdb: return None
 			result = self.get_season_request(tmdb, season)
+			if result == '404:NOT FOUND' and int(season) == 0:
+				result = self._missing_specials_season(tmdb, seasonMeta)
 			if result is None: return
-			if '404:NOT FOUND' in result: return result
+			if not isinstance(result, dict) or not isinstance(result.get('episodes'), list): return None
 			meta = {}
 		except:
 			from resources.lib.modules import log_utils
@@ -1201,118 +1236,118 @@ class TVshows(TMDb):
 
 	def get_networks(self):
 		return [
-			('A&E', '129', 'https://i.imgur.com/xLDfHjH.png'),
-			('ABC (US)', '2', 'https://i.imgur.com/qePLxos.png'),
+			('A&E', '129', network_icon('a-and-e.png')),
+			('ABC (US)', '2', network_icon('abc-us.png')),
 			('ABC (AU)', '18', 'https://i.postimg.cc/K8N5BGVC/abc-australia.png'),
 			('ABC Family', '75', 'https://i.postimg.cc/BtfXj3N6/abc-family.png'),
 			('Acorn TV', '2697', 'https://i.postimg.cc/0jyYrWJJ/logo.png'),
-			('Adult Swim', '80', 'https://i.imgur.com/jCqbRcS.png'),
-			('Amazon', '1024', 'https://i.imgur.com/ru9DDlL.png'),
-			('AMC', '174', 'https://i.imgur.com/ndorJxi.png'),
+			('Adult Swim', '80', network_icon('adult-swim.png')),
+			('Amazon', '1024', network_icon('amazon.png')),
+			('AMC', '174', network_icon('amc.png')),
 			('AHC', '1430', 'https://i.postimg.cc/ydzYKK6Y/ahc.png'),
-			('Animal Planet', '91', 'https://i.imgur.com/olKc4RP.png'),
+			('Animal Planet', '91', network_icon('animal-planet.png')),
 			('Animax', '171', 'https://i.postimg.cc/J4SfvqzR/animax.png'),
-			('Apple TV+', '2552', 'https://i.imgur.com/fAQMVNp.png'),
-			('AT-X', '173', 'https://i.imgur.com/JshJYGN.png'),
-			('Audience', '251', 'https://i.imgur.com/5Q3mo5A.png'),
+			('Apple TV+', '2552', network_icon('apple-tv-plus-tmdb.png')),
+			('AT-X', '173', network_icon('at-x.png')),
+			('Audience', '251', network_icon('audience.png')),
 			('AXN', '2003', 'https://i.postimg.cc/x1T6sNK9/axn.png'),
-			('BBC America', '493', 'https://i.imgur.com/TUHDjfl.png'),
-			('BBC One', '4', 'https://i.imgur.com/u8x26te.png'),
-			('BBC Two', '332', 'https://i.imgur.com/SKeGH1a.png'),
-			('BBC Three', '3', 'https://i.imgur.com/SDLeLcn.png'),
-			('BBC Four', '100', 'https://i.imgur.com/PNDalgw.png'),
-			('BET', '24', 'https://i.imgur.com/ZpGJ5UQ.png'),
-			('BET+', '3343', 'https://i.imgur.com/ZpGJ5UQ.png'),
-			('Blackpills', '2097', 'https://i.imgur.com/8zzNqqq.png'),
-			('Brat', '2451', 'https://i.imgur.com/x2aPEx1.png'),
-			('Bravo', '74', 'https://i.imgur.com/TmEO3Tn.png'),
-			('Cartoon Network', '56', 'https://i.imgur.com/zmOLbbI.png'),
-			('CBC', '23', 'https://i.imgur.com/unQ7WCZ.png'),
-			('CBS', '16', 'https://i.imgur.com/8OT8igR.png'),
+			('BBC America', '493', network_icon('bbc-america.png')),
+			('BBC One', '4', network_icon('bbc-one.png')),
+			('BBC Two', '332', network_icon('bbc-two.png')),
+			('BBC Three', '3', network_icon('bbc-three.png')),
+			('BBC Four', '100', network_icon('bbc-four.png')),
+			('BET', '24', network_icon('bet.png')),
+			('BET+', '3343', network_icon('bet.png')),
+			('Blackpills', '2097', network_icon('blackpills.png')),
+			('Brat', '2451', network_icon('brat.png')),
+			('Bravo', '74', network_icon('bravo.png')),
+			('Cartoon Network', '56', network_icon('cartoon-network.png')),
+			('CBC', '23', network_icon('cbc.png')),
+			('CBS', '16', network_icon('cbs.png')),
 			('CBS All Access', '1709', 'https://i.postimg.cc/ZRV3k8DY/cbs-all-access.png'),
 			('CNBC', '175', 'https://i.postimg.cc/5tmQv5J5/cnbc.png'),
-			('Channel 4', '26', 'https://i.imgur.com/6ZA9UHR.png'),
-			('Channel 5', '99', 'https://i.imgur.com/5ubnvOh.png'),
-			('Cinemax', '359', 'https://i.imgur.com/zWypFNI.png'),
+			('Channel 4', '26', network_icon('channel-4.png')),
+			('Channel 5', '99', network_icon('channel-5.png')),
+			('Cinemax', '359', network_icon('cinemax.png')),
 			('City (CA)', '92', 'https://i.postimg.cc/FzBVXNYC/city.png'),
-			('Comedy Central', '47', 'https://i.imgur.com/ko6XN77.png'),
-			('Crackle', '928', 'https://i.imgur.com/53kqZSY.png'),
-			('CTV', '110', 'https://i.imgur.com/qUlyVHz.png'),
-			('CuriosityStream', '2349', 'https://i.imgur.com/5wJsQdi.png'),
-			('CW', '71', 'https://i.imgur.com/Q8tooeM.png'),
-			('CW Seed', '1049', 'https://i.imgur.com/nOdKoEy.png'),
+			('Comedy Central', '47', network_icon('comedy-central.png')),
+			('Crackle', '928', network_icon('crackle.png')),
+			('CTV', '110', network_icon('ctv.png')),
+			('CuriosityStream', '2349', network_icon('curiositystream.png')),
+			('CW', '71', network_icon('cw.png')),
+			('CW Seed', '1049', network_icon('cw-seed.png')),
 			('DC Universe', '2243', 'https://i.postimg.cc/nM8hNMZc/dc-universe.png'),
-			('Discovery Channel', '64', 'https://i.imgur.com/8UrXnAB.png'),
-			('Discovery+', '4353', 'https://i.imgur.com/8UrXnAB.png'),
-			('Discovery ID', '244', 'https://i.imgur.com/07w7BER.png'),
+			('Discovery Channel', '64', network_icon('discovery-channel.png')),
+			('Discovery+', '4353', network_icon('discovery-channel.png')),
+			('Discovery ID', '244', network_icon('discovery-id.png')),
 			('Disney+', '2739', 'https://i.postimg.cc/zBNHHbKZ/disney.png'),
-			('Disney Channel', '54', 'https://i.imgur.com/ZCgEkp6.png'),
+			('Disney Channel', '54', network_icon('disney-channel.png')),
 			('Disney Junior', '281', 'https://i.postimg.cc/mgGR708M/EqPPq5S.png'),
-			('Disney XD', '44', 'https://i.imgur.com/PAJJoqQ.png'),
-			('E! Entertainment', '76', 'https://i.imgur.com/3Delf9f.png'),
-			('E4', '136', 'https://i.imgur.com/frpunK8.png'),
+			('Disney XD', '44', network_icon('disney-xd.png')),
+			('E! Entertainment', '76', network_icon('e-entertainment.png')),
+			('E4', '136', network_icon('e4.png')),
 			('Epix', '922', 'https://i.postimg.cc/3JMv8Q1g/epix.png'),
-			# ('Fearnet', '635', 'https://i.imgur.com/CdJ6fZt.png'),
-			('FOX', '19', 'https://i.imgur.com/6vc0Iov.png'),
-			('Freeform', '1267', 'https://i.imgur.com/f9AqoHE.png'),
+			# ('Fearnet', '635', network_icon('fearnet.png')),
+			('FOX', '19', network_icon('fox.png')),
+			('Freeform', '1267', network_icon('freeform.png')),
 			('Fusion', '1769', 'https://i.postimg.cc/kGBMhKbb/NPxic1M.png'),
-			('FX', '88', 'https://i.imgur.com/aQc1AIZ.png'),
-			('Hallmark', '384', 'https://i.imgur.com/zXS64I8.png'),
+			('FX', '88', network_icon('fx.png')),
+			('Hallmark', '384', network_icon('hallmark.png')),
 			# ('Hallmark Movies & Mysteries', '2300', 'https://static.tvmaze.com/uploads/images/original_untouched/13/34664.jpg'),
-			('HBO', '49', 'https://i.imgur.com/Hyu8ZGq.png'),
+			('HBO', '49', network_icon('hbo.png')),
 			('HBO Max', '3186', 'https://i.postimg.cc/pLdCcdGt/hbo-max.png'), # not sure I want this
-			('HGTV', '210', 'https://i.imgur.com/INnmgLT.png'),
-			('History Channel', '65', 'https://i.imgur.com/LEMgy6n.png'),
-			('H2', '849', 'https://i.imgur.com/OvkmoDA.png'),
-			('Hulu', '453', 'https://i.imgur.com/cLVo7NH.png'),
-			('ITV', '9', 'https://i.imgur.com/5Hxp5eA.png'),
-			('Lifetime', '34', 'https://i.imgur.com/tvYbhen.png'),
+			('HGTV', '210', network_icon('hgtv.png')),
+			('History Channel', '65', network_icon('history-channel.png')),
+			('H2', '849', network_icon('h2.png')),
+			('Hulu', '453', network_icon('hulu-tmdb.png')),
+			('ITV', '9', network_icon('itv.png')),
+			('Lifetime', '34', network_icon('lifetime.png')),
 			('Motor Trend', '2444', 'https://i.postimg.cc/cCDRWZbt/motor-trend.png'),
-			('MTV', '33', 'https://i.imgur.com/QM6DpNW.png'),
-			('National Geographic', '43', 'https://i.imgur.com/XCGNKVQ.png'),
-			('NBC', '6', 'https://i.imgur.com/yPRirQZ.png'),
+			('MTV', '33', network_icon('mtv.png')),
+			('National Geographic', '43', network_icon('national-geographic.png')),
+			('NBC', '6', network_icon('nbc.png')),
 			('Netflix', '213', 'https://i.postimg.cc/c4vHp9wV/netflix.png'),
-			('Nick Junior', '35', 'https://i.imgur.com/leuCWYt.png'),
-			('Nickelodeon', '13', 'https://i.imgur.com/OUVoqYc.png'),
-			('Nicktoons', '224', 'https://i.imgur.com/890wBrw.png'),
-			('Oxygen', '132', 'https://i.imgur.com/uFCQvbR.png'),
+			('Nick Junior', '35', network_icon('nick-junior.png')),
+			('Nickelodeon', '13', network_icon('nickelodeon.png')),
+			('Nicktoons', '224', network_icon('nicktoons.png')),
+			('Oxygen', '132', network_icon('oxygen.png')),
 			('OWN', '827', 'https://i.postimg.cc/qqFZyk58/own.png'),
 			# ('Playboy TV', '225', 'https://i.postimg.cc/sxVWPpL3/playboy-tv.png'),
 			('Paramount+', '4330', 'https://i.postimg.cc/1zTXGsF6/paramountplus.png'),
 			('Paramount Network', '2076', 'https://i.postimg.cc/fL9YCz5R/paramount-network.png'),
-			('PBS', '14', 'https://i.imgur.com/r9qeDJY.png'),
+			('PBS', '14', network_icon('pbs.png')),
 			('Peacock', '3353', 'https://i.postimg.cc/76m4v7VW/NBCUniversal-Peacock-Logo.png'),
 			('Reelz', '367', 'https://i.postimg.cc/7P7byqjF/reelz.png'),
 			('Showcase (AU)', '1630', 'https://i.postimg.cc/C5JVs11Q/showcase-ca.png'),
 			('Showcase (CA)', '105', 'https://i.postimg.cc/C5JVs11Q/showcase-ca.png'),
-			('Showtime', '67', 'https://i.imgur.com/SawAYkO.png'),
-			('Sky1', '214', 'https://i.imgur.com/xbgzhPU.png'),
-			('Sky Atlantic', '1063', 'https://i.imgur.com/9u6M0ef.png'),
+			('Showtime', '67', network_icon('showtime.png')),
+			('Sky1', '214', network_icon('sky1.png')),
+			('Sky Atlantic', '1063', network_icon('sky-atlantic.png')),
 			('Smithsonian', '658', 'https://i.postimg.cc/GtZ5RkNy/smithsonian.png'),
 			('Spike', '55', 'https://i.postimg.cc/zGs4WW7f/spike.png'),
-			('Starz', '318', 'https://i.imgur.com/Z0ep2Ru.png'),
-			('Sundance TV', '270', 'https://i.imgur.com/qldG5p2.png'),
-			('Syfy', '77', 'https://i.imgur.com/9yCq37i.png'),
-			('TBS', '68', 'https://i.imgur.com/RVCtt4Z.png'),
-			('TLC', '84', 'https://i.imgur.com/c24MxaB.png'),
-			('TNT', '41', 'https://i.imgur.com/WnzpAGj.png'),
-			('Travel Channel', '209', 'https://i.imgur.com/mWXv7SF.png'),
-			('TruTV', '364', 'https://i.imgur.com/HnB3zfc.png'),
-			('TV Land', '397', 'https://i.imgur.com/1nIeDA5.png'),
-			('TV One', '150', 'https://i.imgur.com/gGCTa8s.png'),
-			('USA Network', '30', 'https://i.imgur.com/Doccw9E.png'),
-			('VH1', '158', 'https://i.imgur.com/IUtHYzA.png'),
+			('Starz', '318', network_icon('starz.png')),
+			('Sundance TV', '270', network_icon('sundance-tv.png')),
+			('Syfy', '77', network_icon('syfy.png')),
+			('TBS', '68', network_icon('tbs.png')),
+			('TLC', '84', network_icon('tlc.png')),
+			('TNT', '41', network_icon('tnt.png')),
+			('Travel Channel', '209', network_icon('travel-channel.png')),
+			('TruTV', '364', network_icon('trutv.png')),
+			('TV Land', '397', network_icon('tv-land.png')),
+			('TV One', '150', network_icon('tv-one.png')),
+			('USA Network', '30', network_icon('usa-network.png')),
+			('VH1', '158', network_icon('vh1.png')),
 			('Viceland', '1339', 'https://i.postimg.cc/0N1Hrv5M/viceland.png'),
 			('WB', '21', 'https://i.postimg.cc/kg4PycCn/the-wb.png'),
 			('WE TV', '448', 'https://i.postimg.cc/1ztHyxt6/we.png'),
-			('WGN America', '202', 'https://i.imgur.com/TL6MzgO.png'),
-			('WWE Network', '1025', 'https://i.imgur.com/JjbTbb2.png'),
+			('WGN America', '202', network_icon('wgn-america.png')),
+			('WWE Network', '1025', network_icon('wwe-network.png')),
 			('YouTube Premium', '1436', 'https://i.postimg.cc/vHtqdhyt/youtube-premium.png')]
 
 	def get_originals(self):
 		return [
-			('Amazon', '1024', 'https://i.imgur.com/ru9DDlL.png'),
-			('Hulu', '453', 'https://i.imgur.com/cLVo7NH.png'),
+			('Amazon', '1024', network_icon('amazon.png')),
+			('Hulu', '453', network_icon('hulu-tmdb.png')),
 			('Netflix', '213', 'https://i.postimg.cc/c4vHp9wV/netflix.png')]
 
 	def actorSearch(self, url):

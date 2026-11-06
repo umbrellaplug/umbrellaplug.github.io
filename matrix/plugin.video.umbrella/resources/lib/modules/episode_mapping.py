@@ -17,6 +17,10 @@ BAKE_OFF_ORIGINAL = '34549'
 BAKE_OFF_IMDB = 'tt1877368'
 BAKE_OFF_TVDB = '184871'
 BAKE_OFF_SIMKL = '21506'
+DERRY = '200875'
+# The special also has a standalone movie record; its temporary episode record
+# may disappear while catalogs settle. Keep movie and episode IDs separate.
+SPECIAL_MOVIES = {(DERRY, 0, 1): '1813355'}
 BAKE_OFF_SEASONS = {season: 10 for season in range(1, 11)}
 STORY_TITLES = {'113988': 'DAHMER - Monster: The Jeffrey Dahmer Story',
                 '225634': 'Monsters: The Lyle and Erik Menendez Story',
@@ -233,6 +237,17 @@ def display_shows(rows):
 
 def scrape_variants(tmdb, data):
     """Search both release-numbering conventions without changing playback meta."""
+    if str(tmdb) == DERRY and (str(data.get('season')), str(data.get('episode'))) == ('0', '1'):
+        # A Story of Derry: TMDB S00E01, TVDB DVD order S01E09.
+        # This is a release-search alias, not a provider tracking-ID mapping.
+        movie = dict(data, title='A Story of Derry', year='2026', imdb='', tvdb='',
+                     aliases=[], season='', episode='',
+                     _scrape_tmdb=DERRY, _scrape_convention='movie')
+        movie.pop('tvshowtitle', None)  # Providers use key presence to select movie searches.
+        return [movie,
+                dict(data, _scrape_tmdb=DERRY, _scrape_convention='tmdb'),
+                dict(data, season='1', episode='9', _scrape_tmdb=DERRY,
+                     _scrape_convention='dvd', _scrape_total_seasons=1)]
     if str(tmdb) == BAKE_OFF:
         try: season = int(data.get('season'))
         except (TypeError, ValueError): return [data]
@@ -278,8 +293,39 @@ def bake_off_pack_count(item):
 def source_coordinates(item, meta, season, episode):
     """Use the selected release's numbering when choosing a file in a pack."""
     if item.get('scrape_tmdb') and str(item['scrape_tmdb']) == str((meta or {}).get('tmdb')):
+        if str(item['scrape_tmdb']) == DERRY:
+            if (str(season), str(episode)) == ('0', '1') and item.get('scrape_convention') == 'movie':
+                return None, None
+            if ((str(season), str(episode)) == ('0', '1') and item.get('scrape_convention') == 'dvd'
+                    and (str(item.get('scrape_season')), str(item.get('scrape_episode'))) == ('1', '9')):
+                return '1', '9'
+            return season, episode
         return item.get('scrape_season', season), str(episode)
     return season, episode
+
+
+def filter_special_sources(sources, tmdb, season, episode):
+    """Reject unrelated episodes and unverifiable regular-season packs."""
+    if str(tmdb) != DERRY or (str(season), str(episode)) != ('0', '1'): return sources
+    import re
+    result = []
+    for row in sources:
+        convention = row.get('scrape_convention')
+        if convention == 'movie':
+            result.append(row)
+            continue
+        if row.get('package'):
+            # An old eight-episode season pack is not the new special. Only
+            # retain packs explicitly advertising a range containing it.
+            try:
+                target = 9 if convention == 'dvd' else 1
+                if not int(row['episode_start']) <= target <= int(row['episode_end']): continue
+            except (KeyError, TypeError, ValueError): continue
+        numbers = re.findall(r's(\d{1,2})[ ._-]*e(\d{1,3})', str(row.get('name') or ''), re.I)
+        expected = ('1', '9') if convention == 'dvd' else ('0', '1')
+        if numbers and expected not in [(str(int(s)), str(int(e))) for s, e in numbers]: continue
+        result.append(row)
+    return result
 
 
 def preresolved_matches(imdb, tmdb, season, episode, saved_imdb, saved_tmdb, saved_season, saved_episode):

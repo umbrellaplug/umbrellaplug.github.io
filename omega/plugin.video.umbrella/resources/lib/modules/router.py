@@ -1230,7 +1230,13 @@ def router(argv2):
 	#---Download
 	####################################################
 	elif action and action.startswith('download'):
-		if action == 'downloadNavigator':
+		if action == 'downloadManager':
+			from resources.lib.modules.download_manager import open_manager
+			open_manager()
+		elif action == 'downloadResume':
+			from resources.lib.modules.downloader import doDownload
+			doDownload('', '', 'Download', '', {}, no_confirm=True, resume_job=params.get('id'))
+		elif action == 'downloadNavigator':
 			from resources.lib.menus import navigator
 			navigator.Navigator().downloads(folderName=folderName)
 		elif action == 'download':
@@ -1266,6 +1272,8 @@ def router(argv2):
 				except:
 					import traceback
 					traceback.print_exc()
+					from resources.lib.modules.downloader import report_failure
+					report_failure(name, 'Unable to resolve the download link. Check the provider account and try another source.')
 			if caller == 'alldebrid':
 				control.busy()
 				try:
@@ -1275,6 +1283,8 @@ def router(argv2):
 				except:
 					import traceback
 					traceback.print_exc()
+					from resources.lib.modules.downloader import report_failure
+					report_failure(name, 'Unable to resolve the download link. Check the provider account and try another source.')
 			# EasyDebrid disabled
 			# if caller == 'easydebrid':
 			# 	control.busy()
@@ -1293,6 +1303,8 @@ def router(argv2):
 				except:
 					import traceback
 					traceback.print_exc()
+					from resources.lib.modules.downloader import report_failure
+					report_failure(name, 'Unable to resolve the download link. Check the provider account and try another source.')
 			if caller == 'offcloud':
 				control.busy()
 				try:
@@ -1301,6 +1313,8 @@ def router(argv2):
 				except:
 					import traceback
 					traceback.print_exc()
+					from resources.lib.modules.downloader import report_failure
+					report_failure(name, 'Unable to resolve the download link. Check the provider account and try another source.')
 			if caller == 'premiumize':
 				control.busy()
 				try:
@@ -1310,6 +1324,8 @@ def router(argv2):
 				except:
 					import traceback
 					traceback.print_exc()
+					from resources.lib.modules.downloader import report_failure
+					report_failure(name, 'Unable to resolve the download link. Check the provider account and try another source.')
 			if caller == 'realdebrid':
 				control.busy()
 				try:
@@ -1322,6 +1338,8 @@ def router(argv2):
 				except:
 					import traceback
 					traceback.print_exc()
+					from resources.lib.modules.downloader import report_failure
+					report_failure(name, 'Unable to resolve the download link. Check the provider account and try another source.')
 			if caller == 'torbox':
 				control.busy()
 				try:
@@ -1334,6 +1352,8 @@ def router(argv2):
 				except:
 					import traceback
 					traceback.print_exc()
+					from resources.lib.modules.downloader import report_failure
+					report_failure(name, 'Unable to resolve the download link. Check the provider account and try another source.')
 		elif action == 'downloadPack':
 			caller = params.get('caller')
 			if caller == 'sources':
@@ -1346,6 +1366,8 @@ def router(argv2):
 				except:
 					import traceback
 					traceback.print_exc()
+					from resources.lib.modules.downloader import report_failure
+					report_failure(name, 'Unable to resolve the download link. Check the provider account and try another source.')
 
 	####################################################
 	#---tmdbbv4

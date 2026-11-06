@@ -3,17 +3,11 @@
 	Umbrella Add-on
 """
 
+
+from importlib import import_module
 from sys import exit as sysexit
 from urllib.parse import quote_plus
 from resources.lib.modules import control
-from resources.lib.modules.trakt import getTraktCredentialsInfo, getTraktIndicatorsInfo
-from resources.lib.modules import simkl
-from resources.lib.modules import mdblist
-from resources.lib.modules import customtrakt
-from resources.lib.modules import floppy
-from resources.lib.modules import scrob
-from resources.lib.modules import punchplay
-from resources.lib.modules.tmdb4 import getTMDbV4CredentialsInfo
 from resources.lib.modules import favourites
 from json import loads as jsloads
 
@@ -23,25 +17,38 @@ decades = ['1930-1939', '1940-1949','1950-1959', '1960-1969', '1970-1979', '1980
 
 
 class Navigator:
+	_LAZY_FLAGS = {
+		'traktCredentials': ('trakt', 'getTraktCredentialsInfo', ()),
+		'traktIndicators': ('trakt', 'getTraktIndicatorsInfo', ()),
+		'simklCredentials': ('simkl', 'getSimKLCredentialsInfo', ()),
+		'simklIndicators': ('simkl', 'getSimKLIndicatorsInfo', ()),
+		'mdblistCredentials': ('mdblist', 'getMDBListCredentialsInfo', ()),
+		'mdblistIndicators': ('mdblist', 'getMDBListIndicatorsInfo', ()),
+		'customCredentials': ('customtrakt', 'getCustomCredentialsInfo', ()),
+		'customIndicators': ('customtrakt', 'getCustomIndicatorsInfo', ()),
+		'floppyCredentials': ('floppy', 'getFloppyCredentialsInfo', ()),
+		'floppyIndicators': ('floppy', 'getFloppyIndicatorsInfo', ()),
+		'scrobCredentials': ('scrob', 'getScrobCredentialsInfo', ()),
+		'scrobIndicators': ('scrob', 'getScrobIndicatorsInfo', ()),
+		'punchplayCredentials': ('punchplay', 'getPunchPlayCredentialsInfo', ()),
+		'punchplayIndicators': ('punchplay', 'getPunchPlayIndicatorsInfo', ()),
+		'tmdbCredentials': ('tmdb4', 'getTMDbV4CredentialsInfo', ()),
+		'favoriteMovie': ('favourites', 'checkForFavourites', ('movies',)),
+		'favoriteTVShows': ('favourites', 'checkForFavourites', ('tvshows',)),
+		'favoriteEpisodes': ('favourites', 'checkForFavourites', ('episode',)),
+	}
+
+	def __getattr__(self, name):
+		if name not in self._LAZY_FLAGS: raise AttributeError(name)
+		module, function, args = self._LAZY_FLAGS[name]
+		value = getattr(import_module('resources.lib.modules.' + module), function)(*args)
+		setattr(self, name, value)
+		return value
+
 	def __init__(self, lightweight=False):
 		self.artPath = control.artPath()
 		self.iconLogos = getSetting('icon.logos') != 'Traditional'
 		self.indexLabels = getSetting('index.labels') == 'true'
-		self.traktCredentials = getTraktCredentialsInfo()
-		self.simklCredentials = simkl.getSimKLCredentialsInfo()
-		self.mdblistCredentials = mdblist.getMDBListCredentialsInfo()
-		self.customCredentials = customtrakt.getCustomCredentialsInfo()
-		self.floppyCredentials = floppy.getFloppyCredentialsInfo()
-		self.scrobCredentials = scrob.getScrobCredentialsInfo()
-		self.punchplayCredentials = punchplay.getPunchPlayCredentialsInfo()
-		self.traktIndicators = getTraktIndicatorsInfo()
-		self.simklIndicators = simkl.getSimKLIndicatorsInfo()
-		self.mdblistIndicators = mdblist.getMDBListIndicatorsInfo()
-		self.customIndicators = customtrakt.getCustomIndicatorsInfo()
-		self.floppyIndicators = floppy.getFloppyIndicatorsInfo()
-		self.scrobIndicators = scrob.getScrobIndicatorsInfo()
-		self.punchplayIndicators = punchplay.getPunchPlayIndicatorsInfo()
-		self.tmdbCredentials = getTMDbV4CredentialsInfo()
 		self.simkltoken = getSetting('simkltoken') != ''
 		self.alldebridCredentials = getSetting('alldebridtoken') != ''
 		self.easynewsCredentials = getSetting('easynews.user') != ''
@@ -59,10 +66,17 @@ class Navigator:
 			self.favoriteTVShows = False
 			self.favoriteEpisodes = False
 			return
-		self.hasLibMovies = len(jsloads(control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": { "limits": { "start" : 0, "end": 1 }, "properties" : ["title", "genre", "uniqueid", "art", "rating", "thumbnail", "playcount", "file"] }, "id": "1"}'))['result']['movies']) > 0
-		self.favoriteMovie = favourites.checkForFavourites(content='movies')
-		self.favoriteTVShows = favourites.checkForFavourites(content='tvshows')
-		self.favoriteEpisodes = favourites.checkForFavourites(content='episode')
+		self.hasLibMovies = None
+
+	def _has_library_movies(self):
+		# Cache only for this menu instance so subsequent visits see library changes.
+		if self.hasLibMovies is None:
+			try:
+				response = jsloads(control.jsonrpc('{"jsonrpc":"2.0","method":"VideoLibrary.GetMovies","params":{"limits":{"start":0,"end":1}},"id":1}'))
+				self.hasLibMovies = bool(response.get('result', {}).get('movies', []))
+			except (ValueError, TypeError, AttributeError):
+				self.hasLibMovies = False
+		return self.hasLibMovies
 
 	def root(self):
 		from resources.lib.database import menu as menu_db
@@ -121,7 +135,7 @@ class Navigator:
 		if key == 'scrob_with_indicators': return bool(self.scrobCredentials and (self.scrobIndicators or getSetting('scrob.markwatched') == 'true'))
 		if key == 'punchplay_with_indicators': return bool(self.punchplayCredentials and (self.punchplayIndicators or getSetting('punchplay.markwatched') == 'true'))
 		if key == 'tmdb_v4_token':           return bool(getSetting('tmdb.v4.accesstoken'))
-		if key == 'has_lib_movies':          return bool(self.hasLibMovies)
+		if key == 'has_lib_movies':          return self._has_library_movies()
 		if key == 'favorite_movie':          return bool(self.favoriteMovie)
 		if key == 'favorite_tvshows':        return bool(self.favoriteTVShows)
 		if key == 'favorite_episodes':       return bool(self.favoriteEpisodes)
@@ -669,6 +683,7 @@ class Navigator:
 		if self.traktCredentials: self.addDirectoryItem(35057, 'tools_traktToolsNavigator&folderName=%s' % quote_plus(getLS(40461)), 'tools.png', 'DefaultAddonService.png', isFolder=True)
 		if self.mdblistCredentials: self.addDirectoryItem(40635, 'tools_mdblistToolsNavigator&folderName=%s' % quote_plus(getLS(40636)), 'tools.png', 'DefaultAddonService.png', isFolder=True)
 		if self.customCredentials:
+			from resources.lib.modules import customtrakt
 			_custom_tools_label = '%s Management Tools' % customtrakt.getCustomServiceName()
 			self.addDirectoryItem('[B]%s[/B]' % _custom_tools_label, 'tools_customToolsNavigator&folderName=%s' % quote_plus(_custom_tools_label), 'tools.png', 'DefaultAddonService.png', isFolder=True)
 		if self.floppyCredentials: self.addDirectoryItem('[B]Floppy Management Tools[/B]', 'tools_floppyToolsNavigator&folderName=%s' % quote_plus('Floppy Management Tools'), 'tools.png', 'DefaultAddonService.png', isFolder=True)
@@ -678,6 +693,7 @@ class Navigator:
 		self.addDirectoryItem(32045, 'tools_openSettings&query=2.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		#-- Downloads - 10
 		self.addDirectoryItem(32048, 'tools_openSettings&query=10.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
+		if getSetting('downloads') == 'true': self.addDirectoryItem(40867, 'downloadManager', 'downloads.png', 'DefaultAddonService.png', isFolder=False)
 		#-- Subtitles - 11
 		self.addDirectoryItem(32046, 'tools_openSettings&query=11.0', 'tools.png', 'DefaultAddonService.png', isFolder=False)
 		self.addDirectoryItem(32556, 'library_Navigator&folderName=%s' % quote_plus(getLS(32541)), 'tools.png', 'DefaultAddonService.png', isFolder=True)
@@ -852,6 +868,7 @@ class Navigator:
 		self.endDirectory()
 
 	def downloads(self, folderName=''):
+		self.addDirectoryItem(40867, 'downloadManager', 'downloads.png', 'DefaultAddonService.png', isFolder=False)
 		movie_downloads = getSetting('movie.download.path')
 		tv_downloads = getSetting('tv.download.path')
 		if len(control.listDir(movie_downloads)[0]) > 0: self.addDirectoryItem(32001, movie_downloads, 'movies.png', 'DefaultMovies.png', isAction=False)
@@ -1192,3 +1209,4 @@ class Navigator:
 		content = 'addons' if control.skin == 'skin.auramod' else ''
 		control.content(syshandle, content) # some skins use their own thumb for things like "genres" when content type is set here
 		control.directory(syshandle, cacheToDisc=True)
+

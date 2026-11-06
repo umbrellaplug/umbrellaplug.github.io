@@ -406,12 +406,12 @@ def last_sync(type):
 		except: pass
 	return last_sync_at
 
-def update_last_watched_at(key='last_history_at'):
+def update_last_watched_at(key='last_history_at', timestamp=None):
 	try:
 		dbcon = get_connection()
 		dbcur = get_connection_cursor(dbcon)
 		dbcur.execute('''CREATE TABLE IF NOT EXISTS service (setting TEXT, value TEXT, UNIQUE(setting));''')
-		timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
+		if timestamp is None: timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
 		dbcur.execute('''INSERT OR REPLACE INTO service Values (?, ?)''', (key, timestamp))
 		dbcur.connection.commit()
 	except:
@@ -431,6 +431,86 @@ def _ensure_watched_tables(dbcur):
 	dbcur.execute('''CREATE TABLE IF NOT EXISTS service (setting TEXT, value TEXT, UNIQUE(setting));''')
 	from resources.lib.database.episode_identity import ensure
 	ensure(dbcur, 'custom_watched_episodes')
+
+def _bump_history_revision(cursor):
+	cursor.execute("INSERT INTO service(setting,value) VALUES('history_revision','1') ON CONFLICT(setting) DO UPDATE SET value=CAST(value AS INTEGER)+1")
+
+
+def history_revision():
+	connection = get_connection()
+	try:
+		cursor = get_connection_cursor(connection)
+		cursor.execute('CREATE TABLE IF NOT EXISTS service (setting TEXT, value TEXT, UNIQUE(setting))')
+		row = cursor.execute("SELECT value FROM service WHERE setting='history_revision'").fetchone()
+		connection.commit()
+		return int(row[0]) if row else 0
+	finally:
+		connection.close()
+
+
+def bump_history_revision():
+	connection = get_connection()
+	try:
+		cursor = get_connection_cursor(connection)
+		with connection:
+			cursor.execute('CREATE TABLE IF NOT EXISTS service (setting TEXT, value TEXT, UNIQUE(setting))')
+			_bump_history_revision(cursor)
+	finally:
+		connection.close()
+
+
+def replace_watched_history(items, expected_revision=None):
+	"""Commit a complete history snapshot, including remote removals, at once."""
+	dbcon = None
+	try:
+		movies, episodes = {}, {}
+		for item in items:
+			watched_at = item.get('watched_at') or ''
+			if not watched_at: continue
+			if item.get('movie'):
+				movie = item['movie']
+				ids = movie.get('ids') or {}
+				imdb = str(ids.get('imdb') or '')
+				if not imdb: continue
+				row = (imdb, str(ids.get('tmdb') or ''), movie.get('title', ''), str(movie.get('year') or ''), watched_at)
+				if imdb not in movies or watched_at > movies[imdb][-1]: movies[imdb] = row
+			elif item.get('episode'):
+				ids = (item.get('show') or {}).get('ids') or {}
+				imdb, tmdb, tvdb = (str(ids.get(k) or '') for k in ('imdb', 'tmdb', 'tvdb'))
+				if not (imdb or tmdb or tvdb): continue
+				ep = item['episode']
+				season, number = int(ep['season']), int(ep['number'])
+				key = (imdb, tmdb, tvdb, season, number)
+				row = key + (watched_at,)
+				if key not in episodes or watched_at > episodes[key][-1]: episodes[key] = row
+		dbcon = get_connection()
+		# Snapshot replacement needs rollback; the default connection disables journaling.
+		dbcon.execute('PRAGMA journal_mode = MEMORY')
+		cursor = get_connection_cursor(dbcon)
+		_ensure_watched_tables(cursor)
+		cursor.execute('CREATE TABLE IF NOT EXISTS watched (key TEXT, value TEXT, date INTEGER, UNIQUE(key))')
+		dbcon.commit()
+		cursor.execute('BEGIN IMMEDIATE')
+		row = cursor.execute("SELECT value FROM service WHERE setting='history_revision'").fetchone()
+		if expected_revision is not None and (int(row[0]) if row else 0) != expected_revision:
+			dbcon.rollback()
+			return False
+		with dbcon:
+			cursor.execute('DELETE FROM custom_watched_movies')
+			cursor.execute('DELETE FROM custom_watched_episodes')
+			cursor.executemany('INSERT OR REPLACE INTO custom_watched_movies VALUES (?, ?, ?, ?, ?)', movies.values())
+			cursor.executemany('INSERT OR REPLACE INTO custom_watched_episodes VALUES (?, ?, ?, ?, ?, ?)', sorted(episodes.values(), key=lambda row: row[-1]))
+			# Per-show progress and season counts must not survive history removals.
+			cursor.execute('DELETE FROM watched')
+			_bump_history_revision(cursor)
+		return True
+	except:
+		from resources.lib.modules import log_utils
+		log_utils.error()
+		return False
+	finally:
+		if dbcon is not None: dbcon.close()
+
 
 def upsert_watched_movie(imdb, tmdb='', title='', year='', last_watched_at=''):
 	try:
@@ -693,46 +773,48 @@ def _ensure_bookmarks_table(dbcur):
 	dbcur.execute('''CREATE TABLE IF NOT EXISTS bookmarks (tvshowtitle TEXT, title TEXT, resume_id TEXT, imdb TEXT, tmdb TEXT, tvdb TEXT, season TEXT, episode TEXT, genre TEXT, mpaa TEXT, studio TEXT, duration TEXT, percent_played TEXT, paused_at TEXT, UNIQUE(resume_id, imdb, tmdb, tvdb, season, episode));''')
 	dbcur.execute('''CREATE TABLE IF NOT EXISTS service (setting TEXT, value TEXT, UNIQUE(setting));''')
 
-def insert_bookmarks(items, new_scrobble=False):
+def insert_bookmarks(items, new_scrobble=False, sync_at=None):
 	# items: raw /sync/playback response entries — same shape assumed as Trakt's
 	# (type: 'movie'/'episode', nested movie/show+episode dicts with ids, progress, paused_at).
 	try:
 		dbcon = get_connection()
+		dbcon.execute('PRAGMA journal_mode = MEMORY')
 		dbcur = get_connection_cursor(dbcon)
 		_ensure_bookmarks_table(dbcur)
 		if not new_scrobble:
 			dbcur.execute('''DELETE FROM bookmarks''')
-			dbcur.connection.commit()
-			dbcur.execute('''VACUUM''')
 		for i in items:
 			try:
 				tvshowtitle, tvdb, season, episode = '', '', '', ''
 				if i.get('type') == 'episode':
 					ids = i.get('show', {}).get('ids', {})
 					tvshowtitle, title = i.get('show', {}).get('title', ''), i.get('episode', {}).get('title', '')
-					imdb, tmdb, tvdb = str(ids.get('imdb', '')), str(ids.get('tmdb', '')), str(ids.get('tvdb', ''))
-					season, episode = str(i.get('episode', {}).get('season', '')), str(i.get('episode', {}).get('number', ''))
+					imdb, tmdb, tvdb = str(ids.get('imdb') or ''), str(ids.get('tmdb') or ''), str(ids.get('tvdb') or '')
+					season, episode = str(i.get('episode', {}).get('season') if i.get('episode', {}).get('season') is not None else ''), str(i.get('episode', {}).get('number') if i.get('episode', {}).get('number') is not None else '')
 					mpaa, studio, duration = i.get('show', {}).get('certification') or 'NR', i.get('show', {}).get('network', ''), i.get('show', {}).get('runtime', '')
 					try: genre = ' / '.join([x.title() for x in i.get('show', {}).get('genres')]) or 'NA'
 					except: genre = 'NA'
 				else:
 					ids = i.get('movie', {}).get('ids', {})
 					title = i.get('movie', {}).get('title', '')
-					imdb, tmdb = str(ids.get('imdb', '')), str(ids.get('tmdb', ''))
+					imdb, tmdb = str(ids.get('imdb') or ''), str(ids.get('tmdb') or '')
 					mpaa, studio, duration = i.get('movie', {}).get('certification') or 'NR', '', i.get('movie', {}).get('runtime', '')
 					try: genre = ' / '.join([x.title() for x in i.get('movie', {}).get('genres')]) or 'NA'
 					except: genre = 'NA'
 				dbcur.execute('''INSERT OR REPLACE INTO bookmarks Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
 					(tvshowtitle, title, str(i.get('id', '')), imdb, tmdb, tvdb, season, episode, genre, mpaa, studio, duration, i.get('progress', ''), i.get('paused_at', '')))
 			except:
-				from resources.lib.modules import log_utils
-				log_utils.error()
-		timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
+				raise
+		timestamp = sync_at if sync_at is not None else datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
 		dbcur.execute('''INSERT OR REPLACE INTO service Values (?, ?)''', ('last_paused_at', timestamp))
 		dbcur.connection.commit()
+		return True
 	except:
+		try: dbcon.rollback()
+		except: pass
 		from resources.lib.modules import log_utils
 		log_utils.error()
+		return False
 	finally:
 		try: dbcur.close()
 		except: pass

@@ -428,8 +428,11 @@ def markMovieAsWatched(imdb):
 
 def markMovieAsNotWatched(imdb):
 	try:
+		from resources.lib.modules.history_result import succeeded
 		from resources.lib.modules import simkl
 		result = simkl.post_request('/sync/history/remove', {"movies": [{"ids": {"imdb": imdb}}]})
+		if succeeded(result, kind='movies'):
+			return True
 		return result['deleted']['movies'] != 0
 	except: log_utils.error()
 
@@ -452,8 +455,11 @@ def markTVShowAsWatched(imdb, tvdb):
 
 def markTVShowAsNotWatched(imdb, tvdb):
 	try:
+		from resources.lib.modules.history_result import succeeded
 		from resources.lib.modules import simkl
 		result = simkl.post_request('/sync/history/remove', {"shows": [{"ids": {"imdb": imdb, "tvdb": tvdb}}]})
+		if succeeded(result, kind='episodes'):
+			return True
 		if not result: return False
 		if result.get('not_found', {}).get('shows') and tvdb: # show not found, retry with tvdb only
 			control.sleep(1000) # POST 1 call per sec rate-limit
@@ -494,9 +500,13 @@ def markSeasonAsWatched(imdb, tvdb, season):
 
 def markSeasonAsNotWatched(imdb, tvdb, season):
 	try:
+		from resources.lib.modules.history_result import succeeded
 		from resources.lib.modules import simkl
 		season = int('%01d' % int(season))
 		result = simkl.post_request('/sync/history/remove', {"shows": [{"seasons": [{"number": season}], "ids": {"imdb": imdb, "tvdb": tvdb}}]})
+		if succeeded(result, kind='episodes'):
+			_clr_episode_progress_cache()
+			return True
 		if not result: result = {}
 		if result.get('deleted', {}).get('episodes', 0) == 0 and tvdb: # fail, trying again with tvdb as fallback
 			control.sleep(1000) # POST 1 call per sec rate-limit
@@ -664,11 +674,15 @@ def markEpisodeAsWatched(imdb, tvdb, season, episode):
 
 def markEpisodeAsNotWatched(imdb, tvdb, season, episode):
 	try:
+		from resources.lib.modules.history_result import succeeded
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
 		from resources.lib.modules import simkl
 		ep_body = {"seasons": [{"episodes": [{"number": episode}], "number": season}]}
 		# Attempt 1: imdb + tvdb (TMDB episode numbers)
 		result = simkl.post_request('/sync/history/remove', {"shows": [{**ep_body, "ids": {"imdb": imdb, "tvdb": tvdb}}]})
+		if succeeded(result, kind='episodes'):
+			_clr_episode_progress_cache()
+			return True
 		if not result: result = {}
 		if result.get('deleted', {}).get('episodes', 0) == 0:
 			# Attempt 2: tvdb only
@@ -1534,7 +1548,7 @@ def manager(name, imdb=None, tvdb=None, season=None, episode=None, refresh=True,
 				else:
 					unwatch(content_type, name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=refresh)
 			elif items[select][1] == 'scrobbleReset':
-				scrobbleReset(imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=True, clear_local=getSetting('indicators.alt') == '2')
+				scrobbleReset(imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, refresh=True, clear_local=True)
 			else:
 				if items[select][1] == '/sync/plantowatch':
 					listname = "Plan to Watch"
@@ -1674,39 +1688,42 @@ def scrobbleStart(media_type, title='', tvshowtitle='', year='0', imdb='', tmdb=
 	except: log_utils.error()
 
 def scrobbleReset(imdb, tmdb='', tvdb='', season=None, episode=None, refresh=False, clear_local=True):
-	if not getSimKLCredentialsInfo(): return
+	if not getSimKLCredentialsInfo(): return False
 	if not control.player.isPlaying(): control.busy()
 	try:
+		from resources.lib.modules.playback_progress import matching_sessions
+		items = get_request('/sync/playback')
+		matches = matching_sessions(items, imdb, tmdb, tvdb, season, episode)
+		for item in matches:
+			if _api_request('DELETE', '/sync/playback/%s' % item['id']) is None:
+				remaining = get_request('/sync/playback')
+				if not isinstance(remaining, list) or any(str(row.get('id')) == str(item['id']) for row in remaining):
+					if refresh: control.notification(title='Simkl', message='Failed to clear playback progress')
+					return False
+			if clear_local: simklsync.delete_bookmark(item['id'])
 		resume_info = simklsync.fetch_bookmarks(imdb, tmdb, tvdb, season, episode, ret_type='resume_info')
-		if resume_info == '0':
-			control.hide()
-			return
-		label_string, resume_id = resume_info[0], resume_info[1]
-		if episode: label_string = label_string + ' - ' + 'S%02dE%02d' % (int(season), int(episode))
-		success = _api_request('DELETE', '/sync/playback/%s' % resume_id) is not None
-		control.hide()
-		if success:
-			if clear_local: simklsync.delete_bookmark(resume_id)
-			if refresh: control.refresh()
-			if getSetting('scrobble.notify') == 'true':
-				control.notification(title=40342, message='Successfully Removed Simkl playback progress: [COLOR %s]%s[/COLOR]' % (highlightColor, label_string))
-			log_utils.log('Successfully Removed Simkl Playback Progress: %s with resume_id=%s' % (label_string, str(resume_id)), __name__, level=log_utils.LOGDEBUG)
-		else:
-			log_utils.log('Failed to Remove Simkl Playback Progress: %s with resume_id=%s' % (label_string, str(resume_id)), __name__, level=log_utils.LOGDEBUG)
-	except: log_utils.error()
+		if clear_local and resume_info != '0': simklsync.delete_bookmark(resume_info[1])
+		if refresh: control.refresh()
+		control.trigger_widget_refresh()
+		if getSetting('scrobble.notify') == 'true': control.notification(title='Simkl', message='Playback progress cleared')
+		return True
+	except:
+		log_utils.error()
+		return False
+	finally: control.hide()
 
 def sync_playbackProgress(activities=None, forced=False):
 	try:
 		link = '/sync/playback'
 		if forced:
 			items = get_request(link)
-			if items: simklsync.insert_bookmarks(items)
+			if isinstance(items, list): simklsync.insert_bookmarks(items)
 		else:
 			db_last_paused = simklsync.last_sync('last_paused_at')
 			sync_interval = int(getSetting('simkl.service.syncInterval')) if getSetting('simkl.service.syncInterval') else 30
 			if db_last_paused == 0 or (int(time.time()) - db_last_paused) >= (60 * sync_interval):
 				items = get_request(link)
-				if items: simklsync.insert_bookmarks(items)
+				if isinstance(items, list): simklsync.insert_bookmarks(items)
 	except: log_utils.error()
 
 def force_simklSync(silent=False):

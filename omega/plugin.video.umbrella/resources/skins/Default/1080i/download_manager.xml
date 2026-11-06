@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <defaultcontrol always="true">101</defaultcontrol>
+    <coordinates><system>1</system></coordinates>
+    <controls>
+        <control type="image">
+            <left>0</left><top>0</top><width>1920</width><height>1080</height>
+            <texture colordiffuse="FA101820">common/umbwhite.png</texture>
+        </control>
+        <control type="label">
+            <left>120</left><top>55</top><width>1480</width><height>60</height>
+            <font>font13</font><textcolor>FFFFFFFF</textcolor><label>[B]Umbrella - $INFO[Window.Property(download.heading)][/B]</label>
+        </control>
+        <control type="label">
+            <left>120</left><top>130</top><width>1660</width><height>45</height>
+            <font>font13</font><textcolor>FFDDDDDD</textcolor><label>$INFO[Window.Property(download.message)]</label>
+        </control>
+        <control type="list" id="100">
+            <left>120</left><top>200</top><width>1660</width><height>700</height>
+            <onup>101</onup><ondown>101</ondown><onleft>101</onleft><onright>101</onright>
+            <itemlayout height="100" width="1660">
+                <control type="label">
+                    <left>20</left><top>5</top><width>1620</width><height>45</height>
+                    <font>font13</font><textcolor>FFFFFFFF</textcolor><label>$INFO[ListItem.Label]</label>
+                </control>
+                <control type="label">
+                    <left>20</left><top>50</top><width>1620</width><height>40</height>
+                    <font>font13</font><textcolor>FFCCCCCC</textcolor><label>$INFO[ListItem.Label2]</label>
+                </control>
+            </itemlayout>
+            <focusedlayout height="100" width="1660">
+                <control type="image"><width>1660</width><height>100</height><texture colordiffuse="FF337799">common/umbwhite.png</texture></control>
+                <control type="label">
+                    <left>20</left><top>5</top><width>1620</width><height>45</height>
+                    <font>font13</font><textcolor>FFFFFFFF</textcolor><label>$INFO[ListItem.Label]</label><scroll>true</scroll>
+                </control>
+                <control type="label">
+                    <left>20</left><top>50</top><width>1620</width><height>40</height>
+                    <font>font13</font><textcolor>FFFFFFFF</textcolor><label>$INFO[ListItem.Label2]</label>
+                </control>
+            </focusedlayout>
+        </control>
+        <control type="button" id="101">
+            <left>1450</left><top>950</top><width>330</width><height>60</height>
+            <label>Close</label><font>font13</font><textcolor>FFFFFFFF</textcolor><align>center</align><aligny>center</aligny>
+            <texturefocus colordiffuse="FF337799">common/umbwhite.png</texturefocus>
+            <texturenofocus colordiffuse="FF444444">common/umbwhite.png</texturenofocus>
+            <onup>100</onup><ondown>100</ondown><onleft>100</onleft><onright>100</onright>
+        </control>
+    </controls>
+</window>

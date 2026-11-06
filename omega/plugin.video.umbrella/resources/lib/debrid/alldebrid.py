@@ -435,21 +435,12 @@ class AllDebrid:
 			if not transfer_id: return None
 			transfer_info = self.list_transfer(transfer_id)
 			if not transfer_info: return log_utils.log('AllDebrid: Error RESOLVE MAGNET "%s" : (Server Failed to respond)' % magnet_url, __name__, log_utils.LOGWARNING)
-			#filenames = [i.get('filename') for i in transfer_info.get('links')]
-			filenames = [i.get('n') for i in transfer_info.get('files', [])]
-			if all(i.lower().endswith('.rar') for i in filenames): failed_reason = 'AD returned unsupported .rar file'
-			# valid_results = [i for i in transfer_info.get('links') if any(i.get('filename').lower().endswith(x) for x in extensions) and not i.get('link', '') == ''] #.m2ts file extension is not in "filename" so this fails
-
-			results = [f for f in transfer_info.get('files', [])]
-			#log_utils.log('AllDebrid: resolve_magnet results=%s' % results, __name__, log_utils.LOGDEBUG)
-			stack = list(transfer_info.get('files', []))
-			leaf_files = []
-			while stack:
-				node = stack.pop()
-				if 'e' in node:
-					stack.extend(node['e'])
-				elif node.get('l'):
-					leaf_files.append(node)
+			files_tree = self._get_magnet_files(transfer_id)
+			if not files_tree: files_tree = transfer_info.get('files', []) or []
+			leaf_files = list(self._iter_leaf_files(files_tree))
+			filenames = [item.get('n', '') for item in leaf_files]
+			if filenames and all(name.lower().endswith('.rar') for name in filenames):
+				failed_reason = 'AD returned unsupported .rar file'
 
 			valid_results = [
 				f for f in leaf_files
@@ -499,7 +490,7 @@ class AllDebrid:
 						except:
 							log_utils.error()
 			else:
-				media_id = max(valid_results, key=lambda x: x.get('s')).get('l', None)
+				media_id = max(valid_results, key=lambda x: x.get('s', 0)).get('l') if valid_results else None
 			if not media_id:
 				if not self.store_to_cloud: self.delete_transfer(transfer_id)
 				log_utils.log('AllDebrid: FAILED TO RESOLVE MAGNET "%s" : (%s)' % (magnet_url, failed_reason), __name__, log_utils.LOGWARNING)

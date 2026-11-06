@@ -3,6 +3,7 @@
 	Umbrella Add-on
 """
 
+
 from datetime import datetime
 from json import dumps as jsdumps, loads as jsloads
 import re
@@ -100,7 +101,6 @@ class Seasons:
 					elif not values['premiered']:
 						values['unaired'] = 'true'
 						# if not self.showunaired: continue # remove at seasonDirectory() instead so cache clear not required on setting change
-						pass
 					elif int(re.sub(r'[^0-9]', '', str(values['premiered']))) > int(re.sub(r'[^0-9]', '', str(self.today_date))):
 						values['unaired'] = 'true'
 						# if not self.showunaired: continue # remove at seasonDirectory() instead so cache clear not required on setting change
@@ -322,3 +322,4 @@ class Seasons:
 		control.content(syshandle, 'seasons')
 		control.directory(syshandle, cacheToDisc=False) # disable cacheToDisc so unwatched counts loads fresh data counts if changes made
 		views.setView('seasons', {'skin.estuary': 55, 'skin.confluence': 500})
+
