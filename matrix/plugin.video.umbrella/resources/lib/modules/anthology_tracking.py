@@ -11,6 +11,8 @@ CREDENTIALS = {'trakt': 'getTraktCredentialsInfo', 'simkl': 'getSimKLCredentials
                'floppy': 'getFloppyCredentialsInfo', 'scrob': 'getScrobCredentialsInfo',
                'punchplay': 'getPunchPlayCredentialsInfo'}
 
+# Providers with a read-only mode, where another add-on owns playback reporting.
+READ_ONLY_CAPABLE = ('trakt', 'floppy')
 
 def module(name):
     return import_module('resources.lib.modules.' + name)
@@ -142,7 +144,7 @@ def write_bake_off(provider, tmdb, season, episode, remove, body):
 def manager_write(provider, tmdb, season, episode, remove, refresh):
     from resources.lib.modules import control, log_utils
     try:
-        if provider == 'floppy' and module(provider).isReadOnly(): return False
+        if provider in READ_ONLY_CAPABLE and module(provider).isReadOnly(): return False
         success = write(provider, str(tmdb), season, episode, remove)
     except Exception:
         log_utils.error()
@@ -170,7 +172,7 @@ def mark(tmdb, season=None, episode=None, watched=5, refresh=False):
                 if not getattr(api, CREDENTIALS[provider])():
                     if provider == selected: failures.append(provider)
                     continue
-                if provider == 'floppy' and api.isReadOnly(): continue
+                if provider in READ_ONLY_CAPABLE and api.isReadOnly(): continue
             if not write(provider, str(tmdb), season, episode, int(watched) != 5):
                 failures.append(provider)
         except Exception:

@@ -33,6 +33,27 @@ getSetting = control.setting
 LOGINFO = log_utils.LOGINFO
 homeWindow = control.homeWindow
 
+# Bump when the fields stored in a Custom show progress snapshot change, so older ones rebuild.
+CUSTOM_PROGRESS_SNAPSHOT_FORMAT = 2
+
+
+def _new_season_premiere(progress, show_seasons):
+	"""Air date of the season the viewer starts next, when they finished the season before it.
+	Mirrors Progress Episodes, which lists a new season's first episode at the top for a week."""
+	try:
+		seasons = {int(s.get('number', 0)): s for s in (progress or {}).get('seasons', []) if int(s.get('number', 0)) > 0}
+		started = [n for n, s in seasons.items() if int(s.get('completed', 0)) > 0]
+		if not started: return ''
+		furthest = max(started)
+		if int(seasons[furthest].get('completed', 0)) < int(seasons[furthest].get('aired', 0)): return ''
+		upcoming = seasons.get(furthest + 1)
+		if not upcoming or int(upcoming.get('aired', 0)) < 1 or int(upcoming.get('completed', 0)) > 0: return ''
+		for item in (show_seasons or {}).get('seasons', []):
+			if int(item.get('season_number', -1)) == furthest + 1: return str(item.get('air_date') or '')
+	except (TypeError, ValueError, KeyError): pass
+	return ''
+
+
 class TVshows:
 	def __init__(self, notifications=True):
 		self.list = []
@@ -2594,7 +2615,9 @@ class TVshows:
 	def trakt_tvshow_progress(self, create_directory=True, folderName=''):
 		self.list = []
 		try:
-			historyurl = 'https://api.trakt.tv/users/me/watched/shows?extended=progress&limit=250&page=1'
+			# limit=100 matches Trakt's page cap for extended=progress, so trakt_list() can
+			# tell a full page from the last one and offer the next page.
+			historyurl = 'https://api.trakt.tv/users/me/watched/shows?extended=progress&limit=100&page=1'
 			self.list = self.trakt_list(historyurl, self.trakt_user, folderName)
 			next = ''
 			for i in range(len(self.list)): self.list[i]['next'] = next
@@ -2842,8 +2865,20 @@ class TVshows:
 			except:
 				q = {'limit': self.page_limit, 'page': '1'}
 				index = 0
-			cache.get(self.custom_tvshow_progress, 0, folderName)
+			# Building this list costs a Custom progress request and TMDb metadata per show,
+			# over a minute on low-power devices. Reuse it until the watched history or
+			# dropped shows change, or the cache window passes (same rule as episodes).
+			snapshot = cache.get(self.custom_tvshow_progress_snapshot, customtraktsync.PROGRESS_CACHE_HOURS)
+			if (not isinstance(snapshot, dict) or snapshot.get('format') != CUSTOM_PROGRESS_SNAPSHOT_FORMAT
+					or snapshot.get('revision') != customtraktsync.progress_revision()):
+				snapshot = cache.get(self.custom_tvshow_progress_snapshot, 0)
+			self.list = list((snapshot or {}).get('items') or [])
 			self.sort(type='progress')
+			# Like Progress Episodes: a show whose next season premiered this week goes on top.
+			prior_week = (self.date_time - timedelta(days=7)).strftime('%Y-%m-%d')
+			today = self.date_time.strftime('%Y-%m-%d')
+			new_seasons = [i for i in self.list if prior_week <= str(i.get('new_season_premiered') or '') <= today]
+			self.list = new_seasons + [i for i in self.list if i not in new_seasons]
 			if self.list is None: self.list = []
 			next = ''
 			if getSetting('services.paginate.lists') == 'true' and self.list:
@@ -2866,6 +2901,10 @@ class TVshows:
 			if not self.list:
 				control.hide()
 				if self.notifications and self.is_widget != True: control.notification(title=32326, message=33049)
+
+	def custom_tvshow_progress_snapshot(self):
+		revision = customtraktsync.progress_revision()
+		return {'format': CUSTOM_PROGRESS_SNAPSHOT_FORMAT, 'revision': revision, 'items': self.custom_tvshow_progress() or []}
 
 	def custom_tvshow_progress(self, create_directory=True, folderName=''):
 		# "In progress" shows for Custom: start from the locally-known watched-show
@@ -2923,6 +2962,8 @@ class TVshows:
 						last_watched.get((imdb, ids.get('tmdb', ''), tvdb), ''))
 					values['mediatype'] = 'tvshows'
 					values['has_next_episode'] = True
+					if progress:
+						values['new_season_premiered'] = _new_season_premiere(progress, cache.get(tmdb_indexer().get_showSeasons_meta, 96, tmdb))
 					self.list.append(values)
 				except: log_utils.error()
 
@@ -3494,7 +3535,7 @@ class TVshows:
 	def trakt_tvshow_watched(self, create_directory=True, folderName=''):
 		self.list = []
 		try:
-			historyurl = 'https://api.trakt.tv/users/me/watched/shows?extended=progress&limit=250&page=1'
+			historyurl = 'https://api.trakt.tv/users/me/watched/shows?extended=progress&limit=100&page=1'
 			self.list = self.trakt_list(historyurl, self.trakt_user, folderName)
 			next = ''
 			for i in range(len(self.list)): self.list[i]['next'] = next

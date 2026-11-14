@@ -19,6 +19,8 @@ api_url = 'http://localhost:8080/jsonrpc'
 addon = xbmcaddon.Addon
 AddonID = xbmcaddon.Addon().getAddonInfo('id')
 addonInfo = xbmcaddon.Addon().getAddonInfo
+ADDON_PATH = addonInfo('path')
+ADDON_VERSION = addonInfo('version')
 addonName = addonInfo('name')
 addonVersion = addonInfo('version')
 getLangString = xbmcaddon.Addon().getLocalizedString
@@ -239,7 +241,7 @@ def getCurrentViewId():
 	return str(win.getFocusId())
 
 def getUmbrellaVersion():
-	return xbmcaddon.Addon('plugin.video.umbrella').getAddonInfo('version')
+	return ADDON_VERSION
 
 def addonVersion(addon):
 	return xbmcaddon.Addon(addon).getAddonInfo('version')
@@ -251,6 +253,9 @@ def addonName():
 	return addonInfo('name')
 
 def addonPath(addon):
+	# Kodi can briefly unregister the add-on while replacing an update. The
+	# running process already knows its own location; don't look it up again.
+	if addon == 'plugin.video.umbrella': return transPath(ADDON_PATH)
 	try: addonID = xbmcaddon.Addon(addon)
 	except: addonID = None
 	if addonID is None: return ''
@@ -266,7 +271,7 @@ def artPath():
 	user_path = joinPath(userIconFolders(), theme)
 	if os.path.isdir(user_path):
 		return user_path
-	return joinPath(xbmcaddon.Addon('plugin.video.umbrella').getAddonInfo('path'), 'resources', 'artwork', theme)
+	return joinPath(ADDON_PATH, 'resources', 'artwork', theme)
 
 def themedIcon(filename):
 	path = joinPath(artPath(), filename)
@@ -278,21 +283,21 @@ def genreIconPath():
 	user_path = joinPath(userIconFolders(), theme, 'genre_media', 'icons')
 	if os.path.isdir(user_path):
 		return user_path
-	return joinPath(xbmcaddon.Addon('plugin.video.umbrella').getAddonInfo('path'), 'resources', 'artwork', theme, 'genre_media', 'icons')
+	return joinPath(ADDON_PATH, 'resources', 'artwork', theme, 'genre_media', 'icons')
 
 def genrePosterPath():
 	theme = appearance()
 	user_path = joinPath(userIconFolders(), theme, 'genre_media', 'posters')
 	if os.path.isdir(user_path):
 		return user_path
-	return joinPath(xbmcaddon.Addon('plugin.video.umbrella').getAddonInfo('path'), 'resources', 'artwork', theme, 'genre_media', 'posters')
+	return joinPath(ADDON_PATH, 'resources', 'artwork', theme, 'genre_media', 'posters')
 
 def appearance():
 	theme = setting('skinpackicons').lower()
 	return theme
 
 def iconFolders():
-	return joinPath(xbmcaddon.Addon('plugin.video.umbrella').getAddonInfo('path'), 'resources', 'artwork')
+	return joinPath(ADDON_PATH, 'resources', 'artwork')
 
 def userIconFolders():
 	return joinPath(dataPath, 'icon_packs')

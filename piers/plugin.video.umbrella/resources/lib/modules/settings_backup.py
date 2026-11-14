@@ -246,6 +246,7 @@ trakt.collection.hideWatched
 trakt.lists.showowner
 trakt.progress.episodes
 trakt.progress.shows
+trakt.readonly
 mdblist.service.syncInterval
 mdblist.progressFlatten
 mdblist.progress.showunaired
@@ -520,7 +521,7 @@ def import_settings():
 
 # Only explicitly reviewed account fields can appear in version 2 backups.
 ACCOUNT_FIELDS = {
-    'trakt': 'trakt.user.name trakt.user.token trakt.refreshtoken trakt.token.expires trakt.authed.clientid trakt.clientid trakt.clientsecret traktuserkey.customenabled trakt.isauthed',
+    'trakt': 'trakt.user.name trakt.user.token trakt.refreshtoken trakt.token.expires trakt.authed.clientid trakt.clientid trakt.clientsecret traktuserkey.customenabled trakt.isauthed trakt.readonly',
     'simkl': 'simkltoken simklusername simkljoindate',
     'mdblist': 'mdblist.token mdblist.refresh.token',
     'custom': 'dev.enable.custom custom.servicename custom.baseurl custom.clientid custom.clientsecret custom.user.name custom.user.token custom.refreshtoken custom.token.expires custom.isauthed',

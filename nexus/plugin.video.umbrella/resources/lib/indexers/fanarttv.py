@@ -3,15 +3,11 @@
 	Umbrella Add-on
 """
 
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
+from resources.lib.modules.lazy_network import requests, LazySession
 from resources.lib.modules.control import setting as getSetting, apiLanguage, notification
 
 base_url = 'https://webservice.fanart.tv/v3/%s/%s'
-session = requests.Session()
-retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
-session.mount('https://webservice.fanart.tv', HTTPAdapter(max_retries=retries, pool_maxsize=100))
+session = LazySession(dict(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504]), ('https://webservice.fanart.tv',))
 
 
 class FanartTv:

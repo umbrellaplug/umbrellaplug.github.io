@@ -6,9 +6,7 @@
 
 from datetime import datetime
 import time
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
+from resources.lib.modules.lazy_network import requests, LazySession
 from urllib.parse import urljoin, urlencode, quote_plus, urlsplit
 from json import dumps as jsdumps
 from resources.lib.database import scrobsync
@@ -20,10 +18,7 @@ getSetting = control.setting
 setSetting = control.setSetting
 
 headers = {'Content-Type': 'application/json'}
-session = requests.Session()
-retries = Retry(total=4, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504, 520, 521, 522, 524, 530])
-session.mount('https://', HTTPAdapter(max_retries=retries, pool_maxsize=100))
-session.mount('http://', HTTPAdapter(max_retries=retries, pool_maxsize=100))
+session = LazySession(dict(total=4, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504, 520, 521, 522, 524, 530]), ('https://', 'http://'))
 
 scrob_icon = control.joinPath(control.artPath(), 'scrob.png')
 _last_request_time = 0.0

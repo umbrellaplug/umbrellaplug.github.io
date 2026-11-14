@@ -858,6 +858,32 @@ def delete_tables(tables):
 		except: pass
 	return cleared
 
+def watchlists_signature():
+	"""Fingerprint the library tables a full sync replaces, for detecting real changes.
+	listed_at falls back to the sync time and rating/votes drift constantly, so they are left out."""
+	import hashlib
+	tables = ('movies_plantowatch', 'movies_completed', 'movies_dropped', 'shows_plantowatch',
+		'shows_completed', 'shows_watching', 'shows_hold', 'shows_dropped')
+	digest = hashlib.md5()
+	dbcon = None
+	try:
+		dbcon = get_connection()
+		existing = {r[0] for r in dbcon.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+		for table in tables:
+			digest.update(('|' + table).encode('utf-8'))
+			if table not in existing: continue
+			has_watched = any(col[1] == 'last_watched_at' for col in dbcon.execute('PRAGMA table_info(%s)' % table))
+			columns = 'title, year, premiered, imdb, tmdb, tvdb, simkl' + (', last_watched_at' if has_watched else '')
+			for row in sorted(dbcon.execute('SELECT %s FROM %s' % (columns, table)).fetchall(), key=repr):
+				digest.update(repr(row).encode('utf-8'))
+		return digest.hexdigest()
+	except Exception:
+		log_utils.error()
+		return None
+	finally:
+		if dbcon: dbcon.close()
+
+
 def replace_watchlists(response):
 	"""Atomically reconcile a validated full account response; keep data on failure."""
 	if not isinstance(response, dict) or any(not isinstance(response.get(k), list) for k in ('movies', 'shows')):

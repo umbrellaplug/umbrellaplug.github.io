@@ -8,9 +8,7 @@
 
 from datetime import datetime
 import time
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
+from resources.lib.modules.lazy_network import requests, LazySession
 from urllib.parse import urljoin
 from json import dumps as jsdumps
 from resources.lib.database import floppysync
@@ -22,10 +20,7 @@ getSetting = control.setting
 setSetting = control.setSetting
 
 headers = {'Content-Type': 'application/json'}
-session = requests.Session()
-retries = Retry(total=4, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504, 520, 521, 522, 524, 530])
-session.mount('https://', HTTPAdapter(max_retries=retries, pool_maxsize=100))
-session.mount('http://', HTTPAdapter(max_retries=retries, pool_maxsize=100))
+session = LazySession(dict(total=4, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504, 520, 521, 522, 524, 530]), ('https://', 'http://'))
 
 floppy_icon = control.joinPath(control.artPath(), 'floppy.png')
 _last_request_time = 0.0
@@ -1097,6 +1092,10 @@ def sync_incremental(forced=False, progress_callback=None):
 			floppysync.clear_cache()
 			control.trigger_widget_refresh()
 		return True
+	except floppy_incremental.Cancelled:
+		# A profile reload stops active syncs. Keep existing data and release the
+		# lock without treating Kodi's normal shutdown as an account/API failure.
+		return False
 	except floppy_incremental.Unavailable:
 		# Release the common lock before the older snapshot implementations take it.
 		if lock is not None: lock.close(); lock = None

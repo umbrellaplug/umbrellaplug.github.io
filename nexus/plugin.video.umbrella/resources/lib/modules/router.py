@@ -1581,6 +1581,9 @@ def router(argv2):
 		elif action == 'tools_forceMDBListSync':
 			from resources.lib.modules import mdblist
 			mdblist.force_mdblistSync()
+		elif action == 'tools_cleanupMDBListPlayback':
+			from resources.lib.modules import mdblist
+			mdblist.cleanup_finished_playback()
 		elif action == 'tools_forceCustomSync':
 			from resources.lib.modules import customtrakt
 			customtrakt.force_customSync()

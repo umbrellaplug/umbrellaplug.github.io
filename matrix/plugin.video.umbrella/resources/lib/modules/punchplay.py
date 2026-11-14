@@ -12,7 +12,7 @@ from email.utils import parsedate_to_datetime
 from threading import Lock
 from urllib.parse import urlencode
 
-import requests
+from resources.lib.modules.lazy_network import requests, LazySession
 from resources.lib.database import punchplaysync
 from resources.lib.modules import control, log_utils
 
@@ -24,7 +24,7 @@ SCOPES = ('profile:read history:read history:write playback:read playback:write 
           'lists:read lists:write ratings:read ratings:write collection:read collection:write')
 getSetting = control.setting
 setSetting = control.setSetting
-_session = requests.Session()
+_session = LazySession()
 _refresh_lock = Lock()
 _sync_lock = Lock()
 _playback_lock = Lock()
@@ -1062,7 +1062,9 @@ def get_library_items(category, kind):
 
 def get_calendar(month):
     try:
-        month = datetime.strptime(month, '%Y-%m').strftime('%Y-%m')
+        # time.strptime, not datetime.strptime: the latter raises TypeError on some
+        # embedded Kodi Pythons (Fire TV), which made every month "invalid" here.
+        month = time.strftime('%Y-%m', time.strptime(month, '%Y-%m'))
     except (TypeError, ValueError):
         raise PunchPlayError('Invalid calendar month.')
     return _request('/calendar?' + urlencode({'month': month}))

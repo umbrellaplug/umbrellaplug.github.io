@@ -6,10 +6,8 @@
 from datetime import datetime
 from json import dumps as jsdumps, loads as jsloads
 import re
-import requests
-from requests.adapters import HTTPAdapter
+from resources.lib.modules.lazy_network import requests, LazySession, HTTPAdapter
 from threading import Thread, Lock
-from urllib3.util.retry import Retry
 from urllib.parse import urljoin, urlparse, parse_qsl, urlencode, urlunparse
 from resources.lib.database import cache, traktsync
 from resources.lib.modules import cleandate
@@ -25,10 +23,13 @@ BASE_URL = 'https://api.trakt.tv'
 AUTH_URL = 'https://auth.trakt.tv'
 headers = {'Content-Type': 'application/json', 'trakt-api-key': '', 'trakt-api-version': '2'}
 REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
-session = requests.Session()
-retries = Retry(total=4, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504, 520, 521, 522, 524, 530])
-session.mount('https://api.trakt.tv', HTTPAdapter(max_retries=retries, pool_maxsize=100))
-session.mount(AUTH_URL, HTTPAdapter(max_retries=retries, pool_maxsize=100))
+# 429 is deliberately NOT in status_forcelist: urllib3 would honor Retry-After with an
+# un-logged, un-abortable time.sleep() up to 4 times per request. A burst of parallel
+# requests then stalled the whole service sync loop (and Kodi shutdown) for minutes
+# with nothing in the log. getTrakt() handles 429 itself: logged, bounded, abort-aware.
+session = LazySession(dict(total=4, backoff_factor=1, status_forcelist=[500, 502, 503, 504, 520, 521, 522, 524, 530], respect_retry_after_header=False), (BASE_URL, AUTH_URL))
+_MAX_THROTTLE_RETRIES = 2
+_MAX_THROTTLE_WAIT = 60  # seconds; longer Retry-After windows fail fast instead of blocking callers
 highlight_color = getSetting('highlight.color')
 server_notification = getSetting('trakt.server.notifications') == 'true'
 service_syncInterval = int(getSetting('background.service.syncInterval')) if getSetting('background.service.syncInterval') else 15
@@ -61,7 +62,7 @@ def traktVerificationURL(device_code):
 	return urlunparse(parsed._replace(query=urlencode(query)))
 
 
-def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0, method=None):
+def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0, method=None, throttle_attempts=0):
 	activity_write = post is not None or method == 'DELETE'
 	if activity_write:
 		try:
@@ -124,14 +125,20 @@ def getTrakt(url, post=None, extended=False, silent=False, reauth_attempts=0, me
 				return None
 			log_utils.log('TRAKT: %s Status Code Returned on call to url: %s (attempt %d)' % (status_code, url, reauth_attempts + 1), level=log_utils.LOGINFO)
 			success = re_auth(headers)
-			if success: return getTrakt(url, post=post, extended=extended, silent=silent, reauth_attempts=reauth_attempts + 1, method=method)
+			if success: return getTrakt(url, post=post, extended=extended, silent=silent, reauth_attempts=reauth_attempts + 1, method=method, throttle_attempts=throttle_attempts)
 		elif status_code == '429':
-			if 'Retry-After' in response.headers: # API REQUESTS ARE BEING THROTTLED, INTRODUCE WAIT TIME (1000 get requests every 5 minutes, 1 post/put/delte every per second)
-				throttleTime = response.headers['Retry-After']
-				if not silent and server_notification and not control.condVisibility('Player.HasVideo'):
-					control.notification(title=32315, message='Trakt Throttling Applied, Sleeping for %s seconds' % throttleTime) # message lang code 33674
-				control.sleep((int(throttleTime) + 1) * 1000)
-				return getTrakt(url, post=post, extended=extended, silent=silent, reauth_attempts=reauth_attempts, method=method)
+			# API REQUESTS ARE BEING THROTTLED (1000 GET requests every 5 minutes, 1 POST/PUT/DELETE per second)
+			try: throttleTime = int(float(response.headers.get('Retry-After', 0)))
+			except (TypeError, ValueError): throttleTime = 0
+			if throttle_attempts >= _MAX_THROTTLE_RETRIES or throttleTime > _MAX_THROTTLE_WAIT:
+				log_utils.log('TRAKT: 429 rate limited (Retry-After=%ss, attempt %d) - giving up: %s' % (throttleTime, throttle_attempts + 1, url), level=log_utils.LOGWARNING)
+				return None
+			log_utils.log('TRAKT: 429 rate limited - waiting %ss before retry %d: %s' % (throttleTime + 1, throttle_attempts + 1, url), level=log_utils.LOGINFO)
+			if not silent and server_notification and not control.condVisibility('Player.HasVideo'):
+				control.notification(title=32315, message='Trakt Throttling Applied, Sleeping for %s seconds' % throttleTime) # message lang code 33674
+			control.sleep((throttleTime + 1) * 1000)
+			if control.monitor.abortRequested(): return None
+			return getTrakt(url, post=post, extended=extended, silent=silent, reauth_attempts=reauth_attempts, method=method, throttle_attempts=throttle_attempts + 1)
 		else:
 			response_text = response.text[:300] if hasattr(response, 'text') else str(response)[:300]
 			log_utils.log_force('TRAKT: request failed url=%s status=%s response=%s' % (url, status_code, response_text), level=log_utils.LOGWARNING)
@@ -588,6 +595,10 @@ def getTraktCredentialsInfo():
 	username, token, refresh = getSetting('trakt.user.name').strip(), getSetting('trakt.user.token'), getSetting('trakt.refreshtoken')
 	if (username == '' or token == '' or refresh == ''): return False
 	return True
+
+def isReadOnly():
+	"""True when another add-on (e.g. script.trakt) owns automatic Trakt playback reporting."""
+	return getSetting('trakt.readonly') == 'true'
 
 def getTraktIndicatorsInfo():
 	indicators = getSetting('indicators.alt')
@@ -1206,7 +1217,11 @@ def getProgressActivity(activities=None):
 		activity = [int(cleandate.iso_2_utc(i)) for i in activity]
 		activity = sorted(activity, key=int)[-1]
 		return activity
-	except: log_utils.error()
+	except:
+		log_utils.error()
+		# Callers compare this value with numeric cache timestamps. An invalid
+		# activity response must not abort the parent Progress Episodes listing.
+		return 0
 
 def cachesyncMovies(timeout=0):
 	indicators = traktsync.get(syncMovies, timeout)
@@ -1384,7 +1399,8 @@ def syncTVShows(): # sync all watched shows ex. [({'imdb': 'tt12571834', 'tvdb':
 		indicators = []
 		seen_ids = set()
 		page = 1
-		limit = 250
+		# Trakt caps extended=progress watched pages at 100 items, whatever limit is requested.
+		limit = 100
 		while True:
 			response = getTrakt('/users/me/watched/shows?extended=progress&page=%d&limit=%d' % (page, limit))
 			if not response: break
@@ -1408,18 +1424,14 @@ def syncTVShows(): # sync all watched shows ex. [({'imdb': 'tt12571834', 'tvdb':
 					indicators.append((ids, aired, episodes))
 				except: pass
 			log_utils.log('TRAKT: syncTVShows page %d: %d shows fetched' % (page, len(page_results)), level=log_utils.LOGDEBUG)
+			# Pagination headers are authoritative; a short page only ends the loop when
+			# they are missing (Trakt may return fewer items than the requested limit).
+			more_by_headers = None
 			if hasattr(response, 'headers'):
-				total_pages = response.headers.get('X-Pagination-Page-Count')
-				if total_pages:
-					try:
-						if page >= int(total_pages): break
-					except: pass
-				total_items = response.headers.get('X-Pagination-Item-Count')
-				if total_items:
-					try:
-						if len(indicators) >= int(total_items): break
-					except: pass
-			if len(page_results) < limit: break
+				try: more_by_headers = page < int(response.headers.get('X-Pagination-Page-Count'))
+				except (TypeError, ValueError): pass
+			if more_by_headers is False: break
+			if more_by_headers is None and len(page_results) < limit: break
 			page += 1
 			if page > 400: break
 		log_utils.log('TRAKT: syncTVShows complete: %d shows in %.1fs' % (len(indicators) if indicators else 0, time.time() - _start), level=log_utils.LOGINFO)
@@ -1941,6 +1953,7 @@ def IdLookup(id_type, id, type): # ("id_type" can be trakt, imdb, tmdb, tvdb) (t
 
 def scrobbleMovie(imdb, tmdb, watched_percent):
 	log_utils.log('Trakt Scrobble Movie Called. Received: imdb: %s tmdb: %s watched_percent: %s' % (imdb, tmdb, watched_percent), level=log_utils.LOGDEBUG)
+	if isReadOnly(): return
 	try:
 		if not imdb.startswith('tt'): imdb = 'tt' + imdb
 		post = {"movie": {"ids": {"imdb": imdb}}, "progress": watched_percent}
@@ -1965,6 +1978,7 @@ def scrobbleMovie(imdb, tmdb, watched_percent):
 
 def scrobbleEpisode(imdb, tmdb, tvdb, season, episode, watched_percent):
 	#log_utils.log('Trakt Scrobble Episode Called. Received: imdb: %s tmdb: %s season: %s episode: %s watched_percent: %s' % (imdb, tmdb, season, episode, watched_percent), level=log_utils.LOGDEBUG)
+	if isReadOnly(): return
 	try:
 		season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
 		post = {"show": {"ids": {"tvdb": tvdb}}, "episode": {"season": season, "number": episode}, "progress": watched_percent}
@@ -1987,6 +2001,7 @@ def scrobbleEpisode(imdb, tmdb, tvdb, season, episode, watched_percent):
 	except: log_utils.error()
 
 def scrobbleStart(media_type, title='', tvshowtitle='', year='0', imdb='', tmdb='', tvdb='', season='', episode='', watched_percent=0):
+	if isReadOnly(): return
 	try:
 		if media_type == 'movie':
 			post = {'movie': {'title': title, 'year': int(year) if year else 0,

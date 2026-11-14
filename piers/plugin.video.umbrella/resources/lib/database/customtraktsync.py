@@ -448,6 +448,19 @@ def history_revision():
 		connection.close()
 
 
+# Upper bound on reusing a Custom progress build when its source data is unchanged,
+# so new seasons and TMDb metadata changes still appear within a few hours.
+PROGRESS_CACHE_HOURS = 6
+
+
+def progress_revision():
+	"""Identify the data Custom progress lists are built from: watched history plus dropped shows."""
+	try: history = history_revision()
+	except Exception: history = 'unknown'
+	dropped = sorted('%s|%s|%s' % (i.get('imdb'), i.get('tmdb'), i.get('tvdb')) for i in (fetch_dropped('shows_dropped') or []))
+	return '%s:%s' % (history, hashlib.md5('\n'.join(dropped).encode('utf-8')).hexdigest())
+
+
 def bump_history_revision():
 	connection = get_connection()
 	try:

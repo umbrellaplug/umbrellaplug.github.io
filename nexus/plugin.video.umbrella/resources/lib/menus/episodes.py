@@ -36,19 +36,24 @@ getSetting = control.setting
 KODI_VERSION = control.getKodiVersion()
 
 
-def _mdblist_episode_unaired(item, now):
+def _episode_unaired(item, now):
 	"""Evaluate release time on each view, including rows read from cache."""
+	# No datetime.strptime() here: on some embedded Kodi Pythons (Fire TV) it raises
+	# TypeError ('NoneType' object is not callable) inside threads, which used to be
+	# swallowed as "unaired" and hid every non-Ended show from Custom/Floppy progress.
 	air_date = str(item.get('premiered') or '').split('T')[0]
 	try:
-		date = datetime.strptime(air_date, '%Y-%m-%d')
+		y, m, d = (int(x) for x in air_date.split('-'))
+		date = datetime(y, m, d)
 	except (TypeError, ValueError):
 		return 'true'
 	airtime, airzone = item.get('airtime'), item.get('airzone')
 	if airtime and airzone:
 		try:
 			from resources.lib.externals import pytz
-			try: scheduled = datetime.strptime('%sT%s' % (air_date, airtime), '%Y-%m-%dT%H:%M:%S')
-			except ValueError: scheduled = datetime.strptime('%sT%s' % (air_date, airtime), '%Y-%m-%dT%H:%M')
+			hms = [int(x) for x in str(airtime).strip().split(':')]
+			if not 2 <= len(hms) <= 3: raise ValueError(airtime)
+			scheduled = datetime(y, m, d, *hms)
 			local_zone = pytz.timezone(tools.localZone())
 			local_air = pytz.timezone(airzone).localize(scheduled).astimezone(local_zone)
 			local_now = local_zone.localize(now)
@@ -209,8 +214,9 @@ class Episodes:
 				try:
 					from resources.lib.modules.playcount import getTVShowIndicators, getEpisodeOverlay
 					_progress_ind = getTVShowIndicators()
+					_progress_cache = {}
 					if _progress_ind:
-						while self.list and getEpisodeOverlay(_progress_ind, self.list[0].get('imdb', ''), str(self.list[0].get('tvdb', '')), self.list[0].get('season', 0), self.list[0].get('episode', 0), tmdb=self.list[0].get('tmdb', '')) == '5':
+						while self.list and getEpisodeOverlay(_progress_ind, self.list[0].get('imdb', ''), str(self.list[0].get('tvdb', '')), self.list[0].get('season', 0), self.list[0].get('episode', 0), tmdb=self.list[0].get('tmdb', ''), custom_progress=_progress_cache) == '5':
 							self.list = self.list[1:]
 				except: pass
 				if self.trakt_progressFlatten or self.mdblist_progressFlatten:
@@ -750,6 +756,13 @@ class Episodes:
 			return control.refresh()
 		if url == 'customprogress':
 			cache.remove(self.custom_progress_list, 'customepisodesprogress', self.custom_directProgressScrape)
+			cache.remove(self.custom_progress_snapshot, 'customepisodesprogress', self.custom_directProgressScrape)
+			try:
+				from resources.lib.menus.tvshows import TVshows
+				cache.remove(TVshows().custom_tvshow_progress_snapshot)
+			except Exception:
+				from resources.lib.modules import log_utils
+				log_utils.error()
 			control.sleep(200)
 			return control.refresh()
 		if url == 'floppyprogress':
@@ -984,7 +997,7 @@ class Episodes:
 			from sys import argv
 			self.list = _unique_mdblist_progress(self.list)
 			for item in self.list:
-				item['unaired'] = _mdblist_episode_unaired(item, self.date_time)
+				item['unaired'] = _episode_unaired(item, self.date_time)
 			self.sort(type='progress')
 			if self.list is None: self.list = []
 			# place new season ep1's at top of list for 1 week
@@ -1122,7 +1135,7 @@ class Episodes:
 				if duration:
 					try: values['duration'] = int(duration) * 60
 					except: pass
-				values['unaired'] = _mdblist_episode_unaired(values, self.date_time)
+				values['unaired'] = _episode_unaired(values, self.date_time)
 				if self.enable_fanarttv:
 					tvdb = values.get('tvdb', '')
 					extended_art = fanarttv_cache.get(FanartTv().get_tvshow_art, 336, tvdb)
@@ -1387,10 +1400,29 @@ class Episodes:
 			log_utils.error()
 		return self.list
 
+	def custom_progress_snapshot(self, url, direct):
+		# Revision is read before the build, so a change made while it runs forces
+		# the next view to rebuild instead of trusting a list built from older data.
+		revision = customtraktsync.progress_revision()
+		return {'revision': revision, 'items': self.custom_progress_list(url, direct) or []}
+
 	def custom_calendar(self, url, folderName=''):
 		self.list = []
 		try:
-			self.list = cache.get(self.custom_progress_list, 0, url, self.custom_directProgressScrape)
+			# Rebuilding means one TMDb/Trakt/fanart lookup per show in the history, which
+			# takes over a minute on low-power devices and ran on every widget refresh.
+			# Reuse the last build until the local watched history or dropped shows change
+			# (every local mark and history sync bumps the revision) or the window passes.
+			direct = self.custom_directProgressScrape
+			snapshot = cache.get(self.custom_progress_snapshot, customtraktsync.PROGRESS_CACHE_HOURS, url, direct)
+			if not isinstance(snapshot, dict) or snapshot.get('revision') != customtraktsync.progress_revision():
+				snapshot = cache.get(self.custom_progress_snapshot, 0, url, direct)
+			self.list = list((snapshot or {}).get('items') or [])
+			for item in self.list:
+				# Cached rows must not keep yesterday's "unaired" verdict.
+				if str(item.get('status', '')).lower() == 'ended': item['unaired'] = ''
+				elif not item.get('premiered'): item['unaired'] = 'true'
+				else: item['unaired'] = _episode_unaired(item, self.date_time)
 			self.sort(type='progress')
 			if self.list is None: self.list = []
 			prior_week = int(re.sub(r'[^0-9]', '', (self.date_time - timedelta(days=7)).strftime('%Y-%m-%d')))
@@ -1507,7 +1539,7 @@ class Episodes:
 						try:
 							if values.get('status', '').lower() == 'ended': return
 							elif not air_date: values['unaired'] = 'true'
-							elif int(re.sub(r'[^0-9]', '', air_date)) > int(re.sub(r'[^0-9]', '', str(self.today_date))):
+							elif _episode_unaired(values, self.date_time):
 								values['unaired'] = 'true'
 							else: return  # already aired (today or earlier) - not "upcoming"
 						except:
@@ -1518,7 +1550,7 @@ class Episodes:
 						try:
 							if values.get('status', '').lower() == 'ended': pass
 							elif not air_date: values['unaired'] = 'true'
-							elif int(re.sub(r'[^0-9]', '', air_date)) > int(re.sub(r'[^0-9]', '', str(self.today_date))):
+							elif _episode_unaired(values, self.date_time):
 								values['unaired'] = 'true'
 						except: pass
 					if self.enable_fanarttv:
@@ -1713,7 +1745,7 @@ class Episodes:
 						try:
 							if values.get('status', '').lower() == 'ended': return
 							elif not air_date: values['unaired'] = 'true'
-							elif int(re.sub(r'[^0-9]', '', air_date)) > int(re.sub(r'[^0-9]', '', str(self.today_date))):
+							elif _episode_unaired(values, self.date_time):
 								values['unaired'] = 'true'
 							else: return  # already aired (today or earlier) - not "upcoming"
 						except:
@@ -1724,7 +1756,7 @@ class Episodes:
 						try:
 							if values.get('status', '').lower() == 'ended': pass
 							elif not air_date: values['unaired'] = 'true'
-							elif int(re.sub(r'[^0-9]', '', air_date)) > int(re.sub(r'[^0-9]', '', str(self.today_date))):
+							elif _episode_unaired(values, self.date_time):
 								values['unaired'] = 'true'
 						except: pass
 					if self.enable_fanarttv:
@@ -1985,7 +2017,7 @@ class Episodes:
 						try:
 							if values.get('status', '').lower() == 'ended': return
 							elif not air_date: values['unaired'] = 'true'
-							elif int(re.sub(r'[^0-9]', '', air_date)) > int(re.sub(r'[^0-9]', '', str(self.today_date))):
+							elif _episode_unaired(values, self.date_time):
 								values['unaired'] = 'true'
 							else: return  # already aired (today or earlier) - not "upcoming"
 						except:
@@ -1996,7 +2028,7 @@ class Episodes:
 						try:
 							if values.get('status', '').lower() == 'ended': pass
 							elif not air_date: values['unaired'] = 'true'
-							elif int(re.sub(r'[^0-9]', '', air_date)) > int(re.sub(r'[^0-9]', '', str(self.today_date))):
+							elif _episode_unaired(values, self.date_time):
 								values['unaired'] = 'true'
 						except: pass
 					if self.enable_fanarttv:
@@ -2108,7 +2140,7 @@ class Episodes:
 						try:
 							if values.get('status', '').lower() == 'ended': return
 							elif not air_date: values['unaired'] = 'true'
-							elif int(re.sub(r'[^0-9]', '', air_date)) > int(re.sub(r'[^0-9]', '', str(self.today_date))):
+							elif _episode_unaired(values, self.date_time):
 								values['unaired'] = 'true'
 							else: return  # already aired (today or earlier) - not "upcoming"
 						except:
@@ -2119,7 +2151,7 @@ class Episodes:
 						try:
 							if values.get('status', '').lower() == 'ended': pass
 							elif not air_date: values['unaired'] = 'true'
-							elif int(re.sub(r'[^0-9]', '', air_date)) > int(re.sub(r'[^0-9]', '', str(self.today_date))):
+							elif _episode_unaired(values, self.date_time):
 								values['unaired'] = 'true'
 						except: pass
 					if self.enable_fanarttv:
@@ -2412,6 +2444,7 @@ class Episodes:
 					try:duration = (int(item['show']['runtime']) * 60)
 					except: duration = ''
 				values['duration'] = duration
+				values['trakt_summary_id'] = ids.get('trakt') or ids.get('slug') or ''
 				try: values['trailer'] = control.trailer % item['show']['trailer'].split('v=')[1]
 				except: values['trailer'] = ''
 				try:
@@ -2430,7 +2463,11 @@ class Episodes:
 				# `extended=progress` can omit the `airs` object. Fill it from the
 				# full show summary so Air Information works in Progress Episodes.
 				if not (values.get('airday') or values.get('airtime')):
-					show_summary = trakt.getTVShowSummary(imdb or tvdb, full=True) if (imdb or tvdb) else None
+					# Numeric TVDB IDs are not Trakt show IDs. Retain the native ID
+					# from the watched-show response rather than repeatedly requesting
+					# the wrong show (404 responses are not cached).
+					summary_id = imdb or i.get('trakt_summary_id')
+					show_summary = trakt.getTVShowSummary(summary_id, full=True) if summary_id else None
 					airs = (show_summary or {}).get('airs', {}) or {}
 					values['airday'] = airs.get('day', '')
 					values['airtime'] = airs.get('time', '')[:5]
@@ -2923,12 +2960,17 @@ class Episodes:
 			except:
 				from resources.lib.modules import log_utils
 				log_utils.error()
-		threads = []
-		append = threads.append
-		for i in items:
-			append(Thread(target=items_list, args=(i,)))
-		[i.start() for i in threads]
-		[i.join() for i in threads]
+		threads = [Thread(target=items_list, args=(i,)) for i in items]
+		# Batched like the other providers' progress lists: one thread per show all at
+		# once fired ~200 simultaneous Trakt show-summary requests, tripping Trakt's
+		# rate limit and stalling the service sync loop.
+		_unlimited = getSetting('dev.batch.unlimited') == 'true'
+		_chunk = max(len(threads), 1) if _unlimited else max(int(getSetting('dev.batch.size') or '10'), 1)
+		for n in range(0, len(threads), _chunk):
+			if control.monitor.abortRequested(): break
+			batch = threads[n:n + _chunk]
+			[t.start() for t in batch]
+			[t.join() for t in batch]
 		return self.list
 
 	def episodeDirectory(self, items, unfinished=False, next=True, playlist=False, folderName=''):
@@ -3023,6 +3065,7 @@ class Episodes:
 		rescrape_method = getSetting('rescrape.default2')
 		enable_playnext = getSetting('enable.playnext') == 'true'
 		indicators = getTVShowIndicators() # gives breakdown of (season, ep) watched
+		custom_progress = {}
 		isFolder = False if sysaction != 'episodes' else True
 		if airEnabled == 'true':
 			airZone, airLocation = getSetting('tvshows.air.zone'), getSetting('tvshows.air.location')
@@ -3235,7 +3278,7 @@ class Episodes:
 ####-Context Menu and Overlays-####
 				cm = []
 				try:
-					watched = getEpisodeOverlay(indicators, imdb, tvdb, season, episode, tmdb=tmdb) == '5'
+					watched = getEpisodeOverlay(indicators, imdb, tvdb, season, episode, tmdb=tmdb, custom_progress=custom_progress) == '5'
 					if self.traktCredentials:
 						cm.append((traktManagerMenu, 'RunPlugin(%s?action=tools_traktManager&name=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&watched=%s&unfinished=%s)' % (sysaddon, systvshowtitle, imdb, tmdb, tvdb, season, episode, watched, unfinished)))
 					if self.simklCredentials:

@@ -489,7 +489,7 @@ def update_cache_version():
 		with open(versionFile, 'r') as fh: oldVersion = fh.read()
 	except: oldVersion = '0'
 	try:
-		curVersion = control.addon('plugin.video.umbrella').getAddonInfo('version')
+		curVersion = control.getUmbrellaVersion()
 		if oldVersion != curVersion:
 			with open(versionFile, 'w') as fh: fh.write(curVersion)
 			return oldVersion, True

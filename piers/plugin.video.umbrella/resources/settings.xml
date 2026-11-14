@@ -2851,6 +2851,7 @@
 							<and>
 								<condition operator="!is" setting="trakt.user.token"/>
 								<condition operator="!is" setting="indicators.alt">1</condition>
+								<condition operator="is" setting="trakt.readonly">false</condition>
 							</and>
 						</dependency>
 					</dependencies>
@@ -3202,6 +3203,16 @@
 					<control type="button" format="action">
 						<close>true</close>
 					</control>
+				</setting>
+				<setting id="trakt.readonly" type="boolean" label="40822" help="40871">
+					<level>0</level>
+					<default>false</default>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="trakt.user.token"/>
+						</dependency>
+					</dependencies>
+					<control type="toggle"/>
 				</setting>
 <setting id="trakt.token.expires" type="string" label="" help="">
 					<level>0</level>
@@ -7421,6 +7432,19 @@
 				<setting id="forceMDBListSyncButton" type="action" label="40660" help="">
 					<level>0</level>
 					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_forceMDBListSync)</data>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+					<dependencies>
+						<dependency type="visible">
+							<condition operator="!is" setting="mdblist.token"/>
+						</dependency>
+					</dependencies>
+					<control type="button" format="action"/>
+				</setting>
+				<setting id="cleanupMDBListPlaybackButton" type="action" label="40870" help="">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.umbrella/?action=tools_cleanupMDBListPlayback)</data>
 					<constraints>
 						<allowempty>true</allowempty>
 					</constraints>

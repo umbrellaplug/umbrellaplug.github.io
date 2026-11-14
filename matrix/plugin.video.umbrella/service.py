@@ -164,7 +164,7 @@ class ReuseLanguageInvokerCheck:
 			addon_xml = control.joinPath(control.addonPath('plugin.video.umbrella'), 'addon.xml')
 			tree = ET.parse(addon_xml)
 			root = tree.getroot()
-			current_addon_setting = control.addon('plugin.video.umbrella').getSetting('reuse.languageinvoker')
+			current_addon_setting = control.setting('reuse.languageinvoker')
 			try: current_xml_setting = [str(i.text) for i in root.iter('reuselanguageinvoker')][0]
 			except Exception: return control.log('[ plugin.video.umbrella ]  ReuseLanguageInvokerCheck failed to get settings.xml value', LOGINFO)
 			if current_addon_setting == '':
@@ -299,7 +299,7 @@ try:
 	if _scrobble_val in _scrobble_map and _scrobble_disp != _scrobble_map[_scrobble_val]:
 		control.setSetting('scrobble', _scrobble_map[_scrobble_val]) # sync display label with backing integer on upgrade
 	kodiVersion = control.getKodiVersion(full=True)
-	addonVersion = control.addon('plugin.video.umbrella').getAddonInfo('version')
+	addonVersion = control.getUmbrellaVersion()
 	if len(str(control.getUmbrellaVersion())) > 6:
 		repoVersion = control.addon('repository.umbrellakodi').getAddonInfo('version')
 		repoName = 'repository.umbrellakodi'
@@ -483,7 +483,6 @@ def main():
 
 		syncServices = Thread(target=SyncServices().run, daemon=True) # run service in case user auth's trakt later, sync will loop and do nothing without valid auth'd account
 		syncServices.start()
-
 		# if getTraktCredentialsInfo():
 		# 	if control.setting('autoTraktOnStart') == 'true':
 		# 		SyncTraktCollection().run()

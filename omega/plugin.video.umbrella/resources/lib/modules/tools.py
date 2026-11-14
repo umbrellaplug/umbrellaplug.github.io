@@ -70,7 +70,9 @@ def convert_time(stringTime, stringDay=None, abbreviate=False, formatInput=Forma
 		# Parse them before calling the logging date helper, preserving timezone conversion.
 		timeobject = None
 		if formatNew.endswith('%H:%M'):
-			try: timeobject = datetime.strptime(stringTime, formatNew + ':%S')
+			# time.strptime: datetime.strptime raises TypeError on some embedded Kodi
+			# Pythons (Fire TV), which left HH:MM:SS airtimes unconverted.
+			try: timeobject = datetime(*time.strptime(stringTime, formatNew + ':%S')[0:6])
 			except (ValueError, TypeError): pass
 		if timeobject is None:
 			timeobject = cleandate.datetime_from_string(string_date=stringTime, format=formatNew, date_only=False)

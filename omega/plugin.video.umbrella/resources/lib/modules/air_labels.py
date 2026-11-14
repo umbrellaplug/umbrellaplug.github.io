@@ -16,8 +16,10 @@ def date_label(meta, include_schedule, zone, short_day, time_format, convert):
 		zone_from = 'utc'
 	elif not has_time and meta.get('airtime') and zone_from:
 		try:
-			clock = datetime.strptime(meta['airtime'][:5], '%H:%M')
-			stamp = stamp.replace(hour=clock.hour, minute=clock.minute)
+			# Manual parse: datetime.strptime raises TypeError on some embedded Kodi
+			# Pythons (Fire TV), which silently dropped the air time from labels.
+			hour, minute = (int(x) for x in meta['airtime'][:5].split(':'))
+			stamp = stamp.replace(hour=hour, minute=minute)
 			has_time = True
 		except (ValueError, TypeError): pass
 	parts = ['%Y-%m-%d']

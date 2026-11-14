@@ -14,6 +14,10 @@ class Reset(Exception):
     pass
 
 
+class Cancelled(ValueError):
+    """Kodi is stopping or reloading its profile; discard the staged sync."""
+
+
 def number(value):
     if type(value) is not int or value < 0:
         raise ValueError('Invalid Floppy sync position')
@@ -92,7 +96,7 @@ class Client:
         return urlunsplit(target._replace(query=urlencode(query)))
 
     def fetch(self, url, method='GET', bootstrap=False):
-        if self.cancelled(): raise ValueError('Floppy sync cancelled')
+        if self.cancelled(): raise Cancelled('Floppy sync cancelled')
         try:
             response = self.request(self.url(url), method=method, silent=True)
         except RuntimeError as exc:

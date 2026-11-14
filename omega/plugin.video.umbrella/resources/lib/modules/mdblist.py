@@ -5,11 +5,9 @@
 """
 
 
-import requests
+from resources.lib.modules.lazy_network import requests, LazySession
 import re
 import time
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 from resources.lib.modules import control
 from resources.lib.modules import log_utils
 from resources.lib.database import mdbsync
@@ -41,9 +39,7 @@ mdblist_liked_list = '/lists/liked'
 mdblist_official_list = '/lists/official'
 mdblist_page_limit = '?limit=%s' % getSetting('page.item.limit')
 _CLIENT_ID = 'YVFS6WW6GT4c2LvaHxHGa8YlB6u9zGgL6KjtDsHg'
-session = requests.Session()
-retries = Retry(total=4, backoff_factor=0.3, status_forcelist=[429, 500, 502, 503, 504, 520, 521, 522, 524, 530])
-session.mount('https://api.mdblist.com', HTTPAdapter(max_retries=retries, pool_maxsize=100))
+session = LazySession(dict(total=4, backoff_factor=0.3, status_forcelist=[429, 500, 502, 503, 504, 520, 521, 522, 524, 530]), ('https://api.mdblist.com',))
 _mdblist_token = getSetting('mdblist.token')
 if _mdblist_token:
 	session.headers.update({'Authorization': 'Bearer %s' % _mdblist_token})
@@ -1177,31 +1173,54 @@ def _clr_episode_progress_cache():
 	except: log_utils.error()
 
 
-def _scrobble(endpoint, media_type, imdb, tmdb, tvdb, season, episode, percent):
+def _scrobble_item(media_type, imdb, tmdb, tvdb, season, episode):
 	if tmdb and media_type != 'movie':
 		from resources.lib.modules.episode_mapping import supported
 		if supported(tmdb): imdb, tvdb = '', ''
+	if media_type == 'movie':
+		return {'movie': {'ids': {'imdb': imdb, 'tmdb': int(tmdb) if tmdb not in (None, '', 'None', '0', 0) else None}}}
+	return {
+		'show': {
+			'ids': {'imdb': imdb, 'tmdb': int(tmdb) if tmdb not in (None, '', 'None', '0', 0) else None, 'tvdb': int(tvdb) if tvdb not in (None, '', 'None', '0', 0) else None},
+			'season': {'number': int(season) if season not in (None, '', 'None') else 1,
+				'episode': {'number': int(episode) if episode not in (None, '', 'None') else 1}}
+		}
+	}
+
+def _scrobble(endpoint, media_type, imdb, tmdb, tvdb, season, episode, percent):
 	try:
-		percent = round(float(percent), 2)
-		if media_type == 'movie':
-			post = {'movie': {'ids': {'imdb': imdb, 'tmdb': int(tmdb) if tmdb not in (None, '', 'None', '0', 0) else None}}, 'progress': percent}
-		else:
-			post = {
-				'show': {
-					'ids': {'imdb': imdb, 'tmdb': int(tmdb) if tmdb not in (None, '', 'None', '0', 0) else None, 'tvdb': int(tvdb) if tvdb not in (None, '', 'None', '0', 0) else None},
-					'season': {'number': int(season) if season not in (None, '', 'None') else 1,
-						'episode': {'number': int(episode) if episode not in (None, '', 'None') else 1}}
-				},
-				'progress': percent
-			}
+		post = _scrobble_item(media_type, imdb, tmdb, tvdb, season, episode)
+		post['progress'] = round(float(percent), 2)
 		return get_request(endpoint, post=post)
 	except: log_utils.error()
 	return None
 
+# MDBList records a watch for any start at 80% or more. Umbrella decides when an
+# item is watched (markwatched.percent), so a resumed session must stay below that.
+_MAX_START_PROGRESS = 79.0
+
 def scrobbleStart(media_type, title='', tvshowtitle='', year='0', imdb='', tmdb='', tvdb='', season='', episode='', watched_percent=0):
 	try:
+		try: watched_percent = min(float(watched_percent or 0), _MAX_START_PROGRESS)
+		except (TypeError, ValueError): watched_percent = 0
 		_scrobble('/scrobble/start', media_type, imdb, tmdb, tvdb, season, episode, watched_percent)
 	except: log_utils.error()
+
+def _clear_scrobble_session(media_type, imdb, tmdb, tvdb, season, episode):
+	"""Delete the item's scrobble session, active or paused. MDBList keeps a started
+	session open until it expires and then saves it as paused progress (~79%), which
+	puts finished items back into Finish Watching. 404 means there is no session."""
+	try:
+		post = __import__('json').dumps(_scrobble_item(media_type, imdb, tmdb, tvdb, season, episode))
+		response = session.post('%s/scrobble/clear' % mdblist_baseurl, data=post, headers=headers, timeout=20)
+		if response.status_code == 401 and _refresh_token():
+			response = session.post('%s/scrobble/clear' % mdblist_baseurl, data=post, headers=headers, timeout=20)
+		if response.status_code in (200, 201, 204, 404):
+			log_utils.log('MDBList scrobble session closed: %s imdb=%s tmdb=%s S%sE%s status=%s' % (media_type, imdb, tmdb, season, episode, response.status_code), level=log_utils.LOGDEBUG)
+			return True
+		log_utils.log('MDBList scrobble session clear failed: status=%s body=%r' % (response.status_code, response.text[:200]), level=log_utils.LOGWARNING)
+	except: log_utils.error()
+	return False
 
 def scrobbleMovie(title, year, imdb, tmdb, watched_percent):
 	try:
@@ -1265,6 +1284,10 @@ def scrobbleReset(imdb, tmdb='', tvdb='', season=None, episode=None, refresh=Fal
 		if completed and not already_watched and (is_episode or season in (None, '', 'None')):
 			result = _post_sync_watched(show_ids=ids, seasons_dict={int(season) if season else 1: [int(episode)]}) if is_episode else _post_sync_watched(movies=[ids])
 			if result is None: return False
+		if completed and (is_episode or season in (None, '', 'None')):
+			# Marking watched does not end the scrobble session opened at playback start;
+			# left open, MDBList later saves it as paused progress (Finish Watching).
+			_clear_scrobble_session('episode' if is_episode else 'movie', imdb, tmdb, tvdb, season, episode)
 		if clear_local:
 			if is_episode: mdbsync.delete_bookmark(imdb, tvdb or '', season if season is not None else '', episode, tmdb=tmdb)
 			elif season not in (None, '', 'None'): mdbsync.delete_bookmarks_for_season(imdb, tvdb or '', season)
@@ -1346,6 +1369,110 @@ def force_mdblistSync():
 	finally:
 		dialog.close()
 	control.notification(message='Forced MDBList Sync Complete')
+
+
+# Before 6.8.004 a finished item's scrobble session stayed open, and MDBList later
+# saved it as paused progress a few minutes after the watch. Such an entry is
+# treated as finished when the item was watched after it was paused, or at most
+# this long before. A rewatch paused long after an earlier watch is kept.
+_STALE_PLAYBACK_WINDOW = 6 * 3600
+
+
+def _utc_seconds(value):
+	"""'2026-11-12T13:24:16.000Z' -> UTC epoch seconds, or None. Avoids strptime,
+	which fails in threads on some Kodi builds."""
+	try:
+		import calendar
+		d, t = str(value).replace(' ', 'T').split('T')[:2]
+		y, mo, dd = (int(x) for x in d.split('-'))
+		h, mi, s = (int(x) for x in t[:8].split(':'))
+		return calendar.timegm((y, mo, dd, h, mi, s, 0, 0, 0))
+	except Exception: return None
+
+
+def _watched_times():
+	"""Latest watched time per movie and per episode, keyed by every known ID.
+	Returns None when any page fails, so a partial history never clears entries."""
+	from urllib.parse import urlencode
+	movies, episodes, cursor = {}, {}, None
+	for _ in range(200):
+		query = {'limit': 5000}
+		if cursor: query['cursor'] = cursor
+		page = get_request('/sync/watched?%s' % urlencode(query))
+		if not isinstance(page, dict): return None
+		for item in page.get('movies') or []:
+			when = _utc_seconds(item.get('last_watched_at'))
+			ids = (item.get('movie') or {}).get('ids') or {}
+			for k in ('imdb', 'tmdb'):
+				if when and ids.get(k): movies[(k, str(ids[k]))] = max(when, movies.get((k, str(ids[k])), 0))
+		for item in page.get('episodes') or []:
+			ep = item.get('episode') or {}
+			when = _utc_seconds(item.get('last_watched_at'))
+			ids = (ep.get('show') or item.get('show') or {}).get('ids') or {}
+			try: key = (int(ep['season']), int(ep['number']))
+			except (KeyError, TypeError, ValueError): continue
+			for k in ('imdb', 'tmdb', 'tvdb'):
+				if when and ids.get(k): episodes[(k, str(ids[k])) + key] = max(when, episodes.get((k, str(ids[k])) + key, 0))
+		paging = page.get('pagination') or {}
+		cursor = paging.get('next_cursor')
+		if not paging.get('has_more') or not cursor: return movies, episodes
+	return None
+
+
+def find_finished_playback(playback, movies, episodes):
+	"""Playback entries for items that were already finished (see _STALE_PLAYBACK_WINDOW)."""
+	finished = []
+	for item in playback or []:
+		paused = _utc_seconds(item.get('paused_at'))
+		if paused is None or item.get('id') is None: continue
+		if item.get('type') == 'episode':
+			ids = (item.get('show') or {}).get('ids') or {}
+			ep = item.get('episode') or {}
+			try: key = (int(ep['season']), int(ep['number']))
+			except (KeyError, TypeError, ValueError): continue
+			times = [episodes.get((k, str(ids[k])) + key) for k in ('imdb', 'tmdb', 'tvdb') if ids.get(k)]
+		else:
+			ids = (item.get('movie') or {}).get('ids') or {}
+			times = [movies.get((k, str(ids[k]))) for k in ('imdb', 'tmdb') if ids.get(k)]
+		watched = max([t for t in times if t] or [0])
+		if watched and (watched >= paused or paused - watched <= _STALE_PLAYBACK_WINDOW):
+			finished.append(item)
+	return finished
+
+
+def cleanup_finished_playback():
+	if not getMDBListCredentialsInfo(): return
+	dialog = control.progressDialog
+	dialog.create('MDBList', 'Checking Finish Watching against your watched history...')
+	try:
+		playback = get_request('/sync/playback')
+		history = _watched_times() if isinstance(playback, list) else None
+	finally:
+		dialog.close()
+	if history is None:
+		log_utils.log('MDBList Finish Watching cleanup: could not read playback or watched history; nothing removed', level=log_utils.LOGWARNING)
+		return control.notification(title='MDBList', message='Could not read your MDBList history. Nothing was removed.')
+	finished = find_finished_playback(playback, *history)
+	log_utils.log('MDBList Finish Watching cleanup: %s of %s entries are finished items' % (len(finished), len(playback)), level=log_utils.LOGINFO)
+	if not finished:
+		return control.notification(title='MDBList', message='No finished items found in Finish Watching')
+	if not control.yesnoDialog('Remove %s finished item%s from MDBList Finish Watching?' % (len(finished), '' if len(finished) == 1 else 's'),
+			'These were watched but left behind by an earlier version.',
+			'Unfinished items and rewatches in progress are kept.'): return
+	removed = 0
+	dialog.create('MDBList', 'Removing finished items...')
+	try:
+		for n, item in enumerate(finished):
+			if dialog.iscanceled() or control.monitor.abortRequested(): break
+			dialog.update(int(100 * n / len(finished)))
+			if get_request('/scrobble/clear', post={'id': item['id']}) is not None: removed += 1
+	finally:
+		dialog.close()
+	log_utils.log('MDBList Finish Watching cleanup removed %s of %s finished items' % (removed, len(finished)), level=log_utils.LOGINFO)
+	sync_playbackProgress(forced=True)
+	_clr_episode_progress_cache()
+	control.trigger_widget_refresh()
+	control.notification(title='MDBList', message='Removed %s of %s finished items from Finish Watching' % (removed, len(finished)))
 
 
 def _post_sync_watched(movies=None, show_ids=None, seasons_dict=None):

@@ -208,7 +208,7 @@ def getSeasonIndicators(imdb, tvdb, refresh=False, has_next_episode=False, tmdb_
 						tmdb_id = str(tmdb_result.get('id', '')) if tmdb_result else ''
 						if tmdb_id:
 							_cache.get(_tmdb.TVshows().get_showSeasons_meta, 0, tmdb_id)  # force fresh, updates cache
-							indicators = customtrakt.cachesyncSeasons(imdb, tvdb, timeout=0)  # re-run with fresh totals
+							indicators = customtrakt.cachesyncSeasons(imdb, tvdb, timeout=0, tmdb=tmdb)  # re-run with fresh totals
 					except:
 						from resources.lib.modules import log_utils
 						log_utils.error()
@@ -367,7 +367,7 @@ def getSeasonOverlay(indicators, imdb, tvdb, season): # tvdb no longer used
 		log_utils.error()
 		return '4'
 
-def getEpisodeOverlay(indicators, imdb, tvdb, season, episode, tmdb=''):
+def getEpisodeOverlay(indicators, imdb, tvdb, season, episode, tmdb='', custom_progress=None):
 	if tmdb:
 		from resources.lib.modules import episode_mapping, anthology_tracking
 		if episode_mapping.supported(tmdb):
@@ -377,7 +377,14 @@ def getEpisodeOverlay(indicators, imdb, tvdb, season, episode, tmdb=''):
 	# Custom season indicators use server progress. Use that same snapshot for
 	# episodes, since the incremental local history may be incomplete or stale.
 	if customIndicators and imdb:
-		progress = customtrakt.getShowProgress(imdb)
+		# Episode flags need no catalog totals. Reuse one provider snapshot per
+		# listing, including failed reads, instead of parsing/enriching it per row.
+		if custom_progress is None:
+			progress = customtrakt.getShowProgress(imdb, enrich=False)
+		else:
+			if imdb not in custom_progress:
+				custom_progress[imdb] = customtrakt.getShowProgress(imdb, enrich=False)
+			progress = custom_progress[imdb]
 		if progress:
 			for s in progress.get('seasons', []):
 				if int(s.get('number', -1)) != int(season): continue
@@ -510,7 +517,7 @@ def getSeasonCount(imdb, tvdb, season=None, tmdb=''):
 def markMovieDuringPlayback(imdb, watched):
 	try:
 		watch_history_service = getSetting('indicators.alt')
-		if watch_history_service == '1' and traktCredentials:
+		if watch_history_service == '1' and traktCredentials and not trakt.isReadOnly():
 			if int(watched) == 5: trakt.markMovieAsWatched(imdb)
 			else: trakt.markMovieAsNotWatched(imdb)
 			if traktIndicators: trakt.cachesyncMovies()
@@ -539,7 +546,7 @@ def markMovieDuringPlayback(imdb, watched):
 		else:
 			from resources.lib.database import watchedcache
 			watchedcache.change_watched('movie', imdb, '', watched=int(watched))
-		if watch_history_service != '1' and getSetting('trakt.markwatched') == 'true' and traktCredentials:
+		if watch_history_service != '1' and getSetting('trakt.markwatched') == 'true' and traktCredentials and not trakt.isReadOnly():
 			if int(watched) == 5: trakt.markMovieAsWatched(imdb)
 			else: trakt.markMovieAsNotWatched(imdb)
 		if watch_history_service != '2' and getSetting('simkl.markwatched') == 'true' and simklCredentials:
@@ -570,7 +577,7 @@ def markEpisodeDuringPlayback(imdb, tvdb, season, episode, watched, tmdb=''):
 			return anthology_tracking.mark(tmdb, season, episode, watched, refresh=False)
 	try:
 		watch_history_service = getSetting('indicators.alt')
-		if watch_history_service == '1' and traktCredentials:
+		if watch_history_service == '1' and traktCredentials and not trakt.isReadOnly():
 			if int(watched) == 5: trakt.markEpisodeAsWatched(imdb, tvdb, season, episode)
 			else: trakt.markEpisodeAsNotWatched(imdb, tvdb, season, episode)
 			if traktIndicators: trakt.cachesyncTV(imdb, tvdb)
@@ -599,7 +606,7 @@ def markEpisodeDuringPlayback(imdb, tvdb, season, episode, watched, tmdb=''):
 		else:
 			from resources.lib.database import watchedcache
 			watchedcache.change_watched('episode', imdb, '', season=season, episode=episode, watched=int(watched))
-		if watch_history_service != '1' and getSetting('trakt.markwatched') == 'true' and traktCredentials:
+		if watch_history_service != '1' and getSetting('trakt.markwatched') == 'true' and traktCredentials and not trakt.isReadOnly():
 			if int(watched) == 5: trakt.markEpisodeAsWatched(imdb, tvdb, season, episode)
 			else: trakt.markEpisodeAsNotWatched(imdb, tvdb, season, episode)
 		if watch_history_service != '2' and getSetting('simkl.markwatched') == 'true' and simklCredentials:

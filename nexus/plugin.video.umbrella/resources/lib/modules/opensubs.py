@@ -4,7 +4,7 @@
 """
 
 import re
-import requests
+from resources.lib.modules.lazy_network import requests
 from resources.lib.modules import control
 from resources.lib.modules import log_utils
 import xbmc

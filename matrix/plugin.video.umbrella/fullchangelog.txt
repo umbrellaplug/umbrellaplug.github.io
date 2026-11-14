@@ -1,3 +1,27 @@
+[B]Update - v6.8.01 - Nov 14th, 2026[/B]
+--[Feature] Added a read-only mode for Trakt (Settings > Online Services > Trakt). Umbrella still reads your Trakt watched status, lists and resume points but stops reporting playback and marking items watched automatically, so another add-on such as the Trakt add-on can handle that. Marking items watched manually still works.
+--[Fix] Progress Episodes and Progress Shows load much faster, especially on low-power devices such as Fire TV. They now reuse the last list until your watch history or dropped shows change, instead of rebuilding it on every load.
+--[Fix] Simkl no longer reloads every home-screen widget every 30 minutes when nothing has changed.
+--[Enhancement] Progress Shows now lists a show at the top for a week when its new season premieres, matching Progress Episodes.
+--[Fix] Trakt watched indicators and the Trakt Progress and Watched show lists now include every show. Umbrella stopped after the first 100 shows because Trakt returns at most 100 per page.
+--[Fix] MDBList Finish Watching no longer fills up with episodes and movies you finished. Umbrella now closes the MDBList playback session when an item is completed, and resuming past 80% no longer marks it watched early.
+--[Feature] Added MDBList Tools > Clean up finished items in MDBList Finish Watching (also in Settings > Shortcuts). It removes items you already finished that older versions left in Finish Watching, and keeps unfinished items and rewatches in progress.
+--[Fix] Account sync no longer stalls for minutes when Trakt rate-limits requests, so Custom, Floppy, Scrob and PunchPlay sync on time and Kodi closes promptly. Trakt rate-limit waits are now logged, capped at 60 seconds and retried at most twice.
+--[Fix] Simkl Progress Episodes now loads shows in batches using the batch size setting instead of all at once, which avoids rate limits.
+--[Fix] Progress Episodes no longer hides shows with episodes left to watch on devices where date parsing fails, such as Fire TV.
+--[Fix] Fixed the same date-parsing failure in the PunchPlay calendar, episode air time labels and time conversion.
+--[Fix] Watched checkmarks now update after playback even if a brief loading spinner is showing when the list refreshes.
+--[Fix] Season counts for shows without an IMDb ID stay correct when a new episode airs.
+--[Fix] Floppy, Scrob and PunchPlay Progress Episodes now use each show's broadcast time and timezone, so new episodes no longer appear up to a day early outside the US.
+--[Fix] Speed up cached season and episode navigation by deferring HTTP setup and reusing watched progress within each episode list.
+--[Fix] Limit repeated service requests during outages and retain saved show progress when the service cannot be reached.
+--[Fix] Prevent delayed playback refreshes from interrupting Back navigation and skipping the Progress Episodes list.
+--[Fix] Prevent incomplete Trakt activity responses from interrupting Progress Episodes list loading; cached results remain available.
+--[Fix] Log uploads now clearly confirm completion and explain how to use the link. Fixed clipboard copying on cancellation and added an upload timeout.
+--[Fix] Restore the saved language invoker preference after updates without forcing a profile reload. The restored preference takes effect on the next normal Kodi restart.
+--[Fix] Prevent artwork and version lookups from failing during add-on reloads and interrupting startup or account sync.
+--[Fix] Floppy sync cancellation during shutdown or profile reload no longer logs an error.
+
 [B]Update - v6.8.00 - Nov 6th, 2026[/B]
 --[Enhancement] Faster menus and results through fewer account checks, less repeated metadata work, and reused TMDb IDs.
 --[Feature] Added Download Manager (in Downloads settings, the Downloads page, and Tools) with live progress, transfer speeds, cancellation, resume for interrupted transfers (even after Kodi restarts), and Remove from list for finished entries.

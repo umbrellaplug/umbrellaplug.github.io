@@ -7262,3 +7262,15 @@ msgstr ""
 msgctxt "#40868"
 msgid "View download progress and recent results. Select a download to cancel, remove or resume it when supported. Resume requires a local partial file and a valid server link, and remains available after Kodi restarts."
 msgstr ""
+
+msgctxt "#40869"
+msgid "[COLOR %s][B]Clean up finished items in MDBList Finish Watching[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#40870"
+msgid "Clean up finished items in MDBList Finish Watching"
+msgstr ""
+
+msgctxt "#40871"
+msgid "Allows Umbrella to read Trakt indicators, lists, and resume information while preventing Umbrella from reporting playback or automatically marking items watched during playback. Use this when another add-on, such as the Trakt add-on, reports your playback."
+msgstr ""

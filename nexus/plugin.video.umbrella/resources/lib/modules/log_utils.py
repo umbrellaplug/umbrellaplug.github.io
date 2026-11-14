@@ -144,26 +144,27 @@ def upload_LogFile(name):
 		return notification(message='Log File not found, likely logging is not enabled.')
 	try:
 		import requests
-		from resources.lib.modules.control import addonVersion, selectDialog
+		from resources.lib.modules.control import selectDialog, okDialog
 		f = open(log_file, 'r', encoding='utf-8', errors='ignore')
 		text = f.read()
 		f.close()
-		#UserAgent = 'Umbrella %s' % addonVersion('plugin.video.umbrella')
-		UserAgent = 'script.kodi.loguploader: 1.0' # your mom is a ho for blocking my user agent.
-		response = requests.post(url + 'documents', data=text.encode('utf-8', errors='ignore'), headers={'User-Agent': UserAgent})
+		UserAgent = 'script.kodi.loguploader: 1.0'
+		response = requests.post(url + 'documents', data=text.encode('utf-8', errors='ignore'), headers={'User-Agent': UserAgent}, timeout=30)
 		if 'key' in response.json():
 			result = url + response.json()['key']
 			log('%s log file uploaded to: %s' % (name, result))
 			from sys import platform as sys_platform
-			supported_platform = any(value in sys_platform for value in ('win32', 'linux2'))
-			highlight_color = getSetting('highlight.color')
-			list = [('[COLOR %s]url:[/COLOR]  %s' % (highlight_color, str(result)), str(result))]
-			if supported_platform: list += [('[COLOR %s]  -- Copy url To Clipboard[/COLOR]' % highlight_color, ' ')]
-			select = selectDialog([i[0] for i in list], lang(32196) if name.lower() == 'umbrella' else lang(32199))
-			if 'Copy url To Clipboard' in list[select][0]:
+			heading = lang(32196) if name.lower() == 'umbrella' else lang(32199)
+			message = 'Upload complete.[CR]%s[CR][CR]Open this URL on your phone or computer to view and share the log.' % result
+			if sys_platform not in ('win32', 'darwin'):
+				return okDialog(title=heading, message=message)
+			select = selectDialog(['Upload complete: %s' % result, 'Copy URL to clipboard'], heading)
+			if select == 0:
+				okDialog(title=heading, message=message)
+			elif select == 1:
 				try:
 					from resources.lib.modules.source_utils import copy2clip
-					copy2clip(list[select - 1][1])
+					copy2clip(result)
 				except:
 					pass
 		elif 'message' in response.json():

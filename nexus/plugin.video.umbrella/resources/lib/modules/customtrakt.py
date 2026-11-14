@@ -5,12 +5,11 @@
 #trakt clone
 
 from datetime import datetime
+from hashlib import md5
 from json import dumps as jsdumps
 import time
 from threading import Lock
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
+from resources.lib.modules.lazy_network import requests, LazySession
 from urllib.parse import urljoin, urlsplit, urlunsplit, parse_qsl, urlencode
 from resources.lib.database import cache, customtraktsync
 from resources.lib.modules import control
@@ -21,10 +20,8 @@ getSetting = control.setting
 setSetting = control.setSetting
 
 headers = {'Content-Type': 'application/json'}
-session = requests.Session()
-retries = Retry(total=4, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504, 520, 521, 522, 524, 530])
-session.mount('https://', HTTPAdapter(max_retries=retries, pool_maxsize=100))
-session.mount('http://', HTTPAdapter(max_retries=retries, pool_maxsize=100))
+session = LazySession(dict(total=4, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504, 520, 521, 522, 524, 530]), ('https://', 'http://'))
+read_session = LazySession(dict(total=0), ('https://', 'http://'))
 
 custom_icon = control.joinPath(control.artPath(), 'icon.png')
 custom_token = getSetting('custom.user.token')
@@ -71,7 +68,32 @@ def getCustomIndicatorsInfo():
 
 #### Core request plumbing (mirrors trakt.py's getTrakt/getTraktAsJson/get_all_pages) ####
 
-def getCustom(url, post=None, extended=False, silent=False, reauth_attempts=0, method=None):
+def _custom_reads_paused(base):
+	key = 'umbrella.custom.read_backoff.' + md5(base.encode('utf-8')).hexdigest()
+	try: return float(control.homeWindow.getProperty(key) or 0) > time.time()
+	except (TypeError, ValueError): return False
+
+
+def _custom_read(url, base):
+	# Share an outage cooldown across plugin invocations. Repeated progress
+	# lookups must not multiply connection retries for every show and episode.
+	key = 'umbrella.custom.read_backoff.' + md5(base.encode('utf-8')).hexdigest()
+	if _custom_reads_paused(base): return None
+	try:
+		response = read_session.get(url, headers=headers, timeout=(3, 5))
+	except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as exc:
+		control.homeWindow.setProperty(key, str(time.time() + 30))
+		log_utils.log_force('CUSTOM: read unavailable (%s); pausing reads for 30 seconds' % type(exc).__name__, level=log_utils.LOGWARNING)
+		return None
+	if response.status_code == 429 or response.status_code >= 500:
+		control.homeWindow.setProperty(key, str(time.time() + 30))
+	return response
+
+
+def getCustom(url, post=None, extended=False, silent=False, reauth_attempts=0, method=None, fast=False):
+	# fast=True is for lookups made while a directory is being built: short
+	# timeout, no retries, shared outage cooldown. Syncs and writes keep the
+	# patient retrying transport so a slow server cannot leave watched state stale.
 	try:
 		global _last_request_time
 		base = customBaseUrl()
@@ -90,6 +112,9 @@ def getCustom(url, post=None, extended=False, silent=False, reauth_attempts=0, m
 					response = session.delete(url, headers=headers, timeout=20)
 				elif post:
 					response = session.post(url, data=post, headers=headers, timeout=20)
+				elif fast:
+					response = _custom_read(url, base)
+					if response is None: return None
 				else:
 					response = session.get(url, headers=headers, timeout=20)
 				_last_request_time = time.time()
@@ -113,8 +138,9 @@ def getCustom(url, post=None, extended=False, silent=False, reauth_attempts=0, m
 				log_utils.log('CUSTOM: Too many re-auth attempts, stopping to prevent infinite loop', level=log_utils.LOGWARNING)
 				return None
 			success = re_auth(headers)
-			if success: return getCustom(url, post=post, extended=extended, silent=silent, reauth_attempts=reauth_attempts + 1, method=method)
+			if success: return getCustom(url, post=post, extended=extended, silent=silent, reauth_attempts=reauth_attempts + 1, method=method, fast=fast)
 		elif status_code == '429':
+			if fast: return None
 			if 'Retry-After' in response.headers:
 				throttleTime = response.headers['Retry-After']
 				control.sleep((int(throttleTime) + 1) * 1000)
@@ -138,9 +164,9 @@ def error_handler(url, response, status_code, silent=False):
 		log_utils.log('getCustom() (404:NOT FOUND): URL=(%s): %s' % (url, response_text), level=log_utils.LOGWARNING)
 
 
-def getCustomAsJson(url, post=None, silent=False):
+def getCustomAsJson(url, post=None, silent=False, fast=False):
 	try:
-		r = getCustom(url=url, post=post, extended=False, silent=silent)
+		r = getCustom(url=url, post=post, extended=False, silent=silent, fast=fast)
 		if not r: return None
 		return r.json()
 	except Exception as e:
@@ -848,11 +874,14 @@ def watchedShows():
 		return [{'ids': {'imdb': r[0], 'tmdb': r[1], 'tvdb': r[2]}, 'last_watched_at': r[3]} for r in rows]
 	except: log_utils.error()
 
-def getShowProgress(imdb):
+def getShowProgress(imdb, enrich=True):
 	try:
 		if not imdb: return None
 		progress = customtraktsync.get(_fetchShowProgress, 15, imdb)
-		return _complete_progress_totals(progress, imdb) if progress else None
+		if not progress and _custom_reads_paused(customBaseUrl()):
+			progress = customtraktsync.cache_existing(_fetchShowProgress, imdb)
+		if not progress: return None
+		return _complete_progress_totals(progress, imdb) if enrich else progress
 	except: log_utils.error()
 
 def _complete_progress_totals(progress, imdb):
@@ -900,7 +929,7 @@ def _complete_progress_totals(progress, imdb):
 
 def _fetchShowProgress(imdb):
 	try:
-		results = getCustomAsJson('shows/%s/progress/watched' % imdb, silent=True)
+		results = getCustomAsJson('shows/%s/progress/watched' % imdb, silent=True, fast=True)
 		if not results or not results.get('seasons'): return None
 		# Mirrors trakt.py's syncSeasons reset_at handling â€” episodes watched before
 		# a reset_at timestamp don't count as completed for the current watch-through.

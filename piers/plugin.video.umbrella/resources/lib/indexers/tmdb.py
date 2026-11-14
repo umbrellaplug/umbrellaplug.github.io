@@ -5,10 +5,8 @@
 
 from datetime import datetime
 import re
-import requests
-from requests.adapters import HTTPAdapter
+from resources.lib.modules.lazy_network import requests, LazySession
 from threading import Thread
-from urllib3.util.retry import Retry
 from resources.lib.database import cache, metacache, fanarttv_cache
 from resources.lib.indexers.fanarttv import FanartTv
 from resources.lib.modules.network_art import network_icon
@@ -23,12 +21,7 @@ else:
 	base_link = "https://api.themoviedb.org/3/"
 	tmdb_base = "https://api.themoviedb.org"
 image_path = "https://image.tmdb.org/t/p/%s"
-session = requests.Session()
-retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
-if use_tmdb:
-    session.mount('https://api.tmdb.org', HTTPAdapter(max_retries=retries, pool_maxsize=100))
-else:
-	session.mount('https://api.themoviedb.org', HTTPAdapter(max_retries=retries, pool_maxsize=100))
+session = LazySession(dict(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504]), (tmdb_base,))
 
 
 def _convert_gb_movie_rating(rating):
