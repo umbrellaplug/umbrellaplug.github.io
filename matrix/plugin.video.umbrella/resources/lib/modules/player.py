@@ -302,6 +302,7 @@ class Player(xbmc.Player):
 				kodi_resume = None
 				if len(argv) > 3 and str(argv[3]).lower() in ('resume:true', 'resume:false'):
 					kodi_resume = str(argv[3]).lower() == 'resume:true'
+				log_utils.log('play_source resume arg: argv[3]=%s kodi_resume=%s handle=%s container=%s' % (argv[3] if len(argv) > 3 else 'missing', kodi_resume, argv[1] if len(argv) > 1 else 'missing', control.infoLabel('Container.PluginName') or 'none'), level=log_utils.LOGDEBUG)
 				self.offset = bookmark.get(name=self.name, imdb=imdb, tmdb=tmdb, tvdb=tvdb, season=season, episode=episode, year=self.year, runtime=meta.get('duration') if meta else 0, kodi_resume=kodi_resume)
 				self.trakt_resume_percent = bookmark.trakt_resume_percent
 				self.mdblist_resume_percent = bookmark.mdblist_resume_percent
@@ -1179,6 +1180,8 @@ class Player(xbmc.Player):
 
 	def onPlayBackStopped(self):
 		try:
+			try: homeWindow.setProperty('umbrella.playback_ended_at', str(time.time())) # holds widget refreshes while Kodi restores the folder
+			except Exception: pass
 			current_owner = playerWindow.getProperty('umbrella.queue.current')
 			if (getattr(self, '_queue_current', '') and current_owner
 					and self._queue_current != current_owner):
@@ -1252,6 +1255,8 @@ class Player(xbmc.Player):
 
 	def onPlayBackEnded(self):
 		try:
+			try: homeWindow.setProperty('umbrella.playback_ended_at', str(time.time())) # holds widget refreshes while Kodi restores the folder
+			except Exception: pass
 			# Kodi may deliver the outgoing stream's end to a new resolver before
 			# its own stream starts. It has no completed playback to hand off yet.
 			if not getattr(self, 'av_started_ran', True): return
@@ -2116,10 +2121,11 @@ class Bookmarks:
 			offset = float(match[1])
 			display_offset = offset
 		if ck: return offset
-		# A native Kodi playback action is authoritative. resume:true keeps the
-		# provider offset; resume:false explicitly starts from the beginning.
+		# Kodi's resume:true means the user accepted Kodi's native resume prompt.
+		# resume:false is ambiguous: Kodi also sends it for skin widgets, info
+		# dialog Play buttons and PlayMedia() calls that never offered a choice,
+		# so it must fall through to Umbrella's own auto-resume/prompt settings.
 		if kodi_resume is True: return offset
-		if kodi_resume is False: return '0'
 		minutes, seconds = divmod(display_offset, 60)
 		hours, minutes = divmod(minutes, 60)
 		label = '%02d:%02d:%02d' % (hours, minutes, seconds)

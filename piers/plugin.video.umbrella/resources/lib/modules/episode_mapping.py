@@ -108,14 +108,14 @@ def bookmark(cursor, provider, tmdb, season, episode, ret_type):
         return '0'
     if provider == 'simkl':
         if str(tmdb) == BAKE_OFF:
-            match = cursor.execute("SELECT * FROM bookmarks WHERE (tvdb=? OR imdb=? OR tmdb=?) AND season=? AND episode=?",
+            match = cursor.execute("SELECT * FROM bookmarks WHERE (tvdb=? OR imdb=? OR tmdb=?) AND season=? AND episode=? ORDER BY paused_at DESC",
                                    (BAKE_OFF_TVDB, BAKE_OFF_IMDB, BAKE_OFF_ORIGINAL, str(sn), str(episode))).fetchone()
             if not match: return '0'
             return (match[0], match[2]) if ret_type == 'resume_info' else match[12]
-        match = cursor.execute("SELECT * FROM bookmarks WHERE (tvdb=? OR imdb=? OR tmdb=?) AND season=? AND episode=?",
+        match = cursor.execute("SELECT * FROM bookmarks WHERE (tvdb=? OR imdb=? OR tmdb=?) AND season=? AND episode=? ORDER BY paused_at DESC",
                                (MONSTER_TVDB, MONSTER_IMDB, '113988', str(sn), str(episode))).fetchone()
     else:
-        match = cursor.execute('SELECT * FROM bookmarks WHERE tmdb=? AND season=? AND episode=?',
+        match = cursor.execute('SELECT * FROM bookmarks WHERE tmdb=? AND season=? AND episode=? ORDER BY paused_at DESC',
                                (str(tmdb), str(sn), str(episode))).fetchone()
     if not match: return '0'
     return (match[0], match[2]) if ret_type == 'resume_info' else match[12]

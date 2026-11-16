@@ -666,23 +666,23 @@ def fetch_bookmarks(imdb, tmdb='', tvdb='', season=None, episode=None, ret_all=N
 		else:
 			if not episode:
 				try:
-					match = dbcur.execute('''SELECT * FROM bookmarks WHERE (imdb=? AND tmdb=? AND NOT imdb='' AND NOT tmdb='')''', (imdb, tmdb)).fetchone()
+					match = dbcur.execute('''SELECT * FROM bookmarks WHERE (imdb=? AND tmdb=? AND NOT imdb='' AND NOT tmdb='') ORDER BY paused_at DESC''', (imdb, tmdb)).fetchone()
 					if ret_type == 'resume_info': progress = (match[1], match[2])
 					else: progress = match[12]
 				except:
 					try:
-						match = dbcur.execute('''SELECT * FROM bookmarks WHERE (imdb=? AND NOT imdb='')''', (imdb,)).fetchone()
+						match = dbcur.execute('''SELECT * FROM bookmarks WHERE (imdb=? AND NOT imdb='') ORDER BY paused_at DESC''', (imdb,)).fetchone()
 						if ret_type == 'resume_info': progress = (match[1], match[2])
 						else: progress = match[12]
 					except: pass
 			else:
 				try:
-					match = dbcur.execute('''SELECT * FROM bookmarks WHERE (imdb=? AND tvdb=? AND season=? AND episode=? AND NOT imdb='' AND NOT tvdb='')''', (imdb, tvdb, season, episode)).fetchone()
+					match = dbcur.execute('''SELECT * FROM bookmarks WHERE (imdb=? AND tvdb=? AND season=? AND episode=? AND NOT imdb='' AND NOT tvdb='') ORDER BY paused_at DESC''', (imdb, tvdb, season, episode)).fetchone()
 					if ret_type == 'resume_info': progress = (match[0], match[2])
 					else: progress = match[12]
 				except:
 					try:
-						match = dbcur.execute('''SELECT * FROM bookmarks WHERE (tvdb=? AND season=? AND episode=? AND NOT tvdb='')''', (tvdb, season, episode)).fetchone()
+						match = dbcur.execute('''SELECT * FROM bookmarks WHERE (tvdb=? AND season=? AND episode=? AND NOT tvdb='') ORDER BY paused_at DESC''', (tvdb, season, episode)).fetchone()
 						if ret_type == 'resume_info': progress = (match[0], match[2])
 						else: progress = match[12]
 					except: pass
@@ -704,6 +704,20 @@ def upsert_bookmark(tvshowtitle='', title='', resume_id='', imdb='', tmdb='', tv
 		if not resume_id:
 			import hashlib as _hl
 			resume_id = _hl.md5(('%s%s%s%s' % (imdb, tvdb, season, episode)).encode('utf-8')).hexdigest()
+		# Local scrobbles (md5 resume_id) and server syncs (numeric MDBList id) describe
+		# the same item under different keys. Keep exactly one row per item: the one
+		# with the newest paused_at, so a stale server entry cannot shadow a fresh pause.
+		if episode not in (None, ''):
+			where = "season=? AND episode=? AND ((tmdb=? AND tmdb!='') OR (imdb=? AND imdb!='' AND tvdb=?) OR (tvdb=? AND tvdb!=''))"
+			args = (str(season), str(episode), str(tmdb), str(imdb), str(tvdb), str(tvdb))
+		else:
+			where = "tvshowtitle='' AND ((tmdb=? AND tmdb!='') OR (imdb=? AND imdb!=''))"
+			args = (str(tmdb), str(imdb))
+		rows = dbcur.execute('SELECT resume_id, paused_at FROM bookmarks WHERE resume_id!=? AND ' + where, (resume_id,) + args).fetchall()
+		if any(str(r[1] or '') > str(paused_at or '') for r in rows):
+			return
+		if rows:
+			dbcur.execute('DELETE FROM bookmarks WHERE resume_id!=? AND ' + where, (resume_id,) + args)
 		dbcur.execute('''INSERT OR REPLACE INTO bookmarks Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
 			(tvshowtitle, title, resume_id, imdb, tmdb, tvdb, season, episode, genre, mpaa, studio, duration, percent_played, paused_at))
 		timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")

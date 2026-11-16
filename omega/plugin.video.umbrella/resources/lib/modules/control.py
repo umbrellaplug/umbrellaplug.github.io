@@ -580,7 +580,15 @@ def trigger_widget_refresh(update_library=True, force=False):
 	try:
 		playback_cleanup = homeWindow.getProperty('umbrella.playback_cleanup') == 'true'
 		player_window_active = condVisibility('Window.IsActive(fullscreenvideo)')
-		if player.isPlaying() or player_window_active or playback_cleanup:
+		# After playback Kodi restores the previous directory. An UpdateLibrary that
+		# lands during that reload makes Kodi merge two listings (each episode shown
+		# twice until the folder is reopened). Account syncs skipped during playback
+		# fire right at that moment, so hold refreshes until the folder has settled;
+		# the service loop runs the pending refresh afterwards.
+		try: ended_at = float(homeWindow.getProperty('umbrella.playback_ended_at') or 0)
+		except: ended_at = 0
+		settling = 0 <= time.time() - ended_at < 30
+		if player.isPlaying() or player_window_active or playback_cleanup or settling or condVisibility('Container.IsUpdating'):
 			homeWindow.setProperty('umbrella.widget_refresh_pending', 'true')
 			return
 	except: pass

@@ -445,6 +445,11 @@ def services_syncs():
 				except Exception:
 					from resources.lib.modules import log_utils
 					log_utils.log('PunchPlay background sync failed; cached state retained.', 1)
+		# Widget refreshes requested while playback was ending were held back so they
+		# could not race Kodi restoring the directory. Run them once it has settled.
+		if (control.homeWindow.getProperty('umbrella.widget_refresh_pending') == 'true'
+				and not control.condVisibility('Player.HasVideo')):
+			control.trigger_widget_refresh()
 		# Short local checks honor independent intervals and live setting changes.
 		# Network work remains gated by each provider's last sync above.
 		if control.monitor.waitForAbort(30): break

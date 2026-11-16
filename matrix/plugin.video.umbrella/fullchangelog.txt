@@ -1,3 +1,8 @@
+[B]Update - v6.8.02 - Nov 16th, 2026[/B]
+--[Fix] Resume points work again when an episode or movie is started from a skin widget, an info screen Play button or a skin helper. Umbrella was treating these launches as "Start from beginning". Applies to Trakt, Simkl, MDBList and the other resume sources.
+--[Fix] MDBList now keeps only the most recent resume point for each episode or movie.
+--[Fix] Episode lists should no longer duplicate after finishing an episode or show, which happened most often with Simkl. Home-screen widget refreshes now wait until Kodi has finished reloading the list after playback.
+
 [B]Update - v6.8.01 - Nov 14th, 2026[/B]
 --[Feature] Added a read-only mode for Trakt (Settings > Online Services > Trakt). Umbrella still reads your Trakt watched status, lists and resume points but stops reporting playback and marking items watched automatically, so another add-on such as the Trakt add-on can handle that. Marking items watched manually still works.
 --[Fix] Progress Episodes and Progress Shows load much faster, especially on low-power devices such as Fire TV. They now reuse the last list until your watch history or dropped shows change, instead of rebuilding it on every load.
